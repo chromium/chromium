@@ -1656,14 +1656,14 @@
           ],
         },
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
           'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
         },
       },
       'ToTFuchsiaOfficial': {
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
         },
         'mixins': [
@@ -2825,7 +2825,7 @@
       },
       'fuchsia-code-coverage': {
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
@@ -2839,7 +2839,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
         'mixins': [
@@ -2856,7 +2856,7 @@
         'os_type': 'linux',
         'test_suites': {
           'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
         },
         'mixins': [
@@ -2871,7 +2871,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'fuchsia_experimental_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_experimental_gtests',
         },
         'mixins': [
           'arm64',
@@ -2895,7 +2895,7 @@
           ],
         },
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
       },
@@ -2918,7 +2918,7 @@
         },
         'test_suites': {
           'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
-          'gtest_tests': 'fuchsia_experimental_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_experimental_gtests',
         },
       },
       'ios-asan': {
@@ -4865,7 +4865,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
         },
         'mixins': [
@@ -4891,7 +4891,7 @@
           ],
         },
         'test_suites': {
-          'gtest_tests': 'fuchsia_gtests_with_runner_logs',
+          'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
         },
       },

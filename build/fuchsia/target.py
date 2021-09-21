@@ -10,7 +10,9 @@ import time
 
 import common
 import remote_cmd
-import runner_logs
+
+from log_manager import LogManager
+from symbolizer import BuildIdsPaths, RunSymbolizer
 
 
 _SHUTDOWN_CMD = ['dm', 'poweroff']
@@ -59,17 +61,21 @@ class FuchsiaTargetException(Exception):
     super(FuchsiaTargetException, self).__init__(message)
 
 
+# TODO(crbug.com/1250803): Factor high level commands out of target.
 class Target(object):
   """Base class representing a Fuchsia deployment target."""
 
-  def __init__(self, out_dir, target_cpu):
+  def __init__(self, out_dir, target_cpu, logs_dir):
     self._out_dir = out_dir
-    self._started = False
-    self._dry_run = False
     self._target_cpu = target_cpu
     self._command_runner = None
+    self._symbolizer_proc = None
+    self._log_listener_proc = None
+    self._dry_run = False
+    self._started = False
     self._ffx_path = os.path.join(common.SDK_ROOT, 'tools',
                                   common.GetHostArchFromPlatform(), 'ffx')
+    self._log_manager = LogManager(logs_dir)
 
   @staticmethod
   def CreateFromArgs(args):
@@ -83,7 +89,7 @@ class Target(object):
   def __enter__(self):
     return self
   def __exit__(self, exc_type, exc_val, exc_tb):
-    return
+    self.Stop()
 
   def Start(self):
     """Handles the instantiation and connection process for the Fuchsia
@@ -93,6 +99,14 @@ class Target(object):
     """Returns True if the Fuchsia target instance is ready to accept
     commands."""
     return self._started
+
+  def Stop(self):
+    """Stop all subprocesses and close log streams."""
+    if self._symbolizer_proc:
+      self._symbolizer_proc.kill()
+    if self._log_listener_proc:
+      self._log_listener_proc.kill()
+    self._log_manager.Stop()
 
   def IsNewInstance(self):
     """Returns True if the connected target instance is newly provisioned."""
@@ -109,6 +123,21 @@ class Target(object):
           remote_cmd.CommandRunner(self._GetSshConfigPath(), host, port)
 
     return self._command_runner
+
+  def StartSystemLog(self, package_paths):
+    """Start a system log reader as a long-running SSH task."""
+    system_log = self._log_manager.Open('system_log')
+    if package_paths:
+      self._log_listener_proc = self.RunCommandPiped(['log_listener'],
+                                                     stdout=subprocess.PIPE,
+                                                     stderr=subprocess.STDOUT)
+      self._symbolizer_proc = RunSymbolizer(self._log_listener_proc.stdout,
+                                            system_log,
+                                            BuildIdsPaths(package_paths))
+    else:
+      self._log_listener_proc = self.RunCommandPiped(['log_listener'],
+                                                     stdout=system_log,
+                                                     stderr=subprocess.STDOUT)
 
   def RunCommandPiped(self, command, **kwargs):
     """Starts a remote command and immediately returns a Popen object for the
@@ -252,7 +281,7 @@ class Target(object):
 
     host, port = self._GetEndpoint()
     end_time = time.time() + _ATTACH_RETRY_SECONDS
-    ssh_diagnostic_log = runner_logs.FileStreamFor('ssh_diagnostic_log')
+    ssh_diagnostic_log = self._log_manager.Open('ssh_diagnostic_log')
     while time.time() < end_time:
       runner = remote_cmd.CommandRunner(self._GetSshConfigPath(), host, port)
       ssh_proc = runner.RunCommandPiped(['true'],

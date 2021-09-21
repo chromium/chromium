@@ -71,12 +71,7 @@ def AddCommonArgs(arg_parser):
     arg_parser: an ArgumentParser object."""
 
   common_args = arg_parser.add_argument_group('common', 'Common arguments')
-  common_args.add_argument('--runner-logs-dir',
-                           help='Directory to write test runner logs to.')
-  common_args.add_argument('--exclude-system-logs',
-                           action='store_false',
-                           dest='include_system_logs',
-                           help='Do not show system log data.')
+  common_args.add_argument('--logs-dir', help='Directory to write logs to.')
   common_args.add_argument('--verbose',
                            '-v',
                            default=False,
@@ -87,9 +82,6 @@ def AddCommonArgs(arg_parser):
       type=os.path.realpath,
       help=('Path to the directory in which build files are located. '
             'Defaults to current directory.'))
-  common_args.add_argument('--system-log-file',
-                           help='File to write system logs to. Specify '
-                           '\'-\' to log to stdout.')
   common_args.add_argument('--fuchsia-out-dir',
                            help='Path to a Fuchsia build output directory. '
                            'Setting the GN arg '

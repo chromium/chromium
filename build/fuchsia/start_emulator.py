@@ -12,6 +12,7 @@ import os
 import time
 import subprocess
 
+from aemu_target import AemuTarget
 from fvdl_target import FvdlTarget
 
 
@@ -20,6 +21,9 @@ def main():
       description='Launches a long-running emulator that can '
       'be re-used for multiple test runs.')
   AddLongRunningArgs(parser)
+  FvdlTarget.RegisterArgs(parser)
+  AemuTarget.RegisterArgs(parser)
+  common_args.AddCommonArgs(parser)
   args = parser.parse_args()
   args.out_dir = None
   args.device = 'fvdl'
@@ -41,43 +45,16 @@ def main():
 
 
 def AddLongRunningArgs(arg_parser):
-  arg_parser.add_argument('-v',
-                          '--verbose',
-                          default=False,
-                          action='store_true',
-                          help='Enable debug-level logging.')
   fvdl_args = arg_parser.add_argument_group('FVDL arguments')
   fvdl_args.add_argument('--target-cpu',
                          default=common_args.GetHostArchFromPlatform(),
                          help='Set target_cpu for the emulator. Defaults '
                          'to the same architecture as host cpu.')
-  fvdl_args.add_argument('--system-log-file',
-                         help='File to write system logs to. Specify '
-                         '\'-\' to log to stdout.')
-  fvdl_args.add_argument('--allow-no-kvm',
-                         action='store_false',
-                         dest='require_kvm',
-                         default=True,
-                         help='Disables KVM acceleration for the emulator.')
-  fvdl_args.add_argument('--enable-graphics',
-                          action='store_true',
-                          default=False,
-                          help='Start FVDL with graphics instead of '\
-                              'headless.')
-  fvdl_args.add_argument('--hardware-gpu',
-                          action='store_true',
-                          default=False,
-                          help='Use local GPU hardware instead of '\
-                              'Swiftshader.')
   fvdl_args.add_argument('--without-network',
                          action='store_false',
                          dest='with_network',
                          default=True,
                          help='Run emulator without emulated nic via tun/tap.')
-  fvdl_args.add_argument('--ram-size-mb',
-                         type=int,
-                         default=8192,
-                         help='Set the ram size amount for the emulator.')
 
 
 if __name__ == '__main__':

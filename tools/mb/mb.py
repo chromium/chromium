@@ -1711,7 +1711,7 @@ class MetaBuildWrapper(object):
       cmdline += [
           os.path.join('bin', 'run_%s' % target),
           '--test-launcher-bot-mode',
-          '--system-log-file', '${ISOLATED_OUTDIR}/system_log'
+          '--logs-dir=${ISOLATED_OUTDIR}',
       ]
     elif is_cros_device and test_type != 'script':
       cmdline += [

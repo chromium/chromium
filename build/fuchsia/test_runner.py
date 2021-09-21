@@ -8,16 +8,14 @@
 
 import argparse
 import os
-import runner_logs
 import sys
 import tempfile
 
 from common_args import AddCommonArgs, AddTargetSpecificArgs, \
                         ConfigureLogging, GetDeploymentTargetForArgs
 from net_test_server import SetupTestServer
-from run_test_package import RunTestPackage, RunTestPackageArgs, SystemLogReader
+from run_test_package import RunTestPackage, RunTestPackageArgs
 from runner_exceptions import HandleExceptionAndReturnExitCode
-from runner_logs import RunnerLogManager
 from symbolizer import BuildIdsPaths
 
 DEFAULT_TEST_SERVER_CONCURRENCY = 4
@@ -193,13 +191,9 @@ def main():
     test_realms = [TEST_REALM_NAME]
 
   try:
-    with GetDeploymentTargetForArgs(args) as target, \
-         SystemLogReader() as system_logger, \
-         RunnerLogManager(args.runner_logs_dir, BuildIdsPaths(args.package)):
+    with GetDeploymentTargetForArgs(args) as target:
       target.Start()
-
-      if args.system_log_file and args.system_log_file != '-':
-        system_logger.Start(target, args.package, args.system_log_file)
+      target.StartSystemLog(args.package)
 
       if args.test_launcher_filter_file:
         test_launcher_filter_files = args.test_launcher_filter_file.split(';')

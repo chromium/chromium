@@ -8,7 +8,6 @@ import pkg_repo
 import boot_data
 import logging
 import os
-import runner_logs
 import subprocess
 import sys
 import target
@@ -16,15 +15,14 @@ import tempfile
 
 
 class EmuTarget(target.Target):
-  def __init__(self, out_dir, target_cpu, system_log_file):
+  def __init__(self, out_dir, target_cpu, logs_dir):
     """out_dir: The directory which will contain the files that are
                    generated to support the emulator deployment.
     target_cpu: The emulated target CPU architecture.
                 Can be 'x64' or 'arm64'."""
 
-    super(EmuTarget, self).__init__(out_dir, target_cpu)
+    super(EmuTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._emu_process = None
-    self._system_log_file = system_log_file
     self._pkg_repo = None
 
   def __enter__(self):
@@ -36,11 +34,6 @@ class EmuTarget(target.Target):
 
   def _SetEnv(self):
     return os.environ.copy()
-
-  # Used by the context manager to ensure that the emulator is killed when
-  # the Python process exits.
-  def __exit__(self, exc_type, exc_val, exc_tb):
-    self.Shutdown();
 
   def Start(self):
     emu_command = self._BuildCommand()
@@ -59,14 +52,14 @@ class EmuTarget(target.Target):
     # to a temporary file, and print that out if we are unable to connect to
     # the emulator guest, to make it easier to diagnose connectivity issues.
     temporary_log_file = None
-    if runner_logs.IsEnabled():
-      stdout = runner_logs.FileStreamFor('serial_log')
+    if self._log_manager.IsLoggingEnabled():
+      stdout = self._log_manager.Open('serial_log')
     else:
       temporary_log_file = tempfile.NamedTemporaryFile('w')
       stdout = temporary_log_file
 
-    LogProcessStatistics('proc_stat_start_log')
-    LogSystemStatistics('system_statistics_start_log')
+    self.LogProcessStatistics('proc_stat_start_log')
+    self.LogSystemStatistics('system_statistics_start_log')
 
     self._emu_process = subprocess.Popen(emu_command,
                                          stdin=open(os.devnull),
@@ -76,12 +69,18 @@ class EmuTarget(target.Target):
 
     try:
       self._WaitUntilReady()
-      LogProcessStatistics('proc_stat_ready_log')
+      self.LogProcessStatistics('proc_stat_ready_log')
     except target.FuchsiaTargetException:
       if temporary_log_file:
         logging.info('Kernel logs:\n' +
                      open(temporary_log_file.name, 'r').read())
       raise
+
+  def Stop(self):
+    try:
+      super(EmuTarget, self).Stop()
+    finally:
+      self.Shutdown()
 
   def GetPkgRepo(self):
     if not self._pkg_repo:
@@ -106,8 +105,8 @@ class EmuTarget(target.Target):
       logging.error('%s quit unexpectedly with exit code %d' %
                     (self.EMULATOR_NAME, returncode))
 
-    LogProcessStatistics('proc_stat_end_log')
-    LogSystemStatistics('system_statistics_end_log')
+    self.LogProcessStatistics('proc_stat_end_log')
+    self.LogSystemStatistics('system_statistics_end_log')
 
 
   def _IsEmuStillRunning(self):
@@ -123,23 +122,21 @@ class EmuTarget(target.Target):
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath()
 
+  def LogSystemStatistics(self, log_file_name):
+    self._LaunchSubprocessWithLogs(['top', '-b', '-n', '1'], log_file_name)
+    self._LaunchSubprocessWithLogs(['ps', '-ax'], log_file_name)
 
-def LogSystemStatistics(log_file_name):
-  statistics_log = runner_logs.FileStreamFor(log_file_name)
-  # Log the cpu load and process information.
-  subprocess.call(['top', '-b', '-n', '1'],
-                  stdin=open(os.devnull),
-                  stdout=statistics_log,
-                  stderr=subprocess.STDOUT)
-  subprocess.call(['ps', '-ax'],
-                  stdin=open(os.devnull),
-                  stdout=statistics_log,
-                  stderr=subprocess.STDOUT)
+  def LogProcessStatistics(self, log_file_name):
+    self._LaunchSubprocessWithLogs(['cat', '/proc/stat'], log_file_name)
 
+  def _LaunchSubprocessWithLogs(self, command, log_file_name):
+    """Launch a subprocess and redirect stdout and stderr to log_file_name.
+    Command will not be run if logging directory is not set."""
 
-def LogProcessStatistics(log_file_name):
-  statistics_log = runner_logs.FileStreamFor(log_file_name)
-  subprocess.call(['cat', '/proc/stat'],
-                  stdin=open(os.devnull),
-                  stdout=statistics_log,
-                  stderr=subprocess.STDOUT)
+    if not self._log_manager.IsLoggingEnabled():
+      return
+    log = self._log_manager.Open(log_file_name)
+    subprocess.call(command,
+                    stdin=open(os.devnull),
+                    stdout=log,
+                    stderr=subprocess.STDOUT)

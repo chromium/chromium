@@ -678,10 +678,4 @@
       ],
     },
   },
-  'FUCHSIA': {
-    'identifier': 'fuchsia',
-    'mixins': [
-      'fuchsia_runner_logs',
-    ],
-  },
 }

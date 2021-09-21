@@ -22550,15 +22550,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "absl_hardening_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22570,15 +22568,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "accessibility_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22590,15 +22586,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "aura_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22610,19 +22604,16 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/"
@@ -22631,15 +22622,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_common_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22651,15 +22640,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_heap_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22671,19 +22658,16 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_platform_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_platform_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
@@ -22693,19 +22677,16 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 30
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
@@ -22714,15 +22695,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_crypto_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22734,15 +22713,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_ssl_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22754,15 +22731,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "capture_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22774,15 +22749,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22794,15 +22767,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22814,15 +22785,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22834,19 +22803,17 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cc_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 2
         },
         "test": "cc_unittests",
         "test_id_prefix": "ninja://cc:cc_unittests/"
@@ -22855,15 +22822,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "color_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22875,15 +22840,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "compositor_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22896,15 +22859,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -22917,15 +22878,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "courgette_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22937,15 +22896,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr_fuchsia_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22957,15 +22914,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22977,15 +22932,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22997,15 +22950,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "crypto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23017,15 +22968,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "display_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23037,15 +22986,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "events_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23057,15 +23004,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "extensions_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23077,15 +23022,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "fuchsia_mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23097,15 +23040,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gcm_unit_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23117,19 +23058,16 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gfx_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
@@ -23138,15 +23076,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gin_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23158,15 +23094,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "google_apis_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23178,19 +23112,16 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gpu_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
@@ -23199,15 +23130,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gwp_asan_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23220,19 +23149,16 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "headless_browsertests",
         "test_id_prefix": "ninja://headless:headless_browsertests/"
@@ -23241,15 +23167,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23261,15 +23185,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "http_service_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23281,15 +23203,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ipc_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23302,15 +23222,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "jingle_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23322,15 +23240,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "latency_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23342,19 +23258,16 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "media_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "media_unittests",
         "test_id_prefix": "ninja://media:media_unittests/"
@@ -23363,15 +23276,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "message_center_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23383,15 +23294,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "midi_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23403,19 +23312,16 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_unittests",
         "test_id_prefix": "ninja://mojo:mojo_unittests/"
@@ -23424,15 +23330,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "native_theme_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23445,19 +23349,17 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "net_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 14
+          "shards": 4
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/"
@@ -23467,15 +23369,13 @@
           "--child-arg=--ozone-platform=headless",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_gl_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23487,15 +23387,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23507,15 +23405,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "perfetto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23527,15 +23423,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23548,15 +23442,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "services_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -23569,15 +23461,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "shell_dialogs_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23589,15 +23479,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "skia_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23609,15 +23497,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "snapshot_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23629,15 +23515,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "sql_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23650,15 +23534,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "storage_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23671,15 +23553,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23691,15 +23571,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_touch_selection_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23711,15 +23589,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "url_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23732,15 +23608,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_examples_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23753,15 +23627,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23774,15 +23646,13 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "viz_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23794,19 +23664,16 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 28
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_browsertests",
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_browsertests/"
@@ -23816,19 +23683,16 @@
           "--child-arg=--vmodule=test_navigation_listener=1",
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "web_engine_integration_tests",
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_integration_tests/"
@@ -23837,15 +23701,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23857,15 +23719,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23877,15 +23737,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wm_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23897,15 +23755,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wtf_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23917,15 +23773,13 @@
         "args": [
           "--ram-size-mb=16384",
           "--code-coverage",
-          "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
         ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "zlib_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -23941,7 +23795,7 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
         "isolate_name": "angle_unittests",
         "isolate_profile_data": true,
@@ -23964,14 +23818,10 @@
     ],
     "gtest_tests": [
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "absl_hardening_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -23987,14 +23837,10 @@
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "accessibility_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24010,14 +23856,10 @@
         "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "aura_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24033,14 +23875,10 @@
         "test_id_prefix": "ninja://ui/aura:aura_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24056,14 +23894,10 @@
         "test_id_prefix": "ninja://base:base_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_common_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24079,14 +23913,10 @@
         "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_heap_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24102,14 +23932,10 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/heap:blink_heap_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_platform_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24126,14 +23952,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24149,14 +23973,10 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_crypto_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24172,14 +23992,10 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_ssl_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24195,14 +24011,10 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "capture_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24218,14 +24030,10 @@
         "test_id_prefix": "ninja://media/capture:capture_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24241,14 +24049,10 @@
         "test_id_prefix": "ninja://fuchsia/runners:cast_runner_browsertests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24264,14 +24068,10 @@
         "test_id_prefix": "ninja://fuchsia/runners:cast_runner_integration_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24287,15 +24087,10 @@
         "test_id_prefix": "ninja://fuchsia/runners:cast_runner_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.cc_unittests.filter"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cc_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24312,14 +24107,10 @@
         "test_id_prefix": "ninja://cc:cc_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "color_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24335,15 +24126,10 @@
         "test_id_prefix": "ninja://ui/color:color_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.compositor_unittests.filter"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "compositor_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24360,14 +24146,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24383,14 +24167,10 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "courgette_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24406,14 +24186,10 @@
         "test_id_prefix": "ninja://courgette:courgette_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr_fuchsia_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24429,14 +24205,10 @@
         "test_id_prefix": "ninja://fuchsia/base:cr_fuchsia_base_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24452,14 +24224,10 @@
         "test_id_prefix": "ninja://components/cronet:cronet_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24475,14 +24243,10 @@
         "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "crypto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24498,14 +24262,10 @@
         "test_id_prefix": "ninja://crypto:crypto_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "display_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24521,14 +24281,10 @@
         "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "events_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24544,14 +24300,10 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "extensions_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24567,14 +24319,10 @@
         "test_id_prefix": "ninja://extensions:extensions_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "fuchsia_mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24590,14 +24338,10 @@
         "test_id_prefix": "ninja://fuchsia/mojom:fuchsia_mojo_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gcm_unit_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24613,14 +24357,10 @@
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gfx_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24636,14 +24376,10 @@
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gin_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24659,14 +24395,10 @@
         "test_id_prefix": "ninja://gin:gin_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "google_apis_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24682,14 +24414,10 @@
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gpu_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24705,14 +24433,10 @@
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gwp_asan_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24729,14 +24453,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24752,14 +24474,10 @@
         "test_id_prefix": "ninja://headless:headless_browsertests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24775,14 +24493,10 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "http_service_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24798,14 +24512,10 @@
         "test_id_prefix": "ninja://fuchsia/http:http_service_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ipc_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24822,14 +24532,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "jingle_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24845,14 +24553,10 @@
         "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "latency_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24868,15 +24572,10 @@
         "test_id_prefix": "ninja://ui/latency:latency_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.media_unittests.filter"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "media_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24892,14 +24591,10 @@
         "test_id_prefix": "ninja://media:media_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "message_center_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24915,14 +24610,10 @@
         "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "midi_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24938,14 +24629,10 @@
         "test_id_prefix": "ninja://media/midi:midi_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24961,14 +24648,10 @@
         "test_id_prefix": "ninja://mojo:mojo_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "native_theme_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -24985,14 +24668,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "net_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25010,14 +24691,12 @@
       },
       {
         "args": [
-          "--child-arg=--ozone-platform=headless",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--child-arg=--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_gl_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25033,14 +24712,10 @@
         "test_id_prefix": "ninja://ui/ozone/gl:ozone_gl_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25056,14 +24731,10 @@
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "perfetto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25079,14 +24750,10 @@
         "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25103,14 +24770,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "services_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25126,14 +24791,10 @@
         "test_id_prefix": "ninja://services:services_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "shell_dialogs_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25149,14 +24810,10 @@
         "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "skia_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25172,15 +24829,10 @@
         "test_id_prefix": "ninja://skia:skia_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.snapshot_unittests.filter"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "snapshot_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25196,14 +24848,10 @@
         "test_id_prefix": "ninja://ui/snapshot:snapshot_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "sql_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25220,14 +24868,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "storage_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25244,14 +24890,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25267,14 +24911,10 @@
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_touch_selection_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25290,14 +24930,10 @@
         "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "url_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25314,14 +24950,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_examples_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25338,14 +24972,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25362,14 +24994,12 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "viz_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25385,14 +25015,10 @@
         "test_id_prefix": "ninja://components/viz:viz_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25409,14 +25035,12 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--child-arg=--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25432,14 +25056,10 @@
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_integration_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25455,14 +25075,10 @@
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25478,14 +25094,10 @@
         "test_id_prefix": "ninja://fuchsia/runners:web_runner_integration_tests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wm_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25501,14 +25113,10 @@
         "test_id_prefix": "ninja://ui/wm:wm_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wtf_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25524,14 +25132,10 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
       },
       {
-        "args": [
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "zlib_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25551,7 +25155,7 @@
       {
         "args": [
           "bin/run_angle_unittests",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
         "isolate_name": "angle_unittests",
         "merge": {
@@ -25581,14 +25185,12 @@
     "gtest_tests": [
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "absl_hardening_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25605,14 +25207,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "accessibility_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25629,14 +25229,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "aura_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25653,14 +25251,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25677,14 +25273,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_common_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25701,14 +25295,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_heap_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25725,14 +25317,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_platform_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25750,14 +25340,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25774,14 +25362,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_crypto_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25798,14 +25384,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_ssl_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25822,14 +25406,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "capture_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25846,14 +25428,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25870,14 +25450,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25894,14 +25472,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25918,14 +25494,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cc_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25943,14 +25517,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "color_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25967,14 +25539,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "compositor_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -25992,14 +25562,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26016,14 +25584,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "courgette_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26040,14 +25606,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr_fuchsia_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26064,14 +25628,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26088,14 +25650,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26112,14 +25672,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "crypto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26136,14 +25694,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "display_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26160,14 +25716,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "events_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26184,14 +25738,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "extensions_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26208,14 +25760,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "fuchsia_mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26232,14 +25782,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gcm_unit_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26256,14 +25804,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gfx_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26280,14 +25826,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gin_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26304,14 +25848,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "google_apis_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26328,14 +25870,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gpu_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26352,14 +25892,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gwp_asan_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26377,14 +25915,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26401,14 +25937,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26425,14 +25959,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "http_service_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26449,14 +25981,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ipc_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26474,14 +26004,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "jingle_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26498,14 +26026,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "latency_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26522,14 +26048,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "media_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26546,14 +26070,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "message_center_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26570,14 +26092,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "midi_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26594,14 +26114,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26618,14 +26136,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "native_theme_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26643,14 +26159,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "net_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26669,14 +26183,12 @@
       {
         "args": [
           "--child-arg=--ozone-platform=headless",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_gl_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26693,14 +26205,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26717,14 +26227,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "perfetto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26741,14 +26249,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26766,14 +26272,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "services_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26790,14 +26294,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "shell_dialogs_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26814,14 +26316,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "skia_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26838,14 +26338,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "snapshot_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26862,14 +26360,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "sql_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26887,14 +26383,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "storage_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26912,14 +26406,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26936,14 +26428,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_touch_selection_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26960,14 +26450,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "url_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -26985,14 +26473,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_examples_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27010,14 +26496,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27035,14 +26519,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "viz_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27059,14 +26541,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27084,14 +26564,12 @@
       {
         "args": [
           "--child-arg=--vmodule=test_navigation_listener=1",
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27108,14 +26586,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27132,14 +26608,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27156,14 +26630,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wm_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27180,14 +26652,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wtf_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27204,14 +26674,12 @@
       },
       {
         "args": [
-          "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=aemu"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "zlib_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27232,7 +26700,7 @@
         "args": [
           "bin/run_angle_unittests",
           "--device=aemu",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
         "isolate_name": "angle_unittests",
         "merge": {
@@ -27694,15 +27162,32 @@
     ],
     "gtest_tests": [
       {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "components_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27716,6 +27201,25 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       }
     ]
   },
@@ -27726,14 +27230,12 @@
     "gtest_tests": [
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "absl_hardening_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27749,14 +27251,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "accessibility_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27772,14 +27272,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "aura_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27795,14 +27293,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27818,14 +27314,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_common_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27841,14 +27335,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_heap_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27864,14 +27356,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_platform_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27888,14 +27378,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "blink_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27911,14 +27399,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_crypto_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27934,14 +27420,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "boringssl_ssl_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27957,14 +27441,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "capture_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -27980,14 +27462,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28003,14 +27483,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28026,14 +27504,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cast_runner_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28049,14 +27525,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cc_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28073,14 +27547,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "color_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28096,14 +27568,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "compositor_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28120,14 +27590,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28143,14 +27611,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "courgette_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28166,14 +27632,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cr_fuchsia_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28189,14 +27653,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28212,14 +27674,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "cronet_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28235,14 +27695,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "crypto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28258,14 +27716,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "display_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28281,14 +27737,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "events_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28304,14 +27758,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "extensions_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28327,14 +27779,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "fuchsia_mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28350,14 +27800,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gcm_unit_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28373,14 +27821,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gfx_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28396,14 +27842,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gin_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28419,14 +27863,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "google_apis_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28442,14 +27884,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gpu_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28465,14 +27905,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gwp_asan_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28489,14 +27927,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28512,14 +27948,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "headless_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28535,14 +27969,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "http_service_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28558,14 +27990,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ipc_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28582,14 +28012,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "jingle_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28605,14 +28033,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "latency_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28628,14 +28054,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "media_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28651,14 +28075,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "message_center_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28674,14 +28096,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "midi_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28697,14 +28117,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28720,14 +28138,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "native_theme_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28744,14 +28160,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "net_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28769,14 +28183,12 @@
       {
         "args": [
           "--child-arg=--ozone-platform=headless",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_gl_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28792,14 +28204,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ozone_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28815,14 +28225,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "perfetto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28838,14 +28246,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28862,14 +28268,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "services_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28885,14 +28289,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "shell_dialogs_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28908,14 +28310,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "skia_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28931,14 +28331,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "snapshot_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28954,14 +28352,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "sql_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -28978,14 +28374,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "storage_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29002,14 +28396,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29025,14 +28417,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "ui_touch_selection_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29048,14 +28438,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "url_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29072,14 +28460,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_examples_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29096,14 +28482,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "views_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29120,14 +28504,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "viz_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29143,14 +28525,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29167,14 +28547,12 @@
       {
         "args": [
           "--child-arg=--vmodule=test_navigation_listener=1",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29190,14 +28568,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_engine_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29213,14 +28589,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "web_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29236,14 +28610,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wm_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29259,14 +28631,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "wtf_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29282,14 +28652,12 @@
       },
       {
         "args": [
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "zlib_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29309,7 +28677,7 @@
         "args": [
           "bin/run_angle_unittests",
           "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--logs-dir=${ISOLATED_OUTDIR}/logs"
         ],
         "isolate_name": "angle_unittests",
         "merge": {
@@ -29338,15 +28706,34 @@
     "gtest_tests": [
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter",
-          "--device=fvdl",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+          "--device=fvdl"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "components_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter",
+          "--device=fvdl"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -29359,6 +28746,27 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
+      },
+      {
+        "args": [
+          "--device=fvdl"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
       }
     ],
     "isolated_scripts": [

@@ -159,19 +159,12 @@ class _TargetHost(object):
                                                    stdout=subprocess.PIPE,
                                                    stderr=subprocess.STDOUT)
 
-        self._listener = self._target.RunCommandPiped(['log_listener'],
-                                                      stdout=subprocess.PIPE,
-                                                      stderr=subprocess.STDOUT)
-
-        listener_log_path = os.path.join(results_directory, 'system_log')
-        listener_log = open(listener_log_path, 'w')
-        self.symbolizer = symbolizer.RunSymbolizer(
-            self._listener.stdout, listener_log, [build_ids_path])
+        package_path = os.path.join(build_path, CONTENT_SHELL_PACKAGE_PATH)
+        self._target.StartSystemLog([package_path])
 
         self._pkg_repo = self._target.GetPkgRepo()
         self._pkg_repo.__enter__()
 
-        package_path = os.path.join(build_path, CONTENT_SHELL_PACKAGE_PATH)
         self._target.InstallPackage([package_path])
 
         # Process will be forked for each worker, which may make QemuTarget
@@ -188,16 +181,12 @@ class _TargetHost(object):
             stderr=subprocess.PIPE)
 
     def cleanup(self):
-        if self._pkg_repo:
-            self._pkg_repo.__exit__(None, None, None)
-        if self._target:
-            # Emulator targets will be shutdown during cleanup.
-            # TODO(sergeyu): Currently __init__() always starts Qemu, so we can
-            # just shutdown it. Update this logic when reusing target devices
-            # for multiple test runs.
-            if not isinstance(self._target, device_target.DeviceTarget):
-                self._target.Shutdown()
-            self._target = None
+        try:
+            if self._target:
+                self._target.Stop()
+        finally:
+            if self._pkg_repo:
+                self._pkg_repo.__exit__(None, None, None)
 
 
 class FuchsiaPort(base.Port):
@@ -245,7 +234,6 @@ class FuchsiaPort(base.Port):
         try:
             target_args = Namespace(
                 out_dir=self._build_path(),
-                system_log_file=None,
                 fuchsia_out_dir=self.get_option('fuchsia_out_dir'),
                 target_cpu=self.get_option('fuchsia_target_cpu'),
                 ssh_config=self.get_option('fuchsia_ssh_config'),
@@ -257,7 +245,9 @@ class FuchsiaPort(base.Port):
                 require_kvm=True,
                 ram_size_mb=8192,
                 enable_graphics=False,
-                hardware_gpu=False)
+                hardware_gpu=False,
+                with_network=False,
+                logs_dir=self.results_directory())
             target = _LoadTargetClass(
                 _GetPathToBuiltinTarget(
                     self._target_device)).CreateFromArgs(target_args)

@@ -39,9 +39,9 @@ class FvdlTarget(emu_target.EmuTarget):
   EMULATOR_NAME = 'aemu'
   _FVDL_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'fvdl')
 
-  def __init__(self, out_dir, target_cpu, system_log_file, require_kvm,
-               enable_graphics, hardware_gpu, with_network, ram_size_mb):
-    super(FvdlTarget, self).__init__(out_dir, target_cpu, system_log_file)
+  def __init__(self, out_dir, target_cpu, require_kvm, enable_graphics,
+               hardware_gpu, with_network, ram_size_mb, logs_dir):
+    super(FvdlTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._require_kvm = require_kvm
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
@@ -61,9 +61,9 @@ class FvdlTarget(emu_target.EmuTarget):
 
   @staticmethod
   def CreateFromArgs(args):
-    return FvdlTarget(args.out_dir, args.target_cpu, args.system_log_file,
-                      args.require_kvm, args.enable_graphics, args.hardware_gpu,
-                      args.with_network, args.ram_size_mb)
+    return FvdlTarget(args.out_dir, args.target_cpu, args.require_kvm,
+                      args.enable_graphics, args.hardware_gpu,
+                      args.with_network, args.ram_size_mb, args.logs_dir)
 
   @staticmethod
   def RegisterArgs(arg_parser):
@@ -195,8 +195,8 @@ class FvdlTarget(emu_target.EmuTarget):
       logging.info('FVDL shutdown successfully')
     else:
       logging.info('FVDL kill returned error status {}'.format(returncode))
-    emu_target.LogProcessStatistics('proc_stat_end_log')
-    emu_target.LogSystemStatistics('system_statistics_end_log')
+    self.LogProcessStatistics('proc_stat_end_log')
+    self.LogSystemStatistics('system_statistics_end_log')
     self._vdl_output_file.close()
     self._device_proto_file.close()
 

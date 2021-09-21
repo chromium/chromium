@@ -2427,7 +2427,7 @@
         'args': [
           'bin/run_angle_unittests',
         ],
-        'mixins': ['fuchsia_runner_logs'],
+        'mixins': ['fuchsia_logs'],
       },
     },
 
@@ -6153,6 +6153,11 @@
       'gpu_angle_fuchsia_unittests_isolated_scripts',
     ],
 
+    'fuchsia_gtests': [
+      'fuchsia_common_gtests',
+      'web_engine_gtests',
+    ],
+
     'fuchsia_isolated_scripts': [
       'chromium_webkit_isolated_scripts',
       'gpu_angle_fuchsia_unittests_isolated_scripts'
@@ -7004,27 +7009,6 @@
           'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
         ]
       }
-    },
-
-    'fuchsia_experimental_gtests_with_runner_logs': {
-      'fuchsia_experimental_gtests': {
-        'variants': [
-          'FUCHSIA',
-        ],
-      },
-    },
-
-    'fuchsia_gtests_with_runner_logs': {
-      'fuchsia_common_gtests': {
-        'variants': [
-          'FUCHSIA',
-        ],
-      },
-      'web_engine_gtests': {
-        'variants': [
-          'FUCHSIA',
-        ],
-      },
     },
 
     'gpu_angle_ios_gtests': {

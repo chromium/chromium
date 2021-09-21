@@ -434,10 +434,10 @@
       ],
     },
   },
-  'fuchsia_runner_logs': {
+  'fuchsia_logs': {
     '$mixin_append': {
       'args': [
-        '--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs',
+        '--logs-dir=${ISOLATED_OUTDIR}/logs',
       ],
     },
   },

@@ -24,7 +24,8 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
                           enable_graphics=False,
                           hardware_gpu=False,
                           with_network=False,
-                          ram_size_mb=8192)
+                          ram_size_mb=8192,
+                          logs_dir=None)
 
   def testBasicEmuCommand(self):
     with FvdlTarget.CreateFromArgs(self.args) as target:

@@ -52,16 +52,8 @@ class DeviceTarget(target.Target):
   If |_host| is set:
     Deploy to a device at the host IP address as-is."""
 
-  def __init__(self,
-               out_dir,
-               target_cpu,
-               host=None,
-               node_name=None,
-               port=None,
-               ssh_config=None,
-               fuchsia_out_dir=None,
-               os_check='update',
-               system_log_file=None):
+  def __init__(self, out_dir, target_cpu, host, node_name, port, ssh_config,
+               fuchsia_out_dir, os_check, logs_dir):
     """out_dir: The directory which will contain the files that are
                    generated to support the deployment.
     target_cpu: The CPU architecture of the deployment target. Can be
@@ -77,9 +69,8 @@ class DeviceTarget(target.Target):
                   mismatch.
               If 'ignore', the target's SDK version is ignored."""
 
-    super(DeviceTarget, self).__init__(out_dir, target_cpu)
+    super(DeviceTarget, self).__init__(out_dir, target_cpu, logs_dir)
 
-    self._system_log_file = system_log_file
     self._host = host
     self._port = port
     self._fuchsia_out_dir = None
@@ -114,8 +105,7 @@ class DeviceTarget(target.Target):
   def CreateFromArgs(args):
     return DeviceTarget(args.out_dir, args.target_cpu, args.host,
                         args.node_name, args.port, args.ssh_config,
-                        args.fuchsia_out_dir, args.os_check,
-                        args.system_log_file)
+                        args.fuchsia_out_dir, args.os_check, args.logs_dir)
 
   @staticmethod
   def RegisterArgs(arg_parser):
