@@ -623,7 +623,7 @@ void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
 
 int RunVPythonCommand(const base::CommandLine& command_line) {
   base::CommandLine python_command = command_line;
-  python_command.PrependWrapper(FILE_PATH_LITERAL("vpython.bat"));
+  python_command.PrependWrapper(FILE_PATH_LITERAL("vpython3.bat"));
 
   int exit_code = -1;
   base::Process process = base::LaunchProcess(python_command, {});

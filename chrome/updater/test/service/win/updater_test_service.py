@@ -5,7 +5,7 @@
 import logging
 import os
 import sys
-import SimpleXMLRPCServer
+import xmlrpc.server
 
 import pywintypes
 import servicemanager
@@ -20,7 +20,7 @@ import rpc_handler
 _XML_RPC_SERVER_PORT = 9090
 
 
-class UpdaterTestRequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
+class UpdaterTestRequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
 
   def log_message(self, format, *args):
     # Overrides base class's implementation which writes the messages to
@@ -31,18 +31,13 @@ class UpdaterTestRequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
     logging.error(format, *args)
 
 
-class UpdaterTestXmlRpcServer(SimpleXMLRPCServer.SimpleXMLRPCServer):
+class UpdaterTestXmlRpcServer(xmlrpc.server.SimpleXMLRPCServer):
   """Customized XML-RPC server for updater tests."""
 
   def __init__(self):
-    # Can't use super() here because the Python 2.4-2.7 implementation of
-    # SocketServer (from which SimpleXMLRPCServer extends) uses the old style of
-    # class definition (not inheriting from 'object'). super() doesn't work in
-    # that case.
-    SimpleXMLRPCServer.SimpleXMLRPCServer.__init__(
-        self, ('localhost', _XML_RPC_SERVER_PORT),
-        requestHandler=UpdaterTestRequestHandler,
-        allow_none=True)
+    super().__init__(('localhost', _XML_RPC_SERVER_PORT),
+                     requestHandler=UpdaterTestRequestHandler,
+                     allow_none=True)
 
   def run(self):
     """xml-rpc server main loop."""

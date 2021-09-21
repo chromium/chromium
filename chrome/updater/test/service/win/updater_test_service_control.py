@@ -3,13 +3,12 @@
 # found in the LICENSE file.
 
 # [VPYTHON:BEGIN]
-# python_version: "2.7"
+# python_version: "3"
 # wheel: <
 #   name: "infra/python/wheels/pywin32/${vpython_platform}"
-#    version: "version:224"
+#    version: "version:300"
 # >
 # [VPYTHON:END]
-
 
 import contextlib
 import logging
@@ -83,6 +82,26 @@ def _SetupEnvironmentForVPython():
   if not os.path.exists(python_service_path):
     shutil.copyfile(source, python_service_path)
   os.environ['PYTHON_SERVICE_EXE'] = python_service_path
+
+  # TODO(crbug/1233612): Workaround DLL missing issue caused by crbug/1237202.
+  # Remove this hack once the issue is fixed.
+  def _FindDLLPath(dll_name):
+    search_path = [os.getcwd()]
+    search_path.extend(os.environ.get('PATH', '').split(os.pathsep))
+    for path in search_path:
+      full_path = os.path.join(path, dll_name)
+      if os.path.exists(full_path):
+        return full_path
+    return None
+  dlls_to_copy = ['vcruntime140.dll']
+  for dll in dlls_to_copy:
+    source = _FindDLLPath(dll)
+    if source:
+      target = os.path.join(
+          os.path.dirname(os.path.abspath(sys.executable)), dll)
+    if not os.path.exists(target):
+      logging.error('Copying DLL: %s --> %s', source, target)
+      shutil.copyfile(source, target)
 
 
 def _IsServiceInStatus(status):

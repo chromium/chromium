@@ -5,9 +5,7 @@
 import logging
 import sys
 
-# TODO(crbug.com/1233612): We are still running with PY2, import winreg
-# directly once we switch to PY3.
-import _winreg as winreg
+import winreg
 
 import ui
 

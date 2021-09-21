@@ -6,7 +6,7 @@ import logging
 import os
 import socket
 import sys
-import xmlrpclib
+import xmlrpc.client
 
 
 # TODO(crbug.com/1233612): Query XML RPC server port once the server propgate
@@ -20,7 +20,7 @@ RPCErrors = (socket.error, socket.herror, socket.gaierror, socket.timeout)
 
 def GetProxy():
   """Constructs a XML RPC server proxy."""
-  return xmlrpclib.ServerProxy(
+  return xmlrpc.client.ServerProxy(
       'http://localhost:%s' % _UPDATER_XML_RPC_PORT)
 
 
