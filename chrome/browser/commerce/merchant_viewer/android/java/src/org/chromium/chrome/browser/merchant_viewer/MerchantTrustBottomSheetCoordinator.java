@@ -11,8 +11,11 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -54,17 +57,20 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
      * @param tabSupplier provider to obtain {@link Tab}.
      * @param layoutView decor view.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param profileSupplier Supplier of {@link Profile} for which favicon service is used.
      */
     public MerchantTrustBottomSheetCoordinator(Context context, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController, Supplier<Tab> tabSupplier, View layoutView,
-            MerchantTrustMetrics metrics, IntentRequestTracker intentRequestTracker) {
+            MerchantTrustMetrics metrics, IntentRequestTracker intentRequestTracker,
+            ObservableSupplier<Profile> profileSupplier) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mLayoutView = layoutView;
         mMetrics = metrics;
         mIntentRequestTracker = intentRequestTracker;
 
-        mMediator = new MerchantTrustBottomSheetMediator(context, windowAndroid, metrics);
+        mMediator = new MerchantTrustBottomSheetMediator(
+                context, windowAndroid, metrics, profileSupplier, new FaviconHelper());
     }
 
     /** Displays the details tab sheet. */

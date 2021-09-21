@@ -27,10 +27,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -97,11 +99,13 @@ public class MerchantTrustBottomSheetCoordinatorTest {
     @Before
     public void setUp() {
         mActivity = sActivityTestRule.getActivity();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mWindowAndroid = new WindowAndroid(mActivity); });
-        mDetailsTabCoordinator = new MerchantTrustBottomSheetCoordinator(mActivity, mWindowAndroid,
-                mMockBottomSheetController, mMockTabProvider, mMockDecorView, mMockMetrics,
-                IntentRequestTracker.createFromActivity(mActivity));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mWindowAndroid = new WindowAndroid(mActivity);
+            mDetailsTabCoordinator = new MerchantTrustBottomSheetCoordinator(mActivity,
+                    mWindowAndroid, mMockBottomSheetController, mMockTabProvider, mMockDecorView,
+                    mMockMetrics, IntentRequestTracker.createFromActivity(mActivity),
+                    new ObservableSupplierImpl<Profile>());
+        });
         mDetailsTabCoordinator.setMediatorForTesting(mMockMediator);
         requestOpenSheetAndVerify();
     }
