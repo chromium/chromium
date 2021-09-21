@@ -19,7 +19,7 @@
 
     <!-- Small Button Dimensions -->
     <dimen name="quick_action_search_widget_small_button_radius">24dp</dimen>
-    <dimen name="quick_action_search_widget_small_button_icon_padding">16dp</dimen>
+    <dimen name="quick_action_search_widget_small_button_icon_padding">14dp</dimen>
     <dimen name="quick_action_search_widget_small_button_height">48dp</dimen>
     <dimen name="quick_action_search_widget_small_button_width">48dp</dimen>
 
