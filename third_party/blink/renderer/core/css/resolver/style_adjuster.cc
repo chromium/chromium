@@ -127,6 +127,20 @@ bool HostIsInputFile(const Element* element) {
   return false;
 }
 
+void AdjustStyleForSvgElement(const SVGElement& element, ComputedStyle& style) {
+  // Disable some of text decoration properties.
+  //
+  // Note that SetFooBar() is more efficient than ResetFooBar() if the current
+  // value is same as the reset value.
+  style.SetTextDecorationSkipInk(ETextDecorationSkipInk::kAuto);
+  style.SetTextDecorationStyle(
+      ETextDecorationStyle::kSolid);  // crbug.com/1246719
+  style.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
+  style.SetTextEmphasisMark(TextEmphasisMark::kNone);
+  style.SetTextUnderlineOffset(Length());  // crbug.com/1247912
+  style.SetTextUnderlinePosition(kTextUnderlinePositionAuto);
+}
+
 }  // namespace
 
 static EDisplay EquivalentBlockDisplay(EDisplay display) {
@@ -689,7 +703,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
                        element->LayoutObjectIsNeeded(style))) {
     AdjustStyleForHTMLElement(style, *html_element);
   }
+
+  auto* svg_element = DynamicTo<SVGElement>(element);
   if (style.Display() != EDisplay::kNone) {
+    if (svg_element)
+      AdjustStyleForSvgElement(*svg_element, style);
+
     bool is_document_element =
         element && element->GetDocument().documentElement() == element;
     // Per the spec, position 'static' and 'relative' in the top layer compute
@@ -802,7 +821,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   AdjustStyleForEditing(style);
 
   bool is_svg_root = false;
-  auto* svg_element = DynamicTo<SVGElement>(element);
 
   if (svg_element) {
     is_svg_root = svg_element->IsOutermostSVGSVGElement();
@@ -847,6 +865,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       baseline = layout_parent_style.CssDominantBaseline();
     }
     style.SetCssDominantBaseline(baseline);
+
   } else if (element && element->IsMathMLElement()) {
     if (style.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml

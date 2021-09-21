@@ -59,10 +59,7 @@ text, foreignObject {
 }
 
 text {
-   white-space: nowrap;
-
-   /* TODO(crbug.com/1247912): Enable text-underline-offset. */
-   text-underline-offset: auto !important;
+   white-space: nowrap
 }
 
 a:-webkit-any-link {
