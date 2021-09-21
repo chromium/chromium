@@ -59,6 +59,44 @@ SkImageInfo MakeSkImageInfo(const gfx::Size& size, viz::ResourceFormat format) {
                            kOpaque_SkAlphaType);
 }
 
+uint64_t BackendTextureTracingID(const GrBackendTexture& backend_texture) {
+  switch (backend_texture.backend()) {
+    case GrBackendApi::kOpenGL: {
+      GrGLTextureInfo tex_info;
+      if (backend_texture.getGLTextureInfo(&tex_info))
+        return tex_info.fID;
+      break;
+    }
+#if defined(OS_MAC)
+    case GrBackendApi::kMetal: {
+      GrMtlTextureInfo image_info;
+      if (backend_texture.getMtlTextureInfo(&image_info))
+        return reinterpret_cast<uint64_t>(image_info.fTexture.get());
+      break;
+    }
+#endif
+#if BUILDFLAG(ENABLE_VULKAN)
+    case GrBackendApi::kVulkan: {
+      GrVkImageInfo image_info;
+      if (backend_texture.getVkImageInfo(&image_info))
+        return reinterpret_cast<uint64_t>(image_info.fImage);
+      break;
+    }
+#endif
+#if BUILDFLAG(SKIA_USE_DAWN)
+    case GrBackendApi::kDawn: {
+      GrDawnTextureInfo tex_info;
+      if (backend_texture.getDawnTextureInfo(&tex_info))
+        return reinterpret_cast<uint64_t>(tex_info.fTexture.Get());
+      break;
+    }
+#endif
+    default:
+      break;
+  }
+  return 0;
+}
+
 class WrappedSkImage : public ClearTrackingSharedImageBacking {
  public:
   ~WrappedSkImage() override {
@@ -265,42 +303,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     }
 
     promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
-
-    switch (backend_texture_.backend()) {
-      case GrBackendApi::kOpenGL: {
-        GrGLTextureInfo tex_info;
-        if (backend_texture_.getGLTextureInfo(&tex_info))
-          tracing_id_ = tex_info.fID;
-        break;
-      }
-#if defined(OS_MAC)
-      case GrBackendApi::kMetal: {
-        GrMtlTextureInfo image_info;
-        if (backend_texture_.getMtlTextureInfo(&image_info))
-          tracing_id_ = reinterpret_cast<uint64_t>(image_info.fTexture.get());
-        break;
-      }
-#endif
-#if BUILDFLAG(ENABLE_VULKAN)
-      case GrBackendApi::kVulkan: {
-        GrVkImageInfo image_info;
-        if (backend_texture_.getVkImageInfo(&image_info))
-          tracing_id_ = reinterpret_cast<uint64_t>(image_info.fImage);
-        break;
-      }
-#endif
-#if BUILDFLAG(SKIA_USE_DAWN)
-      case GrBackendApi::kDawn: {
-        GrDawnTextureInfo tex_info;
-        if (backend_texture_.getDawnTextureInfo(&tex_info))
-          tracing_id_ = reinterpret_cast<uint64_t>(tex_info.fTexture.Get());
-        break;
-      }
-#endif
-      default:
-        NOTREACHED();
-        return false;
-    }
+    tracing_id_ = BackendTextureTracingID(backend_texture_);
 
     return true;
   }
