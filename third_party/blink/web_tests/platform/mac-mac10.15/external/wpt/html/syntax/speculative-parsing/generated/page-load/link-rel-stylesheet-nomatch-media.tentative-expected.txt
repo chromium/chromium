@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Speculative parsing, page load: link-rel-stylesheet-nomatch-media Unhandled rejection: assert_equals: non-speculative case incorrectly fetched expected "" but got "param-encodingcheck: %C4%9E\r\nHost: web-platform.test:8001\nConnection: keep-alive\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.77.34.5 Safari/537.36\nAccept: text/css,*/*;q=0.1\nReferer: http://web-platform.test:8001/html/syntax/speculative-parsing/generated/resources/link-rel-stylesheet-nomatch-media-nonspeculative.sub.html?uuid=3c034927-73fd-414f-8cf5-1a1215b593bf\nAccept-Encoding: gzip, deflate\nAccept-Language: en-us,en\n\n"
-Harness: the test ran to completion.
-
