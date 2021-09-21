@@ -7,7 +7,7 @@
  */
 
 // clang-format off
- // #import {assert} from 'chrome://resources/js/assert.m.js';
+ // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
  // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
  // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 // clang-format on
@@ -360,18 +360,48 @@
   }
 
   /**
+   * @param {!chromeos.networkConfig.mojom.ConnectionStateType} connectionState
+   * @param {!chromeos.networkConfig.mojom.FilterType} filterType
+   * @return {boolean} Whether the connectionState type is not filtered out.
+   */
+  passFilter(connectionState, filterType) {
+    switch (filterType) {
+      case chromeos.networkConfig.mojom.FilterType.kActive:
+        return connectionState !==
+            chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected;
+      case chromeos.networkConfig.mojom.FilterType.kVisible:
+        return true;
+      case chromeos.networkConfig.mojom.FilterType.kConfigured:
+        return true;
+      case chromeos.networkConfig.mojom.FilterType.kAll:
+        return true;
+    }
+    assertNotReached('Failed to find filterType: ' + filterType.toString());
+  }
+
+  /**
    * @param {!chromeos.networkConfig.mojom.NetworkFilter} filter
    * @return {!Promise<{result:
    *     !Array<!chromeos.networkConfig.mojom.NetworkStateProperties>}>}
    */
   getNetworkStateList(filter) {
     return new Promise(resolve => {
-      const type = filter.networkType;
+      const networkType = filter.networkType;
+      const filterType = filter.filter;
+      const limit = filter.limit;
       let result;
-      if (type === chromeos.networkConfig.mojom.NetworkType.kAll) {
-        result = this.networkStates_.slice();
+      if (networkType === chromeos.networkConfig.mojom.NetworkType.kAll) {
+        result = this.networkStates_.filter(
+            state => this.passFilter(state.connectionState, filterType));
       } else {
-        result = this.networkStates_.filter(state => state.type === type);
+        result = this.networkStates_.filter(
+            state =>
+                (state.type === networkType &&
+                 this.passFilter(state.connectionState, filterType)));
+      }
+
+      if (limit !== chromeos.networkConfig.mojom.NO_LIMIT) {
+        result = result.slice(0, limit);
       }
       this.methodCalled('getNetworkStateList');
       resolve({result: result});
