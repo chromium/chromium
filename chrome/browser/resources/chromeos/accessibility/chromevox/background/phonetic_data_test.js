@@ -56,10 +56,10 @@ TEST_F('ChromeVoxPhoneticDataTest', 'forCharacterJa', function() {
   assertEquals('ハンカク チイサイ ｱ', PhoneticData.forCharacter('ｧ', 'ja'));
   assertEquals('オオモジ A', PhoneticData.forCharacter('A', 'ja'));
   assertEquals('ハンカク a', PhoneticData.forCharacter('a', 'ja'));
-  assertEquals('イチ', PhoneticData.forCharacter('1', 'ja'));
+  assertEquals('ハンカク 1', PhoneticData.forCharacter('1', 'ja'));
   assertEquals('ゼンカクオオモジ Ａ', PhoneticData.forCharacter('Ａ', 'ja'));
   assertEquals('ゼンカク ａ', PhoneticData.forCharacter('ａ', 'ja'));
-  assertEquals('イチ', PhoneticData.forCharacter('１', 'ja'));
+  assertEquals('ゼンカク １', PhoneticData.forCharacter('１', 'ja'));
   assertEquals('アジア ノ ア', PhoneticData.forCharacter('亜', 'ja'));
 });
 
@@ -72,10 +72,10 @@ TEST_F('ChromeVoxPhoneticDataTest', 'forTextJaSingleCharacter', function() {
   assertEquals('ハンカク チイサイ ｱ', PhoneticData.forText('ｧ', 'ja'));
   assertEquals('オオモジ A', PhoneticData.forText('A', 'ja'));
   assertEquals('a', PhoneticData.forText('a', 'ja'));
-  assertEquals('イチ', PhoneticData.forText('1', 'ja'));
+  assertEquals('1', PhoneticData.forText('1', 'ja'));
   assertEquals('ゼンカクオオモジ Ａ', PhoneticData.forText('Ａ', 'ja'));
   assertEquals('ゼンカク ａ', PhoneticData.forText('ａ', 'ja'));
-  assertEquals('イチ', PhoneticData.forText('１', 'ja'));
+  assertEquals('ゼンカク １', PhoneticData.forText('１', 'ja'));
   assertEquals('アジア ノ ア', PhoneticData.forText('亜', 'ja'));
 });
 
@@ -147,6 +147,17 @@ TEST_F(
     'forTextJaPairCharacters_EndWithHalfWidthAlphabetLower', function() {
       assertEquals('aa', PhoneticData.forText('aa', 'ja'));
       assertEquals('あ a', PhoneticData.forText('あa', 'ja'));
+      assertEquals(
+          'ゼンカクオオモジ Ａ ハンカク a', PhoneticData.forText('Ａa', 'ja'));
+    });
+
+TEST_F(
+    'ChromeVoxPhoneticDataTest',
+    'forTextJaPairCharacters_EndWithHalfWidthNumeric', function() {
+      assertEquals('11', PhoneticData.forText('11', 'ja'));
+      assertEquals('あ 1', PhoneticData.forText('あ1', 'ja'));
+      assertEquals(
+          'ゼンカクオオモジ Ａ ハンカク 1', PhoneticData.forText('Ａ1', 'ja'));
     });
 
 TEST_F(
@@ -169,12 +180,19 @@ TEST_F(
     });
 
 TEST_F(
+    'ChromeVoxPhoneticDataTest',
+    'forTextJaPairCharacters_EndWithFullWidthNumeric', function() {
+      assertEquals('ゼンカク １１', PhoneticData.forText('１１', 'ja'));
+      assertEquals(
+          'ゼンカクオオモジ Ａ １', PhoneticData.forText('Ａ１', 'ja'));
+      assertEquals('あ ゼンカク １', PhoneticData.forText('あ１', 'ja'));
+    });
+
+TEST_F(
     'ChromeVoxPhoneticDataTest', 'forTextJaPairCharacters_EndWithOther',
     function() {
       assertEquals(
           'アジア ノ ア アジア ノ ア', PhoneticData.forText('亜亜', 'ja'));
-      assertEquals('あ イチ', PhoneticData.forText('あ1', 'ja'));
-      assertEquals('あ イチ', PhoneticData.forText('あ１', 'ja'));
     });
 
 TEST_F('ChromeVoxPhoneticDataTest', 'forTextJaLongSound', function() {
