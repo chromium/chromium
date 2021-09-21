@@ -56,6 +56,21 @@ class HistoryClustersTabHelper
       int64_t navigation_id,
       const page_load_metrics::PageEndReason page_end_reason);
 
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
+  void WebContentsDestroyed() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(UkmPageLoadMetricsObserverTest,
                            DurationSinceLastVisitSeconds);
@@ -69,18 +84,6 @@ class HistoryClustersTabHelper
   // because we have a flag to prevent multiple recordings. Returns true if it
   // recorded page end metrics.
   void RecordPageEndMetricsIfNeeded(int64_t navigation_id);
-
-  // content::WebContentsObserver implementation.
-
-  // Will update this page's associated `HistoryClustersMetricsLogger`.
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
-  // Will complete any incomplete visits associated with navigations made in
-  // this tab.
-  void WebContentsDestroyed() override;
 
   // Helper functions to return the memories and history services.
   // `GetHistoryClustersService()` may return nullptr (in tests).

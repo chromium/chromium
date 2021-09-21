@@ -5,6 +5,7 @@
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -23,6 +24,8 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
   if (!init_state_)
     return;
 
+  // Record UKM metrics.
+
   ukm::SourceId ukm_source_id =
       ukm::ConvertToSourceId(*navigation_id_, ukm::SourceIdType::NAVIGATION_ID);
   ukm::builders::HistoryClusters builder(ukm_source_id);
@@ -38,6 +41,10 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
   builder.SetNumQueries(num_queries_);
   builder.SetNumTogglesToBasicHistory(num_toggles_to_basic_history_);
   builder.Record(ukm::UkmRecorder::Get());
+
+  // Record UMA metrics.
+  base::UmaHistogramExactLinear("History.Clusters.Actions.LinksOpened",
+                                links_opened_count_, 100);
 }
 
 PAGE_USER_DATA_KEY_IMPL(HistoryClustersMetricsLogger)

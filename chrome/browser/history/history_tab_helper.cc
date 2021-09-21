@@ -374,7 +374,7 @@ void HistoryTabHelper::WebContentsDestroyed() {
 
 bool HistoryTabHelper::IsEligibleTab(
     const history::HistoryAddPageArgs& add_page_args) const {
-  if (force_eligibile_tab_for_testing_)
+  if (force_eligible_tab_for_testing_)
     return true;
 
 #if defined(OS_ANDROID)
