@@ -1792,7 +1792,6 @@
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
-        "experiment_percentage": 100,
         "isolate_name": "variations_smoke_tests",
         "merge": {
           "args": [],
@@ -3698,7 +3697,6 @@
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
-        "experiment_percentage": 100,
         "isolate_name": "variations_smoke_tests",
         "merge": {
           "args": [],

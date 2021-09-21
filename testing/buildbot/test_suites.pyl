@@ -523,8 +523,6 @@
           'enable': True,
           'result_format': 'single'
         },
-        # TODO(crbug.com/1233603): Remove once the test is not flaky anymore.
-        'experiment_percentage': 100,
       },
     },
 
