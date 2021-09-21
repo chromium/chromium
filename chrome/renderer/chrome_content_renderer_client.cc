@@ -224,7 +224,7 @@
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/renderer/printing/chrome_print_render_frame_helper_delegate.h"
 #include "components/printing/renderer/print_render_frame_helper.h"  // nogncheck
-#include "printing/print_settings.h"  // nogncheck
+#include "printing/metafile_agent.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

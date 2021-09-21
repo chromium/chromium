@@ -311,7 +311,7 @@ component("core") {
   }
 
   if (enable_basic_printing) {
-    deps += [ "//printing" ]
+    deps += [ "//printing:metafile" ]
   }
 
   allow_circular_includes_from = [

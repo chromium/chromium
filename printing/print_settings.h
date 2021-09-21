@@ -51,11 +51,6 @@ std::string GetIppColorModelForModel(mojom::ColorModel color_model);
 #endif
 #endif  // defined(USE_CUPS)
 
-// Inform the printing system that it may embed this user-agent string
-// in its output's metadata.
-COMPONENT_EXPORT(PRINTING) void SetAgent(const std::string& user_agent);
-COMPONENT_EXPORT(PRINTING) const std::string& GetAgent();
-
 class COMPONENT_EXPORT(PRINTING) PrintSettings {
  public:
   // Media properties requested by the user. Default instance represents

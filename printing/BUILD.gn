@@ -91,13 +91,54 @@ if (enable_oop_printing && (is_linux || is_chromeos)) {
   }
 }
 
-component("printing") {
+source_set("native_drawing_context") {
+  sources = [ "native_drawing_context.h" ]
+}
+
+component("metafile") {
   sources = [
     "metafile.cc",
     "metafile.h",
+    "metafile_agent.cc",
+    "metafile_agent.h",
     "metafile_skia.cc",
     "metafile_skia.h",
-    "native_drawing_context.h",
+  ]
+
+  configs += [ "//build/config/compiler:noshadowing" ]
+  defines = [ "IS_PRINTING_METAFILE_IMPL" ]
+  public_deps = [
+    ":native_drawing_context",
+    "//printing/mojom",
+  ]
+  deps = [
+    "//cc/paint",
+    "//printing/common",
+    "//ui/accessibility",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "pdf_metafile_cg_mac.cc",
+      "pdf_metafile_cg_mac.h",
+    ]
+
+    frameworks = [
+      "ApplicationServices.framework",
+      "CoreFoundation.framework",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "emf_win.cc",
+      "emf_win.h",
+    ]
+  }
+}
+
+component("printing") {
+  sources = [
     "nup_parameters.cc",
     "nup_parameters.h",
     "page_number.cc",
@@ -124,18 +165,19 @@ component("printing") {
   cflags = []
   defines = [ "IS_PRINTING_IMPL" ]
 
-  public_deps = [ ":printing_base" ]
+  public_deps = [
+    ":metafile",
+    ":native_drawing_context",
+    ":printing_base",
+  ]
   deps = [
     "//base",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
-    "//cc/paint",
-    "//printing/common",
     "//printing/mojom",
     "//skia",
     "//third_party/icu",
-    "//ui/accessibility",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
@@ -172,8 +214,6 @@ component("printing") {
 
   if (is_mac) {
     sources += [
-      "pdf_metafile_cg_mac.cc",
-      "pdf_metafile_cg_mac.h",
       "print_settings_initializer_mac.cc",
       "print_settings_initializer_mac.h",
       "printed_document_mac.cc",
@@ -192,8 +232,6 @@ component("printing") {
 
   if (is_win) {
     sources += [
-      "emf_win.cc",
-      "emf_win.h",
       "print_settings_initializer_win.cc",
       "print_settings_initializer_win.h",
       "printed_document_win.cc",

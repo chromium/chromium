@@ -5,7 +5,6 @@
 #include "printing/print_settings.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/units.h"
@@ -19,20 +18,6 @@
 #endif
 
 namespace printing {
-
-namespace {
-
-base::LazyInstance<std::string>::Leaky g_user_agent;
-
-}  // namespace
-
-void SetAgent(const std::string& user_agent) {
-  g_user_agent.Get() = user_agent;
-}
-
-const std::string& GetAgent() {
-  return g_user_agent.Get();
-}
 
 mojom::ColorModel ColorModeToColorModel(int color_mode) {
   if (color_mode < static_cast<int>(mojom::ColorModel::kUnknownColorModel) ||

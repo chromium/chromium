@@ -35,7 +35,7 @@ class Size;
 namespace printing {
 
 // This class plays metafiles from data stream (usually PDF or EMF).
-class COMPONENT_EXPORT(PRINTING) MetafilePlayer {
+class COMPONENT_EXPORT(PRINTING_METAFILE) MetafilePlayer {
  public:
   MetafilePlayer();
   MetafilePlayer(const MetafilePlayer&) = delete;
@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(PRINTING) MetafilePlayer {
 
 // This class creates a graphics context that renders into a data stream
 // (usually PDF or EMF).
-class COMPONENT_EXPORT(PRINTING) Metafile : public MetafilePlayer {
+class COMPONENT_EXPORT(PRINTING_METAFILE) Metafile : public MetafilePlayer {
  public:
   Metafile();
   Metafile(const Metafile&) = delete;
