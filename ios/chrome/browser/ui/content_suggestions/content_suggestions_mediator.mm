@@ -35,9 +35,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_provider.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/content_suggestions/mediator_util.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -65,7 +64,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }  // namespace
 
 @interface ContentSuggestionsMediator () <BooleanObserver,
-                                          DiscoverFeedObserverBridgeDelegate,
                                           MostVisitedSitesObserving,
                                           PrefObserverDelegate,
                                           ReadingListModelBridgeObserver> {
@@ -77,9 +75,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
-  // Observes changes in the DiscoverFeed.
-  std::unique_ptr<DiscoverFeedObserverBridge>
-      _discoverFeedProviderObserverBridge;
 }
 
 // Whether the contents section should be hidden completely.
@@ -207,11 +202,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
-
-    if (IsDiscoverFeedEnabled()) {
-      _discoverFeedProviderObserverBridge =
-          std::make_unique<DiscoverFeedObserverBridge>(self);
-    }
   }
   return self;
 }
@@ -223,7 +213,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)disconnect {
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
-  _discoverFeedProviderObserverBridge.reset();
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
   _contentArticlesExpanded = nil;
@@ -589,12 +578,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     self.readingListItem.count = self.readingListUnreadCount;
     [self.dataSink itemHasChanged:self.readingListItem];
   }
-}
-
-#pragma mark - DiscoverFeedObserverBridge
-
-- (void)onDiscoverFeedModelRecreated {
-  [self.discoverFeedDelegate recreateDiscoverFeedViewController];
 }
 
 @end

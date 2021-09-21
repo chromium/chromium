@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_header_changing.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
@@ -98,7 +97,6 @@
     ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
-    DiscoverFeedDelegate,
     DiscoverFeedMenuCommands,
     OverscrollActionsControllerDelegate,
     ThemeChangeDelegate,
@@ -245,7 +243,8 @@
     self.contentSuggestionsMediator.contentArticlesExpanded =
         self.contentSuggestionsExpanded;
   }
-  self.contentSuggestionsMediator.discoverFeedDelegate = self;
+  self.contentSuggestionsMediator.discoverFeedDelegate =
+      self.discoverFeedDelegate;
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
   [self configureStartSurfaceIfNeeded];
@@ -499,7 +498,7 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:NO];
-                    [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
+                    [weakSelf.ntpCommandHandler updateNTPForDiscoverFeed];
                   }
                    style:UIAlertActionStyleDestructive];
   } else {
@@ -508,7 +507,7 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:YES];
-                    [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
+                    [weakSelf.ntpCommandHandler updateNTPForDiscoverFeed];
                   }
                    style:UIAlertActionStyleDefault];
   }
@@ -545,34 +544,6 @@
   feature_engagement::TrackerFactory::GetForBrowserState(
       self.browser->GetBrowserState())
       ->NotifyEvent(feature_engagement::events::kDiscoverFeedLoaded);
-}
-
-#pragma mark - DiscoverFeedDelegate
-
-- (void)recreateDiscoverFeedViewController {
-  DCHECK(IsDiscoverFeedEnabled());
-
-  // Create and set a new DiscoverFeed since that its model has changed.
-  self.discoverFeedViewController = [self discoverFeed];
-  self.contentSuggestionsMediator.discoverFeed =
-      self.discoverFeedViewController;
-  [self.alertCoordinator stop];
-}
-
-- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
-  return [SceneStateBrowserAgent::FromBrowser(self.browser)
-              ->GetSceneState()
-              .window.rootViewController.view safeAreaInsets];
-}
-
-- (void)contentSuggestionsWasUpdated {
-  [self.ntpCommandHandler updateDiscoverFeedLayout];
-  [self.ntpCommandHandler setContentOffsetToTop];
-}
-
-- (void)returnToRecentTabWasAdded {
-  [self.ntpCommandHandler updateDiscoverFeedLayout];
-  [self.ntpCommandHandler setContentOffsetToTop];
 }
 
 #pragma mark - ContentSuggestionsHeaderCommands

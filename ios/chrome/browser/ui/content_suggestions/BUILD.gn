@@ -16,7 +16,6 @@ source_set("content_suggestions") {
     "content_suggestions_favicon_mediator.mm",
     "content_suggestions_mediator.h",
     "content_suggestions_mediator.mm",
-    "discover_feed_delegate.h",
     "mediator_util.h",
     "mediator_util.mm",
     "ntp_home_mediator.h",

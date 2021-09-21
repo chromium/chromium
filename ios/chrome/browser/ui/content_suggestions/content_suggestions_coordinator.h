@@ -13,6 +13,7 @@ class WebState;
 
 @class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
+@protocol DiscoverFeedDelegate;
 @class DiscoverFeedMetricsRecorder;
 @protocol NewTabPageCommands;
 @protocol NewTabPageControllerDelegate;
@@ -63,6 +64,9 @@ class WebState;
 // Metrics recorder for the Discover feed events related to ContentSuggestions.
 @property(nonatomic, strong)
     DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+
+// Delegate used to communicate to communicate events to the DiscoverFeed.
+@property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
 
 // Dismisses all modals owned by the NTP mediator.
 - (void)dismissModals;

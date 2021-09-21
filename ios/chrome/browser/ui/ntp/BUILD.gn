@@ -4,6 +4,7 @@
 
 source_set("ntp") {
   sources = [
+    "discover_feed_delegate.h",
     "new_tab_page_commands.h",
     "new_tab_page_content_delegate.h",
     "new_tab_page_controller_delegate.h",
