@@ -49,15 +49,9 @@ const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
 
 @implementation ImageSaver
 
-@synthesize alertCoordinator = _alertCoordinator;
-@synthesize baseViewController = _baseViewController;
-@synthesize browser = _browser;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser {
+- (instancetype)initWithBrowser:(Browser*)browser {
   self = [super init];
   if (self) {
-    _baseViewController = baseViewController;
     _browser = browser;
   }
   return self;
@@ -65,7 +59,10 @@ const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
 
 - (void)saveImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer
-              webState:(web::WebState*)webState {
+              webState:(web::WebState*)webState
+    baseViewController:(UIViewController*)baseViewController {
+  self.baseViewController = baseViewController;
+
   ImageFetchTabHelper* tabHelper = ImageFetchTabHelper::FromWebState(webState);
   DCHECK(tabHelper);
 
@@ -124,17 +121,20 @@ const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
 // Shows a privacy alert on the main queue, allowing the user to go to Chrome's
 // settings. Dismiss previous alert if it has not been dismissed yet.
 - (void)displayImageErrorAlertWithSettingsOnMainQueue {
-  NSURL* settingURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-  BOOL canGoToSetting =
-      [[UIApplication sharedApplication] canOpenURL:settingURL];
-  if (canGoToSetting) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self displayImageErrorAlertWithSettings:settingURL];
-    });
-  } else {
-    [self displayPrivacyErrorAlertOnMainQueue:
+  __weak ImageSaver* weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSURL* settingURL =
+        [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    BOOL canGoToSetting =
+        [[UIApplication sharedApplication] canOpenURL:settingURL];
+    if (canGoToSetting) {
+      [weakSelf displayImageErrorAlertWithSettings:settingURL];
+    } else {
+      [weakSelf
+          displayPrivacyErrorAlertOnMainQueue:
               l10n_util::GetNSString(IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_MESSAGE)];
-  }
+    }
+  });
 }
 
 // Shows a privacy alert allowing the user to go to Chrome's settings. Dismiss

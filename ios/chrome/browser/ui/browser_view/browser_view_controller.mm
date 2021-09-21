@@ -1901,11 +1901,8 @@ const CGFloat kFaviconWidthHeight = 24;
   for (int index = 0; index < webStateList->count(); ++index)
     [self installDelegatesForWebState:webStateList->GetWebStateAt(index)];
 
-  self.imageSaver =
-      [[ImageSaver alloc] initWithBaseViewController:self browser:self.browser];
-  self.imageCopier =
-      [[ImageCopier alloc] initWithBaseViewController:self
-                                              browser:self.browser];
+  self.imageSaver = [[ImageSaver alloc] initWithBrowser:self.browser];
+  self.imageCopier = [[ImageCopier alloc] initWithBrowser:self.browser];
 
   // Set the TTS playback controller's WebStateList.
   TextToSpeechPlaybackControllerFactory::GetInstance()
@@ -3603,7 +3600,8 @@ const CGFloat kFaviconWidthHeight = 24;
       Record(ACTION_SAVE_IMAGE, isImage, isLink);
       [weakSelf.imageSaver saveImageAtURL:imageUrl
                                  referrer:referrer
-                                 webState:weakSelf.currentWebState];
+                                 webState:weakSelf.currentWebState
+                       baseViewController:self];
     };
     [_contextMenuCoordinator addItemWithTitle:title
                                        action:action
@@ -3617,7 +3615,8 @@ const CGFloat kFaviconWidthHeight = 24;
       DCHECK(imageUrl.is_valid());
       [weakSelf.imageCopier copyImageAtURL:imageUrl
                                   referrer:referrer
-                                  webState:weakSelf.currentWebState];
+                                  webState:weakSelf.currentWebState
+                        baseViewController:self];
     };
     [_contextMenuCoordinator addItemWithTitle:title
                                        action:action
@@ -3842,7 +3841,8 @@ const CGFloat kFaviconWidthHeight = 24;
     UIAction* saveImage = [actionFactory actionSaveImageWithBlock:^{
       [weakSelf.imageSaver saveImageAtURL:imageUrl
                                  referrer:referrer
-                                 webState:weakSelf.currentWebState];
+                                 webState:weakSelf.currentWebState
+                       baseViewController:self];
     }];
     [menuElements addObject:saveImage];
 
@@ -3850,7 +3850,8 @@ const CGFloat kFaviconWidthHeight = 24;
     UIAction* copyImage = [actionFactory actionCopyImageWithBlock:^{
       [weakSelf.imageCopier copyImageAtURL:imageUrl
                                   referrer:referrer
-                                  webState:weakSelf.currentWebState];
+                                  webState:weakSelf.currentWebState
+                        baseViewController:self];
     }];
     [menuElements addObject:copyImage];
 
