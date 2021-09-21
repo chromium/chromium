@@ -136,11 +136,12 @@ public class DownloadLocationDialogTest extends DummyUiChromeActivityTestCase {
         when(mPrefService.getBoolean(Pref.PROMPT_FOR_DOWNLOAD)).thenReturn(promptForPolicy);
     }
 
+    // TODO(crbug/1248017): Add LocationDialog tests for Incognito mode.
     private void showDialog(
             long totalBytes, @DownloadLocationDialogType int dialogType, String suggestedPath) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialogCoordinator.showDialog(
-                    getActivity(), mModalDialogManager, totalBytes, dialogType, suggestedPath);
+            mDialogCoordinator.showDialog(getActivity(), mModalDialogManager, totalBytes,
+                    dialogType, suggestedPath, mProfileMock.isOffTheRecord());
         });
     }
 

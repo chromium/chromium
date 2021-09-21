@@ -101,7 +101,7 @@ public class DownloadDialogBridge
     @CalledByNative
     private void showDialog(WindowAndroid windowAndroid, long totalBytes,
             @ConnectionType int connectionType, @DownloadLocationDialogType int dialogType,
-            String suggestedPath, boolean supportsLaterDialog) {
+            String suggestedPath, boolean supportsLaterDialog, boolean isIncognito) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onCancel();
@@ -125,7 +125,7 @@ public class DownloadDialogBridge
             }
 
             showDialog(activity, modalDialogManager, getPrefService(), totalBytes, connectionType,
-                    suggestedDialogType, suggestedPath, supportsLaterDialog);
+                    suggestedDialogType, suggestedPath, supportsLaterDialog, isIncognito);
         });
     }
 
@@ -133,7 +133,7 @@ public class DownloadDialogBridge
     void showDialog(Context context, ModalDialogManager modalDialogManager, PrefService prefService,
             long totalBytes, @ConnectionType int connectionType,
             @DownloadLocationDialogType int dialogType, String suggestedPath,
-            boolean supportsLaterDialog) {
+            boolean supportsLaterDialog, boolean isIncognito) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mPrefService = prefService;
@@ -154,7 +154,7 @@ public class DownloadDialogBridge
         }
 
         mLocationDialog.showDialog(
-                mContext, mModalDialogManager, totalBytes, dialogType, suggestedPath);
+                mContext, mModalDialogManager, totalBytes, dialogType, suggestedPath, isIncognito);
     }
 
     private void onComplete() {
@@ -188,8 +188,8 @@ public class DownloadDialogBridge
         }
 
         // The location dialog has error message text, show the location dialog after the download
-        // later dialog.
-        showLocationDialog(false /*editLocation*/);
+        // later dialog. isIncognito is false because DownloadLater is not available in Incognito.
+        showLocationDialog(false /*editLocation*/, false /* isIncognito */);
     }
 
     @Override
@@ -205,17 +205,18 @@ public class DownloadDialogBridge
                 DownloadLaterUiEvent.DOWNLOAD_LATER_DIALOG_EDIT_CLICKED);
         mDownloadLaterDialog.dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
 
-        // The user clicked the edit location text.
-        showLocationDialog(true /* editLocation */);
+        // The user clicked the edit location text. isIncognito is false because DownloadLater is
+        // not available in Incognito.
+        showLocationDialog(true /* editLocation */, false /* isIncognito */);
     }
 
-    private void showLocationDialog(boolean editLocation) {
+    private void showLocationDialog(boolean editLocation, boolean isIncognito) {
         mEditLocation = editLocation;
 
         mDownloadLaterChoice = mDownloadLaterDialog.getChoice();
 
-        mLocationDialog.showDialog(
-                mContext, mModalDialogManager, mTotalBytes, mLocationDialogType, mSuggestedPath);
+        mLocationDialog.showDialog(mContext, mModalDialogManager, mTotalBytes, mLocationDialogType,
+                mSuggestedPath, isIncognito);
     }
 
     private void showDownloadLaterDialog() {

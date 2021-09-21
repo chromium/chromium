@@ -20,6 +20,9 @@ class DownloadLocationDialogViewBinder {
             view.setSubtitle(model.get(DownloadLocationDialogProperties.SUBTITLE));
         } else if (propertyKey == DownloadLocationDialogProperties.SHOW_SUBTITLE) {
             view.showSubtitle(model.get(DownloadLocationDialogProperties.SHOW_SUBTITLE));
+        } else if (propertyKey == DownloadLocationDialogProperties.SHOW_INCOGNITO_WARNING) {
+            view.showIncognitoWarning(
+                    model.get(DownloadLocationDialogProperties.SHOW_INCOGNITO_WARNING));
         } else if (propertyKey == DownloadLocationDialogProperties.FILE_NAME) {
             view.setFileName(model.get(DownloadLocationDialogProperties.FILE_NAME));
         } else if (propertyKey == DownloadLocationDialogProperties.FILE_SIZE) {

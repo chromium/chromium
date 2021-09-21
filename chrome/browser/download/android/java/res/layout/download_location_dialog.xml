@@ -29,6 +29,15 @@
             android:layout_marginBottom="@dimen/download_dialog_subtitle_margin_bottom"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
+        <TextView
+            android:id="@+id/incognito_warning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/download_location_incognito_warning"
+            android:layout_marginBottom="@dimen/download_dialog_subtitle_margin_bottom"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:visibility="gone"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

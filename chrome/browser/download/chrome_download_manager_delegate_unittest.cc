@@ -1719,6 +1719,7 @@ class TestDownloadDialogBridge : public DownloadDialogBridge {
                   const base::FilePath& suggested_path,
                   bool supports_later_dialog,
                   bool show_date_time_picker,
+                  bool is_incognito,
                   DownloadDialogBridge::DialogCallback callback) override {
     dialog_shown_count_++;
     dialog_type_ = dialog_type;

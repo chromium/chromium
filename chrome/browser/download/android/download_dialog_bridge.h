@@ -55,6 +55,7 @@ class DownloadDialogBridge {
       const base::FilePath& suggested_path,
       bool supports_later_dialog,
       bool show_date_time_picker,
+      bool is_incognito,
       DialogCallback dialog_callback);
 
   void OnComplete(JNIEnv* env,

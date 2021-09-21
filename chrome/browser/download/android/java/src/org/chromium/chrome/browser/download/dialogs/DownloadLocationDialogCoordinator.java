@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -46,6 +47,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     private @DownloadLocationDialogType int mDialogType;
     private String mSuggestedPath;
     private Context mContext;
+    private boolean mHasMultipleDownloadLocations;
+    private boolean mIsIncognito;
     private boolean mLocationDialogManaged;
 
     /**
@@ -65,7 +68,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
      * @param suggestedPath The suggested file path used by the location dialog.
      */
     public void showDialog(Context context, ModalDialogManager modalDialogManager, long totalBytes,
-            @DownloadLocationDialogType int dialogType, String suggestedPath) {
+            @DownloadLocationDialogType int dialogType, String suggestedPath, boolean isIncognito) {
         if (context == null || modalDialogManager == null) {
             onDismiss(null, DialogDismissalCause.ACTIVITY_DESTROYED);
             return;
@@ -77,6 +80,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         mDialogType = dialogType;
         mSuggestedPath = suggestedPath;
         mLocationDialogManaged = DownloadDialogBridge.isLocationDialogManaged();
+        mIsIncognito = isIncognito;
 
         DownloadDirectoryProvider.getInstance().getAllDirectoriesOptions(
                 (ArrayList<DirectoryOption> dirs) -> { onDirectoryOptionsRetrieved(dirs); });
@@ -130,9 +134,10 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     private void onDirectoryOptionsRetrieved(ArrayList<DirectoryOption> dirs) {
         // If there is only one directory available, don't show the default dialog, and set the
         // download directory to default. Dialog will still show for other types of dialogs, like
-        // name conflict or disk error.
+        // name conflict or disk error or if Incognito download warning is needed.
         if (dirs.size() == 1 && !mLocationDialogManaged
-                && mDialogType == DownloadLocationDialogType.DEFAULT) {
+                && mDialogType == DownloadLocationDialogType.DEFAULT
+                && !shouldShowIncognitoWarning()) {
             final DirectoryOption dir = dirs.get(0);
             if (dir.type == DirectoryOption.DownloadLocationDirectoryType.DEFAULT) {
                 assert (!TextUtils.isEmpty(dir.location));
@@ -144,6 +149,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
 
         // Already showing the dialog.
         if (mDialogModel != null) return;
+
+        mHasMultipleDownloadLocations = dirs.size() > 1;
 
         // Actually show the dialog.
         mDownloadLocationDialogModel = getLocationDialogModel();
@@ -233,13 +240,24 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                 break;
         }
 
+        if (shouldShowIncognitoWarning()) {
+            builder.with(DownloadLocationDialogProperties.SHOW_INCOGNITO_WARNING, true);
+            builder.with(DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_SHOWN, false);
+        }
+
         return builder.build();
     }
 
     private String getDefaultTitle() {
         return mContext.getString(mLocationDialogManaged
+                                || (shouldShowIncognitoWarning() && !mHasMultipleDownloadLocations)
                         ? R.string.download_location_dialog_title_confirm_download
                         : R.string.download_location_dialog_title);
+    }
+
+    private boolean shouldShowIncognitoWarning() {
+        return mIsIncognito
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING);
     }
 
     /**

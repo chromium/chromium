@@ -420,6 +420,7 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
   DCHECK(download_dialog_bridge_);
   auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
   bool show_date_time_picker = DownloadDialogBridge::ShouldShowDateTimePicker();
+  bool is_incognito = profile_->IsIncognitoProfile();
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           download::switches::kDownloadLaterDebugOnWifi)) {
@@ -427,7 +428,8 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
   }
   download_dialog_bridge_->ShowDialog(
       native_window, total_bytes, connection_type, dialog_type, suggested_path,
-      supports_later_dialog, show_date_time_picker, std::move(callback));
+      supports_later_dialog, show_date_time_picker, is_incognito,
+      std::move(callback));
 }
 
 void ChromeDownloadManagerDelegate::SetDownloadDialogBridgeForTesting(

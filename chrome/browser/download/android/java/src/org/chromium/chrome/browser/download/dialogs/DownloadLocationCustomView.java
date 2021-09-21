@@ -42,6 +42,7 @@ public class DownloadLocationCustomView
 
     private TextView mTitle;
     private TextView mSubtitleView;
+    private TextView mIncognitoWarning;
     private AlertDialogEditText mFileName;
     private TextView mFileSize;
     private Spinner mFileLocation;
@@ -61,6 +62,7 @@ public class DownloadLocationCustomView
 
         mTitle = findViewById(R.id.title);
         mSubtitleView = findViewById(R.id.subtitle);
+        mIncognitoWarning = findViewById(R.id.incognito_warning);
         mFileName = findViewById(R.id.file_name);
         mFileSize = findViewById(R.id.file_size);
         mFileLocation = findViewById(R.id.file_location);
@@ -95,6 +97,10 @@ public class DownloadLocationCustomView
     void setDontShowAgainCheckbox(boolean checked) {
         mDontShowAgain.setChecked(checked);
         mDontShowAgain.setOnCheckedChangeListener(this);
+    }
+
+    void showIncognitoWarning(boolean show) {
+        mIncognitoWarning.setVisibility(show ? VISIBLE : GONE);
     }
 
     void showDontShowAgainCheckbox(boolean show) {
