@@ -79,6 +79,14 @@ class WaylandPointer {
   WaylandConnection* const connection_;
   Delegate* const delegate_;
 
+  // Whether the axis source event has been received for the current frame.
+  //
+  // The axis source event is optional, and the frame event can be sent with no
+  // source set previously.  However, the delegate expects the axis source to be
+  // set explicitly for the axis events.  Hence, we set the default source when
+  // possible so that the sequence of pointer events has it set.
+  bool axis_source_received_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(WaylandPointer);
 };
 

@@ -143,12 +143,22 @@ void WaylandPointer::Axis(void* data,
   } else {
     return;
   }
+  // If we did not receive the axis event source explicitly, set it to the mouse
+  // wheel so far.  Should this be a part of some complex event coming from the
+  // different source, the compositor will let us know sooner or later.
+  if (!pointer->axis_source_received_)
+    pointer->delegate_->OnPointerAxisSourceEvent(WL_POINTER_AXIS_SOURCE_WHEEL);
   pointer->delegate_->OnPointerAxisEvent(offset);
 }
+
+// ---- Version 5 ----
 
 // static
 void WaylandPointer::Frame(void* data, wl_pointer* obj) {
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  // The frame event ends the sequence of pointer events.  Clear the flag.  The
+  // next frame will set it when necessary.
+  pointer->axis_source_received_ = false;
   pointer->delegate_->OnPointerFrameEvent();
 }
 
@@ -157,6 +167,7 @@ void WaylandPointer::AxisSource(void* data,
                                 wl_pointer* obj,
                                 uint32_t axis_source) {
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  pointer->axis_source_received_ = true;
   pointer->delegate_->OnPointerAxisSourceEvent(axis_source);
 }
 

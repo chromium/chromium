@@ -246,65 +246,43 @@ TEST_P(WaylandPointerTest, AxisSourceTypes) {
   ASSERT_TRUE(event4->IsMouseWheelEvent());
 }
 
-TEST_P(WaylandPointerTest, AxisVertical) {
+TEST_P(WaylandPointerTest, Axis) {
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
                         wl_fixed_from_int(0), wl_fixed_from_int(0));
-  wl_pointer_send_button(pointer_->resource(), 2, 1002, BTN_RIGHT,
-                         WL_POINTER_BUTTON_STATE_PRESSED);
 
   Sync();
 
-  std::unique_ptr<Event> event;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
-  // Wayland servers typically send a value of 10 per mouse wheel click.
-  wl_pointer_send_axis_source(pointer_->resource(),
-                              WL_POINTER_AXIS_SOURCE_WHEEL);
-  wl_pointer_send_axis(pointer_->resource(), 1003,
-                       WL_POINTER_AXIS_VERTICAL_SCROLL, wl_fixed_from_int(20));
-  wl_pointer_send_frame(pointer_->resource());
+  for (uint32_t axis :
+       {WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_HORIZONTAL_SCROLL}) {
+    for (bool send_axis_source : {false, true}) {
+      std::unique_ptr<Event> event;
+      EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
 
-  Sync();
+      if (send_axis_source) {
+        // The axis source event is optional.  When it is not set within the
+        // event frame, we assume the mouse wheel.
+        wl_pointer_send_axis_source(pointer_->resource(),
+                                    WL_POINTER_AXIS_SOURCE_WHEEL);
+      }
 
-  ASSERT_TRUE(event);
-  ASSERT_TRUE(event->IsMouseWheelEvent());
-  auto* mouse_wheel_event = event->AsMouseWheelEvent();
-  EXPECT_EQ(gfx::Vector2d(0, -2 * MouseWheelEvent::kWheelDelta),
-            mouse_wheel_event->offset());
-  EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON, mouse_wheel_event->button_flags());
-  EXPECT_EQ(0, mouse_wheel_event->changed_button_flags());
-  EXPECT_EQ(gfx::PointF(), mouse_wheel_event->location_f());
-  EXPECT_EQ(gfx::PointF(), mouse_wheel_event->root_location_f());
-}
+      // Wayland servers typically send a value of 10 per mouse wheel click.
+      wl_pointer_send_axis(pointer_->resource(), 1003, axis,
+                           wl_fixed_from_int(10));
+      wl_pointer_send_frame(pointer_->resource());
 
-TEST_P(WaylandPointerTest, AxisHorizontal) {
-  wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
-                        wl_fixed_from_int(50), wl_fixed_from_int(75));
-  wl_pointer_send_button(pointer_->resource(), 2, 1002, BTN_LEFT,
-                         WL_POINTER_BUTTON_STATE_PRESSED);
+      Sync();
 
-  Sync();
-
-  std::unique_ptr<Event> event;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
-  // Wayland servers typically send a value of 10 per mouse wheel click.
-  wl_pointer_send_axis_source(pointer_->resource(),
-                              WL_POINTER_AXIS_SOURCE_WHEEL);
-  wl_pointer_send_axis(pointer_->resource(), 1003,
-                       WL_POINTER_AXIS_HORIZONTAL_SCROLL,
-                       wl_fixed_from_int(10));
-  wl_pointer_send_frame(pointer_->resource());
-
-  Sync();
-
-  ASSERT_TRUE(event);
-  ASSERT_TRUE(event->IsMouseWheelEvent());
-  auto* mouse_wheel_event = event->AsMouseWheelEvent();
-  EXPECT_EQ(gfx::Vector2d(-MouseWheelEvent::kWheelDelta, 0),
-            mouse_wheel_event->offset());
-  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON, mouse_wheel_event->button_flags());
-  EXPECT_EQ(0, mouse_wheel_event->changed_button_flags());
-  EXPECT_EQ(gfx::PointF(50, 75), mouse_wheel_event->location_f());
-  EXPECT_EQ(gfx::PointF(50, 75), mouse_wheel_event->root_location_f());
+      ASSERT_TRUE(event);
+      ASSERT_TRUE(event->IsMouseWheelEvent());
+      auto* mouse_wheel_event = event->AsMouseWheelEvent();
+      EXPECT_EQ(axis == WL_POINTER_AXIS_VERTICAL_SCROLL
+                    ? gfx::Vector2d(0, -MouseWheelEvent::kWheelDelta)
+                    : gfx::Vector2d(-MouseWheelEvent::kWheelDelta, 0),
+                mouse_wheel_event->offset());
+      EXPECT_EQ(gfx::PointF(), mouse_wheel_event->location_f());
+      EXPECT_EQ(gfx::PointF(), mouse_wheel_event->root_location_f());
+    }
+  }
 }
 
 TEST_P(WaylandPointerTest, SetBitmap) {
