@@ -198,30 +198,9 @@ class ChromePasswordProtectionService
           InteractionResult interaction_result);
 
   // Gets the detailed warning text that should show in the modal warning
-  // dialog. |placeholder_offsets| are the start points/indices of the
-  // placeholders that are passed into the resource string. It is only set for
-  // saved passwords.
+  // dialog.
   std::u16string GetWarningDetailText(
-      safe_browsing::ReusedPasswordAccountType password_type,
-      std::vector<size_t>* placeholder_offsets) const;
-
-  // Gets the warning text for saved password reuse warnings.
-  // |placeholder_offsets| are the start points/indices of the placeholders that
-  // are passed into the resource string.
-  std::u16string GetWarningDetailTextForSavedPasswords(
-      std::vector<size_t>* placeholder_offsets) const;
-
-  // Gets the warning text of the saved password reuse warnings that tells the
-  // user to check their saved passwords. |placeholder_offsets| are the start
-  // points/indices of the placeholders that are passed into the resource
-  // string.
-  std::u16string GetWarningDetailTextToCheckSavedPasswords(
-      std::vector<size_t>* placeholder_offsets) const;
-
-  // Get placeholders for the warning detail text for saved password reuse
-  // warnings.
-  std::vector<std::u16string> GetPlaceholdersForSavedPasswordWarningText()
-      const;
+      safe_browsing::ReusedPasswordAccountType password_type) const;
 
   // Creates, starts, and tracks a new request.
   void StartRequest(

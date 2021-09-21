@@ -184,9 +184,8 @@ void ChromePasswordProtectionService::ShowModalWarning(
     ReusedPasswordAccountType reused_password_account_type =
         GetPasswordProtectionReusedPasswordAccountType(request->password_type(),
                                                        request->username());
-    std::vector<size_t> placeholder_offsets;
-    const std::u16string warning_text = GetWarningDetailText(
-        reused_password_account_type, &placeholder_offsets);
+    const std::u16string warning_text =
+        GetWarningDetailText(reused_password_account_type);
     // Partial bind WebState and password_type.
     auto completion_callback = base::BindOnce(
         &ChromePasswordProtectionService::OnUserAction,
@@ -593,98 +592,10 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDialogInteraction(
 }
 
 std::u16string ChromePasswordProtectionService::GetWarningDetailText(
-    ReusedPasswordAccountType password_type,
-    std::vector<size_t>* placeholder_offsets) const {
+    ReusedPasswordAccountType password_type) const {
   DCHECK(password_type.account_type() ==
          ReusedPasswordAccountType::SAVED_PASSWORD);
-  return GetWarningDetailTextForSavedPasswords(placeholder_offsets);
-}
-std::u16string
-ChromePasswordProtectionService::GetWarningDetailTextForSavedPasswords(
-    std::vector<size_t>* placeholder_offsets) const {
-  std::vector<std::u16string> placeholders =
-      GetPlaceholdersForSavedPasswordWarningText();
-  // The default text is a complete sentence without placeholders.
-  return placeholders.empty()
-             ? l10n_util::GetStringUTF16(
-                   IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED)
-             : GetWarningDetailTextToCheckSavedPasswords(placeholder_offsets);
-}
-
-std::u16string
-ChromePasswordProtectionService::GetWarningDetailTextToCheckSavedPasswords(
-    std::vector<size_t>* placeholder_offsets) const {
-  std::vector<std::u16string> placeholders =
-      GetPlaceholdersForSavedPasswordWarningText();
-  if (placeholders.size() == 1) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN, placeholders,
-        placeholder_offsets);
-  } else if (placeholders.size() == 2) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_2_DOMAIN, placeholders,
-        placeholder_offsets);
-  } else {
-    return l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN, placeholders,
-        placeholder_offsets);
-  }
-}
-
-std::vector<std::u16string>
-ChromePasswordProtectionService::GetPlaceholdersForSavedPasswordWarningText()
-    const {
-  const std::vector<std::string>& matching_domains =
-      saved_passwords_matching_domains();
-  const std::list<std::string>& spoofed_domains = common_spoofed_domains();
-
-  // Show most commonly spoofed domains first.
-  // This looks through the top priority spoofed domains and then checks to see
-  // if it's in the matching domains.
-  std::vector<std::u16string> placeholders;
-  for (auto priority_domain_iter = spoofed_domains.begin();
-       priority_domain_iter != spoofed_domains.end(); ++priority_domain_iter) {
-    std::string matching_domain;
-
-    // Check if any of the matching domains is equal or a suffix to the current
-    // priority domain.
-    if (std::find_if(matching_domains.begin(), matching_domains.end(),
-                     [priority_domain_iter,
-                      &matching_domain](const std::string& domain) {
-                       // Assigns the matching_domain to add into the priority
-                       // placeholders. This value is only used if the return
-                       // value of this function is true.
-                       matching_domain = domain;
-                       const base::StringPiece domainStringPiece(domain);
-                       // Checks for two cases:
-                       // 1. if the matching domain is equal to the current
-                       // priority domain or
-                       // 2. if "," + the current priority is a suffix of the
-                       // matching domain The second case covers eTLD+1.
-                       return (domain == *priority_domain_iter) ||
-                              base::EndsWith(domainStringPiece,
-                                             "." + *priority_domain_iter);
-                     }) != matching_domains.end()) {
-      placeholders.push_back(base::UTF8ToUTF16(matching_domain));
-    }
-  }
-
-  // If there are less than 3 saved default domains, check the saved
-  //  password domains to see if there are more that can be added to the
-  //  warning text.
-  int domains_idx = placeholders.size();
-  for (size_t idx = 0; idx < matching_domains.size() && domains_idx < 3;
-       idx++) {
-    // Do not add duplicate domains if it was already in the default domains.
-    if (std::find(placeholders.begin(), placeholders.end(),
-                  base::UTF8ToUTF16(matching_domains[idx])) !=
-        placeholders.end()) {
-      continue;
-    }
-    placeholders.push_back(base::UTF8ToUTF16(matching_domains[idx]));
-    domains_idx++;
-  }
-  return placeholders;
+  return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED);
 }
 
 void ChromePasswordProtectionService::StartRequest(

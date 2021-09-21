@@ -60,11 +60,6 @@ PasswordProtectionServiceBase::PasswordProtectionServiceBase(
       try_token_fetch_(try_token_fetch) {
   if (history_service)
     history_service_observation_.Observe(history_service);
-
-  common_spoofed_domains_ = {"login.live.com", "facebook.com", "box.com",
-                             "google.com",     "paypal.com",   "apple.com",
-                             "yahoo.com",      "adobe.com",    "amazon.com",
-                             "linkedin.com"};
 }
 
 PasswordProtectionServiceBase::~PasswordProtectionServiceBase() {

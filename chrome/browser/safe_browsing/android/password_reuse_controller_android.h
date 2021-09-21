@@ -66,13 +66,8 @@ class PasswordReuseControllerAndroid
   std::u16string GetSecondaryButtonText() const;
 
   // Get the detailed warning text that should show in the modal warning dialog.
-  // |placeholder_offsets| are the start points/indices of the placeholders that
-  // are passed into the resource string.
-  std::u16string GetWarningDetailText(
-      std::vector<size_t>* placeholder_offsets) const;
+  std::u16string GetWarningDetailText() const;
   std::u16string GetTitle() const;
-  const std::vector<std::u16string> GetPlaceholdersForSavedPasswordWarningText()
-      const;
 
   // ChromePasswordProtectionService::Observer:
   void OnGaiaPasswordChanged() override;

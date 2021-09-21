@@ -266,10 +266,8 @@ class PageInfoBubbleViewDialogBrowserTest
               GetPasswordProtectionService(browser()->profile());
       service->set_reused_password_account_type_for_last_shown_warning(
           reused_password_account_type);
-      std::vector<size_t> placeholder_offsets;
       identity.safe_browsing_details = service->GetWarningDetailText(
-          service->reused_password_account_type_for_last_shown_warning(),
-          &placeholder_offsets);
+          service->reused_password_account_type_for_last_shown_warning());
     }
 
     if (name == kSecureSubpage || name == kEvSecureSubpage) {

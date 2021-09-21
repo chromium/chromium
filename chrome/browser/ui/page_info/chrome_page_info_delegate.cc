@@ -126,7 +126,6 @@ void ChromePageInfoDelegate::OnUserActionOnPasswordUi(
 }
 
 std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
-  std::vector<size_t> placeholder_offsets;
   auto* chrome_password_protection_service =
       GetChromePasswordProtectionService();
 
@@ -134,8 +133,7 @@ std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
   return chrome_password_protection_service
              ? chrome_password_protection_service->GetWarningDetailText(
                    chrome_password_protection_service
-                       ->reused_password_account_type_for_last_shown_warning(),
-                   &placeholder_offsets)
+                       ->reused_password_account_type_for_last_shown_warning())
              : std::u16string();
 }
 #endif

@@ -354,10 +354,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       const GURL& url,
       ReusedPasswordAccountType password_type) = 0;
 
-  const std::list<std::string>& common_spoofed_domains() const {
-    return common_spoofed_domains_;
-  }
-
   // Subclasses may override this method to either cancel or resume deferred
   // navigations. By default, deferred navigations are not handled.
   virtual void MaybeHandleDeferredNavigations(
@@ -438,10 +434,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // is obtained from SafeBrowsingService so that we can use the Safe Browsing
   // cookie store.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // List of most commonly spoofed domains to default to on the password warning
-  // dialog.
-  std::list<std::string> common_spoofed_domains_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

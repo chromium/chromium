@@ -105,19 +105,21 @@ std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
   return std::u16string();
 }
 
-std::u16string PasswordReuseControllerAndroid::GetWarningDetailText(
-    std::vector<size_t>* placeholder_offsets) const {
-  return service_->GetWarningDetailText(password_type_, placeholder_offsets);
+std::u16string PasswordReuseControllerAndroid::GetWarningDetailText() const {
+  return service_->GetWarningDetailText(password_type_);
 }
 
 std::u16string PasswordReuseControllerAndroid::GetTitle() const {
-  return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
-}
+  if (password_type_.account_type() ==
+          ReusedPasswordAccountType::SAVED_PASSWORD &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::
+              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
+    return l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_CHANGE_PASSWORD_SAVED_PASSWORD_SUMMARY);
+  }
 
-const std::vector<std::u16string>
-PasswordReuseControllerAndroid::GetPlaceholdersForSavedPasswordWarningText()
-    const {
-  return service_->GetPlaceholdersForSavedPasswordWarningText();
+  return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
 }
 
 void PasswordReuseControllerAndroid::OnGaiaPasswordChanged() {
