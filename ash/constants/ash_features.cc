@@ -878,10 +878,6 @@ const base::Feature kQuickAnswers{"QuickAnswers",
 const base::Feature kQuickAnswersOnEditableText{
     "QuickAnswersOnEditableText", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to enable quick answers text annotator.
-const base::Feature kQuickAnswersTextAnnotator{
-    "QuickAnswersTextAnnotator", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable quick answers V2 features.
 const base::Feature kQuickAnswersV2{"QuickAnswersV2",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1709,8 +1705,7 @@ bool ShouldUseBrowserSyncConsent() {
 
 bool ShouldUseQuickAnswersTextAnnotator() {
   // The text classifier is only available on ChromeOS.
-  return base::FeatureList::IsEnabled(kQuickAnswersTextAnnotator) &&
-         base::SysInfo::IsRunningOnChromeOS();
+  return base::SysInfo::IsRunningOnChromeOS();
 }
 
 bool ShouldUseV1DeviceSync() {

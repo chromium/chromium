@@ -51,9 +51,6 @@ class IntentGeneratorTest : public testing::Test {
                        base::Unretained(this)));
 
     intent_generator_->UseTextAnnotatorForTesting();
-
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kQuickAnswersTextAnnotator);
   }
 
   void TearDown() override { intent_generator_.reset(); }

@@ -2587,9 +2587,6 @@ extern const char kEnableQuickAnswersDescription[];
 extern const char kEnableQuickAnswersOnEditableTextName[];
 extern const char kEnableQuickAnswersOnEditableTextDescription[];
 
-extern const char kEnableQuickAnswersTextAnnotatorName[];
-extern const char kEnableQuickAnswersTextAnnotatorDescription[];
-
 extern const char kEnableQuickAnswersV2Name[];
 extern const char kEnableQuickAnswersV2Description[];
 

@@ -2505,11 +2505,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-quick-answers-text-annotator",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-quick-answers-v2",
     "owners": [ "croissant-eng" ],
     "expiry_milestone": 100

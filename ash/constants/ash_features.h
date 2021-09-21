@@ -332,8 +332,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kQuickAnswers;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersOnEditableText;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kQuickAnswersTextAnnotator;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersTranslation;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kQuickAnswersV2;
 COMPONENT_EXPORT(ASH_CONSTANTS)

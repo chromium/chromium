@@ -4533,11 +4533,6 @@ const char kEnableQuickAnswersOnEditableTextName[] =
 const char kEnableQuickAnswersOnEditableTextDescription[] =
     "Enable Quick Answers on editable text.";
 
-const char kEnableQuickAnswersTextAnnotatorName[] =
-    "Enable Quick Answers text annotator";
-const char kEnableQuickAnswersTextAnnotatorDescription[] =
-    "Enable Quick Answers text annotator.";
-
 const char kEnableQuickAnswersV2Name[] = "Enable Quick Answers V2 features";
 const char kEnableQuickAnswersV2Description[] =
     "Enable Quick Answers V2 features.";

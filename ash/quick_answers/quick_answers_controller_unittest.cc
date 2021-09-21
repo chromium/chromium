@@ -33,10 +33,7 @@ gfx::Rect BoundsWithXPosition(int x) {
 
 class QuickAnswersControllerTest : public AshTestBase {
  protected:
-  QuickAnswersControllerTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kQuickAnswersTextAnnotator);
-  }
+  QuickAnswersControllerTest() = default;
   QuickAnswersControllerTest(const QuickAnswersControllerTest&) = delete;
   QuickAnswersControllerTest& operator=(const QuickAnswersControllerTest&) =
       delete;
