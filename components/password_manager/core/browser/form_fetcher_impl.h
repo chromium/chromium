@@ -22,8 +22,9 @@ namespace password_manager {
 class PasswordManagerClient;
 
 // Production implementation of FormFetcher. Fetches credentials associated with
-// a particular origin. When adding new member fields to this class, please,
-// update the Clone() method accordingly.
+// a particular origin from both the profile and account (if it exists) password
+// stores. When adding new member fields to this class, please, update the
+// Clone() method accordingly.
 class FormFetcherImpl : public FormFetcher,
                         public PasswordStoreConsumer,
                         public HttpPasswordStoreMigrator::Consumer {
@@ -70,8 +71,9 @@ class FormFetcherImpl : public FormFetcher,
   void FindMatchesAndNotifyConsumers(
       std::vector<std::unique_ptr<PasswordForm>> results);
 
-  // Splits |results| into |federated_|, |non_federated_| and |is_blocklisted_|.
-  virtual void SplitResults(std::vector<std::unique_ptr<PasswordForm>> results);
+  // Splits |results| into |federated_|, |non_federated_|,
+  // |is_blocklisted_in_profile_store_| and |is_blocklisted_in_account_store_|.
+  void SplitResults(std::vector<std::unique_ptr<PasswordForm>> results);
 
   // PasswordStore results will be fetched for this description.
   const PasswordFormDigest form_digest_;
@@ -105,14 +107,22 @@ class FormFetcherImpl : public FormFetcher,
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
+  void OnGetPasswordStoreResultsFrom(
+      PasswordStoreInterface* store,
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
   void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
 
   // HttpPasswordStoreMigrator::Consumer:
   void ProcessMigratedForms(
       std::vector<std::unique_ptr<PasswordForm>> forms) override;
 
+  void AggregatePasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results);
+
   // Does the actual migration.
-  std::unique_ptr<HttpPasswordStoreMigrator> http_migrator_;
+  base::flat_map<PasswordStoreInterface*,
+                 std::unique_ptr<HttpPasswordStoreMigrator>>
+      http_migrators_;
 
   // Non-federated credentials of the same scheme as the observed form.
   std::vector<const PasswordForm*> non_federated_same_scheme_;
@@ -127,9 +137,13 @@ class FormFetcherImpl : public FormFetcher,
   // matches (when first saved, a login is marked preferred).
   const PasswordForm* preferred_match_ = nullptr;
 
-  // Whether there were any blocklisted credentials obtained from the password
-  // store.
-  bool is_blocklisted_ = false;
+  // Whether there were any blocklisted credentials obtained from the profile
+  // and account password stores respectively.
+  bool is_blocklisted_in_profile_store_ = false;
+  bool is_blocklisted_in_account_store_ = false;
+
+  int wait_counter_ = 0;
+  std::vector<std::unique_ptr<PasswordForm>> partial_results_;
 
   // Statistics for the current domain.
   std::vector<InteractionsStats> interactions_stats_;

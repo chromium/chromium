@@ -10,10 +10,7 @@
 
 namespace password_manager {
 
-// Production implementation of FormFetcher that fetches credentials associated
-// with a particular origin from both the account and profile password stores.
-// When adding new member fields to this class, please, update the Clone()
-// method accordingly.
+// TODO(crbug.com/1108738): Remove this class after updating tests.
 class MultiStoreFormFetcher : public FormFetcherImpl {
  public:
   MultiStoreFormFetcher(PasswordFormDigest form_digest,
@@ -24,45 +21,6 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
   MultiStoreFormFetcher& operator=(const MultiStoreFormFetcher&) = delete;
 
   ~MultiStoreFormFetcher() override;
-
-  // FormFetcher overrides.
-  void Fetch() override;
-  bool IsBlocklisted() const override;
-  bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
-                       const std::u16string& username) const override;
-  std::unique_ptr<FormFetcher> Clone() override;
-
-  // PasswordStoreConsumer:
-  void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-  void OnGetPasswordStoreResultsFrom(
-      PasswordStoreInterface* store,
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-
-  // HttpPasswordStoreMigrator::Consumer:
-  void ProcessMigratedForms(
-      std::vector<std::unique_ptr<PasswordForm>> forms) override;
-
- private:
-  void AggregatePasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results);
-
-  // Splits |results| into |federated_|, |non_federated_|,
-  // |is_blocklisted_in_profile_store_| and |is_blocklisted_in_account_store_|.
-  void SplitResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) override;
-
-  // Whether there were any blocklisted credentials obtained from the profile
-  // and account password stores respectively.
-  bool is_blocklisted_in_profile_store_ = false;
-  bool is_blocklisted_in_account_store_ = false;
-
-  int wait_counter_ = 0;
-  std::vector<std::unique_ptr<PasswordForm>> partial_results_;
-
-  base::flat_map<PasswordStoreInterface*,
-                 std::unique_ptr<HttpPasswordStoreMigrator>>
-      http_migrators_;
 };
 
 }  // namespace password_manager
