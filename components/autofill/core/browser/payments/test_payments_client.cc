@@ -94,6 +94,14 @@ void TestPaymentsClient::MigrateCards(
                           std::move(save_result_), "this is display text");
 }
 
+void TestPaymentsClient::SelectChallengeOption(
+    const SelectChallengeOptionRequestDetails& details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const std::string&)> callback) {
+  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
+                          "context_token from SelectChallengeOption");
+}
+
 void TestPaymentsClient::ShouldReturnUnmaskDetailsImmediately(
     bool should_return_unmask_details) {
   should_return_unmask_details_ = should_return_unmask_details;

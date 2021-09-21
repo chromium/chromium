@@ -349,7 +349,6 @@ class PaymentsClientTest : public testing::Test {
     PaymentsClient::SelectChallengeOptionRequestDetails request_details;
     request_details.billing_customer_number = 555666777888;
     request_details.context_token = "fake context token";
-    request_details.app_locale = "language-LOCALE";
 
     CardUnmaskChallengeOption selected_challenge_option;
     selected_challenge_option.type = challenge_type;

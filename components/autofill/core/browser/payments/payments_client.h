@@ -254,7 +254,6 @@ class PaymentsClient {
     // An opaque token used to chain consecutive payments requests together.
     std::string context_token;
     int64_t billing_customer_number = 0;
-    std::string app_locale;
   };
 
   // An enum set in the GetUploadDetailsRequest indicating the source of the

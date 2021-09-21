@@ -37,7 +37,6 @@ std::string SelectChallengeOptionRequest::GetRequestContentType() {
 std::string SelectChallengeOptionRequest::GetRequestContent() {
   base::Value request_dict(base::Value::Type::DICTIONARY);
   base::Value context(base::Value::Type::DICTIONARY);
-  context.SetKey("language_code", base::Value(request_details_.app_locale));
   context.SetKey("billable_service",
                  base::Value(kUnmaskCardBillableServiceNumber));
   request_dict.SetKey("context", std::move(context));

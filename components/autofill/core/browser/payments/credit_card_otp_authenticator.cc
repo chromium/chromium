@@ -16,8 +16,9 @@ CreditCardOtpAuthenticator::CreditCardOtpAuthenticator(AutofillClient* client)
 
 CreditCardOtpAuthenticator::~CreditCardOtpAuthenticator() = default;
 
-void CreditCardOtpAuthenticator::Authenticate(
+void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
     const CreditCard* card,
+    const CardUnmaskChallengeOption& selected_challenge_option,
     base::WeakPtr<Requester> requester,
     const std::string& context_token,
     int64_t billing_customer_number) {
@@ -25,32 +26,127 @@ void CreditCardOtpAuthenticator::Authenticate(
     return requester->OnOtpAuthenticationComplete(
         OtpAuthenticationResponse().with_did_succeed(false));
   }
-
+  // Currently only virtual cards are supported for OTP authentication.
+  DCHECK_EQ(card->record_type(), CreditCard::VIRTUAL_CARD);
+  DCHECK_EQ(selected_challenge_option.type,
+            CardUnmaskChallengeOptionType::kSmsOtp);
+  DCHECK(!context_token.empty());
+  // Store info for this session. These info will be shared for multiple
+  // payments requests. Only |context_token_| will be changed during this
+  // session.
+  card_ = card;
+  selected_challenge_option_ = selected_challenge_option;
   requester_ = requester;
+  context_token_ = context_token;
+  billing_customer_number_ = billing_customer_number;
 
-  absl::optional<GURL> last_committed_url_origin;
-  if (autofill_client_->GetLastCommittedURL().is_valid()) {
-    last_committed_url_origin =
-        autofill_client_->GetLastCommittedURL().GetOrigin();
-  }
-
+  // Asynchronously prepare payments_client. This is only needed once per
+  // session.
   DCHECK(payments_client_);
   payments_client_->Prepare();
 
-  request_ = std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
-  request_->card = *card;
-  request_->reason = AutofillClient::UnmaskCardReason::kAutofill;
-  request_->last_committed_url_origin = last_committed_url_origin;
-  request_->billing_customer_number = billing_customer_number;
-  request_->context_token = context_token_;
+  // Send user selected challenge option to server.
+  SendSelectChallengeOptionRequest();
+}
 
-  // TODO(crbug.com/1243475): Show otp authentication dialog with masked phone
-  // number and otp digits. Then hold request before otp value is populated.
+void CreditCardOtpAuthenticator::SendSelectChallengeOptionRequest() {
+  // Prepare SelectChallengeOption request.
+  select_challenge_option_request_ = std::make_unique<
+      payments::PaymentsClient::SelectChallengeOptionRequestDetails>();
+  select_challenge_option_request_->selected_challenge_option =
+      selected_challenge_option_;
+  select_challenge_option_request_->billing_customer_number =
+      billing_customer_number_;
+  select_challenge_option_request_->context_token = context_token_;
 
+  // Send SelectChallengeOption request to server, the callback is
+  // |OnDidSelectChallengeOption|.
+  payments_client_->SelectChallengeOption(
+      *select_challenge_option_request_,
+      base::BindOnce(&CreditCardOtpAuthenticator::OnDidSelectChallengeOption,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
+    AutofillClient::PaymentsRpcResult result,
+    const std::string& context_token) {
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+    DCHECK(!context_token.empty());
+    // Update the |context_token_| with the new one.
+    context_token_ = context_token;
+    // Display the OTP dialog.
+    ShowOtpDialog();
+  }
+  // TODO(crbug.com/1243475): Add error handling for SelectChallengeOption
+  // response.
+}
+
+void CreditCardOtpAuthenticator::ShowOtpDialog() {
+  // Before showing OTP dialog, let's load required risk data if it's not
+  // prepared. Risk data is only required for unmask request. Not required for
+  // select challenge option request.
   // TODO(crbug.com/1243475): Explore the possibility of sending one
   // LoadRiskData request per session.
-  autofill_client_->LoadRiskData(
-      base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData,
+  if (risk_data_.empty()) {
+    autofill_client_->LoadRiskData(
+        base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // TODO(crbug.com/1243475): Invoke autofill_client to show otp authentication
+  // dialog. Then hold request before otp value is populated.
+  // Once user confirms the OTP, we wil invoke |OnUnmaskPromptAccepted(otp)|.
+  // If user asks for a new OTP code, we will invoke
+  // |SendSelectChallengeOptionRequest()| again.
+}
+
+void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
+    const std::u16string& otp) {
+  otp_ = otp;
+
+  unmask_request_ =
+      std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
+  unmask_request_->card = *card_;
+  unmask_request_->reason = AutofillClient::UnmaskCardReason::kAutofill;
+  unmask_request_->billing_customer_number = billing_customer_number_;
+  unmask_request_->context_token = context_token_;
+  unmask_request_->otp = otp_;
+
+  if (card_->record_type() == CreditCard::VIRTUAL_CARD) {
+    absl::optional<GURL> last_committed_url_origin;
+    if (autofill_client_->GetLastCommittedURL().is_valid()) {
+      last_committed_url_origin =
+          autofill_client_->GetLastCommittedURL().GetOrigin();
+    }
+    unmask_request_->last_committed_url_origin = last_committed_url_origin;
+  }
+
+  // Populating risk data and showing OTP dialog may occur asynchronously.
+  // If |risk_data_| has already been loaded, send the unmask card request.
+  // Otherwise, continue to wait and let OnDidGetUnmaskRiskData handle it.
+  if (!risk_data_.empty()) {
+    SendUnmaskCardRequest();
+  }
+}
+
+void CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData(
+    const std::string& risk_data) {
+  risk_data_ = risk_data;
+  // Populating risk data and showing OTP dialog may occur asynchronously.
+  // If the dialog has already been accepted (otp is provided), send the unmask
+  // card request. Otherwise, continue to wait for the user to accept the OTP
+  // dialog.
+  if (!otp_.empty()) {
+    SendUnmaskCardRequest();
+  }
+}
+
+void CreditCardOtpAuthenticator::SendUnmaskCardRequest() {
+  unmask_request_->risk_data = risk_data_;
+
+  payments_client_->UnmaskCard(
+      *unmask_request_,
+      base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetRealPan,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -67,6 +163,8 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
           OtpAuthenticationResponse().with_did_succeed(false));
       return;
     }
+    // TODO(crbug.com/1243475): Add error handling for otp mismatch/expired
+    // errors. We allow user retry.
 
     // The following prerequisites should be ensured in the PaymentsClient.
     DCHECK(!response_details.real_pan.empty());
@@ -74,44 +172,37 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     DCHECK(!response_details.expiration_month.empty());
     DCHECK(!response_details.expiration_year.empty());
 
-    request_->card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
-    request_->card.set_record_type(CreditCard::VIRTUAL_CARD);
-    request_->card.SetExpirationMonthFromString(
+    unmask_request_->card.SetNumber(
+        base::UTF8ToUTF16(response_details.real_pan));
+    unmask_request_->card.set_record_type(CreditCard::VIRTUAL_CARD);
+    unmask_request_->card.SetExpirationMonthFromString(
         base::UTF8ToUTF16(response_details.expiration_month),
         /*app_locale=*/std::string());
-    request_->card.SetExpirationYearFromString(
+    unmask_request_->card.SetExpirationYearFromString(
         base::UTF8ToUTF16(response_details.expiration_year));
 
     auto response = OtpAuthenticationResponse().with_did_succeed(true);
-    response.card = &(request_->card);
+    response.card = &(unmask_request_->card);
     response.cvc = base::UTF8ToUTF16(response_details.dcvv);
     requester_->OnOtpAuthenticationComplete(response);
     return;
   }
-  // TODO(crbug.com/1243475): Add error handling.
+  // TODO(crbug.com/1243475): Add error handling for VCN error.
   requester_->OnOtpAuthenticationComplete(
       OtpAuthenticationResponse().with_did_succeed(false));
-}
-
-void CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData(
-    const std::string& risk_data) {
-  request_->risk_data = risk_data;
-  if (!otp_.empty())
-    SendUnmaskCardRequest();
-}
-
-void CreditCardOtpAuthenticator::SendUnmaskCardRequest() {
-  payments_client_->UnmaskCard(
-      *request_, base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetRealPan,
-                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardOtpAuthenticator::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   payments_client_->CancelRequest();
-  request_.reset();
+  card_ = nullptr;
+  selected_challenge_option_ = CardUnmaskChallengeOption();
   otp_ = std::u16string();
   context_token_ = std::string();
+  risk_data_ = std::string();
+  billing_customer_number_ = 0;
+  select_challenge_option_request_.reset();
+  unmask_request_.reset();
 }
 
 }  // namespace autofill
