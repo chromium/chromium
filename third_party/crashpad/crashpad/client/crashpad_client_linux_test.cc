@@ -81,6 +81,10 @@ class StartHandlerForSelfTest
           std::tuple<bool, bool, bool, bool, CrashType>> {
  public:
   StartHandlerForSelfTest() = default;
+
+  StartHandlerForSelfTest(const StartHandlerForSelfTest&) = delete;
+  StartHandlerForSelfTest& operator=(const StartHandlerForSelfTest&) = delete;
+
   ~StartHandlerForSelfTest() = default;
 
   void SetUp() override {
@@ -95,8 +99,6 @@ class StartHandlerForSelfTest
 
  private:
   StartHandlerForSelfTestOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForSelfTest);
 };
 
 bool HandleCrashSuccessfully(int, siginfo_t*, ucontext_t*) {
@@ -212,6 +214,9 @@ class ScopedAltSignalStack {
  public:
   ScopedAltSignalStack() = default;
 
+  ScopedAltSignalStack(const ScopedAltSignalStack&) = delete;
+  ScopedAltSignalStack& operator=(const ScopedAltSignalStack&) = delete;
+
   ~ScopedAltSignalStack() {
     if (stack_mem_.is_valid()) {
       stack_t stack;
@@ -242,8 +247,6 @@ class ScopedAltSignalStack {
 
  private:
   ScopedMmap stack_mem_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAltSignalStack);
 };
 
 class CrashThread : public Thread {
@@ -251,6 +254,9 @@ class CrashThread : public Thread {
   CrashThread(const StartHandlerForSelfTestOptions& options,
               CrashpadClient* client)
       : client_signal_stack_(), options_(options), client_(client) {}
+
+  CrashThread(const CrashThread&) = delete;
+  CrashThread& operator=(const CrashThread&) = delete;
 
  private:
   void ThreadMain() override {
@@ -269,8 +275,6 @@ class CrashThread : public Thread {
   ScopedAltSignalStack client_signal_stack_;
   const StartHandlerForSelfTestOptions& options_;
   CrashpadClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashThread);
 };
 
 CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
@@ -360,6 +364,11 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
     }
   }
 
+  StartHandlerForSelfInChildTest(const StartHandlerForSelfInChildTest&) =
+      delete;
+  StartHandlerForSelfInChildTest& operator=(
+      const StartHandlerForSelfInChildTest&) = delete;
+
  private:
   void MultiprocessParent() override {
     ScopedTempDir temp_dir;
@@ -415,8 +424,6 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
   }
 
   StartHandlerForSelfTestOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForSelfInChildTest);
 };
 
 TEST_P(StartHandlerForSelfTest, StartHandlerInChild) {
@@ -450,6 +457,11 @@ INSTANTIATE_TEST_SUITE_P(
 class StartHandlerForClientTest {
  public:
   StartHandlerForClientTest() = default;
+
+  StartHandlerForClientTest(const StartHandlerForClientTest&) = delete;
+  StartHandlerForClientTest& operator=(const StartHandlerForClientTest&) =
+      delete;
+
   ~StartHandlerForClientTest() = default;
 
   bool Initialize(bool sanitize) {
@@ -513,6 +525,9 @@ class StartHandlerForClientTest {
   // more privileged, process.
   class SandboxedHandler {
    public:
+    SandboxedHandler(const SandboxedHandler&) = delete;
+    SandboxedHandler& operator=(const SandboxedHandler&) = delete;
+
     static SandboxedHandler* Get() {
       static SandboxedHandler* instance = new SandboxedHandler();
       return instance;
@@ -565,22 +580,22 @@ class StartHandlerForClientTest {
 
     FileHandle client_sock_;
     bool sanitize_;
-
-    DISALLOW_COPY_AND_ASSIGN(SandboxedHandler);
   };
 
   ScopedTempDir temp_dir_;
   ScopedFileHandle client_sock_;
   ScopedFileHandle server_sock_;
   bool sanitize_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForClientTest);
 };
 
 // Tests starting the handler for a child process.
 class StartHandlerForChildTest : public Multiprocess {
  public:
   StartHandlerForChildTest() = default;
+
+  StartHandlerForChildTest(const StartHandlerForChildTest&) = delete;
+  StartHandlerForChildTest& operator=(const StartHandlerForChildTest&) = delete;
+
   ~StartHandlerForChildTest() = default;
 
   bool Initialize(bool sanitize) {
@@ -607,8 +622,6 @@ class StartHandlerForChildTest : public Multiprocess {
   }
 
   StartHandlerForClientTest test_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForChildTest);
 };
 
 TEST(CrashpadClient, StartHandlerForChild) {

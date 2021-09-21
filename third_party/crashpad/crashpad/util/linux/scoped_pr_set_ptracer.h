@@ -17,7 +17,6 @@
 
 #include <sys/types.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -37,13 +36,14 @@ class ScopedPrSetPtracer {
   //! \param[in] may_log if `true`, this class may log error messages.
   ScopedPrSetPtracer(pid_t pid, bool may_log);
 
+  ScopedPrSetPtracer(const ScopedPrSetPtracer&) = delete;
+  ScopedPrSetPtracer& operator=(const ScopedPrSetPtracer&) = delete;
+
   ~ScopedPrSetPtracer();
 
  private:
   bool success_;
   bool may_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPrSetPtracer);
 };
 
 }  // namespace crashpad

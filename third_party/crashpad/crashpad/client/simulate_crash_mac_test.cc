@@ -19,7 +19,6 @@
 #include <sys/types.h>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -79,6 +78,9 @@ class TestSimulateCrashMac final : public MachMultiprocess,
         flavor_(flavor),
         succeed_(true) {
   }
+
+  TestSimulateCrashMac(const TestSimulateCrashMac&) = delete;
+  TestSimulateCrashMac& operator=(const TestSimulateCrashMac&) = delete;
 
   ~TestSimulateCrashMac() {}
 
@@ -325,8 +327,6 @@ class TestSimulateCrashMac final : public MachMultiprocess,
   exception_behavior_t behavior_;
   thread_state_flavor_t flavor_;
   bool succeed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSimulateCrashMac);
 };
 
 TEST(SimulateCrash, SimulateCrash) {

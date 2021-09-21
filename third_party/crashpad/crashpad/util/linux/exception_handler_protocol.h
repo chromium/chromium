@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/file/file_io.h"
 #include "util/misc/address_types.h"
@@ -124,9 +123,11 @@ class ExceptionHandlerProtocol {
     pid_t pid;
   };
 
-#pragma pack(pop)
+  ExceptionHandlerProtocol() = delete;
+  ExceptionHandlerProtocol(const ExceptionHandlerProtocol&) = delete;
+  ExceptionHandlerProtocol& operator=(const ExceptionHandlerProtocol&) = delete;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ExceptionHandlerProtocol);
+#pragma pack(pop)
 };
 
 }  // namespace crashpad

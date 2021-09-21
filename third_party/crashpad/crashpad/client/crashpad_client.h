@@ -23,7 +23,6 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "util/file/file_io.h"
@@ -46,6 +45,10 @@ namespace crashpad {
 class CrashpadClient {
  public:
   CrashpadClient();
+
+  CrashpadClient(const CrashpadClient&) = delete;
+  CrashpadClient& operator=(const CrashpadClient&) = delete;
+
   ~CrashpadClient();
 
   //! \brief Starts a Crashpad handler process, performing any necessary
@@ -744,8 +747,6 @@ class CrashpadClient {
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   std::set<int> unhandled_signals_;
 #endif  // OS_APPLE
-
-  DISALLOW_COPY_AND_ASSIGN(CrashpadClient);
 };
 
 }  // namespace crashpad

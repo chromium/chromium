@@ -22,7 +22,6 @@
 #include "base/atomicops.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -42,6 +41,10 @@ using testing::Return;
 class MockReadExactly : public internal::ReadExactlyInternal {
  public:
   MockReadExactly() : ReadExactlyInternal() {}
+
+  MockReadExactly(const MockReadExactly&) = delete;
+  MockReadExactly& operator=(const MockReadExactly&) = delete;
+
   ~MockReadExactly() {}
 
   // Since it’s more convenient for the test to use uintptr_t than void*,
@@ -57,9 +60,6 @@ class MockReadExactly : public internal::ReadExactlyInternal {
   FileOperationResult Read(void* data, size_t size, bool can_log) {
     return ReadInt(reinterpret_cast<uintptr_t>(data), size, can_log);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockReadExactly);
 };
 
 TEST(FileIO, ReadExactly_Zero) {
@@ -239,6 +239,10 @@ TEST(FileIO, ReadExactly_TripleMax) {
 class MockWriteAll : public internal::WriteAllInternal {
  public:
   MockWriteAll() : WriteAllInternal() {}
+
+  MockWriteAll(const MockWriteAll&) = delete;
+  MockWriteAll& operator=(const MockWriteAll&) = delete;
+
   ~MockWriteAll() {}
 
   // Since it’s more convenient for the test to use uintptr_t than const void*,
@@ -254,9 +258,6 @@ class MockWriteAll : public internal::WriteAllInternal {
   FileOperationResult Write(const void* data, size_t size) {
     return WriteInt(reinterpret_cast<uintptr_t>(data), size);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWriteAll);
 };
 
 TEST(FileIO, WriteAll_Zero) {
@@ -582,6 +583,9 @@ class LockingTestThread : public Thread {
   LockingTestThread()
       : file_(), lock_type_(), iterations_(), actual_iterations_() {}
 
+  LockingTestThread(const LockingTestThread&) = delete;
+  LockingTestThread& operator=(const LockingTestThread&) = delete;
+
   void Init(FileHandle file,
             FileLocking lock_type,
             int iterations,
@@ -608,8 +612,6 @@ class LockingTestThread : public Thread {
   FileLocking lock_type_;
   int iterations_;
   base::subtle::Atomic32* actual_iterations_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockingTestThread);
 };
 
 void LockingTest(FileLocking main_lock, FileLocking other_locks) {

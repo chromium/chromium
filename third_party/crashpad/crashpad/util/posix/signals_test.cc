@@ -228,6 +228,10 @@ class SignalsTest : public Multiprocess {
         sig_(sig),
         test_type_(test_type),
         signal_source_(signal_source) {}
+
+  SignalsTest(const SignalsTest&) = delete;
+  SignalsTest& operator=(const SignalsTest&) = delete;
+
   ~SignalsTest() {}
 
  private:
@@ -314,8 +318,6 @@ class SignalsTest : public Multiprocess {
   TestType test_type_;
   SignalSource signal_source_;
   static Signals::OldActions old_actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignalsTest);
 };
 
 Signals::OldActions SignalsTest::old_actions_;

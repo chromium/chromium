@@ -26,6 +26,10 @@ class FileReaderReadExactly final : public internal::ReadExactlyInternal {
  public:
   explicit FileReaderReadExactly(FileReaderInterface* file_reader)
       : ReadExactlyInternal(), file_reader_(file_reader) {}
+
+  FileReaderReadExactly(const FileReaderReadExactly&) = delete;
+  FileReaderReadExactly& operator=(const FileReaderReadExactly&) = delete;
+
   ~FileReaderReadExactly() {}
 
  private:
@@ -36,8 +40,6 @@ class FileReaderReadExactly final : public internal::ReadExactlyInternal {
   }
 
   FileReaderInterface* file_reader_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(FileReaderReadExactly);
 };
 
 }  // namespace

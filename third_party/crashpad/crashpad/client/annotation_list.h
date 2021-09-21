@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_CLIENT_ANNOTATION_LIST_H_
 #define CRASHPAD_CLIENT_ANNOTATION_LIST_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "client/annotation.h"
 
@@ -35,6 +34,10 @@ class InProcessIntermediateDumpHandler;
 class AnnotationList {
  public:
   AnnotationList();
+
+  AnnotationList(const AnnotationList&) = delete;
+  AnnotationList& operator=(const AnnotationList&) = delete;
+
   ~AnnotationList();
 
   //! \brief Returns the instance of the list that has been registered on the
@@ -102,8 +105,6 @@ class AnnotationList {
   // Dummy linked-list head and tail elements of \a Annotation::Type::kInvalid.
   Annotation head_;
   Annotation tail_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnnotationList);
 };
 
 }  // namespace crashpad

@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/elf/elf_image_reader.h"
 #include "snapshot/module_snapshot.h"
 #include "util/linux/address_types.h"
@@ -99,6 +98,10 @@ class ProcessReaderLinux {
   };
 
   ProcessReaderLinux();
+
+  ProcessReaderLinux(const ProcessReaderLinux&) = delete;
+  ProcessReaderLinux& operator=(const ProcessReaderLinux&) = delete;
+
   ~ProcessReaderLinux();
 
   //! \brief Initializes this object.
@@ -175,8 +178,6 @@ class ProcessReaderLinux {
   bool initialized_threads_;
   bool initialized_modules_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderLinux);
 };
 
 }  // namespace crashpad

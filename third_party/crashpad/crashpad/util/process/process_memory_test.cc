@@ -131,6 +131,9 @@ class ReadTest : public MultiprocessAdaptor {
     SetChildTestMainFunction("ReadTestChild");
   }
 
+  ReadTest(const ReadTest&) = delete;
+  ReadTest& operator=(const ReadTest&) = delete;
+
   void RunAgainstSelf() {
     size_t region_size;
     std::unique_ptr<char[]> region;
@@ -209,8 +212,6 @@ class ReadTest : public MultiprocessAdaptor {
     EXPECT_EQ(result[0], 2);
     EXPECT_EQ(result[1], 'J');
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ReadTest);
 };
 
 TEST(ProcessMemory, ReadSelf) {
@@ -278,6 +279,9 @@ class ReadCStringTest : public MultiprocessAdaptor {
       : MultiprocessAdaptor(), limit_size_(limit_size) {
     SetChildTestMainFunction("ReadCStringTestChild");
   }
+
+  ReadCStringTest(const ReadCStringTest&) = delete;
+  ReadCStringTest& operator=(const ReadCStringTest&) = delete;
 
   void RunAgainstSelf() {
     const char* const_empty;
@@ -357,8 +361,6 @@ class ReadCStringTest : public MultiprocessAdaptor {
   }
 
   const bool limit_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadCStringTest);
 };
 
 TEST(ProcessMemory, ReadCStringSelf) {
@@ -406,6 +408,9 @@ class ReadUnmappedTest : public MultiprocessAdaptor {
     SetChildTestMainFunction("ReadUnmappedChildMain");
   }
 
+  ReadUnmappedTest(const ReadUnmappedTest&) = delete;
+  ReadUnmappedTest& operator=(const ReadUnmappedTest&) = delete;
+
   void RunAgainstChild() { Run(); }
 
  private:
@@ -437,8 +442,6 @@ class ReadUnmappedTest : public MultiprocessAdaptor {
     EXPECT_FALSE(memory.Read(page_addr2, base::GetPageSize(), result.get()));
     EXPECT_FALSE(memory.Read(page_addr2 - 1, 2, result.get()));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ReadUnmappedTest);
 };
 
 TEST(ProcessMemory, ReadUnmappedChild) {
@@ -534,6 +537,9 @@ class ReadCStringUnmappedTest : public MultiprocessAdaptor {
     SetChildTestMainFunction("ReadCStringUnmappedChildMain");
   }
 
+  ReadCStringUnmappedTest(const ReadCStringUnmappedTest&) = delete;
+  ReadCStringUnmappedTest& operator=(const ReadCStringUnmappedTest&) = delete;
+
   void RunAgainstChild() { Run(); }
 
  private:
@@ -582,8 +588,6 @@ class ReadCStringUnmappedTest : public MultiprocessAdaptor {
   }
 
   const bool limit_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadCStringUnmappedTest);
 };
 
 TEST(ProcessMemory, ReadCStringUnmappedChild) {

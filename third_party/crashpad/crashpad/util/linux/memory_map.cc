@@ -190,6 +190,9 @@ class SparseReverseIterator : public MemoryMap::Iterator {
 
   SparseReverseIterator() : mappings_(), riter_(mappings_.rend()) {}
 
+  SparseReverseIterator(const SparseReverseIterator&) = delete;
+  SparseReverseIterator& operator=(const SparseReverseIterator&) = delete;
+
   // Iterator:
   const MemoryMap::Mapping* Next() override {
     return riter_ == mappings_.rend() ? nullptr : *(riter_++);
@@ -200,8 +203,6 @@ class SparseReverseIterator : public MemoryMap::Iterator {
  private:
   std::vector<const MemoryMap::Mapping*> mappings_;
   std::vector<const MemoryMap::Mapping*>::reverse_iterator riter_;
-
-  DISALLOW_COPY_AND_ASSIGN(SparseReverseIterator);
 };
 
 class FullReverseIterator : public MemoryMap::Iterator {
@@ -210,6 +211,9 @@ class FullReverseIterator : public MemoryMap::Iterator {
       std::vector<MemoryMap::Mapping>::const_reverse_iterator rbegin,
       std::vector<MemoryMap::Mapping>::const_reverse_iterator rend)
       : riter_(rbegin), rend_(rend) {}
+
+  FullReverseIterator(const FullReverseIterator&) = delete;
+  FullReverseIterator& operator=(const FullReverseIterator&) = delete;
 
   // Iterator:
   const MemoryMap::Mapping* Next() override {
@@ -221,8 +225,6 @@ class FullReverseIterator : public MemoryMap::Iterator {
  private:
   std::vector<MemoryMap::Mapping>::const_reverse_iterator riter_;
   std::vector<MemoryMap::Mapping>::const_reverse_iterator rend_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullReverseIterator);
 };
 
 }  // namespace

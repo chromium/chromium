@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "util/file/string_file.h"
 
@@ -36,6 +35,9 @@ class BaseTestMinidumpWritable : public crashpad::internal::MinidumpWritable {
         has_alignment_(false),
         has_phase_(false),
         verified_(false) {}
+
+  BaseTestMinidumpWritable(const BaseTestMinidumpWritable&) = delete;
+  BaseTestMinidumpWritable& operator=(const BaseTestMinidumpWritable&) = delete;
 
   ~BaseTestMinidumpWritable() { EXPECT_TRUE(verified_); }
 
@@ -113,13 +115,15 @@ class BaseTestMinidumpWritable : public crashpad::internal::MinidumpWritable {
   bool has_alignment_;
   bool has_phase_;
   bool verified_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseTestMinidumpWritable);
 };
 
 class TestStringMinidumpWritable final : public BaseTestMinidumpWritable {
  public:
   TestStringMinidumpWritable() : BaseTestMinidumpWritable(), data_() {}
+
+  TestStringMinidumpWritable(const TestStringMinidumpWritable&) = delete;
+  TestStringMinidumpWritable& operator=(const TestStringMinidumpWritable&) =
+      delete;
 
   ~TestStringMinidumpWritable() {}
 
@@ -140,8 +144,6 @@ class TestStringMinidumpWritable final : public BaseTestMinidumpWritable {
 
  private:
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStringMinidumpWritable);
 };
 
 TEST(MinidumpWritable, MinidumpWritable) {
@@ -487,6 +489,9 @@ class TestRVAMinidumpWritable final : public BaseTestMinidumpWritable {
  public:
   TestRVAMinidumpWritable() : BaseTestMinidumpWritable(), rva_() {}
 
+  TestRVAMinidumpWritable(const TestRVAMinidumpWritable&) = delete;
+  TestRVAMinidumpWritable& operator=(const TestRVAMinidumpWritable&) = delete;
+
   ~TestRVAMinidumpWritable() {}
 
   void SetRVA(MinidumpWritable* other) { other->RegisterRVA(&rva_); }
@@ -505,8 +510,6 @@ class TestRVAMinidumpWritable final : public BaseTestMinidumpWritable {
 
  private:
   RVA rva_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRVAMinidumpWritable);
 };
 
 RVA RVAAtIndex(const std::string& string, size_t index) {
@@ -620,6 +623,11 @@ class TestLocationDescriptorMinidumpWritable final
   TestLocationDescriptorMinidumpWritable()
       : BaseTestMinidumpWritable(), location_descriptor_(), string_() {}
 
+  TestLocationDescriptorMinidumpWritable(
+      const TestLocationDescriptorMinidumpWritable&) = delete;
+  TestLocationDescriptorMinidumpWritable& operator=(
+      const TestLocationDescriptorMinidumpWritable&) = delete;
+
   ~TestLocationDescriptorMinidumpWritable() {}
 
   void SetLocationDescriptor(MinidumpWritable* other) {
@@ -652,8 +660,6 @@ class TestLocationDescriptorMinidumpWritable final
  private:
   MINIDUMP_LOCATION_DESCRIPTOR location_descriptor_;
   std::string string_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLocationDescriptorMinidumpWritable);
 };
 
 struct LocationDescriptorAndData {

@@ -17,7 +17,6 @@
 
 #include <mach/mach.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 namespace internal {
@@ -28,6 +27,10 @@ namespace internal {
 class ScopedVMReadInternal {
  public:
   ScopedVMReadInternal();
+
+  ScopedVMReadInternal(const ScopedVMReadInternal&) = delete;
+  ScopedVMReadInternal& operator=(const ScopedVMReadInternal&) = delete;
+
   ~ScopedVMReadInternal();
 
   //! \brief Releases any previously read data and vm_reads \a data. Logs an
@@ -51,8 +54,6 @@ class ScopedVMReadInternal {
 
   // The size of the pages that were actually read.
   mach_msg_type_number_t vm_read_data_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVMReadInternal);
 };
 
 //! \brief A scoped wrapper for calls to `vm_read` and `vm_deallocate`.  Allows
@@ -63,6 +64,10 @@ template <typename T>
 class ScopedVMRead {
  public:
   ScopedVMRead() : internal_() {}
+
+  ScopedVMRead(const ScopedVMRead&) = delete;
+  ScopedVMRead& operator=(const ScopedVMRead&) = delete;
+
   ~ScopedVMRead() {}
 
   //! \brief Releases any previously read data and vm_reads data.
@@ -96,7 +101,6 @@ class ScopedVMRead {
 
  private:
   ScopedVMReadInternal internal_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedVMRead);
 };
 
 }  // namespace internal

@@ -239,6 +239,10 @@ TEST(DebugRendezvous, Self) {
 class ChildTest : public Multiprocess {
  public:
   ChildTest() {}
+
+  ChildTest(const ChildTest&) = delete;
+  ChildTest& operator=(const ChildTest&) = delete;
+
   ~ChildTest() {}
 
  private:
@@ -250,8 +254,6 @@ class ChildTest : public Multiprocess {
   }
 
   void MultiprocessChild() { CheckedReadFileAtEOF(ReadPipeHandle()); }
-
-  DISALLOW_COPY_AND_ASSIGN(ChildTest);
 };
 
 TEST(DebugRendezvous, Child) {

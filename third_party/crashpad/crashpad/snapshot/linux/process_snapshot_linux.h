@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/elf/module_snapshot_elf.h"
 #include "snapshot/linux/exception_snapshot_linux.h"
@@ -49,6 +48,10 @@ namespace crashpad {
 class ProcessSnapshotLinux final : public ProcessSnapshot {
  public:
   ProcessSnapshotLinux();
+
+  ProcessSnapshotLinux(const ProcessSnapshotLinux&) = delete;
+  ProcessSnapshotLinux& operator=(const ProcessSnapshotLinux&) = delete;
+
   ~ProcessSnapshotLinux() override;
 
   //! \brief Initializes the object.
@@ -147,8 +150,6 @@ class ProcessSnapshotLinux final : public ProcessSnapshot {
   ProcessReaderLinux process_reader_;
   ProcessMemoryRange memory_range_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSnapshotLinux);
 };
 
 }  // namespace crashpad

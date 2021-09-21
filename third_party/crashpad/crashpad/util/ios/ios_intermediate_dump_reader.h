@@ -16,7 +16,6 @@
 #define CRASHPAD_UTIL_IOS_IOS_INTERMEDIATE_DUMP_READER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "util/file/file_reader.h"
 #include "util/ios/ios_intermediate_dump_map.h"
 
@@ -27,6 +26,10 @@ namespace internal {
 class IOSIntermediateDumpReader {
  public:
   IOSIntermediateDumpReader() {}
+
+  IOSIntermediateDumpReader(const IOSIntermediateDumpReader&) = delete;
+  IOSIntermediateDumpReader& operator=(const IOSIntermediateDumpReader&) =
+      delete;
 
   //! \brief Open and parses \a path, ignoring empty files.
   //!
@@ -48,8 +51,6 @@ class IOSIntermediateDumpReader {
  private:
   bool Parse(FileReaderInterface* reader, FileOffset file_size);
   IOSIntermediateDumpMap minidump_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSIntermediateDumpReader);
 };
 
 }  // namespace internal

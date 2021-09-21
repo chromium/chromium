@@ -23,7 +23,6 @@
 #include <sys/types.h>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -139,6 +138,9 @@ class Annotation {
         size_(0),
         type_(type) {}
 
+  Annotation(const Annotation&) = delete;
+  Annotation& operator=(const Annotation&) = delete;
+
   //! \brief Specifies the number of bytes in \a value_ptr_ to include when
   //!     generating a crash report.
   //!
@@ -189,8 +191,6 @@ class Annotation {
   void* const value_ptr_;
   ValueSizeType size_;
   const Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(Annotation);
 };
 
 //! \brief An \sa Annotation that stores a `NUL`-terminated C-string value.
@@ -213,6 +213,9 @@ class StringAnnotation : public Annotation {
   //! \param[in] name The Annotation name.
   constexpr explicit StringAnnotation(const char name[])
       : Annotation(Type::kString, name, value_), value_() {}
+
+  StringAnnotation(const StringAnnotation&) = delete;
+  StringAnnotation& operator=(const StringAnnotation&) = delete;
 
   //! \brief Constructs a new StringAnnotation with the given \a name.
   //!
@@ -262,8 +265,6 @@ class StringAnnotation : public Annotation {
   // This value is not `NUL`-terminated, since the size is stored by the base
   // annotation.
   char value_[MaxSize];
-
-  DISALLOW_COPY_AND_ASSIGN(StringAnnotation);
 };
 
 }  // namespace crashpad

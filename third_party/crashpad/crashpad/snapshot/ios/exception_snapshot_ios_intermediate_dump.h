@@ -20,7 +20,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/exception_snapshot.h"
@@ -37,6 +36,12 @@ namespace internal {
 class ExceptionSnapshotIOSIntermediateDump final : public ExceptionSnapshot {
  public:
   ExceptionSnapshotIOSIntermediateDump();
+
+  ExceptionSnapshotIOSIntermediateDump(
+      const ExceptionSnapshotIOSIntermediateDump&) = delete;
+  ExceptionSnapshotIOSIntermediateDump& operator=(
+      const ExceptionSnapshotIOSIntermediateDump&) = delete;
+
   ~ExceptionSnapshotIOSIntermediateDump() override;
 
   //! \brief Initialize the snapshot as a signal exception.
@@ -102,8 +107,6 @@ class ExceptionSnapshotIOSIntermediateDump final : public ExceptionSnapshot {
   uint32_t exception_;
   uint32_t exception_info_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal

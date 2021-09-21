@@ -14,7 +14,6 @@
 
 #include "test/win/win_multiprocess.h"
 
-#include "base/macros.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -26,6 +25,9 @@ class TestWinMultiprocess final : public WinMultiprocess {
  public:
   TestWinMultiprocess() {}
 
+  TestWinMultiprocess(const TestWinMultiprocess&) = delete;
+  TestWinMultiprocess& operator=(const TestWinMultiprocess&) = delete;
+
  private:
   // WinMultiprocess will have already exercised the pipes.
   void WinMultiprocessParent() override { SetExpectedChildExitCode(ExitCode); }
@@ -33,34 +35,38 @@ class TestWinMultiprocess final : public WinMultiprocess {
   void WinMultiprocessChild() override {
     exit(ExitCode);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestWinMultiprocess);
 };
 
 class TestWinMultiprocessChildAsserts final : public WinMultiprocess {
  public:
   TestWinMultiprocessChildAsserts() {}
 
+  TestWinMultiprocessChildAsserts(const TestWinMultiprocessChildAsserts&) =
+      delete;
+  TestWinMultiprocessChildAsserts& operator=(
+      const TestWinMultiprocessChildAsserts&) = delete;
+
  private:
   void WinMultiprocessParent() override { SetExpectedChildExitCode(255); }
   void WinMultiprocessChild() override {
     ASSERT_FALSE(true);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestWinMultiprocessChildAsserts);
 };
 
 class TestWinMultiprocessChildExpects final : public WinMultiprocess {
  public:
   TestWinMultiprocessChildExpects() {}
 
+  TestWinMultiprocessChildExpects(const TestWinMultiprocessChildExpects&) =
+      delete;
+  TestWinMultiprocessChildExpects& operator=(
+      const TestWinMultiprocessChildExpects&) = delete;
+
  private:
   void WinMultiprocessParent() override { SetExpectedChildExitCode(255); }
   void WinMultiprocessChild() override {
     EXPECT_FALSE(true);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestWinMultiprocessChildExpects);
 };
 
 TEST(WinMultiprocess, WinMultiprocess) {

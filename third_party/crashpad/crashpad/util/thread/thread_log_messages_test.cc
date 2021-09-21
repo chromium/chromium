@@ -104,6 +104,10 @@ TEST(ThreadLogMessages, Basic) {
 class LoggingTestThread : public Thread {
  public:
   LoggingTestThread() : thread_number_(0), start_(0), count_(0) {}
+
+  LoggingTestThread(const LoggingTestThread&) = delete;
+  LoggingTestThread& operator=(const LoggingTestThread&) = delete;
+
   ~LoggingTestThread() override {}
 
   void Initialize(size_t thread_number, int start, int count) {
@@ -137,8 +141,6 @@ class LoggingTestThread : public Thread {
   size_t thread_number_;
   int start_;
   int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingTestThread);
 };
 
 TEST(ThreadLogMessages, Multithreaded) {

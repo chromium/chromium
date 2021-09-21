@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/file/file_io.h"
 
@@ -66,6 +65,9 @@ class Multiprocess {
   };
 
   Multiprocess();
+
+  Multiprocess(const Multiprocess&) = delete;
+  Multiprocess& operator=(const Multiprocess&) = delete;
 
   //! \brief Runs the test.
   //!
@@ -222,8 +224,6 @@ class Multiprocess {
   internal::MultiprocessInfo* info_;
   ReturnCodeType code_;
   TerminationReason reason_;
-
-  DISALLOW_COPY_AND_ASSIGN(Multiprocess);
 };
 
 }  // namespace test

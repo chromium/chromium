@@ -33,6 +33,10 @@ using testing::Return;
 class MockFileReader : public FileReaderInterface {
  public:
   MockFileReader() : FileReaderInterface() {}
+
+  MockFileReader(const MockFileReader&) = delete;
+  MockFileReader& operator=(const MockFileReader&) = delete;
+
   ~MockFileReader() override {}
 
   // Since it’s more convenient for the test to use uintptr_t than void*,
@@ -51,9 +55,6 @@ class MockFileReader : public FileReaderInterface {
 
   // FileSeekerInterface:
   MOCK_METHOD(FileOffset, Seek, (FileOffset, int), (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFileReader);
 };
 
 TEST(FileReader, ReadExactly_Zero) {

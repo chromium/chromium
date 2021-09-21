@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "snapshot/system_snapshot.h"
 
 namespace crashpad {
@@ -30,6 +29,10 @@ namespace test {
 class TestSystemSnapshot final : public SystemSnapshot {
  public:
   TestSystemSnapshot();
+
+  TestSystemSnapshot(const TestSystemSnapshot&) = delete;
+  TestSystemSnapshot& operator=(const TestSystemSnapshot&) = delete;
+
   ~TestSystemSnapshot() override;
 
   void SetCPUArchitecture(CPUArchitecture cpu_architecture) {
@@ -138,8 +141,6 @@ class TestSystemSnapshot final : public SystemSnapshot {
   int time_zone_daylight_offset_seconds_;
   std::string time_zone_standard_name_;
   std::string time_zone_daylight_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSystemSnapshot);
 };
 
 }  // namespace test

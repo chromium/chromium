@@ -43,6 +43,9 @@ class SystemSnapshotMacTest : public testing::Test {
         system_snapshot_() {
   }
 
+  SystemSnapshotMacTest(const SystemSnapshotMacTest&) = delete;
+  SystemSnapshotMacTest& operator=(const SystemSnapshotMacTest&) = delete;
+
   const internal::SystemSnapshotMac& system_snapshot() const {
     return system_snapshot_;
   }
@@ -59,8 +62,6 @@ class SystemSnapshotMacTest : public testing::Test {
   ProcessReaderMac process_reader_;
   timeval snapshot_time_;
   internal::SystemSnapshotMac system_snapshot_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotMacTest);
 };
 
 TEST_F(SystemSnapshotMacTest, GetCPUArchitecture) {

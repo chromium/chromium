@@ -163,6 +163,9 @@ class ReadFromChildTest : public MultiprocessExec {
     SetChildTestMainFunction("ReadAnnotationsFromChildTestMain");
   }
 
+  ReadFromChildTest(const ReadFromChildTest&) = delete;
+  ReadFromChildTest& operator=(const ReadFromChildTest&) = delete;
+
   ~ReadFromChildTest() = default;
 
  private:
@@ -182,8 +185,6 @@ class ReadFromChildTest : public MultiprocessExec {
     ExpectAnnotations(
         ChildProcess(), am_64_bit, simple_map_address, annotations_address);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ReadFromChildTest);
 };
 
 TEST(ImageAnnotationReader, ReadFromChild) {

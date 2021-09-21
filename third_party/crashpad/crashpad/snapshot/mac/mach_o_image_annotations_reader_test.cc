@@ -27,7 +27,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
 #include "client/crashpad_info.h"
@@ -127,6 +126,11 @@ class TestMachOImageAnnotationsReader final
         break;
     }
   }
+
+  TestMachOImageAnnotationsReader(const TestMachOImageAnnotationsReader&) =
+      delete;
+  TestMachOImageAnnotationsReader& operator=(
+      const TestMachOImageAnnotationsReader&) = delete;
 
   ~TestMachOImageAnnotationsReader() {}
 
@@ -442,8 +446,6 @@ class TestMachOImageAnnotationsReader final
   }
 
   TestType test_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMachOImageAnnotationsReader);
 };
 
 TEST(MachOImageAnnotationsReader, DontCrash) {

@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_TEST_SCOPED_MODULE_HANDLE_H_
 #define CRASHPAD_TEST_SCOPED_MODULE_HANDLE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX)
@@ -33,6 +32,10 @@ class ScopedModuleHandle {
  private:
   class Impl {
    public:
+    Impl() = delete;
+    Impl(const Impl&) = delete;
+    Impl& operator=(const Impl&) = delete;
+
 #if defined(OS_POSIX)
     using ModuleHandle = void*;
 
@@ -48,9 +51,6 @@ class ScopedModuleHandle {
 #endif
 
     static void Close(ModuleHandle handle);
-
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(Impl);
   };
 
  public:
@@ -58,6 +58,10 @@ class ScopedModuleHandle {
 
   explicit ScopedModuleHandle(ModuleHandle handle);
   ScopedModuleHandle(ScopedModuleHandle&& handle);
+
+  ScopedModuleHandle(const ScopedModuleHandle&) = delete;
+  ScopedModuleHandle& operator=(const ScopedModuleHandle&) = delete;
+
   ~ScopedModuleHandle();
 
   //! \return The module handle being managed.
@@ -75,8 +79,6 @@ class ScopedModuleHandle {
 
  private:
   ModuleHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedModuleHandle);
 };
 
 }  // namespace test

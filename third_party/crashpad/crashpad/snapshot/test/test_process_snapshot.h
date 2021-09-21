@@ -25,7 +25,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/exception_snapshot.h"
 #include "snapshot/memory_map_region_snapshot.h"
 #include "snapshot/memory_snapshot.h"
@@ -46,6 +45,10 @@ namespace test {
 class TestProcessSnapshot final : public ProcessSnapshot {
  public:
   TestProcessSnapshot();
+
+  TestProcessSnapshot(const TestProcessSnapshot&) = delete;
+  TestProcessSnapshot& operator=(const TestProcessSnapshot&) = delete;
+
   ~TestProcessSnapshot() override;
 
   void SetProcessID(crashpad::ProcessID process_id) {
@@ -187,8 +190,6 @@ class TestProcessSnapshot final : public ProcessSnapshot {
   std::vector<HandleSnapshot> handles_;
   std::vector<std::unique_ptr<MemorySnapshot>> extra_memory_;
   std::unique_ptr<ProcessMemory> process_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProcessSnapshot);
 };
 
 }  // namespace test

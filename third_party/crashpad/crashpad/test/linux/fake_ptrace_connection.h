@@ -20,7 +20,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "util/linux/ptrace_connection.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/process/process_memory_linux.h"
@@ -35,6 +34,10 @@ namespace test {
 class FakePtraceConnection : public PtraceConnection {
  public:
   FakePtraceConnection();
+
+  FakePtraceConnection(const FakePtraceConnection&) = delete;
+  FakePtraceConnection& operator=(const FakePtraceConnection&) = delete;
+
   ~FakePtraceConnection();
 
   //! \brief Initializes this connection for the process whose process ID is
@@ -74,8 +77,6 @@ class FakePtraceConnection : public PtraceConnection {
   pid_t pid_;
   bool is_64_bit_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePtraceConnection);
 };
 
 }  // namespace test

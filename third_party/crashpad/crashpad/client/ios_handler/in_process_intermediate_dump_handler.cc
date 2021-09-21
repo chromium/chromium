@@ -64,6 +64,9 @@ class ScopedTaskThreads {
                              mach_msg_type_number_t thread_count)
       : threads_(threads), thread_count_(thread_count) {}
 
+  ScopedTaskThreads(const ScopedTaskThreads&) = delete;
+  ScopedTaskThreads& operator=(const ScopedTaskThreads&) = delete;
+
   ~ScopedTaskThreads() {
     for (uint32_t thread_index = 0; thread_index < thread_count_;
          ++thread_index) {
@@ -77,8 +80,6 @@ class ScopedTaskThreads {
  private:
   thread_act_array_t threads_;
   mach_msg_type_number_t thread_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTaskThreads);
 };
 
 //! \brief Log \a key as a string.

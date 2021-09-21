@@ -21,7 +21,6 @@
 #include <string>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -43,6 +42,9 @@ class ScopedSetTZ {
     tzset();
   }
 
+  ScopedSetTZ(const ScopedSetTZ&) = delete;
+  ScopedSetTZ& operator=(const ScopedSetTZ&) = delete;
+
   ~ScopedSetTZ() {
     if (old_tz_set_) {
       EXPECT_EQ(setenv(kTZ, old_tz_.c_str(), 1), 0) << ErrnoMessage("setenv");
@@ -57,8 +59,6 @@ class ScopedSetTZ {
   bool old_tz_set_;
 
   static constexpr char kTZ[] = "TZ";
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetTZ);
 };
 
 constexpr char ScopedSetTZ::kTZ[];

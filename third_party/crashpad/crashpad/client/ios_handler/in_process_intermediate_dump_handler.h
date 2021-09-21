@@ -32,6 +32,12 @@ namespace internal {
 //! Note: All methods are `RUNS-DURING-CRASH`.
 class InProcessIntermediateDumpHandler final {
  public:
+  InProcessIntermediateDumpHandler() = delete;
+  InProcessIntermediateDumpHandler(const InProcessIntermediateDumpHandler&) =
+      delete;
+  InProcessIntermediateDumpHandler& operator=(
+      const InProcessIntermediateDumpHandler&) = delete;
+
   //! \brief Set kVersion to 1.
   //!
   //! \param[in] writer The dump writer
@@ -136,8 +142,6 @@ class InProcessIntermediateDumpHandler final {
   //! \brief Write Crashpad annotations list.
   static void WriteCrashpadAnnotationsList(IOSIntermediateDumpWriter* writer,
                                            CrashpadInfo* crashpad_info);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InProcessIntermediateDumpHandler);
 };
 
 }  // namespace internal

@@ -42,6 +42,9 @@ class CrashHandler : public Thread,
                      public UniversalMachExcServer::Interface,
                      public ObjcExceptionDelegate {
  public:
+  CrashHandler(const CrashHandler&) = delete;
+  CrashHandler& operator=(const CrashHandler&) = delete;
+
   static CrashHandler* Get() {
     static CrashHandler* instance = new CrashHandler();
     return instance;
@@ -215,8 +218,6 @@ class CrashHandler : public Thread,
   struct sigaction old_action_ = {};
   internal::IOSSystemDataCollector system_data_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashHandler);
 };
 
 }  // namespace

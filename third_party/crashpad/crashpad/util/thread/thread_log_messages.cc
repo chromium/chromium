@@ -34,6 +34,9 @@ namespace {
 // object of this class exists.
 class ThreadLogMessagesMaster {
  public:
+  ThreadLogMessagesMaster(const ThreadLogMessagesMaster&) = delete;
+  ThreadLogMessagesMaster& operator=(const ThreadLogMessagesMaster&) = delete;
+
   void SetThreadMessageList(std::vector<std::string>* message_list) {
     DCHECK_EQ(logging::GetLogMessageHandler(), &LogMessageHandler);
     DCHECK_NE(tls_.Get() != nullptr, message_list != nullptr);
@@ -70,8 +73,6 @@ class ThreadLogMessagesMaster {
   }
 
   base::ThreadLocalStorage::Slot tls_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLogMessagesMaster);
 };
 
 }  // namespace

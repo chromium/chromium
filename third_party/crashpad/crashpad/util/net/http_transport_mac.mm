@@ -113,6 +113,10 @@ class HTTPBodyStreamCFReadStream {
       : body_stream_(body_stream) {
   }
 
+  HTTPBodyStreamCFReadStream(const HTTPBodyStreamCFReadStream&) = delete;
+  HTTPBodyStreamCFReadStream& operator=(const HTTPBodyStreamCFReadStream&) =
+      delete;
+
   // Creates a new NSInputStream, which the caller owns.
   NSInputStream* CreateInputStream() {
     CFStreamClientContext context = {
@@ -213,19 +217,18 @@ class HTTPBodyStreamCFReadStream {
                          void* info) {}
 
   HTTPBodyStream* body_stream_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(HTTPBodyStreamCFReadStream);
 };
 
 class HTTPTransportMac final : public HTTPTransport {
  public:
   HTTPTransportMac();
+
+  HTTPTransportMac(const HTTPTransportMac&) = delete;
+  HTTPTransportMac& operator=(const HTTPTransportMac&) = delete;
+
   ~HTTPTransportMac() override;
 
   bool ExecuteSynchronously(std::string* response_body) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransportMac);
 };
 
 HTTPTransportMac::HTTPTransportMac() : HTTPTransport() {

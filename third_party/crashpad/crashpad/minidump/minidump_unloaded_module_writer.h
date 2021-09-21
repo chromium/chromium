@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_string_writer.h"
 #include "minidump/minidump_writable.h"
@@ -41,6 +40,11 @@ namespace crashpad {
 class MinidumpUnloadedModuleWriter final : public internal::MinidumpWritable {
  public:
   MinidumpUnloadedModuleWriter();
+
+  MinidumpUnloadedModuleWriter(const MinidumpUnloadedModuleWriter&) = delete;
+  MinidumpUnloadedModuleWriter& operator=(const MinidumpUnloadedModuleWriter&) =
+      delete;
+
   ~MinidumpUnloadedModuleWriter() override;
 
   //! \brief Initializes the MINIDUMP_UNLOADED_MODULE based on \a
@@ -97,8 +101,6 @@ class MinidumpUnloadedModuleWriter final : public internal::MinidumpWritable {
  private:
   MINIDUMP_UNLOADED_MODULE unloaded_module_;
   std::unique_ptr<internal::MinidumpUTF16StringWriter> name_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpUnloadedModuleWriter);
 };
 
 //! \brief The writer for a MINIDUMP_UNLOADED_MODULE_LIST stream in a minidump
@@ -107,6 +109,12 @@ class MinidumpUnloadedModuleListWriter final
     : public internal::MinidumpStreamWriter {
  public:
   MinidumpUnloadedModuleListWriter();
+
+  MinidumpUnloadedModuleListWriter(const MinidumpUnloadedModuleListWriter&) =
+      delete;
+  MinidumpUnloadedModuleListWriter& operator=(
+      const MinidumpUnloadedModuleListWriter&) = delete;
+
   ~MinidumpUnloadedModuleListWriter() override;
 
   //! \brief Adds an initialized MINIDUMP_UNLOADED_MODULE for each unloaded
@@ -145,8 +153,6 @@ class MinidumpUnloadedModuleListWriter final
  private:
   std::vector<std::unique_ptr<MinidumpUnloadedModuleWriter>> unloaded_modules_;
   MINIDUMP_UNLOADED_MODULE_LIST unloaded_module_list_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpUnloadedModuleListWriter);
 };
 
 }  // namespace crashpad

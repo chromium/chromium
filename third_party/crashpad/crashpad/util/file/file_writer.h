@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "util/file/file_io.h"
 #include "util/file/file_seeker.h"
 
@@ -82,6 +81,10 @@ class FileWriterInterface : public virtual FileSeekerInterface {
 class WeakFileHandleFileWriter : public FileWriterInterface {
  public:
   explicit WeakFileHandleFileWriter(FileHandle file_handle);
+
+  WeakFileHandleFileWriter(const WeakFileHandleFileWriter&) = delete;
+  WeakFileHandleFileWriter& operator=(const WeakFileHandleFileWriter&) = delete;
+
   ~WeakFileHandleFileWriter() override;
 
   // FileWriterInterface:
@@ -107,8 +110,6 @@ class WeakFileHandleFileWriter : public FileWriterInterface {
   // construction because no file descriptor will be available until
   // FileWriter::Open() is called.
   friend class FileWriter;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakFileHandleFileWriter);
 };
 
 //! \brief A file writer implementation that wraps traditional system file
@@ -116,6 +117,10 @@ class WeakFileHandleFileWriter : public FileWriterInterface {
 class FileWriter : public FileWriterInterface {
  public:
   FileWriter();
+
+  FileWriter(const FileWriter&) = delete;
+  FileWriter& operator=(const FileWriter&) = delete;
+
   ~FileWriter() override;
 
   // FileWriterInterface:
@@ -179,8 +184,6 @@ class FileWriter : public FileWriterInterface {
  private:
   ScopedFileHandle file_;
   WeakFileHandleFileWriter weak_file_handle_file_writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileWriter);
 };
 
 }  // namespace crashpad

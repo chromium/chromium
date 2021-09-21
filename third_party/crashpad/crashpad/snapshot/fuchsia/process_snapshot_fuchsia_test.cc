@@ -103,6 +103,10 @@ class AddressSpaceTest : public MultiprocessExec {
   AddressSpaceTest() : MultiprocessExec() {
     SetChildTestMainFunction("AddressSpaceChildTestMain");
   }
+
+  AddressSpaceTest(const AddressSpaceTest&) = delete;
+  AddressSpaceTest& operator=(const AddressSpaceTest&) = delete;
+
   ~AddressSpaceTest() {}
 
  private:
@@ -131,8 +135,6 @@ class AddressSpaceTest : public MultiprocessExec {
                  t.minidump_perm);
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AddressSpaceTest);
 };
 
 TEST(ProcessSnapshotFuchsiaTest, AddressSpaceMapping) {
@@ -171,6 +173,10 @@ class InvalidStackPointerTest : public MultiprocessExec {
     SetExpectedChildTermination(kTerminationNormal,
                                 ZX_TASK_RETCODE_SYSCALL_KILL);
   }
+
+  InvalidStackPointerTest(const InvalidStackPointerTest&) = delete;
+  InvalidStackPointerTest& operator=(const InvalidStackPointerTest&) = delete;
+
   ~InvalidStackPointerTest() {}
 
  private:
@@ -215,8 +221,6 @@ class InvalidStackPointerTest : public MultiprocessExec {
     // As we've corrupted the child, don't let it run again.
     ASSERT_EQ(ChildProcess()->kill(), ZX_OK);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidStackPointerTest);
 };
 
 // This is a test for a specific failure detailed in

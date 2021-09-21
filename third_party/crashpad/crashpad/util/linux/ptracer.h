@@ -17,7 +17,6 @@
 
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "util/linux/address_types.h"
 #include "util/linux/thread_info.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -45,6 +44,9 @@ class Ptracer {
   //!
   //! \param[in] can_log Whether methods in this class can log error messages.
   explicit Ptracer(bool can_log);
+
+  Ptracer(const Ptracer&) = delete;
+  Ptracer& operator=(const Ptracer&) = delete;
 
   ~Ptracer();
 
@@ -98,8 +100,6 @@ class Ptracer {
   bool is_64_bit_;
   bool can_log_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(Ptracer);
 };
 
 }  // namespace crashpad

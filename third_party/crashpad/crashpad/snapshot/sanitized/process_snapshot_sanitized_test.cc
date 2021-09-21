@@ -17,7 +17,6 @@
 #include <string.h>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -41,6 +40,9 @@ namespace {
 
 class ExceptionGenerator {
  public:
+  ExceptionGenerator(const ExceptionGenerator&) = delete;
+  ExceptionGenerator& operator=(const ExceptionGenerator&) = delete;
+
   static ExceptionGenerator* Get() {
     static ExceptionGenerator* instance = new ExceptionGenerator();
     return instance;
@@ -73,8 +75,6 @@ class ExceptionGenerator {
 
   FileHandle in_;
   FileHandle out_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionGenerator);
 };
 
 constexpr char kAllowedAnnotationName[] = "name_of_allowed_anno";
@@ -248,6 +248,9 @@ class SanitizeTest : public MultiprocessExec {
     SetExpectedChildTerminationBuiltinTrap();
   }
 
+  SanitizeTest(const SanitizeTest&) = delete;
+  SanitizeTest& operator=(const SanitizeTest&) = delete;
+
   ~SanitizeTest() = default;
 
  private:
@@ -298,8 +301,6 @@ class SanitizeTest : public MultiprocessExec {
     EXPECT_FALSE(screened_snapshot.Initialize(
         &snapshot, nullptr, nullptr, addrs.non_module_address, false));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SanitizeTest);
 };
 
 TEST(ProcessSnapshotSanitized, Sanitize) {

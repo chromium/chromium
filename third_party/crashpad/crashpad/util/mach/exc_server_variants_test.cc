@@ -979,6 +979,9 @@ class TestExcServerVariants : public MachMultiprocess,
     SetExpectedChildTerminationBuiltinTrap();
   }
 
+  TestExcServerVariants(const TestExcServerVariants&) = delete;
+  TestExcServerVariants& operator=(const TestExcServerVariants&) = delete;
+
   // UniversalMachExcServer::Interface:
 
   virtual kern_return_t CatchMachException(
@@ -1089,8 +1092,6 @@ class TestExcServerVariants : public MachMultiprocess,
 
   static const mach_msg_option_t kMachMessageOptions =
       MACH_RCV_TRAILER_TYPE(MACH_MSG_TRAILER_FORMAT_0);
-
-  DISALLOW_COPY_AND_ASSIGN(TestExcServerVariants);
 };
 
 TEST(ExcServerVariants, ExceptionRaise) {

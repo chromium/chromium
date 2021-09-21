@@ -18,7 +18,6 @@
 #include <mach/mach.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/mac/process_reader_mac.h"
@@ -38,6 +37,10 @@ namespace internal {
 class ThreadSnapshotMac final : public ThreadSnapshot {
  public:
   ThreadSnapshotMac();
+
+  ThreadSnapshotMac(const ThreadSnapshotMac&) = delete;
+  ThreadSnapshotMac& operator=(const ThreadSnapshotMac&) = delete;
+
   ~ThreadSnapshotMac() override;
 
   //! \brief Initializes the object.
@@ -81,8 +84,6 @@ class ThreadSnapshotMac final : public ThreadSnapshot {
   int suspend_count_;
   int priority_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotMac);
 };
 
 }  // namespace internal

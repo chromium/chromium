@@ -20,7 +20,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "snapshot/system_snapshot.h"
 #include "snapshot/win/process_reader_win.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -35,6 +34,10 @@ namespace internal {
 class SystemSnapshotWin final : public SystemSnapshot {
  public:
   SystemSnapshotWin();
+
+  SystemSnapshotWin(const SystemSnapshotWin&) = delete;
+  SystemSnapshotWin& operator=(const SystemSnapshotWin&) = delete;
+
   ~SystemSnapshotWin() override;
 
   //! \brief Initializes the object.
@@ -86,8 +89,6 @@ class SystemSnapshotWin final : public SystemSnapshot {
   int os_version_bugfix_;
   bool os_server_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotWin);
 };
 
 }  // namespace internal

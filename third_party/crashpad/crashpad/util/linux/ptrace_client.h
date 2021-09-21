@@ -19,7 +19,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "util/linux/ptrace_connection.h"
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -35,6 +34,10 @@ namespace crashpad {
 class PtraceClient : public PtraceConnection {
  public:
   PtraceClient();
+
+  PtraceClient(const PtraceClient&) = delete;
+  PtraceClient& operator=(const PtraceClient&) = delete;
+
   ~PtraceClient();
 
   //! \brief Initializes this object.
@@ -69,8 +72,6 @@ class PtraceClient : public PtraceConnection {
   pid_t pid_;
   bool is_64_bit_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(PtraceClient);
 };
 
 }  // namespace crashpad

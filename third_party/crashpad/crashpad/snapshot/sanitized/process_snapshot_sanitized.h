@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/exception_snapshot.h"
 #include "snapshot/process_snapshot.h"
 #include "snapshot/sanitized/module_snapshot_sanitized.h"
@@ -39,6 +38,10 @@ namespace crashpad {
 class ProcessSnapshotSanitized final : public ProcessSnapshot {
  public:
   ProcessSnapshotSanitized();
+
+  ProcessSnapshotSanitized(const ProcessSnapshotSanitized&) = delete;
+  ProcessSnapshotSanitized& operator=(const ProcessSnapshotSanitized&) = delete;
+
   ~ProcessSnapshotSanitized() override;
 
   //! \brief Initializes this object.
@@ -105,8 +108,6 @@ class ProcessSnapshotSanitized final : public ProcessSnapshot {
   std::unique_ptr<const std::vector<std::string>> allowed_annotations_;
   bool sanitize_stacks_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSnapshotSanitized);
 };
 
 }  // namespace crashpad

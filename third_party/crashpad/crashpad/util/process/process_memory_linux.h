@@ -21,7 +21,6 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "util/linux/ptrace_connection.h"
 #include "util/misc/address_types.h"
 #include "util/process/process_memory.h"
@@ -32,6 +31,10 @@ namespace crashpad {
 class ProcessMemoryLinux final : public ProcessMemory {
  public:
   explicit ProcessMemoryLinux(PtraceConnection* connection);
+
+  ProcessMemoryLinux(const ProcessMemoryLinux&) = delete;
+  ProcessMemoryLinux& operator=(const ProcessMemoryLinux&) = delete;
+
   ~ProcessMemoryLinux();
 
  private:
@@ -39,8 +42,6 @@ class ProcessMemoryLinux final : public ProcessMemory {
 
   std::function<ssize_t(VMAddress, size_t, void*)> read_up_to_;
   base::ScopedFD mem_fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryLinux);
 };
 
 }  // namespace crashpad

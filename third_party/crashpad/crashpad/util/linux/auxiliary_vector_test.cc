@@ -21,7 +21,6 @@
 #include <limits>
 
 #include "base/bit_cast.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -151,14 +150,16 @@ TEST(AuxiliaryVector, ReadSelf) {
 class ReadChildTest : public Multiprocess {
  public:
   ReadChildTest() : Multiprocess() {}
+
+  ReadChildTest(const ReadChildTest&) = delete;
+  ReadChildTest& operator=(const ReadChildTest&) = delete;
+
   ~ReadChildTest() {}
 
  private:
   void MultiprocessParent() override { TestAgainstCloneOrSelf(ChildPID()); }
 
   void MultiprocessChild() override { CheckedReadFileAtEOF(ReadPipeHandle()); }
-
-  DISALLOW_COPY_AND_ASSIGN(ReadChildTest);
 };
 
 TEST(AuxiliaryVector, ReadChild) {

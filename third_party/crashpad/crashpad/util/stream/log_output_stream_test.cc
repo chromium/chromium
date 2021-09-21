@@ -18,7 +18,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -55,6 +54,9 @@ class LogOutputStreamTest : public testing::Test {
  public:
   LogOutputStreamTest() {}
 
+  LogOutputStreamTest(const LogOutputStreamTest&) = delete;
+  LogOutputStreamTest& operator=(const LogOutputStreamTest&) = delete;
+
  protected:
   void SetUp() override {
     log_stream_ = std::make_unique<LogOutputStream>(
@@ -77,8 +79,6 @@ class LogOutputStreamTest : public testing::Test {
   std::unique_ptr<LogOutputStream> log_stream_;
   std::string test_log_output_;
   std::unique_ptr<uint8_t[]> deterministic_input_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogOutputStreamTest);
 };
 
 TEST_F(LogOutputStreamTest, WriteShortLog) {
