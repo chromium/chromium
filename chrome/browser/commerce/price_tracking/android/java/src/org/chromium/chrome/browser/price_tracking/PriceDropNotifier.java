@@ -104,8 +104,7 @@ public class PriceDropNotifier {
                         Profile.getLastUsedRegularProfile().getProfileKey());
         NotificationWrapperBuilder notificationBuilder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        true /* preferCompat */, ChannelId.PRICE_DROP,
-                        null /* remoteAppPackageName */,
+                        ChannelId.PRICE_DROP,
                         new NotificationMetadata(SystemNotificationType.PRICE_DROP_ALERTS,
                                 NOTIFICATION_TAG, NOTIFICATION_ID));
         return new PriceDropNotifier(context, imageFetcher, notificationBuilder,
