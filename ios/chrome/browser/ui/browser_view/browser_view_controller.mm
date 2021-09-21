@@ -87,6 +87,7 @@
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/ui/commands/search_by_image_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -3674,7 +3675,15 @@ const CGFloat kFaviconWidthHeight = 24;
             ImageFetchTabHelper::FromWebState(self.currentWebState);
         DCHECK(imageFetcher);
         imageFetcher->GetImageData(imageUrl, referrer, ^(NSData* data) {
-          [weakSelf searchByImageData:data atURL:imageUrl];
+          BrowserViewController* strongSelf = weakSelf;
+          if (!strongSelf)
+            return;
+          SearchByImageCommand* command = [[SearchByImageCommand alloc]
+              initWithImage:[UIImage imageWithData:data]
+                        URL:imageUrl
+                   inNewTab:YES];
+
+          [weakSelf searchByImage:command];
         });
       };
       [_contextMenuCoordinator addItemWithTitle:title
@@ -3882,8 +3891,18 @@ const CGFloat kFaviconWidthHeight = 24;
                                  DCHECK(imageFetcher);
                                  imageFetcher->GetImageData(
                                      imageUrl, referrer, ^(NSData* data) {
-                                       [weakSelf searchByImageData:data
-                                                             atURL:imageUrl];
+                                       BrowserViewController* strongSelf =
+                                           weakSelf;
+                                       if (!strongSelf)
+                                         return;
+                                       SearchByImageCommand* command =
+                                           [[SearchByImageCommand alloc]
+                                               initWithImage:
+                                                   [UIImage imageWithData:data]
+                                                         URL:imageUrl
+                                                    inNewTab:YES];
+
+                                       [weakSelf searchByImage:command];
                                      });
                                }];
       [menuElements addObject:searchByImage];
@@ -3957,44 +3976,6 @@ const CGFloat kFaviconWidthHeight = 24;
 - (id<CRWResponderInputView>)webStateInputViewProvider:
     (web::WebState*)webState {
   return self.inputViewProvider;
-}
-
-#pragma mark - CRWWebStateDelegate helpers
-
-// Evaluates Javascript asynchronously using the current page context.
-- (void)openJavascript:(NSString*)javascript {
-  DCHECK(javascript);
-  javascript = [javascript stringByRemovingPercentEncoding];
-  if (self.currentWebState) {
-    self.currentWebState->ExecuteJavaScript(
-        base::SysNSStringToUTF16(javascript));
-  }
-}
-
-// Performs a search using |data| and |imageURL| as inputs. Opens the results in
-// a new tab based on |inNewTab|.
-- (void)searchByImageData:(NSData*)data atURL:(const GURL&)imageURL {
-  web::NavigationManager::WebLoadParams loadParams =
-      ImageSearchParamGenerator::LoadParamsForImageData(
-          data, imageURL,
-          ios::TemplateURLServiceFactory::GetForBrowserState(
-              self.browserState));
-  [self searchByImageWithWebLoadParams:loadParams inNewTab:YES];
-}
-
-// Performs a search with the given image data. The data should alread have
-// been scaled down in |ResizedImageForSearchByImage|.
-- (void)searchByImageWithWebLoadParams:
-            (web::NavigationManager::WebLoadParams)webParams
-                              inNewTab:(BOOL)inNewTab {
-  if (inNewTab) {
-    UrlLoadParams params = UrlLoadParams::InNewTab(webParams);
-    params.in_incognito = self.isOffTheRecord;
-    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-  } else {
-    UrlLoadingBrowserAgent::FromBrowser(self.browser)
-        ->Load(UrlLoadParams::InCurrentTab(webParams));
-  }
 }
 
 #pragma mark - URLLoadingObserver
@@ -4730,12 +4711,21 @@ const CGFloat kFaviconWidthHeight = 24;
   }
 }
 
-- (void)searchByImage:(UIImage*)image {
-  [self searchByImageWithWebLoadParams:
-            ImageSearchParamGenerator::LoadParamsForImage(
-                image, ios::TemplateURLServiceFactory::GetForBrowserState(
-                           self.browserState))
-                              inNewTab:NO];
+- (void)searchByImage:(SearchByImageCommand*)command {
+  web::NavigationManager::WebLoadParams webParams =
+      ImageSearchParamGenerator::LoadParamsForImage(
+          command.image, command.URL,
+          ios::TemplateURLServiceFactory::GetForBrowserState(
+              self.browserState));
+
+  if (command.inNewTab) {
+    UrlLoadParams params = UrlLoadParams::InNewTab(webParams);
+    params.in_incognito = self.isOffTheRecord;
+    UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  } else {
+    UrlLoadingBrowserAgent::FromBrowser(self.browser)
+        ->Load(UrlLoadParams::InCurrentTab(webParams));
+  }
 }
 
 - (void)showActivityOverlay:(BOOL)show {

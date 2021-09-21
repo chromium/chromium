@@ -9,6 +9,7 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "testing/platform_test.h"
 #include "third_party/ocmock/gtest_support.h"
+#include "ui/base/test/ios/ui_image_test_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,7 +38,7 @@ TEST_F(ImageSearchParamGeneratorTest, TestNilImage) {
       ios::TemplateURLServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
   web::NavigationManager::WebLoadParams load_params =
-      ImageSearchParamGenerator::LoadParamsForImageData(nil, GURL(),
+      ImageSearchParamGenerator::LoadParamsForImageData(nil,
                                                         template_url_service);
   ASSERT_EQ(load_params.url,
             GURL("https://www.google.com/searchbyimage/upload"));

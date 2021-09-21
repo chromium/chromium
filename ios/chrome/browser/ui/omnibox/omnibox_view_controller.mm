@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/search_by_image_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
@@ -623,7 +624,9 @@ const CGFloat kClearButtonSize = 28.0f;
         }
         UIImage* image = optionalImage.value().ToUIImage();
         dispatch_async(dispatch_get_main_queue(), ^{
-          [self.dispatcher searchByImage:image];
+          SearchByImageCommand* command =
+              [[SearchByImageCommand alloc] initWithImage:image];
+          [self.dispatcher searchByImage:command];
         });
       }));
 }
