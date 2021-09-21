@@ -122,20 +122,10 @@ void ServiceWorkerRegisterJob::Start() {
   const auto traits = (job_type_ == REGISTRATION_JOB)
                           ? BrowserTaskTraits{}
                           : BrowserTaskTraits{base::TaskPriority::BEST_EFFORT};
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-  switch (ServiceWorkerContext::GetCoreThreadId()) {
-    case BrowserThread::UI:
-      task_runner = GetUIThreadTaskRunner(traits);
-      break;
-    case BrowserThread::IO:
-      task_runner = GetIOThreadTaskRunner(traits);
-      break;
-    case BrowserThread::ID_COUNT:
-      NOTREACHED();
-  }
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&ServiceWorkerRegisterJob::StartImpl,
-                                       weak_factory_.GetWeakPtr()));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetUIThreadTaskRunner(traits)->PostTask(
+      FROM_HERE, base::BindOnce(&ServiceWorkerRegisterJob::StartImpl,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRegisterJob::StartImpl() {
