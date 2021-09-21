@@ -5,6 +5,7 @@
 #include <wrl/client.h>
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -51,6 +52,16 @@ namespace test {
 namespace {
 
 constexpr wchar_t kDidRun[] = L"dr";
+
+enum class CheckInstallationStatus {
+  kCheckIsNotInstalled = 0,
+  kCheckIsInstalled = 1,
+};
+
+enum class CheckInstallationVersions {
+  kCheckSxSOnly = 0,
+  kCheckActiveAndSxS = 1,
+};
 
 base::FilePath GetInstallerPath() {
   base::FilePath test_executable;
@@ -169,6 +180,85 @@ bool IsServiceGone(const std::wstring& service_name) {
               .HasValue(service_name.c_str());
 }
 
+// Checks the installation states (installed or uninstalled) and versions (SxS
+// only, or both active and SxS). The installation state includes
+// Client/ClientState registry, COM server registration, COM service
+// registration, COM interfaces, wake tasks, and files on the file system.
+void CheckInstallation(UpdaterScope scope,
+                       CheckInstallationStatus check_installation_status,
+                       CheckInstallationVersions check_installation_versions) {
+  const bool is_installed =
+      check_installation_status == CheckInstallationStatus::kCheckIsInstalled;
+  const bool is_active_and_sxs = check_installation_versions ==
+                                 CheckInstallationVersions::kCheckActiveAndSxS;
+
+  const HKEY root =
+      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+
+  if (is_active_and_sxs) {
+    for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
+      EXPECT_EQ(is_installed, RegKeyExists(root, key));
+    }
+
+    if (!is_installed) {
+      for (const wchar_t* key :
+           {kRegKeyCompanyCloudManagement, kRegKeyCompanyEnrollment,
+            UPDATER_POLICIES_KEY}) {
+        EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
+      }
+    }
+  }
+
+  for (const CLSID& clsid :
+       JoinVectors(GetSideBySideServers(scope), is_active_and_sxs
+                                                    ? GetActiveServers(scope)
+                                                    : std::vector<CLSID>())) {
+    EXPECT_EQ(is_installed,
+              RegKeyExistsCOM(root, GetComServerClsidRegistryPath(clsid)));
+    if (scope == UpdaterScope::kSystem) {
+      EXPECT_EQ(is_installed,
+                RegKeyExistsCOM(root, GetComServerAppidRegistryPath(clsid)));
+    }
+  }
+
+  for (const IID& iid : JoinVectors(
+           GetSideBySideInterfaces(),
+           is_active_and_sxs ? GetActiveInterfaces() : std::vector<IID>())) {
+    EXPECT_EQ(is_installed, RegKeyExistsCOM(root, GetComIidRegistryPath(iid)));
+    EXPECT_EQ(is_installed,
+              RegKeyExistsCOM(root, GetComTypeLibRegistryPath(iid)));
+  }
+
+  if (scope == UpdaterScope::kSystem) {
+    for (const bool is_internal_service : {false, true}) {
+      if (!is_active_and_sxs && !is_internal_service)
+        continue;
+
+      EXPECT_EQ(is_installed,
+                !IsServiceGone(GetServiceName(is_internal_service)));
+    }
+  }
+
+  std::unique_ptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance();
+  EXPECT_EQ(is_installed,
+            task_scheduler->IsTaskRegistered(GetTaskName(scope).c_str()));
+
+  const absl::optional<base::FilePath> product_version_path =
+      GetProductVersionPath(scope);
+  const absl::optional<base::FilePath> data_dir_path = GetDataDirPath(scope);
+
+  for (const absl::optional<base::FilePath>& path :
+       {product_version_path, data_dir_path}) {
+    if (!is_active_and_sxs && path == data_dir_path)
+      continue;
+
+    EXPECT_TRUE(path);
+    EXPECT_TRUE(WaitFor(base::BindLambdaForTesting(
+        [&]() { return is_installed == base::PathExists(*path); })));
+  }
+}
+
 }  // namespace
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
@@ -235,55 +325,6 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(base::DeletePathRecursively(*path));
 }
 
-void ExpectClean(UpdaterScope scope) {
-  const HKEY root =
-      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
-    EXPECT_FALSE(RegKeyExists(root, key));
-  }
-  for (const wchar_t* key : {kRegKeyCompanyCloudManagement,
-                             kRegKeyCompanyEnrollment, UPDATER_POLICIES_KEY}) {
-    EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
-  }
-
-  for (const CLSID& clsid :
-       JoinVectors(GetSideBySideServers(scope), GetActiveServers(scope))) {
-    EXPECT_FALSE(RegKeyExistsCOM(root, GetComServerClsidRegistryPath(clsid)));
-    if (scope == UpdaterScope::kSystem)
-      EXPECT_FALSE(RegKeyExistsCOM(root, GetComServerAppidRegistryPath(clsid)));
-  }
-
-  for (const IID& iid :
-       JoinVectors(GetSideBySideInterfaces(), GetActiveInterfaces())) {
-    EXPECT_FALSE(RegKeyExistsCOM(root, GetComIidRegistryPath(iid)));
-    EXPECT_FALSE(RegKeyExistsCOM(root, GetComTypeLibRegistryPath(iid)));
-  }
-
-  if (scope == UpdaterScope::kSystem) {
-    for (const bool is_internal_service : {true, false}) {
-      EXPECT_TRUE(IsServiceGone(GetServiceName(is_internal_service)));
-    }
-  }
-
-  std::unique_ptr<TaskScheduler> task_scheduler =
-      TaskScheduler::CreateInstance();
-  EXPECT_FALSE(task_scheduler->IsTaskRegistered(GetTaskName(scope).c_str()));
-
-  // Files must not exist on the file system.
-  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
-  EXPECT_TRUE(path);
-  if (path) {
-    EXPECT_TRUE(WaitFor(base::BindLambdaForTesting(
-        [&]() { return !base::PathExists(*path); })));
-  }
-  path = GetDataDirPath(scope);
-  EXPECT_TRUE(path);
-  if (path) {
-    EXPECT_TRUE(WaitFor(base::BindLambdaForTesting(
-        [&]() { return !base::PathExists(*path); })));
-  }
-}
-
 void EnterTestMode(const GURL& url) {
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetUpdateURL(std::vector<std::string>{url.spec()})
@@ -293,39 +334,23 @@ void EnterTestMode(const GURL& url) {
 }
 
 void ExpectInstalled(UpdaterScope scope) {
-  // TODO(crbug.com/1062288): Assert there are Client / ClientState registry
-  // keys.
-  // TODO(crbug.com/1062288): Assert there are COM server items.
-  // TODO(crbug.com/1062288): Assert there are COM service items. (Maybe.)
-  // TODO(crbug.com/1062288): Assert there are COM interfaces.
-  // TODO(crbug.com/1062288): Assert there are Wake tasks.
+  CheckInstallation(scope, CheckInstallationStatus::kCheckIsInstalled,
+                    CheckInstallationVersions::kCheckSxSOnly);
+}
 
-  // Files must exist on the file system.
-  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
-  EXPECT_TRUE(path);
-  if (path)
-    EXPECT_TRUE(base::PathExists(*path));
+void ExpectClean(UpdaterScope scope) {
+  CheckInstallation(scope, CheckInstallationStatus::kCheckIsNotInstalled,
+                    CheckInstallationVersions::kCheckActiveAndSxS);
 }
 
 void ExpectCandidateUninstalled(UpdaterScope scope) {
-  // TODO(crbug.com/1062288): Assert there are no side-by-side COM interfaces.
-  // TODO(crbug.com/1062288): Assert there are no Wake tasks.
-
-  // Files must not exist on the file system.
-  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
-  EXPECT_TRUE(path);
-  if (path)
-    EXPECT_FALSE(base::PathExists(*path));
+  CheckInstallation(scope, CheckInstallationStatus::kCheckIsNotInstalled,
+                    CheckInstallationVersions::kCheckSxSOnly);
 }
 
 void ExpectActiveUpdater(UpdaterScope scope) {
-  // TODO(crbug.com/1062288): Assert that COM interfaces point to this version.
-
-  // Files must exist on the file system.
-  absl::optional<base::FilePath> path = GetProductVersionPath(scope);
-  EXPECT_TRUE(path);
-  if (path)
-    EXPECT_TRUE(base::PathExists(*path));
+  CheckInstallation(scope, CheckInstallationStatus::kCheckIsInstalled,
+                    CheckInstallationVersions::kCheckActiveAndSxS);
 }
 
 void Install(UpdaterScope scope) {
