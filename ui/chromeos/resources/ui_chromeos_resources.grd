@@ -104,6 +104,21 @@
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_80" file="default_user_images/imaginary/avatar_sneaker.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_81" file="default_user_images/imaginary/avatar_van.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_82" file="default_user_images/imaginary/avatar_watermelon.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_83" file="default_user_images/material_design/avatar_person_watering_plants.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_84" file="default_user_images/material_design/avatar_person_daydreaming.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_85" file="default_user_images/material_design/avatar_person_with_flowers.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_86" file="default_user_images/material_design/avatar_person_with_cats.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_87" file="default_user_images/material_design/avatar_artist.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_88" file="default_user_images/material_design/avatar_person_doing_taichi.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_89" file="default_user_images/material_design/avatar_signing_thankyou.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_90" file="default_user_images/material_design/avatar_person_with_coffee.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_91" file="default_user_images/material_design/avatar_dog_wagging_tail.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_92" file="default_user_images/material_design/avatar_nurse.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_93" file="default_user_images/material_design/avatar_gamer.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_94" file="default_user_images/material_design/avatar_bookworm.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_95" file="default_user_images/material_design/avatar_biking.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_96" file="default_user_images/material_design/avatar_person_in_snow.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_97" file="default_user_images/material_design/avatar_person_with_megaphone.png" />
 
       <!-- Print Job Notification images. -->
       <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_CANCEL" file="print_notification/cancel.png" />

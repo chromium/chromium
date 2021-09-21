@@ -37,7 +37,7 @@ struct DefaultImageInfo {
 };
 
 // Info of default user images. When adding new entries to this list,
-// please also update the enum ChromeOSUserImageId in
+// please also update the enum ChromeOSUserImageId2 in
 // tools/metrics/histograms/enums.xml
 // clang-format off
 const DefaultImageInfo kDefaultImageInfo[] = {
@@ -79,20 +79,20 @@ const DefaultImageInfo kDefaultImageInfo[] = {
     {IDR_LOGIN_DEFAULT_USER_32, IDS_LOGIN_DEFAULT_USER_DESC_32, Eligibility::kDeprecated},
     {IDR_LOGIN_DEFAULT_USER_33, IDS_LOGIN_DEFAULT_USER_DESC_33, Eligibility::kDeprecated},
     // Third set of images.
-    {IDR_LOGIN_DEFAULT_USER_34, IDS_LOGIN_DEFAULT_USER_DESC_34, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_35, IDS_LOGIN_DEFAULT_USER_DESC_35, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_36, IDS_LOGIN_DEFAULT_USER_DESC_36, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_37, IDS_LOGIN_DEFAULT_USER_DESC_37, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_38, IDS_LOGIN_DEFAULT_USER_DESC_38, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_39, IDS_LOGIN_DEFAULT_USER_DESC_39, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_40, IDS_LOGIN_DEFAULT_USER_DESC_40, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_41, IDS_LOGIN_DEFAULT_USER_DESC_41, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_42, IDS_LOGIN_DEFAULT_USER_DESC_42, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_43, IDS_LOGIN_DEFAULT_USER_DESC_43, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_44, IDS_LOGIN_DEFAULT_USER_DESC_44, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_45, IDS_LOGIN_DEFAULT_USER_DESC_45, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_46, IDS_LOGIN_DEFAULT_USER_DESC_46, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_47, IDS_LOGIN_DEFAULT_USER_DESC_47, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_34, IDS_LOGIN_DEFAULT_USER_DESC_34, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_35, IDS_LOGIN_DEFAULT_USER_DESC_35, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_36, IDS_LOGIN_DEFAULT_USER_DESC_36, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_37, IDS_LOGIN_DEFAULT_USER_DESC_37, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_38, IDS_LOGIN_DEFAULT_USER_DESC_38, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_39, IDS_LOGIN_DEFAULT_USER_DESC_39, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_40, IDS_LOGIN_DEFAULT_USER_DESC_40, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_41, IDS_LOGIN_DEFAULT_USER_DESC_41, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_42, IDS_LOGIN_DEFAULT_USER_DESC_42, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_43, IDS_LOGIN_DEFAULT_USER_DESC_43, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_44, IDS_LOGIN_DEFAULT_USER_DESC_44, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_45, IDS_LOGIN_DEFAULT_USER_DESC_45, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_46, IDS_LOGIN_DEFAULT_USER_DESC_46, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_47, IDS_LOGIN_DEFAULT_USER_DESC_47, Eligibility::kDeprecated},
     {IDR_LOGIN_DEFAULT_USER_48, IDS_LOGIN_DEFAULT_USER_DESC_48, Eligibility::kEligible},
     {IDR_LOGIN_DEFAULT_USER_49, IDS_LOGIN_DEFAULT_USER_DESC_49, Eligibility::kEligible},
     {IDR_LOGIN_DEFAULT_USER_50, IDS_LOGIN_DEFAULT_USER_DESC_50, Eligibility::kEligible},
@@ -111,11 +111,11 @@ const DefaultImageInfo kDefaultImageInfo[] = {
     {IDR_LOGIN_DEFAULT_USER_63, IDS_LOGIN_DEFAULT_USER_DESC_63, Eligibility::kEligible},
     {IDR_LOGIN_DEFAULT_USER_64, IDS_LOGIN_DEFAULT_USER_DESC_64, Eligibility::kEligible},
     {IDR_LOGIN_DEFAULT_USER_65, IDS_LOGIN_DEFAULT_USER_DESC_65, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_66, IDS_LOGIN_DEFAULT_USER_DESC_66, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_67, IDS_LOGIN_DEFAULT_USER_DESC_67, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_68, IDS_LOGIN_DEFAULT_USER_DESC_68, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_69, IDS_LOGIN_DEFAULT_USER_DESC_69, Eligibility::kEligible},
-    {IDR_LOGIN_DEFAULT_USER_70, IDS_LOGIN_DEFAULT_USER_DESC_70, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_66, IDS_LOGIN_DEFAULT_USER_DESC_66, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_67, IDS_LOGIN_DEFAULT_USER_DESC_67, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_68, IDS_LOGIN_DEFAULT_USER_DESC_68, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_69, IDS_LOGIN_DEFAULT_USER_DESC_69, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_70, IDS_LOGIN_DEFAULT_USER_DESC_70, Eligibility::kDeprecated},
     {IDR_LOGIN_DEFAULT_USER_71, IDS_LOGIN_DEFAULT_USER_DESC_71, Eligibility::kEligible},
     {IDR_LOGIN_DEFAULT_USER_72, IDS_LOGIN_DEFAULT_USER_DESC_72, Eligibility::kEligible},
     {IDR_LOGIN_DEFAULT_USER_73, IDS_LOGIN_DEFAULT_USER_DESC_73, Eligibility::kEligible},
@@ -128,6 +128,22 @@ const DefaultImageInfo kDefaultImageInfo[] = {
     {IDR_LOGIN_DEFAULT_USER_80, IDS_LOGIN_DEFAULT_USER_DESC_80, Eligibility::kEligible},
     {IDR_LOGIN_DEFAULT_USER_81, IDS_LOGIN_DEFAULT_USER_DESC_81, Eligibility::kEligible},
     {IDR_LOGIN_DEFAULT_USER_82, IDS_LOGIN_DEFAULT_USER_DESC_82, Eligibility::kEligible},
+    // Material design avatars.
+    {IDR_LOGIN_DEFAULT_USER_83, IDS_LOGIN_DEFAULT_USER_DESC_83, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_84, IDS_LOGIN_DEFAULT_USER_DESC_84, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_85, IDS_LOGIN_DEFAULT_USER_DESC_85, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_86, IDS_LOGIN_DEFAULT_USER_DESC_86, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_87, IDS_LOGIN_DEFAULT_USER_DESC_87, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_88, IDS_LOGIN_DEFAULT_USER_DESC_88, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_89, IDS_LOGIN_DEFAULT_USER_DESC_89, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_90, IDS_LOGIN_DEFAULT_USER_DESC_90, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_91, IDS_LOGIN_DEFAULT_USER_DESC_91, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_92, IDS_LOGIN_DEFAULT_USER_DESC_92, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_93, IDS_LOGIN_DEFAULT_USER_DESC_93, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_94, IDS_LOGIN_DEFAULT_USER_DESC_94, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_95, IDS_LOGIN_DEFAULT_USER_DESC_95, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_96, IDS_LOGIN_DEFAULT_USER_DESC_96, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_97, IDS_LOGIN_DEFAULT_USER_DESC_97, Eligibility::kEligible},
 };
 // clang-format on
 
@@ -246,12 +262,12 @@ void GetFirstLastIndex(int* first, int* last) {
 
 const int kDefaultImagesCount = base::size(kDefaultImageInfo);
 
-const int kFirstDefaultImageIndex = 34;
+const int kFirstDefaultImageIndex = 48;
 
 // Limit random default image index to prevent undesirable UI behavior when
 // selecting an image with a high index. E.g. automatic scrolling of picture
 // list that is used to present default images.
-const int kLastRandomDefaultImageIndex = 47;
+const int kLastRandomDefaultImageIndex = 62;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

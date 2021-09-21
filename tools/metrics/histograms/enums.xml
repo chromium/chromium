@@ -12010,6 +12010,21 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="90" label="Sneaker"/>
   <int value="91" label="Van"/>
   <int value="92" label="Watermelon"/>
+  <int value="93" label="Person watering plants"/>
+  <int value="94" label="Person daydreaming"/>
+  <int value="95" label="Person with flowers"/>
+  <int value="96" label="Person with cats"/>
+  <int value="97" label="Artist"/>
+  <int value="98" label="Person doing tai chi"/>
+  <int value="99" label="Signing thank you"/>
+  <int value="100" label="Person with coffee"/>
+  <int value="101" label="Dog wagging tail"/>
+  <int value="102" label="Nurse"/>
+  <int value="103" label="Gamer"/>
+  <int value="104" label="Bookworm"/>
+  <int value="105" label="Biking"/>
+  <int value="106" label="Person in snow"/>
+  <int value="107" label="Person with megaphone"/>
 </enum>
 
 <enum name="ChromePDFViewerActions">
