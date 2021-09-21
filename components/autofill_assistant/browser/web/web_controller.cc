@@ -464,6 +464,8 @@ void WebController::OnJavaScriptResultForInt(
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
     DVLOG(1) << __func__ << "Failed JavaScript with status: " << status;
+    std::move(callback).Run(status, 0);
+    return;
   }
   if (!SafeGetIntValue(result->GetResult(), &value)) {
     std::move(callback).Run(
@@ -482,6 +484,8 @@ void WebController::OnJavaScriptResultForString(
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
     DVLOG(1) << __func__ << "Failed JavaScript with status: " << status;
+    std::move(callback).Run(status, std::string());
+    return;
   }
   SafeGetStringValue(result->GetResult(), &value);
   std::move(callback).Run(status, value);
