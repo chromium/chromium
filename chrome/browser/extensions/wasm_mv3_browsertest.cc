@@ -52,10 +52,6 @@ class WasmMV3BrowserTest
 
 // Test web assembly usage in a service worker.
 IN_PROC_BROWSER_TEST_P(WasmMV3BrowserTest, ServiceWorker) {
-  // TODO(crbug.com/1248289): Remove this custom arg override. Currently service
-  // workers can always use web assembly regardless of their CSP.
-  SetCustomArg("expect-wasm-allowed");
-
   ResultCatcher catcher;
 
   ExtensionTestMessageListener listener("ready", true);
