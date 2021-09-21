@@ -71,7 +71,6 @@ source_set("internal") {
   sources = [
     "abortable_task_list.cc",
     "abortable_task_list.h",
-    "assistant_client_observer.h",
     "audio_input_controller.cc",
     "audio_input_controller.h",
     "chromium_api_delegate.cc",
@@ -180,6 +179,7 @@ source_set("audio") {
     "//base",
     "//chromeos/assistant/internal:buildflags",
     "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/libassistant/grpc:assistant_client",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",
     "//libassistant/shared/public",

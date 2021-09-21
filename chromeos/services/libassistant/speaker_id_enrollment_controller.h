@@ -7,7 +7,7 @@
 
 #include "chromeos/assistant/libassistant/src/third_party/chromium/base/memory/weak_ptr.h"
 #include "chromeos/services/libassistant/abortable_task_list.h"
-#include "chromeos/services/libassistant/assistant_client_observer.h"
+#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
