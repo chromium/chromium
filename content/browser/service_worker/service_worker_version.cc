@@ -1875,10 +1875,17 @@ void ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker(
 }
 
 void ServiceWorkerVersion::StartWorkerInternal() {
-  DCHECK(context_);
   DCHECK_EQ(EmbeddedWorkerStatus::STOPPED, running_status());
   DCHECK(inflight_requests_.IsEmpty());
   DCHECK(request_timeouts_.empty());
+
+  // Don't try to start a new worker thread if the `context_` has been
+  // destroyed.  This can happen during browser shutdown or if corruption
+  // forced a storage reset.
+  if (!context_) {
+    FinishStartWorker(blink::ServiceWorkerStatusCode::kErrorAbort);
+    return;
+  }
 
   StartTimeoutTimer();
 
