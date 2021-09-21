@@ -123,6 +123,11 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             @NonNull WindowAndroid windowAndroid) {
         assert !mPendingSearchPromoDecision;
 
+        // Update voice and lens eligibility in case anything changed in the process.
+        if (mNativeInitialized) {
+            SearchActivityPreferencesManager.updateFeatureAvailability(getContext(), windowAndroid);
+        }
+
         if (searchType == SearchType.VOICE) {
             runVoiceSearch(voiceRecognitionHandler);
         } else if (searchType == SearchType.LENS) {
