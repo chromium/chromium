@@ -29,7 +29,10 @@
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
@@ -207,7 +210,13 @@ void IndexedDBContextImpl::Bind(
 void IndexedDBContextImpl::BindIndexedDB(
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  dispatcher_host_.AddReceiver(storage_key, std::move(receiver));
+  // Ensure default bucket exists for storage key on storage access and add
+  // bind receiver on retrieval.
+  quota_manager_proxy()->GetOrCreateBucket(
+      storage_key, storage::kDefaultBucketName, idb_task_runner_,
+      base::BindOnce(&IndexedDBContextImpl::BindIndexedDBWithBucket,
+                     weak_factory_.GetWeakPtr(), storage_key,
+                     std::move(receiver)));
 }
 
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
@@ -855,6 +864,14 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   if (indexeddb_factory_.get())
     indexeddb_factory_->ContextDestroyed();
+}
+
+void IndexedDBContextImpl::BindIndexedDBWithBucket(
+    const blink::StorageKey& storage_key,
+    mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
+    storage::QuotaErrorOr<storage::BucketInfo> result) {
+  DCHECK(result.ok());
+  dispatcher_host_.AddReceiver(storage_key, std::move(receiver));
 }
 
 void IndexedDBContextImpl::ShutdownOnIDBSequence() {
