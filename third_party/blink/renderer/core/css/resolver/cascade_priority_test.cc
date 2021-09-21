@@ -10,13 +10,14 @@ namespace blink {
 namespace {
 
 CascadePriority AuthorPriority(uint16_t tree_order, uint32_t position) {
-  return CascadePriority(CascadeOrigin::kAuthor, false, tree_order, 0,
+  return CascadePriority(CascadeOrigin::kAuthor, false, tree_order, false, 0,
                          position);
 }
 
 CascadePriority ImportantAuthorPriority(uint16_t tree_order,
                                         uint32_t position) {
-  return CascadePriority(CascadeOrigin::kAuthor, true, tree_order, 0, position);
+  return CascadePriority(CascadeOrigin::kAuthor, true, tree_order, false, 0,
+                         position);
 }
 
 }  // namespace
@@ -35,12 +36,12 @@ TEST(CascadePriorityTest, EncodeOriginImportance) {
 
 TEST(CascadePriorityTest, OriginOperators) {
   std::vector<CascadePriority> priorities = {
-      CascadePriority(CascadeOrigin::kTransition, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kAnimation, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kAuthor, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kUser, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kUserAgent, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kNone, false, 0, 0, 0)};
+      CascadePriority(CascadeOrigin::kTransition, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kAnimation, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kAuthor, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kUser, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kUserAgent, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kNone, false, 0, false, 0, 0)};
 
   for (size_t i = 0; i < priorities.size(); ++i) {
     for (size_t j = i; j < priorities.size(); ++j) {
@@ -70,15 +71,15 @@ TEST(CascadePriorityTest, OriginOperators) {
 
 TEST(CascadePriorityTest, OriginImportance) {
   std::vector<CascadePriority> priorities = {
-      CascadePriority(CascadeOrigin::kTransition, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kUserAgent, true, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kUser, true, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kAuthor, true, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kAnimation, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kAuthor, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kUser, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kUserAgent, false, 0, 0, 0),
-      CascadePriority(CascadeOrigin::kNone, false, 0, 0, 0)};
+      CascadePriority(CascadeOrigin::kTransition, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kUserAgent, true, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kUser, true, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kAuthor, true, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kAnimation, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kAuthor, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kUser, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kUserAgent, false, 0, false, 0, 0),
+      CascadePriority(CascadeOrigin::kNone, false, 0, false, 0, 0)};
 
   for (size_t i = 0; i < priorities.size(); ++i) {
     for (size_t j = i; j < priorities.size(); ++j)
@@ -90,20 +91,25 @@ TEST(CascadePriorityTest, IsImportant) {
   using Priority = CascadePriority;
   using Origin = CascadeOrigin;
 
-  EXPECT_FALSE(Priority(Origin::kUserAgent, false, 0, 0, 0).IsImportant());
-  EXPECT_FALSE(Priority(Origin::kUser, false, 0, 0, 0).IsImportant());
-  EXPECT_FALSE(Priority(Origin::kAuthor, false, 0, 0, 0).IsImportant());
-  EXPECT_FALSE(Priority(Origin::kAnimation, false, 0, 0, 0).IsImportant());
-  EXPECT_FALSE(Priority(Origin::kTransition, false, 0, 0, 0).IsImportant());
   EXPECT_FALSE(
-      Priority(Origin::kAuthor, false, 1024, 2048, 4096).IsImportant());
+      Priority(Origin::kUserAgent, false, 0, false, 0, 0).IsImportant());
+  EXPECT_FALSE(Priority(Origin::kUser, false, 0, false, 0, 0).IsImportant());
+  EXPECT_FALSE(Priority(Origin::kAuthor, false, 0, false, 0, 0).IsImportant());
+  EXPECT_FALSE(
+      Priority(Origin::kAnimation, false, 0, false, 0, 0).IsImportant());
+  EXPECT_FALSE(
+      Priority(Origin::kTransition, false, 0, false, 0, 0).IsImportant());
+  EXPECT_FALSE(
+      Priority(Origin::kAuthor, false, 1024, false, 2048, 4096).IsImportant());
 
-  EXPECT_TRUE(Priority(Origin::kUserAgent, true, 0, 0, 0).IsImportant());
-  EXPECT_TRUE(Priority(Origin::kUser, true, 0, 0, 0).IsImportant());
-  EXPECT_TRUE(Priority(Origin::kAuthor, true, 0, 0, 0).IsImportant());
-  EXPECT_TRUE(Priority(Origin::kAnimation, true, 0, 0, 0).IsImportant());
-  EXPECT_TRUE(Priority(Origin::kTransition, true, 0, 0, 0).IsImportant());
-  EXPECT_TRUE(Priority(Origin::kAuthor, true, 1024, 2048, 4096).IsImportant());
+  EXPECT_TRUE(Priority(Origin::kUserAgent, true, 0, false, 0, 0).IsImportant());
+  EXPECT_TRUE(Priority(Origin::kUser, true, 0, false, 0, 0).IsImportant());
+  EXPECT_TRUE(Priority(Origin::kAuthor, true, 0, false, 0, 0).IsImportant());
+  EXPECT_TRUE(Priority(Origin::kAnimation, true, 0, false, 0, 0).IsImportant());
+  EXPECT_TRUE(
+      Priority(Origin::kTransition, true, 0, false, 0, 0).IsImportant());
+  EXPECT_TRUE(
+      Priority(Origin::kAuthor, true, 1024, false, 2048, 4096).IsImportant());
 }
 
 static std::vector<CascadeOrigin> all_origins = {
@@ -111,15 +117,18 @@ static std::vector<CascadeOrigin> all_origins = {
     CascadeOrigin::kTransition, CascadeOrigin::kAnimation};
 
 TEST(CascadePriorityTest, GetOrigin) {
-  for (CascadeOrigin origin : all_origins)
-    EXPECT_EQ(CascadePriority(origin, false, 0, 0, 0).GetOrigin(), origin);
+  for (CascadeOrigin origin : all_origins) {
+    EXPECT_EQ(CascadePriority(origin, false, 0, false, 0, 0).GetOrigin(),
+              origin);
+  }
 
   for (CascadeOrigin origin : all_origins) {
     if (origin == CascadeOrigin::kAnimation)
       continue;
     if (origin == CascadeOrigin::kTransition)
       continue;
-    EXPECT_EQ(CascadePriority(origin, true, 0, 0, 0).GetOrigin(), origin);
+    EXPECT_EQ(CascadePriority(origin, true, 0, false, 0, 0).GetOrigin(),
+              origin);
   }
 }
 
@@ -265,22 +274,27 @@ TEST(CascadePriorityTest, EncodeLayerOrder) {
 TEST(CascadePriorityTest, LayerOrder) {
   using Priority = CascadePriority;
   CascadeOrigin origin = CascadeOrigin::kAuthor;
-  EXPECT_GE(Priority(origin, false, 0, 1, 0), Priority(origin, false, 0, 0, 0));
-  EXPECT_GE(Priority(origin, false, 0, 7, 0), Priority(origin, false, 0, 6, 0));
-  EXPECT_GE(Priority(origin, false, 0, 42, 0),
-            Priority(origin, false, 0, 42, 0));
-  EXPECT_FALSE(Priority(origin, false, 0, 1, 0) >=
-               Priority(origin, false, 0, 8, 0));
+  EXPECT_GE(Priority(origin, false, 0, false, 1, 0),
+            Priority(origin, false, 0, false, 0, 0));
+  EXPECT_GE(Priority(origin, false, 0, false, 7, 0),
+            Priority(origin, false, 0, false, 6, 0));
+  EXPECT_GE(Priority(origin, false, 0, false, 42, 0),
+            Priority(origin, false, 0, false, 42, 0));
+  EXPECT_FALSE(Priority(origin, false, 0, false, 1, 0) >=
+               Priority(origin, false, 0, false, 8, 0));
 }
 
 TEST(CascadePriorityTest, LayerOrderImportant) {
   using Priority = CascadePriority;
   CascadeOrigin origin = CascadeOrigin::kAuthor;
-  EXPECT_GE(Priority(origin, true, 0, 0, 0), Priority(origin, true, 0, 1, 0));
-  EXPECT_GE(Priority(origin, true, 0, 6, 0), Priority(origin, true, 0, 7, 0));
-  EXPECT_GE(Priority(origin, true, 0, 42, 0), Priority(origin, true, 0, 42, 0));
-  EXPECT_FALSE(Priority(origin, true, 0, 8, 0) >=
-               Priority(origin, true, 0, 1, 0));
+  EXPECT_GE(Priority(origin, true, 0, false, 0, 0),
+            Priority(origin, true, 0, false, 1, 0));
+  EXPECT_GE(Priority(origin, true, 0, false, 6, 0),
+            Priority(origin, true, 0, false, 7, 0));
+  EXPECT_GE(Priority(origin, true, 0, false, 42, 0),
+            Priority(origin, true, 0, false, 42, 0));
+  EXPECT_FALSE(Priority(origin, true, 0, false, 8, 0) >=
+               Priority(origin, true, 0, false, 1, 0));
 }
 
 TEST(CascadePriorityTest, LayerOrderDifferentOrigin) {
@@ -288,10 +302,44 @@ TEST(CascadePriorityTest, LayerOrderDifferentOrigin) {
   // Layer order does not matter if the origin is different.
   CascadeOrigin author = CascadeOrigin::kAuthor;
   CascadeOrigin transition = CascadeOrigin::kTransition;
-  EXPECT_GE(Priority(transition, false, 0, 1, 0),
-            Priority(author, false, 0, 42, 0));
-  EXPECT_GE(Priority(transition, false, 0, 1, 0),
-            Priority(author, false, 0, 1, 0));
+  EXPECT_GE(Priority(transition, false, 0, false, 1, 0),
+            Priority(author, false, 0, false, 42, 0));
+  EXPECT_GE(Priority(transition, false, 0, false, 1, 0),
+            Priority(author, false, 0, false, 1, 0));
+}
+
+TEST(CascadePriorityTest, InlineStyle) {
+  using Priority = CascadePriority;
+  CascadeOrigin author = CascadeOrigin::kAuthor;
+  CascadeOrigin user = CascadeOrigin::kUser;
+
+  // Non-important inline style priorities
+  EXPECT_GE(Priority(author, false, 0, true, 0, 0),
+            Priority(author, false, 0, false, 0, 1));
+  EXPECT_GE(Priority(author, false, 0, true, 0, 0),
+            Priority(author, false, 0, false, 1, 0));
+  EXPECT_GE(Priority(author, false, 1, true, 0, 0),
+            Priority(author, false, 0, false, 0, 0));
+  EXPECT_LT(Priority(author, false, 1, true, 0, 0),
+            Priority(author, false, 2, false, 0, 0));
+  EXPECT_GE(Priority(author, false, 0, true, 0, 0),
+            Priority(user, false, 0, false, 0, 0));
+  EXPECT_LT(Priority(author, false, 0, true, 0, 0),
+            Priority(author, true, 0, false, 0, 0));
+
+  // Important inline style priorities
+  EXPECT_GE(Priority(author, true, 0, true, 0, 0),
+            Priority(author, true, 0, false, 0, 1));
+  EXPECT_GE(Priority(author, true, 0, true, 0, 0),
+            Priority(author, true, 0, false, 1, 0));
+  EXPECT_LT(Priority(author, true, 1, true, 0, 0),
+            Priority(author, true, 0, false, 0, 0));
+  EXPECT_GE(Priority(author, true, 1, true, 0, 0),
+            Priority(author, true, 2, false, 0, 0));
+  EXPECT_LT(Priority(author, true, 0, true, 0, 0),
+            Priority(user, true, 0, false, 0, 0));
+  EXPECT_GE(Priority(author, true, 0, true, 0, 0),
+            Priority(author, false, 0, false, 0, 0));
 }
 
 }  // namespace blink

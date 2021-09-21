@@ -63,6 +63,7 @@ struct CORE_EXPORT MatchedProperties {
     uint16_t tree_order;
     // https://drafts.csswg.org/css-cascade-5/#layer-ordering
     uint16_t layer_order;
+    bool is_inline_style;
   };
   Data types_;
 };
@@ -138,6 +139,7 @@ class AddMatchedPropertiesOptions {
     return valid_property_filter_;
   }
   unsigned GetLayerOrder() const { return layer_order_; }
+  bool IsInlineStyle() const { return is_inline_style_; }
 
   // TODO(crbug.com/1095765): Add a flag for whether it's inline style.
 
@@ -145,6 +147,7 @@ class AddMatchedPropertiesOptions {
   unsigned link_match_type_ = CSSSelector::kMatchAll;
   ValidPropertyFilter valid_property_filter_ = ValidPropertyFilter::kNoFilter;
   unsigned layer_order_ = CascadeLayerMap::kImplicitOuterLayerOrder;
+  bool is_inline_style_ = false;
 
   friend class Builder;
 };
@@ -167,6 +170,11 @@ class AddMatchedPropertiesOptions::Builder {
 
   Builder& SetLayerOrder(unsigned layer_order) {
     options_.layer_order_ = layer_order;
+    return *this;
+  }
+
+  Builder& SetIsInlineStyle(bool is_inline_style) {
+    options_.is_inline_style_ = is_inline_style;
     return *this;
   }
 

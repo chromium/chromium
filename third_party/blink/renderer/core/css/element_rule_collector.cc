@@ -199,7 +199,8 @@ inline RuleIndexList* ElementRuleCollector::EnsureRuleList() {
 
 void ElementRuleCollector::AddElementStyleProperties(
     const CSSPropertyValueSet* property_set,
-    bool is_cacheable) {
+    bool is_cacheable,
+    bool is_inline_style) {
   if (!property_set)
     return;
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
@@ -207,6 +208,7 @@ void ElementRuleCollector::AddElementStyleProperties(
       property_set,
       AddMatchedPropertiesOptions::Builder()
           .SetLinkMatchType(AdjustLinkMatchType(inside_link_, link_match_type))
+          .SetIsInlineStyle(true)
           .Build());
   if (!is_cacheable)
     result_.SetIsCacheable(false);
