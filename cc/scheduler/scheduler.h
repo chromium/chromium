@@ -48,6 +48,7 @@ enum class FrameSkippedReason {
   kRecoverLatency,
   kNoDamage,
   kWaitingOnMain,
+  kDrawThrottled,
 };
 
 class SchedulerClient {
