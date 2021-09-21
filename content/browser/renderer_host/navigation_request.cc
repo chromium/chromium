@@ -2770,16 +2770,14 @@ UrlInfo NavigationRequest::GetUrlInfo() {
 }
 
 const GURL& NavigationRequest::GetOriginalRequestURL() {
-  // If the navigation resulted in an error or this is a loadData navigation we
-  // should return the URL used to commit, even if the navigation went through
-  // redirects. This is to preserve the previous behavior where we use the
-  // edirect chain from the renderer to get the original request URL. When we
-  // commit an error page or a loadDataWithBaseURL/loadDataAsStringWithBaseUrl
-  // navigation, the redirect chain in the renderer only contains the commit
-  // URL.
-  if (net_error_ != net::OK || IsLoadDataWithBaseURL()) {
+  // If this is a loadData navigation we should return the URL used to commit,
+  // even if the navigation went through redirects. This is to preserve the
+  // previous behavior where we use the redirect chain from the renderer to get
+  // the original request URL. When we commit a loadDataWithBaseURL, or a
+  // loadDataAsStringWithBaseUrl navigation, the redirect chain in the renderer
+  // used to only contain the commit URL.
+  if (IsLoadDataWithBaseURL())
     return GetURL();
-  }
 
   // Otherwise, return the first URL in the redirect chain. If the navigation
   // is started by a client redirect, this will be the URL of the document that
@@ -4083,10 +4081,6 @@ void NavigationRequest::CommitErrorPage(
       IgnoreInterfaceDisconnection();
     }
   }
-
-  // On failed navigations, the redirect chain should only contain the last URL.
-  redirect_chain_.clear();
-  redirect_chain_.push_back(GetURL());
 
   ReadyToCommitNavigation(true /* is_error */);
 

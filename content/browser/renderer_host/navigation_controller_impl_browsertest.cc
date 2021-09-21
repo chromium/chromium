@@ -9117,26 +9117,25 @@ IN_PROC_BROWSER_TEST_P(
 
   // Browser-initiated same-site navigation that server-redirects to an empty
   // 404 page, which would result in an error page.
-  GURL fail_url(embedded_test_server()->GetURL("/empty404.html"));
-  EXPECT_FALSE(NavigateToURL(shell(), fail_url));
+  EXPECT_FALSE(NavigateToURL(shell(), server_redirecting_url));
 
   EXPECT_EQ(1, controller.GetEntryCount());
   NavigationEntry* entry = controller.GetLastCommittedEntry();
+  GURL fail_url(embedded_test_server()->GetURL("/empty404.html"));
   EXPECT_EQ(fail_url, entry->GetURL());
 
   // On navigations that end up in error pages, the redirect chain only
   // contains the final URL, even if the navigation went through server
   // redirects.
-  EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
-  EXPECT_EQ(entry->GetRedirectChain()[0], fail_url);
+  EXPECT_THAT(entry->GetRedirectChain(),
+              testing::ElementsAre(server_redirecting_url, fail_url));
 
   // No replaced entry because it's not a client-side redirect.
   EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
 
   // The original request URL on navigations that end up in an error page will
-  // be the URL of the page that failed to load even if the navigation went
-  // through server redirects.
-  EXPECT_EQ(entry->GetOriginalRequestURL(), fail_url);
+  // still be the iniital URL.
+  EXPECT_EQ(entry->GetOriginalRequestURL(), server_redirecting_url);
 
   // No referrer since the last navigation is a browser-initiated navigation.
   ExpectReferrerWithDefaultPolicy(entry, GURL());
@@ -9188,19 +9187,17 @@ IN_PROC_BROWSER_TEST_P(
     NavigationEntry* entry = controller.GetLastCommittedEntry();
     EXPECT_EQ(fail_url, entry->GetURL());
 
-    // On navigations that end up in error pages, the redirect chain only
-    // contains the final URL, even if the navigation went through client
-    // and server redirects.
-    EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
-    EXPECT_EQ(entry->GetRedirectChain()[0], fail_url);
+    // On navigations that end up in error pages, the redirect chain should
+    // still contain the original and all the intermediate URLs.
+    EXPECT_THAT(entry->GetRedirectChain(),
+                testing::ElementsAre(server_redirecting_url, fail_url));
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
 
     // The original request URL on navigations that end up in an error page will
-    // be the URL of the page that failed to load even if the navigation went
-    // through client and server redirects.
-    EXPECT_EQ(entry->GetOriginalRequestURL(), fail_url);
+    // still be the iniital URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), server_redirecting_url);
 
     // The referrer is the previous page's URL since this is renderer-initiated,
     // but is not considered as a client-side redirect since we end up in an
