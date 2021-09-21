@@ -8193,7 +8193,6 @@ interface ScrollTimeline : AnimationTimeline
     getter orientation
     getter scrollOffsets
     getter scrollSource
-    getter timeRange
     method constructor
 interface SecurityPolicyViolationEvent : Event
     attribute @@toStringTag

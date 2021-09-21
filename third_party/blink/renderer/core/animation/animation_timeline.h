@@ -48,7 +48,6 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual bool IsDocumentTimeline() const { return false; }
   virtual bool IsScrollTimeline() const { return false; }
   virtual bool IsCSSScrollTimeline() const { return false; }
-  virtual bool IsProgressBasedTimeline() const { return false; }
   virtual bool IsActive() const = 0;
   virtual AnimationTimeDelta ZeroTime() = 0;
   // https://drafts.csswg.org/web-animations/#monotonically-increasing-timeline

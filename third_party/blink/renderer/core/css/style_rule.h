@@ -262,7 +262,6 @@ class CORE_EXPORT StyleRuleScrollTimeline : public StyleRuleBase {
   Member<const CSSValue> orientation_;
   Member<const CSSValue> start_;
   Member<const CSSValue> end_;
-  Member<const CSSValue> time_range_;
   Member<const CascadeLayer> layer_;
 };
 

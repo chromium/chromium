@@ -189,7 +189,7 @@ ComputedEffectTiming* AnimationEffect::getComputedTiming() const {
 void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
                                    ExceptionState& exception_state) {
   if (GetAnimation() && GetAnimation()->timeline() &&
-      GetAnimation()->timeline()->IsProgressBasedTimeline()) {
+      GetAnimation()->timeline()->IsScrollTimeline()) {
     if (optional_timing->hasDuration()) {
       if (optional_timing->duration()->IsUnrestrictedDouble()) {
         double duration =

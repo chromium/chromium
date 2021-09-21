@@ -11,11 +11,8 @@ enum ScrollDirection {
     "vertical"
 };
 
-enum ScrollTimelineAutoKeyword { "auto" };
-
 dictionary ScrollTimelineOptions {
         Element? scrollSource;
         ScrollDirection orientation = "block";
         sequence<ScrollTimelineOffset> scrollOffsets = [];
-        (double or ScrollTimelineAutoKeyword) timeRange = "auto";
 };
