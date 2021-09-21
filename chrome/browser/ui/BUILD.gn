@@ -4780,6 +4780,8 @@ static_library("ui") {
     if (is_chrome_branded) {
       sources += [
         "lens/lens_side_panel_helper.h",
+        "views/lens/lens_region_search_instructions_view.cc",
+        "views/lens/lens_region_search_instructions_view.h",
         "views/lens/lens_side_panel_controller.cc",
         "views/lens/lens_side_panel_controller.h",
         "views/lens/lens_side_panel_helper.cc",

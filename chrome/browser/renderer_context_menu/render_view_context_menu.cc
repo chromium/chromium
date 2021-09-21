@@ -3315,8 +3315,8 @@ void RenderViewContextMenu::ExecLensRegionSearch() {
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!lens_region_search_controller_)
     lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(
-            source_web_contents_);
+        std::make_unique<lens::LensRegionSearchController>(source_web_contents_,
+                                                           GetBrowser());
   lens_region_search_controller_->Start();
 #endif
 }
