@@ -343,8 +343,8 @@ if (is_android || is_chromeos) {
   }
 
   android_toolchain_root = "$android_ndk_root/toolchains/llvm/prebuilt/${android_host_os}-${android_host_arch}"
-  android_tool_prefix = "$android_toolchain_root/bin/$_binary_prefix-"
-  android_readelf = "${android_tool_prefix}readelf"
+  android_tool_prefix = "$android_toolchain_root/bin/llvm-"
+  android_readelf = "${android_tool_prefix}readobj"
   android_objcopy = "${android_tool_prefix}objcopy"
   android_gdbserver =
       "$android_ndk_root/prebuilt/$android_prebuilt_arch/gdbserver/gdbserver"
