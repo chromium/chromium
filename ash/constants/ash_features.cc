@@ -818,7 +818,7 @@ const base::Feature kOsFeedback{"OsFeedback",
 
 // If enabled, a new App Notifications subpage will appear in CrOS Apps section.
 const base::Feature kOsSettingsAppNotificationsPage{
-    "OsSettingsAppNotificationsPage", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OsSettingsAppNotificationsPage", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kOverviewButton{"OverviewButton",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
