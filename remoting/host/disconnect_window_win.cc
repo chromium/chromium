@@ -336,6 +336,9 @@ void DisconnectWindowWin::EndDialog() {
     hwnd_ = nullptr;
   }
 
+  // Disable auto-hide events since the window has been destroyed.
+  auto_hide_timer_.Stop();
+
   if (client_session_control_)
     client_session_control_->DisconnectSession(protocol::OK);
 }
@@ -359,7 +362,7 @@ void DisconnectWindowWin::ShowDialog() {
     PLOG(ERROR) << "AnimateWindow() failed to show dialog: ";
     ShowWindow(hwnd_, SW_SHOW);
 
-    // If the windows still isn't visible, then disconnect the session.
+    // If the window still isn't visible, then disconnect the session.
     if (!IsWindowVisible(hwnd_))
       client_session_control_->DisconnectSession(protocol::OK);
   }
@@ -367,11 +370,11 @@ void DisconnectWindowWin::ShowDialog() {
 }
 
 void DisconnectWindowWin::HideDialog() {
-  if (was_auto_hidden_ || !local_input_monitor_)
+  if (was_auto_hidden_ || !local_input_monitor_ || !hwnd_)
     return;
 
   if (!AnimateWindow(hwnd_, kAnimationDurationMs, AW_BLEND | AW_HIDE))
-    PLOG(ERROR) << "AnimateWindow() failed to show dialog: ";
+    PLOG(ERROR) << "AnimateWindow() failed to hide dialog: ";
   else
     was_auto_hidden_ = true;
 }
