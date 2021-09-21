@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/user_settings_win.h"
-#include <string>
+#include "remoting/base/user_settings_win.h"
 
 #include "base/logging.h"
 #include "base/notreached.h"

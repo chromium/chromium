@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/user_settings.h"
+#include "remoting/base/user_settings.h"
 
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include "remoting/host/user_settings_win.h"
+#include "remoting/base/user_settings_win.h"
 #endif
 
 namespace remoting {

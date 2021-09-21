@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_FILE_HOST_SETTINGS_H_
-#define REMOTING_HOST_FILE_HOST_SETTINGS_H_
+#ifndef REMOTING_BASE_FILE_HOST_SETTINGS_H_
+#define REMOTING_BASE_FILE_HOST_SETTINGS_H_
 
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/sequenced_task_runner.h"
-#include "remoting/host/host_settings.h"
+#include "remoting/base/host_settings.h"
 
 namespace base {
 class Value;
@@ -21,6 +21,8 @@ namespace remoting {
 // Note that this class currently doesn't watch for changes in the file.
 class FileHostSettings final : public HostSettings {
  public:
+  static base::FilePath GetSettingsFilePath();
+
   explicit FileHostSettings(const base::FilePath& settings_file);
   FileHostSettings(const FileHostSettings&) = delete;
   FileHostSettings& operator=(const FileHostSettings&) = delete;
@@ -48,4 +50,4 @@ class FileHostSettings final : public HostSettings {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_FILE_HOST_SETTINGS_H_
+#endif  // REMOTING_BASE_FILE_HOST_SETTINGS_H_

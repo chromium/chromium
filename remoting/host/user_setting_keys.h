@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_USER_SETTING_KEYS_H_
-#define REMOTING_HOST_USER_SETTING_KEYS_H_
+#ifndef REMOTING_BASE_USER_SETTING_KEYS_H_
+#define REMOTING_BASE_USER_SETTING_KEYS_H_
 
 #include "build/build_config.h"
-#include "remoting/host/user_settings.h"
+#include "remoting/base/user_settings.h"
 
 namespace remoting {
 
@@ -22,4 +22,4 @@ constexpr UserSettingKey kWinPreviousDefaultWebBrowserProgId =
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_USER_SETTING_KEYS_H_
+#endif  // REMOTING_BASE_USER_SETTING_KEYS_H_

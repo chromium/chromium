@@ -101,17 +101,6 @@ if (use_x11) {
   }
 }
 
-source_set("file_path_util") {
-  sources = [
-    "file_path_util.cc",
-    "file_path_util.h",
-  ]
-  deps = [
-    "//base",
-    "//net",
-  ]
-}
-
 if (!is_chromeos_ash && !is_chromeos_lacros) {
   executable("remoting_native_messaging_host") {
     configs += [ "//build/config/compiler:wexit_time_destructors" ]

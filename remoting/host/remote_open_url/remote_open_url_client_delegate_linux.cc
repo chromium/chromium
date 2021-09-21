@@ -13,10 +13,10 @@
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/host_setting_keys.h"
-#include "remoting/host/host_settings.h"
 #include "remoting/host/resources.h"
 #include "ui/base/l10n/l10n_util.h"
 

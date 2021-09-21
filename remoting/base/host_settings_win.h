@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_HOST_SETTINGS_WIN_H_
-#define REMOTING_HOST_HOST_SETTINGS_WIN_H_
+#ifndef REMOTING_BASE_HOST_SETTINGS_WIN_H_
+#define REMOTING_BASE_HOST_SETTINGS_WIN_H_
 
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
-#include "remoting/host/host_settings.h"
+#include "remoting/base/host_settings.h"
 
 namespace remoting {
 
@@ -32,4 +32,4 @@ class HostSettingsWin final : public HostSettings {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_HOST_SETTINGS_WIN_H_
+#endif  // REMOTING_BASE_HOST_SETTINGS_WIN_H_

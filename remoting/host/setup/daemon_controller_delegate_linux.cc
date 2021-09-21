@@ -24,8 +24,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "remoting/base/file_path_util_linux.h"
 #include "remoting/host/host_config.h"
-#include "remoting/host/linux/file_path_util.h"
 #include "remoting/host/usage_stats_consent.h"
 
 namespace remoting {

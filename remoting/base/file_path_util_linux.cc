@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/linux/file_path_util.h"
+#include "remoting/base/file_path_util_linux.h"
 
 #include "base/base_paths.h"
 #include "base/hash/md5.h"

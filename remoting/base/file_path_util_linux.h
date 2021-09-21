@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_LINUX_FILE_PATH_UTIL_H_
-#define REMOTING_HOST_LINUX_FILE_PATH_UTIL_H_
+#ifndef REMOTING_BASE_FILE_PATH_UTIL_LINUX_H_
+#define REMOTING_BASE_FILE_PATH_UTIL_LINUX_H_
 
 #include <string>
 
@@ -20,4 +20,4 @@ std::string GetHostHash();
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_LINUX_FILE_PATH_UTIL_H_
+#endif  // REMOTING_BASE_FILE_PATH_UTIL_LINUX_H_

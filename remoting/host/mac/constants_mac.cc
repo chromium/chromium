@@ -20,6 +20,9 @@ const char kServiceName[] = SERVICE_NAME;
 
 const char kHostConfigFileName[] = SERVICE_NAME ".json";
 const char kHostConfigFilePath[] = HELPER_TOOLS_DIR SERVICE_NAME ".json";
+
+// Note: If this path is changed, also update the value set in:
+// //remoting/base/file_host_settings_mac.cc
 const char kHostSettingsFilePath[] =
     HELPER_TOOLS_DIR SERVICE_NAME ".settings.json";
 

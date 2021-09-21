@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_USER_SETTINGS_WIN_H_
-#define REMOTING_HOST_USER_SETTINGS_WIN_H_
+#ifndef REMOTING_BASE_USER_SETTINGS_WIN_H_
+#define REMOTING_BASE_USER_SETTINGS_WIN_H_
+
+#include <string>
 
 #include "base/win/registry.h"
-#include "remoting/host/user_settings.h"
+#include "remoting/base/user_settings.h"
 
 namespace remoting {
 
@@ -29,4 +31,4 @@ class UserSettingsWin final : public UserSettings {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_USER_SETTINGS_WIN_H_
+#endif  // REMOTING_BASE_USER_SETTINGS_WIN_H_

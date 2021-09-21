@@ -194,38 +194,9 @@ source_set("clipboard") {
 source_set("settings") {
   sources = [
     "host_setting_keys.h",
-    "host_settings.cc",
-    "host_settings.h",
     "user_setting_keys.h",
-    "user_settings.cc",
-    "user_settings.h",
   ]
-  deps = [
-    "//base",
-    "//remoting/base",
-  ]
-
-  if (is_win) {
-    sources += [
-      "host_settings_win.cc",
-      "host_settings_win.h",
-      "user_settings_win.cc",
-      "user_settings_win.h",
-    ]
-  } else {
-    sources += [
-      "file_host_settings.cc",
-      "file_host_settings.h",
-    ]
-  }
-
-  if (is_linux || is_chromeos) {
-    # This isn't used on ChromeOS, but otherwise the GN checker would complain
-    # about missing dependencies.
-    deps += [ "//remoting/host/linux:file_path_util" ]
-  } else if (is_mac) {
-    deps += [ "//remoting/host/mac:constants" ]
-  }
+  public_deps = [ "//remoting/base:settings" ]
 }
 
 source_set("host_extension") {

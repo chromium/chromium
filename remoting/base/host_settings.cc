@@ -2,23 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/host_settings.h"
+#include "remoting/base/host_settings.h"
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "remoting/host/file_host_settings.h"
 
-#if defined(OS_APPLE)
-#include "base/files/file_path.h"
-#include "remoting/host/mac/constants_mac.h"
-#endif  // defined(OS_APPLE)
-
-#if defined(OS_LINUX)
-#include "remoting/host/linux/file_path_util.h"
+#if defined(OS_APPLE) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+#include "remoting/base/file_host_settings.h"
 #endif  // defined(OS_LINUX)
 
 #if defined(OS_WIN)
-#include "remoting/host/host_settings_win.h"
+#include "remoting/base/host_settings_win.h"
 #endif  // defined (OS_WIN)
 
 namespace remoting {
@@ -50,12 +44,9 @@ HostSettings::~HostSettings() = default;
 
 // static
 HostSettings* HostSettings::GetInstance() {
-#if defined(OS_APPLE)
-  static const base::FilePath settings_file(kHostSettingsFilePath);
-  static base::NoDestructor<FileHostSettings> instance(settings_file);
-#elif defined(OS_LINUX)
-  static base::NoDestructor<FileHostSettings> instance(base::FilePath(
-      GetConfigDirectoryPath().Append(GetHostHash() + ".settings.json")));
+#if defined(OS_APPLE) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
+  static base::NoDestructor<FileHostSettings> instance(
+      FileHostSettings::GetSettingsFilePath());
 #elif defined(OS_WIN)
   static base::NoDestructor<HostSettingsWin> instance;
 #else
