@@ -40,7 +40,7 @@ It is used by ARC (to run Android apps) and Crostini (to run Linux apps).
 Lacros will use exo as the Wayland server for graphics and event handling. Where
 possible we use stable Wayland protocols. We also share Wayland protocol
 extensions with ARC and Crostini (e.g.
-[zaura-shell](https://chromium.googlesource.com/chromium/src.git/+/main/components/exo/wayland/protocol/aura-shell.xml).
+[zaura-shell](https://chromium.googlesource.com/chromium/src.git/+/main/components/exo/wayland/protocol/aura-shell.xml)).
 Higher-level features (e.g. file picking) use Mojo IPC.
 
 We call the new Mojo API surface "crosapi". It's similar in concept to Win32 or
