@@ -11,6 +11,8 @@
 #include "chromeos/components/phonehub/camera_roll_thumbnail_decoder.h"
 #include "chromeos/components/phonehub/message_receiver.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
+#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -19,7 +21,9 @@ class CameraRollItem;
 class MessageSender;
 
 // Manages camera roll items sent from the connected Android device.
-class CameraRollManager : public MessageReceiver::Observer {
+class CameraRollManager
+    : public MessageReceiver::Observer,
+      public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -30,8 +34,10 @@ class CameraRollManager : public MessageReceiver::Observer {
     virtual void OnCameraRollItemsChanged() = 0;
   };
 
-  CameraRollManager(MessageReceiver* message_receiver,
-                    MessageSender* message_sender);
+  CameraRollManager(
+      MessageReceiver* message_receiver,
+      MessageSender* message_sender,
+      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
   CameraRollManager(const CameraRollManager&) = delete;
   CameraRollManager& operator=(const CameraRollManager&) = delete;
   ~CameraRollManager() override;
@@ -56,15 +62,22 @@ class CameraRollManager : public MessageReceiver::Observer {
   void OnFetchCameraRollItemsResponseReceived(
       const proto::FetchCameraRollItemsResponse& response) override;
 
+  // MultiDeviceSetupClient::Observer:
+  void OnFeatureStatesChanged(
+      const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+          feature_states_map) override;
+
   void SendFetchCameraRollItemsRequest();
   void ClearCurrentItems();
   void OnItemThumbnailsDecoded(
       CameraRollThumbnailDecoder::BatchDecodeResult result,
       const std::vector<CameraRollItem>& items);
   void CancelPendingThumbnailRequests();
+  bool IsCameraRollSettingEnabled();
 
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;
+  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
 
   int32_t max_item_count_;
   std::vector<CameraRollItem> current_items_;

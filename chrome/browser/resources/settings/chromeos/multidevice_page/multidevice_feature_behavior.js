@@ -86,6 +86,7 @@ const MultiDeviceFeatureBehaviorImpl = {
    */
   isPhoneHubSubFeature(feature) {
     return [
+      settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL,
       settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
       settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
       settings.MultiDeviceFeature.ECHE
@@ -152,6 +153,8 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.i18n('multideviceSmartLockItemTitle');
       case settings.MultiDeviceFeature.PHONE_HUB:
         return this.i18n('multidevicePhoneHubItemTitle');
+      case settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
+        return this.i18n('multidevicePhoneHubCameraRollItemTitle');
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.i18n('multidevicePhoneHubNotificationsItemTitle');
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
@@ -179,8 +182,8 @@ const MultiDeviceFeatureBehaviorImpl = {
         return 'os-settings:multidevice-messages';
       case settings.MultiDeviceFeature.SMART_LOCK:
         return 'os-settings:multidevice-smart-lock';
-      // TODO(https://crbug.com/1106937): Use real Phone Hub asset.
       case settings.MultiDeviceFeature.PHONE_HUB:
+      case settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
       case settings.MultiDeviceFeature.ECHE:
@@ -208,6 +211,8 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.i18nAdvanced('multideviceAndroidMessagesItemSummary');
       case settings.MultiDeviceFeature.PHONE_HUB:
         return this.i18nAdvanced('multidevicePhoneHubItemSummary');
+      case settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
+        return this.i18nAdvanced('multidevicePhoneHubCameraRollItemSummary');
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.i18nAdvanced('multidevicePhoneHubNotificationsItemSummary');
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
@@ -245,6 +250,8 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.pageContentData.smartLockState;
       case settings.MultiDeviceFeature.PHONE_HUB:
         return this.pageContentData.phoneHubState;
+      case settings.MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL:
+        return this.pageContentData.phoneHubCameraRollState;
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
         return this.pageContentData.phoneHubNotificationsState;
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:

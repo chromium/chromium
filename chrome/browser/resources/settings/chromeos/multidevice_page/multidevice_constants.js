@@ -45,6 +45,7 @@ cr.define('settings', function() {
     PHONE_HUB_TASK_CONTINUATION: 6,
     WIFI_SYNC: 7,
     ECHE: 8,
+    PHONE_HUB_CAMERA_ROLL: 9,
   };
 
   /**
@@ -98,6 +99,7 @@ cr.define('settings', function() {
    *   messagesState: !settings.MultiDeviceFeatureState,
    *   smartLockState: !settings.MultiDeviceFeatureState,
    *   phoneHubState: !settings.MultiDeviceFeatureState,
+   *   phoneHubCameraRollState: !settings.MultiDeviceFeatureState,
    *   phoneHubNotificationsState: !settings.MultiDeviceFeatureState,
    *   phoneHubTaskContinuationState: !settings.MultiDeviceFeatureState,
    *   phoneHubAppsState: !settings.MultiDeviceFeatureState,

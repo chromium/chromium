@@ -279,6 +279,9 @@
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub settings, with a toggle to enable/disable the feature. Phone hub provides the user with information about their Android phone and allows the user to perform phone-side actions directly in the Chrome OS UI.">
     Phone Hub
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL" desc="Text for search result item which, when clicked, navigates the user to Phone Hub photo settings, with a toggle to enable/disable the feature. Phone hub populates the 4 most recently updated photos/videos thumbnail in connected phone's camera roll on Chromebook, and give options to intereact with them.">
+    Recent Photos
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Notifications mirrors all standard notifications currently being shown on connected phone device.">
     Phone Hub notifications
   </message>

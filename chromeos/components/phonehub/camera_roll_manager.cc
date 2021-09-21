@@ -25,23 +25,29 @@ bool IsCameraRollSupportedOnAndroidDevice(
 
 }  // namespace
 
-CameraRollManager::CameraRollManager(MessageReceiver* message_receiver,
-                                     MessageSender* message_sender)
+CameraRollManager::CameraRollManager(
+    MessageReceiver* message_receiver,
+    MessageSender* message_sender,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
     : message_receiver_(message_receiver),
       message_sender_(message_sender),
+      multidevice_setup_client_(multidevice_setup_client),
       thumbnail_decoder_(std::make_unique<CameraRollThumbnailDecoderImpl>()) {
   max_item_count_ = 4;  // TODO(mattwalliser): Pull this value from config.
   message_receiver->AddObserver(this);
+  multidevice_setup_client_->AddObserver(this);
 }
 
 CameraRollManager::~CameraRollManager() {
   message_receiver_->RemoveObserver(this);
+  multidevice_setup_client_->RemoveObserver(this);
 }
 
 void CameraRollManager::OnPhoneStatusSnapshotReceived(
     proto::PhoneStatusSnapshot phone_status_snapshot) {
   if (!IsCameraRollSupportedOnAndroidDevice(
-          phone_status_snapshot.properties().camera_roll_access_state())) {
+          phone_status_snapshot.properties().camera_roll_access_state()) ||
+      !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
     return;
@@ -53,7 +59,8 @@ void CameraRollManager::OnPhoneStatusSnapshotReceived(
 void CameraRollManager::OnPhoneStatusUpdateReceived(
     proto::PhoneStatusUpdate phone_status_update) {
   if (!IsCameraRollSupportedOnAndroidDevice(
-          phone_status_update.properties().camera_roll_access_state())) {
+          phone_status_update.properties().camera_roll_access_state()) ||
+      !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
     return;
@@ -121,6 +128,23 @@ void CameraRollManager::AddObserver(Observer* observer) {
 
 void CameraRollManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+bool CameraRollManager::IsCameraRollSettingEnabled() {
+  multidevice_setup::mojom::FeatureState camera_roll_feature_state =
+      multidevice_setup_client_->GetFeatureState(
+          multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+  return camera_roll_feature_state ==
+         multidevice_setup::mojom::FeatureState::kEnabledByUser;
+}
+
+void CameraRollManager::OnFeatureStatesChanged(
+    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+        feature_states_map) {
+  if (!IsCameraRollSettingEnabled()) {
+    ClearCurrentItems();
+    CancelPendingThumbnailRequests();
+  }
 }
 
 }  // namespace phonehub

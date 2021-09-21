@@ -26,8 +26,8 @@ namespace multidevice_setup {
 
 namespace {
 
-constexpr std::array<mojom::Feature, 3> kPhoneHubSubFeatures{
-    mojom::Feature::kPhoneHubNotifications,
+constexpr std::array<mojom::Feature, 4> kPhoneHubSubFeatures{
+    mojom::Feature::kPhoneHubNotifications, mojom::Feature::kPhoneHubCameraRoll,
     mojom::Feature::kPhoneHubTaskContinuation, mojom::Feature::kEche};
 
 base::flat_map<mojom::Feature, std::string>
@@ -39,6 +39,7 @@ GenerateFeatureToEnabledPrefNameMap() {
       {mojom::Feature::kMessages, kMessagesEnabledPrefName},
       {mojom::Feature::kSmartLock, kSmartLockEnabledPrefName},
       {mojom::Feature::kPhoneHub, kPhoneHubEnabledPrefName},
+      {mojom::Feature::kPhoneHubCameraRoll, kPhoneHubCameraRollEnabledPrefName},
       {mojom::Feature::kPhoneHubNotifications,
        kPhoneHubNotificationsEnabledPrefName},
       {mojom::Feature::kPhoneHubTaskContinuation,
@@ -53,6 +54,7 @@ GenerateFeatureToAllowedPrefNameMap() {
       {mojom::Feature::kMessages, kMessagesAllowedPrefName},
       {mojom::Feature::kSmartLock, kSmartLockAllowedPrefName},
       {mojom::Feature::kPhoneHub, kPhoneHubAllowedPrefName},
+      {mojom::Feature::kPhoneHubCameraRoll, kPhoneHubCameraRollAllowedPrefName},
       {mojom::Feature::kPhoneHubNotifications,
        kPhoneHubNotificationsAllowedPrefName},
       {mojom::Feature::kPhoneHubTaskContinuation,
@@ -75,6 +77,8 @@ GenerateInitialDefaultCachedStateMap() {
       {mojom::Feature::kSmartLock,
        mojom::FeatureState::kUnavailableNoVerifiedHost},
       {mojom::Feature::kPhoneHub,
+       mojom::FeatureState::kUnavailableNoVerifiedHost},
+      {mojom::Feature::kPhoneHubCameraRoll,
        mojom::FeatureState::kUnavailableNoVerifiedHost},
       {mojom::Feature::kPhoneHubNotifications,
        mojom::FeatureState::kUnavailableNoVerifiedHost},
@@ -227,6 +231,13 @@ void LogFeatureStates(
     UMA_HISTOGRAM_ENUMERATION(
         "PhoneHub.MultiDeviceFeatureState.TopLevelFeature",
         new_states.find(mojom::Feature::kPhoneHub)->second);
+  }
+
+  if (HasFeatureStateChanged(previous_states, new_states,
+                             mojom::Feature::kPhoneHubCameraRoll)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "PhoneHub.MultiDeviceFeatureState.CameraRoll",
+        new_states.find(mojom::Feature::kPhoneHubCameraRoll)->second);
   }
 
   if (HasFeatureStateChanged(previous_states, new_states,
@@ -466,6 +477,8 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
           // Note: All Phone Hub-related features use the same SoftwareFeature.
           {mojom::Feature::kPhoneHub,
            multidevice::SoftwareFeature::kPhoneHubClient},
+          {mojom::Feature::kPhoneHubCameraRoll,
+           multidevice::SoftwareFeature::kPhoneHubClient},
           {mojom::Feature::kPhoneHubNotifications,
            multidevice::SoftwareFeature::kPhoneHubClient},
           {mojom::Feature::kPhoneHubTaskContinuation,
@@ -529,6 +542,8 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
            multidevice::SoftwareFeature::kSmartLockHost},
           // Note: All Phone Hub-related features use the same SoftwareFeature.
           {mojom::Feature::kPhoneHub,
+           multidevice::SoftwareFeature::kPhoneHubHost},
+          {mojom::Feature::kPhoneHubCameraRoll,
            multidevice::SoftwareFeature::kPhoneHubHost},
           {mojom::Feature::kPhoneHubNotifications,
            multidevice::SoftwareFeature::kPhoneHubHost},

@@ -21,6 +21,8 @@ const char kMessagesAllowedPrefName[] = "multidevice.sms_connect_allowed";
 const char kSmartLockAllowedPrefName[] = "easy_unlock.allowed";
 const char kSmartLockSigninAllowedPrefName[] = "smart_lock_signin.allowed";
 const char kPhoneHubAllowedPrefName[] = "phone_hub.allowed";
+const char kPhoneHubCameraRollAllowedPrefName[] =
+    "phone_hub_camera_roll.allowed";
 const char kPhoneHubNotificationsAllowedPrefName[] =
     "phone_hub_notifications.allowed";
 const char kPhoneHubTaskContinuationAllowedPrefName[] =
@@ -36,6 +38,8 @@ const char kMessagesEnabledPrefName[] = "multidevice.sms_connect_enabled";
 const char kSmartLockEnabledPrefName[] = "smart_lock.enabled";
 const char kSmartLockEnabledDeprecatedPrefName[] = "easy_unlock.enabled";
 const char kPhoneHubEnabledPrefName[] = "phone_hub.enabled";
+const char kPhoneHubCameraRollEnabledPrefName[] =
+    "phone_hub_camera_roll.enabled";
 const char kPhoneHubNotificationsEnabledPrefName[] =
     "phone_hub_notifications.enabled";
 const char kPhoneHubTaskContinuationEnabledPrefName[] =
@@ -48,6 +52,7 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kSmartLockAllowedPrefName, true);
   registry->RegisterBooleanPref(kSmartLockSigninAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubAllowedPrefName, true);
+  registry->RegisterBooleanPref(kPhoneHubCameraRollAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubNotificationsAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubTaskContinuationAllowedPrefName, true);
   registry->RegisterBooleanPref(kWifiSyncAllowedPrefName, true);
@@ -63,6 +68,8 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   // This pref should be disabled for existing Better Together users;
   // they must go to settings to explicitly enable PhoneHub.
   registry->RegisterBooleanPref(kPhoneHubEnabledPrefName, false);
+
+  registry->RegisterBooleanPref(kPhoneHubCameraRollEnabledPrefName, false);
 
   // This pref is disabled by default; it should not be enabled until access is
   // granted from the phone.
@@ -109,6 +116,11 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
       return features::IsPhoneHubEnabled() &&
              pref_service->GetBoolean(kPhoneHubAllowedPrefName);
 
+    case mojom::Feature::kPhoneHubCameraRoll:
+      return features::IsPhoneHubEnabled() &&
+             features::IsPhoneHubCameraRollEnabled() &&
+             pref_service->GetBoolean(kPhoneHubCameraRollAllowedPrefName);
+
     case mojom::Feature::kPhoneHubNotifications:
       return features::IsPhoneHubEnabled() &&
              pref_service->GetBoolean(kPhoneHubNotificationsAllowedPrefName);
@@ -148,6 +160,9 @@ bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
           ->IsDefaultValue();
     case mojom::Feature::kPhoneHub:
       return pref_service->FindPreference(kPhoneHubEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kPhoneHubCameraRoll:
+      return pref_service->FindPreference(kPhoneHubCameraRollEnabledPrefName)
           ->IsDefaultValue();
     case mojom::Feature::kPhoneHubNotifications:
       return pref_service->FindPreference(kPhoneHubNotificationsEnabledPrefName)

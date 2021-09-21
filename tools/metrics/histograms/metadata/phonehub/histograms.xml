@@ -148,6 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
         Base histogram. Use suffixes of this histogram instead.
       </obsolete>
     </variant>
+    <variant name=".CameraRoll" summary="Camera roll sub-feature."/>
     <variant name=".NotificationBadge"
         summary="Notification badge sub-feature.">
       <obsolete>

@@ -110,6 +110,18 @@ GetMultiDeviceOptedInPhoneHubSearchConcepts() {
 }
 
 const std::vector<SearchConcept>&
+GetMultiDeviceOptedInPhoneHubCameraRollSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL,
+        mojom::kMultiDeviceFeaturesSubpagePath,
+        mojom::SearchResultIcon::kPhone,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kPhoneHubCameraRollOnOff}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>&
 GetMultiDeviceOptedInPhoneHubAppsSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_APPS,
@@ -313,6 +325,8 @@ void MultiDeviceSection::AddLoadTimeData(
       {"multideviceSmartLockItemTitle", IDS_SETTINGS_EASY_UNLOCK_SECTION_TITLE},
       {"multidevicePhoneHubItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SECTION_TITLE},
+      {"multidevicePhoneHubCameraRollItemTitle",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SECTION_TITLE},
       {"multidevicePhoneHubLearnMoreLabel",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_LEARN_MORE_LABEL},
       {"multidevicePhoneHubNotificationsItemTitle",
@@ -434,6 +448,10 @@ void MultiDeviceSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY,
                                  ui::GetChromeOSDeviceName()));
   html_source->AddString(
+      "multidevicePhoneHubCameraRollItemSummary",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SUMMARY));
+  html_source->AddString(
       "multidevicePhoneHubNotificationsItemSummary",
       ui::SubstituteChromeOSDeviceType(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY));
@@ -548,6 +566,7 @@ void MultiDeviceSection::RegisterHierarchy(
       mojom::Setting::kMessagesOnOff,
       mojom::Setting::kForgetPhone,
       mojom::Setting::kPhoneHubOnOff,
+      mojom::Setting::kPhoneHubCameraRollOnOff,
       mojom::Setting::kPhoneHubNotificationsOnOff,
       mojom::Setting::kPhoneHubTaskContinuationOnOff,
       mojom::Setting::kWifiSyncOnOff,
@@ -612,6 +631,8 @@ void MultiDeviceSection::OnFeatureStatesChanged(
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetSmartLockOptionsSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+  updater.RemoveSearchTags(
+      GetMultiDeviceOptedInPhoneHubCameraRollSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubAppsSearchConcepts());
 
@@ -619,8 +640,15 @@ void MultiDeviceSection::OnFeatureStatesChanged(
       multidevice_setup::mojom::FeatureState::kEnabledByUser) {
     updater.AddSearchTags(GetSmartLockOptionsSearchConcepts());
   }
-  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kPhoneHub))
+  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kPhoneHub)) {
     updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+    if (features::IsPhoneHubCameraRollEnabled() &&
+        IsFeatureSupported(
+            multidevice_setup::mojom::Feature::kPhoneHubCameraRoll)) {
+      updater.AddSearchTags(
+          GetMultiDeviceOptedInPhoneHubCameraRollSearchConcepts());
+    }
+  }
   if (IsFeatureSupported(multidevice_setup::mojom::Feature::kWifiSync))
     updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   if (IsFeatureSupported(multidevice_setup::mojom::Feature::kEche))

@@ -3030,6 +3030,9 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_LEARN_MORE_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to a page with more information about the 'Phone Hub' feature.">
     Phone Hub, Learn More
   </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SECTION_TITLE" desc="The title of the Phone Hub Recent Photo section on the settings page.">
+    Recent Photos
+  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SECTION_TITLE" desc="The title of the Phone Hub Notifications section on the settings page.">
     Notifications
   </message>
@@ -3044,6 +3047,9 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY" desc="Description of for the 'Phone Hub' setting. This feature lets the user stay productive on Chrome OS by ensuring that their phones' apps, content, and connectivity are available on their Chrome OS device.">
     Access your phone's capabilities from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll' setting. This feature populates most recent photos from a connected Android phone to Chrome OS devices.">
+    View photos from your phone's camera roll on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to Chrome OS devices.">
     View notifications from your chat apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>

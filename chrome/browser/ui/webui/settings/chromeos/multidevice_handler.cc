@@ -40,6 +40,8 @@ const char kPageContentDataBetterTogetherStateKey[] = "betterTogetherState";
 const char kPageContentDataInstantTetheringStateKey[] = "instantTetheringState";
 const char kPageContentDataMessagesStateKey[] = "messagesState";
 const char kPageContentDataPhoneHubStateKey[] = "phoneHubState";
+const char kPageContentDataPhoneHubCameraRollStateKey[] =
+    "phoneHubCameraRollState";
 const char kPageContentDataPhoneHubNotificationsStateKey[] =
     "phoneHubNotificationsState";
 const char kPageContentDataPhoneHubTaskContinuationStateKey[] =
@@ -469,6 +471,11 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
       kPageContentDataPhoneHubStateKey,
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kPhoneHub]));
+  page_content_dictionary->SetInteger(
+      kPageContentDataPhoneHubCameraRollStateKey,
+      static_cast<int32_t>(
+          feature_states
+              [multidevice_setup::mojom::Feature::kPhoneHubCameraRoll]));
   page_content_dictionary->SetInteger(
       kPageContentDataPhoneHubNotificationsStateKey,
       static_cast<int32_t>(

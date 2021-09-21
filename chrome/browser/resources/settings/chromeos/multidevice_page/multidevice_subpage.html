@@ -132,6 +132,16 @@
         </template>
         <template is="dom-if"
             if="[[isFeatureSupported(
+                MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="phoneHubCameraRollItem"
+              feature="[[MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL]]"
+              page-content-data="[[pageContentData]]" is-sub-feature
+              deep-link-focus-id$="[[Setting.kPhoneHubCameraRollOnOff]]">
+          </settings-multidevice-feature-item>
+        </template>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
                 MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION, pageContentData)]]"
             restamp>
           <settings-multidevice-task-continuation-item

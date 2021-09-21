@@ -550,7 +550,8 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
                            /*empty_bluetooth_address=*/true);
 
   const std::vector<mojom::Feature> kAllPhoneHubFeatures{
-      mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubNotifications,
+      mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubCameraRoll,
+      mojom::Feature::kPhoneHubNotifications,
       mojom::Feature::kPhoneHubTaskContinuation, mojom::Feature::kEche};
 
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
@@ -630,7 +631,8 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHubForSecondaryUsers) {
   SetupFeatureStateManager(/*is_secondary_user=*/true);
 
   const std::vector<mojom::Feature> kAllPhoneHubFeatures{
-      mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubNotifications,
+      mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubCameraRoll,
+      mojom::Feature::kPhoneHubNotifications,
       mojom::Feature::kPhoneHubTaskContinuation, mojom::Feature::kEche};
 
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
@@ -707,7 +709,8 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
   SetupFeatureStateManager();
 
   const std::vector<mojom::Feature> kAllPhoneHubFeatures{
-      mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubNotifications,
+      mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubCameraRoll,
+      mojom::Feature::kPhoneHubNotifications,
       mojom::Feature::kPhoneHubTaskContinuation};
 
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
@@ -734,6 +737,7 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
   // Likewise, the Phone Hub notifications enabled pref is disabled by default
   // to ensure the phone grants access.
   test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
+  test_pref_service()->SetBoolean(kPhoneHubCameraRollEnabledPrefName, true);
   test_pref_service()->SetBoolean(kPhoneHubNotificationsEnabledPrefName, true);
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubHost,
