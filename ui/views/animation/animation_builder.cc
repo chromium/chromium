@@ -168,6 +168,15 @@ struct AnimationBuilder::Value {
 AnimationBuilder::AnimationBuilder() = default;
 
 AnimationBuilder::~AnimationBuilder() {
+  DCHECK(!next_animation_observer_)
+      << "Callbacks were scheduled without creating a sequence block "
+         "afterwards. There are no animations to run these callbacks on.";
+  // The observer needs to outlive the AnimationBuilder and will manage its own
+  // lifetime. GetAttachedToSequence should not return false here. This is
+  // DCHECKed in the observer’s destructor.
+  if (animation_observer_ && animation_observer_->GetAttachedToSequence())
+    animation_observer_.release();
+
   for (auto it = layer_animation_sequences_.begin();
        it != layer_animation_sequences_.end();) {
     auto* const target = it->first;
@@ -279,7 +288,6 @@ void AnimationBuilder::TerminateSequence(
   }
 
   values_.clear();
-  animation_observer_.release();
 }
 
 std::unique_ptr<AnimationAbortHandle> AnimationBuilder::GetAbortHandle() {
@@ -289,9 +297,9 @@ std::unique_ptr<AnimationAbortHandle> AnimationBuilder::GetAbortHandle() {
 }
 
 AnimationBuilder::Observer* AnimationBuilder::GetObserver() {
-  if (!animation_observer_)
-    animation_observer_ = std::make_unique<Observer>();
-  return animation_observer_.get();
+  if (!next_animation_observer_)
+    next_animation_observer_ = std::make_unique<Observer>();
+  return next_animation_observer_.get();
 }
 
 // static
@@ -301,6 +309,18 @@ void AnimationBuilder::SetObserverDeletedCallbackForTesting(
 }
 
 AnimationSequenceBlock AnimationBuilder::NewSequence() {
+  // Each sequence should have its own observer.
+
+  // The observer needs to outlive the AnimationBuilder and will manage its own
+  // lifetime. GetAttachedToSequence should not return false here. This is
+  // DCHECKed in the observer’s destructor.
+  if (animation_observer_ && animation_observer_->GetAttachedToSequence())
+    animation_observer_.release();
+  if (next_animation_observer_) {
+    animation_observer_ = std::move(next_animation_observer_);
+    next_animation_observer_.reset();
+  }
+
   end_ = base::TimeDelta();
   return AnimationSequenceBlock(base::PassKey<AnimationBuilder>(), this,
                                 base::TimeDelta());

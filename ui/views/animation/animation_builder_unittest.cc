@@ -335,7 +335,10 @@ TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
         .SetOpacity(first_animating_view, 0.4f)
         .Offset(base::TimeDelta())
         .SetDuration(kDelay * 2)
-        .SetOpacity(second_animating_view, 0.9f);
+        .SetOpacity(second_animating_view, 0.9f)
+        .Then()
+        .SetDuration(kDelay)
+        .SetOpacity(second_animating_view, 0.4f);
   }
 
   // Only one Observer should have been created in the above block. Make sure
@@ -346,6 +349,8 @@ TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
 
   EXPECT_TRUE(started);
   Step(kDelay * 2);
+  EXPECT_FALSE(ended);
+  Step(kDelay);
   EXPECT_TRUE(ended);
 }
 

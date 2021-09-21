@@ -57,6 +57,8 @@ class VIEWS_EXPORT AnimationBuilder {
     void OnLayerAnimationScheduled(
         ui::LayerAnimationSequence* sequence) override;
 
+    bool GetAttachedToSequence() const { return attached_to_sequence_; }
+
    protected:
     void OnAttachedToSequence(ui::LayerAnimationSequence* sequence) override;
     void OnDetachedFromSequence(ui::LayerAnimationSequence* sequence) override;
@@ -146,6 +148,10 @@ class VIEWS_EXPORT AnimationBuilder {
   std::multimap<ui::Layer*, std::unique_ptr<ui::LayerAnimationSequence>>
       layer_animation_sequences_;
   std::unique_ptr<Observer> animation_observer_;
+  // Sets up observer callbacks before .Once() or .Repeatedly() is called to
+  // start the sequence. next_animation_observer_ is moved to
+  // animation_observer_ once .Once() or Repeatedly() is called.
+  std::unique_ptr<Observer> next_animation_observer_;
   absl::optional<ui::LayerAnimator::PreemptionStrategy> preemption_strategy_;
 
   // Data for the current sequence.
