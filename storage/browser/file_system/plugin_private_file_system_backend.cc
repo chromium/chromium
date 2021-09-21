@@ -87,7 +87,11 @@ base::File::Error OpenFileSystemOnFileTaskRunner(
     OpenFileSystemMode mode) {
   base::File::Error error = base::File::FILE_ERROR_FAILED;
   const bool create = (mode == OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
-  file_util->GetDirectoryForOriginAndType(origin, plugin_id, create, &error);
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+  // file system will be partitioned; if so, replace the in-line conversion with
+  // the correct third-party StorageKey.
+  file_util->GetDirectoryForStorageKeyAndType(blink::StorageKey(origin),
+                                              plugin_id, create, &error);
   if (error == base::File::FILE_OK)
     plugin_map->RegisterFileSystem(filesystem_id, plugin_id);
   return error;
@@ -240,8 +244,8 @@ PluginPrivateFileSystemBackend::DeleteStorageKeyDataOnFileTaskRunner(
     FileSystemType type) {
   if (!CanHandleType(type))
     return base::File::FILE_ERROR_SECURITY;
-  bool result = obfuscated_file_util()->DeleteDirectoryForOriginAndType(
-      storage_key.origin(), std::string());
+  bool result = obfuscated_file_util()->DeleteDirectoryForStorageKeyAndType(
+      storage_key, std::string());
   if (result)
     return base::File::FILE_OK;
   return base::File::FILE_ERROR_FAILED;
@@ -330,8 +334,12 @@ void PluginPrivateFileSystemBackend::GetOriginDetailsOnFileTaskRunner(
   // application_x-ppapi-widevine-cdm). Enumerate through the set of
   // directories so that data from any CDM used by this origin is counted.
   base::File::Error error;
-  base::FilePath path = obfuscated_file_util()->GetDirectoryForOriginAndType(
-      origin, "", false, &error);
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+  // file system will be partitioned; if so, replace the in-line conversion with
+  // the correct third-party StorageKey.
+  base::FilePath path =
+      obfuscated_file_util()->GetDirectoryForStorageKeyAndType(
+          blink::StorageKey(origin), "", false, &error);
   if (error != base::File::FILE_OK) {
     DLOG(ERROR) << "Unable to read directory for " << origin;
     return;

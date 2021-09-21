@@ -311,8 +311,13 @@ void PluginPrivateDataDeletionHelper::CheckOriginsOnFileTaskRunner(
     // Determine the available plugin private filesystem directories
     // for this origin.
     base::File::Error error;
-    base::FilePath path = obfuscated_file_util->GetDirectoryForOriginAndType(
-        origin, "", false, &error);
+    // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+    // file system will be partitioned; if so, replace the in-line conversion
+    // with the correct third-party StorageKey.
+    base::FilePath path =
+        obfuscated_file_util->GetDirectoryForStorageKeyAndType(
+            blink::StorageKey(origin), /*type_string=*/std::string(),
+            /*create=*/false, &error);
     if (error != base::File::FILE_OK) {
       DLOG(ERROR) << "Unable to read directory for " << origin;
       continue;

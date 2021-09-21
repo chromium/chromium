@@ -123,8 +123,8 @@ base::File::Error OpenSandboxFileSystemOnFileTaskRunner(
     OpenFileSystemMode mode) {
   const bool create = (mode == OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
   base::File::Error error;
-  file_util->GetDirectoryForOriginAndType(
-      url::Origin::Create(origin_url),
+  file_util->GetDirectoryForStorageKeyAndType(
+      blink::StorageKey(url::Origin::Create(origin_url)),
       SandboxFileSystemBackendDelegate::GetTypeString(type), create, &error);
   if (error != base::File::FILE_OK) {
     UMA_HISTOGRAM_ENUMERATION(kOpenFileSystemLabel, kCreateDirectoryError,
@@ -237,8 +237,9 @@ SandboxFileSystemBackendDelegate::GetBaseDirectoryForStorageKeyAndType(
     FileSystemType type,
     bool create) {
   base::File::Error error = base::File::FILE_OK;
-  base::FilePath path = obfuscated_file_util()->GetDirectoryForOriginAndType(
-      storage_key.origin(), GetTypeString(type), create, &error);
+  base::FilePath path =
+      obfuscated_file_util()->GetDirectoryForStorageKeyAndType(
+          storage_key, GetTypeString(type), create, &error);
   if (error != base::File::FILE_OK)
     return base::FilePath();
   return path;
@@ -339,8 +340,8 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
   int64_t usage = GetStorageKeyUsageOnFileTaskRunner(file_system_context,
                                                      storage_key, type);
   usage_cache()->CloseCacheFiles();
-  bool result = obfuscated_file_util()->DeleteDirectoryForOriginAndType(
-      storage_key.origin(), GetTypeString(type));
+  bool result = obfuscated_file_util()->DeleteDirectoryForStorageKeyAndType(
+      storage_key, GetTypeString(type));
   if (result && proxy && usage) {
     proxy->NotifyStorageModified(QuotaClientType::kFileSystem, storage_key,
                                  FileSystemTypeToQuotaStorageType(type), -usage,
@@ -611,8 +612,9 @@ SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
     base::File::Error* error_out) {
   DCHECK(error_out);
   *error_out = base::File::FILE_OK;
-  base::FilePath base_path = sandbox_file_util->GetDirectoryForOriginAndType(
-      storage_key.origin(), GetTypeString(type), false /* create */, error_out);
+  base::FilePath base_path =
+      sandbox_file_util->GetDirectoryForStorageKeyAndType(
+          storage_key, GetTypeString(type), false /* create */, error_out);
   if (*error_out != base::File::FILE_OK)
     return base::FilePath();
   return base_path.Append(FileSystemUsageCache::kUsageFileName);

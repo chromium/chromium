@@ -23,6 +23,7 @@
 #include "storage/browser/file_system/obfuscated_file_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
 namespace storage {
@@ -134,8 +135,8 @@ class QuotaBackendImplTest : public testing::Test,
     std::string type_string =
         SandboxFileSystemBackendDelegate::GetTypeString(type);
     base::File::Error error = base::File::FILE_ERROR_FAILED;
-    base::FilePath path = file_util_->GetDirectoryForOriginAndType(
-        origin, type_string, true /* create */, &error);
+    base::FilePath path = file_util_->GetDirectoryForStorageKeyAndType(
+        blink::StorageKey(origin), type_string, true /* create */, &error);
     ASSERT_EQ(base::File::FILE_OK, error);
 
     ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(
