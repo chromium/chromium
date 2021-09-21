@@ -143,6 +143,10 @@ void OnTaskDestroyed(int32_t task_id) {
   FullRestoreSaveHandler::GetInstance()->OnTaskDestroyed(task_id);
 }
 
+void SetArcConnection(bool is_connection_ready) {
+  FullRestoreSaveHandler::GetInstance()->SetArcConnection(is_connection_ready);
+}
+
 void OnTaskThemeColorUpdated(int32_t task_id,
                              uint32_t primary_color,
                              uint32_t status_bar_color) {

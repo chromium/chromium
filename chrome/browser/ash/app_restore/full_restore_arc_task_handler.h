@@ -61,6 +61,7 @@ class FullRestoreArcTaskHandler : public KeyedService,
                                 uint32_t primary_color,
                                 uint32_t status_bar_color) override;
   void OnAppConnectionReady() override;
+  void OnAppConnectionClosed() override;
   void OnArcAppListPrefsDestroyed() override;
 
   // arc::ArcSessionManagerObserver:

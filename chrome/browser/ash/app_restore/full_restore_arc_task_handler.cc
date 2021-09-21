@@ -79,6 +79,12 @@ void FullRestoreArcTaskHandler::OnAppConnectionReady() {
 
   if (arc_app_launch_handler_)
     arc_app_launch_handler_->OnAppConnectionReady();
+
+  ::full_restore::SetArcConnection(/*is_connection_ready=*/true);
+}
+
+void FullRestoreArcTaskHandler::OnAppConnectionClosed() {
+  ::full_restore::SetArcConnection(/*is_connection_ready=*/false);
 }
 
 void FullRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {

@@ -1208,6 +1208,9 @@ void ArcAppListPrefs::OnConnectionClosed() {
   is_initialized_ = false;
   package_list_initial_refreshed_ = false;
   app_list_refreshed_callback_.Reset();
+
+  for (auto& observer : observer_list_)
+    observer.OnAppConnectionClosed();
 }
 
 void ArcAppListPrefs::HandleTaskCreated(const absl::optional<std::string>& name,

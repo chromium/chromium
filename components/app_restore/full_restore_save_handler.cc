@@ -466,6 +466,11 @@ std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
   }
 }
 
+void FullRestoreSaveHandler::SetArcConnection(bool is_connection_ready) {
+  if (arc_save_handler_)
+    arc_save_handler_->set_is_connection_ready(is_connection_ready);
+}
+
 void FullRestoreSaveHandler::ClearForTesting() {
   profile_path_to_file_handler_.clear();
   profile_path_to_restore_data_.clear();

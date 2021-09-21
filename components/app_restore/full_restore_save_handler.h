@@ -171,6 +171,9 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // the window's associated AppRestoreData.
   std::string GetAppId(aura::Window* window);
 
+  // Invoked when the ARC instance connection is ready or closed.
+  void SetArcConnection(bool is_connection_ready);
+
   int window_count() const { return window_count_; }
 
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }

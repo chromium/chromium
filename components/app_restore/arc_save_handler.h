@@ -71,6 +71,10 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
   // Returns the app id that associates with |window|.
   std::string GetAppId(aura::Window* window);
 
+  void set_is_connection_ready(bool is_connection_ready) {
+    is_connection_ready_ = is_connection_ready;
+  }
+
  private:
   friend class FullRestoreSaveHandlerTestApi;
 
@@ -86,6 +90,9 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
   base::FilePath profile_path_;
 
   int32_t session_id_ = 0;
+
+  // Specify whether the ARC instance connection is ready.
+  bool is_connection_ready_ = false;
 
   // The map from the ARC session id to the app launch info.
   SessionIdMap session_id_to_app_launch_info_;

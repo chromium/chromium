@@ -122,6 +122,10 @@ void OnTaskCreated(const std::string& app_id,
 COMPONENT_EXPORT(APP_RESTORE)
 void OnTaskDestroyed(int32_t task_id);
 
+// Invoked when the ARC instance connection is ready or closed.
+COMPONENT_EXPORT(APP_RESTORE)
+void SetArcConnection(bool is_connection_ready);
+
 // Invoked when the task theme colors are updated for an ARC app.
 COMPONENT_EXPORT(APP_RESTORE)
 void OnTaskThemeColorUpdated(int32_t task_id,
