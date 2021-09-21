@@ -543,6 +543,8 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     std::vector<scoped_refptr<VASurface>>* reconstructed_surfaces) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(native_input_mode_);
+  TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForGpuMemoryBuffer");
+
   if (frame.storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     NOTIFY_ERROR(kPlatformFailureError,
                  "Unexpected storage: "
@@ -556,22 +558,29 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     return false;
   }
 
-  // Create VASurface from GpuMemory-based VideoFrame.
-  scoped_refptr<gfx::NativePixmap> pixmap = CreateNativePixmapDmaBuf(&frame);
-  if (!pixmap) {
-    NOTIFY_ERROR(kPlatformFailureError,
-                 "Failed to create NativePixmap from VideoFrame");
-    return false;
-  }
+  scoped_refptr<VASurface> source_surface;
+  {
+    TRACE_EVENT0("media,gpu", "VAVEA::ImportGpuMemoryBufferToVASurface");
 
-  scoped_refptr<VASurface> source_surface =
-      vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
-  if (!source_surface) {
-    NOTIFY_ERROR(kPlatformFailureError, "Failed to create VASurface");
-    return false;
+    // Create VASurface from GpuMemory-based VideoFrame.
+    scoped_refptr<gfx::NativePixmap> pixmap = CreateNativePixmapDmaBuf(&frame);
+    if (!pixmap) {
+      NOTIFY_ERROR(kPlatformFailureError,
+                   "Failed to create NativePixmap from VideoFrame");
+      return false;
+    }
+
+    source_surface =
+        vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
+    if (!source_surface) {
+      NOTIFY_ERROR(kPlatformFailureError, "Failed to create VASurface");
+      return false;
+    }
   }
 
   // Create input and reconstructed surfaces.
+  TRACE_EVENT1("media,gpu", "VAVEA::ConstructSurfaces", "the number of layers",
+               spatial_layer_resolutions.size());
   input_surfaces->reserve(spatial_layer_resolutions.size());
   reconstructed_surfaces->reserve(spatial_layer_resolutions.size());
   for (const gfx::Size& encode_size : spatial_layer_resolutions) {
@@ -616,6 +625,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(!native_input_mode_);
   DCHECK(frame.IsMappable());
+  TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForShmem");
 
   if (expected_input_coded_size_ != frame.coded_size()) {
     // In non-zero copy mode, the coded size of the incoming frame should be
@@ -770,12 +780,18 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(
   DCHECK(frame);
   DCHECK(input_surface && reconstructed_surface);
 
-  auto coded_buffer = vaapi_wrapper_->CreateVABuffer(VAEncCodedBufferType,
-                                                     output_buffer_byte_size_);
-  if (!coded_buffer) {
-    NOTIFY_ERROR(kPlatformFailureError, "Failed creating coded buffer");
-    return nullptr;
+  std::unique_ptr<ScopedVABuffer> coded_buffer;
+  {
+    TRACE_EVENT1("media,gpu", "VAVEA::CreateVABuffer", "buffer size",
+                 output_buffer_byte_size_);
+    coded_buffer = vaapi_wrapper_->CreateVABuffer(VAEncCodedBufferType,
+                                                  output_buffer_byte_size_);
+    if (!coded_buffer) {
+      NOTIFY_ERROR(kPlatformFailureError, "Failed creating coded buffer");
+      return nullptr;
+    }
   }
+
   scoped_refptr<CodecPicture> picture;
   switch (output_codec_) {
     case VideoCodec::kH264:
@@ -872,8 +888,10 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       }
 
       TRACE_EVENT0("media,gpu", "VAVEA::FromExecuteToReturn");
-      TRACE_EVENT0("media,gpu", "VAVEA::Execute");
-      job->Execute();
+      {
+        TRACE_EVENT0("media,gpu", "VAVEA::Execute");
+        job->Execute();
+      }
 
       submitted_encode_jobs_.push(std::move(job));
       TryToReturnBitstreamBuffer();

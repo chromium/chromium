@@ -2818,6 +2818,9 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  TRACE_EVENT2("media,gpu", "VaapiWrapper::BlitSurface", "src_rect",
+               src_rect->ToString(), "dest_rect", dest_rect->ToString());
+
   VAStatus va_res =
       vaBeginPicture(va_display_, va_context_id_, va_surface_dest.id());
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVABeginPicture, false);
