@@ -197,8 +197,9 @@ absl::optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
 std::string ItemSuggestCache::GetRequestBody() {
   // We request that ItemSuggest serve our request via particular model by
   // specifying the model name in client_tags. This is a non-standard part of
-  // the API, implemented so we can experiment with model backends. The valid
-  // values for the tag are DCHECKed below.
+  // the API, implemented so we can experiment with model backends. The
+  // client_tags can be set via Finch based on what is expected by the
+  // ItemSuggest backend, and unexpected tags will be assigned a default model.
   static constexpr char kRequestBody[] = R"({
         'client_info': {
           'platform_type': 'CHROME_OS',
@@ -213,7 +214,6 @@ std::string ItemSuggestCache::GetRequestBody() {
       })";
 
   const std::string& model = kModelName.Get();
-  DCHECK(model == "quick_access" || model == "future_access");
   return base::ReplaceStringPlaceholders(kRequestBody, {model}, nullptr);
 }
 
