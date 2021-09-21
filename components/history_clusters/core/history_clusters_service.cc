@@ -413,7 +413,7 @@ void HistoryClustersService::RemoveObserver(Observer* obs) {
 void HistoryClustersService::NotifyDebugMessage(
     const std::string& message) const {
   for (Observer& obs : observers_) {
-    obs.OnMemoriesDebugMessage(message);
+    obs.OnDebugMessage(message);
   }
 }
 

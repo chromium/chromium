@@ -33,12 +33,12 @@ class EntityMetadataProvider;
 
 namespace history_clusters {
 
-// This Service is the API for UIs to fetch Chrome Memories.
+// This Service provides an API to the History Clusters for UI entry points.
 class HistoryClustersService : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnMemoriesDebugMessage(const std::string& message) = 0;
+    virtual void OnDebugMessage(const std::string& message) = 0;
   };
 
   // Used to track incomplete, unpersisted visits.

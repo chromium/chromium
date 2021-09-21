@@ -47,17 +47,12 @@ class HistoryClustersHandler : public mojom::PageHandler,
                     RemoveVisitsCallback callback) override;
 
   // HistoryClustersService::Observer:
-  void OnMemoriesDebugMessage(const std::string& message) override;
+  void OnDebugMessage(const std::string& message) override;
 
  private:
-  // Called with the original `query_params`, `continuation_end_time` which is
-  // created in anticipation of the next query, and `cluster_mojoms` when the
-  // results of querying the HistoryClustersService are available. Subsequently
-  // creates a QueryResult instance using the parameters and sends it to the JS.
-  void OnClustersQueryResult(
-      mojom::QueryParamsPtr original_query_params,
-      const absl::optional<base::Time>& continuation_end_time,
-      std::vector<mojom::ClusterPtr> cluster_mojoms);
+  // Called with the result of querying clusters. Subsequently, `query_result`
+  // is sent to the JS to update the UI.
+  void OnClustersQueryResult(mojom::QueryResultPtr query_result);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
   void OnVisitsRemoved(std::vector<mojom::URLVisitPtr> visits);
