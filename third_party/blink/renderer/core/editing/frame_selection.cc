@@ -162,7 +162,8 @@ VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
   Position extent = GetSelectionInDOMTree().Extent();
   if (base.ComputeContainerNode() && extent.ComputeContainerNode()) {
     DisplayLockUtilities::ScopedForcedUpdate force_locks(
-        MakeGarbageCollected<Range>(GetDocument(), base, extent));
+        MakeGarbageCollected<Range>(GetDocument(), base, extent),
+        DisplayLockContext::ForcedPhase::kLayout);
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
     return ComputeVisibleSelectionInDOMTree();
   } else {

@@ -1135,9 +1135,8 @@ void LocalFrameView::AddPartToUpdate(LayoutEmbeddedObject& object) {
   // However, if layout is blocked (e.g. by content-visibility), we can add the
   // part to update during layout tree attachment (which is a part of style
   // recalc).
-  // TODO(vmpstr): This is using a paint check for now: crbug.com/1250742.
   DCHECK(IsInPerformLayout() ||
-         (DisplayLockUtilities::LockedAncestorPreventingPaint(object) &&
+         (DisplayLockUtilities::LockedAncestorPreventingLayout(object) &&
           frame_->GetDocument()->InStyleRecalc()));
 
   // Tell the DOM element that it needs a Plugin update.

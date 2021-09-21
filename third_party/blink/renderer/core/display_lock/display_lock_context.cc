@@ -346,7 +346,8 @@ void DisplayLockContext::Lock() {
 // whether or not to process the lifecycle for self or for children.
 // =============================================================================
 bool DisplayLockContext::ShouldStyleChildren() const {
-  return !is_locked_ || update_forced_ ||
+  return !is_locked_ ||
+         forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree) ||
          (document_->GetDisplayLockDocumentState()
               .ActivatableDisplayLocksForced() &&
           IsActivatable(DisplayLockActivationReason::kAny));
@@ -373,7 +374,7 @@ void DisplayLockContext::DidStyleChildren() {
 }
 
 bool DisplayLockContext::ShouldLayoutChildren() const {
-  return !is_locked_ || update_forced_ ||
+  return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
          (document_->GetDisplayLockDocumentState()
               .ActivatableDisplayLocksForced() &&
           IsActivatable(DisplayLockActivationReason::kAny));
@@ -391,13 +392,12 @@ void DisplayLockContext::DidLayoutChildren() {
 }
 
 bool DisplayLockContext::ShouldPrePaintChildren() const {
-  return !is_locked_ || update_forced_;
+  return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint);
 }
 
 bool DisplayLockContext::ShouldPaintChildren() const {
   // Note that forced updates should never require us to paint, so we don't
-  // check |update_forced_| here. In other words, although |update_forced_|
-  // could be true here, we still should not paint.
+  // check |forced_info_| here.
   return !is_locked_;
 }
 // End Should* and Did* functions ==============================================
@@ -504,37 +504,29 @@ bool DisplayLockContext::ShouldCommitForActivation(
   return IsActivatable(reason) && IsLocked();
 }
 
-void DisplayLockContext::NotifyForcedUpdateScopeStarted() {
-  ++update_forced_;
-  if (update_forced_ == 1) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"), "LockForced",
-        TRACE_ID_LOCAL(this));
-  }
-
+void DisplayLockContext::NotifyForcedUpdateScopeStarted(ForcedPhase phase) {
+  forced_info_.start(phase);
   if (IsLocked()) {
     // Now that the update is forced, we should ensure that style layout, and
     // prepaint code can reach it via dirty bits. Note that paint isn't a part
-    // of this, since |update_forced_| doesn't force paint to happen. See
+    // of this, since |forced_info_| doesn't force paint to happen. See
     // ShouldPaint(). Also, we could have forced a lock from SetRequestedState
     // during a style update. If that's the case, don't mark style as dirty
     // from within style recalc. We rely on `AdjustStyleRecalcChangeForChildren`
     // instead.
-    if (CanDirtyStyle())
+    if (CanDirtyStyle() &&
+        forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree)) {
       MarkForStyleRecalcIfNeeded();
-    MarkForLayoutIfNeeded();
-    MarkAncestorsForPrePaintIfNeeded();
+    }
+    if (forced_info_.is_forced(ForcedPhase::kLayout))
+      MarkForLayoutIfNeeded();
+    if (forced_info_.is_forced(ForcedPhase::kPrePaint))
+      MarkAncestorsForPrePaintIfNeeded();
   }
 }
 
-void DisplayLockContext::NotifyForcedUpdateScopeEnded() {
-  DCHECK(update_forced_);
-  --update_forced_;
-  if (update_forced_ == 0) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"), "LockForced",
-        TRACE_ID_LOCAL(this));
-  }
+void DisplayLockContext::NotifyForcedUpdateScopeEnded(ForcedPhase phase) {
+  forced_info_.end(phase);
 }
 
 void DisplayLockContext::Unlock() {
@@ -651,7 +643,20 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
   if (IsElementDirtyForLayout()) {
     // Forces the marking of ancestors to happen, even if
     // |DisplayLockContext::ShouldLayout()| returns false.
-    base::AutoReset<int> scoped_force(&update_forced_, update_forced_ + 1);
+    class ScopedForceLayout {
+      STACK_ALLOCATED();
+
+     public:
+      explicit ScopedForceLayout(DisplayLockContext* context)
+          : context_(context) {
+        context_->forced_info_.start(ForcedPhase::kLayout);
+      }
+      ~ScopedForceLayout() { context_->forced_info_.end(ForcedPhase::kLayout); }
+
+     private:
+      DisplayLockContext* context_;
+    } scoped_force(this);
+
     if (child_layout_was_blocked_ || HasStashedScrollOffset()) {
       // We've previously blocked a child traversal when doing self-layout for
       // the locked element, so we're marking it with child-needs-layout so that

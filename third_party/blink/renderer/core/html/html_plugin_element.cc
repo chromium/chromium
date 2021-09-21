@@ -233,13 +233,7 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
     // add our layout object to the frame view's update list. This is typically
     // done during layout, but if we're blocking layout, we will never update
     // the plugin and thus delay the load event indefinitely.
-    // TODO(vmpstr): We're using a paint check here, because this function is
-    // called during style. So we could be forcing an update on our style and
-    // layout tree, without forcing a layout. However, we currently don't
-    // distinguish this and LockedAncestorPreventingLayout would not find the
-    // forced context, which means although it looks like we don't have a
-    // context that blocks layout, we actually do. crbug.com/1250742.
-    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
+    if (DisplayLockUtilities::LockedAncestorPreventingLayout(*this)) {
       auto* embedded_object = GetLayoutEmbeddedObject();
       if (auto* frame_view = embedded_object->GetFrameView())
         frame_view->AddPartToUpdate(*embedded_object);

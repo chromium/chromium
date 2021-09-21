@@ -76,6 +76,8 @@ class CORE_EXPORT DisplayLockContext final
     kStyleUpdateDescendants
   };
 
+  enum class ForcedPhase { kStyleAndLayoutTree, kLayout, kPrePaint };
+
   explicit DisplayLockContext(Element*);
   ~DisplayLockContext() = default;
 
@@ -124,8 +126,6 @@ class CORE_EXPORT DisplayLockContext final
   bool IsLocked() const { return is_locked_; }
 
   EContentVisibility GetState() { return state_; }
-
-  bool UpdateForced() const { return update_forced_; }
 
   // This is called when the element with which this context is associated is
   // moved to a new document. Used to listen to the lifecycle update from the
@@ -242,8 +242,8 @@ class CORE_EXPORT DisplayLockContext final
   void RequestUnlock();
 
   // Called in |DisplayLockUtilities| to notify the state of scope.
-  void NotifyForcedUpdateScopeStarted();
-  void NotifyForcedUpdateScopeEnded();
+  void NotifyForcedUpdateScopeStarted(ForcedPhase phase);
+  void NotifyForcedUpdateScopeEnded(ForcedPhase phase);
 
   // Records the locked context counts on the document as well as context that
   // block all activation.
@@ -342,8 +342,59 @@ class CORE_EXPORT DisplayLockContext final
   WeakMember<Document> document_;
   EContentVisibility state_ = EContentVisibility::kVisible;
 
-  // If non-zero, then the update has been forced.
-  int update_forced_ = 0;
+  // A struct to keep track of forced unlocks, and reasons for it.
+  struct UpdateForcedInfo {
+    bool is_forced(ForcedPhase phase) const {
+      switch (phase) {
+        case ForcedPhase::kStyleAndLayoutTree:
+          return style_update_forced_ || layout_update_forced_ ||
+                 prepaint_update_forced_;
+        case ForcedPhase::kLayout:
+          return layout_update_forced_ || prepaint_update_forced_;
+        case ForcedPhase::kPrePaint:
+          return prepaint_update_forced_;
+      }
+    }
+
+    void start(ForcedPhase phase) {
+      switch (phase) {
+        case ForcedPhase::kStyleAndLayoutTree:
+          ++style_update_forced_;
+          break;
+        case ForcedPhase::kLayout:
+          ++layout_update_forced_;
+          break;
+        case ForcedPhase::kPrePaint:
+          ++prepaint_update_forced_;
+      }
+    }
+
+    void end(ForcedPhase phase) {
+      switch (phase) {
+        case ForcedPhase::kStyleAndLayoutTree:
+          DCHECK(style_update_forced_);
+          --style_update_forced_;
+          break;
+        case ForcedPhase::kLayout:
+          DCHECK(layout_update_forced_);
+          --layout_update_forced_;
+          break;
+        case ForcedPhase::kPrePaint:
+          DCHECK(prepaint_update_forced_);
+          --prepaint_update_forced_;
+      }
+    }
+
+   private:
+    // Each of the forced modes includes forcing phases before. For instance,
+    // layout_update_forced_ == 1 would also ensure that style and layout tree
+    // are up to date.
+    int style_update_forced_ = 0;
+    int layout_update_forced_ = 0;
+    int prepaint_update_forced_ = 0;
+  };
+
+  UpdateForcedInfo forced_info_;
 
   StyleType blocked_style_traversal_type_ = kStyleUpdateNotRequired;
   // Signifies whether we've blocked a layout tree reattachment on |element_|'s

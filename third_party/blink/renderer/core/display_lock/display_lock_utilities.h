@@ -62,17 +62,22 @@ class CORE_EXPORT DisplayLockUtilities {
     // Test friends.
     friend class DisplayLockContextRenderingTest;
 
-    explicit ScopedForcedUpdate(const Node* node, bool include_self = false)
-        : impl_(MakeGarbageCollected<Impl>(node, include_self)) {}
-    explicit ScopedForcedUpdate(const Range* range)
-        : impl_(MakeGarbageCollected<Impl>(range)) {}
+    explicit ScopedForcedUpdate(const Node* node,
+                                DisplayLockContext::ForcedPhase phase,
+                                bool include_self = false)
+        : impl_(MakeGarbageCollected<Impl>(node, phase, include_self)) {}
+    explicit ScopedForcedUpdate(const Range* range,
+                                DisplayLockContext::ForcedPhase phase)
+        : impl_(MakeGarbageCollected<Impl>(range, phase)) {}
 
     friend class DisplayLockDocumentState;
 
     class CORE_EXPORT Impl final : public GarbageCollected<Impl> {
      public:
-      explicit Impl(const Node* node, bool include_self = false);
-      explicit Impl(const Range* range);
+      Impl(const Node* node,
+           DisplayLockContext::ForcedPhase phase,
+           bool include_self = false);
+      Impl(const Range* range, DisplayLockContext::ForcedPhase phase);
 
       // Adds another display-lock scope to this chain. Added when a new lock is
       // created in the ancestor chain of this chain's node.
@@ -88,6 +93,7 @@ class CORE_EXPORT DisplayLockUtilities {
 
      private:
       Member<const Node> node_;
+      DisplayLockContext::ForcedPhase phase_;
       HeapHashSet<Member<DisplayLockContext>> forced_context_set_;
       Member<Impl> parent_frame_impl_;
     };

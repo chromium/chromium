@@ -168,8 +168,10 @@ DisplayLockUtilities::ActivatableLockedInclusiveAncestors(
   return elements_to_activate;
 }
 
-DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Range* range)
-    : node_(range->FirstNode()) {
+DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
+    const Range* range,
+    DisplayLockContext::ForcedPhase phase)
+    : node_(range->FirstNode()), phase_(phase) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
     return;
   if (!node_)
@@ -179,7 +181,7 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Range* range)
   // subframes inside the Range or multiple parent frames.
   auto* owner_node = GetFrameOwnerNode(node_);
   if (owner_node)
-    parent_frame_impl_ = MakeGarbageCollected<Impl>(owner_node, true);
+    parent_frame_impl_ = MakeGarbageCollected<Impl>(owner_node, phase, true);
 
   range->OwnerDocument().GetDisplayLockDocumentState().BeginRangeForcedScope(
       range, this);
@@ -207,13 +209,15 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Range* range)
     }
   }
   for (DisplayLockContext* context : forced_context_set_) {
-    context->NotifyForcedUpdateScopeStarted();
+    context->NotifyForcedUpdateScopeStarted(phase_);
   }
 }
 
-DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Node* node,
-                                                     bool include_self)
-    : node_(node) {
+DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
+    const Node* node,
+    DisplayLockContext::ForcedPhase phase,
+    bool include_self)
+    : node_(node), phase_(phase) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
     return;
 
@@ -222,7 +226,7 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Node* node,
 
   auto* owner_node = GetFrameOwnerNode(node);
   if (owner_node)
-    parent_frame_impl_ = MakeGarbageCollected<Impl>(owner_node, true);
+    parent_frame_impl_ = MakeGarbageCollected<Impl>(owner_node, phase, true);
 
   node->GetDocument().GetDisplayLockDocumentState().BeginNodeForcedScope(
       node, include_self, this);
@@ -255,7 +259,7 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Node* node,
     if (!ancestor_node)
       continue;
     if (auto* context = ancestor_node->GetDisplayLockContext()) {
-      context->NotifyForcedUpdateScopeStarted();
+      context->NotifyForcedUpdateScopeStarted(phase_);
       forced_context_set_.insert(context);
     }
   }
@@ -269,7 +273,7 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::Destroy() {
   if (parent_frame_impl_)
     parent_frame_impl_->Destroy();
   for (auto context : forced_context_set_) {
-    context->NotifyForcedUpdateScopeEnded();
+    context->NotifyForcedUpdateScopeEnded(phase_);
   }
 }
 
@@ -277,7 +281,7 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::
     AddForcedUpdateScopeForContext(DisplayLockContext* context) {
   auto result = forced_context_set_.insert(context);
   if (result.is_new_entry)
-    context->NotifyForcedUpdateScopeStarted();
+    context->NotifyForcedUpdateScopeStarted(phase_);
 }
 
 const Element* DisplayLockUtilities::NearestLockedInclusiveAncestor(

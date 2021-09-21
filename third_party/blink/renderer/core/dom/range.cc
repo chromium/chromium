@@ -1591,7 +1591,8 @@ void Range::expand(const String& unit, ExceptionState& exception_state) {
 }
 
 DOMRectList* Range::getClientRects() const {
-  DisplayLockUtilities::ScopedForcedUpdate force_locks(this);
+  DisplayLockUtilities::ScopedForcedUpdate force_locks(
+      this, DisplayLockContext::ForcedPhase::kLayout);
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   Vector<FloatQuad> quads;
@@ -1713,7 +1714,8 @@ void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
 }
 
 FloatRect Range::BoundingRect() const {
-  DisplayLockUtilities::ScopedForcedUpdate force_locks(this);
+  DisplayLockUtilities::ScopedForcedUpdate force_locks(
+      this, DisplayLockContext::ForcedPhase::kLayout);
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   Vector<FloatQuad> quads;

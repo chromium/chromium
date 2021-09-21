@@ -2012,8 +2012,9 @@ class DisplayLockContextRenderingTest
   }
   DisplayLockUtilities::ScopedForcedUpdate GetScopedForcedUpdate(
       const Node* node,
+      DisplayLockContext::ForcedPhase phase,
       bool include_self = false) {
-    return DisplayLockUtilities::ScopedForcedUpdate(node, include_self);
+    return DisplayLockUtilities::ScopedForcedUpdate(node, phase, include_self);
   }
 };
 
@@ -2175,7 +2176,9 @@ TEST_F(DisplayLockContextRenderingTest,
 
   ASSERT_TRUE(lockable->GetDisplayLockContext());
   {
-    auto scope = GetScopedForcedUpdate(lockable, true /* include self */);
+    auto scope = GetScopedForcedUpdate(
+        lockable, DisplayLockContext::ForcedPhase::kPrePaint,
+        true /* include self */);
 
     // The following should not crash/DCHECK.
     UpdateAllLifecyclePhasesForTest();
@@ -2803,7 +2806,9 @@ TEST_F(DisplayLockContextRenderingTest,
   EXPECT_TRUE(new_parent->GetLayoutObject()->NeedsLayout());
 
   {
-    auto scope = GetScopedForcedUpdate(hide, true /* include self */);
+    auto scope =
+        GetScopedForcedUpdate(hide, DisplayLockContext::ForcedPhase::kLayout,
+                              true /* include self */);
 
     // Updating the lifecycle should update target and new_parent, since it is
     // in a locked but forced subtree.
@@ -2994,7 +2999,9 @@ TEST_F(DisplayLockContextPreCAPRenderingTest,
   EXPECT_EQ(compositor->GetCompositingInputsRoot(), container_layer);
 
   {
-    auto scope = GetScopedForcedUpdate(hide, true /* include self */);
+    auto scope =
+        GetScopedForcedUpdate(hide, DisplayLockContext::ForcedPhase::kPrePaint,
+                              true /* include self */);
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -3032,7 +3039,9 @@ TEST_F(DisplayLockContextRenderingTest,
   auto* target = GetDocument().getElementById("target");
   target->classList().Add("backface_hidden");
 
-  auto scope = GetScopedForcedUpdate(hide, true /* include self */);
+  auto scope =
+      GetScopedForcedUpdate(hide, DisplayLockContext::ForcedPhase::kPrePaint,
+                            true /* include self */);
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdateForNode(*target));
 }
 
