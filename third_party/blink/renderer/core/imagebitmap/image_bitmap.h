@@ -101,7 +101,9 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
       SourceImageStatus*,
       const FloatSize&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
-  bool WouldTaintOrigin() const override { return !image_->OriginClean(); }
+  bool WouldTaintOrigin() const override {
+    return image_ ? !image_->OriginClean() : false;
+  }
   FloatSize ElementSize(const FloatSize&,
                         const RespectImageOrientationEnum) const override;
   bool IsImageBitmap() const override { return true; }
