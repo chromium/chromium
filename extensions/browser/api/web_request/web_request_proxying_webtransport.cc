@@ -194,9 +194,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
 
     int error_code = net::ERR_ABORTED;
     if (error.has_value()) {
-      int webtransport_error_code = error.value().net_error;
-      if (webtransport_error_code != net::OK)
-        error_code = webtransport_error_code;
+      error_code = error->net_error;
     }
     OnError(error_code);
     // `this` is deleted.
