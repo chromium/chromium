@@ -307,8 +307,8 @@ bool IsUsingVulkan() {
 
 bool IsDrDcEnabled() {
 #if defined(OS_ANDROID)
-  // Currently only supported on android P.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() !=
+  // Enabled on android P+.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SDK_VERSION_P) {
     return false;
   }
