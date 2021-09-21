@@ -6,9 +6,9 @@
 #define CHROMECAST_CAST_CORE_RUNTIME_MESSAGE_PORT_APPLICATION_SERVICE_GRPC_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "third_party/cast_core/public/src/proto/v2/runtime_message_port_application_service.grpc.pb.h"
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
 #include "third_party/grpc/src/include/grpcpp/server_context.h"
-#include "third_party/openscreen/src/cast/cast_core/api/v2/runtime_message_port_application_service.grpc.pb.h"
 
 namespace chromecast {
 

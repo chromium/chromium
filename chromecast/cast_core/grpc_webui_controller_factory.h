@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "content/public/browser/web_ui_controller_factory.h"
-#include "third_party/openscreen/src/cast/cast_core/api/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
 
 namespace content {
 class BrowserContext;

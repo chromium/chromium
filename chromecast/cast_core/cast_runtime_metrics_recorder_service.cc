@@ -9,7 +9,7 @@
 #include "chromecast/cast_core/cast_runtime_histogram_flattener.h"
 #include "chromecast/cast_core/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/metrics_recorder_grpc.h"
-#include "third_party/openscreen/src/cast/cast_core/api/metrics/metrics_recorder.pb.h"
+#include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.pb.h"
 
 namespace chromecast {
 namespace {

@@ -11,7 +11,7 @@
 #include "chromecast/media/cma/backend/proxy/push_buffer_queue.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/task_runner.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.grpc.pb.h"
 #include "third_party/protobuf/src/google/protobuf/util/time_util.h"
 
 namespace chromecast {

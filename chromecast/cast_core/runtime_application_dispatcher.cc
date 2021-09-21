@@ -13,10 +13,10 @@
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/cast_core/streaming_runtime_application.h"
 #include "chromecast/cast_core/web_runtime_application.h"
+#include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
-#include "third_party/openscreen/src/cast/cast_core/api/common/application_config.pb.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {

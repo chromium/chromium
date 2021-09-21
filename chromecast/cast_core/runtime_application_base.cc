@@ -7,10 +7,10 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/cast_core/grpc_method.h"
+#include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/runtime_service.grpc.pb.h"
 
 namespace chromecast {
 

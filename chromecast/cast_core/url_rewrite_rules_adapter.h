@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/openscreen/src/cast/cast_core/api/v2/url_rewrite.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/url_rewrite.pb.h"
 
 namespace chromecast {
 

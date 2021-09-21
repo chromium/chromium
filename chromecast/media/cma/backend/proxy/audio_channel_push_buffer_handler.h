@@ -7,7 +7,7 @@
 
 #include "chromecast/media/api/cma_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.pb.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 
 namespace chromecast {
 namespace media {

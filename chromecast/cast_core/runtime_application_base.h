@@ -15,7 +15,7 @@
 #include "chromecast/cast_core/runtime_application.h"
 #include "chromecast/cast_core/runtime_application_service_grpc_impl.h"
 #include "chromecast/cast_core/runtime_message_port_application_service_grpc_impl.h"
-#include "third_party/openscreen/src/cast/cast_core/api/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
 
 namespace chromecast {
 

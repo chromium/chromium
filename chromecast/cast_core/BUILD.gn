@@ -53,10 +53,10 @@ cast_source_set("grpc_impl") {
   public_deps = [
     ":grpc_support",
     "//base",
+    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
+    "//third_party/cast_core/public/src/proto/v2:runtime_application_service_proto",
+    "//third_party/cast_core/public/src/proto/v2:runtime_message_port_application_service_proto",
     "//third_party/grpc:grpc++",
-    "//third_party/openscreen/src/cast/cast_core/api:runtime_application_service_proto",
-    "//third_party/openscreen/src/cast/cast_core/api:runtime_message_port_application_service_proto",
-    "//third_party/openscreen/src/cast/cast_core/api:runtime_service_proto",
   ]
 }
 
@@ -70,7 +70,7 @@ cast_source_set("url_rewrite") {
     "//base",
     "//chromecast/common/mojom",
     "//mojo/public/cpp/bindings",
-    "//third_party/openscreen/src/cast/cast_core/api:url_rewrite_proto",
+    "//third_party/cast_core/public/src/proto/v2:url_rewrite_proto",
   ]
 
   deps = [ "//url" ]
@@ -88,8 +88,8 @@ cast_source_set("message_port") {
     ":grpc_support",
     "//base",
     "//components/cast/message_port",
-    "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
-    "//third_party/openscreen/src/cast/cast_core/api:message_channel_proto",
+    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
+    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
   ]
 }
 
@@ -111,8 +111,8 @@ cast_source_set("metrics_recorder") {
     ":grpc_impl",
     "//base",
     "//chromecast/metrics:metrics_recorder",
+    "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
     "//third_party/grpc:grpc++",
-    "//third_party/openscreen/src/cast/cast_core/api:metrics_recorder_proto",
   ]
 
   deps = [
@@ -140,8 +140,8 @@ cast_source_set("grpc_webui") {
     "//chromecast/browser:browser_base",
     "//chromecast/browser:public",
     "//third_party/blink/public/common:headers",
+    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
     "//third_party/grpc:grpc++",
-    "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
   ]
 
   if (enable_chromecast_extensions) {
@@ -171,8 +171,8 @@ if (is_linux) {
       "//components/cast/message_port",
       "//components/cast/message_port:message_port_cast",
       "//mojo/public/cpp/bindings",
-      "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
-      "//third_party/openscreen/src/cast/cast_core/api:message_channel_proto",
+      "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
+      "//third_party/cast_core/public/src/proto/web:message_channel_proto",
     ]
 
     deps = [ "//chromecast/bindings:bindings_manager_cast" ]
@@ -199,12 +199,12 @@ if (is_linux) {
       ":metrics_recorder",
       "//base",
       "//chromecast/browser:public",
+      "//third_party/cast_core/public/src/proto/common:application_config_proto",
+      "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
+      "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
+      "//third_party/cast_core/public/src/proto/v2:cast_message_proto",
+      "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
       "//third_party/grpc:grpc++",
-      "//third_party/openscreen/src/cast/cast_core/api:application_config_proto",
-      "//third_party/openscreen/src/cast/cast_core/api:cast_core_service_proto",
-      "//third_party/openscreen/src/cast/cast_core/api:cast_message_proto",
-      "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
-      "//third_party/openscreen/src/cast/cast_core/api:metrics_recorder_proto",
     ]
 
     deps = [
@@ -372,8 +372,8 @@ executable("demo_platform_service") {
 
   public_deps = [
     "//base",
-    "//third_party/openscreen/src/cast/cast_core/api:cast_core_service_proto",
-    "//third_party/openscreen/src/cast/cast_core/api:platform_service_proto",
+    "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
+    "//third_party/cast_core/public/src/proto/platform:platform_service_proto",
   ]
 
   deps = [ "//third_party/grpc:grpc++" ]
@@ -388,8 +388,8 @@ cast_source_set("cast_core_test_utils") {
   ]
 
   deps = [
+    "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
     "//third_party/metrics_proto",
-    "//third_party/openscreen/src/cast/cast_core/api:metrics_recorder_proto",
   ]
 }
 
@@ -422,9 +422,9 @@ test("cast_cast_core_unittests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
     "//third_party/grpc:grpc++",
     "//third_party/inspector_protocol:crdtp",
     "//third_party/metrics_proto",
-    "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
   ]
 }

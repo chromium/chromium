@@ -7,9 +7,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromecast/cast_core/grpc_method.h"
+#include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
 #include "third_party/grpc/src/include/grpcpp/server_context.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/runtime_service.grpc.pb.h"
 
 namespace chromecast {
 

@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "third_party/openscreen/src/cast/cast_core/api/metrics/metrics_recorder.pb.h"
+#include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.pb.h"
 
 namespace chromecast {
 
