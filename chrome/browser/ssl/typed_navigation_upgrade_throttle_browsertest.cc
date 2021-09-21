@@ -209,7 +209,8 @@ class TypedNavigationUpgradeThrottleBrowserTest
     }
 
     if (params->url_request.url == MakeHttpsURL(kSiteWithSlowHttps)) {
-      // Do nothing. This will hang the load.
+      // Do nothing, but keep the Mojo pipes alive. This will hang the load.
+      hung_requests_.emplace_back(std::move(*params));
       return true;
     }
 
@@ -431,6 +432,11 @@ class TypedNavigationUpgradeThrottleBrowserTest
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+
+  // Mojo pipes for requests to kSiteWithSlowHttps. Have to keep the pipes open
+  // to make the request hang, instead of dropping them which acts like the
+  // network service crashed.
+  std::vector<content::URLLoaderInterceptor::RequestParams> hung_requests_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
