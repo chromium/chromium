@@ -2,19 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Defines all command-line switches for media/webrtc.
+// Defines features for media/webrtc.
 
-#ifndef MEDIA_WEBRTC_WEBRTC_SWITCHES_H_
-#define MEDIA_WEBRTC_WEBRTC_SWITCHES_H_
+#ifndef MEDIA_WEBRTC_WEBRTC_FEATURES_H_
+#define MEDIA_WEBRTC_WEBRTC_FEATURES_H_
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-
-namespace switches {
-
-COMPONENT_EXPORT(MEDIA_WEBRTC) extern const char kAgcStartupMinVolume[];
-
-}  // namespace switches
 
 namespace features {
 
@@ -33,6 +27,9 @@ extern const base::Feature kWebRtcHybridAgc;
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 extern const base::Feature kWebRtcAnalogAgcClippingControl;
 
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+extern const base::Feature kWebRtcAnalogAgcStartupMinVolume;
+
 }  // namespace features
 
-#endif  // MEDIA_WEBRTC_WEBRTC_SWITCHES_H_
+#endif  // MEDIA_WEBRTC_WEBRTC_FEATURES_H_

@@ -519,13 +519,9 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
   // has determined webrtc::AudioProcessing will be used.
   DCHECK(WouldModifyAudio(properties));
 
-  absl::optional<int> agc_startup_min_volume =
-      Platform::Current()->GetAgcStartupMinimumVolume();
-
   audio_processing_ = media::CreateWebRtcAudioProcessingModule(
       properties.ToAudioProcessingSettings(
-          use_capture_multi_channel_processing_),
-      agc_startup_min_volume);
+          use_capture_multi_channel_processing_));
 
   // Register as a listener for the echo cancellation playout reference signal.
   if (playout_data_source_) {

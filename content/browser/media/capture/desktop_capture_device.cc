@@ -38,7 +38,7 @@
 #include "content/public/common/content_switches.h"
 #include "media/base/video_util.h"
 #include "media/capture/content/capture_resolution_chooser.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"

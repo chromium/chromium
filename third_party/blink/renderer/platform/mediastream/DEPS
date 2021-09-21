@@ -9,7 +9,7 @@ include_rules = [
     "+base/atomicops.h",
     "+media/base",
     "+media/webrtc/audio_processor_controls.h",
-    "+media/webrtc/webrtc_switches.h",
+    "+media/webrtc/webrtc_features.h",
     "+third_party/blink/renderer/platform/audio",
     "+third_party/blink/renderer/platform/heap",
     "+third_party/blink/renderer/platform/peerconnection/rtc_api_name.h",

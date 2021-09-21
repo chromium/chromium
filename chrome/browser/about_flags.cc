@@ -166,7 +166,7 @@
 #include "media/capture/capture_switches.h"
 #include "media/media_buildflags.h"
 #include "media/midi/midi_switches.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "mojo/core/embedder/features.h"
 #include "net/base/features.h"
 #include "net/net_buildflags.h"

@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "third_party/webrtc/api/audio/echo_canceller3_config.h"
 #include "third_party/webrtc/api/audio/echo_canceller3_factory.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
@@ -59,6 +59,15 @@ Agc1AnalagConfig::ClippingPredictor::Mode GetClippingPredictorMode(int mode) {
 bool Allow48kHzApmProcessing() {
   return base::FeatureList::IsEnabled(
       ::features::kWebRtcAllow48kHzProcessingOnArm);
+}
+
+absl::optional<int> GetAgcStartupMinVolume() {
+  if (!base::FeatureList::IsEnabled(
+          ::features::kWebRtcAnalogAgcStartupMinVolume)) {
+    return absl::nullopt;
+  }
+  return base::GetFieldTrialParamByFeatureAsInt(
+      ::features::kWebRtcAnalogAgcStartupMinVolume, "volume", 0);
 }
 
 void ConfigAgc2AdaptiveDigitalForHybridExperiment(
@@ -124,11 +133,9 @@ void ConfigAgc1AnalogForClippingControlExperiment(Agc1AnalagConfig& config) {
 }
 
 // Configures automatic gain control in `apm_config`.
-// TODO(crbug.com/555577): Remove `agc_startup_min_volume` when fixed.
 // TODO(bugs.webrtc.org/7494): Clean up once hybrid AGC experiment finalized.
 // TODO(bugs.webrtc.org/7494): Remove unused cases, simplify decision logic.
 void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
-                                absl::optional<int> agc_startup_min_volume,
                                 webrtc::AudioProcessing::Config& apm_config) {
   // Configure AGC1.
   if (settings.automatic_gain_control) {
@@ -139,7 +146,10 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
   // Enable and configure AGC1 Analog if needed.
   if (kAnalogAgcSupported && settings.experimental_automatic_gain_control) {
     agc1_analog_config.enabled = true;
-    agc1_analog_config.startup_min_volume = agc_startup_min_volume.value_or(0);
+    absl::optional<int> startup_min_volume = GetAgcStartupMinVolume();
+    // TODO(crbug.com/555577): Do not zero if `startup_min_volume` if no
+    // override is specified, instead fall back to the config default value.
+    agc1_analog_config.startup_min_volume = startup_min_volume.value_or(0);
   }
   // Disable AGC1 Analog.
   if (kAllowToDisableAnalogAgc &&
@@ -242,8 +252,7 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
 }
 
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
-    const AudioProcessingSettings& settings,
-    absl::optional<int> agc_startup_min_volume) {
+    const AudioProcessingSettings& settings) {
   // Create and configure the webrtc::AudioProcessing.
   webrtc::AudioProcessingBuilder ap_builder;
   if (settings.echo_cancellation) {
@@ -275,7 +284,7 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
       settings.transient_noise_suppression;
 #endif
 
-  ConfigAutomaticGainControl(settings, agc_startup_min_volume, apm_config);
+  ConfigAutomaticGainControl(settings, apm_config);
 
   // Ensure that 48 kHz APM processing is always active. This overrules the
   // default setting in WebRTC of 32 kHz for ARM platforms.

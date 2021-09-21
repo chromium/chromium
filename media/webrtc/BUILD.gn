@@ -13,8 +13,8 @@ component("webrtc") {
     "audio_delay_stats_reporter.h",
     "helpers.cc",
     "helpers.h",
-    "webrtc_switches.cc",
-    "webrtc_switches.h",
+    "webrtc_features.cc",
+    "webrtc_features.h",
   ]
 
   defines = [ "IS_MEDIA_WEBRTC_IMPL" ]

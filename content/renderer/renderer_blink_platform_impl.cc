@@ -68,7 +68,7 @@
 #include "media/base/media_switches.h"
 #include "media/filters/stream_parser_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -689,18 +689,6 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
     }
   }
   *allow_mdns_obfuscation = true;
-}
-
-absl::optional<int> RendererBlinkPlatformImpl::GetAgcStartupMinimumVolume() {
-  std::string min_volume_str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kAgcStartupMinVolume);
-  int startup_min_volume;
-  if (min_volume_str.empty() ||
-      !base::StringToInt(min_volume_str, &startup_min_volume)) {
-    return absl::optional<int>();
-  }
-  return absl::optional<int>(startup_min_volume);
 }
 
 bool RendererBlinkPlatformImpl::IsWebRtcHWH264DecodingEnabled(

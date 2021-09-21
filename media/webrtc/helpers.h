@@ -31,11 +31,9 @@ bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio);
 
 // Creates and configures a `webrtc::AudioProcessing` audio processing module
 // (APM), based on the provided parameters and on features and field trials.
-// TODO(crbug.com/555577): Remove `agc_startup_min_volume` when fixed.
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
-    const AudioProcessingSettings& settings,
-    absl::optional<int> agc_startup_min_volume);
+    const AudioProcessingSettings& settings);
 
 // Starts the echo cancellation dump in
 // |audio_processing|. |worker_queue| must be kept alive until either

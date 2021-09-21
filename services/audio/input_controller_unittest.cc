@@ -18,7 +18,7 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_processing.h"
 #include "media/base/user_input_monitor.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "testing/gmock/include/gmock/gmock.h"

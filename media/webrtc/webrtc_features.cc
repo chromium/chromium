@@ -2,21 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-
-namespace switches {
-
-// Override the default minimum starting volume of the Automatic Gain Control
-// algorithm in WebRTC used with audio tracks from getUserMedia.
-// The valid range is 12-255. Values outside that range will be clamped
-// to the lowest or highest valid value inside WebRTC.
-// TODO(crbug.com/555577): Remove this switch when fixed.
-const char kAgcStartupMinVolume[] = "agc-startup-min-volume";
-
-}  // namespace switches
 
 namespace features {
 
@@ -44,5 +33,10 @@ const base::Feature kWebRtcHybridAgc{"WebRtcHybridAgc",
 // Enables and configures the clipping control in the WebRTC analog AGC.
 const base::Feature kWebRtcAnalogAgcClippingControl{
     "WebRtcAnalogAgcClippingControl", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables the override for the default minimum starting volume of the Automatic
+// Gain Control algorithm in WebRTC.
+const base::Feature kWebRtcAnalogAgcStartupMinVolume{
+    "WebRtcAnalogAgcStartupMinVolume", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

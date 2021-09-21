@@ -180,7 +180,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
                                     uint16_t* udp_min_port,
                                     uint16_t* udp_max_port,
                                     bool* allow_mdns_obfuscation) override;
-  absl::optional<int> GetAgcStartupMinimumVolume() override;
   bool IsWebRtcHWH264DecodingEnabled(
       webrtc::VideoCodecType video_coded_type) override;
   bool IsWebRtcHWEncodingEnabled() override;
