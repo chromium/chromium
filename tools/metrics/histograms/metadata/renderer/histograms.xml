@@ -248,9 +248,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
-    expires_after="2021-10-31">
-  <owner>yosin@chromium.org</owner>
+    expires_after="2022-01-31">
   <owner>kojii@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent acquiring the primary font consumed in the main tread before
@@ -260,9 +260,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
-    expires_after="2021-10-31">
-  <owner>yosin@chromium.org</owner>
+    expires_after="2022-01-31">
   <owner>kojii@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent acquiring the primary font consumed in style recalc, in the
@@ -272,9 +272,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
-    expires_after="2021-10-31">
-  <owner>yosin@chromium.org</owner>
+    expires_after="2022-01-31">
   <owner>kojii@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
     The time spent finding the system fallback font consumed in the main tread
