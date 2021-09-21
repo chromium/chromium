@@ -884,7 +884,8 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
     }
 
     const uint32_t packed_header_attributes =
-        (VA_ENC_PACKED_HEADER_SEQUENCE | VA_ENC_PACKED_HEADER_PICTURE);
+        (VA_ENC_PACKED_HEADER_SEQUENCE | VA_ENC_PACKED_HEADER_PICTURE |
+         VA_ENC_PACKED_HEADER_SLICE);
     if ((packed_header_attributes & attrib.value) == packed_header_attributes) {
       required_attribs->push_back(
           {VAConfigAttribEncPackedHeaders, packed_header_attributes});
