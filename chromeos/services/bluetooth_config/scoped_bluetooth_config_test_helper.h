@@ -13,6 +13,7 @@ namespace bluetooth_config {
 class FakeAdapterStateController;
 class FakeDeviceCache;
 class FakeDiscoverySessionManager;
+class FakeDeviceOperationHandler;
 
 // Test helper which provides access to fake implementations. This class
 // automatically overrides CrosBluetoothConfig when created and reverses the
@@ -47,10 +48,14 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
       DeviceCache* device_cache) override;
+  std::unique_ptr<DeviceOperationHandler> CreateDeviceOperationHandler(
+      AdapterStateController* adapter_state_controller,
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override;
 
   FakeAdapterStateController* fake_adapter_state_controller_;
   FakeDeviceCache* fake_device_cache_;
   FakeDiscoverySessionManager* fake_discovery_session_manager_;
+  FakeDeviceOperationHandler* fake_device_operation_handler_;
 };
 
 }  // namespace bluetooth_config

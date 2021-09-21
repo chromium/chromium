@@ -231,4 +231,14 @@ interface CrosBluetoothConfig {
   // to find new devices and pair them. To stop discovery, disconnect
   // |delegate|.
   StartDiscovery(pending_remote<BluetoothDiscoveryDelegate> delegate);
+
+  // Initiates a connection to the device with ID |device_id|.
+  Connect(string device_id) => (bool success);
+
+  // Initiates a disconnection from the device with ID |device_id|.
+  Disconnect(string device_id) => (bool success);
+
+  // Forgets the device with ID |device_id|, which in practice means
+  // un-pairing from the device.
+  Forget(string device_id) => (bool success);
 };

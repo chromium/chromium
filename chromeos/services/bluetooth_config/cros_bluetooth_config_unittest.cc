@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -60,6 +62,37 @@ TEST_F(CrosBluetoothConfigTest, CallApiFunction) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   FakeSystemPropertiesObserver fake_observer;
   remote->ObserveSystemProperties(fake_observer.GeneratePendingRemote());
+}
+
+TEST_F(CrosBluetoothConfigTest, CallPairingFunction) {
+  mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
+  auto delegate = std::make_unique<FakeBluetoothDiscoveryDelegate>();
+  remote->StartDiscovery(delegate->GeneratePendingRemote());
+}
+
+TEST_F(CrosBluetoothConfigTest, CallDeviceManagementFunctions) {
+  mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
+  const std::string device_id = "device_id";
+  absl::optional<bool> result;
+
+  remote->Connect(device_id,
+                  base::BindLambdaForTesting(
+                      [&result](bool success) { result = success; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(result.value());
+  result.reset();
+
+  remote->Disconnect(device_id,
+                     base::BindLambdaForTesting(
+                         [&result](bool success) { result = success; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(result.value());
+  result.reset();
+
+  remote->Forget(device_id, base::BindLambdaForTesting(
+                                [&result](bool success) { result = success; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(result.value());
 }
 
 }  // namespace bluetooth_config

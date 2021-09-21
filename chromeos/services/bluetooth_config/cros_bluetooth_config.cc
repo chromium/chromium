@@ -4,6 +4,7 @@
 
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
 
+#include "chromeos/services/bluetooth_config/device_operation_handler.h"
 #include "chromeos/services/bluetooth_config/discovery_session_manager.h"
 #include "chromeos/services/bluetooth_config/initializer.h"
 #include "chromeos/services/bluetooth_config/system_properties_provider_impl.h"
@@ -27,7 +28,10 @@ CrosBluetoothConfig::CrosBluetoothConfig(
       discovery_session_manager_(initializer.CreateDiscoverySessionManager(
           adapter_state_controller_.get(),
           bluetooth_adapter,
-          device_cache_.get())) {}
+          device_cache_.get())),
+      device_operation_handler_(initializer.CreateDeviceOperationHandler(
+          adapter_state_controller_.get(),
+          bluetooth_adapter)) {}
 
 CrosBluetoothConfig::~CrosBluetoothConfig() = default;
 
@@ -48,6 +52,23 @@ void CrosBluetoothConfig::SetBluetoothEnabledState(bool enabled) {
 void CrosBluetoothConfig::StartDiscovery(
     mojo::PendingRemote<mojom::BluetoothDiscoveryDelegate> delegate) {
   discovery_session_manager_->StartDiscovery(std::move(delegate));
+}
+
+void CrosBluetoothConfig::Connect(
+    const std::string& device_id,
+    CrosBluetoothConfig::ConnectCallback callback) {
+  device_operation_handler_->Connect(device_id, std::move(callback));
+}
+
+void CrosBluetoothConfig::Disconnect(
+    const std::string& device_id,
+    CrosBluetoothConfig::DisconnectCallback callback) {
+  device_operation_handler_->Disconnect(device_id, std::move(callback));
+}
+
+void CrosBluetoothConfig::Forget(const std::string& device_id,
+                                 CrosBluetoothConfig::ForgetCallback callback) {
+  device_operation_handler_->Forget(device_id, std::move(callback));
 }
 
 }  // namespace bluetooth_config

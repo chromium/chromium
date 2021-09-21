@@ -10,7 +10,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js';
 
 import {stringToMojoString16} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertFalse, assertTrue} from '../../../chai_assert.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
@@ -72,6 +72,27 @@ export class FakeBluetoothConfig {
      *     !chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface>}
      */
     this.discoveryDelegates_ = [];
+
+    /**
+     * Object containing the device ID and callback for the current connect
+     * request.
+     * @private {?{deviceId: string, callback: function(boolean)}}
+     */
+    this.pendingConnectRequest_ = null;
+
+    /**
+     * Object containing the device ID and callback for the current disconnect
+     * request.
+     * @private {?{deviceId: string, callback: function(boolean)}}
+     */
+    this.pendingDisconnectRequest_ = null;
+
+    /**
+     * Object containing the device ID and callback for the current forget
+     * request.
+     * @private {?{deviceId: string, callback: function(boolean)}}
+     */
+    this.pendingForgetRequest_ = null;
   }
 
   /**
@@ -101,7 +122,7 @@ export class FakeBluetoothConfig {
    * current disabled, transitions to enabling. If the systemState is
    * currently enabled, transitions to disabled. Does nothing if already in the
    * requested state. This method should be followed by a call to
-   * completeSetBluetoothEnabledStateForTest() to complete the operation.
+   * completeSetBluetoothEnabledState() to complete the operation.
    * @param {boolean} enabled
    */
   setBluetoothEnabledState(enabled) {
@@ -116,6 +137,51 @@ export class FakeBluetoothConfig {
     this.setSystemState(
         enabled ? bluetoothSystemState.kEnabling :
                   bluetoothSystemState.kDisabling);
+  }
+
+  /**
+   * Initiates connecting to a device with id |deviceId|. To finish the
+   * operation, call completeConnect().
+   * @override
+   */
+  connect(deviceId) {
+    assertFalse(!!this.pendingConnectRequest_);
+    return new Promise(function(resolve, reject) {
+      this.pendingConnectRequest_ = {
+        deviceId: deviceId,
+        callback: resolve,
+      };
+    });
+  }
+
+  /**
+   * Initiates disconnecting from a device with id |deviceId|. To finish the
+   * operation, call completeDisconnect().
+   * @override
+   */
+  disconnect(deviceId) {
+    assertFalse(!!this.pendingDisconnectRequest_);
+    return new Promise(function(resolve, reject) {
+      this.pendingDisconnectRequest_ = {
+        deviceId: deviceId,
+        callback: resolve,
+      };
+    });
+  }
+
+  /**
+   * Initiates forgetting a device with id |deviceId|. To finish the
+   * operation, call completeForget().
+   * @override
+   */
+  forget(deviceId) {
+    assertFalse(!!this.pendingForgetRequest_);
+    return new Promise(function(resolve, reject) {
+      this.pendingForgetRequest_ = {
+        deviceId: deviceId,
+        callback: resolve,
+      };
+    });
   }
 
   /**
@@ -228,6 +294,59 @@ export class FakeBluetoothConfig {
          */
         (Object.assign({}, this.systemProperties_));
     this.notifyObserversPropertiesUpdated_();
+  }
+
+  /**
+   * Completes the pending connect() call.
+   * @param {boolean} success The result of the operation.
+   */
+  completeConnect(success) {
+    assertTrue(!!this.pendingConnectRequest_);
+    if (success) {
+      const device = this.systemProperties_.pairedDevices.find(
+          d => d.deviceProperties.id === this.pendingConnectRequest_.deviceId);
+      device.deviceProperties.connectionState =
+          mojom.DeviceConnectionState.kConnected;
+      this.updatePairedDevice(device);
+    }
+    this.pendingConnectRequest_.callback(success);
+    this.pendingConnectRequest_ = null;
+  }
+
+  /**
+   * Completes the pending disconnect() call.
+   * @param {boolean} success The result of the operation.
+   */
+  completeDisconnect(success) {
+    assertTrue(!!this.pendingDisconnectRequest_);
+    if (success) {
+      const device = this.systemProperties_.pairedDevices.find(
+          d => d.deviceProperties.id ===
+              this.pendingDisconnectRequest_.deviceId);
+      device.deviceProperties.connectionState =
+          mojom.DeviceConnectionState.kNotConnected;
+      this.updatePairedDevice(device);
+    }
+    this.pendingDisconnectRequest_.callback(success);
+    this.pendingDisconnectRequest_ = null;
+  }
+
+  /**
+   * Completes the pending forget() call.
+   * @param {boolean} success The result of the operation.
+   */
+  completeForget(success) {
+    assertTrue(!!this.pendingForgetRequest_);
+    if (success) {
+      const device = this.systemProperties_.pairedDevices.find(
+          d => d.deviceProperties.id === this.pendingForgetRequest_.deviceId);
+      if (device) {
+        this.removePairedDevice(device);
+        this.appendToDiscoveredDeviceList([device.deviceProperties]);
+      }
+    }
+    this.pendingForgetRequest_.callback(success);
+    this.pendingForgetRequest_ = null;
   }
 
   /**

@@ -6,6 +6,7 @@
 
 #include "chromeos/services/bluetooth_config/adapter_state_controller_impl.h"
 #include "chromeos/services/bluetooth_config/device_cache_impl.h"
+#include "chromeos/services/bluetooth_config/device_operation_handler_impl.h"
 #include "chromeos/services/bluetooth_config/discovery_session_manager_impl.h"
 
 namespace chromeos {
@@ -36,6 +37,14 @@ InitializerImpl::CreateDiscoverySessionManager(
     DeviceCache* device_cache) {
   return std::make_unique<DiscoverySessionManagerImpl>(
       adapter_state_controller, std::move(bluetooth_adapter), device_cache);
+}
+
+std::unique_ptr<DeviceOperationHandler>
+InitializerImpl::CreateDeviceOperationHandler(
+    AdapterStateController* adapter_state_controller,
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  return std::make_unique<DeviceOperationHandlerImpl>(
+      adapter_state_controller, std::move(bluetooth_adapter));
 }
 
 }  // namespace bluetooth_config

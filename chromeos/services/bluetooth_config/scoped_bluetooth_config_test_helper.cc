@@ -6,6 +6,7 @@
 
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
+#include "chromeos/services/bluetooth_config/fake_device_operation_handler.h"
 #include "chromeos/services/bluetooth_config/fake_discovery_session_manager.h"
 #include "chromeos/services/bluetooth_config/in_process_instance.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -49,6 +50,16 @@ ScopedBluetoothConfigTestHelper::CreateDiscoverySessionManager(
                                                     device_cache);
   fake_discovery_session_manager_ = fake_discovery_session_manager.get();
   return fake_discovery_session_manager;
+}
+
+std::unique_ptr<DeviceOperationHandler>
+ScopedBluetoothConfigTestHelper::CreateDeviceOperationHandler(
+    AdapterStateController* adapter_state_controller,
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  auto fake_device_operation_handler =
+      std::make_unique<FakeDeviceOperationHandler>(adapter_state_controller);
+  fake_device_operation_handler_ = fake_device_operation_handler.get();
+  return fake_device_operation_handler;
 }
 
 }  // namespace bluetooth_config
