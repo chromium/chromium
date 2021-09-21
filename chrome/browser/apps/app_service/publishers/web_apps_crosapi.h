@@ -21,6 +21,10 @@
 
 class Profile;
 
+namespace base {
+class Location;
+}  // namespace base
+
 namespace apps {
 
 // An app publisher for crosapi web apps. This is a proxy publisher that lives
@@ -87,6 +91,8 @@ class WebAppsCrosapi : public KeyedService,
       mojo::PendingRemote<crosapi::mojom::AppController> controller) override;
   void OnCapabilityAccesses(
       std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
+
+  bool LogIfNotConnected(const base::Location& from_here);
 
   void OnCrosapiDisconnected();
   void OnControllerDisconnected();

@@ -10,6 +10,8 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -67,6 +69,11 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
                               int32_t size_hint_in_dip,
                               bool allow_placeholder_icon,
                               LoadIconCallback callback) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    std::move(callback).Run(apps::mojom::IconValue::New());
+    return;
+  }
+
   controller_->LoadIcon(app_id, std::move(icon_key), icon_type,
                         size_hint_in_dip, std::move(callback));
 }
@@ -75,6 +82,10 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
                             int32_t event_flags,
                             apps::mojom::LaunchSource launch_source,
                             apps::mojom::WindowInfoPtr window_info) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
   launch_params->launch_source = launch_source;
@@ -87,6 +98,10 @@ void WebAppsCrosapi::LaunchAppWithIntent(
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
   launch_params->launch_source = launch_source;
@@ -98,6 +113,10 @@ void WebAppsCrosapi::Uninstall(const std::string& app_id,
                                apps::mojom::UninstallSource uninstall_source,
                                bool clear_site_data,
                                bool report_abuse) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   controller_->Uninstall(app_id, uninstall_source, clear_site_data,
                          report_abuse);
 }
@@ -151,6 +170,11 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
   }
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenuUI)) {
+    if (!LogIfNotConnected(FROM_HERE)) {
+      std::move(callback).Run(std::move(menu_items));
+      return;
+    }
+
     controller_->GetMenuModel(
         app_id, base::BindOnce(&WebAppsCrosapi::OnGetMenuModelFromCrosapi,
                                weak_factory_.GetWeakPtr(), app_id, menu_type,
@@ -195,23 +219,43 @@ void WebAppsCrosapi::OnGetMenuModelFromCrosapi(
 }
 
 void WebAppsCrosapi::PauseApp(const std::string& app_id) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   controller_->PauseApp(app_id);
 }
 
 void WebAppsCrosapi::UnpauseApp(const std::string& app_id) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   controller_->UnpauseApp(app_id);
 }
 
 void WebAppsCrosapi::StopApp(const std::string& app_id) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   controller_->StopApp(app_id);
 }
 
 void WebAppsCrosapi::OpenNativeSettings(const std::string& app_id) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   controller_->OpenNativeSettings(app_id);
 }
 
 void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
                                    apps::mojom::WindowMode window_mode) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   controller_->SetWindowMode(app_id, window_mode);
 }
 
@@ -219,6 +263,10 @@ void WebAppsCrosapi::ExecuteContextMenuCommand(const std::string& app_id,
                                                int command_id,
                                                const std::string& shortcut_id,
                                                int64_t display_id) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
   controller_->ExecuteContextMenuCommand(app_id, shortcut_id,
                                          base::DoNothing());
 }
@@ -250,6 +298,17 @@ void WebAppsCrosapi::OnCapabilityAccesses(
   for (auto& subscriber : subscribers_) {
     subscriber->OnCapabilityAccesses(apps_util::CloneStructPtrVector(deltas));
   }
+}
+
+bool WebAppsCrosapi::LogIfNotConnected(const base::Location& from_here) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+
+  if (controller_.is_bound()) {
+    return true;
+  }
+  LOG(WARNING) << "Controller not connected: " << from_here.ToString();
+  return false;
 }
 
 void WebAppsCrosapi::OnCrosapiDisconnected() {
