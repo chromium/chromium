@@ -584,7 +584,7 @@ class CartHandlerNtpModuleDiscountFastPathTest : public CartHandlerTest {
         ntp_features::kNtpChromeCartModule,
         {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
          {"partner-merchant-pattern", "(foo.com)"},
-         {ntp_features::NtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
+         {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
           "true"}});
   }
 };

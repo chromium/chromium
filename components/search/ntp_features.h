@@ -59,7 +59,7 @@ extern const char kNtpChromeCartModuleDataParam[];
 extern const char kNtpChromeCartModuleAbandonedCartDiscountParam[];
 // Parameter for enabling the abandoned cart discount with utm_source tag to
 // indicate the feature state.
-extern const char NtpChromeCartModuleAbandonedCartDiscountUseUtmParam[];
+extern const char kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam[];
 // Parameter for enabling the cart heuristics improvement.
 extern const char kNtpChromeCartModuleHeuristicsImprovementParam[];
 // Parameter for enabling coupons on the Cart module.
