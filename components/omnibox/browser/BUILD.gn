@@ -22,6 +22,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [
+    "accessibility.icon",
     "answer_calculator.icon",
     "answer_currency.icon",
     "answer_default.icon",
@@ -36,6 +37,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "chevron.icon",
     "clear.icon",
     "clock.icon",
+    "dino.icon",
     "drive_docs.icon",
     "drive_folder.icon",
     "drive_forms.icon",
@@ -53,6 +55,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "google_super_g.icon",
     "http.icon",
     "https_valid_in_chip.icon",
+    "incognito.icon",
     "install_desktop.icon",
     "keyword_search.icon",
     "offline_pin.icon",

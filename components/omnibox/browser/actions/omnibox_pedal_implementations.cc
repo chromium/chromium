@@ -27,6 +27,7 @@
 
 #if SUPPORTS_DESKTOP_ICONS
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
 
 // =============================================================================
@@ -1001,6 +1002,12 @@ class OmniboxPedalCloseIncognitoWindows : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS),
             GURL()) {}
 
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kIncognitoIcon;
+  }
+#endif
+
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
 #ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CLOSE_INCOGNITO_WINDOWS_ONE_REQUIRED_CLOSE
@@ -1044,6 +1051,12 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME),
             GURL("chrome://dino")) {}
+
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kDinoIcon;
+  }
+#endif
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups() const override {
     return {
@@ -1095,6 +1108,12 @@ class OmniboxPedalFindMyPhone : public OmniboxPedal {
                          IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE),
             GURL()) {}
 
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kGoogleSuperGIcon;
+  }
+#endif
+
  protected:
   ~OmniboxPedalFindMyPhone() override = default;
 };
@@ -1112,6 +1131,12 @@ class OmniboxPedalManageGooglePrivacy : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY),
             GURL()) {}
+
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kGoogleSuperGIcon;
+  }
+#endif
 
  protected:
   ~OmniboxPedalManageGooglePrivacy() override = default;
@@ -1131,6 +1156,12 @@ class OmniboxPedalManageChromeSettings : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS),
             GURL()) {}
 
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return vector_icons::kSettingsIcon;
+  }
+#endif
+
  protected:
   ~OmniboxPedalManageChromeSettings() override = default;
 };
@@ -1148,6 +1179,12 @@ class OmniboxPedalManageChromeDownloads : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS),
             GURL()) {}
+
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return vector_icons::kFileDownloadIcon;
+  }
+#endif
 
  protected:
   ~OmniboxPedalManageChromeDownloads() override = default;
@@ -1167,6 +1204,12 @@ class OmniboxPedalViewChromeHistory : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY),
             GURL()) {}
 
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kClockIcon;
+  }
+#endif
+
  protected:
   ~OmniboxPedalViewChromeHistory() override = default;
 };
@@ -1183,6 +1226,12 @@ class OmniboxPedalShareThisPage : public OmniboxPedal {
                          IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE),
             GURL()) {}
+
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kSendIcon;
+  }
+#endif
 
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
@@ -1212,6 +1261,12 @@ class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY),
             GURL()) {}
 
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kAccessibilityIcon;
+  }
+#endif
+
  protected:
   ~OmniboxPedalManageChromeAccessibility() override = default;
 };
@@ -1229,6 +1284,12 @@ class OmniboxPedalManageChromeOSAccessibility : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY),
             GURL()) {}
+
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kAccessibilityIcon;
+  }
+#endif
 
   OmniboxPedalId GetMetricsId() const override {
     return OmniboxPedalId::MANAGE_CHROME_ACCESSIBILITY;
