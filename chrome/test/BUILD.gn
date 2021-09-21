@@ -5626,7 +5626,6 @@ test("unit_tests") {
       "//chrome/browser/share",
       "//chrome/browser/supervised_user/kids_chrome_management:proto",
       "//chrome/browser/thumbnail:unit_tests",
-      "//chrome/browser/updates:unit_tests",
       "//chrome/services/media_gallery_util:unit_tests",
       "//components/back_forward_cache",
       "//components/crash/content/browser",
