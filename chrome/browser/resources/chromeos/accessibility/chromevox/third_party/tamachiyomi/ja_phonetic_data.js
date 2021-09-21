@@ -28,7 +28,8 @@ JaPhoneticData = class {
    * @return {string}
    */
   static forCharacter(char) {
-    const characterSet = JaPhoneticData.getCharacterSet(char);
+    const characterSet =
+        JaPhoneticData.getCharacterSet(char, JaPhoneticData.CharacterSet.NONE);
     if (characterSet !== JaPhoneticData.CharacterSet.OTHER) {
       const prefix = JaPhoneticData.getDefaultPrefix(characterSet);
       return prefix + ' ' + JaPhoneticData.maybeGetLargeLetterKana(char);
@@ -46,7 +47,8 @@ JaPhoneticData = class {
     const chars = [...text];
     let lastCharacterSet = JaPhoneticData.CharacterSet.NONE;
     for (const char of chars) {
-      const currentCharacterSet = JaPhoneticData.getCharacterSet(char);
+      const currentCharacterSet =
+          JaPhoneticData.getCharacterSet(char, lastCharacterSet);
       if (currentCharacterSet !== JaPhoneticData.CharacterSet.OTHER) {
         const info =
             JaPhoneticData.getPrefixInfo(lastCharacterSet, currentCharacterSet);
@@ -72,9 +74,10 @@ JaPhoneticData = class {
 
   /**
    * @param {string} character
+   * @param {JaPhoneticData.CharacterSet} lastCharacterSet
    * @return {JaPhoneticData.CharacterSet}
    */
-  static getCharacterSet(character) {
+  static getCharacterSet(character, lastCharacterSet) {
     // See https://www.unicode.org/charts/PDF/U3040.pdf
     if (character >= 'ぁ' && character <= 'ゖ') {
       if (JaPhoneticData.isSmallLetter(character)) {
@@ -107,6 +110,15 @@ JaPhoneticData = class {
     }
     if (character >= 'ａ' && character <= 'ｚ') {
       return JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER;
+    }
+    if (character === 'ー') {
+      switch (lastCharacterSet) {
+        case JaPhoneticData.CharacterSet.HIRAGANA:
+        case JaPhoneticData.CharacterSet.KATAKANA:
+        case JaPhoneticData.CharacterSet.HIRAGANA_SMALL_LETTER:
+        case JaPhoneticData.CharacterSet.KATAKANA_SMALL_LETTER:
+          return lastCharacterSet;
+      }
     }
     // Returns OTHER for all other characters, including Kanji.
     return JaPhoneticData.CharacterSet.OTHER;

@@ -178,9 +178,12 @@ TEST_F(
     });
 
 TEST_F('ChromeVoxPhoneticDataTest', 'forTextJaLongSound', function() {
-  assertEquals('あ チョウオン', PhoneticData.forText('あー', 'ja'));
-  assertEquals('カタカナ ア チョウオン', PhoneticData.forText('アー', 'ja'));
+  assertEquals('あー', PhoneticData.forText('あー', 'ja'));
+  assertEquals('カタカナ アー', PhoneticData.forText('アー', 'ja'));
+  assertEquals('あー', PhoneticData.forText('ぁー', 'ja'));
+  assertEquals('カタカナ チイサイ アー', PhoneticData.forText('ァー', 'ja'));
   assertEquals('ハンカク ｱｰ', PhoneticData.forText('ｱｰ', 'ja'));
+  assertEquals('あーー', PhoneticData.forText('あーー', 'ja'));
   assertEquals('チョウオン チョウオン', PhoneticData.forText('ーー', 'ja'));
   assertEquals('アジア ノ ア チョウオン', PhoneticData.forText('亜ー', 'ja'));
 });
