@@ -5,8 +5,8 @@
 /**
  * @type {string}
  */
-export const questionnaireBegin = 'To help us diagnose and fix the issue, ' +
-    'please answer the following questions:';
+export const questionnaireBegin = '(Google Internal) To help us diagnose and ' +
+    'fix the issue, please answer the following questions:';
 
 /**
  * @type {string}

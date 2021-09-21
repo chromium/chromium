@@ -5,8 +5,8 @@
 /**
  * @type {string}
  */
-const questionnaireBegin = 'To help us diagnose and fix the issue, ' +
-    'please answer the following questions:';
+const questionnaireBegin = '(Google Internal) To help us diagnose and ' +
+    'fix the issue, please answer the following questions:';
 
 /**
  * @type {string}
