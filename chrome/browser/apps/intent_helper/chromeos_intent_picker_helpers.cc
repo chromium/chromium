@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/apps/intent_helper/ash_intent_picker_helpers.h"
+#include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 
 #include <algorithm>
 #include <utility>
 
-#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -17,7 +16,7 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_constants.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
-#include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -28,6 +27,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
 #include "ui/display/types/display_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
 
@@ -59,13 +62,15 @@ bool ShouldAutoDisplayUi(
 
   // On devices with tablet form factor we should not pop out the intent
   // picker if Chrome has been chosen by the user as the platform for this URL.
+  // TODO(crbug.com/1225828): Handle this for lacros-chrome as well.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::switches::IsTabletFormFactor()) {
     if (ui_auto_display_service->GetLastUsedPlatformForTablets(url) ==
         IntentPickerAutoDisplayPref::Platform::kChrome) {
       return false;
     }
   }
-
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   // If we only have PWAs in the app list, do not show the intent picker.
   // Instead just show the omnibox icon. This is to reduce annoyance to users
   // until "Remember my choice" is available for desktop PWAs.
@@ -80,8 +85,7 @@ bool ShouldAutoDisplayUi(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  AppServiceProxyChromeOs* proxy =
-      AppServiceProxyFactory::GetForProfile(profile);
+  auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
 
   if (proxy) {
     auto preferred_app_id = proxy->PreferredApps().FindPreferredAppForUrl(url);
@@ -111,7 +115,7 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
       web_contents, std::move(apps),
       /*show_stay_in_chrome=*/true,
       /*show_remember_selection=*/true,
-      base::BindOnce(&OnIntentPickerClosedAsh, web_contents,
+      base::BindOnce(&OnIntentPickerClosedChromeOs, web_contents,
                      ui_auto_display_service, url));
 }
 
@@ -143,7 +147,7 @@ bool ContainsOnlyPwasAndMacApps(const std::vector<IntentPickerAppInfo>& apps) {
                      });
 }
 
-void OnIntentPickerClosedAsh(
+void OnIntentPickerClosedChromeOs(
     content::WebContents* web_contents,
     IntentPickerAutoDisplayService* ui_auto_display_service,
     const GURL& url,
@@ -151,6 +155,8 @@ void OnIntentPickerClosedAsh(
     PickerEntryType entry_type,
     IntentPickerCloseReason close_reason,
     bool should_persist) {
+// TODO(crbug.com/1225828): Handle this for lacros-chrome as well.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::switches::IsTabletFormFactor() && should_persist) {
     // On devices of tablet form factor, until the user has decided to persist
     // the setting, the browser-side intent picker should always be seen.
@@ -165,6 +171,7 @@ void OnIntentPickerClosedAsh(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()))
         ->UpdatePlatformForTablets(url, platform);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const bool should_launch_app =
       close_reason == IntentPickerCloseReason::OPEN_APP;
@@ -172,8 +179,7 @@ void OnIntentPickerClosedAsh(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  AppServiceProxyChromeOs* proxy =
-      AppServiceProxyFactory::GetForProfile(profile);
+  auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
 
   // If the picker was closed without an app being chosen,
   // e.g. due to the tab being closed. Keep count of this scenario so we can

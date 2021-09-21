@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APPS_METRICS_INTENT_HANDLING_METRICS_H_
-#define CHROME_BROWSER_ASH_APPS_METRICS_INTENT_HANDLING_METRICS_H_
+#ifndef CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
+#define CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
 
 #include <string>
 #include <utility>
 
-#include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 class BrowserContext;
@@ -109,14 +110,16 @@ class IntentHandlingMetrics {
       Source source,
       bool should_persist);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static void RecordExternalProtocolMetrics(arc::Scheme scheme,
                                             apps::PickerEntryType entry_type,
                                             bool accepted,
                                             bool persisted);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static void RecordOpenBrowserMetrics(AppType type);
 };
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_ASH_APPS_METRICS_INTENT_HANDLING_METRICS_H_
+#endif  // CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_

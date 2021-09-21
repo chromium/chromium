@@ -19,11 +19,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/apps/intent_helper/ash_intent_picker_helpers.h"
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
-#endif
+#endif  // defined(OS_CHROMEOS)
 
 namespace apps {
 
@@ -37,7 +37,7 @@ std::vector<IntentPickerAppInfo> FindAppsForUrl(
   // On the Mac, if there is a Universal Link, it goes first.
   if (absl::optional<IntentPickerAppInfo> mac_app = FindMacAppForUrl(url))
     apps.push_back(std::move(mac_app.value()));
-#endif
+#endif  // defined(OS_MAC)
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -65,10 +65,10 @@ void OnIntentPickerClosed(
     PickerEntryType entry_type,
     IntentPickerCloseReason close_reason,
     bool should_persist) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  OnIntentPickerClosedAsh(web_contents, ui_auto_display_service, url,
-                          launch_name, entry_type, close_reason,
-                          should_persist);
+#if defined(OS_CHROMEOS)
+  OnIntentPickerClosedChromeOs(web_contents, ui_auto_display_service, url,
+                               launch_name, entry_type, close_reason,
+                               should_persist);
 #else
   const bool should_launch_app =
       close_reason == apps::IntentPickerCloseReason::OPEN_APP;
@@ -92,12 +92,12 @@ void OnIntentPickerClosed(
         LaunchMacApp(url, launch_name);
       }
       break;
-#endif
+#endif  // defined(OS_MAC)
     case PickerEntryType::kArc:
     case PickerEntryType::kDevice:
       NOTREACHED();
   }
-#endif
+#endif  // defined(OS_CHROMEOS)
 }
 
 void OnAppIconsLoaded(content::WebContents* web_contents,
@@ -106,13 +106,13 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
                       std::vector<IntentPickerAppInfo> apps) {
   ShowIntentPickerBubbleForApps(
       web_contents, std::move(apps),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
       /*show_stay_in_chrome=*/true,
       /*show_remember_selection=*/true,
 #else
       /*show_stay_in_chrome=*/false,
       /*show_remember_selection=*/false,
-#endif
+#endif  // defined(OS_CHROMEOS)
       base::BindOnce(&OnIntentPickerClosed, web_contents,
                      ui_auto_display_service, url));
 }
@@ -147,9 +147,9 @@ std::vector<IntentPickerAppInfo> MaybeShowIntentPickerImpl(
 void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   auto apps = MaybeShowIntentPickerImpl(web_contents);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   MaybeShowIntentPickerBubble(navigation_handle, std::move(apps));
-#endif
+#endif  // defined(OS_CHROMEOS)
 }
 
 void MaybeShowIntentPicker(content::WebContents* web_contents) {

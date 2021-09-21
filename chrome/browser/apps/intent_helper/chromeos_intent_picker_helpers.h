@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APPS_INTENT_HELPER_ASH_INTENT_PICKER_HELPERS_H_
-#define CHROME_BROWSER_ASH_APPS_INTENT_HELPER_ASH_INTENT_PICKER_HELPERS_H_
+#ifndef CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_INTENT_PICKER_HELPERS_H_
+#define CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_INTENT_PICKER_HELPERS_H_
 
 #include <vector>
 
@@ -32,7 +32,7 @@ enum class PickerShowState {
   kPopOut = 2,   // show the intent picker icon and pop out bubble
 };
 
-void OnIntentPickerClosedAsh(
+void OnIntentPickerClosedChromeOs(
     content::WebContents* web_contents,
     IntentPickerAutoDisplayService* ui_auto_display_service,
     const GURL& url,
@@ -43,4 +43,4 @@ void OnIntentPickerClosedAsh(
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_ASH_APPS_INTENT_HELPER_ASH_INTENT_PICKER_HELPERS_H_
+#endif  // CHROME_BROWSER_APPS_INTENT_HELPER_CHROMEOS_INTENT_PICKER_HELPERS_H_

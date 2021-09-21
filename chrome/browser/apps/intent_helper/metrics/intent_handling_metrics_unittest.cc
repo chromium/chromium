@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
-#include "components/prefs/testing_pref_service.h"
-#include "content/public/test/browser_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
 
@@ -45,6 +48,8 @@ TEST(IntentHandlingMetricsTest, TestRecordIntentPickerMetrics) {
       "ChromeOS.Apps.IntentPickerDestinationPlatform",
       IntentHandlingMetrics::Platform::ARC, 1);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A fixture class that sets up arc::ArcMetricsService.
 class IntentHandlingMetricsTestWithMetricsService : public testing::Test {
@@ -100,6 +105,7 @@ TEST(IntentHandlingMetricsTest, TestRecordExternalProtocolMetrics) {
       "ChromeOS.Apps.ExternalProtocolDialog.Accepted",
       arc::ProtocolAction::IRC_ACCEPTED_PERSISTED, 1);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST(IntentHandlingMetricsTest, TestRecordOpenBrowserMetrics) {
   base::HistogramTester histogram_tester;

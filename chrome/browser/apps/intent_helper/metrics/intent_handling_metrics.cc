@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/arc/metrics/arc_metrics_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
 
@@ -36,18 +38,22 @@ void IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
     IntentPickerCloseReason close_reason,
     Source source,
     bool should_persist) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (entry_type == PickerEntryType::kArc &&
+      source == Source::kExternalProtocol &&
       (close_reason == IntentPickerCloseReason::PREFERRED_APP_FOUND ||
        close_reason == IntentPickerCloseReason::OPEN_APP)) {
     arc::ArcMetricsService::RecordArcUserInteraction(
         context, arc::UserInteractionType::APP_STARTED_FROM_LINK);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   PickerAction action =
       GetPickerAction(entry_type, close_reason, should_persist);
   Platform platform = GetDestinationPlatform(selected_app_package, action);
   RecordIntentPickerMetrics(source, should_persist, action, platform);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void IntentHandlingMetrics::RecordExternalProtocolMetrics(
     arc::Scheme scheme,
     PickerEntryType entry_type,
@@ -63,6 +69,7 @@ void IntentHandlingMetrics::RecordExternalProtocolMetrics(
                               action);
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void IntentHandlingMetrics::RecordOpenBrowserMetrics(AppType type) {
   UMA_HISTOGRAM_ENUMERATION("ChromeOS.Apps.OpenBrowser", type);
