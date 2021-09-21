@@ -1582,6 +1582,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.ShareFilesOnExit" enum="ArcShareFilesOnExit"
     expires_after="M75">
+  <obsolete>
+    Removed in September 2021. Feature launched in 2018, no longer tracked.
+  </obsolete>
   <owner>weifangsun@google.com</owner>
   <owner>djacobo@google.com</owner>
   <summary>

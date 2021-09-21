@@ -248,7 +248,7 @@ interface CustomTabSession {
 };
 
 // Handles intents from ARC in Chrome.
-// Deprecated method ID: 4, 10
+// Deprecated method ID: 4, 9, 10
 // Next method ID: 20
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.
@@ -296,7 +296,7 @@ interface IntentHelperHost {
   [MinVersion=23] OnOpenWebApp@8(string url);
 
   // Records Sharing files feature's metrics via Chrome.
-  [MinVersion=24] RecordShareFilesMetrics@9(ShareFiles flag);
+  [MinVersion=24] RecordShareFilesMetricsDeprecated@9(ShareFiles flag);
 
   // Does a reset of ARC; this wipes /data, and then re-calls on OOBE for
   // account binding to happen again, as if the user just went through OOBE.

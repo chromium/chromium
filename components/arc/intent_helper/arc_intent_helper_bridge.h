@@ -93,7 +93,7 @@ class ArcIntentHelperBridge : public KeyedService,
   void SetWallpaperDeprecated(const std::vector<uint8_t>& jpeg_data) override;
   void OpenVolumeControl() override;
   void OnOpenWebApp(const std::string& url) override;
-  void RecordShareFilesMetrics(mojom::ShareFiles flag) override;
+  void RecordShareFilesMetricsDeprecated(mojom::ShareFiles flag) override;
   void LaunchCameraApp(uint32_t intent_id,
                        arc::mojom::CameraIntentMode mode,
                        bool should_handle_result,
