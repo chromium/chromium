@@ -198,7 +198,7 @@ void CloudPolicyClient::SetupRegistration(
   request_jobs_.clear();
   app_install_report_request_job_ = nullptr;
   extension_install_report_request_job_ = nullptr;
-  unique_request_job_.reset();
+  policy_fetch_request_job_.reset();
   responses_.clear();
   if (device_dm_token_callback_) {
     device_dm_token_ = device_dm_token_callback_.Run(user_affiliation_ids);
@@ -239,7 +239,7 @@ void CloudPolicyClient::Register(const RegistrationParameters& parameters,
   if (requires_reregistration())
     request->set_reregistration_dm_token(reregistration_dm_token_);
 
-  unique_request_job_ = service_->CreateJob(std::move(config));
+  policy_fetch_request_job_ = service_->CreateJob(std::move(config));
 }
 
 void CloudPolicyClient::RegisterWithCertificate(
@@ -295,11 +295,10 @@ void CloudPolicyClient::RegisterWithToken(
           base::BindOnce(&CloudPolicyClient::OnRegisterCompleted,
                          weak_ptr_factory_.GetWeakPtr()));
 
-  enterprise_management::RegisterBrowserRequest* request =
-      config->request()->mutable_register_browser_request();
   client_data_delegate.FillRegisterBrowserRequest(
-      request, base::BindOnce(&CloudPolicyClient::CreateUniqueRequestJob,
-                              base::Unretained(this), std::move(config)));
+      config->request()->mutable_register_browser_request());
+
+  policy_fetch_request_job_ = service_->CreateJob(std::move(config));
 }
 
 void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
@@ -328,7 +327,7 @@ void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
   signed_request->set_signature(signed_data.signature());
   signed_request->set_extra_data_bytes(signed_data.extra_data_bytes());
 
-  unique_request_job_ = service_->CreateJob(std::move(config));
+  policy_fetch_request_job_ = service_->CreateJob(std::move(config));
 }
 
 void CloudPolicyClient::SetInvalidationInfo(int64_t version,
@@ -421,7 +420,7 @@ void CloudPolicyClient::FetchPolicy() {
   // since it is now the invalidation version used for the latest fetch.
   fetched_invalidation_version_ = invalidation_version_;
 
-  unique_request_job_ = service_->CreateJob(std::move(config));
+  policy_fetch_request_job_ = service_->CreateJob(std::move(config));
 }
 
 void CloudPolicyClient::UploadPolicyValidationReport(
@@ -510,7 +509,7 @@ void CloudPolicyClient::Unregister() {
 
   config->request()->mutable_unregister_request();
 
-  unique_request_job_ = service_->CreateJob(std::move(config));
+  policy_fetch_request_job_ = service_->CreateJob(std::move(config));
 }
 
 void CloudPolicyClient::UploadEnterpriseMachineCertificate(
@@ -1635,11 +1634,6 @@ void CloudPolicyClient::CreateDeviceRegisterRequest(
     request->set_psm_determination_timestamp_ms(
         params.psm_determination_timestamp.value());
   }
-}
-
-void CloudPolicyClient::CreateUniqueRequestJob(
-    std::unique_ptr<RegistrationJobConfiguration> config) {
-  unique_request_job_ = service_->CreateJob(std::move(config));
 }
 
 }  // namespace policy

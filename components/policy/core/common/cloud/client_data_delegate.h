@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLIENT_DATA_DELEGATE_H_
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLIENT_DATA_DELEGATE_H_
 
-#include "base/callback_forward.h"
-
 namespace enterprise_management {
 class RegisterBrowserRequest;
 }  // namespace enterprise_management
@@ -22,8 +20,7 @@ class ClientDataDelegate {
   virtual ~ClientDataDelegate() = default;
 
   virtual void FillRegisterBrowserRequest(
-      enterprise_management::RegisterBrowserRequest* request,
-      base::OnceClosure callback) const = 0;
+      enterprise_management::RegisterBrowserRequest* request) const = 0;
 };
 
 }  // namespace policy

@@ -18,8 +18,7 @@ class ClientDataDelegateIos : public ClientDataDelegate {
   ~ClientDataDelegateIos() override = default;
 
   void FillRegisterBrowserRequest(
-      enterprise_management::RegisterBrowserRequest* request,
-      base::OnceClosure callback) const override;
+      enterprise_management::RegisterBrowserRequest* request) const override;
 };
 
 }  // namespace policy
