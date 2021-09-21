@@ -7075,12 +7075,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrerender2Description, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPrerender2)},
 
-#if defined(OS_ANDROID)
-    {"enable-swipe-to-move-cursor", flag_descriptions::kSwipeToMoveCursorName,
-     flag_descriptions::kSwipeToMoveCursorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kSwipeToMoveCursor)},
-#endif  // defined(OS_ANDROID)
-
 #if !defined(OS_ANDROID)
     {"settings-landing-page-redesign",
      flag_descriptions::kSettingsLandingPageRedesignName,

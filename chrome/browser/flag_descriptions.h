@@ -2062,9 +2062,6 @@ extern const char kVoiceButtonInTopToolbarDescription[];
 extern const char kInlineUpdateFlowName[];
 extern const char kInlineUpdateFlowDescription[];
 
-extern const char kSwipeToMoveCursorName[];
-extern const char kSwipeToMoveCursorDescription[];
-
 extern const char kWalletRequiresFirstSyncSetupCompleteName[];
 extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
 

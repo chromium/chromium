@@ -299,15 +299,12 @@ const base::Feature kUIDebugTools{"ui-debug-tools",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsSwipeToMoveCursorEnabled() {
-  static const bool enabled =
-      base::FeatureList::IsEnabled(kSwipeToMoveCursor)
 #if defined(OS_ANDROID)
-      && base::android::BuildInfo::GetInstance()->sdk_int() >=
-             base::android::SDK_VERSION_R;
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+         base::android::SDK_VERSION_R;
 #else
-      ;
+  return base::FeatureList::IsEnabled(kSwipeToMoveCursor);
 #endif
-  return enabled;
 }
 
 bool ShouldApplyNativeOcclusionToCompositor() {

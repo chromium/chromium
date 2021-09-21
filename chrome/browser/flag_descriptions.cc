@@ -3636,11 +3636,6 @@ const char kInlineUpdateFlowDescription[] =
     "flow where they do not have to leave Chrome until the update is ready "
     "to install.";
 
-const char kSwipeToMoveCursorName[] = "Swipe to move cursor";
-const char kSwipeToMoveCursorDescription[] =
-    "Allows user to use touch gestures to move the text cursor around. This "
-    "flag will only take effect on Android 11 and above.";
-
 const char kWalletRequiresFirstSyncSetupCompleteName[] =
     "Controls whether Wallet (GPay) integration on Android requires "
     "first-sync-setup to be complete";

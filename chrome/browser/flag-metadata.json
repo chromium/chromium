@@ -2690,11 +2690,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-swipe-to-move-cursor",
-    "owners": [ "ctzsm" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-switch-access-point-scanning",
     "owners": ["anastasi@google.com", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 92
