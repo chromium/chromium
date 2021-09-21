@@ -869,11 +869,9 @@ crbug.com/1240324 [ mac google-0xffff swiftshader-gl no-passthrough ] conformanc
 
 # Mac. Vulkan backend.
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/canvas/canvas-test.html [ Failure ]
-crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/canvas/webgl-to-2d-canvas.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/context/premultiplyalpha-test.html [ Failure ]
 crbug.com/1099978 [ mac angle-swiftshader passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
 crbug.com/1099978 [ mac angle-swiftshader passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
-crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/rendering/draw-webgl-to-canvas-2d-repeatedly.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
@@ -882,9 +880,7 @@ crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/ima
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/misc/gl-pixelstorei.html [ Failure ]
-crbug.com/swiftshader/154 [ mac angle-swiftshader passthrough ] conformance/textures/misc/tex-image-canvas-corruption.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
-crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
@@ -893,9 +889,6 @@ crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/vid
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1099979 [ mac angle-swiftshader passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
-crbug.com/1134756 [ mac angle-swiftshader passthrough ] conformance/textures/misc/copy-tex-image-2d-formats.html [ Failure ]
-crbug.com/1134756 [ mac angle-swiftshader passthrough ] conformance/misc/uninitialized-test.html [ Failure ]
-crbug.com/1134756 [ mac angle-swiftshader passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
 crbug.com/1190853 [ mac angle-swiftshader passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 
