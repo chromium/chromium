@@ -640,7 +640,7 @@
   }
   if (preferenceName ==
       DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
-    [self updateDiscoverFeedLayout];
+    [self defaultSearchEngineDidChange];
   }
 }
 
@@ -671,6 +671,18 @@
           .GetDiscoverFeedProvider()
           ->NewFeedViewControllerWithConfiguration(viewControllerConfig);
   return discoverFeed;
+}
+
+// Handles how the NTP should react when the default search engine setting is
+// changed.
+- (void)defaultSearchEngineDidChange {
+  BOOL isScrolledToTop = [self.ntpViewController isNTPScrolledToTop];
+  [self updateDiscoverFeedLayout];
+  // Ensures doodle is visible if content suggestions height changes when
+  // scrolled to top. Otherwise, maintain scroll position.
+  if (isScrolledToTop) {
+    [self.ntpViewController setContentOffsetToTop];
+  }
 }
 
 @end

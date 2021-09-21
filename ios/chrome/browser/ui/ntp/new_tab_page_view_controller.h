@@ -92,6 +92,9 @@
 // Scrolls up the collection view enough to focus the omnibox.
 - (void)focusFakebox;
 
+// Returns whether the NTP is scrolled to the top or not.
+- (BOOL)isNTPScrolledToTop;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_VIEW_CONTROLLER_H_

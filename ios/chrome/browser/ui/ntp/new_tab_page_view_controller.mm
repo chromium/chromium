@@ -236,8 +236,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   __weak NewTabPageViewController* weakSelf = self;
 
   CGFloat yOffsetBeforeRotation = self.collectionView.contentOffset.y;
-  BOOL isScrolledToTop =
-      [self adjustedContentSuggestionsHeight] <= (-yOffsetBeforeRotation) + 1;
+  BOOL isScrolledToTopBeforeRotation = [self isNTPScrolledToTop];
 
   void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) = ^(
       id<UIViewControllerTransitionCoordinatorContext> context) {
@@ -256,7 +255,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
     // ensures that it is adjusted if necessary.
     // TODO(crbug.com/1170995): Remove once the Feed supports a custom
     // header.
-    if (isScrolledToTop &&
+    if (isScrolledToTopBeforeRotation &&
         -yOffsetBeforeRotation < [weakSelf adjustedContentSuggestionsHeight]) {
       weakSelf.collectionView.contentOffset =
           CGPointMake(0, -[weakSelf adjustedContentSuggestionsHeight]);
@@ -327,6 +326,11 @@ const CGFloat kOffsetToPinOmnibox = 100;
 - (void)setContentOffsetToTop {
   [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
   [self resetFakeOmnibox];
+}
+
+- (BOOL)isNTPScrolledToTop {
+  return self.collectionView.contentOffset.y <=
+         -[self adjustedContentSuggestionsHeight];
 }
 
 - (void)updateContentSuggestionForCurrentLayout {
