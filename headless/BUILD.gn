@@ -720,13 +720,18 @@ test("headless_browsertests") {
     "test/headless_client_browsertest.cc",
     "test/headless_devtools_client_browsertest.cc",
     "test/headless_origin_trials_browsertest.cc",
-    "test/headless_policy_browsertest.cc",
-    "test/headless_policy_browsertest.h",
     "test/headless_test_launcher.cc",
     "test/headless_web_contents_browsertest.cc",
     "test/test_network_interceptor.cc",
     "test/test_network_interceptor.h",
   ]
+
+  if (headless_use_policy) {
+    sources += [
+      "test/headless_policy_browsertest.cc",
+      "test/headless_policy_browsertest.h",
+    ]
+  }
 
   # TODO(https://crbug.com/1107396): These tests flakily timeout on fuchsia.
   if (!is_fuchsia) {
