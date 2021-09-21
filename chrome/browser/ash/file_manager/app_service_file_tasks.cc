@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -74,7 +75,22 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
   }
 }
 
+const char kImportCrostiniImageHandlerId[] = "import-crostini-image";
+const char kInstallLinuxPackageHandlerId[] = "install-linux-package";
+
 }  // namespace
+
+bool FileHandlerIsEnabled(Profile* profile,
+                          const std::string& file_handler_id) {
+  // Crostini deb files and backup files can be disabled by policy.
+  if (file_handler_id == kInstallLinuxPackageHandlerId) {
+    return crostini::CrostiniFeatures::Get()->IsRootAccessAllowed(profile);
+  }
+  if (file_handler_id == kImportCrostiniImageHandlerId) {
+    return crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile);
+  }
+  return true;
+}
 
 void FindAppServiceTasks(Profile* profile,
                          const std::vector<extensions::EntryInfo>& entries,
@@ -167,6 +183,9 @@ void FindAppServiceTasks(Profile* profile,
     if (app_type == apps::mojom::AppType::kExtension) {
       if (profile->IsOffTheRecord() &&
           !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile))
+        continue;
+      if (!FileHandlerIsEnabled(maybe_original_profile,
+                                launch_entry.activity_name))
         continue;
     }
 

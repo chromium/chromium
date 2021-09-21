@@ -263,19 +263,6 @@ bool ExecuteFileTask(Profile* profile,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done);
 
-// Returns true if a file handler is enabled. Some handlers such as
-// import-crostini-image can be disabled at runtime by enterprise policy.
-bool IsFileHandlerEnabled(Profile* profile,
-                          const apps::FileHandlerInfo& file_handler_info);
-
-// Returns true if a file handler matches with entries as good match.
-//
-// TODO(crbug.com/1060026): This can be removed in favour of
-// IsGoodMatchAppsFileHandler once apps::FileHandlerInfo is completely
-// replaced by apps::FileHandler.
-bool IsGoodMatchFileHandler(const apps::FileHandlerInfo& file_handler_info,
-                            const std::vector<extensions::EntryInfo>& entries);
-
 // Returns true if an apps::FileHandler matches with all of |entries|; that is,
 // if it doesn't include a blanket wild-card MIME type or file extension, it
 // doesn't include text/* and match on an unsupported text MIME type, and if
@@ -287,13 +274,6 @@ bool IsGoodMatchFileHandler(const apps::FileHandlerInfo& file_handler_info,
 bool IsGoodMatchAppsFileHandler(
     const apps::FileHandler& file_Handler,
     const std::vector<extensions::EntryInfo>& entries);
-
-// Finds the file handler tasks (apps declaring "file_handlers" in
-// manifest.json) that can be used with the given entries, appending them to
-// the |result_list|.
-void FindFileHandlerTasks(Profile* profile,
-                          const std::vector<extensions::EntryInfo>& entries,
-                          std::vector<FullTaskDescriptor>* result_list);
 
 // Finds the file browser handler tasks (app/extensions declaring
 // "file_browser_handlers" in manifest.json) that can be used with the

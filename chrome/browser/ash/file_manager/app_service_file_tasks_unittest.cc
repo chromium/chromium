@@ -259,6 +259,42 @@ class AppServiceFileTasksTest : public testing::Test {
                                 apps::mojom::AppType::kExtension);
   }
 
+  void AddChromeBookmarkApp() {
+    const char kGraphrId[] = "ppcpljkgngnngojbghcdiojhbneibgdg";
+    extensions::ExtensionBuilder graphr;
+    graphr.SetManifest(
+        extensions::DictionaryBuilder()
+            .Set("name", "Graphr")
+            .Set("version", "1.0.0")
+            .Set("manifest_version", 2)
+            .Set("app",
+                 extensions::DictionaryBuilder()
+                     .Set("launch", extensions::DictionaryBuilder()
+                                        .Set("web_url", "https://graphr.tld")
+                                        .Build())
+                     .Build())
+            .Set("file_handlers",
+                 extensions::DictionaryBuilder()
+                     .Set("https://graphr.tld/open-files/?name=raw",
+                          extensions::DictionaryBuilder()
+                              .Set("title", "Raw")
+                              .Set("types", extensions::ListBuilder()
+                                                .Append("text/csv")
+                                                .Build())
+                              .Set("extensions", extensions::ListBuilder()
+                                                     .Append("csv")
+                                                     .Build())
+                              .Build())
+                     .Build())
+            .Build());
+    graphr.SetID(kGraphrId);
+    graphr.AddFlags(extensions::Extension::InitFromValueFlags::FROM_BOOKMARK);
+    auto filters =
+        apps_util::CreateChromeAppIntentFilters(graphr.Build().get());
+    AddFakeAppWithIntentFilters(kGraphrId, std::move(filters),
+                                apps::mojom::AppType::kExtension);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -531,6 +567,15 @@ TEST_F(AppServiceFileTasksTestEnabled,
   EXPECT_TRUE(tasks[0].is_generic_file_handler);
   EXPECT_FALSE(tasks[0].is_file_extension_match);
   EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+}
+
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeBookmarkApp) {
+  AddChromeBookmarkApp();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.csv", "text/csv"}});
+
+  // No bookmark apps expected.
+  ASSERT_EQ(0U, tasks.size());
 }
 
 }  // namespace file_tasks
