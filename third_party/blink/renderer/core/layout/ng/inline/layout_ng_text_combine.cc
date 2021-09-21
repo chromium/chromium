@@ -248,7 +248,8 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
 
 IntRect LayoutNGTextCombine::VisualRectForPaint(
     const PhysicalOffset& paint_offset) const {
-  PhysicalRect ink_overflow = CurrentFragment()->InkOverflow();
+  DCHECK_EQ(PhysicalFragmentCount(), 1u);
+  PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflow();
   ink_overflow.Move(paint_offset);
   return EnclosingIntRect(ink_overflow);
 }
