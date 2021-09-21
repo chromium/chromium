@@ -69,6 +69,8 @@ class MetricsReporter {
 
   // Network metrics.
 
+  void NetworkRefreshRequestStarted(const StreamType& stream_type,
+                                    ContentOrder content_order);
   static void NetworkRequestComplete(NetworkRequestType type,
                                      const NetworkResponseInfo& response_info);
 

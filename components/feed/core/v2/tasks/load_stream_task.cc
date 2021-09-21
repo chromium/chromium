@@ -243,16 +243,20 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
     else if (options_.stream_type.IsWebFeed())
       network_request_id_ = launch_reliability_logger_.LogWebFeedRequestStart();
   }
+  const feed::RequestMetadata request_metadata =
+      stream_.GetRequestMetadata(options_.stream_type,
+                                 /*is_for_next_page=*/false);
 
   feedwire::Request request = CreateFeedQueryRefreshRequest(
       options_.stream_type,
       GetRequestReason(options_.stream_type, options_.load_type),
-      stream_.GetRequestMetadata(options_.stream_type,
-                                 /*is_for_next_page=*/false),
-      stream_.GetMetadata().consistency_token());
+      request_metadata, stream_.GetMetadata().consistency_token());
 
   const std::string gaia =
       force_signed_out_request ? std::string() : stream_.GetSyncSignedInGaia();
+
+  stream_.GetMetricsReporter().NetworkRefreshRequestStarted(
+      options_.stream_type, request_metadata.content_order);
 
   FeedNetwork& network = stream_.GetNetwork();
 

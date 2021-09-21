@@ -117,7 +117,11 @@ enum class FeedUserActionType {
   kMaxValue = kTappedDiscoverFeedPreview,
 };
 
-// The requested order of the Feed content.
+// Values for the UMA
+// ContentSuggestions.Feed.WebFeed.RefreshContentOrder histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This must be kept in sync with
+// FeedContentOrder in enums.xml.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
 enum class ContentOrder : int {
   // Content order is not specified.
@@ -126,6 +130,8 @@ enum class ContentOrder : int {
   kGrouped = 1,
   // Content is ungrouped, and arranged in reverse chronological order.
   kReverseChron = 2,
+
+  kMaxValue = kReverseChron,
 };
 
 }  // namespace feed

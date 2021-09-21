@@ -34769,6 +34769,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="20" label="What's New"/>
 </enum>
 
+<enum name="FeedContentOrder">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Grouped"/>
+  <int value="2" label="Reverse Chronological"/>
+</enum>
+
 <enum name="FeedControlsActions">
   <int value="0" label="Clicked on My activity"/>
   <int value="1" label="Clicked on Manage interests"/>

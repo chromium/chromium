@@ -577,6 +577,15 @@ void MetricsReporter::ReportCardOpenEndIfNeeded(bool success) {
   pending_open_ = {};
 }
 
+void MetricsReporter::NetworkRefreshRequestStarted(
+    const StreamType& stream_type,
+    ContentOrder content_order) {
+  if (stream_type.IsWebFeed()) {
+    base::UmaHistogramEnumeration(
+        "ContentSuggestions.Feed.WebFeed.RefreshContentOrder", content_order);
+  }
+}
+
 void MetricsReporter::NetworkRequestComplete(
     NetworkRequestType type,
     const NetworkResponseInfo& response_info) {

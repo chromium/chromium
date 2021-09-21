@@ -2655,6 +2655,7 @@ TEST_F(FeedApiTest, ForYouContentOrderUnset) {
 }
 
 TEST_F(FeedApiTest, ContentOrderIsGroupedByDefault) {
+  base::HistogramTester histograms;
   network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
@@ -2664,6 +2665,9 @@ TEST_F(FeedApiTest, ContentOrderIsGroupedByDefault) {
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED,
       network_.query_request_sent->feed_request().feed_query().order_by());
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.RefreshContentOrder",
+      ContentOrder::kGrouped, 1);
 }
 
 TEST_F(FeedApiTest, SetContentOrderReloadsContent) {
@@ -2672,6 +2676,7 @@ TEST_F(FeedApiTest, SetContentOrderReloadsContent) {
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
+  base::HistogramTester histograms;
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   stream_->SetContentOrder(kWebFeedStream, ContentOrder::kReverseChron);
   WaitForIdleTaskQueue();
@@ -2683,6 +2688,9 @@ TEST_F(FeedApiTest, SetContentOrderReloadsContent) {
       network_.query_request_sent->feed_request().feed_query().order_by());
   EXPECT_EQ(ContentOrder::kReverseChron,
             stream_->GetContentOrder(kWebFeedStream));
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.RefreshContentOrder",
+      ContentOrder::kReverseChron, 1);
 }
 
 TEST_F(FeedApiTest, SetContentOrderIsSavedeNotRefreshedIfUnchanged) {
