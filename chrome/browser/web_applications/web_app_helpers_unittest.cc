@@ -32,6 +32,11 @@ TEST(WebAppHelpers, GenerateAppId) {
                                "?utm_source=web_app_manifest")));
 }
 
+TEST(WebAppHelpers, GenerateRecommendedId) {
+  EXPECT_EQ("/start?a=b", GenerateRecommendedId(
+                              GURL("https://www.chromestatus.com/start?a=b")));
+}
+
 TEST(WebAppHelpers, IsValidWebAppUrl) {
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://chromium.org")));
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://www.chromium.org")));
