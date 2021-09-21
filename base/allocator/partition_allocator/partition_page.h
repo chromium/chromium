@@ -114,7 +114,7 @@ template <bool thread_safe>
 struct __attribute__((packed)) SlotSpanMetadata {
   PartitionFreelistEntry* freelist_head = nullptr;
   SlotSpanMetadata<thread_safe>* next_slot_span = nullptr;
-  PartitionBucket<thread_safe>* const bucket;
+  PartitionBucket<thread_safe>* const bucket = nullptr;
 
   // Deliberately signed, 0 for empty or decommitted slot spans, -n for full
   // slot spans:
@@ -122,8 +122,8 @@ struct __attribute__((packed)) SlotSpanMetadata {
   uint16_t num_unprovisioned_slots = 0;
   int8_t empty_cache_index = 0;  // -1 if not in the empty cache.
                                  // < kMaxFreeableSpans.
-  static_assert(kMaxFreeableSpans < std::numeric_limits<int8_t>::max(), "");
-  const bool can_store_raw_size;
+  static_assert(kMaxFreeableSpans <= std::numeric_limits<int8_t>::max(), "");
+  const bool can_store_raw_size = false;
 
   explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
@@ -236,8 +236,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // namespace so the getter can be fully inlined.
   static SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
-  constexpr SlotSpanMetadata() noexcept
-      : bucket(nullptr), can_store_raw_size(false) {}
+  constexpr SlotSpanMetadata() noexcept = default;
 };
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
