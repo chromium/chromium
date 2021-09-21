@@ -6,7 +6,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
-import {BookmarksDragManager, DROP_POSITION_ATTR, DropPosition} from 'chrome://read-later.top-chrome/side_panel/bookmarks_drag_manager.js';
+import {BookmarksDragManager, DROP_POSITION_ATTR, DropPosition, overrideFolderOpenerTimeoutDelay} from 'chrome://read-later.top-chrome/side_panel/bookmarks_drag_manager.js';
 import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -49,6 +49,17 @@ suite('SidePanelBookmarkDragManagerTest', () => {
           title: 'My folder\'s child',
           url: 'http://google.com',
           parentId: '4',
+        }],
+      },
+      {
+        id: '5',
+        title: 'Closed folder',
+        parentId: '1',
+        children: [{
+          id: '6',
+          title: 'Closed folder\'s child',
+          url: 'http://google.com',
+          parentId: '5',
         }],
       },
     ],
@@ -251,5 +262,49 @@ suite('SidePanelBookmarkDragManagerTest', () => {
         new DragEvent('drop', {bubbles: true, composed: true}));
     assertEquals('1', calledId);
     assertEquals(2, calledIndex);
+  });
+
+  test('DragOverFolderAutoOpens', async () => {
+    overrideFolderOpenerTimeoutDelay(0);
+    chrome.bookmarkManagerPrivate.startDrag = () => {};
+    const draggableElements = getDraggableElements();
+    const draggedBookmark = draggableElements[0];
+    draggedBookmark.dispatchEvent(new DragEvent(
+        'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
+
+    const folderNode = folders[0].children[3];
+    const dragOverFolder = draggableElements[4];
+    const dragOverRect = dragOverFolder.getBoundingClientRect();
+    dragOverFolder.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: dragOverRect.left,
+      clientY: dragOverRect.top + (dragOverRect.height * .5),
+    }));
+    assertFalse(delegate.isFolderOpen(folderNode));
+
+    // Drag over a new bookmark before the timeout runs out to ensure the
+    // timeout is canceled.
+    const newDragOverBookmark = draggableElements[3];
+    const newDragOverBookmarkRect = newDragOverBookmark.getBoundingClientRect();
+    newDragOverBookmark.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: newDragOverBookmarkRect.left,
+      clientY:
+          newDragOverBookmarkRect.top + (newDragOverBookmarkRect.height * .5),
+    }));
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assertFalse(delegate.isFolderOpen(folderNode));
+
+    // Drag back into closed folder and wait for the timeout to resolve.
+    dragOverFolder.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: dragOverRect.left,
+      clientY: dragOverRect.top + (dragOverRect.height * .5),
+    }));
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assertTrue(delegate.isFolderOpen(folderNode));
   });
 });

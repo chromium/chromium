@@ -119,6 +119,11 @@ export class BookmarksListElement extends BookmarksListElementBase {
     return this.openFolders_.some(id => bookmark.id === id);
   }
 
+  /** BookmarksDragDelegate */
+  openFolder(folderId: string) {
+    this.changeFolderOpenStatus_(folderId, true);
+  }
+
   private addListener_(eventName: string, callback: Function): void {
     this.bookmarksApi_.callbackRouter[eventName]!.addListener(callback);
     this.listeners_.set(eventName, callback);
@@ -205,15 +210,23 @@ export class BookmarksListElement extends BookmarksListElementBase {
     this.splice(`${pathToParentString}.children`, node.index!, 0, node);
   }
 
-  private onFolderOpenChanged_(event: CustomEvent) {
-    const {id, open} = event.detail;
-    if (open) {
+  private changeFolderOpenStatus_(id: string, open: boolean) {
+    const alreadyOpenIndex = this.openFolders_.indexOf(id);
+    if (open && alreadyOpenIndex === -1) {
       this.openFolders_.push(id);
-    } else {
-      this.openFolders_.splice(this.openFolders_.indexOf(id), 1);
+    } else if (!open) {
+      this.openFolders_.splice(alreadyOpenIndex, 1);
     }
+
+    // Assign to a new array so that listeners are triggered.
+    this.openFolders_ = [...this.openFolders_];
     window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] =
         JSON.stringify(this.openFolders_);
+  }
+
+  private onFolderOpenChanged_(event: CustomEvent) {
+    const {id, open} = event.detail;
+    this.changeFolderOpenStatus_(id, open);
   }
 
   private onKeydown_(event: KeyboardEvent) {

@@ -13,6 +13,12 @@ export const DROP_POSITION_ATTR = 'drop-position';
 
 const ROOT_FOLDER_ID = '0';
 
+// Ms to wait during a dragover to open closed folder.
+let folderOpenerTimeoutDelay = 1000;
+export function overrideFolderOpenerTimeoutDelay(ms: number) {
+  folderOpenerTimeoutDelay = ms;
+}
+
 export enum DropPosition {
   ABOVE = 'above',
   INTO = 'into',
@@ -23,6 +29,7 @@ interface BookmarksDragDelegate extends HTMLElement {
   getAscendants(bookmarkId: string): string[];
   getIndex(bookmark: chrome.bookmarks.BookmarkTreeNode): number;
   isFolderOpen(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean;
+  openFolder(folderId: string): void;
 }
 
 class DragSession {
@@ -30,6 +37,7 @@ class DragSession {
   private dragData_: chrome.bookmarkManagerPrivate.DragData;
   private lastDragOverElement_: HTMLElement|null = null;
   private lastPointerWasTouch_ = false;
+  private folderOpenerTimeout_: number|null = null;
 
   constructor(
       delegate: BookmarksDragDelegate,
@@ -53,7 +61,7 @@ class DragSession {
     }
 
     if (dragOverElement !== this.lastDragOverElement_) {
-      this.clearStyles_();
+      this.resetState_();
     }
 
     const dragOverBookmark = getBookmarkFromElement(dragOverElement);
@@ -94,11 +102,22 @@ class DragSession {
           dragOverYRatio <= .5 ? DropPosition.ABOVE : DropPosition.BELOW;
     }
     dragOverElement.setAttribute(DROP_POSITION_ATTR, dropPosition);
+
+    if (dropPosition === DropPosition.INTO &&
+        !this.delegate_.isFolderOpen(dragOverBookmark) &&
+        !this.folderOpenerTimeout_) {
+      // Queue a timeout to auto-open the dragged over folder.
+      this.folderOpenerTimeout_ = setTimeout(() => {
+        this.delegate_.openFolder(dragOverBookmark.id);
+        this.folderOpenerTimeout_ = null;
+      }, folderOpenerTimeoutDelay);
+    }
+
     this.lastDragOverElement_ = dragOverElement;
   }
 
   cancel() {
-    this.clearStyles_();
+    this.resetState_();
     this.lastDragOverElement_ = null;
   }
 
@@ -111,7 +130,7 @@ class DragSession {
         getBookmarkFromElement(this.lastDragOverElement_);
     const dropPosition = this.lastDragOverElement_.getAttribute(
                              DROP_POSITION_ATTR) as DropPosition;
-    this.clearStyles_();
+    this.resetState_();
 
     if (isBookmarkFolderElement(this.lastDragOverElement_) &&
         dropPosition === DropPosition.INTO) {
@@ -127,11 +146,15 @@ class DragSession {
         dropTargetBookmark.parentId!, toIndex, /* callback */ undefined);
   }
 
-  private clearStyles_() {
-    if (!this.lastDragOverElement_) {
-      return;
+  private resetState_() {
+    if (this.lastDragOverElement_) {
+      this.lastDragOverElement_.removeAttribute(DROP_POSITION_ATTR);
     }
-    this.lastDragOverElement_.removeAttribute(DROP_POSITION_ATTR);
+
+    if (this.folderOpenerTimeout_ !== null) {
+      clearTimeout(this.folderOpenerTimeout_);
+      this.folderOpenerTimeout_ = null;
+    }
   }
 
   static createFromBookmark(
