@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
@@ -47,10 +47,11 @@ void StripTrailingDot(base::StringPiece* host) {
 // with a valid TLD that appears in |allowed_tlds|. If |subdomain_permission| is
 // ALLOW_SUBDOMAIN, we check against host "*.<domain_in_lower_case>.<TLD>"
 // instead.
+template <typename Container>
 bool IsValidHostName(base::StringPiece host,
                      base::StringPiece domain_in_lower_case,
                      SubdomainPermission subdomain_permission,
-                     const base::flat_set<base::StringPiece>& allowed_tlds) {
+                     const Container& allowed_tlds) {
   // Fast path to avoid searching the registry set.
   if (host.find(domain_in_lower_case) == base::StringPiece::npos)
     return false;
@@ -104,21 +105,21 @@ bool IsCanonicalHostGoogleHostname(base::StringPiece canonical_host,
   if (base_url.is_valid() && (canonical_host == base_url.host_piece()))
     return true;
 
-  static const base::NoDestructor<base::flat_set<base::StringPiece>>
-      google_tlds(std::initializer_list<base::StringPiece>({GOOGLE_TLD_LIST}));
+  static constexpr auto google_tlds =
+      base::MakeFixedFlatSet<base::StringPiece>({GOOGLE_TLD_LIST});
   return IsValidHostName(canonical_host, "google", subdomain_permission,
-                         *google_tlds);
+                         google_tlds);
 }
 
 bool IsCanonicalHostYoutubeHostname(base::StringPiece canonical_host,
                                     SubdomainPermission subdomain_permission) {
-  static const base::NoDestructor<base::flat_set<base::StringPiece>>
-      youtube_tlds(
-          std::initializer_list<base::StringPiece>({YOUTUBE_TLD_LIST}));
+  static constexpr auto youtube_tlds =
+      base::MakeFixedFlatSet<base::StringPiece>({YOUTUBE_TLD_LIST});
+
   return IsValidHostName(canonical_host, "youtube", subdomain_permission,
-                         *youtube_tlds) ||
-      IsValidHostName(canonical_host, "youtubekids", subdomain_permission,
-                         *youtube_tlds);
+                         youtube_tlds) ||
+         IsValidHostName(canonical_host, "youtubekids", subdomain_permission,
+                         youtube_tlds);
 }
 
 // True if |url| is a valid URL with a host that is in the static list of
@@ -131,11 +132,11 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
   base::StringPiece host(url.host_piece());
   StripTrailingDot(&host);
 
-  static const base::NoDestructor<base::flat_set<base::StringPiece>>
-      google_subdomains(std::initializer_list<base::StringPiece>(
-          {"ipv4.google.com", "ipv6.google.com"}));
+  static constexpr auto google_subdomains =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"ipv4.google.com", "ipv6.google.com"});
 
-  return google_subdomains->contains(host);
+  return google_subdomains.contains(host);
 }
 
 }  // namespace
