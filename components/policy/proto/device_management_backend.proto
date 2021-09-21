@@ -1735,6 +1735,9 @@ message ExtensionRequest {
   // [request_timestamp] is milliseconds since Epoch in UTC timezone
   // (Java time).
   optional int64 request_timestamp = 2;
+
+  // User justification describing why the extension is being requested.
+  optional string justification = 3;
 }
 
 // Extension information.

@@ -16,6 +16,7 @@
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/browser/reporting/policy_info.h"
@@ -76,6 +77,14 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
         it.second.FindKey(extension_misc::kExtensionRequestTimestamp));
     if (timestamp)
       request->set_request_timestamp(timestamp->ToJavaTime());
+
+    if (base::FeatureList::IsEnabled(
+            features::kExtensionWorkflowJustification)) {
+      const std::string* justification = it.second.FindStringKey(
+          extension_misc::kExtensionWorkflowJustification);
+      if (justification)
+        request->set_justification(*justification);
+    }
   }
 }
 
