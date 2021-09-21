@@ -177,13 +177,14 @@ void NetworkStateHandler::UpdateBlockedWifiNetworks(
     bool only_managed,
     bool available_only,
     const std::vector<std::string>& blocked_hex_ssids) {
-  if (allow_only_policy_networks_to_connect_ == only_managed &&
-      allow_only_policy_networks_to_connect_if_available_ == available_only &&
+  if (allow_only_policy_wifi_networks_to_connect_ == only_managed &&
+      allow_only_policy_wifi_networks_to_connect_if_available_ ==
+          available_only &&
       blocked_hex_ssids_ == blocked_hex_ssids) {
     return;
   }
-  allow_only_policy_networks_to_connect_ = only_managed;
-  allow_only_policy_networks_to_connect_if_available_ = available_only;
+  allow_only_policy_wifi_networks_to_connect_ = only_managed;
+  allow_only_policy_wifi_networks_to_connect_if_available_ = available_only;
   blocked_hex_ssids_ = blocked_hex_ssids;
 
   UpdateBlockedWifiNetworksInternal();
@@ -205,8 +206,8 @@ bool NetworkStateHandler::IsProfileNetworksLoaded() {
 }
 
 bool NetworkStateHandler::OnlyManagedWifiNetworksAllowed() const {
-  return allow_only_policy_networks_to_connect_ ||
-         (allow_only_policy_networks_to_connect_if_available_ &&
+  return allow_only_policy_wifi_networks_to_connect_ ||
+         (allow_only_policy_wifi_networks_to_connect_if_available_ &&
           GetAvailableManagedWifiNetwork());
 }
 

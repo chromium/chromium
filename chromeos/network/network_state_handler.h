@@ -762,8 +762,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Policies which control WiFi blocking (Controlled from
   // |ManagedNetworkConfigurationHandler| by calling |UpdateBlockedNetworks()|).
-  bool allow_only_policy_networks_to_connect_ = false;
-  bool allow_only_policy_networks_to_connect_if_available_ = false;
+  bool allow_only_policy_wifi_networks_to_connect_ = false;
+  bool allow_only_policy_wifi_networks_to_connect_if_available_ = false;
   std::vector<std::string> blocked_hex_ssids_;
 
   // After login the user's saved networks get updated asynchronously from
