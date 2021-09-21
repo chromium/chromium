@@ -104,12 +104,6 @@ export const PinModeRestriction = {
  *     allowedMode: (PinModeRestriction | undefined),
  *     defaultMode: (PinModeRestriction | undefined),
  *   } | undefined),
- *   printPdfAsImage: ({
- *     defaultMode: (boolean | undefined),
- *   } | undefined),
- *   printPdfAsImageAvailability: ({
- *     allowedMode: (boolean | undefined),
- *   } | undefined),
  * }}
  */
 export let Policies;
