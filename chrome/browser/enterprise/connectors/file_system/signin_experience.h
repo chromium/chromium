@@ -65,8 +65,10 @@ class SigninExperienceTestObserver {
   virtual void InitForTesting(FileSystemRenameHandler* rename_handler);
   virtual void OnConfirmationDialogCreated(
       views::DialogDelegate* dialog_delegate) {}
-  virtual void OnSignInDialogCreated(content::WebContents* dialog_web_content,
-                                     views::Widget* dialog_widget) {}
+  virtual void OnSignInDialogCreated(
+      content::WebContents* dialog_web_content,
+      FileSystemSigninDialogDelegate* dialog_delegate,
+      views::Widget* dialog_widget) {}
 
  private:
   base::WeakPtr<FileSystemRenameHandler> rename_handler_;

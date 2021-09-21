@@ -135,6 +135,7 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
           browser_context, settings, std::move(account_login),
           std::move(callback));
   content::WebContents* dialog_web_contents = delegate->web_contents();
+  FileSystemSigninDialogDelegate* delegate_ptr = delegate.get();
 
   // We want a dialog whose lifetime is independent from that of |web_contents|,
   // therefore using FindMostRelevantContextWindow() as context, instead of
@@ -144,7 +145,8 @@ void OnConfirmationModalClosed(gfx::NativeWindow context,
       std::move(delegate), context, /* parent = */ nullptr);
 
   if (test_observer)
-    test_observer->OnSignInDialogCreated(dialog_web_contents, widget);
+    test_observer->OnSignInDialogCreated(dialog_web_contents, delegate_ptr,
+                                         widget);
 
   widget->Show();
 }

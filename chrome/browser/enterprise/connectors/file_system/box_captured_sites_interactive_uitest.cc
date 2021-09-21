@@ -2,71 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-#include <vector>
+#include "chrome/browser/enterprise/connectors/file_system/browsertest_helper.h"
 
 #include "base/files/file_util.h"
-#include "base/json/json_reader.h"
-#include "base/json/string_escape.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/current_thread.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
-#include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
-#include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
-#include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/download/download_item_view.h"
 #include "chrome/browser/ui/views/download/download_shelf_view.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/test_switches.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_danger_type.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/policy_constants.h"
-#include "components/variations/variations_params_manager.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/download_request_utils.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "content/public/test/download_test_observer.h"
-#include "google_apis/gaia/gaia_urls.h"
-#include "net/dns/mock_host_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/test/test_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/views/test/widget_test.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
-
-namespace content {
-class DownloadManagerDelegate;
-}
 
 namespace {
+
 const int kHostHttpPort = 8080;
 const int kHostHttpsPort = 8081;
 
@@ -83,13 +43,30 @@ const int kHostHttpsPort = 8081;
 const char kWebPageReplayCertSPKI[] =
     "PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=";
 
+// Determine the test execution mode.
+// By default, test should execute against captured web traffic.
+// To generate/refresh captures for test, one can use the record mode to
+// test against the live Box.com.
+// For debugging, one can run in live mode, which executes the test
+// against live traffic but without recording.
+const char kRecordMode[] = "record";
+const char kLiveMode[] = "live";
+
+enum TestExecutionMode { kReplay, kRecord, kLive };
+
+TestExecutionMode GetTestExecutionMode() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kRecordMode))
+    return TestExecutionMode::kRecord;
+  else if (command_line->HasSwitch(kLiveMode))
+    return TestExecutionMode::kLive;
+  return TestExecutionMode::kReplay;
+}
+
 // The commandline flags to specify a REAL box.com username and password,
 // used to create new web captures against the LIVE box.com site.
 const char kBoxAccountUserName[] = "user_name";
 const char kBoxAccountPassword[] = "password";
-
-enum TestExecutionMode { kReplay, kRecord, kLive };
-enum DownloadServiceProvider { kLocal, kBox, kUnknown };
 
 const std::string GetBoxAccountUserName() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -109,23 +86,6 @@ const std::string GetBoxAccountPassword() {
   return "FakePassword";
 }
 
-// Determine the test execution mode.
-// By default, test should execute against captured web traffic.
-// To generate/refresh captures for test, one can use the record mode to
-// test against the live Box.com.
-// For debugging, one can run in live mode, which executes the test
-// against live traffic but without recording.
-const char kRecordMode[] = "record";
-const char kLiveMode[] = "live";
-TestExecutionMode GetTestExecutionMode() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kRecordMode))
-    return TestExecutionMode::kRecord;
-  else if (command_line->HasSwitch(kLiveMode))
-    return TestExecutionMode::kLive;
-  return TestExecutionMode::kReplay;
-}
-
 // Print WPR output.
 // Used for debugging WPR behavior. WPR output will contain information for
 // each request WPR received and responded to.
@@ -133,58 +93,6 @@ const char kVerboseWprOutput[] = "log_verbose_wpr_output";
 bool ShouldLogVerboseWprOutput() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(kVerboseWprOutput);
-}
-
-std::string GetAllAllowedTestPolicy(const char* enterprise_id) {
-  const char kConnectorPolicyString[] = R"PREFIX(
-        [ {
-           "domain": "*",
-           "enable": [ {
-               "mime_types": [ "*" ],
-               "url_list": [ "*" ]
-           } ],
-           "enterprise_id": "%s",
-           "service_provider": "box"
-        } ])PREFIX";
-  return base::StringPrintf(kConnectorPolicyString, enterprise_id);
-}
-
-std::string GetTestPolicyWithEnabledFilter(const char* enterprise_id,
-                                           const char* include_url,
-                                           const char* include_mime) {
-  const char kConnectorPolicyString[] = R"PREFIX(
-        [ {
-           "domain": "*",
-           "enable": [ {
-               "mime_types": [ "%s" ],
-               "url_list": [ "%s" ]
-           } ],
-           "enterprise_id": "%s",
-           "service_provider": "box"
-        } ])PREFIX";
-  return base::StringPrintf(kConnectorPolicyString, include_mime, include_url,
-                            enterprise_id);
-}
-
-std::string GetTestPolicyWithDisabledFilter(const char* enterprise_id,
-                                            const char* exclude_url,
-                                            const char* exclude_mime) {
-  const char kConnectorPolicyString[] = R"PREFIX(
-        [ {
-           "domain": "*",
-           "enable": [ {
-               "mime_types": [ "*" ],
-               "url_list": [ "*" ]
-           } ],
-           "disable": [ {
-               "mime_types": [ "%s" ],
-               "url_list": [ "%s" ]
-           } ],
-           "enterprise_id": "%s",
-           "service_provider": "box"
-        } ])PREFIX";
-  return base::StringPrintf(kConnectorPolicyString, exclude_mime, exclude_url,
-                            enterprise_id);
 }
 
 std::string FilePathToUTF8(const base::FilePath::StringType& str) {
@@ -463,409 +371,6 @@ class WebPageReplayUtil {
   base::Process web_page_record_server_;
 };
 
-}  // namespace
-
-namespace enterprise_connectors {
-
-class BoxSignInObserver : public SigninExperienceTestObserver,
-                          public content::WebContentsObserver,
-                          public views::WidgetObserver {
- public:
-  enum class Page { kSignin, kAuth, kUnknown };
-
-  explicit BoxSignInObserver(FileSystemRenameHandler* rename_handler) {
-    InitForTesting(rename_handler);
-  }
-
-  ~BoxSignInObserver() override {
-    if (sign_in_widget_)
-      sign_in_widget_->RemoveObserver(this);
-  }
-
-  // Accept the Sign in confirmation dialog to bring up the Box.com
-  // sign in dialog.
-  void AcceptBoxSigninConfirmation() {
-    signin_confirmation_dlg_->AcceptDialog();
-    WaitForSignInDialogToShow();
-  }
-
-  void CancelBoxSignInConfirmation() {
-    signin_confirmation_dlg_->CancelDialog();
-  }
-
-  // Bypass Single-Factor-Authentication sign in and authorize
-  // Chrome to access Box.com resources.
-  void AuthorizeWithUserAndPasswordSFA(const std::string& username,
-                                       const std::string& password) {
-    if (current_page_ != Page::kSignin)
-      WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kSignin)
-        << "The sign-in dialog did not load the account sign in page!";
-    // Set username and password, then click the submit button.
-    ASSERT_TRUE(content::ExecuteScript(
-        web_contents(), GetSubmitAccountSignInScript(username, password)))
-        << "Failed to execute script to sign in!";
-    WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kAuth)
-        << "The Sign In dialog did not load the authorization page!";
-    ASSERT_NO_FATAL_FAILURE(WaitForSignInDialogToClose(base::BindOnce(
-        [](const content::ToRenderFrameHost& adapter) {
-          ASSERT_TRUE(
-              content::ExecuteScript(adapter, GetClickAuthorizeScript()))
-              << "Failed to execute script to authorize access!";
-        },
-        std::move(web_contents()))));
-  }
-
-  // Bypass 2-Factor-Authentication sign in and authorize
-  // Chrome to access Box.com resources.
-  void AuthorizeWithUserAndPassword2FA(const std::string& username,
-                                       const std::string& password,
-                                       const std::string& sms_code) {
-    if (current_page_ != Page::kSignin)
-      WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kSignin)
-        << "The Sign In dialog did not load the account sign in page!";
-    // Set username and password, then click the authorize button.
-    ASSERT_TRUE(content::ExecuteScript(
-        web_contents(), GetSubmitAccountSignInScript(username, password)))
-        << "Failed to execute script to sign in!";
-    WaitForPageLoad();
-
-    ASSERT_EQ(current_page_, Page::kSignin)
-        << "The Sign In dialog did not load the sms code page!";
-    // In replay mode, supply the temporary password given as a parameter.
-    if (GetTestExecutionMode() == TestExecutionMode::kReplay) {
-      ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                         GetSubmitSmsCodeScript(sms_code)))
-          << "Failed to execute script to submit the sms code!";
-    } else {
-      // If test is running the recording mode or live mode, one must manually
-      // supply a valid Short Message Service code.
-      VLOG(0) << "Please submit the Box.com sms code into the signin dialog.";
-    }
-    WaitForPageLoad();
-
-    ASSERT_EQ(current_page_, Page::kAuth)
-        << "The Sign In dialog did not load the authorization page!";
-    ASSERT_NO_FATAL_FAILURE(WaitForSignInDialogToClose(base::BindOnce(
-        [](const content::ToRenderFrameHost& adapter) {
-          ASSERT_TRUE(
-              content::ExecuteScript(adapter, GetClickAuthorizeScript()))
-              << "Failed to execute script to authorize access!";
-        },
-        std::move(web_contents()))));
-  }
-
-  void SubmitInvalidSignInCredentials(const std::string& username,
-                                      const std::string& password) {
-    if (current_page_ != Page::kSignin)
-      WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kSignin)
-        << "The Sign In dialog did not load the account sign in page!";
-    // Set username and password, then click the authorize button.
-    ASSERT_TRUE(content::ExecuteScript(
-        web_contents(), GetSubmitAccountSignInScript(username, password)))
-        << "Failed to execute script to submit invalid credentials!";
-    WaitForPageLoad();
-    ASSERT_EQ(current_page_, Page::kSignin)
-        << "The Sign In dialog did not reload the account sign in page!";
-  }
-
-  bool GetUserNameFromSignInPage(std::string* result) {
-    DCHECK_EQ(current_page_, Page::kSignin);
-
-    const std::string get_login_value = R"(
-      window.domAutomationController.send(
-          document.getElementById('login').value);
-    )";
-    return ExecuteScriptAndExtractString(web_contents()->GetMainFrame(),
-                                         get_login_value, result);
-  }
-
-  void CloseSignInWidget() {
-    WaitForSignInDialogToClose(
-        base::BindOnce([](views::Widget* dialog) { dialog->Close(); },
-                       std::move(sign_in_widget_)));
-  }
-
-  void WaitForPageLoad() {
-    base::RunLoop run_loop;
-    stop_waiting_for_page_load_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  void WaitForSignInConfirmationDialog() {
-    if (signin_confirmation_dlg_)
-      return;
-    base::RunLoop run_loop;
-    stop_waiting_for_signin_confirmation_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  void WaitForSignInDialogToShow() {
-    if (sign_in_widget_ == nullptr) {
-      base::RunLoop run_loop;
-      stop_waiting_for_widget_to_show_ = run_loop.QuitClosure();
-      run_loop.Run();
-    }
-
-    if (current_page_ != Page::kSignin)
-      WaitForPageLoad();
-  }
-
-  void WaitForSignInDialogToClose(base::OnceClosure trigger_close_action) {
-    base::RunLoop run_loop;
-    stop_waiting_for_dialog_shutdown_ = run_loop.QuitClosure();
-    expecting_dialog_shutdown_ = true;
-    ASSERT_NO_FATAL_FAILURE(std::move(trigger_close_action).Run());
-    run_loop.Run();
-  }
-
-  // content::WebContentsObserver
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    const GURL& url = navigation_handle->GetURL();
-    if (IsBoxSignInURI(url))
-      current_page_ = Page::kSignin;
-    else if (IsBoxAuthorizeURI(url))
-      current_page_ = Page::kAuth;
-    else
-      current_page_ = Page::kUnknown;
-  }
-
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override {
-    if (stop_waiting_for_page_load_) {
-      std::move(stop_waiting_for_page_load_).Run();
-      stop_waiting_for_page_load_.Reset();
-    }
-  }
-
-  // views::WidgetObserver
-  void OnWidgetDestroying(views::Widget* widget) override {
-    DCHECK_EQ(sign_in_widget_, widget);
-    // Report unexpected shut down as an error.
-    // Note that ASSERT macros can only be called on subroutines that executes
-    // in the same thread as the test body function. This subroutine executes
-    // in a separate thread.
-    // If the sign in dialog closes unexpectedly, the main test body will catch
-    // the error and abort.
-    EXPECT_TRUE(expecting_dialog_shutdown_)
-        << R"(Detected unexpected shutdown of the sign in dialog!
-              Test should abort)";
-    sign_in_widget_ = nullptr;
-    if (stop_waiting_for_dialog_shutdown_)
-      std::move(stop_waiting_for_dialog_shutdown_).Run();
-  }
-
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override {
-    DCHECK_EQ(sign_in_widget_, widget);
-    if (visible) {
-      if (stop_waiting_for_widget_to_show_)
-        std::move(stop_waiting_for_widget_to_show_).Run();
-    }
-  }
-
-  // SigninExperienceTestObserver
-  void OnConfirmationDialogCreated(
-      views::DialogDelegate* confirmation_dialog_delegate) override {
-    signin_confirmation_dlg_ = confirmation_dialog_delegate;
-    if (stop_waiting_for_signin_confirmation_)
-      std::move(stop_waiting_for_signin_confirmation_).Run();
-  }
-
-  void OnSignInDialogCreated(content::WebContents* dialog_web_content,
-                             views::Widget* dialog_widget) override {
-    this->Observe(dialog_web_content);
-    dialog_widget->AddObserver(this);
-    sign_in_widget_ = dialog_widget;
-  }
-
- private:
-  static bool IsBoxSignInURI(const GURL& url) {
-    return url.host() == "account.box.com" &&
-           url.path() == "/api/oauth2/authorize";
-  }
-
-  static bool IsBoxAuthorizeURI(const GURL& url) {
-    return url.host() == "app.box.com" && url.path() == "/api/oauth2/authorize";
-  }
-
-  static std::string GetSubmitAccountSignInScript(const std::string& username,
-                                                  const std::string& password) {
-    return base::StringPrintf(
-        R"PREFIX(
-        (function() {
-          document.getElementById('login').value = `%s`;
-          document.getElementById('password').value = `%s`;
-          document.getElementsByName('login_submit')[0].click();
-        })();
-        )PREFIX",
-        username.c_str(), password.c_str());
-  }
-
-  static std::string GetSubmitSmsCodeScript(const std::string& password) {
-    return base::StringPrintf(
-        R"PREFIX(
-        (function() {
-          document.getElementById('2fa_sms_code').value = `%s`;
-          document.querySelector('button[type="submit"]').click();
-        })();
-        )PREFIX",
-        password.c_str());
-  }
-
-  static std::string GetClickAuthorizeScript() {
-    return R"PREFIX(
-        (function() {
-          document.getElementById('consent_accept_button').click();
-        })();
-        )PREFIX";
-  }
-
-  Page current_page_ = Page::kUnknown;
-  // This bool variable allows this class to differentiate an expected dialog
-  // closure from unexpected dialog shutdown/crash/exits. Before triggering an
-  // action to close the dialog, the test class will set this variable to true.
-  bool expecting_dialog_shutdown_ = false;
-  views::DialogDelegate* signin_confirmation_dlg_ = nullptr;
-  views::Widget* sign_in_widget_ = nullptr;
-  base::OnceClosure stop_waiting_for_signin_confirmation_;
-  base::OnceClosure stop_waiting_for_page_load_;
-  base::OnceClosure stop_waiting_for_widget_to_show_;
-  base::OnceClosure stop_waiting_for_dialog_shutdown_;
-  base::OnceClosure stop_waiting_for_authorization_completion_;
-};
-
-class BoxDownloadItemObserver : public download::DownloadItem::Observer {
- public:
-  explicit BoxDownloadItemObserver(download::DownloadItem* item)
-      : download_item_(item) {
-    download_item_->AddObserver(this);
-  }
-
-  ~BoxDownloadItemObserver() override {
-    if (download_item_)
-      download_item_->RemoveObserver(this);
-  }
-
-  void OnDownloadDestroyed(download::DownloadItem* item) override {
-    DCHECK_EQ(item, download_item_);
-    download_item_ = nullptr;
-  }
-
-  void OnDownloadUpdated(download::DownloadItem* item) override {
-    DCHECK_EQ(item, download_item_);
-
-    if ((item->GetState() !=
-         download::DownloadItem::DownloadState::IN_PROGRESS) &&
-        (!stop_waiting_for_download_near_completion_.is_null())) {
-      // The download is no longer in progress (either because download
-      // completed, or because it was interrupted or cancelled). We can exit the
-      // wait loop for download to be near completion.
-      std::move(stop_waiting_for_download_near_completion_).Run();
-      stop_waiting_for_download_near_completion_.Reset();
-    }
-
-    // Calling download::DownloadItem::GetRenameHandler before the
-    // download::DownloadItem has a full path will result in the
-    // creation of an invalid RenameHandler.
-    // So check for the DownloadItem full path first to avoid
-    // inadvertently breaking the download workflow.
-    if (item->GetFullPath().empty())
-      return;
-    if (rename_handler_created_)
-      return;
-    if (!item->GetRenameHandler())
-      return;
-
-    rename_handler_created_ = true;
-    FileSystemRenameHandler* rename_handler =
-        static_cast<FileSystemRenameHandler*>(item->GetRenameHandler());
-    rename_start_observer_ =
-        std::make_unique<RenameStartObserver>(rename_handler);
-    sign_in_observer_ = std::make_unique<BoxSignInObserver>(rename_handler);
-    fetch_access_token_observer_ =
-        std::make_unique<BoxFetchAccessTokenTestObserver>(rename_handler);
-    upload_observer_ =
-        std::make_unique<BoxUploader::TestObserver>(rename_handler);
-
-    if (!stop_waiting_for_rename_handler_creation_.is_null()) {
-      std::move(stop_waiting_for_rename_handler_creation_).Run();
-      stop_waiting_for_rename_handler_creation_.Reset();
-    }
-
-    if (!stop_waiting_for_download_near_completion_.is_null()) {
-      std::move(stop_waiting_for_download_near_completion_).Run();
-      stop_waiting_for_download_near_completion_.Reset();
-    }
-  }
-
-  // Wait for when the reroute info on a download::DownloadItem is accurate.
-  // If the DownloadItem downloads to a local file, then this method should
-  // stop when the download completes.
-  // If the DownloadItem will be rerouted, then this method should stop when
-  // the DownloadItem's rename handler kicks off.
-  void WaitForDownloadItemRerouteInfo() {
-    if ((download_item_->GetState() ==
-         download::DownloadItem::DownloadState::IN_PROGRESS) &&
-        (!rename_handler_created_)) {
-      base::RunLoop run_loop;
-      stop_waiting_for_download_near_completion_ = run_loop.QuitClosure();
-      run_loop.Run();
-    }
-
-    if (rename_start_observer_) {
-      rename_start_observer_->WaitForStart();
-    }
-  }
-
-  void WaitForRenameHandlerCreation() {
-    if (!rename_handler_created_) {
-      base::RunLoop run_loop;
-      stop_waiting_for_rename_handler_creation_ = run_loop.QuitClosure();
-      run_loop.Run();
-    }
-  }
-
-  void WaitForSignInConfirmationDialog() {
-    WaitForRenameHandlerCreation();
-    sign_in_observer_->WaitForSignInConfirmationDialog();
-  }
-
-  DownloadServiceProvider GetServiceProvider() {
-    auto& reroute_info = download_item_->GetRerouteInfo();
-    if (!reroute_info.has_service_provider())
-      return DownloadServiceProvider::kLocal;
-    if (reroute_info.service_provider() == FileSystemServiceProvider::BOX)
-      return DownloadServiceProvider::kBox;
-    return DownloadServiceProvider::kUnknown;
-  }
-
-  download::DownloadItem* download_item() { return download_item_; }
-
-  BoxSignInObserver* sign_in_observer() { return sign_in_observer_.get(); }
-
-  BoxFetchAccessTokenTestObserver* fetch_access_token_observer() {
-    return fetch_access_token_observer_.get();
-  }
-
-  BoxUploader::TestObserver* upload_observer() {
-    return upload_observer_.get();
-  }
-
- private:
-  download::DownloadItem* download_item_ = nullptr;
-  base::OnceClosure stop_waiting_for_rename_handler_creation_;
-  base::OnceClosure stop_waiting_for_download_near_completion_;
-  bool rename_handler_created_ = false;
-  std::unique_ptr<RenameStartObserver> rename_start_observer_;
-  std::unique_ptr<BoxSignInObserver> sign_in_observer_;
-  std::unique_ptr<BoxFetchAccessTokenTestObserver> fetch_access_token_observer_;
-  std::unique_ptr<BoxUploader::TestObserver> upload_observer_;
-};
-
 class DownloadManagerObserver : public content::DownloadManager::Observer {
  public:
   explicit DownloadManagerObserver(Browser* browser)
@@ -923,32 +428,29 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
   base::OnceClosure stop_waiting_for_download_;
 };
 
-class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
+}  // namespace
+
+namespace enterprise_connectors {
+
+class BoxCapturedSitesInteractiveTest
+    : public FileSystemConnectorBrowserTestBase {
  public:
   BoxCapturedSitesInteractiveTest() = default;
   ~BoxCapturedSitesInteractiveTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
-    // Set up a localhost server to serve files for download.
-    base::FilePath test_file_directory;
-    ASSERT_TRUE(
-        base::PathService::Get(chrome::DIR_TEST_DATA, &test_file_directory));
-    embedded_test_server()->ServeFilesFromDirectory(test_file_directory);
-    ASSERT_TRUE(embedded_test_server()->Start());
+    FileSystemConnectorBrowserTestBase::SetUpOnMainThread();
+    download_manager_observer_ =
+        std::make_unique<DownloadManagerObserver>(browser());
 
     // Allow test in live mode to access the Internet.
     if (GetTestExecutionMode() == TestExecutionMode::kLive)
       host_resolver()->AllowDirectLookup("*");
-
-    download_manager_observer_ =
-        std::make_unique<DownloadManagerObserver>(browser());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kFileSystemConnectorEnabled},
-        /*disabled_features=*/{});
+    FileSystemConnectorBrowserTestBase::SetUpCommandLine(command_line);
     if (GetTestExecutionMode() != TestExecutionMode::kLive)
       WebPageReplayUtil::SetUpCommandLine(command_line);
 
@@ -961,8 +463,7 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    // Make sure any pending requests have finished
-    base::RunLoop().RunUntilIdle();
+    FileSystemConnectorBrowserTestBase::TearDownOnMainThread();
 
     // Make sure that this function terminates all in-progress downloads.
     // Otherwise Chrome will prompt the user to confirm closing the Chrome
@@ -975,20 +476,6 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
           download_item->Cancel(false);
       }
     }
-  }
-
-  void SetCloudFSCPolicy(const std::string& policy_value) {
-    browser()->profile()->GetPrefs()->Set(
-        ConnectorPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD),
-        *base::JSONReader::Read(policy_value.c_str()));
-    // Verify that the FSC is enabled.
-    ASSERT_TRUE(IsFSCEnabled())
-        << "Failed to enable the File System Connector!";
-  }
-
-  bool IsFSCEnabled() {
-    auto settings = GetFileSystemSettings(browser()->profile());
-    return settings.has_value();
   }
 
   void StartWprUsingFSCCaptureDir(const char* replay_file_relative_path) {
@@ -1078,7 +565,7 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
     if (service_provider == DownloadServiceProvider::kBox &&
         need_to_bypass_box_signin) {
       download_item_observer.WaitForSignInConfirmationDialog();
-      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+      download_item_observer.sign_in_observer()->AcceptSignInConfirmation();
       download_item_observer.sign_in_observer()
           ->AuthorizeWithUserAndPasswordSFA(username, password);
       need_to_bypass_box_signin = false;
@@ -1094,7 +581,6 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
   WebPageReplayUtil* web_page_replay_util() { return &wpr_util_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<DownloadManagerObserver> download_manager_observer_;
   WebPageReplayUtil wpr_util_;
 };
@@ -1118,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
-      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
+      download_item_observer.sign_in_observer()->AcceptSignInConfirmation());
 
   // Make sure that the download shelf is showing.
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
@@ -1180,13 +666,14 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
-      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
+      download_item_observer.sign_in_observer()->AcceptSignInConfirmation());
 
   // Bypass the Box signin and authorize dialog.
   ASSERT_NO_FATAL_FAILURE(
       download_item_observer.sign_in_observer()
-          ->AuthorizeWithUserAndPassword2FA(GetBoxAccountUserName(),
-                                            GetBoxAccountPassword(), "123456"));
+          ->AuthorizeWithUserAndPassword2FA(
+              GetBoxAccountUserName(), GetBoxAccountPassword(), "123456",
+              GetTestExecutionMode() != TestExecutionMode::kReplay));
   ASSERT_TRUE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
 
@@ -1216,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   // Sign in to authorize Chrome to upload to Box.com.
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
-      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
+      download_item_observer.sign_in_observer()->AcceptSignInConfirmation());
   ASSERT_NO_FATAL_FAILURE(
       download_item_observer.sign_in_observer()
           ->AuthorizeWithUserAndPasswordSFA(GetBoxAccountUserName(),
@@ -1271,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, EnterpriseIdMismatch) {
             DownloadServiceProvider::kBox);
 
   download_item_observer.WaitForSignInConfirmationDialog();
-  download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation();
+  download_item_observer.sign_in_observer()->AcceptSignInConfirmation();
 
   // Bypass the Box signin and authorize dialog.
   download_item_observer.sign_in_observer()->AuthorizeWithUserAndPasswordSFA(
@@ -1282,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, EnterpriseIdMismatch) {
   // The sign in confirmation dialog will relaunch after the enterprise ID
   // mismatch error. Close the confirmation dialog.
   download_item_observer.WaitForSignInConfirmationDialog();
-  download_item_observer.sign_in_observer()->CancelBoxSignInConfirmation();
+  download_item_observer.sign_in_observer()->CancelSignInConfirmation();
 
   download_manager_observer()->WaitForDownloadToFinish();
   EXPECT_TRUE(
@@ -1315,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
-      download_item_observer.sign_in_observer()->CancelBoxSignInConfirmation());
+      download_item_observer.sign_in_observer()->CancelSignInConfirmation());
   EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   EXPECT_TRUE(
@@ -1347,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
-      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
+      download_item_observer.sign_in_observer()->AcceptSignInConfirmation());
   ASSERT_NO_FATAL_FAILURE(
       download_item_observer.sign_in_observer()->SubmitInvalidSignInCredentials(
           GetBoxAccountUserName(), GetBoxAccountPassword()));
@@ -1583,7 +1070,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
-      download_item_observer.sign_in_observer()->AcceptBoxSigninConfirmation());
+      download_item_observer.sign_in_observer()->AcceptSignInConfirmation());
 
   std::string login_val;
   ASSERT_TRUE(

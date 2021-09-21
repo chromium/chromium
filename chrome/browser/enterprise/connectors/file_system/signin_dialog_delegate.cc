@@ -206,12 +206,12 @@ void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
 
   // Otherwise check enterprise ID.
   current_api_call_ = std::make_unique<BoxGetCurrentUserApiCallFlow>(
-      base::BindOnce(&FileSystemSigninDialogDelegate::OnGetCurrentUserResponse,
+      base::BindOnce(&FileSystemSigninDialogDelegate::OnGotCurrentUserResponse,
                      weak_factory_.GetWeakPtr()));
   current_api_call_->Start(GetURLLoaderFactory(), access_token);
 }
 
-void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
+void FileSystemSigninDialogDelegate::OnGotCurrentUserResponse(
     BoxApiCallResponse response,
     base::Value user_info) {
   current_api_call_.reset();
