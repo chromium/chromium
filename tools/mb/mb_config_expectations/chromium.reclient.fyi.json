@@ -1,5 +1,5 @@
 {
-  "Linux Builder Re-Client Staging": {
+  "Linux Builder reclient staging": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
@@ -9,7 +9,7 @@
       "use_rbe": true
     }
   },
-  "Linux Builder Re-Client Test": {
+  "Linux Builder reclient test": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",

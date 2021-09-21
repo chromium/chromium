@@ -5430,7 +5430,7 @@
     'name': 'chromium.reclient.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Linux Builder Re-Client Staging': {
+      'Linux Builder reclient staging': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
         'mixins': [
@@ -5440,7 +5440,7 @@
           'all'
         ],
       },
-      'Linux Builder Re-Client Test': {
+      'Linux Builder reclient test': {
         # Copied from
         # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
         'mixins': [
