@@ -34,6 +34,7 @@ group("features") {
     "//ios/showcase/bubble",
     "//ios/showcase/credential_provider",
     "//ios/showcase/default_browser",
+    "//ios/showcase/discover_feed_preview",
     "//ios/showcase/first_run",
     "//ios/showcase/incognito_reauth",
     "//ios/showcase/infobars",
@@ -83,6 +84,7 @@ ios_eg2_test("ios_showcase_eg2tests_module") {
     "//ios/showcase/core:eg2_tests",
     "//ios/showcase/credential_provider:eg2_tests",
     "//ios/showcase/default_browser:eg2_tests",
+    "//ios/showcase/discover_feed_preview:eg2_tests",
     "//ios/showcase/infobars:eg2_tests",
     "//ios/showcase/text_badge_view:eg2_tests",
   ]

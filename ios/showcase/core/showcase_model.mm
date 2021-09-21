@@ -189,6 +189,11 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       kClassForInstantiationKey : @"SCFirstRunScrollingScreenCoordinator",
       showcase::kUseCaseKey : @"New FRE screen with scrolling example",
     },
+    @{
+      showcase::kClassForDisplayKey : @"DiscoverFeedPreviewViewController",
+      showcase::kClassForInstantiationKey : @"SCDiscoverFeedPreviewCoordinator",
+      showcase::kUseCaseKey : @"Link Preview",
+    },
   ];
   DCHECK(IsShowcaseModelValid(model));
   return model;

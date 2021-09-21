@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialProgressView.h>
 
+#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ui/gfx/ios/uikit_util.h"
@@ -60,10 +61,12 @@ const CGFloat kProgressBarHeight = 2.0f;
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   self.URLBarLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   self.URLBarLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.URLBarLabel.accessibilityIdentifier = kPreviewOriginIdentifier;
 
   UIView* URLBarView = [[UIView alloc] init];
   URLBarView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   URLBarView.translatesAutoresizingMaskIntoConstraints = NO;
+  URLBarView.accessibilityIdentifier = kPreviewURLBarIdentifier;
 
   [URLBarView addSubview:self.URLBarLabel];
   [NSLayoutConstraint activateConstraints:@[
@@ -88,8 +91,10 @@ const CGFloat kProgressBarHeight = 2.0f;
   self.progressBar = [[MDCProgressView alloc] init];
   self.progressBar.translatesAutoresizingMaskIntoConstraints = NO;
   self.progressBar.hidden = YES;
+  self.progressBar.accessibilityIdentifier = kPreviewProgressBarIdentifier;
 
   self.webStateView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.webStateView.accessibilityIdentifier = kPreviewWebStateViewIdentifier;
 
   [self.view addSubview:URLBarView];
   [self.view addSubview:separator];
