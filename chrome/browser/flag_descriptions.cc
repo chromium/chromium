@@ -3877,16 +3877,13 @@ const char kRunVideoCaptureServiceInBrowserProcessName[] =
 const char kRunVideoCaptureServiceInBrowserProcessDescription[] =
     "Run the video capture service in the browser process.";
 
-const char kUseAngleName[] = "Choose ANGLE graphics backend";
-const char kUseAngleDescription[] =
+const char kUseAngleDescriptionWindows[] =
     "Choose the graphics backend for ANGLE. D3D11 is used on most Windows "
     "computers by default. Using the OpenGL driver as the graphics backend may "
     "result in higher performance in some graphics-heavy applications, "
     "particularly on NVIDIA GPUs. It can increase battery and memory usage of "
     "video playback.";
 
-const char kUseAngleDefault[] = "Default";
-const char kUseAngleGL[] = "OpenGL";
 const char kUseAngleD3D11[] = "D3D11";
 const char kUseAngleD3D9[] = "D3D9";
 const char kUseAngleD3D11on12[] = "D3D11on12";
@@ -3964,7 +3961,26 @@ const char kScreenTimeName[] = "Screen Time";
 const char kScreenTimeDescription[] =
     "Integrate with the macOS Screen Time system.";
 
+const char kUseAngleDescriptionMac[] =
+    "Choose the graphics backend for ANGLE. The OpenGL backend is soon to be "
+    "deprecated on Mac, and may contain driver bugs that are not planned to be "
+    "fixed. The Metal backend is still experimental, and may contain bugs that "
+    "are still being worked on. The Metal backend should be more performant, "
+    "but may still be behind the OpenGL backend until fully released.";
+
+const char kUseAngleMetal[] = "Metal";
+
 #endif
+
+// Windows and Mac -------------------------------------------------------------
+
+#if defined(OS_WIN) || defined(OS_MAC)
+
+const char kUseAngleName[] = "Choose ANGLE graphics backend";
+const char kUseAngleDefault[] = "Default";
+const char kUseAngleGL[] = "OpenGL";
+
+#endif  // defined(OS_WIN) || defined(OS_MAC)
 
 // Chrome OS -------------------------------------------------------------------
 

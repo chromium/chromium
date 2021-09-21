@@ -349,7 +349,7 @@ const FeatureEntry::Choice kLiteVideoDefaultDownlinkBandwidthKbps[] = {
      "900"}};
 
 #if defined(OS_WIN)
-const FeatureEntry::Choice kUseAngleChoices[] = {
+const FeatureEntry::Choice kUseAngleChoicesWindows[] = {
     {flag_descriptions::kUseAngleDefault, "", ""},
     {flag_descriptions::kUseAngleGL, switches::kUseANGLE,
      gl::kANGLEImplementationOpenGLName},
@@ -359,6 +359,13 @@ const FeatureEntry::Choice kUseAngleChoices[] = {
      gl::kANGLEImplementationD3D9Name},
     {flag_descriptions::kUseAngleD3D11on12, switches::kUseANGLE,
      gl::kANGLEImplementationD3D11on12Name}};
+#elif defined(OS_MAC)
+const FeatureEntry::Choice kUseAngleChoicesMac[] = {
+    {flag_descriptions::kUseAngleDefault, "", ""},
+    {flag_descriptions::kUseAngleGL, switches::kUseANGLE,
+     gl::kANGLEImplementationOpenGLName},
+    {flag_descriptions::kUseAngleMetal, switches::kUseANGLE,
+     gl::kANGLEImplementationMetalName}};
 #endif
 
 #if BUILDFLAG(ENABLE_VR)
@@ -5423,8 +5430,12 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if defined(OS_WIN)
     {"use-angle", flag_descriptions::kUseAngleName,
-     flag_descriptions::kUseAngleDescription, kOsWin,
-     MULTI_VALUE_TYPE(kUseAngleChoices)},
+     flag_descriptions::kUseAngleDescriptionWindows, kOsWin,
+     MULTI_VALUE_TYPE(kUseAngleChoicesWindows)},
+#elif defined(OS_MAC)
+    {"use-angle", flag_descriptions::kUseAngleName,
+     flag_descriptions::kUseAngleDescriptionMac, kOsMac,
+     MULTI_VALUE_TYPE(kUseAngleChoicesMac)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

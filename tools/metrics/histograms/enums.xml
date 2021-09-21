@@ -23777,9 +23777,18 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="ANGLE D3D11"/>
   <int value="5" label="ANGLE OpenGL"/>
   <int value="6" label="ANGLE OpenGL ES"/>
-  <int value="13" label="Angle D3D11on12"/>
-  <int value="15" label="Angle OpenGL EGL"/>
-  <int value="16" label="Angle OpenGL ES EGL"/>
+  <int value="7" label="ANGLE NULL"/>
+  <int value="8" label="ANGLE D3D11 NULL"/>
+  <int value="9" label="ANGLE OpenGL NULL"/>
+  <int value="10" label="ANGLE OpenGLES NULL"/>
+  <int value="11" label="ANGLE Vulkan"/>
+  <int value="12" label="ANGLE Vulkan NULL"/>
+  <int value="13" label="ANGLE D3D11on12"/>
+  <int value="14" label="ANGLE SwiftShader"/>
+  <int value="15" label="ANGLE OpenGL EGL"/>
+  <int value="16" label="ANGLE OpenGL ES EGL"/>
+  <int value="17" label="ANGLE Metal"/>
+  <int value="18" label="ANGLE Metal NULL"/>
 </enum>
 
 <enum name="EligibilityFailureReason">
