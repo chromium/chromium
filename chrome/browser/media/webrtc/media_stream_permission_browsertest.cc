@@ -6,6 +6,7 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -140,8 +141,15 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest, TestDismissingRequest) {
   GetUserMediaAndDismiss(tab_contents);
 }
 
+// TODO(crbug.com/1251470): Fix the issue on Lacros and enable the test.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TestDenyingUserMediaIncognito \
+  DISABLED_TestDenyingUserMediaIncognito
+#else
+#define MAYBE_TestDenyingUserMediaIncognito TestDenyingUserMediaIncognito
+#endif
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       TestDenyingUserMediaIncognito) {
+                       MAYBE_TestDenyingUserMediaIncognito) {
   content::WebContents* tab_contents = LoadTestPageInIncognitoTab();
   GetUserMediaAndDeny(tab_contents);
 }
