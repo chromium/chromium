@@ -747,6 +747,66 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
 
+// Select controls behave differently on Mac/Android, this test doesn't apply.
+#if !defined(OS_ANDROID) && !defined(OS_MAC)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       SelectWithOptgroupActiveDescendant) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <select autofocus aria-label="Select" id="select_node">
+          <optgroup label="A">
+            <option>Option 1</option>
+          </optgroup>
+          <optgroup label="B">
+            <option selected>Option 2</option>
+            <option>Option 3</option>
+          </optgroup>
+        </select>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Select");
+
+  const BrowserAccessibility* root = GetManager()->GetRoot();
+  ASSERT_NE(root, nullptr);
+  const BrowserAccessibility* body = root->PlatformGetChild(0);
+  ASSERT_NE(body, nullptr);
+  BrowserAccessibility* select = body->PlatformGetChild(0);
+  ASSERT_NE(select, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kPopUpButton, select->GetRole());
+
+  // Open popup.
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kChildrenChanged);
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDoDefault;
+  select->AccessibilityPerformAction(action_data);
+  waiter.WaitForNotification();
+
+  // Get popup.
+  const BrowserAccessibility* popup = select->PlatformGetChild(0);
+  ASSERT_NE(popup, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kMenuListPopup, popup->GetRole());
+
+  // Get "Option 2".
+  const BrowserAccessibility* option_2 = popup->PlatformGetChild(1);
+  ASSERT_NE(option_2, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_2->GetRole());
+  EXPECT_EQ("Option 2",
+            option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+  // Ensure active descendant is "Option 2"
+  int active_descendant_id = -1;
+  EXPECT_TRUE(popup->GetIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
+  EXPECT_EQ(active_descendant_id, option_2->GetId());
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
