@@ -439,8 +439,10 @@ class PopulatedAppListTest : public AshTestBase,
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
 
-    app_list_test_delegate_ = std::make_unique<test::AppListTestViewDelegate>();
-    app_list_test_model_ = app_list_test_delegate_->GetTestModel();
+    auto app_list_test_model = std::make_unique<test::AppListTestModel>();
+    app_list_test_model_ = app_list_test_model.get();
+    Shell::Get()->app_list_controller()->SetAppListModelForTest(
+        std::move(app_list_test_model));
   }
 
   void TearDown() override {
@@ -449,17 +451,18 @@ class PopulatedAppListTest : public AshTestBase,
   }
 
  protected:
-  void CreateAndOpenAppList() {
-    app_list_view_ = new AppListView(app_list_test_delegate_.get());
-    app_list_view_->InitView(Shell::GetContainer(
-        Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer));
-    app_list_view_->Show(AppListViewState::kFullscreenAllApps,
-                         false /*is_side_shelf*/);
+  void OpenAppListInFullscreen() {
+    AppListPresenterImpl* presenter =
+        Shell::Get()->app_list_controller()->presenter();
+    presenter->Show(AppListViewState::kFullscreenAllApps,
+                    GetPrimaryDisplay().id(), base::TimeTicks::Now(),
+                    /*show_source=*/absl::nullopt);
+    app_list_view_ = presenter->GetView();
   }
 
   void InitializeAppsGrid() {
     if (!app_list_view_)
-      CreateAndOpenAppList();
+      OpenAppListInFullscreen();
     apps_grid_view_ = app_list_view_->app_list_main_view()
                           ->contents_view()
                           ->apps_container_view()
