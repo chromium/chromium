@@ -6,7 +6,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 import {fakeActionNames} from './fake_data.js';
-import {AcceleratorConfig, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
+import {AcceleratorConfig, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
 
 /**
  * A singleton class that manages the fetched accelerators and layout
@@ -178,6 +178,31 @@ export class AcceleratorLookupManager {
   }
 
   /**
+   * @param {AcceleratorSource} source
+   * @param {number} action
+   * @param {AcceleratorKeys} newAccelerator
+   */
+  addAccelerator(source, action, newAccelerator) {
+    // Check to see if there is a pre-existing accelerator to remove first.
+    this.maybeRemoveOrDisableAccelerator_(newAccelerator);
+
+    // Get the matching accelerator and add the new accelerator to its
+    // container.
+    const accelInfos = this.getAccelerators(source, action);
+    const newAccelInfo = /** @type {!AcceleratorInfo} */ ({
+      accelerator: newAccelerator,
+      type: AcceleratorType.kUserDefined,
+      state: AcceleratorState.kEnabled,
+      locked: false,
+    });
+    accelInfos.push(newAccelInfo);
+
+    // Update the reverse look up maps.
+    this.reverseAcceleratorLookup_.set(
+        JSON.stringify(newAccelerator), `${source}-${action}`);
+  }
+
+  /**
    * Called to either remove or disable (if locked) an accelerator.
    * @param {!AcceleratorKeys} accelKeys
    * @private
@@ -232,6 +257,7 @@ export class AcceleratorLookupManager {
     this.acceleratorLookup_.clear();
     this.acceleratorNameLookup_.clear();
     this.acceleratorLayoutLookup_.clear();
+    this.reverseAcceleratorLookup_.clear();
   }
 }
 

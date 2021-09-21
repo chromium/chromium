@@ -44,6 +44,20 @@ export function acceleratorLookupManagerTest() {
     assertEquals(uuid, manager.getAcceleratorFromKeys(JSON.stringify(newKeys)));
   }
 
+  /**
+   * @param {AcceleratorSource} source
+   * @param {number} action
+   * @param {!AcceleratorKeys} newKeys
+   */
+  function addAndVerify(source, action, newKeys) {
+    manager.addAccelerator(source, action, newKeys);
+
+    // Verify that the new accelerator is in the reverse lookup.
+    assertEquals(
+        `${source}-${action}`,
+        manager.getAcceleratorFromKeys(JSON.stringify(newKeys)));
+  }
+
   test('AcceleratorLookupDefaultFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
     provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
@@ -191,6 +205,74 @@ export function acceleratorLookupManagerTest() {
       assertEquals(1, snapWindowLeftLookup.length);
       assertEquals(
           AcceleratorState.kDisabledByUser, snapWindowLeftLookup[0].state);
+    });
+  });
+
+  test('AddBasicAccelerator', () => {
+    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    return provider.getAllAcceleratorConfig().then((result) => {
+      assertDeepEquals(fakeAcceleratorConfig, result);
+
+      manager.setAcceleratorLookup(result);
+
+      // Get Snap Window Right accelerator from kAsh[1].
+      const expectedAction = 1;
+
+      const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL,
+        key: 79,
+        key_display: 'o',
+      });
+
+      // Sanity check that new accel is not in the reverse lookup.
+      assertEquals(
+          undefined,
+          manager.getAcceleratorFromKeys(JSON.stringify(expectedNewAccel)));
+
+      addAndVerify(AcceleratorSource.kAsh, expectedAction, expectedNewAccel);
+
+      // Check that the accelerator got updated in the lookup.
+      const lookup =
+          manager.getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      assertEquals(2, lookup.length);
+      assertEquals(
+          JSON.stringify(expectedNewAccel),
+          JSON.stringify(lookup[1].accelerator));
+    });
+  });
+
+  test('AddExistingAccelerator', () => {
+    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    return provider.getAllAcceleratorConfig().then((result) => {
+      assertDeepEquals(fakeAcceleratorConfig, result);
+
+      manager.setAcceleratorLookup(result);
+
+      // Get Snap Window Right accelerator, the action that will be overridden.
+      const snapWindowRightAction = 1;
+      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.kAsh);
+      const snapWindowRightAccels = ashMap.get(snapWindowRightAction);
+      // Modifier.Alt + key::221 (']')
+      const overridenAccel = snapWindowRightAccels[0].accelerator;
+
+      // Replace New Desk shortcut with Alt+']'.
+      const newDeskAction = 2;
+
+      addAndVerify(AcceleratorSource.kAsh, newDeskAction, overridenAccel);
+
+      // Verify that the New Desk shortcut now has the ALT + ']' accelerator.
+      const newDeskLookup =
+          manager.getAccelerators(AcceleratorSource.kAsh, newDeskAction);
+      assertEquals(2, newDeskLookup.length);
+      assertEquals(
+          JSON.stringify(overridenAccel),
+          JSON.stringify(newDeskLookup[1].accelerator));
+
+      // Verify that Snap Window Right's has no accelerators since it got
+      // overridden by New Desk.
+      const snapWindowRightLookup = manager.getAccelerators(
+          AcceleratorSource.kAsh, snapWindowRightAction);
+      assertEquals(0, snapWindowRightLookup.length);
     });
   });
 }
