@@ -327,12 +327,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PRELOAD_PAGES_SUMMARY" desc="Summary for a checkbox in Settings that controls pages preloading and informs the user about the data shared by this feature.">
         Preloads pages that Chrome thinks you might visit. To do this, Chrome may use cookies, if you allow cookies, and may encrypt and send pages through Google to hide your identity from sites.
       </message>
-      <message name="IDS_NAVIGATION_ERROR_SUGGESTIONS_TITLE" desc="Title for a checkbox in Settings that controls pages suggestions on navigation errors and informs the user about the data shared by this feature.">
-        Show suggestions for similar pages when a page can't be found
-      </message>
-      <message name="IDS_NAVIGATION_ERROR_SUGGESTIONS_SUMMARY" desc="Summary for a checkbox in Settings that controls pages suggestions on navigation errors and informs the user about the data shared by this feature.">
-        Sends the URL of a page you're trying to reach to Google
-      </message>
       <message name="IDS_URL_KEYED_ANONYMIZED_DATA_TITLE" desc="Title for a checkbox in Settings that controls non-personalized URL collection and informs the user about the data shared by this feature.">
         Make searches and browsing better
       </message>

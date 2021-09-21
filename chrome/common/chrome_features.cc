@@ -586,12 +586,6 @@ const base::Feature kKernelnextVMs{"KernelnextVMs",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-const base::Feature kLinkDoctorDeprecationAndroid{
-    "LinkDoctorDeprecationAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(OS_ANDROID)
-
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 const base::Feature kLinuxLowMemoryMonitor{"LinuxLowMemoryMonitor",

@@ -374,7 +374,6 @@ public abstract class ChromeFeatureList {
     public static final String INTEREST_FEED_V2_AUTOPLAY = "InterestFeedV2Autoplay";
     public static final String KITKAT_SUPPORTED = "KitKatSupported";
     public static final String LIGHTWEIGHT_REACTIONS = "LightweightReactions";
-    public static final String LINK_DOCTOR_DEPRECATION_ANDROID = "LinkDoctorDeprecationAndroid";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MARK_HTTP_AS = "MarkHttpAs";

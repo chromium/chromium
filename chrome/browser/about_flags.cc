@@ -7450,13 +7450,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kEnableInputInDiagnosticsApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
-    {"link-doctor-deprecation-android",
-     flag_descriptions::kLinkDoctorDeprecationAndroidName,
-     flag_descriptions::kLinkDoctorDeprecationAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kLinkDoctorDeprecationAndroid)},
-#endif
-
 #if defined(TOOLKIT_VIEWS)
     {"download-shelf-webui", flag_descriptions::kDownloadShelfWebUI,
      flag_descriptions::kDownloadShelfWebUIDescription, kOsDesktop,

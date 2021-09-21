@@ -1559,12 +1559,6 @@ const char kLensCameraAssistedSearchDescription[] =
     "Enable an entry point to Google Lens to allow users to search what they "
     "see using their mobile camera.";
 
-const char kLinkDoctorDeprecationAndroidName[] =
-    "Link Doctor Deprecation on Android";
-const char kLinkDoctorDeprecationAndroidDescription[] =
-    "Removes the setting for retrieving suggestions on navigation errors since "
-    "this feature is deprecated.";
-
 const char kLiteVideoName[] = "Enable LiteVideos";
 const char kLiteVideoDescription[] =
     "Enable the LiteVideo optimization to throttle media requests to "
