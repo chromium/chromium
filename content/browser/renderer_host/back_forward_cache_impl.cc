@@ -1238,6 +1238,42 @@ bool BackForwardCacheImpl::AllowRestoringPagesWithCacheControlNoStore() {
       kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange);
 }
 
+bool BackForwardCacheImpl::IsBrowsingInstanceInBackForwardCacheForDebugging(
+    BrowsingInstanceId browsing_instance_id) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    if (entry->render_frame_host()
+            ->GetSiteInstance()
+            ->GetBrowsingInstanceId() == browsing_instance_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool BackForwardCacheImpl::IsSiteInstanceInBackForwardCacheForDebugging(
+    SiteInstanceId site_instance_id) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    for (auto& proxy_map_entry : entry->proxy_hosts()) {
+      if (proxy_map_entry.first == site_instance_id) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool BackForwardCacheImpl::IsProxyInBackForwardCacheForDebugging(
+    RenderFrameProxyHost* proxy) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    for (auto& proxy_map_entry : entry->proxy_hosts()) {
+      if (proxy_map_entry.second.get() == proxy) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool BackForwardCache::DisabledReason::operator<(
     const DisabledReason& other) const {
   return std::tie(source, id) < std::tie(other.source, other.id);

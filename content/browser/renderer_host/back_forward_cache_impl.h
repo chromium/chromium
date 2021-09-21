@@ -119,6 +119,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
       return stored_page_->render_view_hosts;
     }
 
+    const StoredPage::RenderFrameProxyHostMap& proxy_hosts() const {
+      return stored_page_->proxy_hosts;
+    }
+
     size_t proxy_hosts_size() { return stored_page_->proxy_hosts.size(); }
 
    private:
@@ -289,6 +293,15 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // there are any.
   BackForwardCacheCanStoreDocumentResult CanRestorePageNowForTesting(
       RenderFrameHostImpl* render_frame_host);
+
+  // Returns true if one of the BFCache entries has a matching
+  // BrowsingInstanceId/SiteInstanceId/RenderFrameProxyHost.
+  // TODO(https://crbug.com/1243541): Remove these once the bug is fixed.
+  bool IsBrowsingInstanceInBackForwardCacheForDebugging(
+      BrowsingInstanceId browsing_instance_id);
+  bool IsSiteInstanceInBackForwardCacheForDebugging(
+      SiteInstanceId site_instance_id);
+  bool IsProxyInBackForwardCacheForDebugging(RenderFrameProxyHost* proxy);
 
  private:
   // Destroys all evicted frames in the BackForwardCache.

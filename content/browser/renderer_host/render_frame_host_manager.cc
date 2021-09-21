@@ -2858,7 +2858,7 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
 }
 
 RenderFrameProxyHost*
-RenderFrameHostManager::GetProxyHostWithoutRenderViewHost() {
+RenderFrameHostManager::GetProxyHostWithoutRenderViewHostForDebugging() {
   RenderFrameProxyHost* outer_delegate_proxy =
       IsMainFrameForInnerDelegate() ? GetProxyToOuterDelegate() : nullptr;
   for (const auto& pair : proxy_hosts_) {
