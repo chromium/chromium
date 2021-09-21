@@ -1684,16 +1684,13 @@ StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
 }
 
 void StoragePartitionImpl::OpenLocalStorage(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(initialized_);
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle =
       dom_storage_receivers_.current_context()->Duplicate();
   dom_storage_context_->OpenLocalStorage(
-      // TODO(https://crbug.com/1199077): Pass the real StorageKey
-      // when StoragePartitionImpl is converted.
-      blink::StorageKey(origin), std::move(receiver),
-      std::move(security_policy_handle),
+      storage_key, std::move(receiver), std::move(security_policy_handle),
       dom_storage_receivers_.GetBadMessageCallback());
 }
 
@@ -1707,16 +1704,14 @@ void StoragePartitionImpl::BindSessionStorageNamespace(
 }
 
 void StoragePartitionImpl::BindSessionStorageArea(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::string& namespace_id,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(initialized_);
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle =
       dom_storage_receivers_.current_context()->Duplicate();
   dom_storage_context_->BindStorageArea(
-      // TODO(https://crbug.com/1199077): Pass the real StorageKey
-      // when StoragePartitionImpl is converted.
-      blink::StorageKey(origin), namespace_id, std::move(receiver),
+      storage_key, namespace_id, std::move(receiver),
       std::move(security_policy_handle),
       dom_storage_receivers_.GetBadMessageCallback());
 }
