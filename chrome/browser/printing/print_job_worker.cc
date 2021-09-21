@@ -240,7 +240,7 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
 #endif  // defined(OS_LINUX) && defined(USE_CUPS)
   }
 
-  PrintingContext::Result result;
+  mojom::ResultCode result;
   {
 #if defined(OS_WIN)
     // Blocking is needed here because Windows printer drivers are oftentimes
@@ -257,14 +257,14 @@ void PrintJobWorker::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> new_settings,
     SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PrintingContext::Result result =
+  mojom::ResultCode result =
       printing_context_->UpdatePrintSettingsFromPOD(std::move(new_settings));
   GetSettingsDone(std::move(callback), result);
 }
 #endif
 
 void PrintJobWorker::GetSettingsDone(SettingsCallback callback,
-                                     PrintingContext::Result result) {
+                                     mojom::ResultCode result) {
   std::move(callback).Run(printing_context_->TakeAndResetSettings(), result);
 }
 
@@ -275,7 +275,7 @@ void PrintJobWorker::GetSettingsWithUI(uint32_t document_page_count,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (document_page_count > kMaxPageCount) {
-    GetSettingsDone(std::move(callback), PrintingContext::Result::FAILED);
+    GetSettingsDone(std::move(callback), mojom::ResultCode::kFailed);
     return;
   }
 
@@ -313,7 +313,7 @@ void PrintJobWorker::GetSettingsWithUI(uint32_t document_page_count,
 }
 
 void PrintJobWorker::UseDefaultSettings(SettingsCallback callback) {
-  PrintingContext::Result result;
+  mojom::ResultCode result;
   {
 #if defined(OS_WIN)
     // Blocking is needed here because Windows printer drivers are oftentimes
@@ -348,9 +348,8 @@ void PrintJobWorker::StartPrinting(PrintedDocument* new_document) {
     document_name = SimplifyDocumentTitle(
         l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE));
   }
-  PrintingContext::Result result =
-      printing_context_->NewDocument(document_name);
-  if (result != PrintingContext::OK) {
+  mojom::ResultCode result = printing_context_->NewDocument(document_name);
+  if (result != mojom::ResultCode::kSuccess) {
     OnFailure();
     return;
   }
@@ -480,7 +479,7 @@ void PrintJobWorker::OnDocumentDone() {
   DCHECK(print_job_);
 
   int job_id = printing_context_->job_id();
-  if (printing_context_->DocumentDone() != PrintingContext::OK) {
+  if (printing_context_->DocumentDone() != mojom::ResultCode::kSuccess) {
     OnFailure();
     return;
   }
@@ -501,7 +500,7 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
   DCHECK_NE(page_number_, PageNumber::npos());
 
   // Preprocess.
-  if (printing_context_->NewPage() != PrintingContext::OK) {
+  if (printing_context_->NewPage() != mojom::ResultCode::kSuccess) {
     OnFailure();
     return;
   }
@@ -510,7 +509,7 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
   document_->RenderPrintedPage(*page, printing_context_->context());
 
   // Postprocess.
-  if (printing_context_->PageDone() != PrintingContext::OK) {
+  if (printing_context_->PageDone() != mojom::ResultCode::kSuccess) {
     OnFailure();
     return;
   }

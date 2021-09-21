@@ -78,7 +78,7 @@ class PrinterQuery {
   virtual void StopWorker();
 
   int cookie() const;
-  PrintingContext::Result last_status() const { return last_status_; }
+  mojom::ResultCode last_status() const { return last_status_; }
 
   // Returns if a worker thread is still associated to this instance.
   bool is_valid() const;
@@ -90,11 +90,11 @@ class PrinterQuery {
   // Virtual so that tests can override.
   virtual void GetSettingsDone(base::OnceClosure callback,
                                std::unique_ptr<PrintSettings> new_settings,
-                               PrintingContext::Result result);
+                               mojom::ResultCode result);
 
   void PostSettingsDoneToIO(base::OnceClosure callback,
                             std::unique_ptr<PrintSettings> new_settings,
-                            PrintingContext::Result result);
+                            mojom::ResultCode result);
 
   void SetSettingsForTest(std::unique_ptr<PrintSettings> settings);
 
@@ -112,7 +112,7 @@ class PrinterQuery {
   int cookie_;
 
   // Results from the last GetSettingsDone() callback.
-  PrintingContext::Result last_status_ = PrintingContext::FAILED;
+  mojom::ResultCode last_status_ = mojom::ResultCode::kFailed;
 
   // All the UI is done in a worker thread because many Win32 print functions
   // are blocking and enters a message loop without your consent. There is one

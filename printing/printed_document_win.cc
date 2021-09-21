@@ -81,7 +81,7 @@ void PrintedDocument::RenderPrintedPage(
 }
 
 bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
-  if (context->NewPage() != PrintingContext::OK)
+  if (context->NewPage() != mojom::ResultCode::kSuccess)
     return false;
 
   std::wstring device_name =
@@ -92,7 +92,7 @@ bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
     static_cast<PrintingContextWin*>(context)->PrintDocument(
         device_name, *(static_cast<const MetafileSkia*>(metafile)));
   }
-  return context->PageDone() == PrintingContext::OK;
+  return context->PageDone() == mojom::ResultCode::kSuccess;
 }
 
 }  // namespace printing

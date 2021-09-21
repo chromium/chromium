@@ -241,6 +241,7 @@ static_library("test_support") {
   public_deps = [
     "//printing",
     "//printing/backend:test_support",
+    "//printing/mojom",
     "//ui/gfx/geometry",
   ]
   deps = [

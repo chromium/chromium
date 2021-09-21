@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "build/build_config.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
 
@@ -47,20 +48,20 @@ class TestPrintingContext : public PrintingContext {
                           bool has_selection,
                           bool is_scripted,
                           PrintSettingsCallback callback) override;
-  Result UseDefaultSettings() override;
+  mojom::ResultCode UseDefaultSettings() override;
   gfx::Size GetPdfPaperSizeDeviceUnits() override;
-  Result UpdatePrinterSettings(bool external_preview,
-                               bool show_system_dialog,
-                               int page_count) override;
-  Result NewDocument(const std::u16string& document_name) override;
-  Result NewPage() override;
-  Result PageDone() override;
-  Result DocumentDone() override;
+  mojom::ResultCode UpdatePrinterSettings(bool external_preview,
+                                          bool show_system_dialog,
+                                          int page_count) override;
+  mojom::ResultCode NewDocument(const std::u16string& document_name) override;
+  mojom::ResultCode NewPage() override;
+  mojom::ResultCode PageDone() override;
+  mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;
   NativeDrawingContext context() const override;
 #if defined(OS_WIN)
-  Result InitWithSettingsForTest(
+  mojom::ResultCode InitWithSettingsForTest(
       std::unique_ptr<PrintSettings> settings) override;
 #endif
 

@@ -155,7 +155,8 @@ void GetDefaultPrintSettingsReplyOnIO(
     mojom::PrintManagerHost::GetDefaultPrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   mojom::PrintParamsPtr params = mojom::PrintParams::New();
-  if (printer_query && printer_query->last_status() == PrintingContext::OK) {
+  if (printer_query &&
+      printer_query->last_status() == mojom::ResultCode::kSuccess) {
     RenderParamsFromPrintSettings(printer_query->settings(), params.get());
     params->document_cookie = printer_query->cookie();
   }
@@ -237,13 +238,13 @@ void UpdatePrintSettingsReplyOnIO(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(printer_query);
   mojom::PrintPagesParamsPtr params = CreateEmptyPrintPagesParamsPtr();
-  if (printer_query->last_status() == PrintingContext::OK) {
+  if (printer_query->last_status() == mojom::ResultCode::kSuccess) {
     RenderParamsFromPrintSettings(printer_query->settings(),
                                   params->params.get());
     params->params->document_cookie = printer_query->cookie();
     params->pages = PageRange::GetPages(printer_query->settings().ranges());
   }
-  bool canceled = printer_query->last_status() == PrintingContext::CANCEL;
+  bool canceled = printer_query->last_status() == mojom::ResultCode::kCanceled;
 #if defined(OS_WIN)
   if (canceled) {
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -291,7 +292,7 @@ void ScriptedPrintReplyOnIO(
     mojom::PrintManagerHost::ScriptedPrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   mojom::PrintPagesParamsPtr params = CreateEmptyPrintPagesParamsPtr();
-  if (printer_query->last_status() == PrintingContext::OK &&
+  if (printer_query->last_status() == mojom::ResultCode::kSuccess &&
       printer_query->settings().dpi()) {
     RenderParamsFromPrintSettings(printer_query->settings(),
                                   params->params.get());
@@ -428,7 +429,7 @@ void PrintViewManagerBase::OnPrintSettingsDone(
 
   // Check if the job was cancelled. This should only happen on Windows when
   // the system dialog is cancelled.
-  if (printer_query->last_status() == PrintingContext::CANCEL) {
+  if (printer_query->last_status() == mojom::ResultCode::kCanceled) {
     queue_->QueuePrinterQuery(std::move(printer_query));
 #if defined(OS_WIN)
     content::GetUIThreadTaskRunner({})->PostTask(

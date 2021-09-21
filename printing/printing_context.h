@@ -40,20 +40,13 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
     virtual std::string GetAppLocale() = 0;
   };
 
-  // Tri-state result for user behavior-dependent functions.
-  enum Result {
-    OK,
-    CANCEL,
-    FAILED,
-  };
-
   PrintingContext(const PrintingContext&) = delete;
   PrintingContext& operator=(const PrintingContext&) = delete;
   virtual ~PrintingContext();
 
   // Callback of AskUserForSettings, used to notify the PrintJobWorker when
   // print settings are available.
-  using PrintSettingsCallback = base::OnceCallback<void(Result)>;
+  using PrintSettingsCallback = base::OnceCallback<void(mojom::ResultCode)>;
 
   // Asks the user what printer and format should be used to print. Updates the
   // context with the select device settings. The result of the call is returned
@@ -69,10 +62,10 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 
   // Selects the user's default printer and format. Updates the context with the
   // default device settings.
-  virtual Result UseDefaultSettings() = 0;
+  virtual mojom::ResultCode UseDefaultSettings() = 0;
 
   // Updates the context with PDF printer settings.
-  Result UsePdfSettings();
+  mojom::ResultCode UsePdfSettings();
 
   // Returns paper size to be used for PDF or Cloud Print in device units.
   virtual gfx::Size GetPdfPaperSizeDeviceUnits() = 0;
@@ -80,17 +73,17 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // Updates printer settings.
   // `external_preview` is true if pdf is going to be opened in external
   // preview. Used by MacOS only now to open Preview.app.
-  virtual Result UpdatePrinterSettings(bool external_preview,
-                                       bool show_system_dialog,
-                                       int page_count) = 0;
+  virtual mojom::ResultCode UpdatePrinterSettings(bool external_preview,
+                                                  bool show_system_dialog,
+                                                  int page_count) = 0;
 
   // Updates Print Settings. `job_settings` contains all print job
   // settings information.
-  Result UpdatePrintSettings(base::Value job_settings);
+  mojom::ResultCode UpdatePrintSettings(base::Value job_settings);
 
 #if defined(OS_CHROMEOS)
   // Updates Print Settings.
-  Result UpdatePrintSettingsFromPOD(
+  mojom::ResultCode UpdatePrintSettingsFromPOD(
       std::unique_ptr<PrintSettings> job_settings);
 #endif
 
@@ -104,17 +97,18 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // like IPC message processing! Some printers have side-effects on this call
   // like virtual printers that ask the user for the path of the saved document;
   // for example a PDF printer.
-  virtual Result NewDocument(const std::u16string& document_name) = 0;
+  virtual mojom::ResultCode NewDocument(
+      const std::u16string& document_name) = 0;
 
   // Starts a new page.
-  virtual Result NewPage() = 0;
+  virtual mojom::ResultCode NewPage() = 0;
 
   // Closes the printed page.
-  virtual Result PageDone() = 0;
+  virtual mojom::ResultCode PageDone() = 0;
 
   // Closes the printing job. After this call the object is ready to start a new
   // document.
-  virtual Result DocumentDone() = 0;
+  virtual mojom::ResultCode DocumentDone() = 0;
 
   // Cancels printing. Can be used in a multi-threaded context. Takes effect
   // immediately.
@@ -128,7 +122,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 
 #if defined(OS_WIN)
   // Initializes with predefined settings.
-  virtual Result InitWithSettingsForTest(
+  virtual mojom::ResultCode InitWithSettingsForTest(
       std::unique_ptr<PrintSettings> settings) = 0;
 #endif
 
@@ -160,7 +154,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   void ResetSettings();
 
   // Does bookkeeping when an error occurs.
-  PrintingContext::Result OnError();
+  mojom::ResultCode OnError();
 
   // Complete print context settings.
   std::unique_ptr<PrintSettings> settings_;

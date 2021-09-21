@@ -37,7 +37,7 @@ class PrintJobWorker {
  public:
   using SettingsCallback =
       base::OnceCallback<void(std::unique_ptr<PrintSettings>,
-                              PrintingContext::Result)>;
+                              mojom::ResultCode)>;
 
   PrintJobWorker(int render_process_id, int render_frame_id);
 
@@ -161,8 +161,7 @@ class PrintJobWorker {
 #endif
 
   // Reports settings back to |callback|.
-  void GetSettingsDone(SettingsCallback callback,
-                       PrintingContext::Result result);
+  void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
   // Use the default settings. When using GTK+ or Mac, this can still end up
   // displaying a dialog. So this needs to happen from the UI thread on these

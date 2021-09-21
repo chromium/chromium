@@ -281,7 +281,7 @@ void PrintingContextChromeos::AskUserForSettings(
   NOTREACHED();
 }
 
-PrintingContext::Result PrintingContextChromeos::UseDefaultSettings() {
+mojom::ResultCode PrintingContextChromeos::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
   ResetSettings();
@@ -298,7 +298,7 @@ PrintingContext::Result PrintingContextChromeos::UseDefaultSettings() {
   }
 
   // Retrieve device information and set it
-  if (InitializeDevice(device_name) != OK) {
+  if (InitializeDevice(device_name) != mojom::ResultCode::kSuccess) {
     LOG(ERROR) << "Could not initialize printer";
     return OnError();
   }
@@ -316,7 +316,7 @@ PrintingContext::Result PrintingContextChromeos::UseDefaultSettings() {
       printer_->GetMediaMarginsByName(paper.vendor_id);
   SetPrintableArea(settings_.get(), media, margins, true /* flip landscape */);
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 gfx::Size PrintingContextChromeos::GetPdfPaperSizeDeviceUnits() {
@@ -343,14 +343,16 @@ gfx::Size PrintingContextChromeos::GetPdfPaperSizeDeviceUnits() {
   return gfx::Size(width, height);
 }
 
-PrintingContext::Result PrintingContextChromeos::UpdatePrinterSettings(
+mojom::ResultCode PrintingContextChromeos::UpdatePrinterSettings(
     bool external_preview,
     bool show_system_dialog,
     int page_count) {
   DCHECK(!show_system_dialog);
 
-  if (InitializeDevice(base::UTF16ToUTF8(settings_->device_name())) != OK)
+  if (InitializeDevice(base::UTF16ToUTF8(settings_->device_name())) !=
+      mojom::ResultCode::kSuccess) {
     return OnError();
+  }
 
   // TODO(skau): Convert to DCHECK when https://crbug.com/613779 is resolved
   // Print quality suffers when this is set to the resolution reported by the
@@ -384,10 +386,10 @@ PrintingContext::Result PrintingContextChromeos::UpdatePrinterSettings(
                                                 : kUsernamePlaceholder;
   }
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextChromeos::InitializeDevice(
+mojom::ResultCode PrintingContextChromeos::InitializeDevice(
     const std::string& device) {
   DCHECK(!in_print_job_);
 
@@ -399,10 +401,10 @@ PrintingContext::Result PrintingContextChromeos::InitializeDevice(
 
   printer_ = std::move(printer);
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextChromeos::NewDocument(
+mojom::ResultCode PrintingContextChromeos::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
   in_print_job_ = true;
@@ -441,34 +443,34 @@ PrintingContext::Result PrintingContextChromeos::NewDocument(
     return OnError();
   }
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextChromeos::NewPage() {
+mojom::ResultCode PrintingContextChromeos::NewPage() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
 
   DCHECK(in_print_job_);
 
   // Intentional No-op.
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextChromeos::PageDone() {
+mojom::ResultCode PrintingContextChromeos::PageDone() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
 
   DCHECK(in_print_job_);
 
   // Intentional No-op.
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextChromeos::DocumentDone() {
+mojom::ResultCode PrintingContextChromeos::DocumentDone() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
 
   DCHECK(in_print_job_);
 
@@ -486,7 +488,7 @@ PrintingContext::Result PrintingContextChromeos::DocumentDone() {
   }
 
   ResetSettings();
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 void PrintingContextChromeos::Cancel() {
@@ -503,10 +505,10 @@ printing::NativeDrawingContext PrintingContextChromeos::context() const {
   return nullptr;
 }
 
-PrintingContext::Result PrintingContextChromeos::StreamData(
+mojom::ResultCode PrintingContextChromeos::StreamData(
     const std::vector<char>& buffer) {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
 
   DCHECK(in_print_job_);
   DCHECK(printer_);
@@ -514,7 +516,7 @@ PrintingContext::Result PrintingContextChromeos::StreamData(
   if (!printer_->StreamData(buffer))
     return OnError();
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 }  // namespace printing

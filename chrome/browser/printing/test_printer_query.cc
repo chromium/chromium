@@ -59,10 +59,10 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
 #endif
   std::unique_ptr<PrintSettings> settings =
       PrintSettingsFromJobSettings(new_settings);
-  PrintingContext::Result result = PrintingContext::OK;
+  mojom::ResultCode result = mojom::ResultCode::kSuccess;
   if (!settings) {
     settings = std::make_unique<PrintSettings>();
-    result = PrintingContext::FAILED;
+    result = mojom::ResultCode::kFailed;
   }
 
   float device_microns_per_device_unit =

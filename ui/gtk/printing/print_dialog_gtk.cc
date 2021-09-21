@@ -23,6 +23,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "printing/metafile.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "ui/aura/window.h"
@@ -515,12 +516,12 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
       settings->set_selection_only(print_selection_only);
       InitPrintSettingsGtk(gtk_settings_, page_setup_, settings.get());
       context_->InitWithSettings(std::move(settings));
-      std::move(callback_).Run(PrintingContextLinux::OK);
+      std::move(callback_).Run(printing::mojom::ResultCode::kSuccess);
       return;
     }
     case GTK_RESPONSE_DELETE_EVENT:  // Fall through.
     case GTK_RESPONSE_CANCEL: {
-      std::move(callback_).Run(PrintingContextLinux::CANCEL);
+      std::move(callback_).Run(printing::mojom::ResultCode::kCanceled);
       return;
     }
     case GTK_RESPONSE_APPLY:
@@ -586,5 +587,5 @@ void PrintDialogGtk::OnWindowDestroying(aura::Window* window) {
   gtk::ClearAuraTransientParent(dialog_, window);
   window->RemoveObserver(this);
   if (callback_)
-    std::move(callback_).Run(PrintingContextLinux::CANCEL);
+    std::move(callback_).Run(printing::mojom::ResultCode::kCanceled);
 }

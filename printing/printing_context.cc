@@ -81,13 +81,14 @@ std::unique_ptr<PrintSettings> PrintingContext::TakeAndResetSettings() {
   return result;
 }
 
-PrintingContext::Result PrintingContext::OnError() {
-  Result result = abort_printing_ ? CANCEL : FAILED;
+mojom::ResultCode PrintingContext::OnError() {
+  mojom::ResultCode result = abort_printing_ ? mojom::ResultCode::kCanceled
+                                             : mojom::ResultCode::kFailed;
   ResetSettings();
   return result;
 }
 
-PrintingContext::Result PrintingContext::UsePdfSettings() {
+mojom::ResultCode PrintingContext::UsePdfSettings() {
   base::Value pdf_settings(base::Value::Type::DICTIONARY);
   pdf_settings.SetBoolKey(kSettingHeaderFooterEnabled, false);
   pdf_settings.SetBoolKey(kSettingShouldPrintBackgrounds, false);
@@ -113,7 +114,7 @@ PrintingContext::Result PrintingContext::UsePdfSettings() {
   return UpdatePrintSettings(std::move(pdf_settings));
 }
 
-PrintingContext::Result PrintingContext::UpdatePrintSettings(
+mojom::ResultCode PrintingContext::UpdatePrintSettings(
     base::Value job_settings) {
   ResetSettings();
   {
@@ -157,7 +158,7 @@ PrintingContext::Result PrintingContext::UpdatePrintSettings(
           kCloudPrintMarginInch * settings_->device_units_per_inch());
     }
     settings_->SetPrinterPrintableArea(paper_size, paper_rect, true);
-    return OK;
+    return mojom::ResultCode::kSuccess;
   }
 
   return UpdatePrinterSettings(
@@ -167,7 +168,7 @@ PrintingContext::Result PrintingContext::UpdatePrintSettings(
 }
 
 #if defined(OS_CHROMEOS)
-PrintingContext::Result PrintingContext::UpdatePrintSettingsFromPOD(
+mojom::ResultCode PrintingContext::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> job_settings) {
   ResetSettings();
   settings_ = std::move(job_settings);

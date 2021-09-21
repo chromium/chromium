@@ -316,14 +316,11 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   // `StartPrinting()` might be called.
   std::unique_ptr<PrintingContext> context =
       PrintingContext::Create(&context_delegate_);
-  PrintingContext::Result context_result =
+  mojom::ResultCode result =
       context->UpdatePrintSettings(base::Value(std::move(job_settings)));
 
-  if (context_result != PrintingContext::OK) {
-    std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(
-        context_result == PrintingContext::CANCEL
-            ? mojom::ResultCode::kCanceled
-            : mojom::ResultCode::kFailed));
+  if (result != mojom::ResultCode::kSuccess) {
+    std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
     return;
   }
 
@@ -408,23 +405,19 @@ mojom::ResultCode PrintBackendServiceImpl::StartPrintingReadyDocument(
   }
 #endif
   context->ApplyPrintSettings(document->settings());
-  PrintingContext::Result context_result = context->UpdatePrinterSettings(
+  mojom::ResultCode result = context->UpdatePrinterSettings(
       external_preview, show_system_dialog, document_container.page_count);
-  if (context_result != PrintingContext::OK) {
+  if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure updating printer settings for document "
-                << document->cookie() << ", error: " << context_result;
-    return context_result == PrintingContext::CANCEL
-               ? mojom::ResultCode::kCanceled
-               : mojom::ResultCode::kFailed;
+                << document->cookie() << ", error: " << result;
+    return result;
   }
 
-  context_result = context->NewDocument(document->name());
-  if (context_result != PrintingContext::OK) {
+  result = context->NewDocument(document->name());
+  if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure initializing new document " << document->cookie()
-                << ", error: " << context_result;
-    return context_result == PrintingContext::CANCEL
-               ? mojom::ResultCode::kCanceled
-               : mojom::ResultCode::kFailed;
+                << ", error: " << result;
+    return result;
   }
 
   document_container.context = std::move(context);

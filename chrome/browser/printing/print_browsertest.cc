@@ -95,7 +95,7 @@ void UpdatePrintSettingsReplyOnIO(
   DCHECK(printer_query);
   auto params = mojom::PrintPagesParams::New();
   params->params = mojom::PrintParams::New();
-  if (printer_query->last_status() == PrintingContext::OK) {
+  if (printer_query->last_status() == mojom::ResultCode::kSuccess) {
     RenderParamsFromPrintSettings(printer_query->settings(),
                                   params->params.get());
     params->params->document_cookie = printer_query->cookie();
@@ -103,7 +103,7 @@ void UpdatePrintSettingsReplyOnIO(
     snooped_settings =
         std::make_unique<PrintSettings>(printer_query->settings());
   }
-  bool canceled = printer_query->last_status() == PrintingContext::CANCEL;
+  bool canceled = printer_query->last_status() == mojom::ResultCode::kCanceled;
 
   params->params = GetPrintParams();
 
