@@ -425,6 +425,20 @@
         Get notified when prices drop
       </message>
 
+      <!-- Price Drop Notification strings -->
+      <message name="IDS_PRICE_DROP_NOTIFICATION_CONTENT_TITLE" desc="This text shows on the price drop notification. It tells users how much price drop on the corresponding product.">
+        <ph name="PRICE_DROP">%1$s<ex>$100</ex></ph> price drop on <ph name="PRODUCT_NAME">%2$s<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_PRICE_DROP_NOTIFICATION_CONTENT_TEXT" desc="This text shows on the price drop notification below the content title. It tells users the current price of the product and the source website.">
+        Now <ph name="CURRENT_PRICE">%1$s<ex>$799</ex></ph> on <ph name="SOURCE_WEBSITE">%2$s<ex>amazon.com</ex></ph>
+      </message>
+      <message name="IDS_PRICE_DROP_NOTIFICATION_ACTION_VISIT_SITE" desc="This text shows when users swipe down the price drop notification. When users click this button, we send them to the source website.">
+        Visit site
+      </message>
+      <message name="IDS_PRICE_DROP_NOTIFICATION_ACTION_TURN_OFF_ALERT" desc="This text shows when users swipe down the price drop notification. When users click this button, we won't send price drop notifications on this product to them any more.">
+        Turn off alert
+      </message>
+
       <!-- Merchant Viewer strings -->
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_TITLE" desc="Message shown when merchant trust signals are available.">
         View store info?
