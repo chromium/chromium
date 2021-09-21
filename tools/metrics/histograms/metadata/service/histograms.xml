@@ -436,7 +436,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FetchHandlerEndToFallbackNetwork"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -453,7 +453,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FetchHandlerEndToResponseReceived"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -470,7 +470,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FetchHandlerStartToFetchHandlerEnd"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -486,7 +486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.ForwardServiceWorkerToWorkerReady2"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -501,7 +501,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.ResponseReceivedToCompleted2"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -517,7 +517,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.StartToForwardServiceWorker"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -533,7 +533,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.WorkerReadyToFetchHandlerStart"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -549,7 +549,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.FetchHandlerEndToFallbackNetwork"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -566,7 +566,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.FetchHandlerEndToResponseReceived"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -583,7 +583,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.ForwardServiceWorkerToWorkerReady"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -598,7 +598,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -613,7 +613,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.WorkerReadyToFetchHandlerEnd"
-    units="ms" expires_after="2021-10-31">
+    units="ms" expires_after="2022-09-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -627,7 +627,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.LookupRegistration.MainResource.Time" units="ms"
-    expires_after="2021-10-31">
+    expires_after="2022-09-20">
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
