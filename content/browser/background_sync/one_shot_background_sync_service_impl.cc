@@ -16,8 +16,10 @@ namespace content {
 
 OneShotBackgroundSyncServiceImpl::OneShotBackgroundSyncServiceImpl(
     BackgroundSyncContextImpl* background_sync_context,
+    const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService> receiver)
     : background_sync_context_(background_sync_context),
+      origin_(origin),
       receiver_(this, std::move(receiver)) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(background_sync_context_);
@@ -51,6 +53,13 @@ void OneShotBackgroundSyncServiceImpl::Register(
     return;
   }
 
+  if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
+                                                      origin_)) {
+    std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
+                            /* registrations= */ nullptr);
+    return;
+  }
+
   registration_helper_->Register(std::move(options), sw_registration_id,
                                  std::move(callback));
 }
@@ -66,6 +75,13 @@ void OneShotBackgroundSyncServiceImpl::GetRegistrations(
     int64_t sw_registration_id,
     GetRegistrationsCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+
+  if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
+                                                      origin_)) {
+    std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
+                            /* options= */ {});
+    return;
+  }
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();
