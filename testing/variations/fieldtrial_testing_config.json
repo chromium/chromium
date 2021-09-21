@@ -3279,6 +3279,23 @@
             ]
         }
     ],
+    "DnsProxy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "DnsProxyEnableDOH_Enabled",
+                    "enable_features": [
+                        "DnsProxyEnableDOH",
+                        "EnableDnsProxy"
+                    ]
+                }
+            ]
+        }
+    ],
     "DownloadBufferSize": [
         {
             "platforms": [

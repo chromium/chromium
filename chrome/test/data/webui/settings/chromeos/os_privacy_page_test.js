@@ -11,7 +11,7 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {Router, routes, PeripheralDataAccessBrowserProxyImpl, DataAccessPolicyState} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {SecureDnsMode, SecureDnsUiManagementMode, Router, routes, PeripheralDataAccessBrowserProxyImpl, DataAccessPolicyState} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.m.js';
 // #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
@@ -99,7 +99,6 @@ suite('PrivacyPageTests', function() {
   test('Suggested content, pref disabled', async () => {
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
-
     Polymer.dom.flush();
 
     // The default state of the pref is disabled.
@@ -122,6 +121,14 @@ suite('PrivacyPageTests', function() {
           }
         }
       },
+      'dns_over_https': {
+        'mode': {
+          value: SecureDnsMode.AUTOMATIC
+        },
+        'templates': {
+          value: ''
+        }
+      }
     };
 
     Polymer.dom.flush();
@@ -154,6 +161,7 @@ suite('PrivacyPageTests', function() {
 
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
+
     await test_util.waitAfterNextRender(privacyPage);
 
     if (!privacyPage.isAccountManagementFlowsV2Enabled_) {
@@ -217,7 +225,7 @@ suite('PrivacePageTest_OfficialBuild', async () => {
         }
       }
     },
-  };
+   };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
   let browserProxy = null;
@@ -272,7 +280,15 @@ suite('PeripheralDataAccessTest', function() {
       }
     },
     'settings': {'local_state_device_pci_data_access_enabled': {value: false}},
-  };
+    'dns_over_https': {
+      'mode': {
+        value: SecureDnsMode.AUTOMATIC
+      },
+      'templates': {
+        value: ''
+      }
+     },
+   };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
   let browserProxy = null;
