@@ -184,5 +184,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                     "Enables reporting of browser and renderer navigation inconsistencies on"
                             + "navigations"),
+            Flag.baseFeature(ContentFeatures.USER_MEDIA_CAPTURE_ON_FOCUS,
+                    "Enables GetUserMedia API will only resolve when the document calling it has"
+                            + "focus"),
     };
 }

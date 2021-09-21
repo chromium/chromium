@@ -48644,6 +48644,7 @@ from previous Chrome versions.
   <int value="-1105686819" label="ShareUsageRanking:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
   <int value="-1104914981" label="frame-throttle-fps"/>
+  <int value="-1104609838" label="UserMediaCaptureOnFocus:enabled"/>
   <int value="-1103221768" label="DefaultChatWebApp:enabled"/>
   <int value="-1103099187" label="NotificationStackingBarRedesign:disabled"/>
   <int value="-1102212525" label="enable-tcp-fastopen"/>
@@ -48968,6 +48969,7 @@ from previous Chrome versions.
   <int value="-853455968"
       label="OmniboxDefaultTypedNavigationsToHttps:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
+  <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
   <int value="-847216521" label="ChromeDuplex:enabled"/>
