@@ -55,7 +55,9 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
   void OnRequestDeviceCallback(ScriptState* script_state,
                                ScriptPromiseResolver* resolver,
                                const GPUDeviceDescriptor* descriptor,
-                               WGPUDevice dawn_device);
+                               WGPUDevice dawn_device,
+                               const WGPUSupportedLimits* limits,
+                               const char* error_message);
   void InitializeFeatureNameList();
 
   String name_;

@@ -64,6 +64,7 @@ class GPUDevice final : public EventTargetWithInlineData,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
                      WGPUDevice dawn_device,
+                     const WGPUSupportedLimits* limits,
                      const GPUDeviceDescriptor* descriptor);
   ~GPUDevice() override;
 

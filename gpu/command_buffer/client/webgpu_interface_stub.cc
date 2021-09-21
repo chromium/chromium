@@ -60,7 +60,9 @@ void WebGPUInterfaceStub::RequestAdapterAsync(
 void WebGPUInterfaceStub::RequestDeviceAsync(
     uint32_t adapter_service_id,
     const WGPUDeviceProperties& requested_device_properties,
-    base::OnceCallback<void(WGPUDevice)> request_device_callback) {}
+    base::OnceCallback<void(WGPUDevice,
+                            const WGPUSupportedLimits*,
+                            const char*)> request_device_callback) {}
 
 WGPUDevice WebGPUInterfaceStub::DeprecatedEnsureDefaultDeviceSync() {
   return nullptr;

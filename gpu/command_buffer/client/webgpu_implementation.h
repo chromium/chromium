@@ -127,7 +127,9 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   void RequestDeviceAsync(
       uint32_t requested_adapter_id,
       const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(WGPUDevice)> request_device_callback) override;
+      base::OnceCallback<void(WGPUDevice,
+                              const WGPUSupportedLimits*,
+                              const char*)> request_device_callback) override;
 
   WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 
@@ -152,7 +154,8 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
       request_adapter_callback_map_;
   DawnRequestAdapterSerial request_adapter_serial_ = 0;
 
-  using RequestDeviceCallback = base::OnceCallback<void(bool)>;
+  using RequestDeviceCallback =
+      base::OnceCallback<void(bool, const WGPUSupportedLimits*, const char*)>;
   base::flat_map<DawnRequestDeviceSerial, RequestDeviceCallback>
       request_device_callback_map_;
   DawnRequestDeviceSerial request_device_serial_ = 0;

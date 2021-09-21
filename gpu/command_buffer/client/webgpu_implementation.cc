@@ -117,7 +117,7 @@ void WebGPUImplementation::LoseContext() {
     std::move(it.second).Run(-1, {}, "Context Lost");
   }
   for (auto& it : request_device_callback_map) {
-    std::move(it.second).Run(false);
+    std::move(it.second).Run(false, nullptr, "Context Lost");
   }
 
   // After |lost_| is set to true, callbacks should not be enqueued anymore.
@@ -382,7 +382,8 @@ void WebGPUImplementation::OnGpuControlReturnData(
               offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer)));
     } break;
     case DawnReturnDataType::kRequestedDawnAdapterProperties: {
-      CHECK_GE(data.size(), sizeof(cmds::DawnReturnAdapterInfo));
+      CHECK_GE(data.size(),
+               offsetof(cmds::DawnReturnAdapterInfo, deserialized_buffer));
 
       const cmds::DawnReturnAdapterInfo* returned_adapter_info =
           reinterpret_cast<const cmds::DawnReturnAdapterInfo*>(data.data());
@@ -424,7 +425,8 @@ void WebGPUImplementation::OnGpuControlReturnData(
                               error_message);
     } break;
     case DawnReturnDataType::kRequestedDeviceReturnInfo: {
-      CHECK_GE(data.size(), sizeof(cmds::DawnReturnRequestDeviceInfo));
+      CHECK_GE(data.size(), offsetof(cmds::DawnReturnRequestDeviceInfo,
+                                     deserialized_buffer));
 
       const cmds::DawnReturnRequestDeviceInfo* returned_request_device_info =
           reinterpret_cast<const cmds::DawnReturnRequestDeviceInfo*>(
@@ -440,9 +442,31 @@ void WebGPUImplementation::OnGpuControlReturnData(
       // perform reentrant calls that modify the map.
       request_device_callback_map_.erase(request_callback_iter);
 
-      bool is_request_device_success =
-          returned_request_device_info->is_request_device_success;
-      std::move(callback).Run(is_request_device_success);
+      bool success = returned_request_device_info->is_request_device_success &&
+                     returned_request_device_info->limits_size > 0;
+
+      WGPUSupportedLimits limits;
+      limits.nextInChain = nullptr;
+
+      const volatile char* deserialized_buffer =
+          reinterpret_cast<const volatile char*>(
+              returned_request_device_info->deserialized_buffer);
+      const char* error_message =
+          returned_request_device_info->deserialized_buffer +
+          returned_request_device_info->limits_size;
+      if (strlen(error_message) == 0) {
+        error_message = nullptr;
+      }
+      if (success) {
+        if (!dawn_wire::DeserializeWGPUSupportedLimits(
+                &limits, deserialized_buffer,
+                returned_request_device_info->limits_size)) {
+          success = false;
+          error_message = "Request device failed";
+        }
+      }
+
+      std::move(callback).Run(success, &limits, error_message);
     } break;
     default:
       NOTREACHED();
@@ -547,10 +571,13 @@ DawnRequestDeviceSerial WebGPUImplementation::NextRequestDeviceSerial() {
 void WebGPUImplementation::RequestDeviceAsync(
     uint32_t requested_adapter_id,
     const WGPUDeviceProperties& requested_device_properties,
-    base::OnceCallback<void(WGPUDevice)> request_device_callback) {
+    base::OnceCallback<void(WGPUDevice,
+                            const WGPUSupportedLimits*,
+                            const char*)> request_device_callback) {
 #if BUILDFLAG(USE_DAWN)
   if (lost_) {
-    std::move(request_device_callback).Run(nullptr);
+    std::move(request_device_callback)
+        .Run(nullptr, nullptr, "GPU connection lost");
     return;
   }
 
@@ -565,7 +592,8 @@ void WebGPUImplementation::RequestDeviceAsync(
                                  transfer_buffer_);
 
   if (!buffer.valid() || buffer.size() < serialized_device_properties_size) {
-    std::move(request_device_callback).Run(nullptr);
+    std::move(request_device_callback)
+        .Run(nullptr, nullptr, "Failed to request device");
     return;
   }
 
@@ -585,13 +613,16 @@ void WebGPUImplementation::RequestDeviceAsync(
   request_device_callback_map_[request_device_serial] = base::BindOnce(
       [](scoped_refptr<DawnWireServices> dawn_wire,
          dawn_wire::ReservedDevice reservation,
-         base::OnceCallback<void(WGPUDevice)> callback, bool success) {
+         base::OnceCallback<void(WGPUDevice, const WGPUSupportedLimits*,
+                                 const char*)> callback,
+         bool success, const WGPUSupportedLimits* limits,
+         const char* error_message) {
         WGPUDevice device = reservation.device;
         if (!success) {
           dawn_wire->wire_client()->ReclaimDeviceReservation(reservation);
           device = nullptr;
         }
-        std::move(callback).Run(device);
+        std::move(callback).Run(device, limits, error_message);
       },
       dawn_wire_, reservation, std::move(request_device_callback));
 
@@ -629,7 +660,8 @@ WGPUDevice WebGPUImplementation::DeprecatedEnsureDefaultDeviceSync() {
                 static_cast<uint32_t>(adapter_id), properties,
                 base::BindOnce(
                     [](WGPUDevice* result, base::OnceCallback<void()> done,
-                       WGPUDevice device) {
+                       WGPUDevice device, const WGPUSupportedLimits*,
+                       const char*) {
                       *result = device;
                       std::move(done).Run();
                     },

@@ -176,8 +176,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   // DecoderContext implementation.
   base::WeakPtr<DecoderContext> AsWeakPtr() override {
-    NOTIMPLEMENTED();
-    return nullptr;
+    return weak_ptr_factory_.GetWeakPtr();
   }
   const gles2::ContextState* GetContextState() override {
     NOTREACHED();
@@ -421,19 +420,23 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   int32_t GetPreferredAdapterIndex(PowerPreference power_preference) const;
 
-  error::Error InitDawnDevice(
-      int32_t requested_adapter_index,
-      uint32_t device_id,
-      uint32_t device_generation,
-      const WGPUDeviceProperties& requested_device_properties,
-      bool* creation_succeeded);
+  void DoRequestDevice(DawnRequestDeviceSerial request_device_serial,
+                       int32_t requested_adapter_index,
+                       uint32_t device_id,
+                       uint32_t device_generation,
+                       const WGPUDeviceProperties& requested_device_properties);
+  void OnRequestDeviceCallback(DawnRequestDeviceSerial request_device_serial,
+                               size_t requested_adapter_index,
+                               uint32_t device_id,
+                               uint32_t device_generation,
+                               WGPURequestDeviceStatus status,
+                               WGPUDevice device,
+                               const char* message);
 
   void SendAdapterProperties(DawnRequestAdapterSerial request_adapter_serial,
                              int32_t adapter_service_id,
                              const dawn_native::Adapter& adapter,
                              const char* error_message = nullptr);
-  void SendRequestedDeviceInfo(DawnRequestDeviceSerial request_device_serial,
-                               bool is_request_device_success);
 
   const GrContextType gr_context_type_;
 
@@ -478,6 +481,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   scoped_refptr<gl::GLContext> gl_context_;
   scoped_refptr<gl::GLSurface> gl_surface_;
+
+  base::WeakPtrFactory<WebGPUDecoderImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebGPUDecoderImpl);
 };
@@ -576,18 +581,16 @@ ContextResult WebGPUDecoderImpl::Initialize() {
   return ContextResult::kSuccess;
 }
 
-error::Error WebGPUDecoderImpl::InitDawnDevice(
+void WebGPUDecoderImpl::DoRequestDevice(
+    DawnRequestDeviceSerial request_device_serial,
     int32_t requested_adapter_index,
     uint32_t device_id,
     uint32_t device_generation,
-    const WGPUDeviceProperties& request_device_properties,
-    bool* creation_succeeded) {
+    const WGPUDeviceProperties& request_device_properties) {
   DCHECK_LE(0, requested_adapter_index);
 
   DCHECK_LT(static_cast<size_t>(requested_adapter_index),
             dawn_adapters_.size());
-
-  *creation_succeeded = false;
 
   dawn_native::DeviceDescriptor device_descriptor;
   if (request_device_properties.textureCompressionBC) {
@@ -629,32 +632,115 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
     device_descriptor.forceDisabledToggles.push_back(toggles.c_str());
   }
 
-  WGPUDevice wgpu_device =
-      dawn_adapters_[requested_adapter_index].CreateDevice(&device_descriptor);
-  if (wgpu_device == nullptr) {
-    // Device creation failed, but it's not a fatal error that needs to trigger
-    // GPU process lost
-    return error::kNoError;
+  // webgpu_implementation.cc sends the requested limits inside a
+  // WGPUDeviceProperties struct which contains WGPUSupportedLimits, not
+  // WGPURequiredLimits. It should be WGPURequiredLimits, but to avoid
+  // additional custom serialization, we reuse the WGPUDeviceProperties struct
+  // until requestDevice is implemented in dawn_wire.
+  WGPURequiredLimits requiredLimits;
+  requiredLimits.nextInChain = nullptr;
+  requiredLimits.limits = request_device_properties.limits.limits;
+
+  device_descriptor.requiredLimits = &requiredLimits;
+
+  auto callback =
+      base::BindOnce(&WebGPUDecoderImpl::OnRequestDeviceCallback,
+                     weak_ptr_factory_.GetWeakPtr(), request_device_serial,
+                     static_cast<size_t>(requested_adapter_index), device_id,
+                     device_generation);
+  using CallbackT = decltype(callback);
+
+  dawn_adapters_[requested_adapter_index].RequestDevice(
+      &device_descriptor,
+      [](WGPURequestDeviceStatus status, WGPUDevice wgpu_device,
+         const char* message, void* userdata) {
+        std::unique_ptr<CallbackT> callback;
+        callback.reset(static_cast<CallbackT*>(userdata));
+        std::move(*callback).Run(status, wgpu_device, message);
+      },
+      new CallbackT(std::move(callback)));
+}
+
+void WebGPUDecoderImpl::OnRequestDeviceCallback(
+    DawnRequestDeviceSerial request_device_serial,
+    size_t requested_adapter_index,
+    uint32_t device_id,
+    uint32_t device_generation,
+    WGPURequestDeviceStatus status,
+    WGPUDevice wgpu_device,
+    const char* error_message) {
+  WGPUSupportedLimits limits;
+  limits.nextInChain = nullptr;
+
+  size_t serialized_limits_size = 0;
+
+  if (wgpu_device) {
+    if (!wire_server_->InjectDevice(wgpu_device, device_id,
+                                    device_generation)) {
+      dawn_native::GetProcs().deviceRelease(wgpu_device);
+      return;
+    }
+
+    // Collect supported limits
+    dawn_native::GetProcs().deviceGetLimits(wgpu_device, &limits);
+
+    serialized_limits_size =
+        dawn_wire::SerializedWGPUSupportedLimitsSize(&limits);
+
+    // Device injection takes a ref. The wire now owns the device so release it.
+    dawn_native::GetProcs().deviceRelease(wgpu_device);
+
+    // Save the id and generation of the device. Now, we can query the server
+    // for this pair to discover if this device has been destroyed. The list
+    // will be checked in PerformPollingWork to tick all the live devices and
+    // remove all the dead ones.
+    known_devices_.emplace_back(device_id, device_generation);
+    dawn_native::BackendType type =
+        dawn_adapters_[requested_adapter_index].GetBackendType();
+    device_backend_types_[device_id] = ToWGPUBackendType(type);
   }
 
-  if (!wire_server_->InjectDevice(wgpu_device, device_id, device_generation)) {
-    return error::kInvalidArguments;
+  size_t error_message_size =
+      error_message != nullptr ? strlen(error_message) : 0;
+
+  std::vector<char> serialized_buffer(
+      offsetof(cmds::DawnReturnRequestDeviceInfo, deserialized_buffer) +
+      serialized_limits_size + error_message_size + 1);
+
+  cmds::DawnReturnRequestDeviceInfo* return_request_device_info =
+      reinterpret_cast<cmds::DawnReturnRequestDeviceInfo*>(
+          serialized_buffer.data());
+  *return_request_device_info = {};
+  return_request_device_info->request_device_serial = request_device_serial;
+  return_request_device_info->is_request_device_success =
+      status == WGPURequestDeviceStatus_Success;
+
+  DCHECK(serialized_limits_size <= std::numeric_limits<uint32_t>::max());
+
+  return_request_device_info->limits_size =
+      static_cast<uint32_t>(serialized_limits_size);
+
+  if (wgpu_device) {
+    dawn_wire::SerializeWGPUSupportedLimits(
+        &limits, return_request_device_info->deserialized_buffer);
   }
 
-  // Device injection takes a ref. The wire now owns the device so release it.
-  dawn_native::GetProcs().deviceRelease(wgpu_device);
+  memcpy(
+      return_request_device_info->deserialized_buffer + serialized_limits_size,
+      error_message, error_message_size);
 
-  // Save the id and generation of the device. Now, we can query the server for
-  // this pair to discover if this device has been destroyed. The list will be
-  // checked in PerformPollingWork to tick all the live devices and remove all
-  // the dead ones.
-  known_devices_.emplace_back(device_id, device_generation);
-  dawn_native::BackendType type =
-      dawn_adapters_[requested_adapter_index].GetBackendType();
-  device_backend_types_[device_id] = ToWGPUBackendType(type);
+  // Write the null-terminator.
+  // We don't copy (error_message_size + 1) above because |error_message| may
+  // be nullptr instead of zero-length.
+  return_request_device_info
+      ->deserialized_buffer[serialized_limits_size + error_message_size] = '\0';
 
-  *creation_succeeded = true;
-  return error::kNoError;
+  DCHECK_EQ(DawnReturnDataType::kRequestedDeviceReturnInfo,
+            return_request_device_info->return_data_header.return_data_type);
+
+  client()->HandleReturnData(base::make_span(
+      reinterpret_cast<const uint8_t*>(serialized_buffer.data()),
+      serialized_buffer.size()));
 }
 
 void WebGPUDecoderImpl::DiscoverAdapters() {
@@ -909,21 +995,6 @@ void WebGPUDecoderImpl::SendAdapterProperties(
       serialized_buffer.size()));
 }
 
-void WebGPUDecoderImpl::SendRequestedDeviceInfo(
-    DawnRequestDeviceSerial request_device_serial,
-    bool is_request_device_success) {
-  cmds::DawnReturnRequestDeviceInfo return_request_device_info;
-  DCHECK_EQ(DawnReturnDataType::kRequestedDeviceReturnInfo,
-            return_request_device_info.return_data_header.return_data_type);
-  return_request_device_info.request_device_serial = request_device_serial;
-  return_request_device_info.is_request_device_success =
-      is_request_device_success;
-
-  client()->HandleReturnData(base::make_span(
-      reinterpret_cast<const uint8_t*>(&return_request_device_info),
-      sizeof(return_request_device_info)));
-}
-
 error::Error WebGPUDecoderImpl::HandleRequestAdapter(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -997,12 +1068,9 @@ error::Error WebGPUDecoderImpl::HandleRequestDevice(
     }
   }
 
-  bool creation_succeeded;
-  error::Error init_device_error =
-      InitDawnDevice(adapter_service_id, device_id, device_generation,
-                     device_properties, &creation_succeeded);
-  SendRequestedDeviceInfo(request_device_serial, creation_succeeded);
-  return init_device_error;
+  DoRequestDevice(request_device_serial, adapter_service_id, device_id,
+                  device_generation, device_properties);
+  return error::kNoError;
 }
 
 error::Error WebGPUDecoderImpl::HandleDawnCommands(

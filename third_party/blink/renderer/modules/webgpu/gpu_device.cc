@@ -60,6 +60,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
                      WGPUDevice dawn_device,
+                     const WGPUSupportedLimits* limits,
                      const GPUDeviceDescriptor* descriptor)
     : ExecutionContextClient(execution_context),
       DawnObject(dawn_control_client, dawn_device),
@@ -82,15 +83,10 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       // called.
       lost_callback_(BindDawnRepeatingCallback(&GPUDevice::OnDeviceLostError,
                                                WrapWeakPersistent(this))) {
-  // Check is necessary because we can't assign a default in the IDL.
-  if (descriptor->hasRequiredLimits()) {
-    limits_ =
-        MakeGarbageCollected<GPUSupportedLimits>(descriptor->requiredLimits());
-  } else {
-    limits_ = MakeGarbageCollected<GPUSupportedLimits>();
-  }
-
   DCHECK(dawn_device);
+  DCHECK(limits);
+  limits_ = MakeGarbageCollected<GPUSupportedLimits>(*limits);
+
   GetProcs().deviceSetUncapturedErrorCallback(
       GetHandle(), error_callback_->UnboundCallback(),
       error_callback_->AsUserdata());

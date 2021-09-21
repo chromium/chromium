@@ -59,7 +59,7 @@ GPUAdapter::GPUAdapter(
       adapter_service_id_(adapter_service_id),
       adapter_properties_(properties),
       gpu_(gpu),
-      limits_(MakeGarbageCollected<GPUSupportedLimits>()) {
+      limits_(MakeGarbageCollected<GPUSupportedLimits>(properties.limits)) {
   InitializeFeatureNameList();
 }
 
@@ -94,20 +94,21 @@ GPUSupportedFeatures* GPUAdapter::features() const {
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
                                          ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
-                                         WGPUDevice dawn_device) {
+                                         WGPUDevice dawn_device,
+                                         const WGPUSupportedLimits* limits,
+                                         const char* error_message) {
   if (dawn_device) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
-    auto* device = MakeGarbageCollected<GPUDevice>(execution_context,
-                                                   GetDawnControlClient(), this,
-                                                   dawn_device, descriptor);
+    auto* device = MakeGarbageCollected<GPUDevice>(
+        execution_context, GetDawnControlClient(), this, dawn_device, limits,
+        descriptor);
     resolver->Resolve(device);
     ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
         .SetGPUDevice(static_cast<int>(true))
         .Record(execution_context->UkmRecorder());
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError,
-        "Fail to request GPUDevice with the given GPUDeviceDescriptor"));
+        DOMExceptionCode::kOperationError, error_message));
   }
 }
 
@@ -136,33 +137,16 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // Validation of the limits could happen in Dawn, but until that's
-  // implemented we can do it here to preserve the spec behavior.
+  WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
+  GPUSupportedLimits::MakeUndefined(&requested_device_properties.limits);
   if (descriptor->hasRequiredLimits()) {
-    for (const auto& key_value_pair : descriptor->requiredLimits()) {
-      switch (
-          limits_->ValidateLimit(key_value_pair.first, key_value_pair.second)) {
-        case GPUSupportedLimits::ValidationResult::Valid:
-          break;
-        case GPUSupportedLimits::ValidationResult::BadName: {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kOperationError, "The limit name \"" +
-                                                     key_value_pair.first +
-                                                     "\" is not recognized."));
-          return promise;
-        }
-        case GPUSupportedLimits::ValidationResult::BadValue: {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kOperationError,
-              "The limit requested for \"" + key_value_pair.first +
-                  "\" exceeds the adapter's supported limit."));
-          return promise;
-        }
-      }
+    DOMException* exception = GPUSupportedLimits::Populate(
+        &requested_device_properties.limits, descriptor->requiredLimits());
+    if (exception) {
+      resolver->Reject(exception);
+      return promise;
     }
   }
-
-  WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
 
   if (auto context_provider = GetContextProviderWeakPtr()) {
     context_provider->ContextProvider()->WebGPUInterface()->RequestDeviceAsync(

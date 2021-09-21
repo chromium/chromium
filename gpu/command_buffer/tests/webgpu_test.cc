@@ -181,7 +181,8 @@ wgpu::Device WebGPUTest::GetNewDevice() {
   webgpu()->RequestDeviceAsync(
       adapter_id_, device_properties_,
       base::BindOnce(
-          [](WGPUDevice* result, bool* done, WGPUDevice device) {
+          [](WGPUDevice* result, bool* done, WGPUDevice device,
+             const WGPUSupportedLimits*, const char*) {
             *result = device;
             *done = true;
           },
@@ -282,7 +283,8 @@ TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
   bool called = false;
   webgpu()->RequestDeviceAsync(GetAdapterId(), GetDeviceProperties(),
                                base::BindOnce(
-                                   [](bool* called, WGPUDevice device) {
+                                   [](bool* called, WGPUDevice device,
+                                      const WGPUSupportedLimits*, const char*) {
                                      EXPECT_EQ(device, nullptr);
                                      *called = true;
                                    },
@@ -309,7 +311,8 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedExtension) {
   webgpu()->RequestDeviceAsync(
       GetAdapterId(), unsupported_device_properties,
       base::BindOnce(
-          [](WGPUDevice* result, bool* done, WGPUDevice device) {
+          [](WGPUDevice* result, bool* done, WGPUDevice device,
+             const WGPUSupportedLimits*, const char*) {
             *result = device;
             *done = true;
           },
