@@ -232,7 +232,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  if (self.focusOmniboxWhenViewAppears) {
+  if (self.focusOmniboxWhenViewAppears && !self.omniboxFocused) {
     [self focusAccessibilityOnOmnibox];
   }
 }
