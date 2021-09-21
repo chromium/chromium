@@ -34,7 +34,7 @@ Event::~Event() = default;
 
 Event::Event(Event&& other)
     : project_name_(std::move(other.project_name_)),
-      event_name_(std::move(other.project_name_)) {
+      event_name_(std::move(other.event_name_)) {
   metric_values_.insert(std::make_move_iterator(other.metric_values_.begin()),
                         std::make_move_iterator(other.metric_values_.end()));
 }
