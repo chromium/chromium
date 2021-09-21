@@ -107,14 +107,14 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   // Record iframes embedded in cross-origin contexts without a CSP
   // frame-ancestor directive.
   bool is_embedded_in_cross_origin_context = false;
-  RenderFrameHostImpl* parent = rfh->frame_tree_node()->parent();
+  RenderFrameHostImpl* parent = rfh->GetParent();
   while (parent) {
     if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
             rfh->GetLastCommittedOrigin())) {
       is_embedded_in_cross_origin_context = true;
       break;
     }
-    parent = parent->frame_tree_node()->parent();
+    parent = parent->GetParent();
   }
 
   if (is_embedded_in_cross_origin_context && !has_embedding_control &&
@@ -122,8 +122,7 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
     client->LogWebFeatureForCurrentPage(
         rfh,
         blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
-    RenderFrameHostImpl* main_frame =
-        rfh->frame_tree_node()->frame_tree()->GetMainFrame();
+    RenderFrameHostImpl* main_frame = rfh->GetMainFrame();
     ukm::builders::CrossOriginSubframeWithoutEmbeddingControl(
         main_frame->GetPageUkmSourceId())
         .SetSubframeEmbedded(1)

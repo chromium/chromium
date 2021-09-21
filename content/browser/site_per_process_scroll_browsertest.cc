@@ -207,11 +207,12 @@ class SitePerProcessProgrammaticScrollTest : public SitePerProcessBrowserTest {
 
   // Helper function to retrieve the bounding client rect of the element
   // identified by |sel| inside |rfh|.
-  gfx::Rect GetBoundingClientRect(FrameTreeNode* node, const std::string& sel) {
+  gfx::Rect GetBoundingClientRect(RenderFrameHostImpl* rfh,
+                                  const std::string& sel) {
     return GetRectFromString(
-        EvalJs(node, JsReplace("rectAsString(document.querySelector($1)."
-                               "getBoundingClientRect());",
-                               sel))
+        EvalJs(rfh, JsReplace("rectAsString(document.querySelector($1)."
+                              "getBoundingClientRect());",
+                              sel))
             .ExtractString());
   }
 
@@ -277,14 +278,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   FrameTreeNode* node = web_contents()->GetFrameTree()->root();
   WaitForOnLoad(node);
   std::vector<gfx::Rect> reference_page_bounds_before_scroll = {
-      GetBoundingClientRect(node, kIframeSelector)};
+      GetBoundingClientRect(node->current_frame_host(), kIframeSelector)};
   node = node->child_at(0);
   for (size_t index = 0; index < kNonEmptyIframesCount; ++index) {
     EXPECT_TRUE(NavigateToURLFromRenderer(node, url_a));
     WaitForOnLoad(node);
     // Store |document.querySelector('iframe').getBoundingClientRect()|.
     reference_page_bounds_before_scroll.push_back(
-        GetBoundingClientRect(node, kIframeSelector));
+        GetBoundingClientRect(node->current_frame_host(), kIframeSelector));
     node = node->child_at(0);
   }
   // Sanity-check: If the page is setup properly then all the <iframe>s should
@@ -298,11 +299,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   // page which contains OOPIFs.
   node = web_contents()->GetFrameTree()->root();
   std::vector<gfx::Rect> reference_page_bounds_after_scroll = {
-      GetBoundingClientRect(node, kIframeSelector)};
+      GetBoundingClientRect(node->current_frame_host(), kIframeSelector)};
   node = node->child_at(0);
   for (size_t index = 0; index < kNonEmptyIframesCount; ++index) {
     reference_page_bounds_after_scroll.push_back(
-        GetBoundingClientRect(node, kIframeSelector));
+        GetBoundingClientRect(node->current_frame_host(), kIframeSelector));
     node = node->child_at(0);
   }
 
@@ -312,14 +313,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   node = web_contents()->GetFrameTree()->root();
   WaitForOnLoad(node);
   std::vector<gfx::Rect> test_page_bounds_before_scroll = {
-      GetBoundingClientRect(node, kIframeSelector)};
+      GetBoundingClientRect(node->current_frame_host(), kIframeSelector)};
   const GURL iframe_urls[] = {url_b, url_a, url_c, url_a, url_a};
   node = node->child_at(0);
   for (const auto& iframe_url : iframe_urls) {
     EXPECT_TRUE(NavigateToURLFromRenderer(node, iframe_url));
     WaitForOnLoad(node);
     test_page_bounds_before_scroll.push_back(
-        GetBoundingClientRect(node, kIframeSelector));
+        GetBoundingClientRect(node->current_frame_host(), kIframeSelector));
     node = node->child_at(0);
   }
   // Sanity-check: The bounds should match those from non-OOPIF page.
@@ -336,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   RenderFrameHostImpl* current_rfh = node->current_frame_host()->GetParent();
   while (current_rfh) {
     gfx::Rect current_bounds =
-        GetBoundingClientRect(current_rfh->frame_tree_node(), kIframeSelector);
+        GetBoundingClientRect(current_rfh, kIframeSelector);
     gfx::Rect reference_bounds = reference_page_bounds_after_scroll[index];
     if (current_bounds.ApproximatelyEqual(reference_bounds,
                                           kRectDimensionErrorTolerance)) {
@@ -395,7 +396,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   // that the <iframe> is out of view again.
   SetWindowScroll(root, 0, 0);
   ASSERT_FALSE(GetVisualViewport(root).Intersects(
-      GetBoundingClientRect(root, kIframeSelector)));
+      GetBoundingClientRect(root->current_frame_host(), kIframeSelector)));
   root->child_at(0)
       ->current_frame_host()
       ->GetRenderWidgetHost()
@@ -428,7 +429,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   AddFocusedInputField(root->child_at(0));
   SetWindowScroll(root, 0, 0);
   ASSERT_FALSE(GetVisualViewport(root).Intersects(
-      GetBoundingClientRect(root, kIframeSelector)));
+      GetBoundingClientRect(root->current_frame_host(), kIframeSelector)));
   root->child_at(0)
       ->current_frame_host()
       ->GetRenderWidgetHost()
@@ -446,9 +447,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
   // Make sure the <input> is at least partly visible in the |visualViewport|.
   gfx::Rect final_visual_viewport_oopif = GetVisualViewport(root);
   gfx::Rect iframe_bounds_after_scroll_oopif =
-      GetBoundingClientRect(root, kIframeSelector);
-  gfx::Rect input_bounds_after_scroll_oopif =
-      GetBoundingClientRect(root->child_at(0), kInputSelector);
+      GetBoundingClientRect(root->current_frame_host(), kIframeSelector);
+  gfx::Rect input_bounds_after_scroll_oopif = GetBoundingClientRect(
+      root->child_at(0)->current_frame_host(), kInputSelector);
   input_bounds_after_scroll_oopif +=
       iframe_bounds_after_scroll_oopif.OffsetFromOrigin();
   ASSERT_TRUE(
@@ -495,13 +496,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
 
   // These rects are in the coordinate space of the root frame.
   gfx::Rect visual_viewport_rect = GetVisualViewport(root);
-  gfx::Rect window_rect = GetBoundingClientRect(root, ":root");
-  gfx::Rect iframe_rect = GetBoundingClientRect(root, "iframe");
-  gfx::Rect clip_rect = GetBoundingClientRect(root, "#clip");
+  gfx::Rect window_rect =
+      GetBoundingClientRect(root->current_frame_host(), ":root");
+  gfx::Rect iframe_rect =
+      GetBoundingClientRect(root->current_frame_host(), "iframe");
+  gfx::Rect clip_rect =
+      GetBoundingClientRect(root->current_frame_host(), "#clip");
 
   // This is in the coordinate space of the iframe, we'll add the iframe offset
   // after to put it into the root frame's coordinate space.
-  gfx::Rect input_rect = GetBoundingClientRect(root->child_at(0), "input");
+  gfx::Rect input_rect =
+      GetBoundingClientRect(root->child_at(0)->current_frame_host(), "input");
 
   // Make sure the input rect is visible in the iframe.
   EXPECT_TRUE(gfx::Rect(iframe_rect.size()).Intersects(input_rect))

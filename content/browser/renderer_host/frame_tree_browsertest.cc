@@ -368,14 +368,14 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateChildToAboutBlank) {
   // initiate the navigation.
   FrameTreeNode* target =
       contents->GetFrameTree()->root()->child_at(0)->child_at(0);
-  FrameTreeNode* initiator = target->parent()->frame_tree_node();
+  RenderFrameHost* initiator_rfh = target->parent();
 
   // Give the target a name.
   EXPECT_TRUE(ExecJs(target, "window.name = 'target';"));
 
   // Use window.open(about:blank), then poll the document for access.
   EvalJsResult about_blank_origin = EvalJs(
-      initiator,
+      initiator_rfh,
       "new Promise(resolve => {"
       "  var didNavigate = false;"
       "  var intervalID = setInterval(function() {"
@@ -416,15 +416,14 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
   // initiate the navigation.
   FrameTreeNode* target =
       contents->GetFrameTree()->root()->child_at(0)->child_at(0);
-  FrameTreeNode* initiator =
-      target->parent()->frame_tree_node()->parent()->frame_tree_node();
+  RenderFrameHost* initiator_rfh = target->parent()->GetParent();
 
   // Give the target a name.
   EXPECT_TRUE(ExecJs(target, "window.name = 'target';"));
 
   // Use window.open(about:blank), then poll the document for access.
   EvalJsResult about_blank_origin =
-      EvalJs(initiator,
+      EvalJs(initiator_rfh,
              "new Promise((resolve) => {"
              "  var didNavigate = false;"
              "  var intervalID = setInterval(() => {"
@@ -464,8 +463,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToDataUrl) {
   // initiate the navigation.
   FrameTreeNode* target =
       contents->GetFrameTree()->root()->child_at(0)->child_at(0);
-  FrameTreeNode* initiator =
-      target->parent()->frame_tree_node()->parent()->frame_tree_node();
+  RenderFrameHostImpl* initiator_rfh = target->parent()->GetParent();
 
   // Give the target a name.
   EXPECT_TRUE(ExecJs(target, "window.name = 'target';"));
@@ -473,8 +471,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToDataUrl) {
   // Navigate the target frame through the initiator frame.
   {
     TestFrameNavigationObserver observer(target);
-    EXPECT_TRUE(
-        ExecJs(initiator, "window.open('data:text/html,content', 'target');"));
+    EXPECT_TRUE(ExecJs(initiator_rfh,
+                       "window.open('data:text/html,content', 'target');"));
     observer.Wait();
   }
 
