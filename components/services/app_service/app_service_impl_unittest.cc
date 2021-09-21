@@ -82,6 +82,10 @@ class FakePublisher : public apps::PublisherBase {
     }
   }
 
+  bool AppHasSupportedLinksPreference(const std::string& app_id) {
+    return supported_link_apps_.find(app_id) != supported_link_apps_.end();
+  }
+
   std::string load_icon_app_id;
 
  private:
@@ -108,6 +112,15 @@ class FakePublisher : public apps::PublisherBase {
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override {}
+
+  void OnSupportedLinksPreferenceChanged(const std::string& app_id,
+                                         bool open_in_app) override {
+    if (open_in_app) {
+      supported_link_apps_.insert(app_id);
+    } else {
+      supported_link_apps_.erase(app_id);
+    }
+  }
 
   void CallOnApps(apps::mojom::Subscriber* subscriber,
                   std::vector<std::string>& app_ids,
@@ -148,6 +161,7 @@ class FakePublisher : public apps::PublisherBase {
   std::vector<std::string> known_app_ids_;
   std::set<std::string> apps_accessing_camera_;
   std::set<std::string> apps_accessing_microphone_;
+  std::set<std::string> supported_link_apps_;
   mojo::ReceiverSet<apps::mojom::Publisher> receivers_;
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 };
@@ -368,8 +382,6 @@ TEST_F(AppServiceImplTest, PubSub) {
   }
 }
 
-// TODO(https://crbug.com/1074596) Test to see if the flakiness is fixed. If it
-// is not fixed, please update to the same bug.
 TEST_F(AppServiceImplTest, PreferredApps) {
   // Test Initialize.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -504,6 +516,73 @@ TEST_F(AppServiceImplTest, PreferredAppsPersistency) {
     EXPECT_EQ(kAppId1, impl.GetPreferredAppsForTesting().FindPreferredAppForUrl(
                            filter_url));
   }
+}
+
+TEST_F(AppServiceImplTest, PreferredAppsSetSupportedLinks) {
+  // Test Initialize.
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  AppServiceImpl impl(temp_dir_.GetPath());
+  impl.GetPreferredAppsForTesting().Init();
+
+  const char kAppId1[] = "abcdefg";
+  const char kAppId2[] = "hijklmn";
+  const char kAppId3[] = "opqrstu";
+
+  auto intent_filter_a =
+      apps_util::CreateIntentFilterForUrlScope(GURL("https://www.a.com/"));
+  auto intent_filter_b =
+      apps_util::CreateIntentFilterForUrlScope(GURL("https://www.b.com/"));
+  auto intent_filter_c =
+      apps_util::CreateIntentFilterForUrlScope(GURL("https://www.c.com/"));
+
+  FakePublisher pub0(&impl, apps::mojom::AppType::kArc,
+                     std::vector<std::string>{kAppId1, kAppId2, kAppId3});
+  task_environment_.RunUntilIdle();
+
+  std::vector<apps::mojom::IntentFilterPtr> app_1_filters;
+  app_1_filters.push_back(intent_filter_a.Clone());
+  app_1_filters.push_back(intent_filter_b.Clone());
+  impl.SetSupportedLinksPreference(apps::mojom::AppType::kArc, kAppId1,
+                                   std::move(app_1_filters));
+
+  std::vector<apps::mojom::IntentFilterPtr> app_2_filters;
+  app_2_filters.push_back(intent_filter_c.Clone());
+  impl.SetSupportedLinksPreference(apps::mojom::AppType::kArc, kAppId2,
+                                   std::move(app_2_filters));
+
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(pub0.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_TRUE(pub0.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_FALSE(pub0.AppHasSupportedLinksPreference(kAppId3));
+
+  // App 3 overlaps with both App 1 and 2. Both previous apps should have all
+  // their supported link filters removed.
+  std::vector<apps::mojom::IntentFilterPtr> app_3_filters;
+  app_3_filters.push_back(intent_filter_b.Clone());
+  app_3_filters.push_back(intent_filter_c.Clone());
+  impl.SetSupportedLinksPreference(apps::mojom::AppType::kArc, kAppId3,
+                                   std::move(app_3_filters));
+
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(pub0.AppHasSupportedLinksPreference(kAppId1));
+  EXPECT_FALSE(pub0.AppHasSupportedLinksPreference(kAppId2));
+  EXPECT_TRUE(pub0.AppHasSupportedLinksPreference(kAppId3));
+
+  // TODO(crbug.com/1238647): Once changes are synced back to subscribers,
+  // assert that FindPreferredAppForUrl returns the correct value.
+
+  // Setting App 3 as preferred again should not change anything.
+  app_3_filters = std::vector<apps::mojom::IntentFilterPtr>();
+  app_3_filters.push_back(intent_filter_b.Clone());
+  app_3_filters.push_back(intent_filter_c.Clone());
+  impl.SetSupportedLinksPreference(apps::mojom::AppType::kArc, kAppId3,
+                                   std::move(app_3_filters));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(pub0.AppHasSupportedLinksPreference(kAppId3));
+
+  impl.RemoveSupportedLinksPreference(apps::mojom::AppType::kArc, kAppId3);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(pub0.AppHasSupportedLinksPreference(kAppId3));
 }
 
 }  // namespace apps

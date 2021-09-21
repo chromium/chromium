@@ -129,6 +129,24 @@ interface AppService {
       string app_id,
       IntentFilter intent_filter);
 
+  // Set |app_id| as preferred app for all its supported link filters. Supported
+  // link filters, which have the http/https scheme and at least one host, are
+  // always enabled/disabled as a group. |all_link_filters| should contain all
+  // of the apps' Supported Link intent filters.
+  // Any apps with overlapping preferred app preferences will have all their
+  // supported link filters unset, as if RemoveSupportedLinksPreference was
+  // called for that app.
+  SetSupportedLinksPreference(
+    AppType app_type,
+    string app_id,
+    array<IntentFilter> all_link_filters);
+
+  // Removes all supported link filters from the preferred app list for an
+  // |app_id|.
+  RemoveSupportedLinksPreference(
+    AppType app_type,
+    string app_id);
+
   // Enables resize lock mode for the app identified by |app_id| with the given
   // |app_type|.
   SetResizeLocked(
@@ -232,6 +250,15 @@ interface Publisher {
       IntentFilter intent_filter,
       Intent intent,
       ReplacedAppPreferences replaced_app_preferences);
+
+  // Indicates that the app identified by |app_id| has had its supported links
+  // preference changed, so that all supported link filters are either preferred
+  // (|open_in_app| is true) or not preferred (|open_in_app| is false). This
+  // method is used by the App Service to sync changes to publishers, and is
+  // called instead of OnPreferredAppSet for supported links changes.
+  OnSupportedLinksPreferenceChanged(
+    string app_id,
+    bool open_in_app);
 
   // Enables resize lock mode for the app identified by |app_id|.
   SetResizeLocked(

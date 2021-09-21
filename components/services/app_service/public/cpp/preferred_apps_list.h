@@ -91,6 +91,10 @@ class PreferredAppsList {
   // Returns |true| if |app_id| was found in the list of preferred apps.
   bool DeleteAppId(const std::string& app_id);
 
+  // Deletes all stored supported link preferences for an |app_id|.
+  // Returns true if any preferences were removed.
+  bool DeleteSupportedLinks(const std::string& app_id);
+
   // Initialize the preferred app with empty list or existing |preferred_apps|;
   void Init();
   void Init(PreferredApps& preferred_apps);

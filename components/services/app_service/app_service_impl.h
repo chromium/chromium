@@ -109,6 +109,12 @@ class AppServiceImpl : public apps::mojom::AppService {
       apps::mojom::AppType app_type,
       const std::string& app_id,
       apps::mojom::IntentFilterPtr intent_filter) override;
+  void SetSupportedLinksPreference(
+      apps::mojom::AppType app_type,
+      const std::string& app_id,
+      std::vector<apps::mojom::IntentFilterPtr> all_link_filters) override;
+  void RemoveSupportedLinksPreference(apps::mojom::AppType app_type,
+                                      const std::string& app_id) override;
   void SetResizeLocked(apps::mojom::AppType app_type,
                        const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;

@@ -589,3 +589,44 @@ TEST_F(PreferredAppListTest, DeleteAppIdForMultipleAppIds) {
   EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_6));
 }
+
+TEST_F(PreferredAppListTest, DeleteSupportedLinks) {
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
+
+  GURL filter_url_2 = GURL("tel://12345678/");
+  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_2);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_2);
+
+  GURL filter_url_3 = GURL("https://www.google.com.au/");
+  auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
+  preferred_apps_.AddPreferredApp(kAppId2, intent_filter_3);
+
+  preferred_apps_.DeleteSupportedLinks(kAppId1);
+
+  EXPECT_EQ(absl::nullopt,
+            preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+
+  preferred_apps_.DeleteSupportedLinks(kAppId2);
+  EXPECT_EQ(absl::nullopt,
+            preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+}
+
+// Test that DeleteSupportedLinks removes the entire preference, including
+// condition values other than http/https links.
+TEST_F(PreferredAppListTest, DeleteSupportedLinksForMultipleConditionValues) {
+  auto intent_filter = apps_util::CreateIntentFilterForUrlScope(
+      GURL("https://www.example.com/"));
+  apps_util::AddConditionValue(apps::mojom::ConditionType::kScheme, "ftp",
+                               apps::mojom::PatternMatchType::kNone,
+                               intent_filter);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter);
+
+  preferred_apps_.DeleteSupportedLinks(kAppId1);
+
+  EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(
+                               GURL("ftp://www.example.com")));
+}

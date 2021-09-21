@@ -162,6 +162,28 @@ bool PreferredAppsList::DeleteAppId(const std::string& app_id) {
   return found;
 }
 
+bool PreferredAppsList::DeleteSupportedLinks(const std::string& app_id) {
+  bool found = false;
+  auto iter = preferred_apps_.begin();
+  while (iter != preferred_apps_.end()) {
+    if ((*iter)->app_id == app_id &&
+        apps_util::IsSupportedLink((*iter)->intent_filter)) {
+      found = true;
+      iter = preferred_apps_.erase(iter);
+    } else {
+      iter++;
+    }
+  }
+
+  if (found) {
+    for (auto& obs : observers_) {
+      obs.OnPreferredAppChanged(app_id, false);
+    }
+  }
+
+  return found;
+}
+
 void PreferredAppsList::Init() {
   preferred_apps_ = PreferredApps();
   initialized_ = true;
