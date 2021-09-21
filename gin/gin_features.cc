@@ -93,4 +93,15 @@ const base::Feature kV8ArrayBufferCageReservationExperiment{
 const base::Feature kV8SlowHistograms{"V8SlowHistograms",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the V8 virtual memory cage.
+const base::Feature kV8VirtualMemoryCage {
+  "V8VirtualMemoryCage",
+#if defined(V8_HEAP_SANDBOX)
+      // The cage is required for the V8 Heap Sandbox.
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
+
 }  // namespace features

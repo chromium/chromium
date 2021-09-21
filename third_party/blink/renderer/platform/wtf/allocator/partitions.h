@@ -47,11 +47,20 @@ class WTF_EXPORT Partitions {
 
   // Should be called on the thread which is or will become the main one.
   static void Initialize();
+  static void InitializeArrayBufferPartition();
   static void StartPeriodicReclaim(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  // The ArrayBufferPartition is initialized separately from the other
+  // partitions and so may not always be available. This function can be used to
+  // determine whether the partition has been initialized.
+  ALWAYS_INLINE static bool ArrayBufferPartitionInitialized() {
+    return array_buffer_root_ != nullptr;
+  }
+
   ALWAYS_INLINE static base::ThreadSafePartitionRoot* ArrayBufferPartition() {
     DCHECK(initialized_);
+    DCHECK(ArrayBufferPartitionInitialized());
     return array_buffer_root_;
   }
 

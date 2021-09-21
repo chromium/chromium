@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -281,6 +282,18 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
 
   v8::V8::InitializePlatform(V8Platform::Get());
 
+#if defined(V8_VIRTUAL_MEMORY_CAGE)
+  static_assert(ARCH_CPU_64_BITS,
+                "V8 virtual memory cage can only work in 64-bit builds");
+  // For now, creating the virtual memory cage is optional, and we only do it
+  // if the correpsonding feature is enabled. In the future, it will be
+  // mandatory when compiling with V8_VIRTUAL_MEMORY_CAGE.
+  bool v8_cage_is_initialized = false;
+  if (base::FeatureList::IsEnabled(features::kV8VirtualMemoryCage)) {
+    v8_cage_is_initialized = v8::V8::InitializeVirtualMemoryCage();
+  }
+#endif
+
   if (!base::FeatureList::IsEnabled(features::kV8OptimizeJavascript)) {
     // We avoid explicitly passing --opt if kV8OptimizeJavascript is enabled
     // since it is the default, and doing so would override flags passed
@@ -386,6 +399,25 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   v8::V8::Initialize();
 
   v8_is_initialized = true;
+
+#if defined(V8_VIRTUAL_MEMORY_CAGE)
+  if (v8_cage_is_initialized) {
+    // When the virtual memory cage is enabled, ArrayBuffers must be located
+    // inside the cage. To achieve that, PA's ConfigurablePool is created inside
+    // the cage and Blink will create the ArrayBuffer partition inside that
+    // Pool if it is enabled.
+    v8::PageAllocator* cage_page_allocator =
+        v8::V8::GetVirtualMemoryCagePageAllocator();
+    size_t pool_size = base::internal::PartitionAddressSpace::
+        ConfigurablePoolReservationSize();
+    void* pool_base = cage_page_allocator->AllocatePages(
+        nullptr, pool_size, pool_size, v8::PageAllocator::kNoAccess);
+    // The V8 cage is guaranteed to be large enough to host the Pool.
+    CHECK(pool_base);
+    base::internal::PartitionAddressSpace::InitConfigurablePool(pool_base,
+                                                                pool_size);
+  }
+#endif
 }
 
 // static
