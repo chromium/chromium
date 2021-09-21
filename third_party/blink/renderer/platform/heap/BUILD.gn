@@ -267,6 +267,7 @@ source_set("blink_heap_unittests_sources") {
   sources = [ "../testing/run_all_tests.cc" ]
 
   sources += [
+    "test/allocation_perftest.cc",
     "test/blink_gc_memory_dump_provider_test.cc",
     "test/concurrent_marking_test.cc",
     "test/heap_compact_test.cc",
