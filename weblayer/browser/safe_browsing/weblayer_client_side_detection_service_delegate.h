@@ -15,6 +15,12 @@ class WebLayerClientSideDetectionServiceDelegate
  public:
   explicit WebLayerClientSideDetectionServiceDelegate(
       BrowserContextImpl* browser_context);
+
+  WebLayerClientSideDetectionServiceDelegate(
+      const WebLayerClientSideDetectionServiceDelegate&) = delete;
+  WebLayerClientSideDetectionServiceDelegate& operator=(
+      const WebLayerClientSideDetectionServiceDelegate&) = delete;
+
   ~WebLayerClientSideDetectionServiceDelegate() override;
 
   // ClientSideDetectionService::Delegate implementation.
@@ -26,8 +32,6 @@ class WebLayerClientSideDetectionServiceDelegate
 
  private:
   BrowserContextImpl* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerClientSideDetectionServiceDelegate);
 };
 
 }  // namespace weblayer

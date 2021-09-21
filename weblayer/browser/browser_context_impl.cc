@@ -91,10 +91,11 @@ const char kUkmEnabled[] = "weblayer.ukm_enabled";
 class ResourceContextImpl : public content::ResourceContext {
  public:
   ResourceContextImpl() = default;
-  ~ResourceContextImpl() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceContextImpl);
+  ResourceContextImpl(const ResourceContextImpl&) = delete;
+  ResourceContextImpl& operator=(const ResourceContextImpl&) = delete;
+
+  ~ResourceContextImpl() override = default;
 };
 
 BrowserContextImpl::BrowserContextImpl(ProfileImpl* profile_impl,

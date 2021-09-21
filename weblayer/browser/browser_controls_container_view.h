@@ -32,6 +32,11 @@ class BrowserControlsContainerView : public content::WebContentsObserver {
                                    java_browser_controls_container_view,
                                ContentViewRenderView* content_view_render_view,
                                bool is_top);
+
+  BrowserControlsContainerView(const BrowserControlsContainerView&) = delete;
+  BrowserControlsContainerView& operator=(const BrowserControlsContainerView&) =
+      delete;
+
   ~BrowserControlsContainerView() override;
 
   // Height needed to display the control.
@@ -96,8 +101,6 @@ class BrowserControlsContainerView : public content::WebContentsObserver {
   // Layer containing showing the image for the controls. This is a sibling of
   // the WebContents layer.
   scoped_refptr<cc::UIResourceLayer> controls_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserControlsContainerView);
 };
 
 }  // namespace weblayer

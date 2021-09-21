@@ -16,6 +16,12 @@ class WebLayerClientSideDetectionHostDelegate
  public:
   explicit WebLayerClientSideDetectionHostDelegate(
       content::WebContents* web_contents);
+
+  WebLayerClientSideDetectionHostDelegate(
+      const WebLayerClientSideDetectionHostDelegate&) = delete;
+  WebLayerClientSideDetectionHostDelegate& operator=(
+      const WebLayerClientSideDetectionHostDelegate&) = delete;
+
   ~WebLayerClientSideDetectionHostDelegate() override;
 
   // ClientSideDetectionHost::Delegate implementation.
@@ -32,8 +38,6 @@ class WebLayerClientSideDetectionHostDelegate
 
  private:
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerClientSideDetectionHostDelegate);
 };
 
 }  // namespace weblayer

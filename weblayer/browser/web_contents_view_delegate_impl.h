@@ -17,6 +17,11 @@ namespace weblayer {
 class WebContentsViewDelegateImpl : public content::WebContentsViewDelegate {
  public:
   explicit WebContentsViewDelegateImpl(content::WebContents* web_contents);
+
+  WebContentsViewDelegateImpl(const WebContentsViewDelegateImpl&) = delete;
+  WebContentsViewDelegateImpl& operator=(const WebContentsViewDelegateImpl&) =
+      delete;
+
   ~WebContentsViewDelegateImpl() override;
 
   // WebContentsViewDelegate overrides.
@@ -25,8 +30,6 @@ class WebContentsViewDelegateImpl : public content::WebContentsViewDelegate {
 
  private:
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewDelegateImpl);
 };
 
 }  // namespace weblayer

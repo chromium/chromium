@@ -22,6 +22,9 @@ class AutofillClientImpl
       public content::WebContentsUserData<AutofillClientImpl>,
       public content::WebContentsObserver {
  public:
+  AutofillClientImpl(const AutofillClientImpl&) = delete;
+  AutofillClientImpl& operator=(const AutofillClientImpl&) = delete;
+
   ~AutofillClientImpl() override;
 
   // AutofillClient:
@@ -139,8 +142,6 @@ class AutofillClientImpl
   friend class content::WebContentsUserData<AutofillClientImpl>;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillClientImpl);
 };
 
 }  // namespace weblayer

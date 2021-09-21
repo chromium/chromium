@@ -26,6 +26,10 @@ class WebLayerRenderFrameObserver : public content::RenderFrameObserver {
  public:
   explicit WebLayerRenderFrameObserver(content::RenderFrame* render_frame);
 
+  WebLayerRenderFrameObserver(const WebLayerRenderFrameObserver&) = delete;
+  WebLayerRenderFrameObserver& operator=(const WebLayerRenderFrameObserver&) =
+      delete;
+
   blink::AssociatedInterfaceRegistry* associated_interfaces() {
     return &associated_interfaces_;
   }
@@ -56,8 +60,6 @@ class WebLayerRenderFrameObserver : public content::RenderFrameObserver {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerRenderFrameObserver);
 };
 
 }  // namespace weblayer

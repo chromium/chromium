@@ -22,6 +22,10 @@ class ContentUtilityClientImpl;
 class ContentMainDelegateImpl : public content::ContentMainDelegate {
  public:
   explicit ContentMainDelegateImpl(MainParams params);
+
+  ContentMainDelegateImpl(const ContentMainDelegateImpl&) = delete;
+  ContentMainDelegateImpl& operator=(const ContentMainDelegateImpl&) = delete;
+
   ~ContentMainDelegateImpl() override;
 
   // ContentMainDelegate implementation:
@@ -46,8 +50,6 @@ class ContentMainDelegateImpl : public content::ContentMainDelegate {
   std::unique_ptr<ContentRendererClientImpl> renderer_client_;
   std::unique_ptr<ContentUtilityClientImpl> utility_client_;
   std::unique_ptr<ContentClientImpl> content_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentMainDelegateImpl);
 };
 
 }  // namespace weblayer

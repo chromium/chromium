@@ -38,6 +38,9 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
                              content::BrowserThread::DeleteOnUIThread>,
                          public ui::SelectFileDialog::Listener {
  public:
+  FileSelectHelper(const FileSelectHelper&) = delete;
+  FileSelectHelper& operator=(const FileSelectHelper&) = delete;
+
   // Show the file chooser dialog.
   static void RunFileChooser(
       content::RenderFrameHost* render_frame_host,
@@ -97,8 +100,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // The mode of file dialog last shown.
   blink::mojom::FileChooserParams::Mode dialog_mode_ =
       blink::mojom::FileChooserParams::Mode::kOpen;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSelectHelper);
 };
 
 }  // namespace weblayer

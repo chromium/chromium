@@ -34,6 +34,10 @@ class NavigationControllerImpl : public NavigationController,
                                  public content::WebContentsObserver {
  public:
   explicit NavigationControllerImpl(TabImpl* tab);
+
+  NavigationControllerImpl(const NavigationControllerImpl&) = delete;
+  NavigationControllerImpl& operator=(const NavigationControllerImpl&) = delete;
+
   ~NavigationControllerImpl() override;
 
   // Creates the NavigationThrottle used to ensure WebContents::Stop() is called
@@ -187,8 +191,6 @@ class NavigationControllerImpl : public NavigationController,
       delayed_load_params_;
 
   base::WeakPtrFactory<NavigationControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerImpl);
 };
 
 }  // namespace weblayer

@@ -29,6 +29,10 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   BrowserMainPartsImpl(MainParams* params,
                        const content::MainFunctionParams& main_function_params,
                        std::unique_ptr<PrefService> local_state);
+
+  BrowserMainPartsImpl(const BrowserMainPartsImpl&) = delete;
+  BrowserMainPartsImpl& operator=(const BrowserMainPartsImpl&) = delete;
+
   ~BrowserMainPartsImpl() override;
 
   // BrowserMainParts overrides.
@@ -59,8 +63,6 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
   // Ownership of this moves to BrowserProcess. See
   // ContentBrowserClientImpl::local_state_ for details.
   std::unique_ptr<PrefService> local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserMainPartsImpl);
 };
 
 }  // namespace weblayer

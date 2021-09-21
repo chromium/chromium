@@ -788,6 +788,9 @@ class WaitForMediaPlaying : public content::WebContentsObserver {
   explicit WaitForMediaPlaying(content::WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  WaitForMediaPlaying(const WaitForMediaPlaying&) = delete;
+  WaitForMediaPlaying& operator=(const WaitForMediaPlaying&) = delete;
+
   // WebContentsObserver override.
   void MediaStartedPlaying(const MediaPlayerInfo& info,
                            const content::MediaPlayerId&) final {
@@ -800,8 +803,6 @@ class WaitForMediaPlaying : public content::WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForMediaPlaying);
 };
 
 }  // namespace

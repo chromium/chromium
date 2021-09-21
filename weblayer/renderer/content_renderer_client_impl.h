@@ -26,6 +26,11 @@ class WebLayerRenderThreadObserver;
 class ContentRendererClientImpl : public content::ContentRendererClient {
  public:
   ContentRendererClientImpl();
+
+  ContentRendererClientImpl(const ContentRendererClientImpl&) = delete;
+  ContentRendererClientImpl& operator=(const ContentRendererClientImpl&) =
+      delete;
+
   ~ContentRendererClientImpl() override;
 
   // content::ContentRendererClient:
@@ -64,8 +69,6 @@ class ContentRendererClientImpl : public content::ContentRendererClient {
 
   scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentRendererClientImpl);
 };
 
 }  // namespace weblayer

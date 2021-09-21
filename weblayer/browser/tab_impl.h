@@ -105,6 +105,10 @@ class TabImpl : public Tab,
   explicit TabImpl(ProfileImpl* profile,
                    std::unique_ptr<content::WebContents> web_contents,
                    const std::string& guid = std::string());
+
+  TabImpl(const TabImpl&) = delete;
+  TabImpl& operator=(const TabImpl&) = delete;
+
   ~TabImpl() override;
 
   // Returns the TabImpl from the specified WebContents (which may be null), or
@@ -407,8 +411,6 @@ class TabImpl : public Tab,
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
   base::WeakPtrFactory<TabImpl> weak_ptr_factory_for_fullscreen_exit_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabImpl);
 };
 
 }  // namespace weblayer

@@ -58,6 +58,11 @@ class SpellcheckInterfaceProvider
     : public service_manager::LocalInterfaceProvider {
  public:
   SpellcheckInterfaceProvider() = default;
+
+  SpellcheckInterfaceProvider(const SpellcheckInterfaceProvider&) = delete;
+  SpellcheckInterfaceProvider& operator=(const SpellcheckInterfaceProvider&) =
+      delete;
+
   ~SpellcheckInterfaceProvider() override = default;
 
   // service_manager::LocalInterfaceProvider:
@@ -69,9 +74,6 @@ class SpellcheckInterfaceProvider
     content::RenderThread::Get()->BindHostReceiver(mojo::GenericPendingReceiver(
         interface_name, std::move(interface_pipe)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckInterfaceProvider);
 };
 #endif  // defined(OS_ANDROID)
 

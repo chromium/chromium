@@ -27,6 +27,9 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
           database_manager,
       scoped_refptr<safe_browsing::SafeBrowsingUIManager> ui_manager);
 
+  UrlCheckerDelegateImpl(const UrlCheckerDelegateImpl&) = delete;
+  UrlCheckerDelegateImpl& operator=(const UrlCheckerDelegateImpl&) = delete;
+
   void SetSafeBrowsingDisabled(bool disabled);
 
  private:
@@ -65,8 +68,6 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<safe_browsing::SafeBrowsingUIManager> ui_manager_;
   safe_browsing::SBThreatTypeSet threat_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlCheckerDelegateImpl);
 };
 
 }  // namespace weblayer

@@ -34,6 +34,11 @@ class WebLayerMetricsServiceClient
   static WebLayerMetricsServiceClient* GetInstance();
 
   WebLayerMetricsServiceClient();
+
+  WebLayerMetricsServiceClient(const WebLayerMetricsServiceClient&) = delete;
+  WebLayerMetricsServiceClient& operator=(const WebLayerMetricsServiceClient&) =
+      delete;
+
   ~WebLayerMetricsServiceClient() override;
 
   void RegisterExternalExperiments(const std::vector<int>& experiment_ids);
@@ -74,8 +79,6 @@ class WebLayerMetricsServiceClient
   void OnHasAtLeastOneResumedBrowserStateChanged(bool new_value) override;
 
   std::vector<base::OnceClosure> post_start_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerMetricsServiceClient);
 };
 
 }  // namespace weblayer

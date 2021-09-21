@@ -31,6 +31,9 @@ class ContentViewRenderView : public content::CompositorClient {
                         jobject obj,
                         gfx::NativeWindow root_window);
 
+  ContentViewRenderView(const ContentViewRenderView&) = delete;
+  ContentViewRenderView& operator=(const ContentViewRenderView&) = delete;
+
   content::Compositor* compositor() { return compositor_.get(); }
 
   scoped_refptr<cc::Layer> root_container_layer() {
@@ -92,8 +95,6 @@ class ContentViewRenderView : public content::CompositorClient {
 
   base::RepeatingClosure height_changed_listener_;
   int height_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentViewRenderView);
 };
 
 }  // namespace weblayer

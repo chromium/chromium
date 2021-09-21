@@ -84,6 +84,10 @@ class TestErrorPageDelegate : public ErrorPageDelegate {
 class SSLBrowserTest : public WebLayerBrowserTest {
  public:
   SSLBrowserTest() = default;
+
+  SSLBrowserTest(const SSLBrowserTest&) = delete;
+  SSLBrowserTest& operator=(const SSLBrowserTest&) = delete;
+
   ~SSLBrowserTest() override = default;
 
   // WebLayerBrowserTest:
@@ -254,9 +258,6 @@ class SSLBrowserTest : public WebLayerBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_mismatched_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_expired_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SSLBrowserTest);
 };
 
 // Tests clicking "take me back" on the interstitial page.

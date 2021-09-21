@@ -166,6 +166,10 @@ class FakeSafeBrowsingApiHandler
 class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
  public:
   SafeBrowsingBrowserTest() : fake_handler_(new FakeSafeBrowsingApiHandler()) {}
+
+  SafeBrowsingBrowserTest(const SafeBrowsingBrowserTest&) = delete;
+  SafeBrowsingBrowserTest& operator=(const SafeBrowsingBrowserTest&) = delete;
+
   ~SafeBrowsingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -290,13 +294,17 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
 
  private:
   TestAccessTokenFetchDelegate access_token_fetch_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBrowserTest);
 };
 
 class SafeBrowsingDisabledBrowserTest : public SafeBrowsingBrowserTest {
  public:
   SafeBrowsingDisabledBrowserTest() {}
+
+  SafeBrowsingDisabledBrowserTest(const SafeBrowsingDisabledBrowserTest&) =
+      delete;
+  SafeBrowsingDisabledBrowserTest& operator=(
+      const SafeBrowsingDisabledBrowserTest&) = delete;
+
   ~SafeBrowsingDisabledBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -304,9 +312,6 @@ class SafeBrowsingDisabledBrowserTest : public SafeBrowsingBrowserTest {
     SafeBrowsingBrowserTest::InitializeOnMainThread();
     ASSERT_FALSE(GetSafeBrowsingEnabled());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingDisabledBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,

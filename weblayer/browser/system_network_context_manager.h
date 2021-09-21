@@ -41,6 +41,10 @@ class SystemNetworkContextManager {
       network::mojom::NetworkContextParams* network_context_params,
       const std::string& user_agent);
 
+  SystemNetworkContextManager(const SystemNetworkContextManager&) = delete;
+  SystemNetworkContextManager& operator=(const SystemNetworkContextManager&) =
+      delete;
+
   ~SystemNetworkContextManager();
 
   // Returns the System NetworkContext. Does any initialization of the
@@ -72,8 +76,6 @@ class SystemNetworkContextManager {
       shared_url_loader_factory_;
 
   mojo::Remote<network::mojom::NetworkContext> system_network_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemNetworkContextManager);
 };
 
 }  // namespace weblayer

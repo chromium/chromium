@@ -41,6 +41,10 @@ void OnReceivedFormDataFromRenderer(base::OnceClosure quit_closure,
 class AutofillBrowserTest : public WebLayerBrowserTest {
  public:
   AutofillBrowserTest() = default;
+
+  AutofillBrowserTest(const AutofillBrowserTest&) = delete;
+  AutofillBrowserTest& operator=(const AutofillBrowserTest&) = delete;
+
   ~AutofillBrowserTest() override = default;
 
   void SetUp() override {
@@ -50,9 +54,6 @@ class AutofillBrowserTest : public WebLayerBrowserTest {
 
     WebLayerBrowserTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillBrowserTest);
 };
 
 // Tests that the renderer detects a password form and passes the appropriate

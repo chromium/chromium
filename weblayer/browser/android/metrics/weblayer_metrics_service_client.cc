@@ -52,6 +52,10 @@ const int kPackageNameLimitRatePerMille = 100;
 class PageLoadMetricsProvider : public metrics::MetricsProvider {
  public:
   PageLoadMetricsProvider() = default;
+
+  PageLoadMetricsProvider(const PageLoadMetricsProvider&) = delete;
+  PageLoadMetricsProvider& operator=(const PageLoadMetricsProvider&) = delete;
+
   ~PageLoadMetricsProvider() override = default;
 
   // metrics:MetricsProvider implementation:
@@ -65,9 +69,6 @@ class PageLoadMetricsProvider : public metrics::MetricsProvider {
         observer->FlushMetricsOnAppEnterBackground();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsProvider);
 };
 
 }  // namespace

@@ -49,6 +49,10 @@ class UrlCheckerDelegateImpl;
 class SafeBrowsingService {
  public:
   explicit SafeBrowsingService(const std::string& user_agent);
+
+  SafeBrowsingService(const SafeBrowsingService&) = delete;
+  SafeBrowsingService& operator=(const SafeBrowsingService&) = delete;
+
   ~SafeBrowsingService();
 
   // Executed on UI thread
@@ -130,8 +134,6 @@ class SafeBrowsingService {
 
   // Collects data and sends reports to Safe Browsing. Accessed on UI thread.
   std::unique_ptr<safe_browsing::TriggerManager> trigger_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingService);
 };
 
 }  // namespace weblayer
