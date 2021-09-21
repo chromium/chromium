@@ -1633,6 +1633,14 @@ void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION1},
       {"privacyReviewClearOnExitFeatureDescription2",
        IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION2},
+      {"privacyReviewHistorySyncCardHeader",
+       IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_CARD_HEADER},
+      {"privacyReviewHistorySyncFeatureDescription1",
+       IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_FEATURE_DESCRIPTION1},
+      {"privacyReviewHistorySyncFeatureDescription2",
+       IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_FEATURE_DESCRIPTION2},
+      {"privacyReviewHistorySyncPrivacyDescription1",
+       IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_PRIVACY_DESCRIPTION1},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

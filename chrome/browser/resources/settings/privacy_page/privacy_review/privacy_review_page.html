@@ -61,6 +61,11 @@
         prefs="{{prefs}}">
     </privacy-review-clear-on-exit-fragment>
   </template>
+  <template is="dom-if" if="[[showHistorySyncFragment_(privacyReviewStep_)]]">
+    <privacy-review-history-sync-fragment id="historySyncFragment"
+        prefs="{{prefs}}">
+    </privacy-review-history-sync-fragment>
+  </template>
   <template is="dom-if" if="[[showAnySettingFragment_(privacyReviewStep_)]]">
     <div id="settingFooter" class="footer hr">
       <cr-button id="backButton" role="button" on-click="onBackButtonClick_"

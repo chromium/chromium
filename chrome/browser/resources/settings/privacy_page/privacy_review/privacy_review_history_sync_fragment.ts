@@ -4,10 +4,9 @@
 
 /**
  * @fileoverview
- * 'privacy-review-clear-on-exit' is the fragment in a privacy review card
- * that contains the 'clear cookies on exit' setting and its description.
+ * 'privacy-review-history-sync-fragment' is the fragment in a privacy review
+ * card that contains the history sync setting and its description.
  */
-import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
 import './privacy_review_description_item.js';
 import './privacy_review_fragment_shared_css.js';
@@ -15,9 +14,9 @@ import './privacy_review_fragment_shared_css.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @polymer */
-export class PrivacyReviewClearOnExitFragmentElement extends PolymerElement {
+export class PrivacyReviewHistorySyncFragmentElement extends PolymerElement {
   static get is() {
-    return 'privacy-review-clear-on-exit-fragment';
+    return 'privacy-review-history-sync-fragment';
   }
 
   static get template() {
@@ -38,5 +37,5 @@ export class PrivacyReviewClearOnExitFragmentElement extends PolymerElement {
 }
 
 customElements.define(
-    PrivacyReviewClearOnExitFragmentElement.is,
-    PrivacyReviewClearOnExitFragmentElement);
+    PrivacyReviewHistorySyncFragmentElement.is,
+    PrivacyReviewHistorySyncFragmentElement);

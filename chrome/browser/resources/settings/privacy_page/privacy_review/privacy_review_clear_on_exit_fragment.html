@@ -1,27 +1,25 @@
-<style include="privacy-review-shared">
+<style include="privacy-review-fragment-shared">
   settings-toggle-button {
     padding-bottom: 8px;
     padding-top: 8px;
   }
 </style>
-<div class="fragment-wrapper">
-  <div class="embedded-setting-wrapper">
-    <settings-toggle-button id="clearOnExit"
-        pref="{{prefs.generated.cookie_session_only}}"
-        label="$i18n{cookiePageClearOnExit}">
-    </settings-toggle-button>
+<div class="embedded-setting-wrapper">
+  <settings-toggle-button id="clearOnExit"
+      pref="{{prefs.generated.cookie_session_only}}"
+      label="$i18n{cookiePageClearOnExit}">
+  </settings-toggle-button>
+</div>
+<div class="description-wrapper">
+  <div class=description-header>
+    $i18n{privacyReviewFeatureDescriptionHeader}
   </div>
-  <div class="description-wrapper">
-    <div class=description-header>
-      $i18n{privacyReviewFeatureDescriptionHeader}
-    </div>
-    <privacy-review-description-item
-        icon="settings20:delete-forever"
-        label="$i18n{privacyReviewClearOnExitFeatureDescription1}">
-    </privacy-review-description-item>
-    <privacy-review-description-item
-        icon="settings20:lightbulb"
-        label="$i18n{privacyReviewClearOnExitFeatureDescription2}">
-    </privacy-review-description-item>
-  </div>
+  <privacy-review-description-item
+      icon="settings20:delete-forever"
+      label="$i18n{privacyReviewClearOnExitFeatureDescription1}">
+  </privacy-review-description-item>
+  <privacy-review-description-item
+      icon="settings20:lightbulb"
+      label="$i18n{privacyReviewClearOnExitFeatureDescription2}">
+  </privacy-review-description-item>
 </div>

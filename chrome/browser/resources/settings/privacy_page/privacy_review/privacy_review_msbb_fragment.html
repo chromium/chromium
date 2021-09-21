@@ -1,46 +1,44 @@
-<style include="privacy-review-shared">
+<style include="privacy-review-fragment-shared">
   settings-toggle-button {
     padding-bottom: 8px;
     padding-top: 8px;
   }
 </style>
-<div class="fragment-wrapper">
-  <div class="embedded-setting-wrapper">
-    <settings-toggle-button id="urlCollectionToggle"
-        pref="{{prefs.url_keyed_anonymized_data_collection.enabled}}"
-        label="$i18n{urlKeyedAnonymizedDataCollection}">
-    </settings-toggle-button>
+<div class="embedded-setting-wrapper">
+  <settings-toggle-button id="urlCollectionToggle"
+      pref="{{prefs.url_keyed_anonymized_data_collection.enabled}}"
+      label="$i18n{urlKeyedAnonymizedDataCollection}">
+  </settings-toggle-button>
+</div>
+<div class="description-wrapper two-column">
+  <div class="description-column description-column-first">
+    <div class=description-header>
+      $i18n{privacyReviewFeatureDescriptionHeader}
+    </div>
+    <privacy-review-description-item
+        icon="settings20:flash-on"
+        label="$i18n{privacyReviewMsbbFeatureDescription1}">
+    </privacy-review-description-item>
+    <privacy-review-description-item
+        icon="settings20:lightbulb"
+        label="$i18n{privacyReviewMsbbFeatureDescription2}">
+    </privacy-review-description-item>
+    <privacy-review-description-item
+        icon="settings20:bar-chart"
+        label="$i18n{privacyReviewMsbbFeatureDescription3}">
+    </privacy-review-description-item>
   </div>
-  <div class="description-wrapper two-column">
-    <div class="description-column description-column-first">
-      <div class=description-header>
-        $i18n{privacyReviewFeatureDescriptionHeader}
-      </div>
-      <privacy-review-description-item
-          icon="settings20:flash-on"
-          label="$i18n{privacyReviewMsbbFeatureDescription1}">
-      </privacy-review-description-item>
-      <privacy-review-description-item
-          icon="settings20:lightbulb"
-          label="$i18n{privacyReviewMsbbFeatureDescription2}">
-      </privacy-review-description-item>
-      <privacy-review-description-item
-          icon="settings20:bar-chart"
-          label="$i18n{privacyReviewMsbbFeatureDescription3}">
-      </privacy-review-description-item>
+  <div class="description-column">
+    <div class=description-header>
+      $i18n{privacyReviewWhatYouShareWithGoogle}
     </div>
-    <div class="description-column">
-      <div class=description-header>
-        $i18n{privacyReviewWhatYouShareWithGoogle}
-      </div>
-      <privacy-review-description-item
-          icon="settings20:link"
-          label="$i18n{privacyReviewMsbbPrivacyDescription1}">
-      </privacy-review-description-item>
-      <privacy-review-description-item
-          icon="settings20:data-connectors-system"
-          label="$i18n{privacyReviewMsbbPrivacyDescription2}">
-      </privacy-review-description-item>
-    </div>
+    <privacy-review-description-item
+        icon="settings20:link"
+        label="$i18n{privacyReviewMsbbPrivacyDescription1}">
+    </privacy-review-description-item>
+    <privacy-review-description-item
+        icon="settings20:data-connectors-system"
+        label="$i18n{privacyReviewMsbbPrivacyDescription2}">
+    </privacy-review-description-item>
   </div>
 </div>
