@@ -832,11 +832,20 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
   rfh.WaitUntilRenderFrameDeleted();
 }
 
+#if defined(OS_WIN)
+// Frequently timing out on Win7 CI builder. See https://crbug.com/1251717.
+#define MAYBE_PopupTriggeredFromDifferentWebContents \
+  DISABLED_PopupTriggeredFromDifferentWebContents
+#else
+#define MAYBE_PopupTriggeredFromDifferentWebContents \
+  PopupTriggeredFromDifferentWebContents
+#endif
+
 // Make sure the poput is attributed to the right WebContents when it is
 // triggered from a different WebContents. Regression test for
 // https://crbug.com/1128495
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       PopupTriggeredFromDifferentWebContents) {
+                       MAYBE_PopupTriggeredFromDifferentWebContents) {
   const GURL url(
       embedded_test_server()->GetURL("/popup_blocker/popup-in-href.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
