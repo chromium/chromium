@@ -137,9 +137,7 @@ js_type_check("closure_compile") {
     #":test_clear_browsing_data_browser_proxy",
 
     #":test_extension_control_browser_proxy",
-    ":test_hats_browser_proxy",
     ":test_lifetime_browser_proxy",
-    ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
 
     #":test_password_manager_proxy",
@@ -151,10 +149,6 @@ js_type_check("closure_compile") {
 
     #":zoom_levels_tests",
   ]
-
-  if (is_win) {
-    deps += [ ":safety_check_chrome_cleaner_test" ]
-  }
 
   if (!is_chromeos_ash) {
     deps += [
@@ -209,8 +203,6 @@ js_library("languages_page_metrics_test_browser") {
 
 js_library("privacy_sandbox_test") {
   deps = [
-    ":test_hats_browser_proxy",
-    ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
     "..:chai_assert",
     "..:test_util",
@@ -218,24 +210,6 @@ js_library("privacy_sandbox_test") {
     "//chrome/browser/resources/settings/privacy_sandbox:app",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("safety_check_chrome_cleaner_test") {
-  deps = [
-    ":test_metrics_browser_proxy",
-    "..:chai_assert",
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//chrome/browser/resources/settings:settings",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_metrics_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:settings",
-  ]
 }
 
 js_library("test_open_window_proxy") {
@@ -274,13 +248,6 @@ js_library("settings_ui_tests") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_hats_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:settings",
-  ]
 }
 
 js_library("test_languages_browser_proxy") {

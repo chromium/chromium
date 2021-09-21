@@ -12,9 +12,46 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsBehavior, PrefsBehaviorInterface, TrustSafetyInteraction} from '../settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrefsBehavior, PrefsBehaviorInterface} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
+
+/**
+ * Copied from metrics_browser_proxy.ts
+ * @interface
+ */
+class MetricsBrowserProxy {
+  /**
+   * Helper function that calls recordAction with one action from
+   * tools/metrics/actions/actions.xml.
+   * @param {string} action One action to be recorded.
+   */
+  recordAction(action) {}
+}
+
+/**
+ * Copied from hats_browser_proxy.ts
+ * @enum {number}
+ */
+const TrustSafetyInteraction = {
+  RAN_SAFETY_CHECK: 0,
+  USED_PRIVACY_CARD: 1,
+  OPENED_PRIVACY_SANDBOX: 2,
+  OPENED_PASSWORD_MANAGER: 3,
+};
+
+/**
+ * Copied from hats_browser_proxy.ts
+ * @interface
+ */
+class HatsBrowserProxy {
+  /**
+   * Inform HaTS that the user performed a Trust & Safety interaction.
+   * @param {TrustSafetyInteraction} interaction The type of interaction
+   *    performed by the user.
+   */
+  trustSafetyInteractionOccurred(interaction) {}
+}
 
 /**
  * @constructor

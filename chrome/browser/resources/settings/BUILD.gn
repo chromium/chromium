@@ -125,12 +125,12 @@ preprocess_if_expr("preprocess") {
     "ensure_lazy_loaded.js",
     "extension_control_browser_proxy.ts",
     "global_scroll_target_mixin.js",
-    "hats_browser_proxy.js",
+    "hats_browser_proxy.ts",
     "i18n_setup.ts",
     "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
     "lazy_load.ts",
     "lifetime_browser_proxy.ts",
-    "metrics_browser_proxy.js",
+    "metrics_browser_proxy.ts",
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "open_window_proxy.js",
@@ -414,11 +414,9 @@ js_type_check("closure_compile_local") {
   deps = [
     ":base_mixin",
     ":extension_control_browser_proxy",
-    ":hats_browser_proxy",
     ":i18n_setup",
     ":lazy_load",
     ":lifetime_browser_proxy",
-    ":metrics_browser_proxy",
     ":open_window_proxy",
     ":page_visibility",
     ":route",
@@ -435,9 +433,7 @@ js_library("settings") {
   sources =
       [ "$root_gen_dir/chrome/browser/resources/settings/tsc/settings.js" ]
   deps = [
-    ":hats_browser_proxy",
     ":lifetime_browser_proxy",
-    ":metrics_browser_proxy",
     ":open_window_proxy",
     "people_page:sync_browser_proxy",
     "settings_ui:settings_ui",
@@ -473,9 +469,6 @@ js_library("global_scroll_target_mixin") {
   ]
 }
 
-js_library("hats_browser_proxy") {
-}
-
 js_library("lazy_load") {
   sources =
       [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lazy_load.js" ]
@@ -496,9 +489,6 @@ js_library("lifetime_browser_proxy") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lifetime_browser_proxy.js" ]
   deps = [ "//ui/webui/resources/js:cr.m" ]
   extra_deps = [ ":build_ts" ]
-}
-
-js_library("metrics_browser_proxy") {
 }
 
 js_library("open_window_proxy") {
@@ -689,12 +679,12 @@ ts_library("build_ts") {
     "ensure_lazy_loaded.js",
     "extension_control_browser_proxy.ts",
     "global_scroll_target_mixin.js",
-    "hats_browser_proxy.js",
+    "hats_browser_proxy.ts",
     "i18n_setup.ts",
     "icons.ts",
     "lazy_load.ts",
     "lifetime_browser_proxy.ts",
-    "metrics_browser_proxy.js",
+    "metrics_browser_proxy.ts",
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/on_startup_page.ts",
     "on_startup_page/startup_url_dialog.ts",

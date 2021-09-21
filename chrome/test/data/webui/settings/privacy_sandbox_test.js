@@ -19,10 +19,10 @@ suite('PrivacySandbox', function() {
   /** @type {!PrivacySandboxAppElement} */
   let page;
 
-  /** @type {?TestMetricsBrowserProxy} */
+  /** @type {?TestBrowserProxy} */
   let metricsBrowserProxy = null;
 
-  /** @type {!TestHatsBrowserProxy} */
+  /** @type {!TestBrowserProxy} */
   let testHatsBrowserProxy;
 
   /**
