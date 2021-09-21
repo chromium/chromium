@@ -786,6 +786,11 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
     blockedReasons->push_back(Network::SetCookieBlockedReasonEnum::
                                   SamePartyConflictsWithOtherAttributes);
   }
+  if (status.HasExclusionReason(net::CookieInclusionStatus::
+                                    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE)) {
+    blockedReasons->push_back(
+        Network::SetCookieBlockedReasonEnum::NameValuePairExceedsMaxSize);
+  }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR)) {
     blockedReasons->push_back(
@@ -856,6 +861,11 @@ GetProtocolBlockedCookieReason(net::CookieInclusionStatus status) {
           net::CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT)) {
     blockedReasons->push_back(
         Network::CookieBlockedReasonEnum::SamePartyFromCrossPartyContext);
+  }
+  if (status.HasExclusionReason(net::CookieInclusionStatus::
+                                    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE)) {
+    blockedReasons->push_back(
+        Network::CookieBlockedReasonEnum::NameValuePairExceedsMaxSize);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR)) {

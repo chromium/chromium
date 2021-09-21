@@ -5151,6 +5151,9 @@ domain Network
       # (which is required in order to use "SameParty"); or specified the "SameSite=Strict"
       # attribute (which is forbidden when using "SameParty").
       SamePartyConflictsWithOtherAttributes
+      # The cookie's name/value pair size exceeded the size limit defined in
+      # RFC6265bis.
+      NameValuePairExceedsMaxSize
 
   # Types of reasons why a cookie may not be sent with a request.
   experimental type CookieBlockedReason extends string
@@ -5195,6 +5198,9 @@ domain Network
       SchemefulSameSiteUnspecifiedTreatedAsLax
       # The cookie had the "SameParty" attribute and the request was made from a cross-party context.
       SamePartyFromCrossPartyContext
+      # The cookie's name/value pair size exceeded the size limit defined in
+      # RFC6265bis.
+      NameValuePairExceedsMaxSize
 
   # A cookie which was not stored from a response with the corresponding reason.
   experimental type BlockedSetCookieWithReason extends object
