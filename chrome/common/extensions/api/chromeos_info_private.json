@@ -79,59 +79,58 @@
             "type": "array",
             "description": "Chrome OS Property names",
             "items": {"type": "string"}
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "propertiesDictionary",
-                "type": "object",
-                "description": "Dictionary which contains all requested properties",
-                "properties": {
-                  "board" : {"type": "string", "optional": true, "description": "Board name"},
-                  "customizationId": {"type": "string", "optional": true, "description": "Customization ID"},
-                  "homeProvider" : {"type": "string", "optional": true, "description": "Home provider which is used by the cellular device"},
-                  "hwid": {"type": "string", "optional": true, "description": "Hardware ID"},
-                  "initialLocale" : {"type": "string", "optional": true, "description": "Initial locale for the device"},
-                  "isOwner" : {"type": "boolean", "optional": true, "description": "True if current logged in user is device owner"},
-                  "sessionType": {"$ref": "SessionType", "optional": true},
-                  "playStoreStatus": {"$ref": "PlayStoreStatus", "optional": true},
-                  "managedDeviceStatus": {"$ref": "ManagedDeviceStatus", "optional": true},
-                  "deviceType": {"$ref": "DeviceType", "optional": true},
-                  "stylusStatus": {"$ref": "StylusStatus", "optional": true},
-                  "assistantStatus": {"$ref": "AssistantStatus", "optional": true},
-                  "clientId" : {"type": "string", "optional": true, "description": "Device client id"},
-                  "timezone" : {"type": "string", "optional": true, "description": "Timezone"},
-                  "a11yLargeCursorEnabled" : {"type": "boolean", "optional": true, "description": "If true, ChromeOS is showing enlarged cursor."},
-                  "a11yStickyKeysEnabled" : {"type": "boolean", "optional": true, "description": "If true, sticky keys are turned on."},
-                  "a11ySpokenFeedbackEnabled" : {"type": "boolean", "optional": true, "description": "If enabled, ChromeOS text-to-speech feature is turned on."},
-                  "a11yHighContrastEnabled" : {"type": "boolean", "optional": true, "description": "If true, all displays have high contrast mode turned on."},
-                  "a11yScreenMagnifierEnabled" : {"type": "boolean", "optional": true, "description": "If true, all displays have screen magnifier turned on."},
-                  "a11yAutoClickEnabled" : {"type": "boolean", "optional": true, "description": "If true, autoclick accessibility feature is turned on."},
-                  "a11yVirtualKeyboardEnabled" : {"type": "boolean", "optional": true, "description": "If true, virtual keyboard will be enabled."},
-                  "a11yCaretHighlightEnabled" : {"type": "boolean", "optional": true, "description": "If true, caret highlighting will be enabled."},
-                  "a11yCursorHighlightEnabled" : {"type": "boolean", "optional": true, "description": "If true, cursor highlighting will be enabled."},
-                  "a11yFocusHighlightEnabled" : {"type": "boolean", "optional": true, "description": "If true, focus highlighting will be enabled."},
-                  "a11ySelectToSpeakEnabled" : {"type": "boolean", "optional": true, "description": "If true, select to speak will be enabled."},
-                  "a11ySwitchAccessEnabled" : {"type": "boolean", "optional": true, "description": "If true, switch access will be enabled."},
-                  "a11yCursorColorEnabled" : {"type": "boolean", "optional": true, "description": "If true, colorized cursor will be enabled."},
-                  "a11yDockedMagnifierEnabled" : {"type": "boolean", "optional": true, "description": "If true, docked magnifier will be enabled."},
-                  "sendFunctionKeys" : {"type": "boolean", "optional": true, "description": "If true, the ChromeOS top row keys send function keys."},
-                  "supportedTimezones" : {
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "propertiesDictionary",
+              "type": "object",
+              "description": "Dictionary which contains all requested properties",
+              "properties": {
+                "board" : {"type": "string", "optional": true, "description": "Board name"},
+                "customizationId": {"type": "string", "optional": true, "description": "Customization ID"},
+                "homeProvider" : {"type": "string", "optional": true, "description": "Home provider which is used by the cellular device"},
+                "hwid": {"type": "string", "optional": true, "description": "Hardware ID"},
+                "initialLocale" : {"type": "string", "optional": true, "description": "Initial locale for the device"},
+                "isOwner" : {"type": "boolean", "optional": true, "description": "True if current logged in user is device owner"},
+                "sessionType": {"$ref": "SessionType", "optional": true},
+                "playStoreStatus": {"$ref": "PlayStoreStatus", "optional": true},
+                "managedDeviceStatus": {"$ref": "ManagedDeviceStatus", "optional": true},
+                "deviceType": {"$ref": "DeviceType", "optional": true},
+                "stylusStatus": {"$ref": "StylusStatus", "optional": true},
+                "assistantStatus": {"$ref": "AssistantStatus", "optional": true},
+                "clientId" : {"type": "string", "optional": true, "description": "Device client id"},
+                "timezone" : {"type": "string", "optional": true, "description": "Timezone"},
+                "a11yLargeCursorEnabled" : {"type": "boolean", "optional": true, "description": "If true, ChromeOS is showing enlarged cursor."},
+                "a11yStickyKeysEnabled" : {"type": "boolean", "optional": true, "description": "If true, sticky keys are turned on."},
+                "a11ySpokenFeedbackEnabled" : {"type": "boolean", "optional": true, "description": "If enabled, ChromeOS text-to-speech feature is turned on."},
+                "a11yHighContrastEnabled" : {"type": "boolean", "optional": true, "description": "If true, all displays have high contrast mode turned on."},
+                "a11yScreenMagnifierEnabled" : {"type": "boolean", "optional": true, "description": "If true, all displays have screen magnifier turned on."},
+                "a11yAutoClickEnabled" : {"type": "boolean", "optional": true, "description": "If true, autoclick accessibility feature is turned on."},
+                "a11yVirtualKeyboardEnabled" : {"type": "boolean", "optional": true, "description": "If true, virtual keyboard will be enabled."},
+                "a11yCaretHighlightEnabled" : {"type": "boolean", "optional": true, "description": "If true, caret highlighting will be enabled."},
+                "a11yCursorHighlightEnabled" : {"type": "boolean", "optional": true, "description": "If true, cursor highlighting will be enabled."},
+                "a11yFocusHighlightEnabled" : {"type": "boolean", "optional": true, "description": "If true, focus highlighting will be enabled."},
+                "a11ySelectToSpeakEnabled" : {"type": "boolean", "optional": true, "description": "If true, select to speak will be enabled."},
+                "a11ySwitchAccessEnabled" : {"type": "boolean", "optional": true, "description": "If true, switch access will be enabled."},
+                "a11yCursorColorEnabled" : {"type": "boolean", "optional": true, "description": "If true, colorized cursor will be enabled."},
+                "a11yDockedMagnifierEnabled" : {"type": "boolean", "optional": true, "description": "If true, docked magnifier will be enabled."},
+                "sendFunctionKeys" : {"type": "boolean", "optional": true, "description": "If true, the ChromeOS top row keys send function keys."},
+                "supportedTimezones" : {
+                  "type": "array",
+                  "items": {
                     "type": "array",
-                    "items": {
-                      "type": "array",
-                      "items": {"type": "string"}
-                    },
-                    "optional": true,
-                    "description": "List of supported timezones definitions."
-                  }
+                    "items": {"type": "string"}
+                  },
+                  "optional": true,
+                  "description": "List of supported timezones definitions."
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "set",
@@ -154,19 +153,17 @@
         "name": "isTabletModeEnabled",
         "type": "function",
         "description": "Called to request tablet mode enabled status from the Chrome OS system.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Returns tablet mode enabled status as a boolean.",
-            "parameters": [
-              {
-                "name": "tabletModeEnabled",
-                "type": "boolean"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns tablet mode enabled status as a boolean.",
+          "parameters": [
+            {
+              "name": "tabletModeEnabled",
+              "type": "boolean"
+            }
+          ]
+        }
       }
     ]
   }
