@@ -32,7 +32,21 @@ class PhotosModuleElement extends mixinBehaviors
     return {
       /** @type {Array<!photos.mojom.Memory>} */
       memories: Array,
+
+      /**
+       * @type {boolean}
+       * @private
+       */
+      showExploreMore_: {type: Boolean, computed: 'computeShowExploreMore_()'},
     };
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShowExploreMore_() {
+    return this.memories.length === 1;
   }
 
   /** @private */
@@ -64,6 +78,21 @@ class PhotosModuleElement extends mixinBehaviors
       },
     }));
   }
+
+  /**
+   * @param {string} url
+   * @param {number} numMemories
+   * @return {string}
+   * @private
+   */
+  resizeImageUrl_(url, numMemories) {
+    // We request image dimensions related to the layout.
+    let imgSize = '=w168-h164-p-k-rw-no';
+    if (numMemories < 3) {
+      imgSize = '=w255-h164-p-k-rw-no';
+    }
+    return url.replace('?', imgSize + '?');
+  }
 }
 
 customElements.define(PhotosModuleElement.is, PhotosModuleElement);
@@ -77,7 +106,8 @@ async function createPhotosElement() {
     return null;
   }
   const element = new PhotosModuleElement();
-  element.memories = memories;
+  // We show only the first 3 at most.
+  element.memories = memories.slice(0, 3);
   return element;
 }
 

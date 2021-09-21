@@ -21,16 +21,27 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   });
 
   test('module appears on render', async () => {
+    // Arrange.
     const data = {
-      memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
+      memories: [
+        {
+          title: 'Title 1',
+          id: 'key1',
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+        },
+        {
+          title: 'Title 2',
+          id: 'key2',
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
+        }
+      ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
-
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
     await handler.whenCalled('getMemories');
-    $$(module, '#memoryRepeat').render();
 
+    // Assert.
     const items = Array.from(module.shadowRoot.querySelectorAll('.memory'));
     assertTrue(!!module);
     assertTrue(isVisible(module.$.memories));
@@ -42,21 +53,35 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   });
 
   test('module does not show without data', async () => {
+    // Arrange.
     handler.setResultFor('getMemories', Promise.resolve({memories: []}));
-
     const module = await photosDescriptor.initialize(0);
     await handler.whenCalled('getMemories');
+
+    // Assert.
     assertFalse(!!module);
   });
 
   test('info button click opens info dialog', async () => {
     // Arrange.
     const data = {
-      memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
+      memories: [
+        {
+          title: 'Title 1',
+          id: 'key1',
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+        },
+        {
+          title: 'Title 2',
+          id: 'key2',
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
+        }
+      ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
+    await handler.whenCalled('getMemories');
 
     // Act.
     $$(module, 'ntp-module-header')
@@ -69,16 +94,28 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   test('backend is notified when module is dismissed or restored', async () => {
     // Arrange.
     const data = {
-      memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
+      memories: [
+        {
+          title: 'Title 1',
+          id: 'key1',
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+        },
+        {
+          title: 'Title 2',
+          id: 'key2',
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
+        }
+      ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
-    const moduleElement = assert(await photosDescriptor.initialize(0));
-    document.body.append(moduleElement);
+    const module = assert(await photosDescriptor.initialize(0));
+    document.body.append(module);
+    await handler.whenCalled('getMemories');
 
     // Act.
     const dismiss = {event: null};
-    moduleElement.addEventListener('dismiss-module', (e) => dismiss.event = e);
-    $$(moduleElement, 'ntp-module-header')
+    module.addEventListener('dismiss-module', (e) => dismiss.event = e);
+    $$(module, 'ntp-module-header')
         .dispatchEvent(new Event('dismiss-button-click'));
 
     // Assert.
@@ -97,21 +134,87 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   test('backend is notified when module is disabled', async () => {
     // Arrange.
     const data = {
-      memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
+      memories: [
+        {
+          title: 'Title 1',
+          id: 'key1',
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+        },
+        {
+          title: 'Title 2',
+          id: 'key2',
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
+        }
+      ]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
-    const moduleElement = assert(await photosDescriptor.initialize(0));
-    document.body.append(moduleElement);
+    const module = assert(await photosDescriptor.initialize(0));
+    document.body.append(module);
+    await handler.whenCalled('getMemories');
 
     // Act.
     const disable = {event: null};
-    moduleElement.addEventListener('disable-module', (e) => disable.event = e);
-    $$(moduleElement, 'ntp-module-header')
+    module.addEventListener('disable-module', (e) => disable.event = e);
+    $$(module, 'ntp-module-header')
         .dispatchEvent(new Event('disable-button-click'));
 
     // Assert.
     assertEquals(
         loadTimeData.getString('modulesPhotosMemoriesDisabled'),
         disable.event.detail.message);
+  });
+
+  test('explore card is shown when 1 memory', async () => {
+    // Arrange.
+    const data = {
+      memories: [{
+        title: 'Title 1',
+        id: 'key1',
+        coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+      }]
+    };
+    handler.setResultFor('getMemories', Promise.resolve(data));
+    const module = assert(await photosDescriptor.initialize(0));
+    document.body.append(module);
+    await handler.whenCalled('getMemories');
+
+    // Assert.
+    assertTrue(!!$$(module, '#exploreCard'));
+  });
+
+  test('shows only up to 3 memories', async () => {
+    // Arrange.
+    const data = {
+      memories: [
+        {
+          title: 'Title 1',
+          id: 'key1',
+          coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
+        },
+        {
+          title: 'Title 2',
+          id: 'key2',
+          coverUrl: {url: 'https://fakeurl.com/2?token=foo'}
+        },
+        {
+          title: 'Title 3',
+          id: 'key3',
+          coverUrl: {url: 'https://fakeurl.com/3?token=foo'}
+        },
+        {
+          title: 'Title 4',
+          id: 'key4',
+          coverUrl: {url: 'https://fakeurl.com/4?token=foo'}
+        }
+      ]
+    };
+    handler.setResultFor('getMemories', Promise.resolve(data));
+    const module = assert(await photosDescriptor.initialize(0));
+    document.body.append(module);
+    await handler.whenCalled('getMemories');
+
+    // Assert.
+    const items = Array.from(module.shadowRoot.querySelectorAll('.memory'));
+    assertEquals(3, items.length);
   });
 });
