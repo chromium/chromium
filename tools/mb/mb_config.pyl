@@ -597,6 +597,11 @@
       'Linux Builder reclient test': 'gpu_tests_release_bot_reclient',
     },
 
+    'chromium.rust': {
+      'linux-rust-x64-rel': 'release_rust_linux_x64',
+      'android-rust-arm-rel': 'release_rust_android_arm',
+    },
+
     'chromium.swangle': {
       'linux-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols',
       'linux-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
@@ -1138,6 +1143,11 @@
       'Mac arm Builder Perf': 'official_goma_mac_arm_perf',
       'Win Builder Perf': 'official_goma_x86_perf',
       'Win x64 Builder Perf': 'official_goma_perf',
+    },
+
+    'tryserver.chromium.rust': {
+      'linux-rust-x64-rel': 'release_rust_linux_x64',
+      'android-rust-arm-rel': 'release_rust_android_arm',
     },
 
     'tryserver.chromium.swangle': {
@@ -2861,6 +2871,14 @@
       'release_trybot_minimal_symbols', 'paeverywhere', 'x64',
     ],
 
+    'release_rust_android_arm': [
+      'release_trybot_minimal_symbols', 'enable_rust', 'android', 'arm',
+    ],
+
+    'release_rust_linux_x64': [
+      'release_trybot_minimal_symbols', 'enable_rust', 'x64',
+    ],
+
     'release_trybot_minimal_symbols': [
       'release_trybot_minimal_symbols',
     ],
@@ -3274,6 +3292,10 @@
     # times.
     'enable_archive_compression': {
       'gn_args': 'skip_archive_compression=false',
+    },
+
+    'enable_rust': {
+      'gn_args': 'enable_rust=true',
     },
 
     'enable_v8_oilpan': {

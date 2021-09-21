@@ -158,6 +158,10 @@ consoles.list_view(
 )
 
 consoles.list_view(
+    name = "tryserver.chromium.rust",
+)
+
+consoles.list_view(
     name = "tryserver.chromium.swangle",
 )
 
@@ -1800,6 +1804,14 @@ try_.chromium_updater_win_builder(
             ".+/[+]/chrome/updater/.+",
         ],
     ),
+)
+
+try_.chromium_rust_builder(
+    name = "linux-rust-x64-rel",
+)
+
+try_.chromium_rust_builder(
+    name = "android-rust-arm-rel",
 )
 
 try_.chromium_win_builder(

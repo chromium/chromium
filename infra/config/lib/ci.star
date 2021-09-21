@@ -759,6 +759,16 @@ def mojo_builder(
         **kwargs
     )
 
+def rust_builder(
+        *,
+        name,
+        **kwargs):
+    return ci.builder(
+        name = name,
+        builder_group = "chromium.rust",
+        **kwargs
+    )
+
 def swangle_builder(*, name, builderless = True, pinned = True, **kwargs):
     builder_args = dict(kwargs)
     builder_args.update(
@@ -909,6 +919,7 @@ ci = struct(
     mac_thin_tester = mac_thin_tester,
     memory_builder = memory_builder,
     mojo_builder = mojo_builder,
+    rust_builder = rust_builder,
     swangle_linux_builder = swangle_linux_builder,
     swangle_mac_builder = swangle_mac_builder,
     swangle_windows_builder = swangle_windows_builder,

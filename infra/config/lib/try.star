@@ -367,6 +367,16 @@ def chromium_mac_ios_builder(
         **kwargs
     )
 
+def chromium_rust_builder(
+        *,
+        name,
+        **kwargs):
+    return try_builder(
+        name = name,
+        builder_group = "tryserver.chromium.rust",
+        **kwargs
+    )
+
 def chromium_swangle_builder(*, name, pinned = True, **kwargs):
     builder_args = dict(kwargs)
     builder_args.update(
@@ -581,6 +591,7 @@ try_ = struct(
     chromium_linux_builder = chromium_linux_builder,
     chromium_mac_builder = chromium_mac_builder,
     chromium_mac_ios_builder = chromium_mac_ios_builder,
+    chromium_rust_builder = chromium_rust_builder,
     chromium_swangle_linux_builder = chromium_swangle_linux_builder,
     chromium_swangle_mac_builder = chromium_swangle_mac_builder,
     chromium_swangle_windows_builder = chromium_swangle_windows_builder,

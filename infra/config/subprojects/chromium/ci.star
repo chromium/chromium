@@ -351,6 +351,16 @@ consoles.console_view(
 )
 
 consoles.console_view(
+    name = "chromium.rust",
+    ordering = {
+        None: [
+            "linux",
+            "android",
+        ],
+    },
+)
+
+consoles.console_view(
     name = "chromium.swangle",
     ordering = {
         None: ["DEPS", "ToT ANGLE", "ToT SwiftShader"],
@@ -6323,6 +6333,28 @@ ci.mojo_builder(
     ),
     cores = 4,
     os = os.MAC_ANY,
+)
+
+ci.rust_builder(
+    name = "android-rust-arm-rel",
+    builderless = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "android|rel",
+        short_name = "32",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+)
+
+ci.rust_builder(
+    name = "linux-rust-x64-rel",
+    builderless = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|rel",
+        short_name = "64",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
 )
 
 ci.swangle_linux_builder(
