@@ -1182,7 +1182,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   std::vector<FormData> password_forms_data;
   for (const WebFormElement& form : forms) {
     if (only_visible) {
-      bool is_form_visible = form_util::AreFormContentsVisible(form);
+      bool is_form_visible = base::ranges::any_of(form.GetFormControlElements(),
+                                                  &IsWebElementVisible);
       LogHTMLForm(logger.get(), Logger::STRING_FORM_FOUND_ON_PAGE, form);
       LogBoolean(logger.get(), Logger::STRING_FORM_IS_VISIBLE, is_form_visible);
 
@@ -1226,7 +1227,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
         form_util::GetUnownedAutofillableFormFieldElements(frame->GetDocument(),
                                                            nullptr);
     add_unowned_inputs =
-        form_util::IsSomeControlElementVisible(control_elements);
+        base::ranges::any_of(control_elements, &IsWebElementVisible);
     LogBoolean(logger.get(), Logger::STRING_UNOWNED_INPUTS_VISIBLE,
                add_unowned_inputs);
   }

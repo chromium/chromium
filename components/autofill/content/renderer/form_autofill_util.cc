@@ -1754,15 +1754,6 @@ bool ExtractFormData(const WebFormElement& form_element,
 }
 
 bool IsSomeControlElementVisible(
-    const WebVector<WebFormControlElement>& control_elements) {
-  for (const WebFormControlElement& control_element : control_elements) {
-    if (IsWebElementVisible(control_element))
-      return true;
-  }
-  return false;
-}
-
-bool IsSomeControlElementVisible(
     blink::WebLocalFrame* frame,
     const std::set<FieldRendererId>& control_elements) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -1812,10 +1803,6 @@ bool IsSomeControlElementVisible(
     }
     return false;
   }
-}
-
-bool AreFormContentsVisible(const WebFormElement& form) {
-  return IsSomeControlElementVisible(form.GetFormControlElements());
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {

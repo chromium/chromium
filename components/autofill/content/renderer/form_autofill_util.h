@@ -123,15 +123,8 @@ bool ExtractFormData(const blink::WebFormElement& form_element,
 
 // Returns true if at least one element from |control_elements| is visible.
 bool IsSomeControlElementVisible(
-    const blink::WebVector<blink::WebFormControlElement>& control_elements);
-
-// Returns true if at least one element from |control_elements| is visible.
-bool IsSomeControlElementVisible(
     blink::WebLocalFrame* frame,
     const std::set<FieldRendererId>& control_elements);
-
-// Returns true if some control elements of |form| are visible.
-bool AreFormContentsVisible(const blink::WebFormElement& form);
 
 // Helper functions to assist in getting the canonical form of the action and
 // origin. The action will proplerly take into account <BASE>, and both will

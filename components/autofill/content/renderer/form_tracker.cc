@@ -247,9 +247,10 @@ bool FormTracker::CanInferFormSubmitted() {
   // form is now gone, either invisible or removed from the DOM.
   // Otherwise (i.e., there is no form tag), we check if the last element the
   // user has interacted with are gone, to decide if submission has occurred.
-  if (!last_interacted_form_.IsNull())
-    return !form_util::AreFormContentsVisible(last_interacted_form_);
-  else if (!last_interacted_formless_element_.IsNull())
+  if (!last_interacted_form_.IsNull()) {
+    return !base::ranges::any_of(last_interacted_form_.GetFormControlElements(),
+                                 &form_util::IsWebElementVisible);
+  } else if (!last_interacted_formless_element_.IsNull())
     return !form_util::IsWebElementVisible(last_interacted_formless_element_);
 
   return false;
