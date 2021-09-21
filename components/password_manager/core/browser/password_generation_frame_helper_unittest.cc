@@ -129,9 +129,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         store_(new TestPasswordStore),
         driver_(this),
         password_requirements_service_(
-            std::make_unique<FakePasswordRequirementsSpecFetcher>()) {
-    store_->Init(prefs_.get());
-  }
+            std::make_unique<FakePasswordRequirementsSpecFetcher>()) {}
 
   ~MockPasswordManagerClient() override { store_->ShutdownOnUIThread(); }
 

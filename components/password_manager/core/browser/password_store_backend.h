@@ -55,10 +55,6 @@ class PasswordStoreBackend {
                            base::RepeatingClosure sync_enabled_or_disabled_cb,
                            base::OnceCallback<void(bool)> completion) = 0;
 
-  // Shuts down the store asynchronously. Is called with its own reference so
-  // the deletion can happen independent from the caller's lifecycles & threads.
-  virtual void Shutdown(std::unique_ptr<PasswordStoreBackend> self) = 0;
-
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status) and notify `consumer` on completion. Callback is called on the main
   // sequence.

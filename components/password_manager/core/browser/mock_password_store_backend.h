@@ -29,10 +29,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
                base::RepeatingClosure sync_enabled_or_disabled_cb,
                base::OnceCallback<void(bool)> completion),
               (override));
-  MOCK_METHOD(void,
-              Shutdown,
-              (std::unique_ptr<PasswordStoreBackend>),
-              (override));
 
   MOCK_METHOD(void, GetAllLoginsAsync, (LoginsReply callback), (override));
   MOCK_METHOD(void,

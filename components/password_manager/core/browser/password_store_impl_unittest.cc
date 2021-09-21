@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -103,23 +101,17 @@ class PasswordStoreImplTest : public testing::Test {
 
   PasswordStoreBackend* Initialize() {
     store_ =
-        std::make_unique<PasswordStoreImpl>(std::make_unique<LoginDatabase>(
+        base::MakeRefCounted<PasswordStoreImpl>(std::make_unique<LoginDatabase>(
             test_login_db_file_path(), IsAccountStore(false)));
-    PasswordStoreBackend* backend = store_.get();
-    backend->InitBackend(base::DoNothing(), base::DoNothing(),
-                         base::DoNothing());
-    RunUntilIdle();
-    return backend;
+    store_->Init(/*prefs=*/nullptr);
+    return store_.get();
   }
 
   PasswordStoreBackend* InitializeWithDatabase(
       std::unique_ptr<LoginDatabase> database) {
-    store_ = std::make_unique<PasswordStoreImpl>(std::move(database));
-    PasswordStoreBackend* backend = store_.get();
-    backend->InitBackend(base::DoNothing(), base::DoNothing(),
-                         base::DoNothing());
-    RunUntilIdle();
-    return backend;
+    store_ = base::MakeRefCounted<PasswordStoreImpl>(std::move(database));
+    store_->Init(/*prefs=*/nullptr);
+    return store_.get();
   }
 
   void SetUp() override {
@@ -128,8 +120,7 @@ class PasswordStoreImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    PasswordStoreBackend* backend = store_.get();
-    backend->Shutdown(std::exchange(store_, nullptr));
+    store_->ShutdownOnUIThread();
     RunUntilIdle();
     OSCryptMocker::TearDown();
     ASSERT_TRUE(temp_dir_.Delete());
@@ -149,7 +140,7 @@ class PasswordStoreImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<PasswordStoreImpl> store_;
+  scoped_refptr<PasswordStoreImpl> store_;
 };
 
 TEST_F(PasswordStoreImplTest, NonASCIIData) {

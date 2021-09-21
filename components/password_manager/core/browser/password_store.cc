@@ -138,11 +138,13 @@ bool PasswordStore::Init(PrefService* prefs,
                          base::RepeatingClosure sync_enabled_or_disabled_cb) {
   main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
   DCHECK(main_task_runner_);
+  background_task_runner_ = CreateBackgroundTaskRunner();
+  DCHECK(background_task_runner_);
   prefs_ = prefs;
 
   // TODO(crbug.bom/1226042): Backend might be null in tests, remove this after
   // tests switch to MockPasswordStoreInterface.
-  if (backend_) {
+  if (background_task_runner_ && backend_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "passwords", "PasswordStore::InitOnBackgroundSequence", this);
     backend_->InitBackend(
@@ -237,7 +239,6 @@ void PasswordStore::RemoveLoginsCreatedBetween(
 void PasswordStore::DisableAutoSignInForOrigins(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   backend_->DisableAutoSignInForOriginsAsync(origin_filter,
                                              std::move(completion));
 }
@@ -315,6 +316,7 @@ void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
   auto affiliation_injection =
       base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
                      this, std::move(consumer_reply));
+
   backend_->GetAllLoginsAsync(base::BindOnce(&RecordDurationMetrics,
                                              base::Time::Now(),
                                              "GetAllLoginsAsync")
@@ -337,20 +339,20 @@ void PasswordStore::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool PasswordStore::ScheduleTask(base::OnceClosure task) {
+  return background_task_runner_ &&
+         background_task_runner_->PostTask(FROM_HERE, std::move(task));
+}
+
 bool PasswordStore::IsAbleToSavePasswords() const {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   return init_status_ == InitStatus::kSuccess;
 }
 
 void PasswordStore::ShutdownOnUIThread() {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
   shutdown_called_ = true;
-  if (backend_) {
-    backend_->Shutdown(std::exchange(backend_deleter_, nullptr));
-    backend_ = nullptr;
-  }
 }
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
@@ -364,6 +366,12 @@ PasswordStoreBackend* PasswordStore::GetBackendForTesting() {
 
 PasswordStore::~PasswordStore() {
   DCHECK(shutdown_called_);
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+PasswordStore::CreateBackgroundTaskRunner() const {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 }
 
 void PasswordStore::OnInitCompleted(bool success) {
@@ -380,11 +388,6 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   if (changes.empty())
-    return;
-
-  // Don't propagate reference to this store after its shutdown. No caller
-  // should expect any notifications from a shut down store in any case.
-  if (shutdown_called_)
     return;
 
   for (auto& observer : observers_) {

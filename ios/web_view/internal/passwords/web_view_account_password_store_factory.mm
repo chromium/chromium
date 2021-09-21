@@ -117,9 +117,7 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
           browser_state->GetStatePath()));
 
   scoped_refptr<password_manager::PasswordStore> ps =
-      new password_manager::PasswordStore(
-          std::make_unique<password_manager::PasswordStoreImpl>(
-              std::move(login_db)));
+      new password_manager::PasswordStoreImpl(std::move(login_db));
   if (!ps->Init(browser_state->GetPrefs(),
                 base::BindRepeating(&SyncEnabledOrDisabled, browser_state))) {
     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the

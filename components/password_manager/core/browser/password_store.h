@@ -125,6 +125,9 @@ class PasswordStore : public PasswordStoreInterface {
   CreateSyncControllerDelegate() override;
   PasswordStoreBackend* GetBackendForTesting() override;
 
+  // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
+  bool ScheduleTask(base::OnceClosure task);
+
  protected:
   friend class base::RefCountedThreadSafe<PasswordStore>;
 
@@ -145,6 +148,18 @@ class PasswordStore : public PasswordStoreInterface {
   // this class anymore.
   PasswordStore();
   ~PasswordStore() override;
+
+  // Create a TaskRunner to be saved in |background_task_runner_|.
+  virtual scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner()
+      const;
+
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner() const {
+    return main_task_runner_;
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner() const {
+    return background_task_runner_;
+  }
 
   // This member is called to perform the actual interaction with the storage.
   // TODO(crbug.com/1217071): Make private std::unique_ptr as soon as the
@@ -177,18 +192,21 @@ class PasswordStore : public PasswordStoreInterface {
   void InjectAffiliationAndBrandingInformation(LoginsReply callback,
                                                LoginsResult forms);
 
-  // The local backend is a ref-counted type in tests because it still inherits
+  // The local backend is currently a ref-counted type because it still inherits
   // from PasswordStore and this would be a self reference. So, if `this` is an
   // instance of PasswordStoreImpl, this member is not used.
   //
-  // The backend is injected via the public constructor, this member owns the
-  /// instance and deletes it by calling PasswordStoreBackend::Shutdown on it.
+  // If the backend is injected via the public constructor, this backend_deleter
+  // owns the instance and deletes it on destruction. Once backend_ is a
+  // unique_ptr, too, this deleter can simply be removed.
   // TODO(crbug.com/1217071): Remove once once backend_ is a unique_ptr.
   std::unique_ptr<PasswordStoreBackend> backend_deleter_ = nullptr;
 
   // TaskRunner for tasks that run on the main sequence (usually the UI thread).
-  // TODO(crbug.com/1217071): Move into backend_.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
+  // TaskRunner for all the background operations.
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // The observers.
   base::ObserverList<Observer, /*check_empty=*/true> observers_;

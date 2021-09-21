@@ -107,9 +107,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
     ps = new password_manager::PasswordStore(
         password_manager::PasswordStoreBackend::Create(std::move(login_db)));
   } else {
-    ps = new password_manager::PasswordStore(
-        std::make_unique<password_manager::PasswordStoreImpl>(
-            std::move(login_db)));
+    ps = new password_manager::PasswordStoreImpl(std::move(login_db));
   }
 #else
   NOTIMPLEMENTED();
