@@ -417,7 +417,7 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         # os.fdopen().
         stdin_socket, _ = listen_socket.accept()
         fd = stdin_socket.fileno()  # pylint: disable=no-member
-        stdin_pipe = os.fdopen(os.dup(fd), "w", 0)
+        stdin_pipe = os.fdopen(os.dup(fd), "wb", 0)
         stdin_socket.close()
 
         proc.stdin.close()

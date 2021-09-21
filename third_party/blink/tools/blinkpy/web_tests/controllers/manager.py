@@ -256,8 +256,8 @@ class Manager(object):
 
     def _run_test_once(self, tests_to_run, tests_to_skip,
                        should_retry_failures):
-        num_workers = self._port.num_workers(
-            int(self._options.child_processes))
+        num_workers = int(
+            self._port.num_workers(int(self._options.child_processes)))
 
         initial_results = self._run_tests(
             tests_to_run, tests_to_skip, self._options.repeat_each,

@@ -69,6 +69,10 @@ def main(argv, stderr):
         printer.cleanup()
         return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
 
+    # Spawn ends up with pickle errors while creating workers on fuchsia.
+    if not six.PY2 and ("fuchsia" not in port.port_name):
+        multiprocessing.set_start_method('spawn')
+
     try:
         return run(port, options, args, printer).exit_code
 
@@ -742,6 +746,4 @@ def run(port, options, args, printer):
 
 
 if __name__ == '__main__':
-    if not six.PY2:
-        multiprocessing.set_start_method('spawn')
     sys.exit(main(sys.argv[1:], sys.stderr))
