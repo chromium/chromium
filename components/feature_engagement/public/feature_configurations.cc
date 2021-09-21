@@ -372,8 +372,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("tutorial_summary_iph_trigger", Comparator(ANY, 0), 90, 90);
     config->used = EventConfig("summary", Comparator(ANY, 0), 90, 90);
     config->event_configs.insert(EventConfig(
-        "video_tutorial_iph_clicked_summary", Comparator(EQUAL, 0), 90, 90));
-    config->event_configs.insert(EventConfig(
         "video_tutorial_iph_dismissed_summary", Comparator(EQUAL, 0), 90, 90));
 
     SessionRateImpact session_rate_impact;

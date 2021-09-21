@@ -57,18 +57,16 @@ void TutorialServiceImpl::OnFetchFinished(
   if (!success || !response_body)
     return;
 
-  proto::ServerResponse response_proto;
+  proto::VideoTutorialGroups response_proto;
   bool parse_success = response_proto.ParseFromString(*response_body.get());
   if (!parse_success)
     return;
 
-  auto tutorial_groups = std::make_unique<std::vector<TutorialGroup>>();
-  TutorialGroupsFromServerResponseProto(&response_proto, tutorial_groups.get());
-
-  tutorial_manager_->SaveGroups(std::move(tutorial_groups));
+  tutorial_manager_->SaveGroups(
+      std::make_unique<proto::VideoTutorialGroups>(std::move(response_proto)));
 }
 
-const std::vector<std::string>& TutorialServiceImpl::GetSupportedLanguages() {
+std::vector<std::string> TutorialServiceImpl::GetSupportedLanguages() {
   return tutorial_manager_->GetSupportedLanguages();
 }
 

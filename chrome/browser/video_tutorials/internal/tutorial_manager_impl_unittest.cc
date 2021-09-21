@@ -10,94 +10,57 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/video_tutorials/internal/tutorial_store.h"
 #include "chrome/browser/video_tutorials/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::StrictMock;
 
 namespace video_tutorials {
 namespace {
 
-std::vector<TutorialGroup> CreateSampleGroups(
+proto::VideoTutorialGroups CreateSampleGroups(
     const std::vector<std::string>& locales,
     const std::vector<FeatureType>& features) {
-  std::vector<TutorialGroup> groups;
+  proto::VideoTutorialGroups groups;
   for (const auto& locale : locales) {
-    TutorialGroup group;
-    group.language = locale;
+    proto::VideoTutorialGroup* group = groups.add_tutorial_groups();
+    group->set_language(locale);
     for (FeatureType feature : features) {
-      group.tutorials.emplace_back(
-          Tutorial(feature, "", "", "", "", "", "", "", 10));
+      proto::VideoTutorial* tutorial = group->add_tutorials();
+      tutorial->set_feature(FromFeatureType(feature));
     }
-
-    groups.emplace_back(group);
   }
 
   return groups;
 }
 
-std::unique_ptr<std::vector<TutorialGroup>> CreateSampleFetchData(
-    const std::vector<std::string>& locales,
-    const std::vector<FeatureType>& features) {
-  auto groups = std::make_unique<std::vector<TutorialGroup>>();
-  for (const auto& group : CreateSampleGroups(locales, features)) {
-    groups->emplace_back(group);
-  }
-
-  return groups;
-}
-
-class TestStore : public Store<TutorialGroup> {
+class TestStore : public TutorialStore {
  public:
-  TestStore() = default;
+  TestStore() : TutorialStore(nullptr) {}
   ~TestStore() override = default;
 
-  void Initialize(SuccessCallback callback) override {
+  void InitAndLoad(LoadCallback callback) override {
+    std::move(callback).Run(
+        true, std::make_unique<proto::VideoTutorialGroups>(groups_));
+  }
+
+  void Update(const proto::VideoTutorialGroups& entry,
+              UpdateCallback callback) override {
+    groups_ = entry;
     std::move(callback).Run(true);
   }
 
-  void LoadEntries(const std::vector<std::string>& keys,
-                   LoadEntriesCallback callback) override {
-    auto entries = std::make_unique<std::vector<TutorialGroup>>();
-    for (const TutorialGroup& group : groups_) {
-      if (keys.empty()) {
-        entries->emplace_back(group);
-      } else {
-        for (auto& key : keys) {
-          if (key == group.language) {
-            entries->emplace_back(group);
-          }
-        }
-      }
-    }
-
-    std::move(callback).Run(true, std::move(entries));
-  }
-
-  void InitStoreData(const std::string& locale,
-                     const std::vector<TutorialGroup>& groups) {
-    locale_ = locale;
-    groups_ = groups;
-  }
-
-  void UpdateAll(
-      const std::vector<std::pair<std::string, TutorialGroup>>& key_entry_pairs,
-      const std::vector<std::string>& keys_to_delete,
-      UpdateCallback callback) override {
-    groups_.clear();
-    for (auto pair : key_entry_pairs)
-      groups_.emplace_back(pair.second);
-
-    std::move(callback).Run(true);
+  void Update(const proto::VideoTutorialGroups groups) {
+    Update(groups, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+    base::RunLoop().RunUntilIdle();
   }
 
  private:
-  std::string locale_;
-  std::vector<TutorialGroup> groups_;
+  proto::VideoTutorialGroups groups_;
 };
 
 class TutorialManagerTest : public testing::Test {
@@ -116,10 +79,11 @@ class TutorialManagerTest : public testing::Test {
                                                      &prefs_);
   }
 
-  // Run GetTutorials call from manager_, compare the |expected| to the actual
-  // returned tutorials.
+  // Run GetTutorials call from manager_ and caches the results in
+  // last_results_.
   void GetTutorials() {
     base::RunLoop loop;
+    last_results_.clear();
     manager()->GetTutorials(base::BindOnce(&TutorialManagerTest::OnGetTutorials,
                                            base::Unretained(this),
                                            loop.QuitClosure()));
@@ -134,6 +98,7 @@ class TutorialManagerTest : public testing::Test {
 
   void GetTutorial(FeatureType feature_type) {
     base::RunLoop loop;
+    last_get_tutorial_result_ = absl::nullopt;
     manager()->GetTutorial(
         feature_type,
         base::BindOnce(&TutorialManagerTest::OnGetTutorial,
@@ -147,11 +112,7 @@ class TutorialManagerTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void OnComplete(base::RepeatingClosure closure, bool success) {
-    std::move(closure).Run();
-  }
-
-  void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups) {
+  void SaveGroups(std::unique_ptr<proto::VideoTutorialGroups> groups) {
     manager()->SaveGroups(std::move(groups));
     base::RunLoop().RunUntilIdle();
   }
@@ -177,11 +138,13 @@ TEST_F(TutorialManagerTest, InitAndGetTutorials) {
   std::vector<FeatureType> features(
       {FeatureType::kDownload, FeatureType::kSearch});
   auto groups = CreateSampleGroups({"hi", "kn"}, features);
-  groups[1].tutorials.emplace_back(
-      Tutorial(FeatureType::kVoiceSearch, "", "", "", "", "", "", "", 10));
+  auto* tutorial = groups.mutable_tutorial_groups(1)->add_tutorials();
+  tutorial->set_feature(FromFeatureType(FeatureType::kVoiceSearch));
+
   auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
-  tutorial_store->InitStoreData("hi", groups);
+  tutorial_store->Update(groups);
   CreateTutorialManager(std::move(tutorial_store));
+  GetTutorials();
 
   auto languages = manager()->GetSupportedLanguages();
   EXPECT_EQ(languages.size(), 2u);
@@ -207,9 +170,10 @@ TEST_F(TutorialManagerTest, InitAndGetTutorialsWithSummary) {
       {FeatureType::kDownload, FeatureType::kSearch, FeatureType::kSummary});
   auto groups = CreateSampleGroups({"hi", "kn"}, features);
   auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
-  tutorial_store->InitStoreData("hi", groups);
+  tutorial_store->Update(groups);
   CreateTutorialManager(std::move(tutorial_store));
 
+  GetTutorials();
   auto languages = manager()->GetSupportedLanguages();
   EXPECT_EQ(languages.size(), 2u);
   manager()->SetPreferredLocale("hi");
@@ -217,34 +181,14 @@ TEST_F(TutorialManagerTest, InitAndGetTutorialsWithSummary) {
   EXPECT_EQ(last_results().size(), 2u);
 }
 
-TEST_F(TutorialManagerTest, GetSingleTutorialBeforeGetTutorialsCall) {
-  std::vector<FeatureType> features(
-      {FeatureType::kDownload, FeatureType::kSearch, FeatureType::kSummary});
-  auto groups = CreateSampleGroups({"hi", "kn"}, features);
-  auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
-  tutorial_store->InitStoreData("hi", groups);
-  CreateTutorialManager(std::move(tutorial_store));
-
-  auto languages = manager()->GetSupportedLanguages();
-  EXPECT_EQ(languages.size(), 2u);
-  manager()->SetPreferredLocale("hi");
-  GetTutorial(FeatureType::kSummary);
-  EXPECT_TRUE(last_get_tutorial_result().has_value());
-  EXPECT_EQ(FeatureType::kSummary, last_get_tutorial_result()->feature);
-
-  GetTutorial(FeatureType::kSearch);
-  EXPECT_EQ(FeatureType::kSearch, last_get_tutorial_result()->feature);
-  GetTutorial(FeatureType::kVoiceSearch);
-  EXPECT_FALSE(last_get_tutorial_result().has_value());
-}
-
 TEST_F(TutorialManagerTest, SaveNewData) {
   std::vector<FeatureType> features(
       {FeatureType::kDownload, FeatureType::kSearch, FeatureType::kSummary});
   auto groups = CreateSampleGroups({"hi", "kn"}, features);
   auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
-  tutorial_store->InitStoreData("hi", groups);
+  tutorial_store->Update(groups);
   CreateTutorialManager(std::move(tutorial_store));
+  GetTutorials();
 
   manager()->SetPreferredLocale("hi");
   auto languages = manager()->GetSupportedLanguages();
@@ -259,9 +203,8 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   features = std::vector<FeatureType>(
       {FeatureType::kChromeIntro, FeatureType::kDownload, FeatureType::kSearch,
        FeatureType::kVoiceSearch});
-  auto new_groups = CreateSampleFetchData({"hi", "tl", "ar"}, features);
-  auto new_group = new_groups->at(0);
-  SaveGroups(std::move(new_groups));
+  auto new_groups = CreateSampleGroups({"hi", "tl", "ar"}, features);
+  SaveGroups(std::make_unique<proto::VideoTutorialGroups>(new_groups));
   manager()->SetPreferredLocale("ar");
   GetTutorials();
   EXPECT_EQ(last_results().size(), 4u);
@@ -274,8 +217,8 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   features = std::vector<FeatureType>(
       {FeatureType::kChromeIntro, FeatureType::kVoiceSearch,
        FeatureType::kSearch, FeatureType::kSummary});
-  new_groups = CreateSampleFetchData({"hi", "tl", "ar"}, features);
-  SaveGroups(std::move(new_groups));
+  new_groups = CreateSampleGroups({"hi", "tl", "ar"}, features);
+  SaveGroups(std::make_unique<proto::VideoTutorialGroups>(new_groups));
   manager()->SetPreferredLocale("tl");
   GetTutorials();
   EXPECT_EQ(last_results().size(), 3u);

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_VIDEO_TUTORIALS_TUTORIAL_H_
 
 #include <string>
+#include "base/logging.h"
 #include "url/gurl.h"
 
 namespace video_tutorials {
