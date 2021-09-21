@@ -18,6 +18,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 const int kWasmPageSize = 1 << 16;
@@ -1217,6 +1218,68 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   LoadIFrame(child_url);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 1);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+}
+
+class ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker
+    : public ChromeWebPlatformSecurityMetricsBrowserTest {
+ public:
+  ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker() {
+    feature_.InitWithFeatures({blink::features::kCOEPForSharedWorker}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
+    CoepNoneSharedWorker) {
+  GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
+  GURL worker_url =
+      https_server().GetURL("a.test",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: unsafe-none");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_page_url));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("worker = new SharedWorker($1)", worker_url)));
+  CheckCounter(WebFeature::kCoepNoneSharedWorker, 1);
+  CheckCounter(WebFeature::kCoepCredentiallessSharedWorker, 0);
+  CheckCounter(WebFeature::kCoepRequireCorpSharedWorker, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
+    CoepCredentiallessSharedWorker) {
+  GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
+  GURL worker_url =
+      https_server().GetURL("a.test",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: credentialless");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_page_url));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("worker = new SharedWorker($1)", worker_url)));
+  CheckCounter(WebFeature::kCoepNoneSharedWorker, 0);
+  CheckCounter(WebFeature::kCoepCredentiallessSharedWorker, 1);
+  CheckCounter(WebFeature::kCoepRequireCorpSharedWorker, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
+    CoepRequireCorpSharedWorker) {
+  GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
+  GURL worker_url =
+      https_server().GetURL("a.test",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: require-corp");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_page_url));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("worker = new SharedWorker($1)", worker_url)));
+  CheckCounter(WebFeature::kCoepNoneSharedWorker, 0);
+  CheckCounter(WebFeature::kCoepCredentiallessSharedWorker, 0);
+  CheckCounter(WebFeature::kCoepRequireCorpSharedWorker, 1);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:

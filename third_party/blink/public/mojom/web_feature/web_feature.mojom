@@ -3349,6 +3349,9 @@ enum WebFeature {
   kWebShareContainingTitle = 4039,
   kWebShareContainingText = 4040,
   kWebShareContainingUrl = 4041,
+  kCoepNoneSharedWorker = 4042,
+  kCoepRequireCorpSharedWorker = 4043,
+  kCoepCredentiallessSharedWorker = 4044,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

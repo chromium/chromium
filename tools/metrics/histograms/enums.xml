@@ -34593,6 +34593,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4039" label="WebShareContainingTitle"/>
   <int value="4040" label="WebShareContainingText"/>
   <int value="4041" label="WebShareContainingUrl"/>
+  <int value="4042" label="CoepNoneSharedWorker"/>
+  <int value="4043" label="CoepRequireCorpSharedWorker"/>
+  <int value="4044" label="CoepCredentiallessSharedWorker"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
