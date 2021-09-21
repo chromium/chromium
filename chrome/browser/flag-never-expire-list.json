@@ -97,6 +97,7 @@
   "show-performance-metrics-hud",
   "show-taps",
   "show-touch-hud",
+  "smooth-scrolling",
   "tint-composited-content",
   "top-chrome-touch-ui",
   "ui-debug-tools",

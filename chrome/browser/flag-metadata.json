@@ -5221,9 +5221,9 @@
   {
     "name": "smooth-scrolling",
     "owners": [ "bokan", "input-dev" ],
-    // This needs to continue to be extended until the UI contains a proper
-    // option for it, see crbug.com/817814.
-    "expiry_milestone": 95
+    // This flag is needed for debugging scrolling issues. However, it can be
+    // removed if and when we add it as a UI setting (crbug.com/817814).
+    "expiry_milestone": -1
   },
   {
     "name": "sms-receiver-cross-device",
