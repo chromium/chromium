@@ -415,64 +415,6 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(void* ptr, bool with_quarantine) {
   return ptr >= payload_start && ptr < payload_end;
 }
 
-// Returns the start of a slot, or nullptr if |maybe_inner_ptr| is not inside of
-// an existing slot span. The function may return a non-nullptr pointer even
-// inside a decommitted or free slot span, it's the caller responsibility to
-// check if memory is actually allocated.
-//
-// |maybe_inner_ptr| must be within a normal-bucket super page and can also
-// point to guard pages or slot-span metadata.
-template <bool thread_safe>
-ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
-  PA_DCHECK(IsManagedByNormalBuckets(maybe_inner_ptr));
-
-  // Don't use FromSlotInnerPtr() or FromPtr() because they expect a pointer to
-  // a valid slot span.
-  const uintptr_t pointer_as_uint =
-      reinterpret_cast<uintptr_t>(maybe_inner_ptr);
-  char* const super_page_ptr =
-      reinterpret_cast<char*>(pointer_as_uint & kSuperPageBaseMask);
-
-  const uintptr_t partition_page_index =
-      (pointer_as_uint & kSuperPageOffsetMask) >> PartitionPageShift();
-  auto* page = reinterpret_cast<PartitionPage<thread_safe>*>(
-      PartitionSuperPageToMetadataArea(super_page_ptr) +
-      (partition_page_index << kPageMetadataShift));
-  // Check if page is valid. The check also works for the guard pages and the
-  // metadata page.
-  if (!page->is_valid)
-    return nullptr;
-
-  page -= page->slot_span_metadata_offset;
-  PA_DCHECK(page->is_valid);
-  PA_DCHECK(!page->slot_span_metadata_offset);
-  auto* slot_span = &page->slot_span_metadata;
-  // Check if the slot span is actually used and valid.
-  if (!slot_span->bucket)
-    return nullptr;
-#if DCHECK_IS_ON()
-  PA_DCHECK(PartitionRoot<thread_safe>::IsValidSlotSpan(slot_span));
-#endif
-  char* const slot_span_begin = static_cast<char*>(
-      SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
-  const ptrdiff_t ptr_offset = maybe_inner_ptr - slot_span_begin;
-#if DCHECK_IS_ON()
-  PA_DCHECK(0 <= ptr_offset &&
-            ptr_offset < static_cast<ptrdiff_t>(
-                             slot_span->bucket->get_pages_per_slot_span() *
-                             PartitionPageSize()));
-#endif
-  // Slot span size in bytes is not necessarily multiple of partition page.
-  if (ptr_offset >=
-      static_cast<ptrdiff_t>(slot_span->bucket->get_bytes_per_span()))
-    return nullptr;
-  const size_t slot_size = slot_span->bucket->slot_size;
-  const size_t slot_number = slot_span->bucket->GetSlotNumber(ptr_offset);
-  char* const result = slot_span_begin + (slot_number * slot_size);
-  PA_DCHECK(result <= maybe_inner_ptr && maybe_inner_ptr < result + slot_size);
-  return result;
-}
-
 // Converts from a pointer to the PartitionPage object (within super pages's
 // metadata) into a pointer to the beginning of the slot span.
 // |page| must be the first PartitionPage of the slot span.

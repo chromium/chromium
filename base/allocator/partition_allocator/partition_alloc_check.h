@@ -59,6 +59,20 @@
 #define PA_PCHECK(condition) PCHECK(condition)
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+// Expensive dchecks that run within *Scan. These checks are only enabled in
+// debug builds with dchecks enabled.
+#if !defined(NDEBUG)
+#define PA_SCAN_DCHECK_IS_ON() DCHECK_IS_ON()
+#else
+#define PA_SCAN_DCHECK_IS_ON() 0
+#endif
+
+#if PA_SCAN_DCHECK_IS_ON()
+#define PA_SCAN_DCHECK(expr) PA_DCHECK(expr)
+#else
+#define PA_SCAN_DCHECK(expr) EAT_CHECK_STREAM_PARAMS(!(expr))
+#endif
+
 #if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)
 
 // Use this macro to assert on things that are conditionally constexpr as

@@ -200,7 +200,7 @@ template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
 ALWAYS_INLINE void
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Allocate(
     uintptr_t address) {
-  PA_DCHECK(IsFreed(address));
+  PA_SCAN_DCHECK(IsFreed(address));
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = AllocationIndexAndBit(address);
   const CellType mask = static_cast<CellType>(State::kAlloced) << object_bit;
@@ -258,8 +258,9 @@ ALWAYS_INLINE bool StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
     if ((expected & set_mask_old) == 0) {
       // Check that the bits can't be in any state other than
       // marked-quarantined.
-      PA_DCHECK(((expected >> object_bit) & kStateMask) ==
-                (~static_cast<CellType>(quarantine_state_old) & kStateMask));
+      PA_SCAN_DCHECK(
+          ((expected >> object_bit) & kStateMask) ==
+          (~static_cast<CellType>(quarantine_state_old) & kStateMask));
       return false;
     }
     // Otherwise, some other bits in the cell were concurrently changed. Update
@@ -325,7 +326,7 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
   const size_t allocation_number =
       (offset_in_page / kAllocationAlignment) * kBitsNeededForAllocation;
   const size_t cell_index = allocation_number / kBitsPerCell;
-  PA_DCHECK(kBitmapSize > cell_index);
+  PA_SCAN_DCHECK(kBitmapSize > cell_index);
   const size_t bit = allocation_number % kBitsPerCell;
   return {cell_index, bit};
 }
