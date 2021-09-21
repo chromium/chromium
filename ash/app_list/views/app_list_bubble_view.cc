@@ -164,12 +164,14 @@ void AppListBubbleView::InitFolderView() {
 }
 
 bool AppListBubbleView::Back() {
+  if (showing_folder_) {
+    folder_view_->CloseFolderPage();
+    return true;
+  }
   if (search_box_view_->HasSearch()) {
     search_box_view_->ClearSearch();
     return true;
   }
-  // TODO(https://crbug.com/1220808): Handle back action for open folders in
-  // AppListBubble
 
   return false;
 }

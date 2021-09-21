@@ -344,6 +344,57 @@ TEST_F(AppListBubbleViewTest, BackActionsCloseAppList) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
+TEST_F(AppListBubbleViewTest, BackActionsCloseFolder) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item =
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+
+  LeftClickOn(folder_item);
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  // Folder closed.
+  PressAndReleaseKey(ui::VKEY_BROWSER_BACK);
+  EXPECT_TRUE(GetBubblePresenter()->IsShowing());
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  LeftClickOn(folder_item);
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  // Folder closed.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_TRUE(GetBubblePresenter()->IsShowing());
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, BackActionWithSelectedItemSelectsFolder) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item =
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+
+  LeftClickOn(folder_item);
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  // Focus on first item in folder
+  PressAndReleaseKey(ui::VKEY_TAB);
+
+  // Folder closed.
+  PressAndReleaseKey(ui::VKEY_BROWSER_BACK);
+
+  ScrollableAppsGridView* grid_view =
+      GetAppListTestHelper()->GetScrollableAppsGridView();
+  EXPECT_TRUE(grid_view->has_selected_view());
+  EXPECT_TRUE(grid_view->selected_view() == folder_item);
+}
+
 TEST_F(AppListBubbleViewTest, CanSelectSearchResults) {
   ShowAppList();
 
