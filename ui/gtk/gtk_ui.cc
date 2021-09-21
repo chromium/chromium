@@ -33,6 +33,9 @@
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/linux/linux_ui_delegate.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/display/display.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_manager.h"
@@ -883,6 +886,25 @@ void GtkUi::LoadGtkValues() {
 }
 
 void GtkUi::UpdateColors() {
+  // TODO(tluk): The below code sets various ThemeProvider colors for GTK. Some
+  // of these definitions leverage colors that were previously defined by
+  // NativeThemeGtk and are now defined as GTK ColorMixers. These ThemeProvider
+  // color definitions should be added as recipes to a browser ColorMixer once
+  // the Color Pipeline project begins rollout into c/b/ui. In the meantime
+  // use the ColorProvider instance from the ColorProviderManager corresponding
+  // to the theme bits associated with the NativeThemeGtk instance to ensure
+  // we do not regress existing behavior during the transition.
+  const auto color_scheme = native_theme_->GetDefaultSystemColorScheme();
+  const auto* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(
+          {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
+               ? ui::ColorProviderManager::ColorMode::kDark
+               : ui::ColorProviderManager::ColorMode::kLight,
+           (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+               ? ui::ColorProviderManager::ContrastMode::kHigh
+               : ui::ColorProviderManager::ContrastMode::kNormal,
+           ui::ColorProviderManager::SystemTheme::kCustom});
+
   SkColor location_bar_border = GetBorderColor("GtkEntry#entry");
   if (SkColorGetA(location_bar_border))
     colors_[ThemeProperties::COLOR_LOCATION_BAR_BORDER] = location_bar_border;
@@ -903,10 +925,9 @@ void GtkUi::UpdateColors() {
   colors_[ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR] = tab_border;
 
   colors_[ThemeProperties::COLOR_NTP_BACKGROUND] =
-      native_theme_->GetSystemColor(
-          ui::NativeTheme::kColorId_TextfieldDefaultBackground);
-  colors_[ThemeProperties::COLOR_NTP_TEXT] = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldDefaultColor);
+      color_provider->GetColor(ui::kColorTextfieldBackground);
+  colors_[ThemeProperties::COLOR_NTP_TEXT] =
+      color_provider->GetColor(ui::kColorTextfieldForeground);
   colors_[ThemeProperties::COLOR_NTP_HEADER] =
       GetBorderColor("GtkButton#button");
 
@@ -920,26 +941,24 @@ void GtkUi::UpdateColors() {
       tab_text_color;
   colors_[ThemeProperties::COLOR_BOOKMARK_TEXT] = tab_text_color;
 
-  colors_[ThemeProperties::COLOR_NTP_LINK] = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldSelectionBackgroundFocused);
+  colors_[ThemeProperties::COLOR_NTP_LINK] =
+      color_provider->GetColor(ui::kColorTextfieldSelectionBackground);
 
   // Generate the colors that we pass to Blink.
-  focus_ring_color_ = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_FocusedBorderColor);
+  focus_ring_color_ =
+      color_provider->GetColor(ui::kColorFocusableBorderFocused);
 
   // Some GTK themes only define the text selection colors on the GtkEntry
   // class, so we need to use that for getting selection colors.
-  active_selection_bg_color_ = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldSelectionBackgroundFocused);
-  active_selection_fg_color_ = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldSelectionColor);
+  active_selection_bg_color_ =
+      color_provider->GetColor(ui::kColorTextfieldSelectionBackground);
+  active_selection_fg_color_ =
+      color_provider->GetColor(ui::kColorTextfieldSelectionForeground);
 
   colors_[ThemeProperties::COLOR_TAB_THROBBER_SPINNING] =
-      native_theme_->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberSpinningColor);
+      color_provider->GetColor(ui::kColorThrobber);
   colors_[ThemeProperties::COLOR_TAB_THROBBER_WAITING] =
-      native_theme_->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberWaitingColor);
+      color_provider->GetColor(ui::kColorThrobberPreconnect);
 
   // Generate colors that depend on whether or not a custom window frame is
   // used.  These colors belong in |color_map| below, not |colors_|.
@@ -991,11 +1010,9 @@ void GtkUi::UpdateColors() {
         background_tab_text_color_inactive;
 
     color_map[ThemeProperties::COLOR_OMNIBOX_TEXT] =
-        native_theme_->GetSystemColor(
-            ui::NativeTheme::kColorId_TextfieldDefaultColor);
+        color_provider->GetColor(ui::kColorTextfieldForeground);
     color_map[ThemeProperties::COLOR_OMNIBOX_BACKGROUND] =
-        native_theme_->GetSystemColor(
-            ui::NativeTheme::kColorId_TextfieldDefaultBackground);
+        color_provider->GetColor(ui::kColorTextfieldBackground);
 
     // These colors represent the border drawn around tabs and between
     // the tabstrip and toolbar.
