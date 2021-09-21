@@ -73,6 +73,9 @@ class AudioOutputAuthorizationHandler::TraceScope {
                                       "device id", device_id);
   }
 
+  TraceScope(const TraceScope&) = delete;
+  TraceScope& operator=(const TraceScope&) = delete;
+
   ~TraceScope() {
     if (waiting_for_params_) {
       TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "Getting audio parameters", this,
@@ -124,8 +127,6 @@ class AudioOutputAuthorizationHandler::TraceScope {
  private:
   bool checking_access_ = false;
   bool waiting_for_params_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceScope);
 };
 
 AudioOutputAuthorizationHandler::AudioOutputAuthorizationHandler(

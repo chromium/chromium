@@ -32,6 +32,9 @@ class VibrationTest : public ContentBrowserTest,
         &VibrationTest::BindVibrationManager, base::Unretained(this)));
   }
 
+  VibrationTest(const VibrationTest&) = delete;
+  VibrationTest& operator=(const VibrationTest&) = delete;
+
   ~VibrationTest() override {
     OverrideVibrationManagerBinderForTesting(base::NullCallback());
   }
@@ -65,8 +68,6 @@ class VibrationTest : public ContentBrowserTest,
   int64_t vibrate_milliseconds_ = -1;
   base::OnceClosure vibrate_done_;
   mojo::Receiver<device::mojom::VibrationManager> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VibrationTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VibrationTest, Vibrate) {

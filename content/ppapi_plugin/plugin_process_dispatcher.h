@@ -19,12 +19,14 @@ class PluginProcessDispatcher : public ppapi::proxy::PluginDispatcher {
   PluginProcessDispatcher(PP_GetInterface_Func get_interface,
                           const ppapi::PpapiPermissions& permissions,
                           bool incognito);
+
+  PluginProcessDispatcher(const PluginProcessDispatcher&) = delete;
+  PluginProcessDispatcher& operator=(const PluginProcessDispatcher&) = delete;
+
   ~PluginProcessDispatcher() override;
 
  private:
   ScopedChildProcessReference process_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginProcessDispatcher);
 };
 
 }  // namespace content

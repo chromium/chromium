@@ -343,6 +343,11 @@ class SpuriousMouseMoveEventObserver
     host_->AddInputEventObserver(this);
   }
 
+  SpuriousMouseMoveEventObserver(const SpuriousMouseMoveEventObserver&) =
+      delete;
+  SpuriousMouseMoveEventObserver& operator=(
+      const SpuriousMouseMoveEventObserver&) = delete;
+
   ~SpuriousMouseMoveEventObserver() override {
     host_->RemoveInputEventObserver(this);
   }
@@ -354,8 +359,6 @@ class SpuriousMouseMoveEventObserver
 
  private:
   RenderWidgetHost* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpuriousMouseMoveEventObserver);
 };
 }  // namespace
 

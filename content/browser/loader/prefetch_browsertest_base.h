@@ -56,6 +56,10 @@ class PrefetchBrowserTestBase : public ContentBrowserTest {
   };
 
   PrefetchBrowserTestBase();
+
+  PrefetchBrowserTestBase(const PrefetchBrowserTestBase&) = delete;
+  PrefetchBrowserTestBase& operator=(const PrefetchBrowserTestBase&) = delete;
+
   ~PrefetchBrowserTestBase() override;
 
   void SetUpOnMainThread() override;
@@ -108,8 +112,6 @@ class PrefetchBrowserTestBase : public ContentBrowserTest {
 
   int prefetch_url_loader_called_ GUARDED_BY(lock_) = 0;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchBrowserTestBase);
 };
 
 }  // namespace content

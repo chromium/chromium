@@ -28,6 +28,10 @@ class BrowserMainRunnerImpl : public BrowserMainRunner {
   static std::unique_ptr<BrowserMainRunnerImpl> Create();
 
   BrowserMainRunnerImpl();
+
+  BrowserMainRunnerImpl(const BrowserMainRunnerImpl&) = delete;
+  BrowserMainRunnerImpl& operator=(const BrowserMainRunnerImpl&) = delete;
+
   ~BrowserMainRunnerImpl() override;
 
   // BrowserMainRunner:
@@ -56,8 +60,6 @@ class BrowserMainRunnerImpl : public BrowserMainRunner {
 #if defined(OS_WIN)
   std::unique_ptr<ui::ScopedOleInitializer> ole_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserMainRunnerImpl);
 };
 
 }  // namespace content

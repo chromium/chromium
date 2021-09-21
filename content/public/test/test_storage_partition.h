@@ -44,6 +44,10 @@ class NetworkContext;
 class TestStoragePartition : public StoragePartition {
  public:
   TestStoragePartition();
+
+  TestStoragePartition(const TestStoragePartition&) = delete;
+  TestStoragePartition& operator=(const TestStoragePartition&) = delete;
+
   ~TestStoragePartition() override;
 
   void set_path(base::FilePath file_path) { file_path_ = file_path; }
@@ -253,8 +257,6 @@ class TestStoragePartition : public StoragePartition {
   ZoomLevelDelegate* zoom_level_delegate_ = nullptr;
 #endif  // !defined(OS_ANDROID)
   int data_removal_observer_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStoragePartition);
 };
 
 }  // namespace content

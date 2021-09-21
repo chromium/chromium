@@ -38,6 +38,10 @@ class AppCacheUpdateJob::UpdateURLLoaderRequest
                          const GURL& url,
                          int buffer_size,
                          URLFetcher* fetcher);
+
+  UpdateURLLoaderRequest(const UpdateURLLoaderRequest&) = delete;
+  UpdateURLLoaderRequest& operator=(const UpdateURLLoaderRequest&) = delete;
+
   ~UpdateURLLoaderRequest() override;
 
   // This method is called to start the request.
@@ -157,8 +161,6 @@ class AppCacheUpdateJob::UpdateURLLoaderRequest
   bool read_requested_;
   // Adapter for transferring data from a mojo data pipe to net.
   scoped_refptr<network::MojoToNetPendingBuffer> pending_read_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateURLLoaderRequest);
 };
 
 }  // namespace content

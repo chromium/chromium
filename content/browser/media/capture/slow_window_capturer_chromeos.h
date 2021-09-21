@@ -56,6 +56,11 @@ class SlowWindowCapturerChromeOS final
       public aura::WindowObserver {
  public:
   explicit SlowWindowCapturerChromeOS(aura::Window* target);
+
+  SlowWindowCapturerChromeOS(const SlowWindowCapturerChromeOS&) = delete;
+  SlowWindowCapturerChromeOS& operator=(const SlowWindowCapturerChromeOS&) =
+      delete;
+
   ~SlowWindowCapturerChromeOS() final;
 
   // viz::mojom::FrameSinkVideoCapturer implementation.
@@ -148,8 +153,6 @@ class SlowWindowCapturerChromeOS final
 
   // The maximum number of frames in-flight at any one time.
   static constexpr int kMaxFramesInFlight = 3;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowWindowCapturerChromeOS);
 };
 
 }  // namespace content

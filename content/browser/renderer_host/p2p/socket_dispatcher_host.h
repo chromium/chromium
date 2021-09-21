@@ -29,6 +29,10 @@ class P2PSocketDispatcherHost
     : public network::mojom::P2PTrustedSocketManagerClient {
  public:
   explicit P2PSocketDispatcherHost(int render_process_id);
+
+  P2PSocketDispatcherHost(const P2PSocketDispatcherHost&) = delete;
+  P2PSocketDispatcherHost& operator=(const P2PSocketDispatcherHost&) = delete;
+
   ~P2PSocketDispatcherHost() override;
 
   // Starts the RTP packet header dumping.
@@ -73,8 +77,6 @@ class P2PSocketDispatcherHost
   network::mojom::P2PNetworkNotificationClientPtr network_notification_client_;
 
   base::WeakPtrFactory<P2PSocketDispatcherHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketDispatcherHost);
 };
 
 }  // namespace content

@@ -66,6 +66,10 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
       const absl::optional<base::UnguessableToken>& throttling_profile_id,
       net::IsolationInfo isolation_info);
 
+  SignedExchangeCertFetcher(const SignedExchangeCertFetcher&) = delete;
+  SignedExchangeCertFetcher& operator=(const SignedExchangeCertFetcher&) =
+      delete;
+
   ~SignedExchangeCertFetcher() override;
 
  private:
@@ -129,8 +133,6 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
   absl::optional<base::UnguessableToken> cert_request_id_;
 
   net::IPAddress cert_server_ip_address_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeCertFetcher);
 };
 
 }  // namespace content

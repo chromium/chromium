@@ -57,6 +57,11 @@ class StubEmbeddedFrameSinkClient
       public blink::mojom::SurfaceEmbedder {
  public:
   StubEmbeddedFrameSinkClient() = default;
+
+  StubEmbeddedFrameSinkClient(const StubEmbeddedFrameSinkClient&) = delete;
+  StubEmbeddedFrameSinkClient& operator=(const StubEmbeddedFrameSinkClient&) =
+      delete;
+
   ~StubEmbeddedFrameSinkClient() override = default;
 
   mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient>
@@ -94,8 +99,6 @@ class StubEmbeddedFrameSinkClient
   mojo::Receiver<blink::mojom::EmbeddedFrameSinkClient> receiver_{this};
   viz::LocalSurfaceId last_received_local_surface_id_;
   bool connection_error_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(StubEmbeddedFrameSinkClient);
 };
 
 }  // namespace

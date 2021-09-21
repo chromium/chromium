@@ -20,14 +20,16 @@ class RenderFrameHostImpl;
 class DevToolsFrameTraceRecorder {
  public:
   DevToolsFrameTraceRecorder();
+
+  DevToolsFrameTraceRecorder(const DevToolsFrameTraceRecorder&) = delete;
+  DevToolsFrameTraceRecorder& operator=(const DevToolsFrameTraceRecorder&) =
+      delete;
+
   ~DevToolsFrameTraceRecorder();
 
   void OnSynchronousSwapCompositorFrame(
       RenderFrameHostImpl* host,
       const cc::RenderFrameMetadata& metadata);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DevToolsFrameTraceRecorder);
 };
 
 }  // namespace content

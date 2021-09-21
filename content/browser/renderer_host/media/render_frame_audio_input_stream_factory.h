@@ -31,13 +31,16 @@ class CONTENT_EXPORT RenderFrameAudioInputStreamFactory final {
       MediaStreamManager* media_stream_manager,
       RenderFrameHost* render_frame_host);
 
+  RenderFrameAudioInputStreamFactory(
+      const RenderFrameAudioInputStreamFactory&) = delete;
+  RenderFrameAudioInputStreamFactory& operator=(
+      const RenderFrameAudioInputStreamFactory&) = delete;
+
   ~RenderFrameAudioInputStreamFactory();
 
  private:
   class Core;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameAudioInputStreamFactory);
 };
 
 }  // namespace content

@@ -291,6 +291,9 @@ class BrowserToPageConnector {
 // Throttle is owned externally by the navigation subsystem.
 class TargetHandler::Throttle : public content::NavigationThrottle {
  public:
+  Throttle(const Throttle&) = delete;
+  Throttle& operator=(const Throttle&) = delete;
+
   ~Throttle() override { CleanupPointers(); }
   TargetAutoAttacher* auto_attacher() const { return auto_attacher_; }
   void Clear();
@@ -315,8 +318,6 @@ class TargetHandler::Throttle : public content::NavigationThrottle {
  private:
   void CleanupPointers();
   TargetAutoAttacher* auto_attacher_;
-
-  DISALLOW_COPY_AND_ASSIGN(Throttle);
 };
 
 class TargetHandler::ResponseThrottle : public TargetHandler::Throttle {
@@ -399,6 +400,9 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
                                          waiting_for_debugger);
     return id;
   }
+
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
 
   ~Session() override {
     if (!agent_host_)
@@ -540,8 +544,6 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   Throttle* throttle_ = nullptr;
   scoped_refptr<DevToolsThrottleHandle> service_worker_throttle_;
   TargetAutoAttacher* auto_attacher_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Session);
 };
 
 void TargetHandler::Throttle::CleanupPointers() {

@@ -48,6 +48,12 @@ class CountingAXTreeObserver : public ui::AXTreeObserver {
 class BrowserAccessibilityManagerTest : public testing::Test {
  public:
   BrowserAccessibilityManagerTest() = default;
+
+  BrowserAccessibilityManagerTest(const BrowserAccessibilityManagerTest&) =
+      delete;
+  BrowserAccessibilityManagerTest& operator=(
+      const BrowserAccessibilityManagerTest&) = delete;
+
   ~BrowserAccessibilityManagerTest() override = default;
 
  protected:
@@ -57,8 +63,6 @@ class BrowserAccessibilityManagerTest : public testing::Test {
 
  private:
   void SetUp() override;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerTest);
 };
 
 void BrowserAccessibilityManagerTest::SetUp() {

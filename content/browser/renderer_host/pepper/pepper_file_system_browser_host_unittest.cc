@@ -20,6 +20,12 @@ class PepperFileSystemBrowserHostTest : public testing::Test,
                                         public BrowserPpapiHostTest {
  public:
   PepperFileSystemBrowserHostTest() {}
+
+  PepperFileSystemBrowserHostTest(const PepperFileSystemBrowserHostTest&) =
+      delete;
+  PepperFileSystemBrowserHostTest& operator=(
+      const PepperFileSystemBrowserHostTest&) = delete;
+
   ~PepperFileSystemBrowserHostTest() override {}
 
   void SetUp() override {
@@ -41,8 +47,6 @@ class PepperFileSystemBrowserHostTest : public testing::Test,
   // Needed because |host_| has checks for UI/IO threads.
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PepperFileSystemBrowserHost> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileSystemBrowserHostTest);
 };
 
 TEST_F(PepperFileSystemBrowserHostTest, GeneratePluginId) {

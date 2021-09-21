@@ -38,6 +38,11 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
     : public ScreenlockMonitorSource {
  public:
   ScreenlockMonitorDeviceSource();
+
+  ScreenlockMonitorDeviceSource(const ScreenlockMonitorDeviceSource&) = delete;
+  ScreenlockMonitorDeviceSource& operator=(
+      const ScreenlockMonitorDeviceSource&) = delete;
+
   ~ScreenlockMonitorDeviceSource() override;
 
 #if defined(OS_WIN)
@@ -59,6 +64,10 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
   class SessionMessageWindow {
    public:
     SessionMessageWindow();
+
+    SessionMessageWindow(const SessionMessageWindow&) = delete;
+    SessionMessageWindow& operator=(const SessionMessageWindow&) = delete;
+
     ~SessionMessageWindow();
 
     static void SetFakeNotificationAPIsForTesting(
@@ -74,8 +83,6 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
     static WTSUnRegisterSessionNotificationFunction
         unregister_session_notification_function_;
     std::unique_ptr<base::win::MessageWindow> window_;
-
-    DISALLOW_COPY_AND_ASSIGN(SessionMessageWindow);
   };
 
   SessionMessageWindow session_message_window_;
@@ -90,19 +97,18 @@ class CONTENT_EXPORT ScreenlockMonitorDeviceSource
   class ScreenLockListener : public session_manager::SessionManagerObserver {
    public:
     ScreenLockListener();
+
+    ScreenLockListener(const ScreenLockListener&) = delete;
+    ScreenLockListener& operator=(const ScreenLockListener&) = delete;
+
     ~ScreenLockListener() override;
 
     // session_manager::SessionManagerObserver:
     void OnSessionStateChanged() override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScreenLockListener);
   };
 
   ScreenLockListener screenlock_listener_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenlockMonitorDeviceSource);
 };
 
 }  // namespace content

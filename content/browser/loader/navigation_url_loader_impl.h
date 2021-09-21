@@ -62,6 +62,10 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
           initial_interceptors);
+
+  NavigationURLLoaderImpl(const NavigationURLLoaderImpl&) = delete;
+  NavigationURLLoaderImpl& operator=(const NavigationURLLoaderImpl&) = delete;
+
   ~NavigationURLLoaderImpl() override;
 
   // TODO(kinuko): Make most of these methods private.
@@ -318,8 +322,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   base::OnceClosure start_closure_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationURLLoaderImpl);
 };
 
 }  // namespace content

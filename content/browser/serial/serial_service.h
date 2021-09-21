@@ -30,6 +30,10 @@ class SerialService
       public content::RenderDocumentHostUserData<SerialService> {
  public:
   explicit SerialService(RenderFrameHost* render_frame_host);
+
+  SerialService(const SerialService&) = delete;
+  SerialService& operator=(const SerialService&) = delete;
+
   ~SerialService() override;
 
   void Bind(mojo::PendingReceiver<blink::mojom::SerialService> receiver);
@@ -76,7 +80,6 @@ class SerialService
   base::WeakPtrFactory<SerialService> weak_factory_{this};
 
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
-  DISALLOW_COPY_AND_ASSIGN(SerialService);
 };
 
 }  // namespace content

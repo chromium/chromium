@@ -43,6 +43,12 @@ class CrossOriginReadBlockingChecker {
       const network::mojom::URLResponseHead& response,
       const storage::BlobDataHandle& blob_data_handle,
       base::OnceCallback<void(Result)> callback);
+
+  CrossOriginReadBlockingChecker(const CrossOriginReadBlockingChecker&) =
+      delete;
+  CrossOriginReadBlockingChecker& operator=(
+      const CrossOriginReadBlockingChecker&) = delete;
+
   ~CrossOriginReadBlockingChecker();
 
   int GetNetError();
@@ -64,8 +70,6 @@ class CrossOriginReadBlockingChecker {
   int net_error_ = net::OK;
 
   base::WeakPtrFactory<CrossOriginReadBlockingChecker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrossOriginReadBlockingChecker);
 };
 
 }  // namespace content

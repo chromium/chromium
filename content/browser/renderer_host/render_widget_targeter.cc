@@ -63,6 +63,10 @@ class TracingUmaTracker {
         kTracingCategory, metric_name_,
         TRACE_ID_WITH_SCOPE("UmaTracker", TRACE_ID_LOCAL(id_)));
   }
+
+  TracingUmaTracker(const TracingUmaTracker&) = delete;
+  TracingUmaTracker& operator=(const TracingUmaTracker&) = delete;
+
   ~TracingUmaTracker() = default;
   TracingUmaTracker(TracingUmaTracker&& tracker) = default;
 
@@ -82,8 +86,6 @@ class TracingUmaTracker {
   const char* metric_name_;
 
   static int next_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TracingUmaTracker);
 };
 
 int TracingUmaTracker::next_id_ = 1;

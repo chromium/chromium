@@ -686,6 +686,10 @@ class GpuMessageHandler
       public ui::GpuSwitchingObserver {
  public:
   GpuMessageHandler();
+
+  GpuMessageHandler(const GpuMessageHandler&) = delete;
+  GpuMessageHandler& operator=(const GpuMessageHandler&) = delete;
+
   ~GpuMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -711,8 +715,6 @@ class GpuMessageHandler
   // True if observing the GpuDataManager (re-attaching as observer would
   // DCHECK).
   bool observing_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMessageHandler);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -30,6 +30,11 @@ class CONTENT_EXPORT SavePackageSerializationHandler
       const DidReceiveDataCallback& did_serialize_data_callback,
       DoneCallback done_callback);
 
+  SavePackageSerializationHandler(const SavePackageSerializationHandler&) =
+      delete;
+  SavePackageSerializationHandler& operator=(
+      const SavePackageSerializationHandler&) = delete;
+
   ~SavePackageSerializationHandler() override;
 
   // mojom::FrameHTMLSerializerHandler implementation:
@@ -39,8 +44,6 @@ class CONTENT_EXPORT SavePackageSerializationHandler
  private:
   const DidReceiveDataCallback did_serialize_data_callback_;
   DoneCallback done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePackageSerializationHandler);
 };
 
 }  // namespace content

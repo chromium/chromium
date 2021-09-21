@@ -52,6 +52,10 @@ struct MidiEvent {
 class FakeMidiManager : public midi::MidiManager {
  public:
   explicit FakeMidiManager(midi::MidiService* service) : MidiManager(service) {}
+
+  FakeMidiManager(const FakeMidiManager&) = delete;
+  FakeMidiManager& operator=(const FakeMidiManager&) = delete;
+
   ~FakeMidiManager() override = default;
 
   base::WeakPtr<FakeMidiManager> GetWeakPtr() {
@@ -68,13 +72,15 @@ class FakeMidiManager : public midi::MidiManager {
   std::vector<MidiEvent> events_;
 
   base::WeakPtrFactory<FakeMidiManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMidiManager);
 };
 
 class FakeMidiManagerFactory : public midi::MidiService::ManagerFactory {
  public:
   FakeMidiManagerFactory() {}
+
+  FakeMidiManagerFactory(const FakeMidiManagerFactory&) = delete;
+  FakeMidiManagerFactory& operator=(const FakeMidiManagerFactory&) = delete;
+
   ~FakeMidiManagerFactory() override = default;
   std::unique_ptr<midi::MidiManager> Create(
       midi::MidiService* service) override {
@@ -94,18 +100,17 @@ class FakeMidiManagerFactory : public midi::MidiService::ManagerFactory {
   base::WeakPtr<FakeMidiManager> manager_;
 
   base::WeakPtrFactory<FakeMidiManagerFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMidiManagerFactory);
 };
 
 class MidiHostForTesting : public MidiHost {
  public:
   MidiHostForTesting(int renderer_process_id, midi::MidiService* midi_service)
       : MidiHost(renderer_process_id, midi_service) {}
-  ~MidiHostForTesting() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MidiHostForTesting);
+  MidiHostForTesting(const MidiHostForTesting&) = delete;
+  MidiHostForTesting& operator=(const MidiHostForTesting&) = delete;
+
+  ~MidiHostForTesting() override {}
 };
 
 class MidiSessionClientForTesting : public midi::mojom::MidiSessionClient {
@@ -140,6 +145,10 @@ class MidiHostTest : public testing::Test {
     host_->StartSession(session_.BindNewPipeAndPassReceiver(),
                         std::move(client_remote));
   }
+
+  MidiHostTest(const MidiHostTest&) = delete;
+  MidiHostTest& operator=(const MidiHostTest&) = delete;
+
   ~MidiHostTest() override {
     session_.reset();
     service_->Shutdown();
@@ -195,8 +204,6 @@ class MidiHostTest : public testing::Test {
   std::unique_ptr<midi::MidiService> service_;
   std::unique_ptr<MidiHostForTesting> host_;
   mojo::Remote<midi::mojom::MidiSession> session_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiHostTest);
 };
 
 }  // namespace

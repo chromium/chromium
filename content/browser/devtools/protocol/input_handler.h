@@ -36,6 +36,10 @@ namespace protocol {
 class InputHandler : public DevToolsDomainHandler, public Input::Backend {
  public:
   explicit InputHandler(bool allow_file_access);
+
+  InputHandler(const InputHandler&) = delete;
+  InputHandler& operator=(const InputHandler&) = delete;
+
   ~InputHandler() override;
 
   static std::vector<InputHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -247,8 +251,6 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   base::flat_map<int, blink::WebTouchPoint> touch_points_;
   base::WeakPtrFactory<InputHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputHandler);
 };
 
 }  // namespace protocol

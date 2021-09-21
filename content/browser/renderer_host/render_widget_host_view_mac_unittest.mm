@@ -350,6 +350,9 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
             testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
   }
 
+  MockRenderWidgetHostImpl(const MockRenderWidgetHostImpl&) = delete;
+  MockRenderWidgetHostImpl& operator=(const MockRenderWidgetHostImpl&) = delete;
+
   ~MockRenderWidgetHostImpl() override = default;
 
   // Extracts |latency_info| and stores it in |last_wheel_event_latency_info_|.
@@ -383,8 +386,6 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
 
   ui::LatencyInfo last_wheel_event_latency_info_;
   MockWidgetInputHandler input_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderWidgetHostImpl);
 };
 
 // Generates the |length| of composition rectangle vector and save them to
@@ -1663,6 +1664,10 @@ TEST_F(RenderWidgetHostViewMacTest, SelectedText) {
 class InputMethodMacTest : public RenderWidgetHostViewMacTest {
  public:
   InputMethodMacTest() {}
+
+  InputMethodMacTest(const InputMethodMacTest&) = delete;
+  InputMethodMacTest& operator=(const InputMethodMacTest&) = delete;
+
   ~InputMethodMacTest() override {}
 
   void SetUp() override {
@@ -1724,8 +1729,6 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
 
  private:
   std::unique_ptr<TestBrowserContext> child_browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodMacTest);
 };
 
 // This test will verify that calling unmarkText on the cocoa view will lead to

@@ -35,6 +35,10 @@ class CONTENT_EXPORT ContentIndexContext {
   using GetIconsCallback = base::OnceCallback<void(std::vector<SkBitmap>)>;
 
   ContentIndexContext() = default;
+
+  ContentIndexContext(const ContentIndexContext&) = delete;
+  ContentIndexContext& operator=(const ContentIndexContext&) = delete;
+
   virtual ~ContentIndexContext() = default;
 
   // Returns all available icons for the entry identified by
@@ -58,8 +62,6 @@ class CONTENT_EXPORT ContentIndexContext {
   virtual void OnUserDeletedItem(int64_t service_worker_registration_id,
                                  const url::Origin& origin,
                                  const std::string& description_id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexContext);
 };
 
 }  // namespace content

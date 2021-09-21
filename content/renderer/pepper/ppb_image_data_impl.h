@@ -117,6 +117,10 @@ class ImageDataPlatformBackend : public PPB_ImageData_Impl::Backend {
   // |is_browser_allocated| indicates whether the backing shared memory should
   // be allocated by the browser process.
   ImageDataPlatformBackend();
+
+  ImageDataPlatformBackend(const ImageDataPlatformBackend&) = delete;
+  ImageDataPlatformBackend& operator=(const ImageDataPlatformBackend&) = delete;
+
   ~ImageDataPlatformBackend() override;
 
   // PPB_ImageData_Impl::Backend implementation.
@@ -143,13 +147,15 @@ class ImageDataPlatformBackend : public PPB_ImageData_Impl::Backend {
 
   // When the device is mapped, this is the image. Null when umapped.
   std::unique_ptr<SkCanvas> mapped_canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataPlatformBackend);
 };
 
 class ImageDataSimpleBackend : public PPB_ImageData_Impl::Backend {
  public:
   ImageDataSimpleBackend();
+
+  ImageDataSimpleBackend(const ImageDataSimpleBackend&) = delete;
+  ImageDataSimpleBackend& operator=(const ImageDataSimpleBackend&) = delete;
+
   ~ImageDataSimpleBackend() override;
 
   // PPB_ImageData_Impl::Backend implementation.
@@ -174,8 +180,6 @@ class ImageDataSimpleBackend : public PPB_ImageData_Impl::Backend {
   SkBitmap skia_bitmap_;
   std::unique_ptr<SkCanvas> skia_canvas_;
   uint32_t map_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataSimpleBackend);
 };
 
 // Manages mapping an image resource if necessary. Use this to ensure the
@@ -200,6 +204,9 @@ class ImageDataAutoMapper {
     }
   }
 
+  ImageDataAutoMapper(const ImageDataAutoMapper&) = delete;
+  ImageDataAutoMapper& operator=(const ImageDataAutoMapper&) = delete;
+
   ~ImageDataAutoMapper() {
     if (needs_unmap_)
       image_data_->Unmap();
@@ -213,8 +220,6 @@ class ImageDataAutoMapper {
   PPB_ImageData_Impl* image_data_;
   bool is_valid_;
   bool needs_unmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataAutoMapper);
 };
 
 }  // namespace content

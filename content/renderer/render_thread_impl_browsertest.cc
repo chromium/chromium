@@ -410,6 +410,12 @@ class RenderThreadImplGpuMemoryBufferBrowserTest
           ::testing::tuple<NativeBufferFlag, gfx::BufferFormat>> {
  public:
   RenderThreadImplGpuMemoryBufferBrowserTest() {}
+
+  RenderThreadImplGpuMemoryBufferBrowserTest(
+      const RenderThreadImplGpuMemoryBufferBrowserTest&) = delete;
+  RenderThreadImplGpuMemoryBufferBrowserTest& operator=(
+      const RenderThreadImplGpuMemoryBufferBrowserTest&) = delete;
+
   ~RenderThreadImplGpuMemoryBufferBrowserTest() override {}
 
   gpu::GpuMemoryBufferManager* memory_buffer_manager() {
@@ -439,8 +445,6 @@ class RenderThreadImplGpuMemoryBufferBrowserTest
   }
 
   gpu::GpuMemoryBufferManager* memory_buffer_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderThreadImplGpuMemoryBufferBrowserTest);
 };
 
 // https://crbug.com/652531

@@ -53,6 +53,10 @@ class CONTENT_EXPORT SynchronousCompositorHost
       const viz::FrameSinkId& frame_sink_id,
       viz::HostFrameSinkManager* host_frame_sink_manager);
 
+  SynchronousCompositorHost(const SynchronousCompositorHost&) = delete;
+  SynchronousCompositorHost& operator=(const SynchronousCompositorHost&) =
+      delete;
+
   ~SynchronousCompositorHost() override;
 
   // SynchronousCompositor overrides.
@@ -207,8 +211,6 @@ class CONTENT_EXPORT SynchronousCompositorHost
   viz::BeginFrameSource* begin_frame_source_ = nullptr;
   viz::BeginFrameArgs last_begin_frame_args_;
   viz::FrameTimingDetailsMap timing_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousCompositorHost);
 };
 
 }  // namespace content

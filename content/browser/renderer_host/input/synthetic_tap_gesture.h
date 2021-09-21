@@ -17,6 +17,10 @@ namespace content {
 class CONTENT_EXPORT SyntheticTapGesture : public SyntheticGesture {
  public:
   explicit SyntheticTapGesture(const SyntheticTapGestureParams& params);
+
+  SyntheticTapGesture(const SyntheticTapGesture&) = delete;
+  SyntheticTapGesture& operator=(const SyntheticTapGesture&) = delete;
+
   ~SyntheticTapGesture() override;
 
   SyntheticGesture::Result ForwardInputEvents(
@@ -44,8 +48,6 @@ class CONTENT_EXPORT SyntheticTapGesture : public SyntheticGesture {
   base::TimeTicks start_time_;
   content::mojom::GestureSourceType gesture_source_type_;
   GestureState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTapGesture);
 };
 
 }  // namespace content

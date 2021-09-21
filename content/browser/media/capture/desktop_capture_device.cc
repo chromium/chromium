@@ -114,6 +114,10 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   Core(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
        std::unique_ptr<webrtc::DesktopCapturer> capturer,
        DesktopMediaID::Type type);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   // Implementation of VideoCaptureDevice methods.
@@ -210,8 +214,6 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   base::WeakPtrFactory<Core> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 DesktopCaptureDevice::Core::Core(

@@ -32,6 +32,10 @@ class CONTENT_EXPORT CacheStorageQuotaClient
  public:
   CacheStorageQuotaClient(scoped_refptr<CacheStorageManager> cache_manager,
                           storage::mojom::CacheStorageOwner owner);
+
+  CacheStorageQuotaClient(const CacheStorageQuotaClient&) = delete;
+  CacheStorageQuotaClient& operator=(const CacheStorageQuotaClient&) = delete;
+
   ~CacheStorageQuotaClient() override;
 
   // storage::StorageKeyQuotaClient method overrides.
@@ -57,8 +61,6 @@ class CONTENT_EXPORT CacheStorageQuotaClient
   const storage::mojom::CacheStorageOwner owner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageQuotaClient);
 };
 
 }  // namespace content

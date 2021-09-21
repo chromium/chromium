@@ -42,6 +42,9 @@ class WebBundleHandle {
       std::unique_ptr<WebBundleNavigationInfo> navigation_info,
       int frame_tree_node_id);
 
+  WebBundleHandle(const WebBundleHandle&) = delete;
+  WebBundleHandle& operator=(const WebBundleHandle&) = delete;
+
   ~WebBundleHandle();
 
   // Takes a NavigationLoaderInterceptor instance to handle the request for
@@ -91,8 +94,6 @@ class WebBundleHandle {
   std::unique_ptr<WebBundleURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<WebBundleHandle> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleHandle);
 };
 
 }  // namespace content

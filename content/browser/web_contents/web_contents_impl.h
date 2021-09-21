@@ -187,6 +187,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
  public:
   class FriendWrapper;
 
+  WebContentsImpl(const WebContentsImpl&) = delete;
+  WebContentsImpl& operator=(const WebContentsImpl&) = delete;
+
   ~WebContentsImpl() override;
 
   static std::unique_ptr<WebContentsImpl> CreateWithOpener(
@@ -2230,8 +2233,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsImpl);
 };
 
 // Dangerous methods which should never be made part of the public API, so we

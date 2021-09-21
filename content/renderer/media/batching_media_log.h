@@ -40,6 +40,10 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
 
   BatchingMediaLog(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                    std::vector<std::unique_ptr<EventHandler>> impl);
+
+  BatchingMediaLog(const BatchingMediaLog&) = delete;
+  BatchingMediaLog& operator=(const BatchingMediaLog&) = delete;
+
   ~BatchingMediaLog() override;
 
   // Will reset |last_ipc_send_time_| with the value of NowTicks().
@@ -99,8 +103,6 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
 
   base::WeakPtr<BatchingMediaLog> weak_this_;
   base::WeakPtrFactory<BatchingMediaLog> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BatchingMediaLog);
 };
 
 }  // namespace content

@@ -62,6 +62,10 @@ class CONTENT_EXPORT InputRouterImpl
                   InputDispositionHandler* disposition_handler,
                   FlingControllerSchedulerClient* fling_scheduler_client,
                   const Config& config);
+
+  InputRouterImpl(const InputRouterImpl&) = delete;
+  InputRouterImpl& operator=(const InputRouterImpl&) = delete;
+
   ~InputRouterImpl() override;
 
   // InputRouter
@@ -256,8 +260,6 @@ class CONTENT_EXPORT InputRouterImpl
 
   base::WeakPtr<InputRouterImpl> weak_this_;
   base::WeakPtrFactory<InputRouterImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputRouterImpl);
 };
 
 }  // namespace content

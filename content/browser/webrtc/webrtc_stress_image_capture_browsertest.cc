@@ -55,6 +55,12 @@ class WebRtcImageCaptureStressBrowserTest
     scoped_feature_list_.InitWithFeatures(features_to_enable,
                                           features_to_disable);
   }
+
+  WebRtcImageCaptureStressBrowserTest(
+      const WebRtcImageCaptureStressBrowserTest&) = delete;
+  WebRtcImageCaptureStressBrowserTest& operator=(
+      const WebRtcImageCaptureStressBrowserTest&) = delete;
+
   ~WebRtcImageCaptureStressBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -92,8 +98,6 @@ class WebRtcImageCaptureStressBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcImageCaptureStressBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureStressBrowserTest,

@@ -20,6 +20,12 @@ class BrowserAccessibilityManagerAuraLinuxTest : public testing::Test {
  public:
   BrowserAccessibilityManagerAuraLinuxTest()
       : ax_mode_setter_(ui::kAXModeComplete) {}
+
+  BrowserAccessibilityManagerAuraLinuxTest(
+      const BrowserAccessibilityManagerAuraLinuxTest&) = delete;
+  BrowserAccessibilityManagerAuraLinuxTest& operator=(
+      const BrowserAccessibilityManagerAuraLinuxTest&) = delete;
+
   ~BrowserAccessibilityManagerAuraLinuxTest() override = default;
 
  protected:
@@ -29,8 +35,6 @@ class BrowserAccessibilityManagerAuraLinuxTest : public testing::Test {
  private:
   void SetUp() override;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAuraLinuxTest);
 };
 
 void BrowserAccessibilityManagerAuraLinuxTest::SetUp() {

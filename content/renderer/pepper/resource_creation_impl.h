@@ -22,6 +22,10 @@ class PepperPluginInstanceImpl;
 class ResourceCreationImpl : public ppapi::thunk::ResourceCreationAPI {
  public:
   explicit ResourceCreationImpl(PepperPluginInstanceImpl* instance);
+
+  ResourceCreationImpl(const ResourceCreationImpl&) = delete;
+  ResourceCreationImpl& operator=(const ResourceCreationImpl&) = delete;
+
   ~ResourceCreationImpl() override;
 
   // ResourceCreationAPI implementation.
@@ -130,9 +134,6 @@ class ResourceCreationImpl : public ppapi::thunk::ResourceCreationAPI {
                                     const PP_FloatPoint* wheel_ticks,
                                     PP_Bool scroll_by_page) override;
   PP_Resource CreateX509CertificatePrivate(PP_Instance instance) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceCreationImpl);
 };
 
 }  // namespace content

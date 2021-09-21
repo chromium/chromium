@@ -421,6 +421,11 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
     virtual_device_thread_.Start();
   }
 
+  WebRtcVideoCaptureServiceBrowserTest(
+      const WebRtcVideoCaptureServiceBrowserTest&) = delete;
+  WebRtcVideoCaptureServiceBrowserTest& operator=(
+      const WebRtcVideoCaptureServiceBrowserTest&) = delete;
+
   ~WebRtcVideoCaptureServiceBrowserTest() override {}
 
   void AddVirtualDeviceAndStartCapture(VirtualDeviceExerciser* device_exerciser,
@@ -532,8 +537,6 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
   base::TimeTicks first_frame_time_;
   base::WeakPtrFactory<WebRtcVideoCaptureServiceBrowserTest> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureServiceBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(

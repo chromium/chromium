@@ -35,6 +35,11 @@ class CONTENT_EXPORT BackgroundFetchRegistrationServiceImpl
       mojo::PendingRemote<blink::mojom::BackgroundFetchRegistrationObserver>
           observer) override;
 
+  BackgroundFetchRegistrationServiceImpl(
+      const BackgroundFetchRegistrationServiceImpl&) = delete;
+  BackgroundFetchRegistrationServiceImpl& operator=(
+      const BackgroundFetchRegistrationServiceImpl&) = delete;
+
   ~BackgroundFetchRegistrationServiceImpl() override;
 
  private:
@@ -48,8 +53,6 @@ class CONTENT_EXPORT BackgroundFetchRegistrationServiceImpl
   base::WeakPtr<BackgroundFetchContext> background_fetch_context_;
   mojo::Receiver<blink::mojom::BackgroundFetchRegistrationService> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchRegistrationServiceImpl);
 };
 
 }  // namespace content

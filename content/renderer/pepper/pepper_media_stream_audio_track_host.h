@@ -39,6 +39,10 @@ class PepperMediaStreamAudioTrackHost : public PepperMediaStreamTrackHostBase {
   class AudioSink : public blink::WebMediaStreamAudioSink {
    public:
     explicit AudioSink(PepperMediaStreamAudioTrackHost* host);
+
+    AudioSink(const AudioSink&) = delete;
+    AudioSink& operator=(const AudioSink&) = delete;
+
     ~AudioSink() override;
 
     // Enqueues a free buffer index into |buffers_| which will be used for
@@ -135,8 +139,6 @@ class PepperMediaStreamAudioTrackHost : public PepperMediaStreamTrackHostBase {
     ppapi::host::ReplyMessageContext pending_configure_reply_;
 
     base::WeakPtrFactory<AudioSink> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(AudioSink);
   };
 
   ~PepperMediaStreamAudioTrackHost() override;

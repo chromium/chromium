@@ -123,6 +123,11 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
                                     public WebContentsDelegate {
  public:
   TestJavaScriptDialogManager() {}
+
+  TestJavaScriptDialogManager(const TestJavaScriptDialogManager&) = delete;
+  TestJavaScriptDialogManager& operator=(const TestJavaScriptDialogManager&) =
+      delete;
+
   ~TestJavaScriptDialogManager() override {}
 
   void Handle() {
@@ -176,7 +181,6 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
   DialogClosedCallback callback_;
   bool handle_ = false;
   bool is_handled_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestJavaScriptDialogManager);
 };
 
 }  // namespace

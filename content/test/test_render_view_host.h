@@ -272,6 +272,11 @@ class TestRenderViewHost
 class RenderViewHostImplTestHarness : public RenderViewHostTestHarness {
  public:
   RenderViewHostImplTestHarness();
+
+  RenderViewHostImplTestHarness(const RenderViewHostImplTestHarness&) = delete;
+  RenderViewHostImplTestHarness& operator=(
+      const RenderViewHostImplTestHarness&) = delete;
+
   ~RenderViewHostImplTestHarness() override;
 
   // contents() is equivalent to static_cast<TestWebContents*>(web_contents())
@@ -296,7 +301,6 @@ class RenderViewHostImplTestHarness : public RenderViewHostTestHarness {
   typedef std::unique_ptr<ui::test::ScopedSetSupportedResourceScaleFactors>
       ScopedSetSupportedScaleFactors;
   ScopedSetSupportedScaleFactors scoped_set_supported_scale_factors_;
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostImplTestHarness);
 };
 
 }  // namespace content

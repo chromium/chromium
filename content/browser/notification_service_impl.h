@@ -24,6 +24,10 @@ class CONTENT_EXPORT NotificationServiceImpl : public NotificationService {
   // Normally instantiated when the thread is created.  Not all threads have
   // a NotificationService.  Only one instance should be created per thread.
   NotificationServiceImpl();
+
+  NotificationServiceImpl(const NotificationServiceImpl&) = delete;
+  NotificationServiceImpl& operator=(const NotificationServiceImpl&) = delete;
+
   ~NotificationServiceImpl() override;
 
   // NotificationService:
@@ -88,8 +92,6 @@ class CONTENT_EXPORT NotificationServiceImpl : public NotificationService {
   // balanced.
   NotificationObserverCount observer_counts_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationServiceImpl);
 };
 
 }  // namespace content

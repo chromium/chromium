@@ -34,6 +34,9 @@ class PepperFileChooserHost::CompletionHandler {
   explicit CompletionHandler(const base::WeakPtr<PepperFileChooserHost>& host)
       : host_(host) {}
 
+  CompletionHandler(const CompletionHandler&) = delete;
+  CompletionHandler& operator=(const CompletionHandler&) = delete;
+
   ~CompletionHandler() {}
 
   bool OpenFileChooser(RenderFrameImpl* render_frame,
@@ -85,8 +88,6 @@ class PepperFileChooserHost::CompletionHandler {
 
   base::WeakPtr<PepperFileChooserHost> host_;
   mojo::Remote<blink::mojom::FileChooser> file_chooser_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompletionHandler);
 };
 
 PepperFileChooserHost::ChosenFileInfo::ChosenFileInfo(

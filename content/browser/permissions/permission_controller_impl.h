@@ -22,6 +22,10 @@ class BrowserContext;
 class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
  public:
   explicit PermissionControllerImpl(BrowserContext* browser_context);
+
+  PermissionControllerImpl(const PermissionControllerImpl&) = delete;
+  PermissionControllerImpl& operator=(const PermissionControllerImpl&) = delete;
+
   ~PermissionControllerImpl() override;
 
   static PermissionControllerImpl* FromBrowserContext(
@@ -107,8 +111,6 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   SubscriptionId::Generator subscription_id_generator_;
 
   BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionControllerImpl);
 };
 
 }  // namespace content

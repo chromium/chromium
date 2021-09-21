@@ -43,6 +43,10 @@ media::AudioParameters TestParams() {
 class MockSource : public AudioStreamBroker::LoopbackSource {
  public:
   MockSource() : group_id_(base::UnguessableToken::Create()) {}
+
+  MockSource(const MockSource&) = delete;
+  MockSource& operator=(const MockSource&) = delete;
+
   ~MockSource() override {}
 
   // AudioStreamBrokerFactory::LoopbackSource mocking.
@@ -52,7 +56,6 @@ class MockSource : public AudioStreamBroker::LoopbackSource {
 
  private:
   base::UnguessableToken group_id_;
-  DISALLOW_COPY_AND_ASSIGN(MockSource);
 };
 
 using MockDeleterCallback = StrictMock<
@@ -97,6 +100,10 @@ class MockRendererAudioInputStreamFactoryClient
 class MockStreamFactory final : public audio::FakeStreamFactory {
  public:
   MockStreamFactory() = default;
+
+  MockStreamFactory(const MockStreamFactory&) = delete;
+  MockStreamFactory& operator=(const MockStreamFactory&) = delete;
+
   ~MockStreamFactory() override = default;
 
   // State of an expected stream creation. |device_id| and |params| are set
@@ -154,8 +161,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
   }
 
   StreamRequestData* stream_request_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockStreamFactory);
 };
 
 const bool kMuteSource = true;

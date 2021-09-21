@@ -35,6 +35,10 @@ class PepperBrowserConnection
   using PendingResourceIDCallback =
       base::OnceCallback<void(const std::vector<int>&)>;
   explicit PepperBrowserConnection(RenderFrame* render_frame);
+
+  PepperBrowserConnection(const PepperBrowserConnection&) = delete;
+  PepperBrowserConnection& operator=(const PepperBrowserConnection&) = delete;
+
   ~PepperBrowserConnection() override;
 
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -98,8 +102,6 @@ class PepperBrowserConnection
   std::map<int32_t, PendingResourceIDCallback> pending_create_map_;
 
   mojo::AssociatedRemote<mojom::PepperIOHost> io_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperBrowserConnection);
 };
 
 }  // namespace content

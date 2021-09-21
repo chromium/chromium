@@ -77,6 +77,9 @@ class CookieChangeSubscription
                            ::network::mojom::CookieMatchType match_type,
                            int64_t service_worker_registration_id);
 
+  CookieChangeSubscription(const CookieChangeSubscription&) = delete;
+  CookieChangeSubscription& operator=(const CookieChangeSubscription&) = delete;
+
   ~CookieChangeSubscription();
 
   // The URL whose cookie list is watched for changes.
@@ -115,8 +118,6 @@ class CookieChangeSubscription
   const std::string name_;
   const ::network::mojom::CookieMatchType match_type_;
   const int64_t service_worker_registration_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieChangeSubscription);
 };
 
 // Used to deduplicate equivalent subscriptons.

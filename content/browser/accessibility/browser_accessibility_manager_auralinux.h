@@ -21,6 +21,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   BrowserAccessibilityManagerAuraLinux(const ui::AXTreeUpdate& initial_tree,
                                        BrowserAccessibilityDelegate* delegate);
 
+  BrowserAccessibilityManagerAuraLinux(
+      const BrowserAccessibilityManagerAuraLinux&) = delete;
+  BrowserAccessibilityManagerAuraLinux& operator=(
+      const BrowserAccessibilityManagerAuraLinux&) = delete;
+
   ~BrowserAccessibilityManagerAuraLinux() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
@@ -78,8 +83,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
 
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAuraLinux);
 };
 
 }  // namespace content

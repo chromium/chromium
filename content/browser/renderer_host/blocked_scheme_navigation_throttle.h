@@ -17,6 +17,12 @@ namespace content {
 class BlockedSchemeNavigationThrottle : public NavigationThrottle {
  public:
   explicit BlockedSchemeNavigationThrottle(NavigationHandle* navigation_handle);
+
+  BlockedSchemeNavigationThrottle(const BlockedSchemeNavigationThrottle&) =
+      delete;
+  BlockedSchemeNavigationThrottle& operator=(
+      const BlockedSchemeNavigationThrottle&) = delete;
+
   ~BlockedSchemeNavigationThrottle() override;
 
   // NavigationThrottle method:
@@ -25,9 +31,6 @@ class BlockedSchemeNavigationThrottle : public NavigationThrottle {
 
   static std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
       NavigationHandle* navigation_handle);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlockedSchemeNavigationThrottle);
 };
 
 }  // namespace content

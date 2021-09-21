@@ -18,6 +18,10 @@ namespace content {
 class TestHostResolver {
  public:
   TestHostResolver();
+
+  TestHostResolver(const TestHostResolver&) = delete;
+  TestHostResolver& operator=(const TestHostResolver&) = delete;
+
   ~TestHostResolver();
 
   net::RuleBasedHostResolverProc* host_resolver() {
@@ -30,8 +34,6 @@ class TestHostResolver {
   scoped_refptr<net::RuleBasedHostResolverProc> rule_based_resolver_;
   std::unique_ptr<net::ScopedDefaultHostResolverProc>
       scoped_local_host_resolver_proc_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHostResolver);
 };
 
 }  // namespace content

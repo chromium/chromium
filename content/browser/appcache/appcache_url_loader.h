@@ -61,6 +61,9 @@ class CONTENT_EXPORT AppCacheURLLoader : public AppCacheStorage::Delegate,
       AppCacheStorage* storage,
       AppCacheRequestHandler::AppCacheLoaderCallback loader_callback);
 
+  AppCacheURLLoader(const AppCacheURLLoader&) = delete;
+  AppCacheURLLoader& operator=(const AppCacheURLLoader&) = delete;
+
   ~AppCacheURLLoader() override;
 
   // Sets up the bindings.
@@ -226,7 +229,6 @@ class CONTENT_EXPORT AppCacheURLLoader : public AppCacheStorage::Delegate,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AppCacheURLLoader> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AppCacheURLLoader);
 };
 
 }  // namespace content

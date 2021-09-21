@@ -56,6 +56,12 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
       base::WeakPtr<ServiceWorkerHost> worker_host,
       scoped_refptr<network::SharedURLLoaderFactory>
           loader_factory_for_new_scripts);
+
+  ServiceWorkerScriptLoaderFactory(const ServiceWorkerScriptLoaderFactory&) =
+      delete;
+  ServiceWorkerScriptLoaderFactory& operator=(
+      const ServiceWorkerScriptLoaderFactory&) = delete;
+
   ~ServiceWorkerScriptLoaderFactory() override;
 
   // network::mojom::URLLoaderFactory:
@@ -120,8 +126,6 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
   std::unique_ptr<ServiceWorkerCacheWriter> cache_writer_;
 
   base::WeakPtrFactory<ServiceWorkerScriptLoaderFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerScriptLoaderFactory);
 };
 
 }  // namespace content

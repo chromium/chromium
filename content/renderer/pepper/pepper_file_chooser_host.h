@@ -36,6 +36,10 @@ class CONTENT_EXPORT PepperFileChooserHost
   PepperFileChooserHost(RendererPpapiHost* host,
                         PP_Instance instance,
                         PP_Resource resource);
+
+  PepperFileChooserHost(const PepperFileChooserHost&) = delete;
+  PepperFileChooserHost& operator=(const PepperFileChooserHost&) = delete;
+
   ~PepperFileChooserHost() override;
 
   int32_t OnResourceMessageReceived(
@@ -64,8 +68,6 @@ class CONTENT_EXPORT PepperFileChooserHost
   CompletionHandler* handler_;
 
   base::WeakPtrFactory<PepperFileChooserHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileChooserHost);
 };
 
 }  // namespace content

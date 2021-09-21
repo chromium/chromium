@@ -43,6 +43,9 @@ class CONTENT_EXPORT PepperGamepadHost :
                     PP_Instance instance,
                     PP_Resource resource);
 
+  PepperGamepadHost(const PepperGamepadHost&) = delete;
+  PepperGamepadHost& operator=(const PepperGamepadHost&) = delete;
+
   ~PepperGamepadHost() override;
 
   int32_t OnResourceMessageReceived(
@@ -65,8 +68,6 @@ class CONTENT_EXPORT PepperGamepadHost :
   bool is_started_;
 
   base::WeakPtrFactory<PepperGamepadHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperGamepadHost);
 };
 
 }  // namespace content

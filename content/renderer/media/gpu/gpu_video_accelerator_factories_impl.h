@@ -131,6 +131,11 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   // with a new ContextProvider.
   bool CheckContextProviderLostOnMainThread();
 
+  GpuVideoAcceleratorFactoriesImpl(const GpuVideoAcceleratorFactoriesImpl&) =
+      delete;
+  GpuVideoAcceleratorFactoriesImpl& operator=(
+      const GpuVideoAcceleratorFactoriesImpl&) = delete;
+
   ~GpuVideoAcceleratorFactoriesImpl() override;
 
  private:
@@ -231,8 +236,6 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
       supported_vea_profiles_ GUARDED_BY(supported_profiles_lock_);
   Notifier encoder_support_notifier_ GUARDED_BY(supported_profiles_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuVideoAcceleratorFactoriesImpl);
 };
 
 }  // namespace content

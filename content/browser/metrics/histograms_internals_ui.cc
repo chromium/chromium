@@ -56,6 +56,10 @@ WebUIDataSource* CreateHistogramsHTMLSource() {
 class HistogramsMessageHandler : public WebUIMessageHandler {
  public:
   HistogramsMessageHandler();
+
+  HistogramsMessageHandler(const HistogramsMessageHandler&) = delete;
+  HistogramsMessageHandler& operator=(const HistogramsMessageHandler&) = delete;
+
   ~HistogramsMessageHandler() override;
 
   // WebUIMessageHandler:
@@ -70,7 +74,6 @@ class HistogramsMessageHandler : public WebUIMessageHandler {
   JsParams AllowJavascriptAndUnpackParams(const base::ListValue& args);
 
   HistogramsMonitor histogram_monitor_;
-  DISALLOW_COPY_AND_ASSIGN(HistogramsMessageHandler);
 };
 
 HistogramsMessageHandler::HistogramsMessageHandler() {}

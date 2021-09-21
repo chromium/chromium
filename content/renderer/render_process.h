@@ -28,6 +28,10 @@ class RenderProcess : public ChildProcess {
   RenderProcess(const std::string& thread_pool_name,
                 std::unique_ptr<base::ThreadPoolInstance::InitParams>
                     thread_pool_init_params);
+
+  RenderProcess(const RenderProcess&) = delete;
+  RenderProcess& operator=(const RenderProcess&) = delete;
+
   ~RenderProcess() override {}
 
   // Returns a pointer to the RenderProcess singleton instance. Assuming that
@@ -36,9 +40,6 @@ class RenderProcess : public ChildProcess {
   static RenderProcess* current() {
     return static_cast<RenderProcess*>(ChildProcess::current());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderProcess);
 };
 
 }  // namespace content

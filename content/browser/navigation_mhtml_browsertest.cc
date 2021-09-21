@@ -62,6 +62,10 @@ class NavigationMhtmlBrowserTest : public ContentBrowserTest {
 class MhtmlArchive {
  public:
   MhtmlArchive() = default;
+
+  MhtmlArchive(const MhtmlArchive&) = delete;
+  MhtmlArchive& operator=(const MhtmlArchive&) = delete;
+
   ~MhtmlArchive() {
     base::ScopedAllowBlockingForTesting allow_blocking_;
     EXPECT_TRUE(file_directory_.Delete());
@@ -127,8 +131,6 @@ class MhtmlArchive {
  private:
   base::ScopedTempDir file_directory_;
   std::string content_;
-
-  DISALLOW_COPY_AND_ASSIGN(MhtmlArchive);
 };
 
 }  // namespace

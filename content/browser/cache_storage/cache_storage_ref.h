@@ -43,6 +43,9 @@ class CacheStorageRef {
     return *this;
   }
 
+  CacheStorageRef(const CacheStorageRef&) = delete;
+  CacheStorageRef& operator=(const CacheStorageRef&) = delete;
+
   ~CacheStorageRef() {
     if (target_)
       target_->DropHandleRef();
@@ -54,8 +57,6 @@ class CacheStorageRef {
 
  private:
   base::WeakPtr<TargetType> target_;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageRef);
 };
 
 }  // namespace content

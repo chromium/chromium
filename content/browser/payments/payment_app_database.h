@@ -52,6 +52,10 @@ class CONTENT_EXPORT PaymentAppDatabase {
 
   explicit PaymentAppDatabase(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  PaymentAppDatabase(const PaymentAppDatabase&) = delete;
+  PaymentAppDatabase& operator=(const PaymentAppDatabase&) = delete;
+
   ~PaymentAppDatabase();
 
   void ReadAllPaymentApps(ReadAllPaymentAppsCallback callback);
@@ -248,8 +252,6 @@ class CONTENT_EXPORT PaymentAppDatabase {
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   base::WeakPtrFactory<PaymentAppDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppDatabase);
 };
 
 }  // namespace content

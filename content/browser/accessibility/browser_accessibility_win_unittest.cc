@@ -100,6 +100,11 @@ namespace content {
 class BrowserAccessibilityWinTest : public ::testing::Test {
  public:
   BrowserAccessibilityWinTest();
+
+  BrowserAccessibilityWinTest(const BrowserAccessibilityWinTest&) = delete;
+  BrowserAccessibilityWinTest& operator=(const BrowserAccessibilityWinTest&) =
+      delete;
+
   ~BrowserAccessibilityWinTest() override;
 
  protected:
@@ -110,8 +115,6 @@ class BrowserAccessibilityWinTest : public ::testing::Test {
   void SetUp() override;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityWinTest);
 };
 
 BrowserAccessibilityWinTest::BrowserAccessibilityWinTest() {}

@@ -53,6 +53,9 @@ class WebContentsImpl;
 class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
                                           public WebContentsObserver {
  public:
+  BrowserPluginGuest(const BrowserPluginGuest&) = delete;
+  BrowserPluginGuest& operator=(const BrowserPluginGuest&) = delete;
+
   ~BrowserPluginGuest() override;
 
   // The WebContents passed into the factory method here has not been
@@ -139,8 +142,6 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   ui::mojom::TextInputStatePtr last_text_input_state_;
 
   BrowserPluginGuestDelegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPluginGuest);
 };
 
 }  // namespace content

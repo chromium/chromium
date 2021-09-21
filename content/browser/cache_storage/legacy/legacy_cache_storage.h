@@ -69,6 +69,9 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner);
 
+  LegacyCacheStorage(const LegacyCacheStorage&) = delete;
+  LegacyCacheStorage& operator=(const LegacyCacheStorage&) = delete;
+
   // Any unfinished asynchronous operations may not complete or call their
   // callbacks.
   ~LegacyCacheStorage() override;
@@ -340,8 +343,6 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LegacyCacheStorage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyCacheStorage);
 };
 
 }  // namespace content

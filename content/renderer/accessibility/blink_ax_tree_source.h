@@ -32,12 +32,15 @@ class RenderFrameImpl;
 class ScopedFreezeBlinkAXTreeSource {
  public:
   explicit ScopedFreezeBlinkAXTreeSource(BlinkAXTreeSource* tree_source);
+
+  ScopedFreezeBlinkAXTreeSource(const ScopedFreezeBlinkAXTreeSource&) = delete;
+  ScopedFreezeBlinkAXTreeSource& operator=(
+      const ScopedFreezeBlinkAXTreeSource&) = delete;
+
   ~ScopedFreezeBlinkAXTreeSource();
 
  private:
   BlinkAXTreeSource* tree_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFreezeBlinkAXTreeSource);
 };
 
 class CONTENT_EXPORT BlinkAXTreeSource

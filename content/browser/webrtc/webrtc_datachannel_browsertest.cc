@@ -20,6 +20,10 @@ namespace content {
 class WebRtcDataChannelTest : public WebRtcContentBrowserTestBase {
  public:
   WebRtcDataChannelTest() {}
+
+  WebRtcDataChannelTest(const WebRtcDataChannelTest&) = delete;
+  WebRtcDataChannelTest& operator=(const WebRtcDataChannelTest&) = delete;
+
   ~WebRtcDataChannelTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -28,9 +32,6 @@ class WebRtcDataChannelTest : public WebRtcContentBrowserTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kJavaScriptFlags, kJavaScriptFeaturesNeeded);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcDataChannelTest);
 };
 
 // Flaky on all platforms: https://crbug.com/734567

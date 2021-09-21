@@ -94,6 +94,12 @@ class RenderFrameHostManagerTestWebUIControllerFactory
     : public WebUIControllerFactory {
  public:
   RenderFrameHostManagerTestWebUIControllerFactory() {}
+
+  RenderFrameHostManagerTestWebUIControllerFactory(
+      const RenderFrameHostManagerTestWebUIControllerFactory&) = delete;
+  RenderFrameHostManagerTestWebUIControllerFactory& operator=(
+      const RenderFrameHostManagerTestWebUIControllerFactory&) = delete;
+
   ~RenderFrameHostManagerTestWebUIControllerFactory() override {}
 
   // WebUIFactory implementation.
@@ -121,14 +127,17 @@ class RenderFrameHostManagerTestWebUIControllerFactory
                       const GURL& url) override {
     return HasWebUIScheme(url);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostManagerTestWebUIControllerFactory);
 };
 
 class BeforeUnloadFiredWebContentsDelegate : public WebContentsDelegate {
  public:
   BeforeUnloadFiredWebContentsDelegate() {}
+
+  BeforeUnloadFiredWebContentsDelegate(
+      const BeforeUnloadFiredWebContentsDelegate&) = delete;
+  BeforeUnloadFiredWebContentsDelegate& operator=(
+      const BeforeUnloadFiredWebContentsDelegate&) = delete;
+
   ~BeforeUnloadFiredWebContentsDelegate() override {}
 
   void BeforeUnloadFired(WebContents* web_contents,
@@ -136,14 +145,15 @@ class BeforeUnloadFiredWebContentsDelegate : public WebContentsDelegate {
                          bool* proceed_to_fire_unload) override {
     *proceed_to_fire_unload = proceed;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BeforeUnloadFiredWebContentsDelegate);
 };
 
 class CloseWebContentsDelegate : public WebContentsDelegate {
  public:
   CloseWebContentsDelegate() : close_called_(false) {}
+
+  CloseWebContentsDelegate(const CloseWebContentsDelegate&) = delete;
+  CloseWebContentsDelegate& operator=(const CloseWebContentsDelegate&) = delete;
+
   ~CloseWebContentsDelegate() override {}
 
   void CloseContents(WebContents* web_contents) override {
@@ -154,8 +164,6 @@ class CloseWebContentsDelegate : public WebContentsDelegate {
 
  private:
   bool close_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseWebContentsDelegate);
 };
 
 // This observer keeps track of the last deleted RenderViewHost to avoid

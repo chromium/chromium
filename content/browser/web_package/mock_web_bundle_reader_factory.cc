@@ -34,6 +34,10 @@ class MockParser final : public web_package::mojom::WebBundleParser {
   explicit MockParser(
       mojo::PendingReceiver<web_package::mojom::WebBundleParser> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  MockParser(const MockParser&) = delete;
+  MockParser& operator=(const MockParser&) = delete;
+
   ~MockParser() override = default;
 
   void RunMetadataCallback(web_package::mojom::BundleMetadataPtr metadata) {
@@ -86,14 +90,16 @@ class MockParser final : public web_package::mojom::WebBundleParser {
   base::OnceClosure wait_parse_metadata_callback_;
   base::OnceCallback<void(web_package::mojom::BundleResponseLocationPtr)>
       wait_parse_response_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockParser);
 };
 
 class MockParserFactory final
     : public web_package::mojom::WebBundleParserFactory {
  public:
   MockParserFactory() {}
+
+  MockParserFactory(const MockParserFactory&) = delete;
+  MockParserFactory& operator=(const MockParserFactory&) = delete;
+
   ~MockParserFactory() override = default;
 
   void AddReceiver(
@@ -155,13 +161,17 @@ class MockParserFactory final
   std::unique_ptr<MockParser> parser_;
   mojo::ReceiverSet<web_package::mojom::WebBundleParserFactory> receivers_;
   base::OnceClosure wait_parse_metadata_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockParserFactory);
 };
 
 class MockWebBundleReaderFactoryImpl final : public MockWebBundleReaderFactory {
  public:
   MockWebBundleReaderFactoryImpl() : MockWebBundleReaderFactory() {}
+
+  MockWebBundleReaderFactoryImpl(const MockWebBundleReaderFactoryImpl&) =
+      delete;
+  MockWebBundleReaderFactoryImpl& operator=(
+      const MockWebBundleReaderFactoryImpl&) = delete;
+
   ~MockWebBundleReaderFactoryImpl() override {
     EXPECT_TRUE(!temp_dir_.IsValid() || temp_dir_.Delete())
         << temp_dir_.GetPath();
@@ -252,8 +262,6 @@ class MockWebBundleReaderFactoryImpl final : public MockWebBundleReaderFactory {
   base::ScopedTempDir temp_dir_;
   base::FilePath temp_file_path_;
   std::unique_ptr<MockParserFactory> factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWebBundleReaderFactoryImpl);
 };
 
 }  // namespace

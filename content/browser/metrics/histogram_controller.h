@@ -33,6 +33,10 @@ class HistogramController {
   // Normally instantiated when the child process is launched. Only one instance
   // should be created per process.
   HistogramController();
+
+  HistogramController(const HistogramController&) = delete;
+  HistogramController& operator=(const HistogramController&) = delete;
+
   virtual ~HistogramController();
 
   // Register the subscriber so that it will be called when for example
@@ -102,8 +106,6 @@ class HistogramController {
 
   ChildHistogramFetcherMap<RenderProcessHost> renderer_histogram_fetchers_;
   ChildHistogramFetcherMap<ChildProcessHost> child_histogram_fetchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramController);
 };
 
 }  // namespace content

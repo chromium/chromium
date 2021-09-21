@@ -110,12 +110,13 @@ class RenderWidgetHostProcess : public MockRenderProcessHost {
   explicit RenderWidgetHostProcess(BrowserContext* browser_context)
       : MockRenderProcessHost(browser_context) {
   }
+
+  RenderWidgetHostProcess(const RenderWidgetHostProcess&) = delete;
+  RenderWidgetHostProcess& operator=(const RenderWidgetHostProcess&) = delete;
+
   ~RenderWidgetHostProcess() override {}
 
   bool IsInitializedAndNotDead() override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostProcess);
 };
 
 // TestView --------------------------------------------------------------------
@@ -249,6 +250,12 @@ class TestView : public TestRenderWidgetHostView {
 class MockRenderViewHostDelegateView : public RenderViewHostDelegateView {
  public:
   MockRenderViewHostDelegateView() = default;
+
+  MockRenderViewHostDelegateView(const MockRenderViewHostDelegateView&) =
+      delete;
+  MockRenderViewHostDelegateView& operator=(
+      const MockRenderViewHostDelegateView&) = delete;
+
   ~MockRenderViewHostDelegateView() override = default;
 
   int start_dragging_count() const { return start_dragging_count_; }
@@ -265,8 +272,6 @@ class MockRenderViewHostDelegateView : public RenderViewHostDelegateView {
 
  private:
   int start_dragging_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderViewHostDelegateView);
 };
 
 // FakeRenderFrameMetadataObserver -----------------------------------------
@@ -283,6 +288,12 @@ class FakeRenderFrameMetadataObserver
       mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver,
       mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
           client_remote);
+
+  FakeRenderFrameMetadataObserver(const FakeRenderFrameMetadataObserver&) =
+      delete;
+  FakeRenderFrameMetadataObserver& operator=(
+      const FakeRenderFrameMetadataObserver&) = delete;
+
   ~FakeRenderFrameMetadataObserver() override {}
 
 #if defined(OS_ANDROID)
@@ -294,7 +305,6 @@ class FakeRenderFrameMetadataObserver
   mojo::PendingReceiver<cc::mojom::RenderFrameMetadataObserver> receiver_;
   mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserverClient>
       client_remote_;
-  DISALLOW_COPY_AND_ASSIGN(FakeRenderFrameMetadataObserver);
 };
 
 FakeRenderFrameMetadataObserver::FakeRenderFrameMetadataObserver(
@@ -496,6 +506,10 @@ class MockRenderWidgetHostOwnerDelegate
 class RenderWidgetHostTest : public testing::Test {
  public:
   RenderWidgetHostTest() : last_simulated_event_time_(ui::EventTimeForNow()) {}
+
+  RenderWidgetHostTest(const RenderWidgetHostTest&) = delete;
+  RenderWidgetHostTest& operator=(const RenderWidgetHostTest&) = delete;
+
   ~RenderWidgetHostTest() override = default;
 
   bool KeyPressEventCallback(const NativeWebKeyboardEvent& /* event */) {
@@ -797,8 +811,6 @@ class RenderWidgetHostTest : public testing::Test {
 
  private:
   blink::SyntheticWebTouchEvent touch_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostTest);
 };
 
 // RenderWidgetHostWithSourceTest ----------------------------------------------

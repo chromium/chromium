@@ -16,15 +16,16 @@ class SchemaHandler : public DevToolsDomainHandler,
                       public Schema::Backend {
  public:
   SchemaHandler();
+
+  SchemaHandler(const SchemaHandler&) = delete;
+  SchemaHandler& operator=(const SchemaHandler&) = delete;
+
   ~SchemaHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
 
   Response GetDomains(
       std::unique_ptr<protocol::Array<Schema::Domain>>* domains) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SchemaHandler);
 };
 
 }  // namespace protocol

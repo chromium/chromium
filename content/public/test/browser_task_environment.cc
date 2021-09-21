@@ -47,6 +47,9 @@ class TestBrowserThread {
   TestBrowserThread(BrowserThread::ID identifier,
                     scoped_refptr<base::SingleThreadTaskRunner> thread_runner);
 
+  TestBrowserThread(const TestBrowserThread&) = delete;
+  TestBrowserThread& operator=(const TestBrowserThread&) = delete;
+
   ~TestBrowserThread();
 
   // Stops the thread, no-op if this is not a real thread.
@@ -66,8 +69,6 @@ class TestBrowserThread {
   // Binds |identifier_| to |thread_runner| when the public constructor is used
   // (null otherwise).
   std::unique_ptr<BrowserThreadImpl> fake_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserThread);
 };
 
 // static

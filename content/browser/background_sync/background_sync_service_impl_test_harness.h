@@ -50,6 +50,12 @@ class BackgroundSyncServiceImplTestHarness : public testing::Test {
                             blink::mojom::BackgroundSyncError error);
 
   BackgroundSyncServiceImplTestHarness();
+
+  BackgroundSyncServiceImplTestHarness(
+      const BackgroundSyncServiceImplTestHarness&) = delete;
+  BackgroundSyncServiceImplTestHarness& operator=(
+      const BackgroundSyncServiceImplTestHarness&) = delete;
+
   ~BackgroundSyncServiceImplTestHarness() override;
 
   void SetUp() override;
@@ -81,8 +87,6 @@ class BackgroundSyncServiceImplTestHarness : public testing::Test {
   std::unique_ptr<EmbeddedWorkerTestHelper> embedded_worker_helper_;
   std::unique_ptr<StoragePartitionImpl> storage_partition_impl_;
   scoped_refptr<ServiceWorkerRegistration> sw_registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncServiceImplTestHarness);
 };
 
 }  // namespace content

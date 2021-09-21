@@ -28,6 +28,9 @@ class CONTENT_EXPORT VirtualFidoDiscovery
  public:
   explicit VirtualFidoDiscovery(::device::FidoTransportProtocol transport);
 
+  VirtualFidoDiscovery(const VirtualFidoDiscovery&) = delete;
+  VirtualFidoDiscovery& operator=(const VirtualFidoDiscovery&) = delete;
+
   // Notifies the AuthenticatorEnvironment of this instance being destroyed.
   ~VirtualFidoDiscovery() override;
 
@@ -41,8 +44,6 @@ class CONTENT_EXPORT VirtualFidoDiscovery
  private:
   std::vector<std::unique_ptr<::device::FidoDevice>>
       devices_pending_discovery_start_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualFidoDiscovery);
 };
 
 }  // namespace content

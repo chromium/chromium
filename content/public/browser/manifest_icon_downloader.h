@@ -35,6 +35,10 @@ class CONTENT_EXPORT ManifestIconDownloader final {
   using IconFetchCallback = base::OnceCallback<void(const SkBitmap&)>;
 
   ManifestIconDownloader() = delete;
+
+  ManifestIconDownloader(const ManifestIconDownloader&) = delete;
+  ManifestIconDownloader& operator=(const ManifestIconDownloader&) = delete;
+
   ~ManifestIconDownloader() = delete;
 
   // Returns whether the download has started.
@@ -82,8 +86,6 @@ class CONTENT_EXPORT ManifestIconDownloader final {
                                     const std::vector<SkBitmap>& bitmaps);
 
   friend class ManifestIconDownloaderTest;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestIconDownloader);
 };
 
 }  // namespace content

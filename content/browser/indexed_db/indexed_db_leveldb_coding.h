@@ -476,6 +476,10 @@ class ObjectStoreDataKey {
 class ExistsEntryKey {
  public:
   ExistsEntryKey();
+
+  ExistsEntryKey(const ExistsEntryKey&) = delete;
+  ExistsEntryKey& operator=(const ExistsEntryKey&) = delete;
+
   ~ExistsEntryKey();
 
   static bool Decode(base::StringPiece* slice, ExistsEntryKey* result);
@@ -493,7 +497,6 @@ class ExistsEntryKey {
   static const int64_t kSpecialIndexNumber;
 
   std::string encoded_user_key_;
-  DISALLOW_COPY_AND_ASSIGN(ExistsEntryKey);
 };
 
 class CONTENT_EXPORT BlobEntryKey {

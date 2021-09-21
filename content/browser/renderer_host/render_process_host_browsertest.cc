@@ -548,6 +548,11 @@ class RenderProcessHostObserverCounter : public RenderProcessHostObserver {
     observed_host_ = host;
   }
 
+  RenderProcessHostObserverCounter(const RenderProcessHostObserverCounter&) =
+      delete;
+  RenderProcessHostObserverCounter& operator=(
+      const RenderProcessHostObserverCounter&) = delete;
+
   ~RenderProcessHostObserverCounter() override {
     if (observing_)
       observed_host_->RemoveObserver(this);
@@ -578,8 +583,6 @@ class RenderProcessHostObserverCounter : public RenderProcessHostObserver {
   int destroyed_count_ = 0;
   bool observing_ = false;
   RenderProcessHost* observed_host_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostObserverCounter);
 };
 
 // Check that the spare renderer is properly destroyed via DisableRefCounts().

@@ -33,6 +33,10 @@ class CONTENT_EXPORT V8VarConverter {
   // Constructor for testing.
   V8VarConverter(PP_Instance instance,
                  std::unique_ptr<ResourceConverter> resource_converter);
+
+  V8VarConverter(const V8VarConverter&) = delete;
+  V8VarConverter& operator=(const V8VarConverter&) = delete;
+
   ~V8VarConverter();
 
   // Converts the given PP_Var to a v8::Value. True is returned upon success.
@@ -86,8 +90,6 @@ class CONTENT_EXPORT V8VarConverter {
 
   // The converter to use for converting V8 vars to resources.
   std::unique_ptr<ResourceConverter> resource_converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8VarConverter);
 };
 
 }  // namespace content

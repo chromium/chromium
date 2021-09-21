@@ -68,6 +68,11 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
       base::WeakPtr<ServiceWorkerContainerHost> container_host);
 
+  ServiceWorkerMainResourceLoader(const ServiceWorkerMainResourceLoader&) =
+      delete;
+  ServiceWorkerMainResourceLoader& operator=(
+      const ServiceWorkerMainResourceLoader&) = delete;
+
   ~ServiceWorkerMainResourceLoader() override;
 
   // Passed as the RequestHandler for
@@ -184,8 +189,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   bool is_detached_ = false;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMainResourceLoader);
 };
 
 // Owns a loader and calls DetachedFromRequest() to release it.
@@ -193,14 +196,18 @@ class ServiceWorkerMainResourceLoaderWrapper {
  public:
   explicit ServiceWorkerMainResourceLoaderWrapper(
       std::unique_ptr<ServiceWorkerMainResourceLoader> loader);
+
+  ServiceWorkerMainResourceLoaderWrapper(
+      const ServiceWorkerMainResourceLoaderWrapper&) = delete;
+  ServiceWorkerMainResourceLoaderWrapper& operator=(
+      const ServiceWorkerMainResourceLoaderWrapper&) = delete;
+
   ~ServiceWorkerMainResourceLoaderWrapper();
 
   ServiceWorkerMainResourceLoader* get() { return loader_.get(); }
 
  private:
   std::unique_ptr<ServiceWorkerMainResourceLoader> loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMainResourceLoaderWrapper);
 };
 
 }  // namespace content

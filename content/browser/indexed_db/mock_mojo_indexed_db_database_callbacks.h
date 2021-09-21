@@ -19,6 +19,12 @@ class MockMojoIndexedDBDatabaseCallbacks
     : public blink::mojom::IDBDatabaseCallbacks {
  public:
   MockMojoIndexedDBDatabaseCallbacks();
+
+  MockMojoIndexedDBDatabaseCallbacks(
+      const MockMojoIndexedDBDatabaseCallbacks&) = delete;
+  MockMojoIndexedDBDatabaseCallbacks& operator=(
+      const MockMojoIndexedDBDatabaseCallbacks&) = delete;
+
   ~MockMojoIndexedDBDatabaseCallbacks() override;
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
@@ -34,8 +40,6 @@ class MockMojoIndexedDBDatabaseCallbacks
 
  private:
   mojo::AssociatedReceiver<blink::mojom::IDBDatabaseCallbacks> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoIndexedDBDatabaseCallbacks);
 };
 
 }  // namespace content

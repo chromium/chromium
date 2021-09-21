@@ -15,6 +15,10 @@ namespace content {
 class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   ShellCrashReporterClient();
+
+  ShellCrashReporterClient(const ShellCrashReporterClient&) = delete;
+  ShellCrashReporterClient& operator=(const ShellCrashReporterClient&) = delete;
+
   ~ShellCrashReporterClient() override;
 
 #if defined(OS_WIN)
@@ -52,9 +56,6 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
 #endif
 
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellCrashReporterClient);
 };
 
 }  // namespace content

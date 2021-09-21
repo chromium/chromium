@@ -30,6 +30,11 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
   EmbeddedFrameSinkProviderImpl(
       viz::HostFrameSinkManager* host_frame_sink_manager,
       uint32_t renderer_client_id);
+
+  EmbeddedFrameSinkProviderImpl(const EmbeddedFrameSinkProviderImpl&) = delete;
+  EmbeddedFrameSinkProviderImpl& operator=(
+      const EmbeddedFrameSinkProviderImpl&) = delete;
+
   ~EmbeddedFrameSinkProviderImpl() override;
 
   void Add(
@@ -85,8 +90,6 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
 
   base::flat_map<viz::FrameSinkId, std::unique_ptr<EmbeddedFrameSinkImpl>>
       frame_sink_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedFrameSinkProviderImpl);
 };
 
 }  // namespace content

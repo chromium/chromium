@@ -77,6 +77,10 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
           prefetched_signed_exchange_cache,
       const std::string& accept_langs,
       RecursivePrefetchTokenGenerator recursive_prefetch_token_generator);
+
+  PrefetchURLLoader(const PrefetchURLLoader&) = delete;
+  PrefetchURLLoader& operator=(const PrefetchURLLoader&) = delete;
+
   ~PrefetchURLLoader() override;
 
   // Sends an empty response's body to |forwarding_client_|. If failed to create
@@ -158,8 +162,6 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
   // TODO(kinuko): This value can become stale if the preference is updated.
   // Make this listen to the changes if it becomes a real concern.
   bool is_signed_exchange_handling_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchURLLoader);
 };
 
 }  // namespace content

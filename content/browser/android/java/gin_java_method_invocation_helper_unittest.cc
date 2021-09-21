@@ -24,6 +24,9 @@ class NullObjectDelegate
  public:
   NullObjectDelegate() {}
 
+  NullObjectDelegate(const NullObjectDelegate&) = delete;
+  NullObjectDelegate& operator=(const NullObjectDelegate&) = delete;
+
   ~NullObjectDelegate() override {}
 
   base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) override {
@@ -50,8 +53,6 @@ class NullObjectDelegate
 
  private:
   base::android::ScopedJavaGlobalRef<jclass> safe_annotation_class_;
-
-  DISALLOW_COPY_AND_ASSIGN(NullObjectDelegate);
 };
 
 class NullDispatcherDelegate
@@ -59,14 +60,15 @@ class NullDispatcherDelegate
  public:
   NullDispatcherDelegate() {}
 
+  NullDispatcherDelegate(const NullDispatcherDelegate&) = delete;
+  NullDispatcherDelegate& operator=(const NullDispatcherDelegate&) = delete;
+
   ~NullDispatcherDelegate() override {}
 
   JavaObjectWeakGlobalRef GetObjectWeakRef(
       GinJavaBoundObject::ObjectID object_id) override {
     return JavaObjectWeakGlobalRef();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(NullDispatcherDelegate);
 };
 
 }  // namespace
@@ -80,6 +82,10 @@ class CountingDispatcherDelegate
     : public GinJavaMethodInvocationHelper::DispatcherDelegate {
  public:
   CountingDispatcherDelegate() {}
+
+  CountingDispatcherDelegate(const CountingDispatcherDelegate&) = delete;
+  CountingDispatcherDelegate& operator=(const CountingDispatcherDelegate&) =
+      delete;
 
   ~CountingDispatcherDelegate() override {}
 
@@ -102,8 +108,6 @@ class CountingDispatcherDelegate
  private:
   typedef std::map<GinJavaBoundObject::ObjectID, int> Counters;
   Counters counters_;
-
-  DISALLOW_COPY_AND_ASSIGN(CountingDispatcherDelegate);
 };
 
 }  // namespace
@@ -179,6 +183,10 @@ class ObjectIsGoneObjectDelegate : public NullObjectDelegate {
     method_ = std::make_unique<JavaMethod>(method_obj);
   }
 
+  ObjectIsGoneObjectDelegate(const ObjectIsGoneObjectDelegate&) = delete;
+  ObjectIsGoneObjectDelegate& operator=(const ObjectIsGoneObjectDelegate&) =
+      delete;
+
   ~ObjectIsGoneObjectDelegate() override {}
 
   base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) override {
@@ -198,9 +206,6 @@ class ObjectIsGoneObjectDelegate : public NullObjectDelegate {
  protected:
   std::unique_ptr<JavaMethod> method_;
   bool get_local_ref_called_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObjectIsGoneObjectDelegate);
 };
 
 }  // namespace
@@ -231,6 +236,10 @@ class MethodNotFoundObjectDelegate : public NullObjectDelegate {
  public:
   MethodNotFoundObjectDelegate() : find_method_called_(false) {}
 
+  MethodNotFoundObjectDelegate(const MethodNotFoundObjectDelegate&) = delete;
+  MethodNotFoundObjectDelegate& operator=(const MethodNotFoundObjectDelegate&) =
+      delete;
+
   ~MethodNotFoundObjectDelegate() override {}
 
   base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) override {
@@ -248,9 +257,6 @@ class MethodNotFoundObjectDelegate : public NullObjectDelegate {
 
  protected:
   bool find_method_called_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MethodNotFoundObjectDelegate);
 };
 
 }  // namespace
@@ -281,6 +287,9 @@ class GetClassObjectDelegate : public MethodNotFoundObjectDelegate {
  public:
   GetClassObjectDelegate() : get_class_called_(false) {}
 
+  GetClassObjectDelegate(const GetClassObjectDelegate&) = delete;
+  GetClassObjectDelegate& operator=(const GetClassObjectDelegate&) = delete;
+
   ~GetClassObjectDelegate() override {}
 
   const JavaMethod* FindMethod(const std::string& method_name,
@@ -299,8 +308,6 @@ class GetClassObjectDelegate : public MethodNotFoundObjectDelegate {
  private:
   static const JavaMethod* kFakeGetClass;
   bool get_class_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetClassObjectDelegate);
 };
 
 // We don't expect GinJavaMethodInvocationHelper to actually invoke the

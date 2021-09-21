@@ -66,6 +66,10 @@ class PageHandler : public DevToolsDomainHandler,
   PageHandler(EmulationHandler* emulation_handler,
               BrowserHandler* browser_handler,
               bool allow_file_access);
+
+  PageHandler(const PageHandler&) = delete;
+  PageHandler& operator=(const PageHandler&) = delete;
+
   ~PageHandler() override;
 
   static std::vector<PageHandler*> EnabledForWebContents(
@@ -243,8 +247,6 @@ class PageHandler : public DevToolsDomainHandler,
   base::flat_set<download::DownloadItem*> pending_downloads_;
 
   base::WeakPtrFactory<PageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PageHandler);
 };
 
 }  // namespace protocol

@@ -124,6 +124,10 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
       : context_provider_(context_provider) {
     context_provider_->AddObserver(this);
   }
+
+  ContextLostRunLoop(const ContextLostRunLoop&) = delete;
+  ContextLostRunLoop& operator=(const ContextLostRunLoop&) = delete;
+
   ~ContextLostRunLoop() override { context_provider_->RemoveObserver(this); }
 
   void RunUntilContextLost() {
@@ -151,8 +155,6 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   viz::ContextProvider* const context_provider_;
   bool did_lose_context_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextLostRunLoop);
 };
 
 // RunLoop implementation that runs until it observes a swap with size.
@@ -162,6 +164,10 @@ class CompositorSwapRunLoop {
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::BindRepeating(
         &CompositorSwapRunLoop::DidSwap, base::Unretained(this)));
   }
+
+  CompositorSwapRunLoop(const CompositorSwapRunLoop&) = delete;
+  CompositorSwapRunLoop& operator=(const CompositorSwapRunLoop&) = delete;
+
   ~CompositorSwapRunLoop() {
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::DoNothing());
   }
@@ -176,8 +182,6 @@ class CompositorSwapRunLoop {
 
   CompositorImpl* compositor_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorSwapRunLoop);
 };
 
 IN_PROC_BROWSER_TEST_P(CompositorImplLowEndBrowserTest,

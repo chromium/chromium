@@ -17,6 +17,10 @@ namespace content {
 class CONTENT_EXPORT BrowserAccessibilityWin : public BrowserAccessibility {
  public:
   BrowserAccessibilityWin();
+
+  BrowserAccessibilityWin(const BrowserAccessibilityWin&) = delete;
+  BrowserAccessibilityWin& operator=(const BrowserAccessibilityWin&) = delete;
+
   ~BrowserAccessibilityWin() override;
 
   // This is used to call UpdateStep1ComputeWinAttributes, ... above when
@@ -49,7 +53,6 @@ class CONTENT_EXPORT BrowserAccessibilityWin : public BrowserAccessibility {
   CComObject<BrowserAccessibilityComWin>* browser_accessibility_com_;
   // Give BrowserAccessibility::Create access to our constructor.
   friend class BrowserAccessibility;
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityWin);
 };
 
 CONTENT_EXPORT BrowserAccessibilityWin* ToBrowserAccessibilityWin(

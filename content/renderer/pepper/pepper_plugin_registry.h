@@ -24,6 +24,9 @@ class PluginModule;
 // not preloaded).
 class PepperPluginRegistry {
  public:
+  PepperPluginRegistry(const PepperPluginRegistry&) = delete;
+  PepperPluginRegistry& operator=(const PepperPluginRegistry&) = delete;
+
   ~PepperPluginRegistry();
 
   static PepperPluginRegistry* GetInstance();
@@ -76,8 +79,6 @@ class PepperPluginRegistry {
       std::map<std::pair<base::FilePath, absl::optional<url::Origin>>,
                PluginModule*>;
   NonOwningModuleMap live_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPluginRegistry);
 };
 
 }  // namespace content

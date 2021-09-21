@@ -18,6 +18,11 @@ class WebContents;
 class CONTENT_EXPORT ScreenOrientationDelegate {
  public:
   ScreenOrientationDelegate() {}
+
+  ScreenOrientationDelegate(const ScreenOrientationDelegate&) = delete;
+  ScreenOrientationDelegate& operator=(const ScreenOrientationDelegate&) =
+      delete;
+
   virtual ~ScreenOrientationDelegate() {}
 
   // Returns true if the tab must be fullscreen in order for
@@ -34,9 +39,6 @@ class CONTENT_EXPORT ScreenOrientationDelegate {
 
   // Unlocks the display, allowing hardware rotation to resume.
   virtual void Unlock(WebContents* web_contents) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationDelegate);
 };
 
 } // namespace content

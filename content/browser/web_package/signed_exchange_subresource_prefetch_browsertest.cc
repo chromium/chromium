@@ -202,6 +202,12 @@ class SignedExchangePrefetchBrowserTest
     // should be created while single-threaded.
     MockClock::Get();
   }
+
+  SignedExchangePrefetchBrowserTest(const SignedExchangePrefetchBrowserTest&) =
+      delete;
+  SignedExchangePrefetchBrowserTest& operator=(
+      const SignedExchangePrefetchBrowserTest&) = delete;
+
   ~SignedExchangePrefetchBrowserTest() = default;
 
   void SetUp() override {
@@ -417,8 +423,6 @@ class SignedExchangePrefetchBrowserTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePrefetchBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
@@ -812,6 +816,12 @@ class SignedExchangeSubresourcePrefetchBrowserTest
     // should be created while single-threaded.
     MockClock::Get();
   }
+
+  SignedExchangeSubresourcePrefetchBrowserTest(
+      const SignedExchangeSubresourcePrefetchBrowserTest&) = delete;
+  SignedExchangeSubresourcePrefetchBrowserTest& operator=(
+      const SignedExchangeSubresourcePrefetchBrowserTest&) = delete;
+
   ~SignedExchangeSubresourcePrefetchBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1102,8 +1112,6 @@ class SignedExchangeSubresourcePrefetchBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeSubresourcePrefetchBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,

@@ -27,6 +27,12 @@ namespace {
 class MockPepperPrintSettingsManager : public PepperPrintSettingsManager {
  public:
   MockPepperPrintSettingsManager(const PP_PrintSettings_Dev& settings);
+
+  MockPepperPrintSettingsManager(const MockPepperPrintSettingsManager&) =
+      delete;
+  MockPepperPrintSettingsManager& operator=(
+      const MockPepperPrintSettingsManager&) = delete;
+
   ~MockPepperPrintSettingsManager() override {}
 
   // PepperPrintSettingsManager implementation.
@@ -35,8 +41,6 @@ class MockPepperPrintSettingsManager : public PepperPrintSettingsManager {
 
  private:
   PP_PrintSettings_Dev settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPepperPrintSettingsManager);
 };
 
 MockPepperPrintSettingsManager::MockPepperPrintSettingsManager(
@@ -53,9 +57,10 @@ class PepperPrintingHostTest : public testing::Test,
  public:
   PepperPrintingHostTest() {}
 
-  ~PepperPrintingHostTest() override {}
+  PepperPrintingHostTest(const PepperPrintingHostTest&) = delete;
+  PepperPrintingHostTest& operator=(const PepperPrintingHostTest&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(PepperPrintingHostTest);
+  ~PepperPrintingHostTest() override {}
 };
 
 bool PP_SizeEqual(const PP_Size& lhs, const PP_Size& rhs) {

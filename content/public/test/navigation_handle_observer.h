@@ -26,6 +26,10 @@ class NavigationHandleObserver : public WebContentsObserver {
  public:
   NavigationHandleObserver(WebContents* web_contents,
                            const GURL& expected_start_url);
+
+  NavigationHandleObserver(const NavigationHandleObserver&) = delete;
+  NavigationHandleObserver& operator=(const NavigationHandleObserver&) = delete;
+
   ~NavigationHandleObserver() override;
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -82,8 +86,6 @@ class NavigationHandleObserver : public WebContentsObserver {
   NavigationHandleTiming navigation_handle_timing_;
   ReloadType reload_type_ = ReloadType::NONE;
   scoped_refptr<const net::HttpResponseHeaders> response_headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationHandleObserver);
 };
 
 }  // namespace content

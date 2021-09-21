@@ -39,6 +39,12 @@ class WebContentsVideoCaptureDeviceBrowserTest
       public FrameTestUtil {
  public:
   WebContentsVideoCaptureDeviceBrowserTest() = default;
+
+  WebContentsVideoCaptureDeviceBrowserTest(
+      const WebContentsVideoCaptureDeviceBrowserTest&) = delete;
+  WebContentsVideoCaptureDeviceBrowserTest& operator=(
+      const WebContentsVideoCaptureDeviceBrowserTest&) = delete;
+
   ~WebContentsVideoCaptureDeviceBrowserTest() override = default;
 
   // Runs the browser until a frame whose content matches the given |color| is
@@ -178,9 +184,6 @@ class WebContentsVideoCaptureDeviceBrowserTest
   }
 
   void WaitForFirstFrame() final { WaitForFrameWithColor(SK_ColorBLACK); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsVideoCaptureDeviceBrowserTest);
 };
 
 // Tests that the device refuses to start if the WebContents target was

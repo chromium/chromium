@@ -15,6 +15,12 @@ class WebTestBluetoothFakeAdapterSetterImpl
     : public mojom::WebTestBluetoothFakeAdapterSetter {
  public:
   WebTestBluetoothFakeAdapterSetterImpl();
+
+  WebTestBluetoothFakeAdapterSetterImpl(
+      const WebTestBluetoothFakeAdapterSetterImpl&) = delete;
+  WebTestBluetoothFakeAdapterSetterImpl& operator=(
+      const WebTestBluetoothFakeAdapterSetterImpl&) = delete;
+
   ~WebTestBluetoothFakeAdapterSetterImpl() override;
 
   static void Create(
@@ -22,8 +28,6 @@ class WebTestBluetoothFakeAdapterSetterImpl
 
  private:
   void Set(const std::string& adapter_name, SetCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestBluetoothFakeAdapterSetterImpl);
 };
 
 }  // namespace content

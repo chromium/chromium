@@ -27,6 +27,10 @@ class TestRenderFrame : public RenderFrameImpl {
  public:
   static RenderFrameImpl* CreateTestRenderFrame(
       RenderFrameImpl::CreateParams params);
+
+  TestRenderFrame(const TestRenderFrame&) = delete;
+  TestRenderFrame& operator=(const TestRenderFrame&) = delete;
+
   ~TestRenderFrame() override;
 
   // Overrides the content in the next navigation originating from the frame.
@@ -78,8 +82,6 @@ class TestRenderFrame : public RenderFrameImpl {
   absl::optional<std::string> next_navigation_html_override_;
 
   mojo::AssociatedRemote<mojom::NavigationClient> mock_navigation_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRenderFrame);
 };
 
 }  // namespace content

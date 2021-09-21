@@ -41,6 +41,12 @@ class CONTENT_EXPORT BackgroundFetchEventDispatcher {
       BackgroundFetchContext* background_fetch_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       DevToolsBackgroundServicesContextImpl* devtools_context);
+
+  BackgroundFetchEventDispatcher(const BackgroundFetchEventDispatcher&) =
+      delete;
+  BackgroundFetchEventDispatcher& operator=(
+      const BackgroundFetchEventDispatcher&) = delete;
+
   ~BackgroundFetchEventDispatcher();
 
   // Dispatches one of the update, fail, or success events depending on the
@@ -151,8 +157,6 @@ class CONTENT_EXPORT BackgroundFetchEventDispatcher {
 
   // Owned by BackgroundFetchContext.
   DevToolsBackgroundServicesContextImpl* devtools_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchEventDispatcher);
 };
 
 }  // namespace content

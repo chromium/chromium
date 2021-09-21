@@ -20,6 +20,11 @@ class CONTENT_EXPORT SyntheticTouchpadPinchGesture : public SyntheticGesture {
  public:
   explicit SyntheticTouchpadPinchGesture(
       const SyntheticPinchGestureParams& params);
+
+  SyntheticTouchpadPinchGesture(const SyntheticTouchpadPinchGesture&) = delete;
+  SyntheticTouchpadPinchGesture& operator=(
+      const SyntheticTouchpadPinchGesture&) = delete;
+
   ~SyntheticTouchpadPinchGesture() override;
 
   SyntheticGesture::Result ForwardInputEvents(
@@ -47,9 +52,6 @@ class CONTENT_EXPORT SyntheticTouchpadPinchGesture : public SyntheticGesture {
   base::TimeTicks start_time_;
   base::TimeTicks stop_time_;
   float current_scale_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTouchpadPinchGesture);
 };
 
 }  // namespace content

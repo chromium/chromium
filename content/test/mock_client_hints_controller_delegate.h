@@ -18,6 +18,12 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
  public:
   explicit MockClientHintsControllerDelegate(
       const blink::UserAgentMetadata& metadata);
+
+  MockClientHintsControllerDelegate(const MockClientHintsControllerDelegate&) =
+      delete;
+  MockClientHintsControllerDelegate& operator=(
+      const MockClientHintsControllerDelegate&) = delete;
+
   ~MockClientHintsControllerDelegate() override;
   network::NetworkQualityTracker* GetNetworkQualityTracker() override;
 
@@ -45,8 +51,6 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
   const blink::UserAgentMetadata metadata_;
   ClientHintsContainer client_hints_map_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockClientHintsControllerDelegate);
 };
 }  // end namespace content
 

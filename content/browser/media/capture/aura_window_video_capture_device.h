@@ -31,6 +31,11 @@ class CONTENT_EXPORT AuraWindowVideoCaptureDevice final
       public base::SupportsWeakPtr<AuraWindowVideoCaptureDevice> {
  public:
   explicit AuraWindowVideoCaptureDevice(const DesktopMediaID& source_id);
+
+  AuraWindowVideoCaptureDevice(const AuraWindowVideoCaptureDevice&) = delete;
+  AuraWindowVideoCaptureDevice& operator=(const AuraWindowVideoCaptureDevice&) =
+      delete;
+
   ~AuraWindowVideoCaptureDevice() final;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -53,8 +58,6 @@ class CONTENT_EXPORT AuraWindowVideoCaptureDevice final
   // post a notification if it is destroyed.
   const std::unique_ptr<WindowTracker, BrowserThread::DeleteOnUIThread>
       tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraWindowVideoCaptureDevice);
 };
 
 }  // namespace content

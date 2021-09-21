@@ -41,6 +41,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
       public ui::AXModeObserver {
  public:
   BrowserAccessibilityStateImpl();
+
+  BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
+  BrowserAccessibilityStateImpl& operator=(
+      const BrowserAccessibilityStateImpl&) = delete;
+
   ~BrowserAccessibilityStateImpl() override;
 
   static BrowserAccessibilityStateImpl* GetInstance();
@@ -173,8 +178,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityStateImpl);
 };
 
 }  // namespace content

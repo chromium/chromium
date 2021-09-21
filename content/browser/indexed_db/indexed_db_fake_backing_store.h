@@ -31,6 +31,11 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  IndexedDBFakeBackingStore(const IndexedDBFakeBackingStore&) = delete;
+  IndexedDBFakeBackingStore& operator=(const IndexedDBFakeBackingStore&) =
+      delete;
+
   ~IndexedDBFakeBackingStore() override;
 
   leveldb::Status DeleteDatabase(
@@ -134,8 +139,6 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
       blink::mojom::IDBTransactionMode mode) override;
 
  protected:
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBFakeBackingStore);
 };
 
 }  // namespace content

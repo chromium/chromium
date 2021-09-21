@@ -48,6 +48,12 @@ class MockWebMediaPlayerDelegateObserver
 class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
  public:
   RendererWebMediaPlayerDelegateTest() {}
+
+  RendererWebMediaPlayerDelegateTest(
+      const RendererWebMediaPlayerDelegateTest&) = delete;
+  RendererWebMediaPlayerDelegateTest& operator=(
+      const RendererWebMediaPlayerDelegateTest&) = delete;
+
   ~RendererWebMediaPlayerDelegateTest() override {}
 
   void SetUp() override {
@@ -89,9 +95,6 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
   StrictMock<MockWebMediaPlayerDelegateObserver> observer_1_, observer_2_,
       observer_3_;
   base::SimpleTestTickClock tick_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegateTest);
 };
 
 TEST_F(RendererWebMediaPlayerDelegateTest, TheTimerIsInitiallyStopped) {

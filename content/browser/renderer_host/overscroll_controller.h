@@ -46,6 +46,10 @@ enum class OverscrollSource {
 class CONTENT_EXPORT OverscrollController {
  public:
   OverscrollController();
+
+  OverscrollController(const OverscrollController&) = delete;
+  OverscrollController& operator=(const OverscrollController&) = delete;
+
   virtual ~OverscrollController();
 
   // This must be called when dispatching any event from the
@@ -185,8 +189,6 @@ class CONTENT_EXPORT OverscrollController {
   // overscroll if it is not completed yet.
   // Timestamp for the first inertial event (fling) in current stream.
   absl::optional<base::TimeTicks> first_inertial_event_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollController);
 };
 
 }  // namespace content

@@ -68,6 +68,9 @@ class SaveFileManager::SimpleURLLoaderHelper
         url_loader_factory, save_file_manager, std::move(on_complete_cb)));
   }
 
+  SimpleURLLoaderHelper(const SimpleURLLoaderHelper&) = delete;
+  SimpleURLLoaderHelper& operator=(const SimpleURLLoaderHelper&) = delete;
+
   ~SimpleURLLoaderHelper() override = default;
 
  private:
@@ -142,8 +145,6 @@ class SaveFileManager::SimpleURLLoaderHelper
   SavePackageId save_package_id_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   URLLoaderCompleteCallback on_complete_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderHelper);
 };
 
 SaveFileManager::SaveFileManager() {

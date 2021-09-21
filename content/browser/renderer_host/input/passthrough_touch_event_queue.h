@@ -91,6 +91,10 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
   PassthroughTouchEventQueue(PassthroughTouchEventQueueClient* client,
                              const Config& config);
 
+  PassthroughTouchEventQueue(const PassthroughTouchEventQueue&) = delete;
+  PassthroughTouchEventQueue& operator=(const PassthroughTouchEventQueue&) =
+      delete;
+
   ~PassthroughTouchEventQueue();
 
   void QueueEvent(const TouchEventWithLatencyInfo& event);
@@ -272,8 +276,6 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
   // What events types are allowed to bypass the filter.
   const std::string events_to_always_forward_;
   static const base::FeatureParam<std::string> kSkipTouchEventFilterType;
-
-  DISALLOW_COPY_AND_ASSIGN(PassthroughTouchEventQueue);
 };
 
 }  // namespace content

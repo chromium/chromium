@@ -80,6 +80,9 @@ class ServiceProcessObserver : public ServiceProcessHost::Observer {
  public:
   ServiceProcessObserver() { ServiceProcessHost::AddObserver(this); }
 
+  ServiceProcessObserver(const ServiceProcessObserver&) = delete;
+  ServiceProcessObserver& operator=(const ServiceProcessObserver&) = delete;
+
   ~ServiceProcessObserver() override {
     ServiceProcessHost::RemoveObserver(this);
   }
@@ -102,8 +105,6 @@ class ServiceProcessObserver : public ServiceProcessHost::Observer {
  private:
   absl::optional<base::RunLoop> launch_wait_loop_;
   int instances_started_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest, Launch) {

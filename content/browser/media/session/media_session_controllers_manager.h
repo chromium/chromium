@@ -32,6 +32,12 @@ class WebContentsImpl;
 class CONTENT_EXPORT MediaSessionControllersManager {
  public:
   explicit MediaSessionControllersManager(WebContentsImpl* web_contents);
+
+  MediaSessionControllersManager(const MediaSessionControllersManager&) =
+      delete;
+  MediaSessionControllersManager& operator=(
+      const MediaSessionControllersManager&) = delete;
+
   ~MediaSessionControllersManager();
 
   // Clear all the MediaSessionController associated with the given
@@ -94,8 +100,6 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   WebContentsImpl* const web_contents_;
 
   ControllersMap controllers_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionControllersManager);
 };
 
 }  // namespace content

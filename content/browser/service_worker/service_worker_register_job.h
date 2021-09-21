@@ -66,6 +66,10 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       bool skip_script_comparison,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object);
+
+  ServiceWorkerRegisterJob(const ServiceWorkerRegisterJob&) = delete;
+  ServiceWorkerRegisterJob& operator=(const ServiceWorkerRegisterJob&) = delete;
+
   ~ServiceWorkerRegisterJob() override;
 
   // Registers a callback to be called when the promise would resolve (whether
@@ -223,8 +227,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   const GlobalRenderFrameHostId requesting_frame_id_;
 
   base::WeakPtrFactory<ServiceWorkerRegisterJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegisterJob);
 };
 
 }  // namespace content

@@ -21,6 +21,10 @@ class AuditsHandler final : public DevToolsDomainHandler,
                             public Audits::Backend {
  public:
   AuditsHandler();
+
+  AuditsHandler(const AuditsHandler&) = delete;
+  AuditsHandler& operator=(const AuditsHandler&) = delete;
+
   ~AuditsHandler() override;
 
   static std::vector<AuditsHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -40,8 +44,6 @@ class AuditsHandler final : public DevToolsDomainHandler,
   std::unique_ptr<Audits::Frontend> frontend_;
   bool enabled_ = false;
   RenderFrameHostImpl* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuditsHandler);
 };
 
 }  // namespace protocol

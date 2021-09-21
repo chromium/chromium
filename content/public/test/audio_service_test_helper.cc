@@ -20,6 +20,10 @@ namespace content {
 class AudioServiceTestHelper::TestingApi : public audio::mojom::TestingApi {
  public:
   TestingApi() = default;
+
+  TestingApi(const TestingApi&) = delete;
+  TestingApi& operator=(const TestingApi&) = delete;
+
   ~TestingApi() override = default;
 
   // audio::mojom::TestingApi implementation
@@ -36,8 +40,6 @@ class AudioServiceTestHelper::TestingApi : public audio::mojom::TestingApi {
 
  private:
   mojo::ReceiverSet<audio::mojom::TestingApi> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingApi);
 };
 
 AudioServiceTestHelper::AudioServiceTestHelper()

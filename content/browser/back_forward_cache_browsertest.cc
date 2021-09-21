@@ -3230,6 +3230,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 class MockAppBannerService : public blink::mojom::AppBannerService {
  public:
   MockAppBannerService() = default;
+
+  MockAppBannerService(const MockAppBannerService&) = delete;
+  MockAppBannerService& operator=(const MockAppBannerService&) = delete;
+
   ~MockAppBannerService() override = default;
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
@@ -3267,8 +3271,6 @@ class MockAppBannerService : public blink::mojom::AppBannerService {
   mojo::Receiver<blink::mojom::AppBannerService> receiver_{this};
   mojo::Remote<blink::mojom::AppBannerEvent> event_;
   mojo::Remote<blink::mojom::AppBannerController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAppBannerService);
 };
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfAppBanner) {

@@ -149,6 +149,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
 
   static BrowserAccessibilityManager* FromID(ui::AXTreeID ax_tree_id);
 
+  BrowserAccessibilityManager(const BrowserAccessibilityManager&) = delete;
+  BrowserAccessibilityManager& operator=(const BrowserAccessibilityManager&) =
+      delete;
+
   ~BrowserAccessibilityManager() override;
 
   void Initialize(const ui::AXTreeUpdate& initial_tree);
@@ -635,8 +639,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   // declaration, do not move this member above other members.
   base::ScopedObservation<ui::AXTree, ui::AXTreeObserver> tree_observation_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManager);
 };
 
 }  // namespace content

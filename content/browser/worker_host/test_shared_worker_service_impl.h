@@ -24,6 +24,11 @@ class TestSharedWorkerServiceImpl : public SharedWorkerServiceImpl {
       StoragePartitionImpl* storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       scoped_refptr<ChromeAppCacheService> appcache_service);
+
+  TestSharedWorkerServiceImpl(const TestSharedWorkerServiceImpl&) = delete;
+  TestSharedWorkerServiceImpl& operator=(const TestSharedWorkerServiceImpl&) =
+      delete;
+
   ~TestSharedWorkerServiceImpl() override;
 
   void TerminateAllWorkers(base::OnceClosure callback);
@@ -43,8 +48,6 @@ class TestSharedWorkerServiceImpl : public SharedWorkerServiceImpl {
   // Holds all remote shared workers whose host have been deleted and are now
   // expected to soon cause the disconnection handler to fire.
   mojo::RemoteSet<blink::mojom::SharedWorker> workers_awaiting_disconnection_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSharedWorkerServiceImpl);
 };
 
 }  // namespace content

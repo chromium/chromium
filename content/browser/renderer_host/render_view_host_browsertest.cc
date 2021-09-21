@@ -36,6 +36,12 @@ class RenderViewHostTestWebContentsObserver : public WebContentsObserver {
   explicit RenderViewHostTestWebContentsObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents),
         navigation_count_(0) {}
+
+  RenderViewHostTestWebContentsObserver(
+      const RenderViewHostTestWebContentsObserver&) = delete;
+  RenderViewHostTestWebContentsObserver& operator=(
+      const RenderViewHostTestWebContentsObserver&) = delete;
+
   ~RenderViewHostTestWebContentsObserver() override {}
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
@@ -57,8 +63,6 @@ class RenderViewHostTestWebContentsObserver : public WebContentsObserver {
  private:
   net::IPEndPoint observed_remote_endpoint_;
   int navigation_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostTestWebContentsObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(RenderViewHostTest, FrameNavigateSocketAddress) {

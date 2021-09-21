@@ -31,6 +31,10 @@ class MediaSessionAndroid final
   struct JavaObjectGetter;
 
   explicit MediaSessionAndroid(MediaSessionImpl* session);
+
+  MediaSessionAndroid(const MediaSessionAndroid&) = delete;
+  MediaSessionAndroid& operator=(const MediaSessionAndroid&) = delete;
+
   ~MediaSessionAndroid() override;
 
   // media_session::mojom::MediaSessionObserver implementation:
@@ -82,8 +86,6 @@ class MediaSessionAndroid final
 
   mojo::Receiver<media_session::mojom::MediaSessionObserver> observer_receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionAndroid);
 };
 
 }  // namespace content

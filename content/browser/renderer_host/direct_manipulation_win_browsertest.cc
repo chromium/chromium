@@ -113,6 +113,10 @@ IN_PROC_BROWSER_TEST_F(DirectManipulationBrowserTest,
 class EventLogger : public ui::EventRewriter {
  public:
   EventLogger() {}
+
+  EventLogger(const EventLogger&) = delete;
+  EventLogger& operator=(const EventLogger&) = delete;
+
   ~EventLogger() override {}
 
   std::unique_ptr<ui::Event> ReleaseLastEvent() {
@@ -130,8 +134,6 @@ class EventLogger : public ui::EventRewriter {
   }
 
   std::unique_ptr<ui::Event> last_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventLogger);
 };
 
 // Check DirectManipulation events convert to ui::event correctly.

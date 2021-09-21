@@ -33,6 +33,9 @@ struct IndexedDBPendingConnection;
 // TODO(dmurph): Remove this interface.
 class CONTENT_EXPORT IndexedDBFactory {
  public:
+  IndexedDBFactory(const IndexedDBFactory&) = delete;
+  IndexedDBFactory& operator=(const IndexedDBFactory&) = delete;
+
   virtual ~IndexedDBFactory() = default;
 
   virtual void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
@@ -102,9 +105,6 @@ class CONTENT_EXPORT IndexedDBFactory {
 
  protected:
   IndexedDBFactory() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBFactory);
 };
 
 }  // namespace content

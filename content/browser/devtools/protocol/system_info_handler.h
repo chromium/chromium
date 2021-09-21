@@ -21,6 +21,10 @@ class SystemInfoHandler : public DevToolsDomainHandler,
  public:
 
   SystemInfoHandler();
+
+  SystemInfoHandler(const SystemInfoHandler&) = delete;
+  SystemInfoHandler& operator=(const SystemInfoHandler&) = delete;
+
   ~SystemInfoHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -31,8 +35,6 @@ class SystemInfoHandler : public DevToolsDomainHandler,
 
  private:
   friend class SystemInfoHandlerGpuObserver;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemInfoHandler);
 };
 
 }  // namespace protocol

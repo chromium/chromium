@@ -41,6 +41,10 @@ class CONTENT_EXPORT MediaInterfaceFactory final
   MediaInterfaceFactory(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojo::PendingRemote<media::mojom::InterfaceFactory> interface_factory);
+
+  MediaInterfaceFactory(const MediaInterfaceFactory&) = delete;
+  MediaInterfaceFactory& operator=(const MediaInterfaceFactory&) = delete;
+
   ~MediaInterfaceFactory() final;
 
   // media::mojom::InterfaceFactory implementation.
@@ -90,8 +94,6 @@ class CONTENT_EXPORT MediaInterfaceFactory final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<MediaInterfaceFactory> weak_this_;
   base::WeakPtrFactory<MediaInterfaceFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInterfaceFactory);
 };
 
 }  // namespace content

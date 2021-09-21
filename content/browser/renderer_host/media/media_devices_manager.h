@@ -80,6 +80,10 @@ class CONTENT_EXPORT MediaDevicesManager
       const scoped_refptr<VideoCaptureManager>& video_capture_manager,
       StopRemovedInputDeviceCallback stop_removed_input_device_cb,
       UIInputDeviceChangeCallback ui_input_device_change_cb);
+
+  MediaDevicesManager(const MediaDevicesManager&) = delete;
+  MediaDevicesManager& operator=(const MediaDevicesManager&) = delete;
+
   ~MediaDevicesManager() override;
 
   // Performs a possibly cached device enumeration for the requested device
@@ -334,8 +338,6 @@ class CONTENT_EXPORT MediaDevicesManager
   uint32_t next_enumeration_state_id_ = 0;
 
   base::WeakPtrFactory<MediaDevicesManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDevicesManager);
 };
 
 // This function uses a heuristic to guess the group ID for a video device with

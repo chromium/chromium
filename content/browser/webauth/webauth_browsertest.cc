@@ -287,6 +287,12 @@ class ClosureExecutorBeforeNavigationCommit
                                         base::OnceClosure closure)
       : DidCommitNavigationInterceptor(web_contents),
         closure_(std::move(closure)) {}
+
+  ClosureExecutorBeforeNavigationCommit(
+      const ClosureExecutorBeforeNavigationCommit&) = delete;
+  ClosureExecutorBeforeNavigationCommit& operator=(
+      const ClosureExecutorBeforeNavigationCommit&) = delete;
+
   ~ClosureExecutorBeforeNavigationCommit() override = default;
 
  protected:
@@ -303,7 +309,6 @@ class ClosureExecutorBeforeNavigationCommit
 
  private:
   base::OnceClosure closure_;
-  DISALLOW_COPY_AND_ASSIGN(ClosureExecutorBeforeNavigationCommit);
 };
 
 // Cancels all navigations in a WebContents while in scope.
@@ -312,6 +317,12 @@ class ScopedNavigationCancellingThrottleInstaller : public WebContentsObserver {
   explicit ScopedNavigationCancellingThrottleInstaller(
       WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
+
+  ScopedNavigationCancellingThrottleInstaller(
+      const ScopedNavigationCancellingThrottleInstaller&) = delete;
+  ScopedNavigationCancellingThrottleInstaller& operator=(
+      const ScopedNavigationCancellingThrottleInstaller&) = delete;
+
   ~ScopedNavigationCancellingThrottleInstaller() override = default;
 
  protected:
@@ -319,6 +330,10 @@ class ScopedNavigationCancellingThrottleInstaller : public WebContentsObserver {
    public:
     explicit CancellingThrottle(NavigationHandle* handle)
         : NavigationThrottle(handle) {}
+
+    CancellingThrottle(const CancellingThrottle&) = delete;
+    CancellingThrottle& operator=(const CancellingThrottle&) = delete;
+
     ~CancellingThrottle() override = default;
 
    protected:
@@ -329,18 +344,12 @@ class ScopedNavigationCancellingThrottleInstaller : public WebContentsObserver {
     ThrottleCheckResult WillStartRequest() override {
       return ThrottleCheckResult(CANCEL);
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CancellingThrottle);
   };
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
     navigation_handle->RegisterThrottleForTesting(
         std::make_unique<CancellingThrottle>(navigation_handle));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedNavigationCancellingThrottleInstaller);
 };
 
 struct WebAuthBrowserTestState {
@@ -502,6 +511,11 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
 class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
  public:
   WebAuthLocalClientBrowserTest() = default;
+
+  WebAuthLocalClientBrowserTest(const WebAuthLocalClientBrowserTest&) = delete;
+  WebAuthLocalClientBrowserTest& operator=(
+      const WebAuthLocalClientBrowserTest&) = delete;
+
   ~WebAuthLocalClientBrowserTest() override = default;
 
  protected:
@@ -600,8 +614,6 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
  private:
   mojo::Remote<blink::mojom::Authenticator> authenticator_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAuthLocalClientBrowserTest);
 };
 
 // Tests that no crash occurs when the implementation is destroyed with a
@@ -821,10 +833,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
 class WebAuthJavascriptClientBrowserTest : public WebAuthBrowserTestBase {
  public:
   WebAuthJavascriptClientBrowserTest() = default;
-  ~WebAuthJavascriptClientBrowserTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAuthJavascriptClientBrowserTest);
+  WebAuthJavascriptClientBrowserTest(
+      const WebAuthJavascriptClientBrowserTest&) = delete;
+  WebAuthJavascriptClientBrowserTest& operator=(
+      const WebAuthJavascriptClientBrowserTest&) = delete;
+
+  ~WebAuthJavascriptClientBrowserTest() override = default;
 };
 
 constexpr device::ProtocolVersion kAllProtocols[] = {
@@ -1538,9 +1553,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBackForwardCacheBrowserTest,
 class WebAuthBrowserCtapTest : public WebAuthLocalClientBrowserTest {
  public:
   WebAuthBrowserCtapTest() = default;
-  ~WebAuthBrowserCtapTest() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(WebAuthBrowserCtapTest);
+  WebAuthBrowserCtapTest(const WebAuthBrowserCtapTest&) = delete;
+  WebAuthBrowserCtapTest& operator=(const WebAuthBrowserCtapTest&) = delete;
+
+  ~WebAuthBrowserCtapTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest, TestMakeCredential) {

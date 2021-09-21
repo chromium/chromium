@@ -33,6 +33,10 @@ class WebContentsImpl;
 class CONTENT_EXPORT WebContentsAndroid {
  public:
   explicit WebContentsAndroid(WebContentsImpl* web_contents);
+
+  WebContentsAndroid(const WebContentsAndroid&) = delete;
+  WebContentsAndroid& operator=(const WebContentsAndroid&) = delete;
+
   ~WebContentsAndroid();
 
   WebContentsImpl* web_contents() const { return web_contents_; }
@@ -314,8 +318,6 @@ class CONTENT_EXPORT WebContentsAndroid {
   base::ObserverList<DestructionObserver> destruction_observers_;
 
   base::WeakPtrFactory<WebContentsAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsAndroid);
 };
 
 }  // namespace content

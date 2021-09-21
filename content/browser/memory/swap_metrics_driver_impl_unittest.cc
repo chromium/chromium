@@ -63,6 +63,10 @@ class SwapMetricsDelegateCounter : public SwapMetricsDriver::Delegate {
         num_compressed_updates_(0),
         num_updates_failed_(0) {}
 
+  SwapMetricsDelegateCounter(const SwapMetricsDelegateCounter&) = delete;
+  SwapMetricsDelegateCounter& operator=(const SwapMetricsDelegateCounter&) =
+      delete;
+
   ~SwapMetricsDelegateCounter() override = default;
 
   void OnSwapInCount(uint64_t count, base::TimeDelta interval) override {
@@ -97,8 +101,6 @@ class SwapMetricsDelegateCounter : public SwapMetricsDriver::Delegate {
   size_t num_decompressed_updates_;
   size_t num_compressed_updates_;
   size_t num_updates_failed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwapMetricsDelegateCounter);
 };
 
 // The time delta between updates must non-zero for the delegate callbacks to be

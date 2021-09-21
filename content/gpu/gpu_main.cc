@@ -119,6 +119,10 @@ bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo*);
 class ContentSandboxHelper : public gpu::GpuSandboxHelper {
  public:
   ContentSandboxHelper() {}
+
+  ContentSandboxHelper(const ContentSandboxHelper&) = delete;
+  ContentSandboxHelper& operator=(const ContentSandboxHelper&) = delete;
+
   ~ContentSandboxHelper() override {}
 
 #if defined(OS_WIN)
@@ -180,8 +184,6 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #if defined(OS_WIN)
   const sandbox::SandboxInterfaceInfo* sandbox_info_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSandboxHelper);
 };
 
 }  // namespace

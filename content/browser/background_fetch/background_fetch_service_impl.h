@@ -29,6 +29,11 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
       blink::StorageKey storage_key,
       RenderFrameHostImpl* rfh);
+
+  BackgroundFetchServiceImpl(const BackgroundFetchServiceImpl&) = delete;
+  BackgroundFetchServiceImpl& operator=(const BackgroundFetchServiceImpl&) =
+      delete;
+
   ~BackgroundFetchServiceImpl() override;
 
   static void CreateForWorker(
@@ -74,8 +79,6 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   GlobalRenderFrameHostId rfh_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchServiceImpl);
 };
 
 }  // namespace content

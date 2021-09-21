@@ -946,6 +946,9 @@ class StoragePartitionImpl::DataDeletionHelper {
         quota_storage_remove_mask_(quota_storage_remove_mask),
         callback_(std::move(callback)) {}
 
+  DataDeletionHelper(const DataDeletionHelper&) = delete;
+  DataDeletionHelper& operator=(const DataDeletionHelper&) = delete;
+
   ~DataDeletionHelper() = default;
 
   void ClearDataOnUIThread(
@@ -1006,8 +1009,6 @@ class StoragePartitionImpl::DataDeletionHelper {
 
   base::WeakPtrFactory<StoragePartitionImpl::DataDeletionHelper> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataDeletionHelper);
 };
 
 void StoragePartitionImpl::DataDeletionHelper::ClearQuotaManagedDataOnIOThread(

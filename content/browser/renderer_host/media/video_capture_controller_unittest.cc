@@ -172,6 +172,11 @@ class VideoCaptureControllerTest
         arbitrary_color_space_(gfx::ColorSpace::CreateREC709()),
         arbitrary_route_id_(base::UnguessableToken::Create()),
         arbitrary_session_id_(base::UnguessableToken::Create()) {}
+
+  VideoCaptureControllerTest(const VideoCaptureControllerTest&) = delete;
+  VideoCaptureControllerTest& operator=(const VideoCaptureControllerTest&) =
+      delete;
+
   ~VideoCaptureControllerTest() override {}
 
  protected:
@@ -250,9 +255,6 @@ class VideoCaptureControllerTest
   const gfx::ColorSpace arbitrary_color_space_;
   const VideoCaptureControllerID arbitrary_route_id_;
   const media::VideoCaptureSessionId arbitrary_session_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureControllerTest);
 };
 
 // A simple test of VideoCaptureController's ability to add, remove, and keep

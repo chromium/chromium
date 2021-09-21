@@ -53,6 +53,9 @@ class CONTENT_EXPORT AppCacheRequestHandler
   using AppCacheLoaderCallback =
       base::OnceCallback<void(SingleRequestURLLoaderFactory::RequestHandler)>;
 
+  AppCacheRequestHandler(const AppCacheRequestHandler&) = delete;
+  AppCacheRequestHandler& operator=(const AppCacheRequestHandler&) = delete;
+
   ~AppCacheRequestHandler() override;
 
   // NetworkService loading
@@ -268,8 +271,6 @@ class CONTENT_EXPORT AppCacheRequestHandler
   base::WeakPtr<AppCacheHost> appcache_host_;
 
   base::WeakPtrFactory<AppCacheRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheRequestHandler);
 };
 
 }  // namespace content

@@ -543,6 +543,10 @@ class CommitOriginInterceptor : public DidCommitNavigationInterceptor {
         target_url_(target_url),
         new_url_(new_url),
         new_origin_(new_origin) {}
+
+  CommitOriginInterceptor(const CommitOriginInterceptor&) = delete;
+  CommitOriginInterceptor& operator=(const CommitOriginInterceptor&) = delete;
+
   ~CommitOriginInterceptor() override = default;
 
   // WebContentsObserver:
@@ -566,8 +570,6 @@ class CommitOriginInterceptor : public DidCommitNavigationInterceptor {
   GURL target_url_;
   GURL new_url_;
   url::Origin new_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitOriginInterceptor);
 };
 
 // Observer which waits for a visual update in a RenderWidgetHost to meet some
@@ -3306,6 +3308,9 @@ class EvictionStateWaiter : public DelegatedFrameHost::Observer {
     delegated_frame_host_->AddObserverForTesting(this);
   }
 
+  EvictionStateWaiter(const EvictionStateWaiter&) = delete;
+  EvictionStateWaiter& operator=(const EvictionStateWaiter&) = delete;
+
   ~EvictionStateWaiter() override {
     delegated_frame_host_->RemoveObserverForTesting(this);
   }
@@ -3331,8 +3336,6 @@ class EvictionStateWaiter : public DelegatedFrameHost::Observer {
   DelegatedFrameHost* delegated_frame_host_;
   DelegatedFrameHost::FrameEvictionState waited_eviction_state_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(EvictionStateWaiter);
 };
 
 }  // namespace

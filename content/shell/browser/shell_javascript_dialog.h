@@ -30,6 +30,10 @@ class ShellJavaScriptDialog {
                         const std::u16string& message_text,
                         const std::u16string& default_prompt_text,
                         JavaScriptDialogManager::DialogClosedCallback callback);
+
+  ShellJavaScriptDialog(const ShellJavaScriptDialog&) = delete;
+  ShellJavaScriptDialog& operator=(const ShellJavaScriptDialog&) = delete;
+
   ~ShellJavaScriptDialog();
 
   // Called to cancel a dialog mid-flight.
@@ -48,8 +52,6 @@ class ShellJavaScriptDialog {
   static INT_PTR CALLBACK DialogProc(HWND dialog, UINT message, WPARAM wparam,
                                      LPARAM lparam);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ShellJavaScriptDialog);
 };
 
 }  // namespace content

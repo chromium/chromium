@@ -23,6 +23,10 @@ class CONTENT_EXPORT OneShotTimeoutMonitor {
   // The timer starts upon construction.
   explicit OneShotTimeoutMonitor(TimeoutHandler timeout_handler,
                                  base::TimeDelta delay);
+
+  OneShotTimeoutMonitor(const OneShotTimeoutMonitor&) = delete;
+  OneShotTimeoutMonitor& operator=(const OneShotTimeoutMonitor&) = delete;
+
   ~OneShotTimeoutMonitor();
 
  private:
@@ -34,8 +38,6 @@ class CONTENT_EXPORT OneShotTimeoutMonitor {
 
   // This timer runs to check if |time_when_considered_timed_out_| has past.
   base::OneShotTimer timeout_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotTimeoutMonitor);
 };
 
 }  // namespace content

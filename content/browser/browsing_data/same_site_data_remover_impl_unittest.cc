@@ -40,6 +40,12 @@ struct StoragePartitionSameSiteRemovalData {
 class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
  public:
   SameSiteRemoverTestStoragePartition() {}
+
+  SameSiteRemoverTestStoragePartition(
+      const SameSiteRemoverTestStoragePartition&) = delete;
+  SameSiteRemoverTestStoragePartition& operator=(
+      const SameSiteRemoverTestStoragePartition&) = delete;
+
   ~SameSiteRemoverTestStoragePartition() override {}
 
   void ClearData(uint32_t removal_mask,
@@ -63,8 +69,6 @@ class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
 
  private:
   StoragePartitionSameSiteRemovalData storage_partition_removal_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteRemoverTestStoragePartition);
 };
 
 class SameSiteDataRemoverImplTest : public testing::Test {

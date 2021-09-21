@@ -37,6 +37,12 @@ class PepperInProcessResourceCreation : public ResourceCreationImpl {
  public:
   PepperInProcessResourceCreation(RendererPpapiHostImpl* host_impl,
                                   PepperPluginInstanceImpl* instance);
+
+  PepperInProcessResourceCreation(const PepperInProcessResourceCreation&) =
+      delete;
+  PepperInProcessResourceCreation& operator=(
+      const PepperInProcessResourceCreation&) = delete;
+
   ~PepperInProcessResourceCreation() override;
 
   // ResourceCreation_API implementation.
@@ -63,8 +69,6 @@ class PepperInProcessResourceCreation : public ResourceCreationImpl {
  private:
   // Non-owning pointer to the host for the current plugin.
   RendererPpapiHostImpl* host_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperInProcessResourceCreation);
 };
 
 }  // namespace content

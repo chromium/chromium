@@ -59,6 +59,9 @@ class TestNavigationObserver {
                                       MessageLoopRunner::QuitMode::IMMEDIATE,
                                   bool ignore_uncommitted_navigations = true);
 
+  TestNavigationObserver(const TestNavigationObserver&) = delete;
+  TestNavigationObserver& operator=(const TestNavigationObserver&) = delete;
+
   virtual ~TestNavigationObserver();
 
   void set_wait_event(WaitEvent event) { wait_event_ = event; }
@@ -252,8 +255,6 @@ class TestNavigationObserver {
 
   // Callback invoked on WebContents creation.
   base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationObserver);
 };
 
 }  // namespace content

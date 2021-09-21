@@ -35,6 +35,11 @@ class WebContentsObserverConsistencyChecker
     : public WebContentsObserver,
       public base::SupportsUserData::Data {
  public:
+  WebContentsObserverConsistencyChecker(
+      const WebContentsObserverConsistencyChecker&) = delete;
+  WebContentsObserverConsistencyChecker& operator=(
+      const WebContentsObserverConsistencyChecker&) = delete;
+
   ~WebContentsObserverConsistencyChecker() override;
 
   // Enables these checks on |web_contents|. Usually
@@ -138,8 +143,6 @@ class WebContentsObserverConsistencyChecker
   bool is_loading_;
 
   bool web_contents_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserverConsistencyChecker);
 };
 
 }  // namespace content

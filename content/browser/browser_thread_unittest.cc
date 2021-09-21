@@ -58,6 +58,10 @@ class SequenceManagerThreadDelegate : public base::Thread::Delegate {
     BrowserTaskExecutor::EnableAllQueues();
   }
 
+  SequenceManagerThreadDelegate(const SequenceManagerThreadDelegate&) = delete;
+  SequenceManagerThreadDelegate& operator=(
+      const SequenceManagerThreadDelegate&) = delete;
+
   ~SequenceManagerThreadDelegate() override {
     BrowserTaskExecutor::ResetForTesting();
   }
@@ -77,8 +81,6 @@ class SequenceManagerThreadDelegate : public base::Thread::Delegate {
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> ui_sequence_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceManagerThreadDelegate);
 };
 
 }  // namespace

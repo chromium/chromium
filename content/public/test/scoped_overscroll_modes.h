@@ -14,10 +14,11 @@ namespace content {
 class ScopedPullToRefreshMode {
  public:
   explicit ScopedPullToRefreshMode(OverscrollConfig::PullToRefreshMode mode);
-  ~ScopedPullToRefreshMode();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedPullToRefreshMode);
+  ScopedPullToRefreshMode(const ScopedPullToRefreshMode&) = delete;
+  ScopedPullToRefreshMode& operator=(const ScopedPullToRefreshMode&) = delete;
+
+  ~ScopedPullToRefreshMode();
 };
 
 }  // namespace content

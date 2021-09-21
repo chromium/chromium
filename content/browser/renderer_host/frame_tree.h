@@ -186,6 +186,10 @@ class CONTENT_EXPORT FrameTree {
             RenderFrameHostManager::Delegate* manager_delegate,
             PageDelegate* page_delegate,
             Type type);
+
+  FrameTree(const FrameTree&) = delete;
+  FrameTree& operator=(const FrameTree&) = delete;
+
   ~FrameTree();
 
   // Initializes the main frame for this FrameTree. That is it creates the
@@ -478,8 +482,6 @@ class CONTENT_EXPORT FrameTree {
   // Whether Shutdown() was called.
   bool was_shut_down_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTree);
 };
 
 }  // namespace content

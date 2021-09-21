@@ -35,6 +35,12 @@ class CONTENT_EXPORT PepperPrintSettingsManagerImpl
     : public PepperPrintSettingsManager {
  public:
   PepperPrintSettingsManagerImpl() {}
+
+  PepperPrintSettingsManagerImpl(const PepperPrintSettingsManagerImpl&) =
+      delete;
+  PepperPrintSettingsManagerImpl& operator=(
+      const PepperPrintSettingsManagerImpl&) = delete;
+
   ~PepperPrintSettingsManagerImpl() override {}
 
   // PepperPrintSettingsManager implementation.
@@ -43,8 +49,6 @@ class CONTENT_EXPORT PepperPrintSettingsManagerImpl
 
  private:
   static PepperPrintSettingsManager::Result ComputeDefaultPrintSettings();
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPrintSettingsManagerImpl);
 };
 
 }  // namespace content

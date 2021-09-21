@@ -16,6 +16,11 @@ class FontUniqueNameLookup;
 class FontUniqueNameLookupService : public blink::mojom::FontUniqueNameLookup {
  public:
   FontUniqueNameLookupService();
+
+  FontUniqueNameLookupService(const FontUniqueNameLookupService&) = delete;
+  FontUniqueNameLookupService& operator=(const FontUniqueNameLookupService&) =
+      delete;
+
   ~FontUniqueNameLookupService() override;
 
   static void Create(mojo::PendingReceiver<blink::mojom::FontUniqueNameLookup>);
@@ -29,7 +34,6 @@ class FontUniqueNameLookupService : public blink::mojom::FontUniqueNameLookup {
       GetUniqueNameLookupTableIfAvailableCallback callback) override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookupService);
   ::content::FontUniqueNameLookup& font_unique_name_lookup_;
 };
 

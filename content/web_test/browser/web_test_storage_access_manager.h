@@ -23,6 +23,11 @@ class WebTestStorageAccessManager
     : public blink::test::mojom::StorageAccessAutomation {
  public:
   explicit WebTestStorageAccessManager(BrowserContext* browser_context);
+
+  WebTestStorageAccessManager(const WebTestStorageAccessManager&) = delete;
+  WebTestStorageAccessManager& operator=(const WebTestStorageAccessManager&) =
+      delete;
+
   ~WebTestStorageAccessManager() override;
 
   // blink::test::mojom::StorageAccessAutomation
@@ -43,8 +48,6 @@ class WebTestStorageAccessManager
 
   ContentSettingsForOneType content_settings_for_automation_;
   bool third_party_cookies_blocked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestStorageAccessManager);
 };
 
 }  // namespace content

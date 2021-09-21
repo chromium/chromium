@@ -24,10 +24,11 @@ class CONTENT_EXPORT HidChooser {
       base::OnceCallback<void(std::vector<device::mojom::HidDeviceInfoPtr>)>;
 
   HidChooser() = default;
-  virtual ~HidChooser() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HidChooser);
+  HidChooser(const HidChooser&) = delete;
+  HidChooser& operator=(const HidChooser&) = delete;
+
+  virtual ~HidChooser() = default;
 };
 
 }  // namespace content

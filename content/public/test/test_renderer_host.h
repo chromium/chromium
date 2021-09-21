@@ -173,10 +173,13 @@ class RenderViewHostTester {
 class RenderViewHostTestEnabler {
  public:
   RenderViewHostTestEnabler();
+
+  RenderViewHostTestEnabler(const RenderViewHostTestEnabler&) = delete;
+  RenderViewHostTestEnabler& operator=(const RenderViewHostTestEnabler&) =
+      delete;
+
   ~RenderViewHostTestEnabler();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostTestEnabler);
   friend class RenderViewHostTestHarness;
 
 #if defined(OS_ANDROID)
@@ -200,6 +203,10 @@ class RenderViewHostTestHarness : public ::testing::Test {
   explicit RenderViewHostTestHarness(TaskEnvironmentTraits&&... traits)
       : RenderViewHostTestHarness(std::make_unique<BrowserTaskEnvironment>(
             std::forward<TaskEnvironmentTraits>(traits)...)) {}
+
+  RenderViewHostTestHarness(const RenderViewHostTestHarness&) = delete;
+  RenderViewHostTestHarness& operator=(const RenderViewHostTestHarness&) =
+      delete;
 
   ~RenderViewHostTestHarness() override;
 
@@ -305,8 +312,6 @@ class RenderViewHostTestHarness : public ::testing::Test {
   std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
 #endif
   RenderProcessHostFactory* factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostTestHarness);
 };
 
 }  // namespace content

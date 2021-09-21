@@ -82,6 +82,11 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   IndexedDBTombstoneSweeper(int round_iterations,
                             int max_iterations,
                             leveldb::DB* database);
+
+  IndexedDBTombstoneSweeper(const IndexedDBTombstoneSweeper&) = delete;
+  IndexedDBTombstoneSweeper& operator=(const IndexedDBTombstoneSweeper&) =
+      delete;
+
   ~IndexedDBTombstoneSweeper() override;
 
   bool RequiresMetadata() const override;
@@ -192,7 +197,6 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   SweepMetrics metrics_;
 
   base::WeakPtrFactory<IndexedDBTombstoneSweeper> ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBTombstoneSweeper);
 };
 
 }  // namespace content

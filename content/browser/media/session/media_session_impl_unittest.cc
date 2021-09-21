@@ -42,6 +42,10 @@ namespace {
 class MockAudioFocusDelegate : public AudioFocusDelegate {
  public:
   MockAudioFocusDelegate() = default;
+
+  MockAudioFocusDelegate(const MockAudioFocusDelegate&) = delete;
+  MockAudioFocusDelegate& operator=(const MockAudioFocusDelegate&) = delete;
+
   ~MockAudioFocusDelegate() override = default;
 
   void AbandonAudioFocus() override {}
@@ -75,8 +79,6 @@ class MockAudioFocusDelegate : public AudioFocusDelegate {
   int request_audio_focus_count_ = 0;
 
   MediaSessionInfoPtr session_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudioFocusDelegate);
 };
 
 // A mock WebContentsDelegate which listens to |ActivateContents()| calls.

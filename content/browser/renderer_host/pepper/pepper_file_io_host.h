@@ -43,6 +43,10 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   PepperFileIOHost(BrowserPpapiHostImpl* host,
                    PP_Instance instance,
                    PP_Resource resource);
+
+  PepperFileIOHost(const PepperFileIOHost&) = delete;
+  PepperFileIOHost& operator=(const PepperFileIOHost&) = delete;
+
   ~PepperFileIOHost() override;
 
   // ppapi::host::ResourceHost override.
@@ -147,8 +151,6 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
   bool check_quota_;
 
   ppapi::FileIOStateManager state_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileIOHost);
 };
 
 }  // namespace content

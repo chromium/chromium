@@ -21,6 +21,10 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   static const int kPlayerId;
 
   PepperPlayerDelegate(RenderFrameHost* render_frame_host, int32_t pp_instance);
+
+  PepperPlayerDelegate(const PepperPlayerDelegate&) = delete;
+  PepperPlayerDelegate& operator=(const PepperPlayerDelegate&) = delete;
+
   ~PepperPlayerDelegate() override;
 
   // MediaSessionPlayerObserver implementation.
@@ -49,8 +53,6 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
 
   RenderFrameHost* render_frame_host_;
   int32_t pp_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlayerDelegate);
 };
 
 }  // namespace content

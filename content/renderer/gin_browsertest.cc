@@ -41,6 +41,10 @@ gin::WrapperInfo TestGinObject::kWrapperInfo = { gin::kEmbedderNativeGin };
 class GinBrowserTest : public RenderViewTest {
  public:
   GinBrowserTest() {}
+
+  GinBrowserTest(const GinBrowserTest&) = delete;
+  GinBrowserTest& operator=(const GinBrowserTest&) = delete;
+
   ~GinBrowserTest() override {}
 
   void SetUp() override {
@@ -49,10 +53,6 @@ class GinBrowserTest : public RenderViewTest {
 
     RenderViewTest::SetUp();
   }
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(GinBrowserTest);
 };
 
 // Test that garbage collection doesn't crash if a gin-wrapped object is

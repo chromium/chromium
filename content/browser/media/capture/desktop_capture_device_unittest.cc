@@ -99,12 +99,14 @@ class InvertedDesktopFrame : public webrtc::DesktopFrame {
     mutable_updated_region()->Swap(frame->mutable_updated_region());
     original_frame_ = std::move(frame);
   }
+
+  InvertedDesktopFrame(const InvertedDesktopFrame&) = delete;
+  InvertedDesktopFrame& operator=(const InvertedDesktopFrame&) = delete;
+
   ~InvertedDesktopFrame() override {}
 
  private:
   std::unique_ptr<webrtc::DesktopFrame> original_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvertedDesktopFrame);
 };
 
 // DesktopFrame wrapper that copies the input frame and doubles the stride.
@@ -121,12 +123,13 @@ class UnpackedDesktopFrame : public webrtc::DesktopFrame {
     CopyPixelsFrom(*frame, webrtc::DesktopVector(),
                    webrtc::DesktopRect::MakeSize(size()));
   }
+
+  UnpackedDesktopFrame(const UnpackedDesktopFrame&) = delete;
+  UnpackedDesktopFrame& operator=(const UnpackedDesktopFrame&) = delete;
+
   ~UnpackedDesktopFrame() override {
     delete[] data_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnpackedDesktopFrame);
 };
 
 // TODO(sergeyu): Move this to a separate file where it can be reused.

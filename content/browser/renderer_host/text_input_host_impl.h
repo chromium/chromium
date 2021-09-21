@@ -17,6 +17,10 @@ namespace content {
 class CONTENT_EXPORT TextInputHostImpl : public blink::mojom::TextInputHost {
  public:
   TextInputHostImpl();
+
+  TextInputHostImpl(const TextInputHostImpl&) = delete;
+  TextInputHostImpl& operator=(const TextInputHostImpl&) = delete;
+
   ~TextInputHostImpl() override;
 
   static void Create(
@@ -28,8 +32,6 @@ class CONTENT_EXPORT TextInputHostImpl : public blink::mojom::TextInputHost {
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputHostImpl);
 };
 
 }  // namespace content

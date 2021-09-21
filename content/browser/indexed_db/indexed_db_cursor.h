@@ -27,6 +27,10 @@ class CONTENT_EXPORT IndexedDBCursor {
                   indexed_db::CursorType cursor_type,
                   blink::mojom::IDBTaskType task_type,
                   base::WeakPtr<IndexedDBTransaction> transaction);
+
+  IndexedDBCursor(const IndexedDBCursor&) = delete;
+  IndexedDBCursor& operator=(const IndexedDBCursor&) = delete;
+
   ~IndexedDBCursor();
 
   void Advance(uint32_t count,
@@ -92,8 +96,6 @@ class CONTENT_EXPORT IndexedDBCursor {
   bool closed_;
 
   base::WeakPtrFactory<IndexedDBCursor> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBCursor);
 };
 
 }  // namespace content

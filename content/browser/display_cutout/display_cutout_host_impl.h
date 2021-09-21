@@ -17,6 +17,10 @@ class WebContentsImpl;
 class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
  public:
   explicit DisplayCutoutHostImpl(WebContentsImpl*);
+
+  DisplayCutoutHostImpl(const DisplayCutoutHostImpl&) = delete;
+  DisplayCutoutHostImpl& operator=(const DisplayCutoutHostImpl&) = delete;
+
   ~DisplayCutoutHostImpl() override;
 
   // Binds a new receiver for the specified frame.
@@ -72,8 +76,6 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
 
   // Weak pointer to the owning |WebContentsImpl| instance.
   WebContentsImpl* web_contents_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayCutoutHostImpl);
 };
 
 }  // namespace content

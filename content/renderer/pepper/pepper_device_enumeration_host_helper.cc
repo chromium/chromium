@@ -107,6 +107,9 @@ class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest
         owner_->device_type_, callback_);
   }
 
+  ScopedMonitoringRequest(const ScopedMonitoringRequest&) = delete;
+  ScopedMonitoringRequest& operator=(const ScopedMonitoringRequest&) = delete;
+
   ~ScopedMonitoringRequest() {
     if (requested_ && owner_->delegate_) {
       owner_->delegate_->StopMonitoringDevices(owner_->device_type_,
@@ -121,8 +124,6 @@ class PepperDeviceEnumerationHostHelper::ScopedMonitoringRequest
   PepperDeviceEnumerationHostHelper::Delegate::DevicesCallback callback_;
   bool requested_;
   size_t subscription_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMonitoringRequest);
 };
 
 PepperDeviceEnumerationHostHelper::PepperDeviceEnumerationHostHelper(

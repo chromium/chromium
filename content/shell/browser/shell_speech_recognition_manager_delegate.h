@@ -20,6 +20,12 @@ class ShellSpeechRecognitionManagerDelegate
     : public SpeechRecognitionManagerDelegate {
  public:
   ShellSpeechRecognitionManagerDelegate() {}
+
+  ShellSpeechRecognitionManagerDelegate(
+      const ShellSpeechRecognitionManagerDelegate&) = delete;
+  ShellSpeechRecognitionManagerDelegate& operator=(
+      const ShellSpeechRecognitionManagerDelegate&) = delete;
+
   ~ShellSpeechRecognitionManagerDelegate() override {}
 
   // SpeechRecognitionManagerDelegate methods.
@@ -29,9 +35,6 @@ class ShellSpeechRecognitionManagerDelegate
       override;
   SpeechRecognitionEventListener* GetEventListener() override;
   bool FilterProfanities(int render_process_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellSpeechRecognitionManagerDelegate);
 };
 
 }  // namespace content

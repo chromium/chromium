@@ -24,6 +24,10 @@ class ScreenlockMonitorSource;
 class CONTENT_EXPORT ScreenlockMonitor {
  public:
   ScreenlockMonitor(std::unique_ptr<ScreenlockMonitorSource> source);
+
+  ScreenlockMonitor(const ScreenlockMonitor&) = delete;
+  ScreenlockMonitor& operator=(const ScreenlockMonitor&) = delete;
+
   ~ScreenlockMonitor();
 
   // Get the process-wide ScreenlockMonitor (if not present, returns NULL).
@@ -44,8 +48,6 @@ class CONTENT_EXPORT ScreenlockMonitor {
 
   scoped_refptr<base::ObserverListThreadSafe<ScreenlockObserver>> observers_;
   std::unique_ptr<ScreenlockMonitorSource> source_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenlockMonitor);
 };
 
 }  // namespace content

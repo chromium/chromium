@@ -157,6 +157,10 @@ class TestWebContentsObserver : public WebContentsObserver {
  public:
   explicit TestWebContentsObserver(WebContents* contents)
       : WebContentsObserver(contents) {}
+
+  TestWebContentsObserver(const TestWebContentsObserver&) = delete;
+  TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
+
   ~TestWebContentsObserver() override {
     EXPECT_FALSE(expected_capture_handle_config_) << "Unfulfilled expectation.";
   }
@@ -227,8 +231,6 @@ class TestWebContentsObserver : public WebContentsObserver {
   int num_is_connected_to_bluetooth_device_changed_ = 0;
   bool last_is_connected_to_bluetooth_device_ = false;
   blink::mojom::CaptureHandleConfigPtr expected_capture_handle_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };
 
 class MockWebContentsDelegate : public WebContentsDelegate {
@@ -257,6 +259,10 @@ class MockWebContentsDelegate : public WebContentsDelegate {
 class FakeFullscreenDelegate : public WebContentsDelegate {
  public:
   FakeFullscreenDelegate() : fullscreened_contents_(nullptr) {}
+
+  FakeFullscreenDelegate(const FakeFullscreenDelegate&) = delete;
+  FakeFullscreenDelegate& operator=(const FakeFullscreenDelegate&) = delete;
+
   ~FakeFullscreenDelegate() override {}
 
   void EnterFullscreenModeForTab(
@@ -275,13 +281,15 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
 
  private:
   WebContents* fullscreened_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFullscreenDelegate);
 };
 
 class FakeWebContentsDelegate : public WebContentsDelegate {
  public:
   FakeWebContentsDelegate() : loading_state_changed_was_called_(false) {}
+
+  FakeWebContentsDelegate(const FakeWebContentsDelegate&) = delete;
+  FakeWebContentsDelegate& operator=(const FakeWebContentsDelegate&) = delete;
+
   ~FakeWebContentsDelegate() override {}
 
   void LoadingStateChanged(WebContents* source,
@@ -295,8 +303,6 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
 
  private:
   bool loading_state_changed_was_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWebContentsDelegate);
 };
 
 class FakeImageDownloader : public blink::mojom::ImageDownloader {
@@ -2304,6 +2310,11 @@ class LoadingWebContentsObserver : public WebContentsObserver {
       : WebContentsObserver(contents),
         is_loading_(false),
         did_receive_response_(false) {}
+
+  LoadingWebContentsObserver(const LoadingWebContentsObserver&) = delete;
+  LoadingWebContentsObserver& operator=(const LoadingWebContentsObserver&) =
+      delete;
+
   ~LoadingWebContentsObserver() override {}
 
   // The assertions on these messages ensure that they are received in order.
@@ -2328,8 +2339,6 @@ class LoadingWebContentsObserver : public WebContentsObserver {
  private:
   bool is_loading_;
   bool did_receive_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadingWebContentsObserver);
 };
 
 // Subclass of WebContentsImplTest for cases that need out-of-process iframes.
@@ -2625,6 +2634,11 @@ namespace {
 class TestJavaScriptDialogManager : public JavaScriptDialogManager {
  public:
   TestJavaScriptDialogManager() {}
+
+  TestJavaScriptDialogManager(const TestJavaScriptDialogManager&) = delete;
+  TestJavaScriptDialogManager& operator=(const TestJavaScriptDialogManager&) =
+      delete;
+
   ~TestJavaScriptDialogManager() override {}
 
   size_t reset_count() { return reset_count_; }
@@ -2660,8 +2674,6 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager {
 
  private:
   size_t reset_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestJavaScriptDialogManager);
 };
 
 }  // namespace

@@ -16,6 +16,11 @@ class RenderProcessHost;
 // This can only be used on the UI thread.
 class CONTENT_EXPORT RenderProcessHostCreationObserver {
  public:
+  RenderProcessHostCreationObserver(const RenderProcessHostCreationObserver&) =
+      delete;
+  RenderProcessHostCreationObserver& operator=(
+      const RenderProcessHostCreationObserver&) = delete;
+
   virtual ~RenderProcessHostCreationObserver();
 
   // This method is invoked when the process was successfully launched. Note
@@ -24,9 +29,6 @@ class CONTENT_EXPORT RenderProcessHostCreationObserver {
 
  protected:
   RenderProcessHostCreationObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostCreationObserver);
 };
 
 }  // namespace content

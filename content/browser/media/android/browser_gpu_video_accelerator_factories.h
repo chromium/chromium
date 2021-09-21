@@ -22,6 +22,12 @@ class BrowserGpuVideoAcceleratorFactories
  public:
   explicit BrowserGpuVideoAcceleratorFactories(
       scoped_refptr<viz::ContextProviderCommandBuffer>);
+
+  BrowserGpuVideoAcceleratorFactories(
+      const BrowserGpuVideoAcceleratorFactories&) = delete;
+  BrowserGpuVideoAcceleratorFactories& operator=(
+      const BrowserGpuVideoAcceleratorFactories&) = delete;
+
   ~BrowserGpuVideoAcceleratorFactories() override;
 
  private:
@@ -68,8 +74,6 @@ class BrowserGpuVideoAcceleratorFactories
   base::UnguessableToken channel_token_;
   base::OnceCallbackList<void(const base::UnguessableToken&)>
       channel_token_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserGpuVideoAcceleratorFactories);
 };
 
 }  // namespace content

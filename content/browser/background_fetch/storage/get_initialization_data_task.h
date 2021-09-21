@@ -75,6 +75,10 @@ class GetInitializationDataTask : public DatabaseTask {
   GetInitializationDataTask(DatabaseTaskHost* host,
                             GetInitializationDataCallback callback);
 
+  GetInitializationDataTask(const GetInitializationDataTask&) = delete;
+  GetInitializationDataTask& operator=(const GetInitializationDataTask&) =
+      delete;
+
   ~GetInitializationDataTask() override;
 
   // DatabaseTask implementation:
@@ -96,8 +100,6 @@ class GetInitializationDataTask : public DatabaseTask {
 
   base::WeakPtrFactory<GetInitializationDataTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(GetInitializationDataTask);
 };
 
 }  // namespace background_fetch

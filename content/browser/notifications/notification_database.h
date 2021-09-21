@@ -81,6 +81,9 @@ class CONTENT_EXPORT NotificationDatabase {
 
   NotificationDatabase(const base::FilePath& path, UkmCallback callback);
 
+  NotificationDatabase(const NotificationDatabase&) = delete;
+  NotificationDatabase& operator=(const NotificationDatabase&) = delete;
+
   ~NotificationDatabase();
 
   // Opens the database. If |path| is non-empty, it will be created on the given
@@ -263,8 +266,6 @@ class CONTENT_EXPORT NotificationDatabase {
 
   // Callback to use for recording UKM metrics. Must be posted to the UI thread.
   UkmCallback record_notification_to_ukm_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationDatabase);
 };
 
 }  // namespace content

@@ -61,6 +61,9 @@ class CONTENT_EXPORT PresentationServiceImpl
   static std::unique_ptr<PresentationServiceImpl> Create(
       RenderFrameHost* render_frame_host);
 
+  PresentationServiceImpl(const PresentationServiceImpl&) = delete;
+  PresentationServiceImpl& operator=(const PresentationServiceImpl&) = delete;
+
   ~PresentationServiceImpl() override;
 
   // Creates a binding between this object and |receiver|. Note that a
@@ -139,6 +142,12 @@ class CONTENT_EXPORT PresentationServiceImpl
   class NewPresentationCallbackWrapper {
    public:
     explicit NewPresentationCallbackWrapper(NewPresentationCallback callback);
+
+    NewPresentationCallbackWrapper(const NewPresentationCallbackWrapper&) =
+        delete;
+    NewPresentationCallbackWrapper& operator=(
+        const NewPresentationCallbackWrapper&) = delete;
+
     ~NewPresentationCallbackWrapper();
 
     void Run(blink::mojom::PresentationConnectionResultPtr result,
@@ -146,8 +155,6 @@ class CONTENT_EXPORT PresentationServiceImpl
 
    private:
     NewPresentationCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(NewPresentationCallbackWrapper);
   };
 
   // Note: Use |PresentationServiceImpl::Create| instead. This constructor
@@ -294,8 +301,6 @@ class CONTENT_EXPORT PresentationServiceImpl
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<PresentationServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationServiceImpl);
 };
 
 }  // namespace content

@@ -20,6 +20,11 @@ class BackgroundTracingAgentClientImpl
       int child_process_id,
       mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider);
 
+  BackgroundTracingAgentClientImpl(const BackgroundTracingAgentClientImpl&) =
+      delete;
+  BackgroundTracingAgentClientImpl& operator=(
+      const BackgroundTracingAgentClientImpl&) = delete;
+
   ~BackgroundTracingAgentClientImpl() override;
 
   // tracing::mojom::BackgroundTracingAgentClient methods:
@@ -32,8 +37,6 @@ class BackgroundTracingAgentClientImpl
       mojo::Remote<tracing::mojom::BackgroundTracingAgent> agent);
 
   mojo::Remote<tracing::mojom::BackgroundTracingAgent> agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingAgentClientImpl);
 };
 
 }  // namespace content

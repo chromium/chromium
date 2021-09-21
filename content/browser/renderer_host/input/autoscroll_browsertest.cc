@@ -89,6 +89,10 @@ class GestureScrollEventWatcher : public RenderWidgetHost::InputEventObserver {
 class AutoscrollBrowserTest : public ContentBrowserTest {
  public:
   AutoscrollBrowserTest() {}
+
+  AutoscrollBrowserTest(const AutoscrollBrowserTest&) = delete;
+  AutoscrollBrowserTest& operator=(const AutoscrollBrowserTest&) = delete;
+
   ~AutoscrollBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -166,9 +170,6 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
       observer.WaitForMetadataChange();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoscrollBrowserTest);
 };
 
 // We don't plan on supporting middle click autoscroll on Android.

@@ -44,6 +44,10 @@ class SafeConnectionWrapper {
       std::unique_ptr<IndexedDBConnection> connection)
       : connection_(std::move(connection)),
         idb_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  SafeConnectionWrapper(const SafeConnectionWrapper&) = delete;
+  SafeConnectionWrapper& operator=(const SafeConnectionWrapper&) = delete;
+
   ~SafeConnectionWrapper() {
     if (connection_) {
       idb_runner_->PostTask(
@@ -58,9 +62,6 @@ class SafeConnectionWrapper {
 
   std::unique_ptr<IndexedDBConnection> connection_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeConnectionWrapper);
 };
 
 class SafeCursorWrapper {
@@ -68,6 +69,10 @@ class SafeCursorWrapper {
   explicit SafeCursorWrapper(std::unique_ptr<IndexedDBCursor> cursor)
       : cursor_(std::move(cursor)),
         idb_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  SafeCursorWrapper(const SafeCursorWrapper&) = delete;
+  SafeCursorWrapper& operator=(const SafeCursorWrapper&) = delete;
+
   ~SafeCursorWrapper() {
     if (cursor_)
       idb_runner_->DeleteSoon(FROM_HERE, cursor_.release());
@@ -76,9 +81,6 @@ class SafeCursorWrapper {
 
   std::unique_ptr<IndexedDBCursor> cursor_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeCursorWrapper);
 };
 
 }  // namespace

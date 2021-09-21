@@ -62,6 +62,10 @@ class CONTENT_EXPORT EnergyEndpointer {
   // The default construction MUST be followed by Init(), before any
   // other use can be made of the instance.
   EnergyEndpointer();
+
+  EnergyEndpointer(const EnergyEndpointer&) = delete;
+  EnergyEndpointer& operator=(const EnergyEndpointer&) = delete;
+
   virtual ~EnergyEndpointer();
 
   void Init(const EnergyEndpointerParams& params);
@@ -152,8 +156,6 @@ class CONTENT_EXPORT EnergyEndpointer {
   // Time when mode switched from environment estimation to user input. This
   // is used to time forced rejection of audio feedback contamination.
   int64_t user_input_start_time_us_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnergyEndpointer);
 };
 
 }  // namespace content

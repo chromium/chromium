@@ -31,6 +31,11 @@ class ContentBrowserPepperHostFactory : public ppapi::host::HostFactory {
   // Non-owning pointer to the filter must outlive this class.
   explicit ContentBrowserPepperHostFactory(BrowserPpapiHostImpl* host);
 
+  ContentBrowserPepperHostFactory(const ContentBrowserPepperHostFactory&) =
+      delete;
+  ContentBrowserPepperHostFactory& operator=(
+      const ContentBrowserPepperHostFactory&) = delete;
+
   ~ContentBrowserPepperHostFactory() override;
 
   std::unique_ptr<ppapi::host::ResourceHost> CreateResourceHost(
@@ -60,8 +65,6 @@ class ContentBrowserPepperHostFactory : public ppapi::host::HostFactory {
 
   // Non-owning pointer.
   BrowserPpapiHostImpl* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentBrowserPepperHostFactory);
 };
 
 }  // namespace content

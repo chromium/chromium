@@ -38,6 +38,10 @@ class CONTENT_EXPORT BrowserProcessIOThread : public base::Thread {
  public:
   // Constructs a BrowserProcessIOThread.
   BrowserProcessIOThread();
+
+  BrowserProcessIOThread(const BrowserProcessIOThread&) = delete;
+  BrowserProcessIOThread& operator=(const BrowserProcessIOThread&) = delete;
+
   ~BrowserProcessIOThread() override;
 
   // Registers this thread to represent the IO thread in the browser_thread.h
@@ -86,8 +90,6 @@ class CONTENT_EXPORT BrowserProcessIOThread : public base::Thread {
   std::unique_ptr<NotificationService> notification_service_;
 
   THREAD_CHECKER(browser_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessIOThread);
 };
 
 }  // namespace content

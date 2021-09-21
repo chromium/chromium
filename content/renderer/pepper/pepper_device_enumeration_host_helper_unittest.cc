@@ -50,6 +50,9 @@ class TestDelegate : public PepperDeviceEnumerationHostHelper::Delegate,
  public:
   TestDelegate() : last_used_id_(0u) {}
 
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   ~TestDelegate() override { CHECK(monitoring_callbacks_.empty()); }
 
   void EnumerateDevices(PP_DeviceType_Dev /* type */,
@@ -92,8 +95,6 @@ class TestDelegate : public PepperDeviceEnumerationHostHelper::Delegate,
  private:
   std::map<size_t, DevicesCallback> monitoring_callbacks_;
   size_t last_used_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class PepperDeviceEnumerationHostHelperTest : public testing::Test {

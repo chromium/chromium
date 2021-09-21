@@ -33,6 +33,9 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
   explicit TestWebUIDataSourceImpl(const std::string& source_name)
       : source_(WebUIDataSourceImplWithPublicData::Create(source_name)) {}
 
+  TestWebUIDataSourceImpl(const TestWebUIDataSourceImpl&) = delete;
+  TestWebUIDataSourceImpl& operator=(const TestWebUIDataSourceImpl&) = delete;
+
   ~TestWebUIDataSourceImpl() override {}
 
   const base::DictionaryValue* GetLocalizedStrings() override {
@@ -47,8 +50,6 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
 
  private:
   scoped_refptr<WebUIDataSourceImplWithPublicData> source_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebUIDataSourceImpl);
 };
 
 // static

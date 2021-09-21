@@ -21,6 +21,12 @@ class MockOverscrollControllerDelegateAura
       public MockOverscrollObserver {
  public:
   MockOverscrollControllerDelegateAura(RenderWidgetHostViewAura* rwhva);
+
+  MockOverscrollControllerDelegateAura(
+      const MockOverscrollControllerDelegateAura&) = delete;
+  MockOverscrollControllerDelegateAura& operator=(
+      const MockOverscrollControllerDelegateAura&) = delete;
+
   ~MockOverscrollControllerDelegateAura() override;
 
   // OverscrollControllerDelegate:
@@ -46,7 +52,6 @@ class MockOverscrollControllerDelegateAura
   scoped_refptr<MessageLoopRunner> end_message_loop_runner_;
   bool seen_update_;
   bool overscroll_ended_;
-  DISALLOW_COPY_AND_ASSIGN(MockOverscrollControllerDelegateAura);
 };
 
 }  // namespace content

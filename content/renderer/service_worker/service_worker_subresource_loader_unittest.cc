@@ -101,6 +101,11 @@ class FakeControllerServiceWorker
     : public blink::mojom::ControllerServiceWorker {
  public:
   FakeControllerServiceWorker() = default;
+
+  FakeControllerServiceWorker(const FakeControllerServiceWorker&) = delete;
+  FakeControllerServiceWorker& operator=(const FakeControllerServiceWorker&) =
+      delete;
+
   ~FakeControllerServiceWorker() override = default;
 
   static blink::mojom::FetchAPIResponsePtr OkResponse(
@@ -422,8 +427,6 @@ class FakeControllerServiceWorker
 
   std::string cache_storage_cache_name_;
   base::Time response_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeControllerServiceWorker);
 };
 
 class FakeServiceWorkerContainerHost
@@ -432,6 +435,11 @@ class FakeServiceWorkerContainerHost
   explicit FakeServiceWorkerContainerHost(
       FakeControllerServiceWorker* fake_controller)
       : fake_controller_(fake_controller) {}
+
+  FakeServiceWorkerContainerHost(const FakeServiceWorkerContainerHost&) =
+      delete;
+  FakeServiceWorkerContainerHost& operator=(
+      const FakeServiceWorkerContainerHost&) = delete;
 
   ~FakeServiceWorkerContainerHost() override = default;
 
@@ -488,7 +496,6 @@ class FakeServiceWorkerContainerHost
   int get_controller_service_worker_count_ = 0;
   FakeControllerServiceWorker* fake_controller_;
   mojo::ReceiverSet<blink::mojom::ServiceWorkerContainerHost> receivers_;
-  DISALLOW_COPY_AND_ASSIGN(FakeServiceWorkerContainerHost);
 };
 
 // Returns an expected network::mojom::URLResponseHeadPtr which is used by

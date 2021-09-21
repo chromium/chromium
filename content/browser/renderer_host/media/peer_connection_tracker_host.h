@@ -41,6 +41,10 @@ class PeerConnectionTrackerHost
       public base::PowerThermalObserver,
       public blink::mojom::PeerConnectionTrackerHost {
  public:
+  PeerConnectionTrackerHost(const PeerConnectionTrackerHost&) = delete;
+  PeerConnectionTrackerHost& operator=(const PeerConnectionTrackerHost&) =
+      delete;
+
   ~PeerConnectionTrackerHost() override;
 
   // Adds/removes a PeerConnectionTrackerHostObserver.
@@ -95,8 +99,6 @@ class PeerConnectionTrackerHost
   base::ProcessId peer_pid_;
   mojo::Receiver<blink::mojom::PeerConnectionTrackerHost> receiver_{this};
   mojo::Remote<blink::mojom::PeerConnectionManager> tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionTrackerHost);
 };
 
 }  // namespace content

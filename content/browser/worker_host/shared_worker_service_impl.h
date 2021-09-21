@@ -46,6 +46,10 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       StoragePartitionImpl* storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       scoped_refptr<ChromeAppCacheService> appcache_service);
+
+  SharedWorkerServiceImpl(const SharedWorkerServiceImpl&) = delete;
+  SharedWorkerServiceImpl& operator=(const SharedWorkerServiceImpl&) = delete;
+
   ~SharedWorkerServiceImpl() override;
 
   // SharedWorkerService implementation.
@@ -151,8 +155,6 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<SharedWorkerServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerServiceImpl);
 };
 
 }  // namespace content

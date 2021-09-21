@@ -30,6 +30,12 @@ namespace {
 class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
  public:
   SiteInstanceRenderProcessHostFactory() = default;
+
+  SiteInstanceRenderProcessHostFactory(
+      const SiteInstanceRenderProcessHostFactory&) = delete;
+  SiteInstanceRenderProcessHostFactory& operator=(
+      const SiteInstanceRenderProcessHostFactory&) = delete;
+
   ~SiteInstanceRenderProcessHostFactory() override = default;
 
   RenderProcessHost* CreateRenderProcessHost(
@@ -52,8 +58,6 @@ class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
  private:
   mutable std::vector<std::unique_ptr<MockRenderProcessHost>> processes_;
   mutable SiteInstance* last_site_instance_used_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteInstanceRenderProcessHostFactory);
 };
 
 }  // namespace

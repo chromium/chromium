@@ -51,6 +51,10 @@ class CONTENT_EXPORT AudioChunk :
 class AudioBuffer {
  public:
   explicit AudioBuffer(int bytes_per_sample);
+
+  AudioBuffer(const AudioBuffer&) = delete;
+  AudioBuffer& operator=(const AudioBuffer&) = delete;
+
   ~AudioBuffer();
 
   // Enqueues a copy of |length| bytes of |data| buffer.
@@ -75,8 +79,6 @@ class AudioBuffer {
   using ChunksContainer = base::circular_deque<scoped_refptr<AudioChunk>>;
   ChunksContainer chunks_;
   const int bytes_per_sample_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBuffer);
 };
 
 }  // namespace content

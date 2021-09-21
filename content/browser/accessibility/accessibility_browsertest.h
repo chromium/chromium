@@ -17,6 +17,10 @@ namespace content {
 class AccessibilityBrowserTest : public ContentBrowserTest {
  public:
   AccessibilityBrowserTest() = default;
+
+  AccessibilityBrowserTest(const AccessibilityBrowserTest&) = delete;
+  AccessibilityBrowserTest& operator=(const AccessibilityBrowserTest&) = delete;
+
   ~AccessibilityBrowserTest() override = default;
 
  protected:
@@ -35,9 +39,6 @@ class AccessibilityBrowserTest : public ContentBrowserTest {
 
   static std::string InputContentsString();
   static std::string TextAreaContentsString();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityBrowserTest);
 };
 
 }  // namespace content

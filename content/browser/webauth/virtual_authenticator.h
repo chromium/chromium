@@ -33,6 +33,10 @@ class CONTENT_EXPORT VirtualAuthenticator
  public:
   explicit VirtualAuthenticator(
       const blink::test::mojom::VirtualAuthenticatorOptions& options);
+
+  VirtualAuthenticator(const VirtualAuthenticator&) = delete;
+  VirtualAuthenticator& operator=(const VirtualAuthenticator&) = delete;
+
   ~VirtualAuthenticator() override;
 
   void AddReceiver(
@@ -138,8 +142,6 @@ class CONTENT_EXPORT VirtualAuthenticator
   mojo::ReceiverSet<blink::test::mojom::VirtualAuthenticator> receiver_set_;
 
   base::WeakPtrFactory<VirtualAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualAuthenticator);
 };
 
 }  // namespace content

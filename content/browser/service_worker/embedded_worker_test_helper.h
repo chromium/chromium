@@ -88,6 +88,10 @@ class EmbeddedWorkerTestHelper {
   EmbeddedWorkerTestHelper(
       const base::FilePath& user_data_directory,
       storage::SpecialStoragePolicy* special_storage_policy);
+
+  EmbeddedWorkerTestHelper(const EmbeddedWorkerTestHelper&) = delete;
+  EmbeddedWorkerTestHelper& operator=(const EmbeddedWorkerTestHelper&) = delete;
+
   virtual ~EmbeddedWorkerTestHelper();
 
   ServiceWorkerContextCore* context();
@@ -215,8 +219,6 @@ class EmbeddedWorkerTestHelper {
   int new_mock_render_process_id_;
 
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerTestHelper);
 };
 
 template <typename MockType, typename... Args>

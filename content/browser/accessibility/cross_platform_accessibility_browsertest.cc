@@ -60,6 +60,12 @@ namespace content {
 class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
  public:
   CrossPlatformAccessibilityBrowserTest() = default;
+
+  CrossPlatformAccessibilityBrowserTest(
+      const CrossPlatformAccessibilityBrowserTest&) = delete;
+  CrossPlatformAccessibilityBrowserTest& operator=(
+      const CrossPlatformAccessibilityBrowserTest&) = delete;
+
   ~CrossPlatformAccessibilityBrowserTest() override = default;
 
   // Make sure each node in the tree has a unique id.
@@ -204,8 +210,6 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
 #if defined(OS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CrossPlatformAccessibilityBrowserTest);
 };
 
 void CrossPlatformAccessibilityBrowserTest::SetUp() {

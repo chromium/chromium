@@ -26,6 +26,10 @@ class WebTestBrowserMainRunner;
 class ShellMainDelegate : public ContentMainDelegate {
  public:
   explicit ShellMainDelegate(bool is_content_browsertests = false);
+
+  ShellMainDelegate(const ShellMainDelegate&) = delete;
+  ShellMainDelegate& operator=(const ShellMainDelegate&) = delete;
+
   ~ShellMainDelegate() override;
 
   // ContentMainDelegate implementation:
@@ -67,9 +71,6 @@ class ShellMainDelegate : public ContentMainDelegate {
   std::unique_ptr<ShellContentRendererClient> renderer_client_;
   std::unique_ptr<ShellContentUtilityClient> utility_client_;
   std::unique_ptr<ShellContentClient> content_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellMainDelegate);
 };
 
 }  // namespace content

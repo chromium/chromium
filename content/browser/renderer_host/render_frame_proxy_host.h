@@ -103,6 +103,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
   RenderFrameProxyHost(SiteInstance* site_instance,
                        scoped_refptr<RenderViewHostImpl> render_view_host,
                        FrameTreeNode* frame_tree_node);
+
+  RenderFrameProxyHost(const RenderFrameProxyHost&) = delete;
+  RenderFrameProxyHost& operator=(const RenderFrameProxyHost&) = delete;
+
   ~RenderFrameProxyHost() override;
 
   RenderProcessHost* GetProcess() { return process_; }
@@ -337,8 +341,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
       remote_main_frame_host_receiver_{this};
 
   blink::RemoteFrameToken frame_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameProxyHost);
 };
 
 }  // namespace content

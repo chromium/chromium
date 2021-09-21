@@ -1801,6 +1801,11 @@ class TestAuthenticatorRequestDelegate
         attestation_consent_(attestation_consent),
         started_over_callback_(std::move(started_over_callback)) {}
 
+  TestAuthenticatorRequestDelegate(const TestAuthenticatorRequestDelegate&) =
+      delete;
+  TestAuthenticatorRequestDelegate& operator=(
+      const TestAuthenticatorRequestDelegate&) = delete;
+
   ~TestAuthenticatorRequestDelegate() override {
     CHECK(attestation_consent_queried_ ||
           attestation_consent_ == AttestationConsent::NOT_USED);
@@ -1868,9 +1873,6 @@ class TestAuthenticatorRequestDelegate
   const AttestationConsent attestation_consent_;
   base::OnceClosure started_over_callback_;
   bool attestation_consent_queried_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAuthenticatorRequestDelegate);
 };
 
 // TestAuthenticatorContentBrowserClient is a test fake implementation of the
@@ -3185,6 +3187,12 @@ class MockAuthenticatorRequestDelegateObserver
             AttestationConsent::NOT_USED,
             /*started_over_callback=*/base::OnceClosure()),
         failure_reasons_callback_(std::move(failure_reasons_callback)) {}
+
+  MockAuthenticatorRequestDelegateObserver(
+      const MockAuthenticatorRequestDelegateObserver&) = delete;
+  MockAuthenticatorRequestDelegateObserver& operator=(
+      const MockAuthenticatorRequestDelegateObserver&) = delete;
+
   ~MockAuthenticatorRequestDelegateObserver() override = default;
 
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
@@ -3203,8 +3211,6 @@ class MockAuthenticatorRequestDelegateObserver
 
  private:
   InterestingFailureReasonCallback failure_reasons_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAuthenticatorRequestDelegateObserver);
 };
 
 // Fake test construct that shares all other behavior with AuthenticatorCommon
@@ -4357,6 +4363,12 @@ class PINTestAuthenticatorRequestDelegate
       : supports_pin_(supports_pin),
         expected_(pins),
         failure_reason_(failure_reason) {}
+
+  PINTestAuthenticatorRequestDelegate(
+      const PINTestAuthenticatorRequestDelegate&) = delete;
+  PINTestAuthenticatorRequestDelegate& operator=(
+      const PINTestAuthenticatorRequestDelegate&) = delete;
+
   ~PINTestAuthenticatorRequestDelegate() override {
     DCHECK(expected_.empty())
         << expected_.size() << " unsatisifed PIN expectations";
@@ -4396,7 +4408,6 @@ class PINTestAuthenticatorRequestDelegate
   const bool supports_pin_;
   std::list<PINExpectation> expected_;
   absl::optional<InterestingFailureReason>* const failure_reason_;
-  DISALLOW_COPY_AND_ASSIGN(PINTestAuthenticatorRequestDelegate);
 };
 
 class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {

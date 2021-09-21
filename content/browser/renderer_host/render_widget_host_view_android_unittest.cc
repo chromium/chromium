@@ -31,6 +31,12 @@ namespace content {
 class RenderWidgetHostViewAndroidTest : public testing::Test {
  public:
   RenderWidgetHostViewAndroidTest();
+
+  RenderWidgetHostViewAndroidTest(const RenderWidgetHostViewAndroidTest&) =
+      delete;
+  RenderWidgetHostViewAndroidTest& operator=(
+      const RenderWidgetHostViewAndroidTest&) = delete;
+
   ~RenderWidgetHostViewAndroidTest() override {}
 
   RenderWidgetHostViewAndroid* render_widget_host_view_android() {
@@ -77,8 +83,6 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   RenderWidgetHostViewAndroid* render_widget_host_view_android_;
 
   BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAndroidTest);
 };
 
 RenderWidgetHostViewAndroidTest::RenderWidgetHostViewAndroidTest()

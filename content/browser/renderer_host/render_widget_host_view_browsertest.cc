@@ -195,15 +195,18 @@ class NoCompositingRenderWidgetHostViewBrowserTest
     : public RenderWidgetHostViewBrowserTest {
  public:
   NoCompositingRenderWidgetHostViewBrowserTest() {}
+
+  NoCompositingRenderWidgetHostViewBrowserTest(
+      const NoCompositingRenderWidgetHostViewBrowserTest&) = delete;
+  NoCompositingRenderWidgetHostViewBrowserTest& operator=(
+      const NoCompositingRenderWidgetHostViewBrowserTest&) = delete;
+
   ~NoCompositingRenderWidgetHostViewBrowserTest() override {}
 
   bool SetUpSourceSurface(const char* wait_message) override {
     NOTIMPLEMENTED();
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoCompositingRenderWidgetHostViewBrowserTest);
 };
 
 // When creating the first RenderWidgetHostViewBase, the CompositorFrameSink can

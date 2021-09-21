@@ -30,6 +30,10 @@ class TestNotificationListener
     : public blink::mojom::NonPersistentNotificationListener {
  public:
   TestNotificationListener() = default;
+
+  TestNotificationListener(const TestNotificationListener&) = delete;
+  TestNotificationListener& operator=(const TestNotificationListener&) = delete;
+
   ~TestNotificationListener() override = default;
 
   // Closes the bindings associated with this listener.
@@ -69,8 +73,6 @@ class TestNotificationListener
   int on_close_count_ = 0;
   mojo::Receiver<blink::mojom::NonPersistentNotificationListener> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestNotificationListener);
 };
 
 }  // anonymous namespace
@@ -79,6 +81,11 @@ class NotificationEventDispatcherImplTest : public ::testing::Test {
  public:
   NotificationEventDispatcherImplTest()
       : dispatcher_(new NotificationEventDispatcherImpl()) {}
+
+  NotificationEventDispatcherImplTest(
+      const NotificationEventDispatcherImplTest&) = delete;
+  NotificationEventDispatcherImplTest& operator=(
+      const NotificationEventDispatcherImplTest&) = delete;
 
   ~NotificationEventDispatcherImplTest() override { delete dispatcher_; }
 
@@ -91,9 +98,6 @@ class NotificationEventDispatcherImplTest : public ::testing::Test {
   // Using a raw pointer because NotificationEventDispatcherImpl is a singleton
   // with private constructor and destructor, so unique_ptr is not an option.
   NotificationEventDispatcherImpl* dispatcher_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationEventDispatcherImplTest);
 };
 
 TEST_F(NotificationEventDispatcherImplTest,

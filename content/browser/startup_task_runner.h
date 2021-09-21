@@ -40,6 +40,9 @@ class CONTENT_EXPORT StartupTaskRunner {
   StartupTaskRunner(base::OnceCallback<void(int)> startup_complete_callback,
                     scoped_refptr<base::SingleThreadTaskRunner> proxy);
 
+  StartupTaskRunner(const StartupTaskRunner&) = delete;
+  StartupTaskRunner& operator=(const StartupTaskRunner&) = delete;
+
   ~StartupTaskRunner();
 
   // Add a task to the queue of startup tasks to be run.
@@ -59,8 +62,6 @@ class CONTENT_EXPORT StartupTaskRunner {
 
   base::OnceCallback<void(int)> startup_complete_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupTaskRunner);
 };
 
 }  // namespace content

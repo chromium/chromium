@@ -51,6 +51,11 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       public viz::mojom::FrameSinkVideoConsumer {
  public:
   FrameSinkVideoCaptureDevice();
+
+  FrameSinkVideoCaptureDevice(const FrameSinkVideoCaptureDevice&) = delete;
+  FrameSinkVideoCaptureDevice& operator=(const FrameSinkVideoCaptureDevice&) =
+      delete;
+
   ~FrameSinkVideoCaptureDevice() override;
 
   // Deviation from the VideoCaptureDevice interface: Since the memory pooling
@@ -200,8 +205,6 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   // Creates WeakPtrs for use on the device thread.
   base::WeakPtrFactory<FrameSinkVideoCaptureDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSinkVideoCaptureDevice);
 };
 
 }  // namespace content

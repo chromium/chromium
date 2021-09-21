@@ -101,6 +101,9 @@ class URLLoaderInterceptor {
       const URLLoaderCompletionStatusCallback& completion_status_callback,
       base::OnceClosure ready_callback);
 
+  URLLoaderInterceptor(const URLLoaderInterceptor&) = delete;
+  URLLoaderInterceptor& operator=(const URLLoaderInterceptor&) = delete;
+
   ~URLLoaderInterceptor();
 
   // Serves static data, similar to net::test::EmbeddedTestServer, for
@@ -230,8 +233,6 @@ class URLLoaderInterceptor {
   base::Lock last_request_lock_;
   GURL last_request_url_ GUARDED_BY(last_request_lock_);
   net::HttpRequestHeaders last_request_headers_ GUARDED_BY(last_request_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderInterceptor);
 };
 
 }  // namespace content

@@ -20,6 +20,11 @@ class MockWebBundleReaderFactory {
   static std::unique_ptr<MockWebBundleReaderFactory> Create();
 
   MockWebBundleReaderFactory() = default;
+
+  MockWebBundleReaderFactory(const MockWebBundleReaderFactory&) = delete;
+  MockWebBundleReaderFactory& operator=(const MockWebBundleReaderFactory&) =
+      delete;
+
   virtual ~MockWebBundleReaderFactory() = default;
 
   // Creates WebBundleReader instance. A temporary file is created and
@@ -50,9 +55,6 @@ class MockWebBundleReaderFactory {
   virtual void FullfillResponse(
       web_package::mojom::BundleResponseLocationPtr expected_parse_args,
       web_package::mojom::BundleResponsePtr response) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebBundleReaderFactory);
 };
 
 }  // namespace content

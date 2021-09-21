@@ -39,6 +39,10 @@ class CONTENT_EXPORT EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
       const viz::FrameSinkId& frame_sink_id,
       mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient> client,
       DestroyCallback destroy_callback);
+
+  EmbeddedFrameSinkImpl(const EmbeddedFrameSinkImpl&) = delete;
+  EmbeddedFrameSinkImpl& operator=(const EmbeddedFrameSinkImpl&) = delete;
+
   ~EmbeddedFrameSinkImpl() override;
 
   const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
@@ -86,8 +90,6 @@ class CONTENT_EXPORT EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
   viz::LocalSurfaceId local_surface_id_;
 
   bool has_created_compositor_frame_sink_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedFrameSinkImpl);
 };
 
 }  // namespace content

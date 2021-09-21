@@ -42,6 +42,9 @@ class AppCacheQuotaClient : public storage::StorageKeyQuotaClient {
   CONTENT_EXPORT
   explicit AppCacheQuotaClient(base::WeakPtr<AppCacheServiceImpl> service);
 
+  AppCacheQuotaClient(const AppCacheQuotaClient&) = delete;
+  AppCacheQuotaClient& operator=(const AppCacheQuotaClient&) = delete;
+
   ~AppCacheQuotaClient() override;
 
   // storage::StorageKeyQuotaClient method overrides.
@@ -100,8 +103,6 @@ class AppCacheQuotaClient : public storage::StorageKeyQuotaClient {
   bool appcache_is_ready_ = false;
   bool service_is_destroyed_ = false;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheQuotaClient);
 };
 
 }  // namespace content

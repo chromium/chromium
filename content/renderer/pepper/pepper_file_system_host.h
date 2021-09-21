@@ -43,6 +43,10 @@ class PepperFileSystemHost
                        PP_Resource resource,
                        const GURL& root_url,
                        PP_FileSystemType type);
+
+  PepperFileSystemHost(const PepperFileSystemHost&) = delete;
+  PepperFileSystemHost& operator=(const PepperFileSystemHost&) = delete;
+
   ~PepperFileSystemHost() override;
 
   // ppapi::host::ResourceHost override.
@@ -80,8 +84,6 @@ class PepperFileSystemHost
   GURL root_url_;
   bool called_open_;  // whether open has been called.
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileSystemHost);
 };
 
 }  // namespace content

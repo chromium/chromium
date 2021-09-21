@@ -72,6 +72,11 @@ namespace {
 class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
  public:
   AccessibilityWinBrowserTest();
+
+  AccessibilityWinBrowserTest(const AccessibilityWinBrowserTest&) = delete;
+  AccessibilityWinBrowserTest& operator=(const AccessibilityWinBrowserTest&) =
+      delete;
+
   ~AccessibilityWinBrowserTest() override;
 
  protected:
@@ -139,7 +144,6 @@ class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
                                           ax::mojom::Role role,
                                           const std::string& name_or_value);
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityWinBrowserTest);
 };
 
 AccessibilityWinBrowserTest::AccessibilityWinBrowserTest() = default;

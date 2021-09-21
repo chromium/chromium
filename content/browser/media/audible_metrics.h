@@ -37,6 +37,10 @@ class CONTENT_EXPORT AudibleMetrics {
   };
 
   AudibleMetrics();
+
+  AudibleMetrics(const AudibleMetrics&) = delete;
+  AudibleMetrics& operator=(const AudibleMetrics&) = delete;
+
   ~AudibleMetrics();
 
   void UpdateAudibleWebContentsState(const WebContents* web_contents,
@@ -67,8 +71,6 @@ class CONTENT_EXPORT AudibleMetrics {
   // contents to the set when it becomes currently audible and remove it when it
   // is no longer audible.
   std::set<const WebContents*> audible_web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudibleMetrics);
 };
 
 }  // namespace content

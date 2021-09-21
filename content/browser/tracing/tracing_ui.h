@@ -28,6 +28,10 @@ class TracingDelegate;
 class CONTENT_EXPORT TracingUI : public WebUIController {
  public:
   explicit TracingUI(WebUI* web_ui);
+
+  TracingUI(const TracingUI&) = delete;
+  TracingUI& operator=(const TracingUI&) = delete;
+
   ~TracingUI() override;
 
   // Public for testing.
@@ -38,8 +42,6 @@ class CONTENT_EXPORT TracingUI : public WebUIController {
  private:
   std::unique_ptr<TracingDelegate> delegate_;
   base::WeakPtrFactory<TracingUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TracingUI);
 };
 
 }  // namespace content

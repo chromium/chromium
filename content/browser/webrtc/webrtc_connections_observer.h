@@ -20,6 +20,11 @@ class WebRtcConnectionsObserver : public WebRtcInternalsConnectionsObserver {
   // is a change in the count of active WebRTC connections.
   explicit WebRtcConnectionsObserver(const ConnectionsCountChangedCallback&
                                          connections_count_changed_callback);
+
+  WebRtcConnectionsObserver(const WebRtcConnectionsObserver&) = delete;
+  WebRtcConnectionsObserver& operator=(const WebRtcConnectionsObserver&) =
+      delete;
+
   ~WebRtcConnectionsObserver() override;
 
  private:
@@ -29,7 +34,6 @@ class WebRtcConnectionsObserver : public WebRtcInternalsConnectionsObserver {
   ConnectionsCountChangedCallback connections_count_changed_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(WebRtcConnectionsObserver);
 };
 
 }  // namespace content

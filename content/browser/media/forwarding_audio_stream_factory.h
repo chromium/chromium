@@ -58,6 +58,10 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     Core(base::WeakPtr<ForwardingAudioStreamFactory> owner,
          media::UserInputMonitorBase* user_input_monitor,
          std::unique_ptr<AudioStreamBrokerFactory> factory);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     ~Core() final;
 
     const base::UnguessableToken& group_id() const { return group_id_; }
@@ -158,8 +162,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
 
     base::WeakPtrFactory<ForwardingAudioStreamFactory::Core> weak_ptr_factory_{
         this};
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // Returns the ForwardingAudioStreamFactory which takes care of stream

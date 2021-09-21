@@ -23,6 +23,12 @@ namespace content {
 class TestSynchronousCompositorClient : public SynchronousCompositorClient {
  public:
   TestSynchronousCompositorClient() = default;
+
+  TestSynchronousCompositorClient(const TestSynchronousCompositorClient&) =
+      delete;
+  TestSynchronousCompositorClient& operator=(
+      const TestSynchronousCompositorClient&) = delete;
+
   ~TestSynchronousCompositorClient() override = default;
 
   // SynchronousCompositorClient overrides.
@@ -65,7 +71,6 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
 
  private:
   std::map<viz::FrameSinkId, SynchronousCompositor*> compositor_map_;
-  DISALLOW_COPY_AND_ASSIGN(TestSynchronousCompositorClient);
 };
 
 class SynchronousCompositorBrowserTest : public ContentBrowserTest {

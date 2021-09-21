@@ -24,6 +24,9 @@ class CONTENT_EXPORT BackgroundTracingRule {
   BackgroundTracingRule();
   explicit BackgroundTracingRule(int trigger_delay);
 
+  BackgroundTracingRule(const BackgroundTracingRule&) = delete;
+  BackgroundTracingRule& operator=(const BackgroundTracingRule&) = delete;
+
   virtual ~BackgroundTracingRule();
 
   void Setup(const base::Value& dict);
@@ -65,8 +68,6 @@ class CONTENT_EXPORT BackgroundTracingRule {
   virtual std::string GetDefaultRuleId() const;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingRule);
-
   double trigger_chance_ = 1.0;
   int trigger_delay_ = -1;
   bool stop_tracing_on_repeated_reactive_ = false;

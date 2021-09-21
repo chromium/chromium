@@ -60,6 +60,12 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jlong ax_tree_update_ptr);
+
+  WebContentsAccessibilityAndroid(const WebContentsAccessibilityAndroid&) =
+      delete;
+  WebContentsAccessibilityAndroid& operator=(
+      const WebContentsAccessibilityAndroid&) = delete;
+
   ~WebContentsAccessibilityAndroid() override;
 
   // Notify the root BrowserAccessibilityManager that this is the
@@ -421,8 +427,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   std::unique_ptr<TouchPassthroughManager> touch_passthrough_manager_;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsAccessibilityAndroid);
 };
 
 }  // namespace content

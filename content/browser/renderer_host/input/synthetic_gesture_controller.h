@@ -39,6 +39,11 @@ class CONTENT_EXPORT SyntheticGestureController {
   SyntheticGestureController(
       Delegate* delegate,
       std::unique_ptr<SyntheticGestureTarget> gesture_target);
+
+  SyntheticGestureController(const SyntheticGestureController&) = delete;
+  SyntheticGestureController& operator=(const SyntheticGestureController&) =
+      delete;
+
   virtual ~SyntheticGestureController();
 
   typedef base::OnceCallback<void(SyntheticGesture::Result)>
@@ -84,6 +89,10 @@ class CONTENT_EXPORT SyntheticGestureController {
   class GestureAndCallbackQueue {
   public:
     GestureAndCallbackQueue();
+
+    GestureAndCallbackQueue(const GestureAndCallbackQueue&) = delete;
+    GestureAndCallbackQueue& operator=(const GestureAndCallbackQueue&) = delete;
+
     ~GestureAndCallbackQueue();
     void Push(std::unique_ptr<SyntheticGesture> gesture,
               OnGestureCompleteCallback callback,
@@ -132,8 +141,6 @@ class CONTENT_EXPORT SyntheticGestureController {
     std::vector<std::unique_ptr<SyntheticGesture>> gestures_;
     base::queue<OnGestureCompleteCallback> callbacks_;
     base::queue<bool> complete_immediately_;
-
-    DISALLOW_COPY_AND_ASSIGN(GestureAndCallbackQueue);
   } pending_gesture_queue_;
 
   // The first time we start sending a gesture, the renderer may not yet be
@@ -150,8 +157,6 @@ class CONTENT_EXPORT SyntheticGestureController {
 
   base::RepeatingTimer dispatch_timer_;
   base::WeakPtrFactory<SyntheticGestureController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticGestureController);
 };
 
 }  // namespace content

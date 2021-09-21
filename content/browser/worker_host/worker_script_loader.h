@@ -81,6 +81,10 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
       scoped_refptr<network::SharedURLLoaderFactory> default_loader_factory,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       ukm::SourceId ukm_source_id);
+
+  WorkerScriptLoader(const WorkerScriptLoader&) = delete;
+  WorkerScriptLoader& operator=(const WorkerScriptLoader&) = delete;
+
   ~WorkerScriptLoader() override;
 
   // network::mojom::URLLoader:
@@ -171,8 +175,6 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   bool completed_ = false;
 
   base::WeakPtrFactory<WorkerScriptLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerScriptLoader);
 };
 
 }  // namespace content

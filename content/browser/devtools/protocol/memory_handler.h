@@ -19,6 +19,10 @@ class MemoryHandler : public DevToolsDomainHandler,
                       public Memory::Backend {
  public:
   MemoryHandler();
+
+  MemoryHandler(const MemoryHandler&) = delete;
+  MemoryHandler& operator=(const MemoryHandler&) = delete;
+
   ~MemoryHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -40,8 +44,6 @@ class MemoryHandler : public DevToolsDomainHandler,
   mojo::Remote<blink::mojom::LeakDetector> leak_detector_;
   std::unique_ptr<PrepareForLeakDetectionCallback> leak_detection_callback_;
   base::WeakPtrFactory<MemoryHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryHandler);
 };
 
 }  // namespace protocol

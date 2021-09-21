@@ -124,6 +124,10 @@ class CONTENT_EXPORT AppCacheDatabase {
   };
 
   explicit AppCacheDatabase(const base::FilePath& path);
+
+  AppCacheDatabase(const AppCacheDatabase&) = delete;
+  AppCacheDatabase& operator=(const AppCacheDatabase&) = delete;
+
   ~AppCacheDatabase();
 
   void Disable();
@@ -288,8 +292,6 @@ class CONTENT_EXPORT AppCacheDatabase {
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheDatabaseTest, UpgradeSchemaFrom8);
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheDatabaseTest, UpgradeSchemaFrom9);
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheDatabaseTest, WasCorrutionDetected);
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheDatabase);
 };
 
 }  // namespace content

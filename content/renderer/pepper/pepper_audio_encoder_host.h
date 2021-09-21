@@ -31,6 +31,10 @@ class CONTENT_EXPORT PepperAudioEncoderHost
   PepperAudioEncoderHost(RendererPpapiHost* host,
                          PP_Instance instance,
                          PP_Resource resource);
+
+  PepperAudioEncoderHost(const PepperAudioEncoderHost&) = delete;
+  PepperAudioEncoderHost& operator=(const PepperAudioEncoderHost&) = delete;
+
   ~PepperAudioEncoderHost() override;
 
  private:
@@ -104,8 +108,6 @@ class CONTENT_EXPORT PepperAudioEncoderHost
   std::unique_ptr<AudioEncoderImpl> encoder_;
 
   base::WeakPtrFactory<PepperAudioEncoderHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperAudioEncoderHost);
 };
 
 }  // namespace content

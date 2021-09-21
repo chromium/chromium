@@ -20,6 +20,11 @@ class BlinkInterfaceRegistryImpl final : public blink::InterfaceRegistry {
       base::WeakPtr<service_manager::BinderRegistry> interface_registry,
       base::WeakPtr<blink::AssociatedInterfaceRegistry>
           associated_interface_registry);
+
+  BlinkInterfaceRegistryImpl(const BlinkInterfaceRegistryImpl&) = delete;
+  BlinkInterfaceRegistryImpl& operator=(const BlinkInterfaceRegistryImpl&) =
+      delete;
+
   ~BlinkInterfaceRegistryImpl();
 
   // blink::InterfaceRegistry override.
@@ -35,8 +40,6 @@ class BlinkInterfaceRegistryImpl final : public blink::InterfaceRegistry {
   const base::WeakPtr<service_manager::BinderRegistry> interface_registry_;
   const base::WeakPtr<blink::AssociatedInterfaceRegistry>
       associated_interface_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlinkInterfaceRegistryImpl);
 };
 
 }  // namespace content

@@ -33,14 +33,17 @@ class DummyPictureInPictureSessionObserver final
     : public blink::mojom::PictureInPictureSessionObserver {
  public:
   DummyPictureInPictureSessionObserver() = default;
+
+  DummyPictureInPictureSessionObserver(
+      const DummyPictureInPictureSessionObserver&) = delete;
+  DummyPictureInPictureSessionObserver& operator=(
+      const DummyPictureInPictureSessionObserver&) = delete;
+
   ~DummyPictureInPictureSessionObserver() override = default;
 
   // Implementation of PictureInPictureSessionObserver.
   void OnWindowSizeChanged(const gfx::Size&) override {}
   void OnStopped() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyPictureInPictureSessionObserver);
 };
 
 class PictureInPictureDelegate : public WebContentsDelegate {
@@ -59,6 +62,10 @@ class PictureInPictureDelegate : public WebContentsDelegate {
 class TestOverlayWindow : public OverlayWindow {
  public:
   TestOverlayWindow() = default;
+
+  TestOverlayWindow(const TestOverlayWindow&) = delete;
+  TestOverlayWindow& operator=(const TestOverlayWindow&) = delete;
+
   ~TestOverlayWindow() override {}
 
   static std::unique_ptr<OverlayWindow> Create(
@@ -91,8 +98,6 @@ class TestOverlayWindow : public OverlayWindow {
 
  private:
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverlayWindow);
 };
 
 class PictureInPictureTestBrowserClient : public TestContentBrowserClient {

@@ -57,6 +57,9 @@ class MockFrameConnector : public CrossProcessFrameConnector {
         use_zoom_for_device_scale_factor);
   }
 
+  MockFrameConnector(const MockFrameConnector&) = delete;
+  MockFrameConnector& operator=(const MockFrameConnector&) = delete;
+
   ~MockFrameConnector() override {
     if (view_) {
       view_->SetFrameConnector(nullptr);
@@ -75,8 +78,6 @@ class MockFrameConnector : public CrossProcessFrameConnector {
  private:
   RenderWidgetHostViewBase* parent_view_;
   RenderWidgetHostViewBase* root_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFrameConnector);
 };
 
 // Used as a target for the RenderWidgetHostInputEventRouter. We record what

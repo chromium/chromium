@@ -20,6 +20,12 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
  public:
   explicit DelegatedFrameHostClientAndroid(
       RenderWidgetHostViewAndroid* render_widget_host_view);
+
+  DelegatedFrameHostClientAndroid(const DelegatedFrameHostClientAndroid&) =
+      delete;
+  DelegatedFrameHostClientAndroid& operator=(
+      const DelegatedFrameHostClientAndroid&) = delete;
+
   ~DelegatedFrameHostClientAndroid() override;
 
  private:
@@ -30,8 +36,6 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
   void OnSurfaceIdChanged() override;
 
   RenderWidgetHostViewAndroid* render_widget_host_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHostClientAndroid);
 };
 
 }  // namespace content

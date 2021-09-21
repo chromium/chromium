@@ -36,6 +36,10 @@ namespace content {
 class CONTENT_EXPORT AppCacheRequest {
  public:
   explicit AppCacheRequest(const network::ResourceRequest& request);
+
+  AppCacheRequest(const AppCacheRequest&) = delete;
+  AppCacheRequest& operator=(const AppCacheRequest&) = delete;
+
   ~AppCacheRequest();
 
   // The URL for this request.
@@ -105,8 +109,6 @@ class CONTENT_EXPORT AppCacheRequest {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AppCacheRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheRequest);
 };
 
 }  // namespace content

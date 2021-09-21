@@ -14,12 +14,13 @@ namespace content {
 class MockSmsProvider : public SmsProvider {
  public:
   MockSmsProvider();
+
+  MockSmsProvider(const MockSmsProvider&) = delete;
+  MockSmsProvider& operator=(const MockSmsProvider&) = delete;
+
   ~MockSmsProvider() override;
 
   MOCK_METHOD2(Retrieve, void(RenderFrameHost*, SmsFetchType));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSmsProvider);
 };
 
 }  // namespace content

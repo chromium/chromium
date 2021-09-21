@@ -80,6 +80,10 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
   explicit BackgroundFetchDelegateProxy(
       base::WeakPtr<StoragePartitionImpl> storage_partition);
 
+  BackgroundFetchDelegateProxy(const BackgroundFetchDelegateProxy&) = delete;
+  BackgroundFetchDelegateProxy& operator=(const BackgroundFetchDelegateProxy&) =
+      delete;
+
   ~BackgroundFetchDelegateProxy() override;
 
   // Set BackgroundFetchClick event dispatcher callback, which is a method on
@@ -179,8 +183,6 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BackgroundFetchDelegateProxy> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchDelegateProxy);
 };
 
 }  // namespace content

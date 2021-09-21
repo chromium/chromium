@@ -40,6 +40,12 @@ class MixedContentNavigationThrottle : public NavigationThrottle {
       NavigationHandle* navigation_handle);
 
   MixedContentNavigationThrottle(NavigationHandle* navigation_handle);
+
+  MixedContentNavigationThrottle(const MixedContentNavigationThrottle&) =
+      delete;
+  MixedContentNavigationThrottle& operator=(
+      const MixedContentNavigationThrottle&) = delete;
+
   ~MixedContentNavigationThrottle() override;
 
   // NavigationThrottle overrides.
@@ -79,8 +85,6 @@ class MixedContentNavigationThrottle : public NavigationThrottle {
   // navigation throttling steps. These values are reported to the respective
   // renderer process after each mixed content check is finished.
   std::set<blink::mojom::WebFeature> mixed_content_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixedContentNavigationThrottle);
 };
 
 }  // namespace content

@@ -34,6 +34,10 @@ class ContentIndexServiceImplTest : public ::testing::Test {
             /* content_index_context= */ nullptr,
             /* service_worker_context= */ nullptr)) {}
 
+  ContentIndexServiceImplTest(const ContentIndexServiceImplTest&) = delete;
+  ContentIndexServiceImplTest& operator=(const ContentIndexServiceImplTest&) =
+      delete;
+
   ~ContentIndexServiceImplTest() override = default;
 
   void Add(const SkBitmap& icon, const GURL& launch_url) {
@@ -57,8 +61,6 @@ class ContentIndexServiceImplTest : public ::testing::Test {
   std::unique_ptr<ContentIndexServiceImpl> service_;
   mojo::FakeMessageDispatchContext fake_dispatch_context_;
   mojo::test::BadMessageObserver bad_message_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexServiceImplTest);
 };
 
 // static

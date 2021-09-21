@@ -30,6 +30,10 @@ class DownloadUpdatedObserver : public download::DownloadItem::Observer {
   // The filter passed may be called multiple times, even after it
   // returns true.
   DownloadUpdatedObserver(download::DownloadItem* item, EventFilter filter);
+
+  DownloadUpdatedObserver(const DownloadUpdatedObserver&) = delete;
+  DownloadUpdatedObserver& operator=(const DownloadUpdatedObserver&) = delete;
+
   ~DownloadUpdatedObserver() override;
 
   // Returns when either the event has been seen (at least once since
@@ -47,8 +51,6 @@ class DownloadUpdatedObserver : public download::DownloadItem::Observer {
   EventFilter filter_;
   bool waiting_;
   bool event_seen_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUpdatedObserver);
 };
 
 // Detects changes to the downloads after construction.
@@ -76,6 +78,9 @@ class DownloadTestObserver : public DownloadManager::Observer,
   DownloadTestObserver(DownloadManager* download_manager,
                        size_t wait_count,
                        DangerousDownloadAction dangerous_download_action);
+
+  DownloadTestObserver(const DownloadTestObserver&) = delete;
+  DownloadTestObserver& operator=(const DownloadTestObserver&) = delete;
 
   ~DownloadTestObserver() override;
 
@@ -168,8 +173,6 @@ class DownloadTestObserver : public DownloadManager::Observer,
   std::set<uint32_t> dangerous_downloads_seen_;
 
   base::WeakPtrFactory<DownloadTestObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTestObserver);
 };
 
 class DownloadTestObserverTerminal : public DownloadTestObserver {
@@ -182,12 +185,14 @@ class DownloadTestObserverTerminal : public DownloadTestObserver {
       size_t wait_count,
       DangerousDownloadAction dangerous_download_action);
 
+  DownloadTestObserverTerminal(const DownloadTestObserverTerminal&) = delete;
+  DownloadTestObserverTerminal& operator=(const DownloadTestObserverTerminal&) =
+      delete;
+
   ~DownloadTestObserverTerminal() override;
 
  private:
   bool IsDownloadInFinalState(download::DownloadItem* download) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTestObserverTerminal);
 };
 
 // Detects changes to the downloads after construction.
@@ -202,12 +207,15 @@ class DownloadTestObserverInProgress : public DownloadTestObserver {
   DownloadTestObserverInProgress(
       DownloadManager* download_manager, size_t wait_count);
 
+  DownloadTestObserverInProgress(const DownloadTestObserverInProgress&) =
+      delete;
+  DownloadTestObserverInProgress& operator=(
+      const DownloadTestObserverInProgress&) = delete;
+
   ~DownloadTestObserverInProgress() override;
 
  private:
   bool IsDownloadInFinalState(download::DownloadItem* download) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTestObserverInProgress);
 };
 
 class DownloadTestObserverInterrupted : public DownloadTestObserver {
@@ -219,12 +227,15 @@ class DownloadTestObserverInterrupted : public DownloadTestObserver {
       size_t wait_count,
       DangerousDownloadAction dangerous_download_action);
 
+  DownloadTestObserverInterrupted(const DownloadTestObserverInterrupted&) =
+      delete;
+  DownloadTestObserverInterrupted& operator=(
+      const DownloadTestObserverInterrupted&) = delete;
+
   ~DownloadTestObserverInterrupted() override;
 
  private:
   bool IsDownloadInFinalState(download::DownloadItem* download) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTestObserverInterrupted);
 };
 
 // The WaitForFlush() method on this class returns after:
@@ -238,6 +249,11 @@ class DownloadTestFlushObserver : public DownloadManager::Observer,
                                   public download::DownloadItem::Observer {
  public:
   explicit DownloadTestFlushObserver(DownloadManager* download_manager);
+
+  DownloadTestFlushObserver(const DownloadTestFlushObserver&) = delete;
+  DownloadTestFlushObserver& operator=(const DownloadTestFlushObserver&) =
+      delete;
+
   ~DownloadTestFlushObserver() override;
 
   void WaitForFlush();
@@ -263,8 +279,6 @@ class DownloadTestFlushObserver : public DownloadManager::Observer,
   DownloadSet downloads_observed_;
   bool waiting_for_zero_inprogress_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTestFlushObserver);
 };
 
 // Waits for a callback indicating that the download::DownloadItem is about to
@@ -316,6 +330,11 @@ class SavePackageFinishedObserver : public download::DownloadItem::Observer,
  public:
   SavePackageFinishedObserver(DownloadManager* manager,
                               base::OnceClosure callback);
+
+  SavePackageFinishedObserver(const SavePackageFinishedObserver&) = delete;
+  SavePackageFinishedObserver& operator=(const SavePackageFinishedObserver&) =
+      delete;
+
   ~SavePackageFinishedObserver() override;
 
   // download::DownloadItem::Observer:
@@ -331,8 +350,6 @@ class SavePackageFinishedObserver : public download::DownloadItem::Observer,
   DownloadManager* download_manager_;
   download::DownloadItem* download_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePackageFinishedObserver);
 };
 
 }  // namespace content`

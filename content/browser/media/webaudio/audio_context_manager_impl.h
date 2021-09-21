@@ -31,6 +31,10 @@ class CONTENT_EXPORT AudioContextManagerImpl final
   explicit AudioContextManagerImpl(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
+
+  AudioContextManagerImpl(const AudioContextManagerImpl&) = delete;
+  AudioContextManagerImpl& operator=(const AudioContextManagerImpl&) = delete;
+
   ~AudioContextManagerImpl() override;
 
   static void Create(
@@ -58,8 +62,6 @@ class CONTENT_EXPORT AudioContextManagerImpl final
   // by tests.
   // It is not owned by the implementation.
   const base::TickClock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioContextManagerImpl);
 };
 
 }  // namespace content

@@ -20,6 +20,12 @@ class WebContents;
 class ScreenOrientationDelegateAndroid : public ScreenOrientationDelegate {
  public:
   ScreenOrientationDelegateAndroid();
+
+  ScreenOrientationDelegateAndroid(const ScreenOrientationDelegateAndroid&) =
+      delete;
+  ScreenOrientationDelegateAndroid& operator=(
+      const ScreenOrientationDelegateAndroid&) = delete;
+
   ~ScreenOrientationDelegateAndroid() override;
 
   // ScreenOrientationDelegate:
@@ -28,9 +34,6 @@ class ScreenOrientationDelegateAndroid : public ScreenOrientationDelegate {
             device::mojom::ScreenOrientationLockType lock_orientation) override;
   bool ScreenOrientationProviderSupported() override;
   void Unlock(WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationDelegateAndroid);
 };
 
 } // namespace content

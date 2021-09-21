@@ -24,6 +24,10 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
  public:
   explicit BackgroundTracingConfigImpl(TracingMode tracing_mode);
 
+  BackgroundTracingConfigImpl(const BackgroundTracingConfigImpl&) = delete;
+  BackgroundTracingConfigImpl& operator=(const BackgroundTracingConfigImpl&) =
+      delete;
+
   ~BackgroundTracingConfigImpl() override;
 
   // From BackgroundTracingConfig
@@ -131,8 +135,6 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   int upload_limit_network_kb_ = 1024;
   int upload_limit_kb_ = kUploadLimitKb;
   int interning_reset_interval_ms_ = 5000;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingConfigImpl);
 };
 
 }  // namespace content

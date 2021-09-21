@@ -59,6 +59,10 @@ class CONTENT_EXPORT NativeEventObserver
                       DidRunEventCallback did_run_event_callback);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+  NativeEventObserver(const NativeEventObserver&) = delete;
+  NativeEventObserver& operator=(const NativeEventObserver&) = delete;
+
   ~NativeEventObserver() override;
 #else
   virtual ~NativeEventObserver();
@@ -96,8 +100,6 @@ class CONTENT_EXPORT NativeEventObserver
 
   WillRunEventCallback will_run_event_callback_;
   DidRunEventCallback did_run_event_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeEventObserver);
 };
 
 }  // namespace responsiveness

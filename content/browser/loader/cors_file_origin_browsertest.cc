@@ -52,6 +52,11 @@ using net::test_server::HttpResponse;
 class CorsFileOriginBrowserTest : public ContentBrowserTest {
  public:
   CorsFileOriginBrowserTest() : pass_string_(u"PASS"), fail_string_(u"FAIL") {}
+
+  CorsFileOriginBrowserTest(const CorsFileOriginBrowserTest&) = delete;
+  CorsFileOriginBrowserTest& operator=(const CorsFileOriginBrowserTest&) =
+      delete;
+
   ~CorsFileOriginBrowserTest() override = default;
 
  protected:
@@ -174,8 +179,6 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
 
   const std::u16string pass_string_;
   const std::u16string fail_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(CorsFileOriginBrowserTest);
 };
 
 // Tests end to end Origin header and CORS check behaviors with

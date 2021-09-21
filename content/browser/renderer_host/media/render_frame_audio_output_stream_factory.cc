@@ -62,6 +62,9 @@ class RenderFrameAudioOutputStreamFactory::Core final
        media::AudioSystem* audio_system,
        MediaStreamManager* media_stream_manager);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() final = default;
 
   void Init(
@@ -92,6 +95,9 @@ class RenderFrameAudioOutputStreamFactory::Core final
       receiver_.set_disconnect_handler(
           base::BindOnce(&ProviderImpl::Done, base::Unretained(this)));
     }
+
+    ProviderImpl(const ProviderImpl&) = delete;
+    ProviderImpl& operator=(const ProviderImpl&) = delete;
 
     ~ProviderImpl() final { DCHECK_CURRENTLY_ON(BrowserThread::IO); }
 
@@ -124,8 +130,6 @@ class RenderFrameAudioOutputStreamFactory::Core final
     const std::string device_id_;
 
     mojo::Receiver<media::mojom::AudioOutputStreamProvider> receiver_;
-
-    DISALLOW_COPY_AND_ASSIGN(ProviderImpl);
   };
 
   using OutputStreamProviderSet =
@@ -175,8 +179,6 @@ class RenderFrameAudioOutputStreamFactory::Core final
   // Weak pointers are used to cancel device authorizations that are in flight
   // while |this| is destructed.
   base::WeakPtrFactory<Core> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 class RenderFrameAudioOutputStreamFactory::RestrictedModeCore final

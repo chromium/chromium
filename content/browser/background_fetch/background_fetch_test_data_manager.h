@@ -35,6 +35,11 @@ class BackgroundFetchTestDataManager : public BackgroundFetchDataManager {
       base::WeakPtr<StoragePartitionImpl> storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
 
+  BackgroundFetchTestDataManager(const BackgroundFetchTestDataManager&) =
+      delete;
+  BackgroundFetchTestDataManager& operator=(
+      const BackgroundFetchTestDataManager&) = delete;
+
   ~BackgroundFetchTestDataManager() override;
 
   void Initialize() override;
@@ -46,8 +51,6 @@ class BackgroundFetchTestDataManager : public BackgroundFetchDataManager {
   BrowserContext* browser_context_;
   base::WeakPtr<StoragePartition> storage_partition_;
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchTestDataManager);
 };
 
 }  // namespace content

@@ -53,6 +53,9 @@ class CONTENT_EXPORT MediaPlayerRenderer
       mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
       mojo::PendingRemote<ClientExtension> client_extension_remote);
 
+  MediaPlayerRenderer(const MediaPlayerRenderer&) = delete;
+  MediaPlayerRenderer& operator=(const MediaPlayerRenderer&) = delete;
+
   ~MediaPlayerRenderer() override;
 
   // media::Renderer implementation
@@ -138,8 +141,6 @@ class CONTENT_EXPORT MediaPlayerRenderer
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaPlayerRenderer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerRenderer);
 };
 
 }  // namespace content

@@ -71,6 +71,12 @@ class CONTENT_EXPORT PepperDeviceEnumerationHostHelper {
                                     base::WeakPtr<Delegate> delegate,
                                     PP_DeviceType_Dev device_type,
                                     const GURL& document_url);
+
+  PepperDeviceEnumerationHostHelper(const PepperDeviceEnumerationHostHelper&) =
+      delete;
+  PepperDeviceEnumerationHostHelper& operator=(
+      const PepperDeviceEnumerationHostHelper&) = delete;
+
   ~PepperDeviceEnumerationHostHelper();
 
   // Returns true if the message has been handled.
@@ -110,8 +116,6 @@ class CONTENT_EXPORT PepperDeviceEnumerationHostHelper {
   std::unique_ptr<ScopedMonitoringRequest> monitor_;
 
   ppapi::host::ReplyMessageContext enumerate_devices_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperDeviceEnumerationHostHelper);
 };
 
 }  // namespace content

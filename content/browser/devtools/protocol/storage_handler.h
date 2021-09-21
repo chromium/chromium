@@ -26,6 +26,10 @@ class StorageHandler : public DevToolsDomainHandler,
                        public Storage::Backend {
  public:
   StorageHandler();
+
+  StorageHandler(const StorageHandler&) = delete;
+  StorageHandler& operator=(const StorageHandler&) = delete;
+
   ~StorageHandler() override;
 
   // content::protocol::DevToolsDomainHandler
@@ -105,8 +109,6 @@ class StorageHandler : public DevToolsDomainHandler,
   std::unique_ptr<storage::QuotaOverrideHandle> quota_override_handle_;
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StorageHandler);
 };
 
 }  // namespace protocol

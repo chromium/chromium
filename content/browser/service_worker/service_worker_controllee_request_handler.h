@@ -51,6 +51,12 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       network::mojom::RequestDestination destination,
       bool skip_service_worker,
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
+
+  ServiceWorkerControlleeRequestHandler(
+      const ServiceWorkerControlleeRequestHandler&) = delete;
+  ServiceWorkerControlleeRequestHandler& operator=(
+      const ServiceWorkerControlleeRequestHandler&) = delete;
+
   ~ServiceWorkerControlleeRequestHandler();
 
   // This is called only once. On redirects, a new instance of this
@@ -120,8 +126,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   base::WeakPtrFactory<ServiceWorkerControlleeRequestHandler> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerControlleeRequestHandler);
 };
 
 }  // namespace content

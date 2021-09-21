@@ -32,16 +32,24 @@ namespace content {
 class IndexedDBInternalsUI : public WebUIController {
  public:
   explicit IndexedDBInternalsUI(WebUI* web_ui);
+
+  IndexedDBInternalsUI(const IndexedDBInternalsUI&) = delete;
+  IndexedDBInternalsUI& operator=(const IndexedDBInternalsUI&) = delete;
+
   ~IndexedDBInternalsUI() override;
 
  private:
   base::WeakPtrFactory<IndexedDBInternalsUI> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBInternalsUI);
 };
 
 class IndexedDBInternalsHandler : public WebUIMessageHandler {
  public:
   IndexedDBInternalsHandler();
+
+  IndexedDBInternalsHandler(const IndexedDBInternalsHandler&) = delete;
+  IndexedDBInternalsHandler& operator=(const IndexedDBInternalsHandler&) =
+      delete;
+
   ~IndexedDBInternalsHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -78,7 +86,6 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
                          storage::mojom::IndexedDBControl** control);
 
   base::WeakPtrFactory<IndexedDBInternalsHandler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBInternalsHandler);
 };
 
 }  // namespace content

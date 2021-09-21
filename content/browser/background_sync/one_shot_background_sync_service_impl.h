@@ -30,6 +30,11 @@ class CONTENT_EXPORT OneShotBackgroundSyncServiceImpl
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver);
 
+  OneShotBackgroundSyncServiceImpl(const OneShotBackgroundSyncServiceImpl&) =
+      delete;
+  OneShotBackgroundSyncServiceImpl& operator=(
+      const OneShotBackgroundSyncServiceImpl&) = delete;
+
   ~OneShotBackgroundSyncServiceImpl() override;
 
  private:
@@ -55,8 +60,6 @@ class CONTENT_EXPORT OneShotBackgroundSyncServiceImpl
 
   base::WeakPtrFactory<blink::mojom::OneShotBackgroundSyncService>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotBackgroundSyncServiceImpl);
 };
 
 }  // namespace content

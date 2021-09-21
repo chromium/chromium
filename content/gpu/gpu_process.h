@@ -13,10 +13,11 @@ namespace content {
 class GpuProcess : public ChildProcess {
  public:
   explicit GpuProcess(base::ThreadPriority io_thread_priority);
-  ~GpuProcess() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuProcess);
+  GpuProcess(const GpuProcess&) = delete;
+  GpuProcess& operator=(const GpuProcess&) = delete;
+
+  ~GpuProcess() override;
 };
 
 }

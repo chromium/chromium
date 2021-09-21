@@ -34,6 +34,12 @@ namespace content {
 class OneShotBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
  public:
   OneShotBackgroundSyncBrowserTest() {}
+
+  OneShotBackgroundSyncBrowserTest(const OneShotBackgroundSyncBrowserTest&) =
+      delete;
+  OneShotBackgroundSyncBrowserTest& operator=(
+      const OneShotBackgroundSyncBrowserTest&) = delete;
+
   ~OneShotBackgroundSyncBrowserTest() override {}
 
   bool Register(const std::string& tag);
@@ -47,9 +53,6 @@ class OneShotBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
   bool GetTags(const std::vector<std::string>& expected_tags);
   bool GetTagsFromServiceWorker(const std::vector<std::string>& expected_tags);
   bool RejectDelayedSyncEvent();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OneShotBackgroundSyncBrowserTest);
 };
 
 bool OneShotBackgroundSyncBrowserTest::Register(const std::string& tag) {

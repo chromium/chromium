@@ -28,6 +28,10 @@ namespace {
 class TestOverlayWindow : public OverlayWindow {
  public:
   TestOverlayWindow() = default;
+
+  TestOverlayWindow(const TestOverlayWindow&) = delete;
+  TestOverlayWindow& operator=(const TestOverlayWindow&) = delete;
+
   ~TestOverlayWindow() override = default;
 
   bool IsActive() override { return false; }
@@ -99,8 +103,6 @@ class TestOverlayWindow : public OverlayWindow {
 
   absl::optional<bool> play_pause_button_visible_;
   absl::optional<bool> next_track_button_visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverlayWindow);
 };
 
 class TestContentBrowserClient : public ContentBrowserClient {

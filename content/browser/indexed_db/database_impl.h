@@ -38,6 +38,10 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
                         const blink::StorageKey& storage_key,
                         IndexedDBDispatcherHost* dispatcher_host,
                         scoped_refptr<base::SequencedTaskRunner> idb_runner);
+
+  DatabaseImpl(const DatabaseImpl&) = delete;
+  DatabaseImpl& operator=(const DatabaseImpl&) = delete;
+
   ~DatabaseImpl() override;
 
   // blink::mojom::IDBDatabase implementation
@@ -129,8 +133,6 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseImpl);
 };
 
 }  // namespace content

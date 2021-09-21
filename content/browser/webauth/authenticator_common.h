@@ -67,6 +67,10 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // Creates a new AuthenticatorCommon. Callers must ensure that this instance
   // outlives the RenderFrameHost.
   explicit AuthenticatorCommon(RenderFrameHost* render_frame_host);
+
+  AuthenticatorCommon(const AuthenticatorCommon&) = delete;
+  AuthenticatorCommon& operator=(const AuthenticatorCommon&) = delete;
+
   virtual ~AuthenticatorCommon();
 
   // This is not-quite an implementation of blink::mojom::Authenticator. The
@@ -245,8 +249,6 @@ class CONTENT_EXPORT AuthenticatorCommon {
   base::flat_set<RequestExtension> requested_extensions_;
 
   base::WeakPtrFactory<AuthenticatorCommon> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorCommon);
 };
 
 }  // namespace content

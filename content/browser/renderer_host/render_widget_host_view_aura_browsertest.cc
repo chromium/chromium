@@ -50,6 +50,10 @@ void GiveItSomeTime() {
 class FakeWebContentsDelegate : public WebContentsDelegate {
  public:
   FakeWebContentsDelegate() = default;
+
+  FakeWebContentsDelegate(const FakeWebContentsDelegate&) = delete;
+  FakeWebContentsDelegate& operator=(const FakeWebContentsDelegate&) = delete;
+
   ~FakeWebContentsDelegate() override = default;
 
   void SetShowStaleContentOnEviction(bool value) {
@@ -62,8 +66,6 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
 
  private:
   bool show_stale_content_on_eviction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWebContentsDelegate);
 };
 
 }  // namespace
@@ -446,6 +448,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
 class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
  public:
   RenderWidgetHostViewAuraActiveWidgetTest() = default;
+
+  RenderWidgetHostViewAuraActiveWidgetTest(
+      const RenderWidgetHostViewAuraActiveWidgetTest&) = delete;
+  RenderWidgetHostViewAuraActiveWidgetTest& operator=(
+      const RenderWidgetHostViewAuraActiveWidgetTest&) = delete;
+
   ~RenderWidgetHostViewAuraActiveWidgetTest() override = default;
 
   // Helper function to check |isActivated| for a given frame.
@@ -472,9 +480,6 @@ class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraActiveWidgetTest);
 };
 
 // In this test, toggling the value of 'active' state changes the

@@ -32,6 +32,10 @@ class ServiceWorkerHandler : public DevToolsDomainHandler,
                              public ServiceWorker::Backend {
  public:
   explicit ServiceWorkerHandler(bool allow_inspect_worker);
+
+  ServiceWorkerHandler(const ServiceWorkerHandler&) = delete;
+  ServiceWorkerHandler& operator=(const ServiceWorkerHandler&) = delete;
+
   ~ServiceWorkerHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -81,8 +85,6 @@ class ServiceWorkerHandler : public DevToolsDomainHandler,
   StoragePartitionImpl* storage_partition_;
 
   base::WeakPtrFactory<ServiceWorkerHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerHandler);
 };
 
 }  // namespace protocol

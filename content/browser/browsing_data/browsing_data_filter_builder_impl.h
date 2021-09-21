@@ -17,6 +17,11 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
     : public BrowsingDataFilterBuilder {
  public:
   explicit BrowsingDataFilterBuilderImpl(Mode mode);
+
+  BrowsingDataFilterBuilderImpl(const BrowsingDataFilterBuilderImpl&) = delete;
+  BrowsingDataFilterBuilderImpl& operator=(
+      const BrowsingDataFilterBuilderImpl&) = delete;
+
   ~BrowsingDataFilterBuilderImpl() override;
 
   // BrowsingDataFilterBuilder implementation:
@@ -39,8 +44,6 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
 
   std::set<url::Origin> origins_;
   std::set<std::string> domains_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataFilterBuilderImpl);
 };
 
 }  // content

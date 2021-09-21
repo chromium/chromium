@@ -944,6 +944,12 @@ TEST_F(RenderProcessHostUnitTest, ProcessAssignmentDefault) {
 class SpareRenderProcessHostUnitTest : public RenderViewHostImplTestHarness {
  public:
   SpareRenderProcessHostUnitTest() {}
+
+  SpareRenderProcessHostUnitTest(const SpareRenderProcessHostUnitTest&) =
+      delete;
+  SpareRenderProcessHostUnitTest& operator=(
+      const SpareRenderProcessHostUnitTest&) = delete;
+
   ~SpareRenderProcessHostUnitTest() override = default;
 
  protected:
@@ -979,9 +985,6 @@ class SpareRenderProcessHostUnitTest : public RenderViewHostImplTestHarness {
   }
 
   MockRenderProcessHostFactory rph_factory_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpareRenderProcessHostUnitTest);
 };
 
 using SpareProcessMaybeTakeAction =

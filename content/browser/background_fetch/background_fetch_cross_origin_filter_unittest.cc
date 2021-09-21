@@ -28,6 +28,12 @@ class BackgroundFetchCrossOriginFilterTest : public ::testing::Test {
   BackgroundFetchCrossOriginFilterTest()
       : task_environment_(BrowserTaskEnvironment::REAL_IO_THREAD),
         source_(url::Origin::Create(GURL(kFirstOrigin))) {}
+
+  BackgroundFetchCrossOriginFilterTest(
+      const BackgroundFetchCrossOriginFilterTest&) = delete;
+  BackgroundFetchCrossOriginFilterTest& operator=(
+      const BackgroundFetchCrossOriginFilterTest&) = delete;
+
   ~BackgroundFetchCrossOriginFilterTest() override = default;
 
   // Creates a BackgroundFetchRequestInfo instance filled with the information
@@ -61,9 +67,6 @@ class BackgroundFetchCrossOriginFilterTest : public ::testing::Test {
   BrowserTaskEnvironment task_environment_;  // Must be first member.
 
   url::Origin source_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchCrossOriginFilterTest);
 };
 
 TEST_F(BackgroundFetchCrossOriginFilterTest, SameOrigin) {

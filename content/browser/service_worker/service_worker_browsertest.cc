@@ -123,6 +123,9 @@ class WorkerStateObserver : public ServiceWorkerContextCoreObserver {
     observation_.Observe(context_.get());
   }
 
+  WorkerStateObserver(const WorkerStateObserver&) = delete;
+  WorkerStateObserver& operator=(const WorkerStateObserver&) = delete;
+
   ~WorkerStateObserver() override = default;
 
   // ServiceWorkerContextCoreObserver overrides.
@@ -153,7 +156,6 @@ class WorkerStateObserver : public ServiceWorkerContextCoreObserver {
   base::ScopedObservation<ServiceWorkerContextWrapper,
                           ServiceWorkerContextCoreObserver>
       observation_{this};
-  DISALLOW_COPY_AND_ASSIGN(WorkerStateObserver);
 };
 
 class WorkerClientDestroyedObserver : public ServiceWorkerContextCoreObserver {
@@ -465,6 +467,10 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
     scoped_context_observation_.Observe(context);
   }
 
+  WorkerRunningStatusObserver(const WorkerRunningStatusObserver&) = delete;
+  WorkerRunningStatusObserver& operator=(const WorkerRunningStatusObserver&) =
+      delete;
+
   ~WorkerRunningStatusObserver() override = default;
 
   int64_t version_id() { return version_id_; }
@@ -488,8 +494,6 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
   base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
       scoped_context_observation_{this};
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerRunningStatusObserver);
 };
 
 // Tests the |top_frame_origin| and |request_initiator| on the main resource and
@@ -1422,6 +1426,10 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
    public:
     explicit CustomResponse(const std::string& response)
         : response_(response) {}
+
+    CustomResponse(const CustomResponse&) = delete;
+    CustomResponse& operator=(const CustomResponse&) = delete;
+
     ~CustomResponse() override {}
 
     void SendResponse(const net::test_server::SendBytesCallback& send,
@@ -1431,8 +1439,6 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
 
    private:
     const std::string response_;
-
-    DISALLOW_COPY_AND_ASSIGN(CustomResponse);
   };
 
   std::unique_ptr<net::test_server::HttpResponse> StaticRequestHandler(
@@ -2307,6 +2313,12 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
     : public ServiceWorkerBrowserTest {
  public:
   ServiceWorkerV8CodeCacheForCacheStorageTest() = default;
+
+  ServiceWorkerV8CodeCacheForCacheStorageTest(
+      const ServiceWorkerV8CodeCacheForCacheStorageTest&) = delete;
+  ServiceWorkerV8CodeCacheForCacheStorageTest& operator=(
+      const ServiceWorkerV8CodeCacheForCacheStorageTest&) = delete;
+
   ~ServiceWorkerV8CodeCacheForCacheStorageTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -2371,8 +2383,6 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
         partition->GetCacheStorageControl(), embedded_test_server()->base_url(),
         std::string("cache_name"), embedded_test_server()->GetURL(kScriptUrl));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerV8CodeCacheForCacheStorageTest);
 };
 
 const char ServiceWorkerV8CodeCacheForCacheStorageTest::kPageUrl[] =
@@ -2401,14 +2411,17 @@ class ServiceWorkerV8CodeCacheForCacheStorageNoneTest
     : public ServiceWorkerV8CodeCacheForCacheStorageTest {
  public:
   ServiceWorkerV8CodeCacheForCacheStorageNoneTest() = default;
+
+  ServiceWorkerV8CodeCacheForCacheStorageNoneTest(
+      const ServiceWorkerV8CodeCacheForCacheStorageNoneTest&) = delete;
+  ServiceWorkerV8CodeCacheForCacheStorageNoneTest& operator=(
+      const ServiceWorkerV8CodeCacheForCacheStorageNoneTest&) = delete;
+
   ~ServiceWorkerV8CodeCacheForCacheStorageNoneTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kV8CacheOptions, "none");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerV8CodeCacheForCacheStorageNoneTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageNoneTest,
@@ -2647,6 +2660,12 @@ IN_PROC_BROWSER_TEST_F(
 class ServiceWorkerDisableWebSecurityTest : public ServiceWorkerBrowserTest {
  public:
   ServiceWorkerDisableWebSecurityTest() = default;
+
+  ServiceWorkerDisableWebSecurityTest(
+      const ServiceWorkerDisableWebSecurityTest&) = delete;
+  ServiceWorkerDisableWebSecurityTest& operator=(
+      const ServiceWorkerDisableWebSecurityTest&) = delete;
+
   ~ServiceWorkerDisableWebSecurityTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2686,7 +2705,6 @@ class ServiceWorkerDisableWebSecurityTest : public ServiceWorkerBrowserTest {
 
  private:
   net::EmbeddedTestServer cross_origin_server_;
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerDisableWebSecurityTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerDisableWebSecurityTest,
@@ -2734,6 +2752,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDisableWebSecurityTest, UpdateNoCrash) {
 class HeaderInjectingThrottle : public blink::URLLoaderThrottle {
  public:
   HeaderInjectingThrottle() = default;
+
+  HeaderInjectingThrottle(const HeaderInjectingThrottle&) = delete;
+  HeaderInjectingThrottle& operator=(const HeaderInjectingThrottle&) = delete;
+
   ~HeaderInjectingThrottle() override = default;
 
   void WillStartRequest(network::ResourceRequest* request,
@@ -2748,14 +2770,17 @@ class HeaderInjectingThrottle : public blink::URLLoaderThrottle {
 
     request->headers.SetHeader("x-injected", "injected value");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeaderInjectingThrottle);
 };
 
 class ThrottlingContentBrowserClient : public TestContentBrowserClient {
  public:
   ThrottlingContentBrowserClient() = default;
+
+  ThrottlingContentBrowserClient(const ThrottlingContentBrowserClient&) =
+      delete;
+  ThrottlingContentBrowserClient& operator=(
+      const ThrottlingContentBrowserClient&) = delete;
+
   ~ThrottlingContentBrowserClient() override = default;
 
   // ContentBrowserClient overrides:
@@ -2771,9 +2796,6 @@ class ThrottlingContentBrowserClient : public TestContentBrowserClient {
     throttles.push_back(std::move(throttle));
     return throttles;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingContentBrowserClient);
 };
 
 class ServiceWorkerURLLoaderThrottleTest : public ServiceWorkerBrowserTest {

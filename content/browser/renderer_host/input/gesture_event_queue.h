@@ -76,6 +76,10 @@ class CONTENT_EXPORT GestureEventQueue {
                     FlingControllerEventSenderClient* fling_event_sender_client,
                     FlingControllerSchedulerClient* fling_scheduler_client,
                     const Config& config);
+
+  GestureEventQueue(const GestureEventQueue&) = delete;
+  GestureEventQueue& operator=(const GestureEventQueue&) = delete;
+
   ~GestureEventQueue();
 
   // Allow the fling controller to observe the gesture event. Returns true if
@@ -215,8 +219,6 @@ class CONTENT_EXPORT GestureEventQueue {
   // True when the last GSE event is either in the debouncing_deferral_queue_ or
   // pushed to the queue and dropped from it later on.
   bool scroll_end_filtered_by_deboucing_deferral_queue_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventQueue);
 };
 
 }  // namespace content

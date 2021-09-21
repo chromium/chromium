@@ -63,6 +63,9 @@ class MessageChannel :
   static MessageChannel* Create(PepperPluginInstanceImpl* instance,
                                 v8::Persistent<v8::Object>* result);
 
+  MessageChannel(const MessageChannel&) = delete;
+  MessageChannel& operator=(const MessageChannel&) = delete;
+
   ~MessageChannel() override;
 
   // Called when the instance is deleted. The MessageChannel might outlive the
@@ -202,8 +205,6 @@ class MessageChannel :
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
   base::WeakPtrFactory<MessageChannel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageChannel);
 };
 
 }  // namespace content

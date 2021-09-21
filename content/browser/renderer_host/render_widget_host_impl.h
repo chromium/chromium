@@ -177,6 +177,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       bool hidden,
       std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue);
 
+  RenderWidgetHostImpl(const RenderWidgetHostImpl&) = delete;
+  RenderWidgetHostImpl& operator=(const RenderWidgetHostImpl&) = delete;
+
   ~RenderWidgetHostImpl() override;
 
   // Similar to RenderWidgetHost::FromID, but returning the Impl object.
@@ -1408,8 +1411,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       user_input_active_handle_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostImpl);
 };
 
 }  // namespace content

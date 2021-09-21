@@ -31,6 +31,9 @@ class CONTENT_EXPORT SignedExchangeReporter {
       const net::NetworkIsolationKey& network_isolation_key,
       int frame_tree_node_id);
 
+  SignedExchangeReporter(const SignedExchangeReporter&) = delete;
+  SignedExchangeReporter& operator=(const SignedExchangeReporter&) = delete;
+
   ~SignedExchangeReporter();
 
   void set_cert_server_ip_address(const net::IPAddress& cert_server_ip_address);
@@ -55,8 +58,6 @@ class CONTENT_EXPORT SignedExchangeReporter {
   const net::NetworkIsolationKey network_isolation_key_;
   const int frame_tree_node_id_;
   net::IPAddress cert_server_ip_address_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeReporter);
 };
 
 }  // namespace content

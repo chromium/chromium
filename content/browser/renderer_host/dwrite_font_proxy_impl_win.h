@@ -32,6 +32,10 @@ class CONTENT_EXPORT DWriteFontProxyImpl
     : public blink::mojom::DWriteFontProxy {
  public:
   DWriteFontProxyImpl();
+
+  DWriteFontProxyImpl(const DWriteFontProxyImpl&) = delete;
+  DWriteFontProxyImpl& operator=(const DWriteFontProxyImpl&) = delete;
+
   ~DWriteFontProxyImpl() override;
 
   static void Create(
@@ -88,8 +92,6 @@ class CONTENT_EXPORT DWriteFontProxyImpl
 
   // Temp code to help track down crbug.com/561873
   std::vector<uint32_t> last_resort_fonts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DWriteFontProxyImpl);
 };
 
 }  // namespace content

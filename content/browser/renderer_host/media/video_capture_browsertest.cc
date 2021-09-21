@@ -134,6 +134,9 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
     }
   }
 
+  VideoCaptureBrowserTest(const VideoCaptureBrowserTest&) = delete;
+  VideoCaptureBrowserTest& operator=(const VideoCaptureBrowserTest&) = delete;
+
   ~VideoCaptureBrowserTest() override {}
 
   void SetUpAndStartCaptureDeviceOnIOThread(base::OnceClosure continuation) {
@@ -241,9 +244,6 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
   MockMediaStreamProviderListener mock_stream_provider_listener_;
   MockVideoCaptureControllerEventHandler mock_controller_event_handler_;
   base::WeakPtr<VideoCaptureController> controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {

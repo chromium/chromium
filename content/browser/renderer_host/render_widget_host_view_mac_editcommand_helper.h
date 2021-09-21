@@ -35,6 +35,12 @@ class CONTENT_EXPORT RenderWidgetHostViewMacEditCommandHelper {
 
  public:
   RenderWidgetHostViewMacEditCommandHelper();
+
+  RenderWidgetHostViewMacEditCommandHelper(
+      const RenderWidgetHostViewMacEditCommandHelper&) = delete;
+  RenderWidgetHostViewMacEditCommandHelper& operator=(
+      const RenderWidgetHostViewMacEditCommandHelper&) = delete;
+
   ~RenderWidgetHostViewMacEditCommandHelper();
 
   // Is a given menu item currently enabled?
@@ -63,7 +69,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMacEditCommandHelper {
  protected:
  private:
   std::unordered_set<std::string> edit_command_set_;
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewMacEditCommandHelper);
 };
 
 }  // namespace content

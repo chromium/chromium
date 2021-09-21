@@ -74,6 +74,11 @@ class TestFileAccessContentBrowserClient : public TestContentBrowserClient {
     blocked_path_ = AbsoluteFilePath(blocked_path);
   }
 
+  TestFileAccessContentBrowserClient(
+      const TestFileAccessContentBrowserClient&) = delete;
+  TestFileAccessContentBrowserClient& operator=(
+      const TestFileAccessContentBrowserClient&) = delete;
+
   ~TestFileAccessContentBrowserClient() override {
     EXPECT_EQ(this, SetBrowserClientForTesting(old_content_browser_client_));
   }
@@ -100,8 +105,6 @@ class TestFileAccessContentBrowserClient : public TestContentBrowserClient {
   base::FilePath blocked_path_;
 
   std::vector<FileAccessAllowedArgs> access_allowed_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFileAccessContentBrowserClient);
 };
 
 // This class contains integration tests for file URLs.

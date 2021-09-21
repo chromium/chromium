@@ -33,6 +33,9 @@ class CONTENT_EXPORT StoragePartitionImplMap
  public:
   explicit StoragePartitionImplMap(BrowserContext* browser_context);
 
+  StoragePartitionImplMap(const StoragePartitionImplMap&) = delete;
+  StoragePartitionImplMap& operator=(const StoragePartitionImplMap&) = delete;
+
   ~StoragePartitionImplMap() override;
 
   // This map retains ownership of the returned StoragePartition objects.
@@ -97,8 +100,6 @@ class CONTENT_EXPORT StoragePartitionImplMap
   // Set to true when the ResourceContext for the associated |browser_context_|
   // is initialized. Can never return to false.
   bool resource_context_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoragePartitionImplMap);
 };
 
 }  // namespace content

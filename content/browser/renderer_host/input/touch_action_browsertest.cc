@@ -141,6 +141,10 @@ namespace content {
 class TouchActionBrowserTest : public ContentBrowserTest {
  public:
   TouchActionBrowserTest() = default;
+
+  TouchActionBrowserTest(const TouchActionBrowserTest&) = delete;
+  TouchActionBrowserTest& operator=(const TouchActionBrowserTest&) = delete;
+
   ~TouchActionBrowserTest() override = default;
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -472,8 +476,6 @@ class TouchActionBrowserTest : public ContentBrowserTest {
  private:
   std::unique_ptr<RenderFrameSubmissionObserver> frame_observer_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchActionBrowserTest);
 };
 
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \

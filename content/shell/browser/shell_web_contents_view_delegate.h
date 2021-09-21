@@ -23,6 +23,11 @@ namespace content {
 class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
  public:
   explicit ShellWebContentsViewDelegate(WebContents* web_contents);
+
+  ShellWebContentsViewDelegate(const ShellWebContentsViewDelegate&) = delete;
+  ShellWebContentsViewDelegate& operator=(const ShellWebContentsViewDelegate&) =
+      delete;
+
   ~ShellWebContentsViewDelegate() override;
 
   // Overridden from WebContentsViewDelegate:
@@ -46,8 +51,6 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ShellWebContentsViewDelegate);
 };
 
 }  // namespace content

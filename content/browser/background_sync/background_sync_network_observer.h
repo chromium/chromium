@@ -23,6 +23,10 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
   BackgroundSyncNetworkObserver(
       base::RepeatingClosure network_changed_callback);
 
+  BackgroundSyncNetworkObserver(const BackgroundSyncNetworkObserver&) = delete;
+  BackgroundSyncNetworkObserver& operator=(
+      const BackgroundSyncNetworkObserver&) = delete;
+
   ~BackgroundSyncNetworkObserver() override;
 
   // Does nothing in this class, but can be overridden to do some work
@@ -74,8 +78,6 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BackgroundSyncNetworkObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncNetworkObserver);
 };
 
 }  // namespace content

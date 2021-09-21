@@ -29,6 +29,11 @@ class TestImageTransportFactory : public ui::ContextFactory,
                                   public ImageTransportFactory {
  public:
   TestImageTransportFactory();
+
+  TestImageTransportFactory(const TestImageTransportFactory&) = delete;
+  TestImageTransportFactory& operator=(const TestImageTransportFactory&) =
+      delete;
+
   ~TestImageTransportFactory() override;
 
   // ui::ContextFactory implementation.
@@ -59,8 +64,6 @@ class TestImageTransportFactory : public ui::ContextFactory,
   scoped_refptr<viz::ContextProvider> shared_main_context_provider_;
   viz::HostFrameSinkManager host_frame_sink_manager_;
   viz::TestFrameSinkManagerImpl test_frame_sink_manager_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImageTransportFactory);
 };
 
 }  // namespace content

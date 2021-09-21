@@ -41,6 +41,9 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
                                 public midi::mojom::MidiSession,
                                 public base::SupportsWeakPtr<MidiHost> {
  public:
+  MidiHost(const MidiHost&) = delete;
+  MidiHost& operator=(const MidiHost&) = delete;
+
   ~MidiHost() override;
 
   // Creates an instance of MidiHost and binds |receiver| to the instance using
@@ -130,8 +133,6 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
   // Bound on the IO thread and should only be called there. Use CallClient to
   // call midi::mojom::MidiSessionClient methods.
   mojo::Remote<midi::mojom::MidiSessionClient> midi_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiHost);
 };
 
 }  // namespace content

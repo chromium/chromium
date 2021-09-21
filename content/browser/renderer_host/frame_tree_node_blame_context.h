@@ -26,12 +26,15 @@ class FrameTreeNode;
 class FrameTreeNodeBlameContext : public base::trace_event::BlameContext {
  public:
   FrameTreeNodeBlameContext(int node_id, FrameTreeNode* parent);
+
+  FrameTreeNodeBlameContext(const FrameTreeNodeBlameContext&) = delete;
+  FrameTreeNodeBlameContext& operator=(const FrameTreeNodeBlameContext&) =
+      delete;
+
   ~FrameTreeNodeBlameContext() override;
 
  private:
   void AsValueInto(base::trace_event::TracedValue* value) override;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTreeNodeBlameContext);
 };
 
 }  // namespace content

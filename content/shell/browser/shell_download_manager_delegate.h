@@ -20,6 +20,11 @@ class DownloadManager;
 class ShellDownloadManagerDelegate : public DownloadManagerDelegate {
  public:
   ShellDownloadManagerDelegate();
+
+  ShellDownloadManagerDelegate(const ShellDownloadManagerDelegate&) = delete;
+  ShellDownloadManagerDelegate& operator=(const ShellDownloadManagerDelegate&) =
+      delete;
+
   ~ShellDownloadManagerDelegate() override;
 
   void SetDownloadManager(DownloadManager* manager);
@@ -58,8 +63,6 @@ class ShellDownloadManagerDelegate : public DownloadManagerDelegate {
   base::FilePath default_download_path_;
   bool suppress_prompting_;
   base::WeakPtrFactory<ShellDownloadManagerDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellDownloadManagerDelegate);
 };
 
 }  // namespace content

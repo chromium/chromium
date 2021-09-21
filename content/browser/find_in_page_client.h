@@ -20,6 +20,9 @@ class FindInPageClient final : public blink::mojom::FindInPageClient {
   FindInPageClient(FindRequestManager* find_request_manager,
                    RenderFrameHostImpl* rfh);
 
+  FindInPageClient(const FindInPageClient&) = delete;
+  FindInPageClient& operator=(const FindInPageClient&) = delete;
+
   ~FindInPageClient() override;
 
   void ActivateNearestFindResult(int request_id, const gfx::PointF& point);
@@ -45,8 +48,6 @@ class FindInPageClient final : public blink::mojom::FindInPageClient {
   FindRequestManager* const find_request_manager_;
   mojo::Receiver<blink::mojom::FindInPageClient> receiver_{this};
   int number_of_matches_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FindInPageClient);
 };
 
 }  // namespace content

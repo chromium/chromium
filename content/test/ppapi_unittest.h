@@ -18,6 +18,10 @@ class PluginModule;
 class PpapiUnittest : public testing::Test {
  public:
   PpapiUnittest();
+
+  PpapiUnittest(const PpapiUnittest&) = delete;
+  PpapiUnittest& operator=(const PpapiUnittest&) = delete;
+
   ~PpapiUnittest() override;
 
   void SetUp() override;
@@ -43,8 +47,6 @@ class PpapiUnittest : public testing::Test {
   // we want it to get destroyed just before |task_environment_|.
   scoped_refptr<PluginModule> module_;
   scoped_refptr<PepperPluginInstanceImpl> instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiUnittest);
 };
 
 }  // namespace content

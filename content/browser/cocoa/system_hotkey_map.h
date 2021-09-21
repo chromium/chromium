@@ -23,6 +23,10 @@ class CONTENT_EXPORT SystemHotkeyMap {
  public:
   SystemHotkeyMap();
   SystemHotkeyMap(SystemHotkeyMap&&);
+
+  SystemHotkeyMap(const SystemHotkeyMap&) = delete;
+  SystemHotkeyMap& operator=(const SystemHotkeyMap&) = delete;
+
   ~SystemHotkeyMap();
 
   // Parses the property list data commonly stored at
@@ -54,8 +58,6 @@ class CONTENT_EXPORT SystemHotkeyMap {
   void ReserveHotkey(unsigned short key_code, NSUInteger modifiers);
 
   std::vector<SystemHotkey> system_hotkeys_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemHotkeyMap);
 };
 
 }  // namespace content

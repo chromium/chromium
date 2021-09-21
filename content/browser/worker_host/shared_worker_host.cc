@@ -61,6 +61,9 @@ class SharedWorkerHost::ScopedDevToolsHandle {
         owner, &pause_on_start_, &dev_tools_token_);
   }
 
+  ScopedDevToolsHandle(const ScopedDevToolsHandle&) = delete;
+  ScopedDevToolsHandle& operator=(const ScopedDevToolsHandle&) = delete;
+
   ~ScopedDevToolsHandle() {
     SharedWorkerDevToolsManager::GetInstance()->WorkerDestroyed(owner_);
   }
@@ -88,8 +91,6 @@ class SharedWorkerHost::ScopedDevToolsHandle {
   bool pause_on_start_;
 
   base::UnguessableToken dev_tools_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDevToolsHandle);
 };
 
 class SharedWorkerHost::ScopedProcessHostRef {

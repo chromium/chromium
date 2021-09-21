@@ -27,6 +27,10 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
  public:
   EchoServiceProcessObserver() { ServiceProcessHost::AddObserver(this); }
 
+  EchoServiceProcessObserver(const EchoServiceProcessObserver&) = delete;
+  EchoServiceProcessObserver& operator=(const EchoServiceProcessObserver&) =
+      delete;
+
   ~EchoServiceProcessObserver() override {
     ServiceProcessHost::RemoveObserver(this);
   }
@@ -56,8 +60,6 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
   base::RunLoop launch_loop_;
   base::RunLoop death_loop_;
   base::RunLoop crash_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(EchoServiceProcessObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, Launch) {

@@ -39,6 +39,10 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   typedef int RequestID;
 
   URLDataManagerBackend();
+
+  URLDataManagerBackend(const URLDataManagerBackend&) = delete;
+  URLDataManagerBackend& operator=(const URLDataManagerBackend&) = delete;
+
   ~URLDataManagerBackend() override;
 
   static URLDataManagerBackend* GetForBrowserContext(BrowserContext* context);
@@ -87,8 +91,6 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   // and detached from the backend. This allows outstanding asynchronous queries
   // to be served and routed to the backend to which they were original issued.
   base::WeakPtrFactory<URLDataManagerBackend> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLDataManagerBackend);
 };
 
 }  // namespace content

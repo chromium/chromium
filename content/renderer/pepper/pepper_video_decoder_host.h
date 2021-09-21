@@ -34,6 +34,10 @@ class CONTENT_EXPORT PepperVideoDecoderHost
   PepperVideoDecoderHost(RendererPpapiHost* host,
                          PP_Instance instance,
                          PP_Resource resource);
+
+  PepperVideoDecoderHost(const PepperVideoDecoderHost&) = delete;
+  PepperVideoDecoderHost& operator=(const PepperVideoDecoderHost&) = delete;
+
   ~PepperVideoDecoderHost() override;
 
  private:
@@ -169,8 +173,6 @@ class CONTENT_EXPORT PepperVideoDecoderHost
   ppapi::host::ReplyMessageContext reset_reply_context_;
 
   bool initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVideoDecoderHost);
 };
 
 }  // namespace content

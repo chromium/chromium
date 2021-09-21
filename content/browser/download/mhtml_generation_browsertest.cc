@@ -113,6 +113,10 @@ const char kTestData[] =
 class MockWriterBase : public mojom::MhtmlFileWriter {
  public:
   MockWriterBase() = default;
+
+  MockWriterBase(const MockWriterBase&) = delete;
+  MockWriterBase& operator=(const MockWriterBase&) = delete;
+
   ~MockWriterBase() override = default;
 
   void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
@@ -143,9 +147,6 @@ class MockWriterBase : public mojom::MhtmlFileWriter {
   }
 
   mojo::AssociatedReceiver<mojom::MhtmlFileWriter> receiver_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWriterBase);
 };
 
 // This Mock injects our overwritten interface, running the callback

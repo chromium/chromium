@@ -81,6 +81,9 @@ class MediaSessionImpl : public MediaSession,
   // none is currently available.
   CONTENT_EXPORT static MediaSessionImpl* Get(WebContents* web_contents);
 
+  MediaSessionImpl(const MediaSessionImpl&) = delete;
+  MediaSessionImpl& operator=(const MediaSessionImpl&) = delete;
+
   ~MediaSessionImpl() override;
 
   CONTENT_EXPORT void SetDelegateForTests(
@@ -561,8 +564,6 @@ class MediaSessionImpl : public MediaSession,
   absl::optional<PlayerIdentifier> guarding_player_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionImpl);
 };
 
 }  // namespace content

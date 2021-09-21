@@ -39,6 +39,9 @@ class FillLayout : public aura::LayoutManager {
   explicit FillLayout(aura::Window* root)
       : root_(root), has_bounds_(!root->bounds().IsEmpty()) {}
 
+  FillLayout(const FillLayout&) = delete;
+  FillLayout& operator=(const FillLayout&) = delete;
+
   ~FillLayout() override {}
 
  private:
@@ -71,8 +74,6 @@ class FillLayout : public aura::LayoutManager {
 
   aura::Window* root_;
   bool has_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(FillLayout);
 };
 
 }

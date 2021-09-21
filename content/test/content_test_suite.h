@@ -24,6 +24,10 @@ class TestContentClientInitializer;
 class ContentTestSuite : public ContentTestSuiteBase {
  public:
   ContentTestSuite(int argc, char** argv);
+
+  ContentTestSuite(const ContentTestSuite&) = delete;
+  ContentTestSuite& operator=(const ContentTestSuite&) = delete;
+
   ~ContentTestSuite() override;
 
  protected:
@@ -38,8 +42,6 @@ class ContentTestSuite : public ContentTestSuiteBase {
 #if defined(OS_WIN)
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ContentTestSuite);
 };
 
 }  // namespace content

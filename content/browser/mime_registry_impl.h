@@ -15,6 +15,10 @@ namespace content {
 class MimeRegistryImpl : public blink::mojom::MimeRegistry {
  public:
   MimeRegistryImpl();
+
+  MimeRegistryImpl(const MimeRegistryImpl&) = delete;
+  MimeRegistryImpl& operator=(const MimeRegistryImpl&) = delete;
+
   ~MimeRegistryImpl() override;
 
   static void Create(
@@ -26,8 +30,6 @@ class MimeRegistryImpl : public blink::mojom::MimeRegistry {
       GetMimeTypeFromExtensionCallback callback) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MimeRegistryImpl);
 };
 
 }  // namespace content

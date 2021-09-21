@@ -56,6 +56,9 @@ class CONTENT_EXPORT PepperGraphics2DHost
       PP_Bool is_always_opaque,
       scoped_refptr<PPB_ImageData_Impl> backing_store);
 
+  PepperGraphics2DHost(const PepperGraphics2DHost&) = delete;
+  PepperGraphics2DHost& operator=(const PepperGraphics2DHost&) = delete;
+
   ~PepperGraphics2DHost() override;
 
   // ppapi::host::ResourceHost override.
@@ -258,7 +261,6 @@ class CONTENT_EXPORT PepperGraphics2DHost
   const bool enable_gpu_memory_buffer_;
 
   friend class PepperGraphics2DHostTest;
-  DISALLOW_COPY_AND_ASSIGN(PepperGraphics2DHost);
 };
 
 }  // namespace content

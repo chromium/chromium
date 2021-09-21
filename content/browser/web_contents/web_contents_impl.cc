@@ -277,6 +277,12 @@ class CloseDialogCallbackWrapper
 class JavaScriptDialogDismissNotifier {
  public:
   JavaScriptDialogDismissNotifier() = default;
+
+  JavaScriptDialogDismissNotifier(const JavaScriptDialogDismissNotifier&) =
+      delete;
+  JavaScriptDialogDismissNotifier& operator=(
+      const JavaScriptDialogDismissNotifier&) = delete;
+
   ~JavaScriptDialogDismissNotifier() {
     for (auto& callback : callbacks_) {
       std::move(callback).Run();
@@ -289,8 +295,6 @@ class JavaScriptDialogDismissNotifier {
 
  private:
   std::vector<base::OnceClosure> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogDismissNotifier);
 };
 
 bool FrameCompareDepth(RenderFrameHostImpl* a, RenderFrameHostImpl* b) {
@@ -617,6 +621,11 @@ class WebContentsImpl::RenderWidgetHostDestructionObserver
     watched_host_->AddObserver(this);
   }
 
+  RenderWidgetHostDestructionObserver(
+      const RenderWidgetHostDestructionObserver&) = delete;
+  RenderWidgetHostDestructionObserver& operator=(
+      const RenderWidgetHostDestructionObserver&) = delete;
+
   ~RenderWidgetHostDestructionObserver() override {
     watched_host_->RemoveObserver(this);
   }
@@ -629,8 +638,6 @@ class WebContentsImpl::RenderWidgetHostDestructionObserver
  private:
   WebContentsImpl* owner_;
   RenderWidgetHost* watched_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostDestructionObserver);
 };
 
 // WebContentsImpl::WebContentsDestructionObserver ----------------------------

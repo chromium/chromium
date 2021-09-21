@@ -21,6 +21,11 @@ namespace content {
 class CONTENT_EXPORT OverscrollControllerDelegate {
  public:
   OverscrollControllerDelegate();
+
+  OverscrollControllerDelegate(const OverscrollControllerDelegate&) = delete;
+  OverscrollControllerDelegate& operator=(const OverscrollControllerDelegate&) =
+      delete;
+
   virtual ~OverscrollControllerDelegate();
 
   // Get the size of the display containing the view corresponding to the
@@ -52,7 +57,6 @@ class CONTENT_EXPORT OverscrollControllerDelegate {
 
  private:
   base::WeakPtrFactory<OverscrollControllerDelegate> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerDelegate);
 };
 
 }  // namespace content

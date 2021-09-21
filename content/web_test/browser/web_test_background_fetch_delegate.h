@@ -25,6 +25,12 @@ class BrowserContext;
 class WebTestBackgroundFetchDelegate : public BackgroundFetchDelegate {
  public:
   explicit WebTestBackgroundFetchDelegate(BrowserContext* browser_context);
+
+  WebTestBackgroundFetchDelegate(const WebTestBackgroundFetchDelegate&) =
+      delete;
+  WebTestBackgroundFetchDelegate& operator=(
+      const WebTestBackgroundFetchDelegate&) = delete;
+
   ~WebTestBackgroundFetchDelegate() override;
 
   // BackgroundFetchDelegate implementation:
@@ -57,8 +63,6 @@ class WebTestBackgroundFetchDelegate : public BackgroundFetchDelegate {
 
   // Weak reference to an instance of our download client.
   WebTestBackgroundFetchDownloadClient* background_fetch_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestBackgroundFetchDelegate);
 };
 
 }  // namespace content

@@ -33,6 +33,10 @@ class CONTENT_EXPORT CacheStorageScheduler {
  public:
   CacheStorageScheduler(CacheStorageSchedulerClient client_type,
                         scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  CacheStorageScheduler(const CacheStorageScheduler&) = delete;
+  CacheStorageScheduler& operator=(const CacheStorageScheduler&) = delete;
+
   virtual ~CacheStorageScheduler();
 
   // Create a scheduler-unique identifier for an operation to be scheduled.
@@ -115,8 +119,6 @@ class CONTENT_EXPORT CacheStorageScheduler {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CacheStorageScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageScheduler);
 };
 
 }  // namespace content

@@ -30,6 +30,11 @@ class CONTENT_EXPORT CastRendererClientFactory : public media::RendererFactory {
   CastRendererClientFactory(
       media::MediaLog* media_log,
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory);
+
+  CastRendererClientFactory(const CastRendererClientFactory&) = delete;
+  CastRendererClientFactory& operator=(const CastRendererClientFactory&) =
+      delete;
+
   ~CastRendererClientFactory() override;
 
   std::unique_ptr<media::Renderer> CreateRenderer(
@@ -43,8 +48,6 @@ class CONTENT_EXPORT CastRendererClientFactory : public media::RendererFactory {
  private:
   media::MediaLog* media_log_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastRendererClientFactory);
 };
 
 }  // namespace content

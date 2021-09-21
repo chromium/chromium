@@ -15,6 +15,10 @@ namespace content {
 class KeyboardMicRegistration {
  public:
   KeyboardMicRegistration();
+
+  KeyboardMicRegistration(const KeyboardMicRegistration&) = delete;
+  KeyboardMicRegistration& operator=(const KeyboardMicRegistration&) = delete;
+
   ~KeyboardMicRegistration();
 
   void Register();
@@ -22,8 +26,6 @@ class KeyboardMicRegistration {
 
  private:
   int register_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardMicRegistration);
 };
 
 }  // namespace content

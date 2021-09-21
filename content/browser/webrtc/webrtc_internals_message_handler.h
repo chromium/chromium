@@ -26,6 +26,11 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
       public WebRTCInternalsUIObserver {
  public:
   WebRTCInternalsMessageHandler();
+
+  WebRTCInternalsMessageHandler(const WebRTCInternalsMessageHandler&) = delete;
+  WebRTCInternalsMessageHandler& operator=(
+      const WebRTCInternalsMessageHandler&) = delete;
+
   ~WebRTCInternalsMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -56,8 +61,6 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
 
   // Executes Javascript command.
   void ExecuteJavascriptCommand(const char* command, const base::Value* args);
-
-  DISALLOW_COPY_AND_ASSIGN(WebRTCInternalsMessageHandler);
 };
 
 }  // namespace content

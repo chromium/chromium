@@ -28,6 +28,10 @@ class EmulationHandler : public DevToolsDomainHandler,
                          public Emulation::Backend {
  public:
   EmulationHandler();
+
+  EmulationHandler(const EmulationHandler&) = delete;
+  EmulationHandler& operator=(const EmulationHandler&) = delete;
+
   ~EmulationHandler() override;
 
   static std::vector<EmulationHandler*> ForAgentHost(
@@ -111,8 +115,6 @@ class EmulationHandler : public DevToolsDomainHandler,
   RenderFrameHostImpl* host_;
 
   base::ScopedClosureRunner capture_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmulationHandler);
 };
 
 }  // namespace protocol

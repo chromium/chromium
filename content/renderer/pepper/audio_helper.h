@@ -23,6 +23,10 @@ namespace content {
 class AudioHelper {
  public:
   AudioHelper();
+
+  AudioHelper(const AudioHelper&) = delete;
+  AudioHelper& operator=(const AudioHelper&) = delete;
+
   virtual ~AudioHelper();
 
   // Called when the stream is created.
@@ -52,8 +56,6 @@ class AudioHelper {
   // invalid all other times.
   base::UnsafeSharedMemoryRegion shared_memory_for_create_callback_;
   std::unique_ptr<base::SyncSocket> socket_for_create_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioHelper);
 };
 
 }  // namespace content

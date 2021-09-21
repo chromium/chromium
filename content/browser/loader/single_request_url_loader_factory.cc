@@ -66,6 +66,10 @@ class SingleRequestURLLoaderFactory::PendingFactory
  public:
   explicit PendingFactory(scoped_refptr<HandlerState> state)
       : state_(std::move(state)) {}
+
+  PendingFactory(const PendingFactory&) = delete;
+  PendingFactory& operator=(const PendingFactory&) = delete;
+
   ~PendingFactory() override = default;
 
   // PendingSharedURLLoaderFactory:
@@ -75,8 +79,6 @@ class SingleRequestURLLoaderFactory::PendingFactory
 
  private:
   scoped_refptr<HandlerState> state_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingFactory);
 };
 
 SingleRequestURLLoaderFactory::SingleRequestURLLoaderFactory(

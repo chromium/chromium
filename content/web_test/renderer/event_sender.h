@@ -55,6 +55,10 @@ enum KeyLocationCode {
 class EventSender {
  public:
   EventSender(blink::WebFrameWidget*, content::TestRunner* test_runner);
+
+  EventSender(const EventSender&) = delete;
+  EventSender& operator=(const EventSender&) = delete;
+
   virtual ~EventSender();
 
   void Reset();
@@ -318,8 +322,6 @@ class EventSender {
   base::TimeTicks last_event_timestamp_;
 
   base::WeakPtrFactory<EventSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventSender);
 };
 
 }  // namespace content

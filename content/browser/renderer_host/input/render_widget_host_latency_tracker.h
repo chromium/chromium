@@ -23,6 +23,12 @@ class RenderWidgetHostDelegate;
 class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
  public:
   explicit RenderWidgetHostLatencyTracker(RenderWidgetHostDelegate* delegate);
+
+  RenderWidgetHostLatencyTracker(const RenderWidgetHostLatencyTracker&) =
+      delete;
+  RenderWidgetHostLatencyTracker& operator=(
+      const RenderWidgetHostLatencyTracker&) = delete;
+
   virtual ~RenderWidgetHostLatencyTracker();
 
   // Populates the LatencyInfo with relevant entries for latency tracking.
@@ -56,8 +62,6 @@ class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
   bool touch_start_default_prevented_;
 
   RenderWidgetHostDelegate* render_widget_host_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostLatencyTracker);
 };
 
 }  // namespace content

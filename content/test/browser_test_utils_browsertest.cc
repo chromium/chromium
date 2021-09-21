@@ -19,6 +19,10 @@ class NavigationObserver: public WebContentsObserver {
  public:
   explicit NavigationObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
+
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   ~NavigationObserver() override {}
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
@@ -41,8 +45,6 @@ class NavigationObserver: public WebContentsObserver {
  private:
   GURL redirect_url_;
   GURL navigation_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
 
 class CrossSiteRedirectorBrowserTest : public ContentBrowserTest {

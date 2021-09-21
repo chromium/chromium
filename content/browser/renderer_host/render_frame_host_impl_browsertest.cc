@@ -107,6 +107,12 @@ class PrerenderTestContentBrowserClient : public TestContentBrowserClient {
   PrerenderTestContentBrowserClient()
       : override_enabled_(false),
         visibility_override_(PageVisibilityState::kVisible) {}
+
+  PrerenderTestContentBrowserClient(const PrerenderTestContentBrowserClient&) =
+      delete;
+  PrerenderTestContentBrowserClient& operator=(
+      const PrerenderTestContentBrowserClient&) = delete;
+
   ~PrerenderTestContentBrowserClient() override {}
 
   void EnableVisibilityOverride(PageVisibilityState visibility_override) {
@@ -124,8 +130,6 @@ class PrerenderTestContentBrowserClient : public TestContentBrowserClient {
  private:
   bool override_enabled_;
   PageVisibilityState visibility_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrerenderTestContentBrowserClient);
 };
 
 const char kTrustMeUrl[] = "trustme://host/path/";
@@ -150,6 +154,11 @@ class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
     trustmeifembeddingsecure_factory_->AddResponse(kTrustMeIfEmbeddingSecureUrl,
                                                    response_body);
   }
+
+  FirstPartySchemeContentBrowserClient(
+      const FirstPartySchemeContentBrowserClient&) = delete;
+  FirstPartySchemeContentBrowserClient& operator=(
+      const FirstPartySchemeContentBrowserClient&) = delete;
 
   ~FirstPartySchemeContentBrowserClient() override = default;
 
@@ -182,8 +191,6 @@ class FirstPartySchemeContentBrowserClient : public TestContentBrowserClient {
   std::unique_ptr<network::TestURLLoaderFactory> trustme_factory_;
   std::unique_ptr<network::TestURLLoaderFactory>
       trustmeifembeddingsecure_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstPartySchemeContentBrowserClient);
 };
 
 }  // anonymous namespace
@@ -459,6 +466,11 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
  public:
   TestJavaScriptDialogManager()
       : message_loop_runner_(new MessageLoopRunner), url_invalidate_count_(0) {}
+
+  TestJavaScriptDialogManager(const TestJavaScriptDialogManager&) = delete;
+  TestJavaScriptDialogManager& operator=(const TestJavaScriptDialogManager&) =
+      delete;
+
   ~TestJavaScriptDialogManager() override {}
 
   // This waits until either WCD::BeforeUnloadFired is called (the unload has
@@ -552,8 +564,6 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
 
   // The |proceed| value returned by the last unload event.
   bool proceed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestJavaScriptDialogManager);
 };
 
 // A RenderFrameHostImpl that discards callback for BeforeUnload.
@@ -1844,6 +1854,10 @@ class ScopedInterfaceRequestMonitor
         interface_name_(interface_name),
         request_callback_(callback) {}
 
+  ScopedInterfaceRequestMonitor(const ScopedInterfaceRequestMonitor&) = delete;
+  ScopedInterfaceRequestMonitor& operator=(
+      const ScopedInterfaceRequestMonitor&) = delete;
+
   ~ScopedInterfaceRequestMonitor() override {
     auto* old_impl = receiver().SwapImplForTesting(impl_);
     DCHECK_EQ(old_impl, this);
@@ -1871,8 +1885,6 @@ class ScopedInterfaceRequestMonitor
 
   std::string interface_name_;
   base::RepeatingClosure request_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedInterfaceRequestMonitor);
 };
 
 // Calls |callback| whenever a navigation finishes in |render_frame_host|.

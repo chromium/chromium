@@ -29,6 +29,10 @@ namespace {
 class TextInputClientMacHelper {
  public:
   TextInputClientMacHelper() {}
+
+  TextInputClientMacHelper(const TextInputClientMacHelper&) = delete;
+  TextInputClientMacHelper& operator=(const TextInputClientMacHelper&) = delete;
+
   ~TextInputClientMacHelper() {}
 
   void WaitForStringFromRange(RenderWidgetHost* rwh, const gfx::Range& range) {
@@ -69,8 +73,6 @@ class TextInputClientMacHelper {
   std::string word_;
   gfx::Point point_;
   scoped_refptr<MessageLoopRunner> loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputClientMacHelper);
 };
 
 }  // namespace

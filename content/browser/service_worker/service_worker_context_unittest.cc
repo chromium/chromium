@@ -295,6 +295,11 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
     scoped_observation_.Observe(context);
   }
 
+  TestServiceWorkerContextObserver(const TestServiceWorkerContextObserver&) =
+      delete;
+  TestServiceWorkerContextObserver& operator=(
+      const TestServiceWorkerContextObserver&) = delete;
+
   ~TestServiceWorkerContextObserver() override = default;
 
   void OnRegistrationCompleted(const GURL& scope) override {
@@ -395,7 +400,6 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
       scoped_observation_{this};
   std::vector<EventLog> events_;
-  DISALLOW_COPY_AND_ASSIGN(TestServiceWorkerContextObserver);
 };
 
 // Make sure OnRegistrationCompleted is called on observer.

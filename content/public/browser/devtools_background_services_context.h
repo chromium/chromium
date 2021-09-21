@@ -35,6 +35,12 @@ enum class DevToolsBackgroundService {
 class CONTENT_EXPORT DevToolsBackgroundServicesContext {
  public:
   DevToolsBackgroundServicesContext() = default;
+
+  DevToolsBackgroundServicesContext(const DevToolsBackgroundServicesContext&) =
+      delete;
+  DevToolsBackgroundServicesContext& operator=(
+      const DevToolsBackgroundServicesContext&) = delete;
+
   virtual ~DevToolsBackgroundServicesContext() = default;
 
   // Whether events related to |service| should be recorded.
@@ -52,9 +58,6 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContext {
       const std::string& event_name,
       const std::string& instance_id,
       const std::map<std::string, std::string>& event_metadata) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DevToolsBackgroundServicesContext);
 };
 
 }  // namespace content

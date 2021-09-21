@@ -36,6 +36,11 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   CacheStorageBlobToDiskCache(
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       const blink::StorageKey& storage_key);
+
+  CacheStorageBlobToDiskCache(const CacheStorageBlobToDiskCache&) = delete;
+  CacheStorageBlobToDiskCache& operator=(const CacheStorageBlobToDiskCache&) =
+      delete;
+
   ~CacheStorageBlobToDiskCache() override;
 
   // Writes the body of |blob_remote| to |entry| with index
@@ -82,8 +87,6 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   const blink::StorageKey storage_key_;
 
   base::WeakPtrFactory<CacheStorageBlobToDiskCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageBlobToDiskCache);
 };
 
 }  // namespace content

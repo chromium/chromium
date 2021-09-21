@@ -19,6 +19,10 @@ namespace content {
 class MockIndexedDBFactory : public IndexedDBFactory {
  public:
   MockIndexedDBFactory();
+
+  MockIndexedDBFactory(const MockIndexedDBFactory&) = delete;
+  MockIndexedDBFactory& operator=(const MockIndexedDBFactory&) = delete;
+
   ~MockIndexedDBFactory() override;
   MOCK_METHOD3(GetDatabaseNames,
                void(scoped_refptr<IndexedDBCallbacks> callbacks,
@@ -104,9 +108,6 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                void(const blink::StorageKey& storage_key,
                     const std::u16string& database_name,
                     const std::u16string& object_store_name));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIndexedDBFactory);
 };
 
 }  // namespace content

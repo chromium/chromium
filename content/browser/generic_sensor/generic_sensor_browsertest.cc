@@ -53,6 +53,9 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
             base::Unretained(this)));
   }
 
+  GenericSensorBrowserTest(const GenericSensorBrowserTest&) = delete;
+  GenericSensorBrowserTest& operator=(const GenericSensorBrowserTest&) = delete;
+
   ~GenericSensorBrowserTest() override {
     SensorProviderProxyImpl::OverrideSensorProviderBinderForTesting(
         base::NullCallback());
@@ -112,8 +115,6 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   bool sensor_provider_available_ = true;
   std::unique_ptr<FakeSensorProvider> fake_sensor_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(GenericSensorBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(GenericSensorBrowserTest, AmbientLightSensorTest) {

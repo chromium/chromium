@@ -68,6 +68,12 @@ void BindInterfaceForGpuOnProcessThread(
 class MockPowerMonitorMessageBroadcaster : public device::mojom::PowerMonitor {
  public:
   MockPowerMonitorMessageBroadcaster() = default;
+
+  MockPowerMonitorMessageBroadcaster(
+      const MockPowerMonitorMessageBroadcaster&) = delete;
+  MockPowerMonitorMessageBroadcaster& operator=(
+      const MockPowerMonitorMessageBroadcaster&) = delete;
+
   ~MockPowerMonitorMessageBroadcaster() override = default;
 
   void Bind(mojo::PendingReceiver<device::mojom::PowerMonitor> receiver) {
@@ -94,8 +100,6 @@ class MockPowerMonitorMessageBroadcaster : public device::mojom::PowerMonitor {
 
   mojo::ReceiverSet<device::mojom::PowerMonitor> receivers_;
   mojo::RemoteSet<device::mojom::PowerMonitorClient> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPowerMonitorMessageBroadcaster);
 };
 
 class PowerMonitorTest : public ContentBrowserTest {
@@ -109,6 +113,9 @@ class PowerMonitorTest : public ContentBrowserTest {
         base::BindRepeating(&PowerMonitorTest::BindForNonRenderer,
                             base::Unretained(this)));
   }
+
+  PowerMonitorTest(const PowerMonitorTest&) = delete;
+  PowerMonitorTest& operator=(const PowerMonitorTest&) = delete;
 
   ~PowerMonitorTest() override {
     RenderProcessHost::InterceptBindHostReceiverForTesting(
@@ -223,8 +230,6 @@ class PowerMonitorTest : public ContentBrowserTest {
   base::OnceClosure utility_bound_closure_;
 
   MockPowerMonitorMessageBroadcaster power_monitor_message_broadcaster_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestRendererProcess) {

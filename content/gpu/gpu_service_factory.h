@@ -37,6 +37,10 @@ class GpuServiceFactory {
       base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
+
+  GpuServiceFactory(const GpuServiceFactory&) = delete;
+  GpuServiceFactory& operator=(const GpuServiceFactory&) = delete;
+
   ~GpuServiceFactory();
 
   void RunMediaService(
@@ -57,8 +61,6 @@ class GpuServiceFactory {
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   gpu::GpuFeatureInfo gpu_feature_info_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(GpuServiceFactory);
 };
 
 }  // namespace content

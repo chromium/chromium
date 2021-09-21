@@ -31,6 +31,11 @@ class PepperPlatformVideoCapture {
   PepperPlatformVideoCapture(int render_frame_id,
                              const std::string& device_id,
                              PepperVideoCaptureHost* handler);
+
+  PepperPlatformVideoCapture(const PepperPlatformVideoCapture&) = delete;
+  PepperPlatformVideoCapture& operator=(const PepperPlatformVideoCapture&) =
+      delete;
+
   virtual ~PepperPlatformVideoCapture();
 
   // Detaches the event handler and stops sending notifications to it.
@@ -69,8 +74,6 @@ class PepperPlatformVideoCapture {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<PepperPlatformVideoCapture> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformVideoCapture);
 };
 
 }  // namespace content

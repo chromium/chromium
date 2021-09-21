@@ -20,6 +20,10 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
  public:
   BrowserAccessibilityAuraLinux();
 
+  BrowserAccessibilityAuraLinux(const BrowserAccessibilityAuraLinux&) = delete;
+  BrowserAccessibilityAuraLinux& operator=(
+      const BrowserAccessibilityAuraLinux&) = delete;
+
   ~BrowserAccessibilityAuraLinux() override;
 
   CONTENT_EXPORT ui::AXPlatformNodeAuraLinux* GetNode() const;
@@ -42,8 +46,6 @@ class BrowserAccessibilityAuraLinux : public BrowserAccessibility {
   friend class BrowserAccessibility;
 
   ui::AXPlatformNodeAuraLinux* node_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAuraLinux);
 };
 
 CONTENT_EXPORT BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(

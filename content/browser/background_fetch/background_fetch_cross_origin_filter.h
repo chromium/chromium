@@ -22,6 +22,12 @@ class CONTENT_EXPORT BackgroundFetchCrossOriginFilter {
  public:
   BackgroundFetchCrossOriginFilter(const url::Origin& source_origin,
                                    const BackgroundFetchRequestInfo& request);
+
+  BackgroundFetchCrossOriginFilter(const BackgroundFetchCrossOriginFilter&) =
+      delete;
+  BackgroundFetchCrossOriginFilter& operator=(
+      const BackgroundFetchCrossOriginFilter&) = delete;
+
   ~BackgroundFetchCrossOriginFilter();
 
   // Returns whether the Response object passed to the Service Worker event
@@ -45,8 +51,6 @@ class CONTENT_EXPORT BackgroundFetchCrossOriginFilter {
 
   // Whether credentials were included for cross-origin requests.
   bool include_credentials_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchCrossOriginFilter);
 };
 
 }  // namespace content

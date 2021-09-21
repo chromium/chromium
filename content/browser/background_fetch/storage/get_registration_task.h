@@ -32,6 +32,9 @@ class GetRegistrationTask : public DatabaseTask {
                       const std::string& developer_id,
                       GetRegistrationCallback callback);
 
+  GetRegistrationTask(const GetRegistrationTask&) = delete;
+  GetRegistrationTask& operator=(const GetRegistrationTask&) = delete;
+
   ~GetRegistrationTask() override;
 
   // DatabaseTask implementation:
@@ -56,8 +59,6 @@ class GetRegistrationTask : public DatabaseTask {
 
   base::WeakPtrFactory<GetRegistrationTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(GetRegistrationTask);
 };
 
 }  // namespace background_fetch

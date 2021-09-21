@@ -34,6 +34,10 @@ namespace {
 class MockObserver : public SmsProvider::Observer {
  public:
   MockObserver() = default;
+
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+
   ~MockObserver() override = default;
 
   MOCK_METHOD3(OnReceive,
@@ -41,9 +45,6 @@ class MockObserver : public SmsProvider::Observer {
                     const std::string& one_time_code,
                     SmsFetcher::UserConsent));
   MOCK_METHOD1(OnFailure, bool(SmsFetchFailureType));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 // SmsProviderGmsBaseTest tests the JNI bindings to the android provider, the

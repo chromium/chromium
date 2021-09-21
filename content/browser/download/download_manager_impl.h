@@ -70,6 +70,10 @@ class CONTENT_EXPORT DownloadManagerImpl
   // Caller guarantees that |net_log| will remain valid
   // for the lifetime of DownloadManagerImpl (until Shutdown() is called).
   explicit DownloadManagerImpl(BrowserContext* browser_context);
+
+  DownloadManagerImpl(const DownloadManagerImpl&) = delete;
+  DownloadManagerImpl& operator=(const DownloadManagerImpl&) = delete;
+
   ~DownloadManagerImpl() override;
 
   // Implementation functions (not part of the DownloadManager interface).
@@ -385,8 +389,6 @@ class CONTENT_EXPORT DownloadManagerImpl
   std::set<uint32_t> pending_disk_access_query_;
 
   base::WeakPtrFactory<DownloadManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerImpl);
 };
 
 }  // namespace content

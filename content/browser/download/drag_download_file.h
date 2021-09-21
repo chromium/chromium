@@ -42,6 +42,10 @@ class CONTENT_EXPORT DragDownloadFile : public ui::DownloadFileProvider {
                    const Referrer& referrer,
                    const std::string& referrer_encoding,
                    WebContents* web_contents);
+
+  DragDownloadFile(const DragDownloadFile&) = delete;
+  DragDownloadFile& operator=(const DragDownloadFile&) = delete;
+
   ~DragDownloadFile() override;
 
   // DownloadFileProvider methods.
@@ -63,8 +67,6 @@ class CONTENT_EXPORT DragDownloadFile : public ui::DownloadFileProvider {
   base::RunLoop nested_loop_;
   DragDownloadFileUI* drag_ui_ = nullptr;
   base::WeakPtrFactory<DragDownloadFile> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragDownloadFile);
 };
 
 }  // namespace content

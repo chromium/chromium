@@ -50,6 +50,10 @@ class LevelDBLock {
   LevelDBLock() = default;
   LevelDBLock(leveldb::Env* env, leveldb::FileLock* lock)
       : env_(env), lock_(lock) {}
+
+  LevelDBLock(const LevelDBLock&) = delete;
+  LevelDBLock& operator=(const LevelDBLock&) = delete;
+
   ~LevelDBLock() {
     if (env_)
       env_->UnlockFile(lock_);
@@ -58,8 +62,6 @@ class LevelDBLock {
  private:
   leveldb::Env* env_ = nullptr;
   leveldb::FileLock* lock_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDBLock);
 };
 
 std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
@@ -103,6 +105,10 @@ class IndexedDBTest : public testing::Test {
         kSessionOnlyStorageKey.origin(), should_purge_on_shutdown));
     context_->ApplyPolicyUpdates(std::move(policy_updates));
   }
+
+  IndexedDBTest(const IndexedDBTest&) = delete;
+  IndexedDBTest& operator=(const IndexedDBTest&) = delete;
+
   ~IndexedDBTest() override = default;
 
   void RunPostedTasks() {
@@ -157,8 +163,6 @@ class IndexedDBTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBTest);
 };
 
 TEST_F(IndexedDBTest, ClearSessionOnlyDatabases) {

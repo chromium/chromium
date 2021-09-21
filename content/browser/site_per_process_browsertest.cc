@@ -270,6 +270,11 @@ class RedirectNotificationObserver : public NotificationObserver {
   // NotificationService::AllSources().
   RedirectNotificationObserver(int notification_type,
                                const NotificationSource& source);
+
+  RedirectNotificationObserver(const RedirectNotificationObserver&) = delete;
+  RedirectNotificationObserver& operator=(const RedirectNotificationObserver&) =
+      delete;
+
   ~RedirectNotificationObserver() override;
 
   // Wait until the specified notification occurs.  If the notification was
@@ -301,8 +306,6 @@ class RedirectNotificationObserver : public NotificationObserver {
   NotificationSource source_;
   NotificationDetails details_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RedirectNotificationObserver);
 };
 
 RedirectNotificationObserver::RedirectNotificationObserver(
@@ -348,6 +351,9 @@ class UserInteractionObserver : public WebContentsObserver {
   explicit UserInteractionObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents), user_interaction_received_(false) {}
 
+  UserInteractionObserver(const UserInteractionObserver&) = delete;
+  UserInteractionObserver& operator=(const UserInteractionObserver&) = delete;
+
   ~UserInteractionObserver() override {}
 
   // Retrieve the flag. There is no need to wait on a loop since
@@ -364,8 +370,6 @@ class UserInteractionObserver : public WebContentsObserver {
   }
 
   bool user_interaction_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInteractionObserver);
 };
 
 // Supports waiting until a WebContents notifies its observers that the visible
@@ -8590,6 +8594,9 @@ class TextSelectionObserver : public TextInputManager::Observer {
     text_input_manager->AddObserver(this);
   }
 
+  TextSelectionObserver(const TextSelectionObserver&) = delete;
+  TextSelectionObserver& operator=(const TextSelectionObserver&) = delete;
+
   ~TextSelectionObserver() { text_input_manager_->RemoveObserver(this); }
 
   void WaitForSelectedText(const std::string& expected_text) {
@@ -8613,13 +8620,16 @@ class TextSelectionObserver : public TextInputManager::Observer {
   std::string last_selected_text_;
   std::string expected_text_;
   scoped_refptr<MessageLoopRunner> loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextSelectionObserver);
 };
 
 class SitePerProcessAndroidImeTest : public SitePerProcessBrowserTest {
  public:
   SitePerProcessAndroidImeTest() : SitePerProcessBrowserTest() {}
+
+  SitePerProcessAndroidImeTest(const SitePerProcessAndroidImeTest&) = delete;
+  SitePerProcessAndroidImeTest& operator=(const SitePerProcessAndroidImeTest&) =
+      delete;
+
   ~SitePerProcessAndroidImeTest() override {}
 
  protected:
@@ -8683,9 +8693,6 @@ class SitePerProcessAndroidImeTest : public SitePerProcessBrowserTest {
   }
 
   std::vector<RenderFrameHostImpl*> frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessAndroidImeTest);
 };
 
 // This test verifies that committing text will be applied on the focused
@@ -10128,6 +10135,11 @@ class TouchSelectionControllerClientTestWrapper
       ui::TouchSelectionControllerClient* client)
       : expected_event_(ui::SELECTION_HANDLES_SHOWN), client_(client) {}
 
+  TouchSelectionControllerClientTestWrapper(
+      const TouchSelectionControllerClientTestWrapper&) = delete;
+  TouchSelectionControllerClientTestWrapper& operator=(
+      const TouchSelectionControllerClientTestWrapper&) = delete;
+
   ~TouchSelectionControllerClientTestWrapper() override {}
 
   void InitWaitForSelectionEvent(ui::SelectionEventType expected_event) {
@@ -10182,8 +10194,6 @@ class TouchSelectionControllerClientTestWrapper
   std::unique_ptr<base::RunLoop> run_loop_;
   // Not owned.
   ui::TouchSelectionControllerClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerClientTestWrapper);
 };
 
 class TouchSelectionControllerClientAndroidSiteIsolationTest
@@ -11381,6 +11391,11 @@ class CommitMessageOrderReverser : public DidCommitNavigationInterceptor {
         deferred_url_(deferred_url),
         deferred_url_triggered_action_(
             std::move(deferred_url_triggered_action)) {}
+
+  CommitMessageOrderReverser(const CommitMessageOrderReverser&) = delete;
+  CommitMessageOrderReverser& operator=(const CommitMessageOrderReverser&) =
+      delete;
+
   ~CommitMessageOrderReverser() override = default;
 
   void WaitForBothCommits() { outer_run_loop.Run(); }
@@ -11415,8 +11430,6 @@ class CommitMessageOrderReverser : public DidCommitNavigationInterceptor {
 
   const GURL deferred_url_;
   DidStartDeferringCommitCallback deferred_url_triggered_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitMessageOrderReverser);
 };
 
 }  // namespace
@@ -14609,6 +14622,11 @@ class InnerWebContentsAttachTest
                      bool /* user proceeds with attaching */>> {
  public:
   InnerWebContentsAttachTest() {}
+
+  InnerWebContentsAttachTest(const InnerWebContentsAttachTest&) = delete;
+  InnerWebContentsAttachTest& operator=(const InnerWebContentsAttachTest&) =
+      delete;
+
   ~InnerWebContentsAttachTest() override {}
 
  protected:
@@ -14631,6 +14649,10 @@ class InnerWebContentsAttachTest
       original_render_frame_host->PrepareForInnerWebContentsAttach(
           std::move(callback));
     }
+
+    PrepareFrameJob(const PrepareFrameJob&) = delete;
+    PrepareFrameJob& operator=(const PrepareFrameJob&) = delete;
+
     virtual ~PrepareFrameJob() {}
 
     void WaitForPreparedFrame() {
@@ -14655,14 +14677,10 @@ class InnerWebContentsAttachTest
     bool did_call_prepare_ = false;
     RenderFrameHostImpl* new_render_frame_host_ = nullptr;
     base::RunLoop run_loop_;
-
-    DISALLOW_COPY_AND_ASSIGN(PrepareFrameJob);
   };
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(InnerWebContentsAttachTest);
 };
 
 // This is a test for the FrameTreeNode preparation process for various types

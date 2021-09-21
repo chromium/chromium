@@ -19,6 +19,12 @@ class MockOverscrollRefreshHandlerAndroid : public ui::OverscrollRefreshHandler,
                                             public MockOverscrollObserver {
  public:
   MockOverscrollRefreshHandlerAndroid();
+
+  MockOverscrollRefreshHandlerAndroid(
+      const MockOverscrollRefreshHandlerAndroid&) = delete;
+  MockOverscrollRefreshHandlerAndroid& operator=(
+      const MockOverscrollRefreshHandlerAndroid&) = delete;
+
   ~MockOverscrollRefreshHandlerAndroid() override;
 
   // ui::OverscrollRefreshHandler:
@@ -43,7 +49,6 @@ class MockOverscrollRefreshHandlerAndroid : public ui::OverscrollRefreshHandler,
   scoped_refptr<MessageLoopRunner> end_message_loop_runner_;
   bool seen_update_;
   bool pull_ended_;
-  DISALLOW_COPY_AND_ASSIGN(MockOverscrollRefreshHandlerAndroid);
 };
 
 }  // namespace content

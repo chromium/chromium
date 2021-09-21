@@ -35,6 +35,10 @@ class WebContentsViewAndroid : public WebContentsView,
  public:
   WebContentsViewAndroid(WebContentsImpl* web_contents,
                          WebContentsViewDelegate* delegate);
+
+  WebContentsViewAndroid(const WebContentsViewAndroid&) = delete;
+  WebContentsViewAndroid& operator=(const WebContentsViewAndroid&) = delete;
+
   ~WebContentsViewAndroid() override;
 
   void SetContentUiEventHandler(std::unique_ptr<ContentUiEventHandler> handler);
@@ -175,8 +179,6 @@ class WebContentsViewAndroid : public WebContentsView,
 
   gfx::PointF drag_location_;
   gfx::PointF drag_screen_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewAndroid);
 };
 
 } // namespace content

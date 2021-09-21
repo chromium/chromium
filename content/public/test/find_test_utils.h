@@ -29,6 +29,11 @@ struct FindResults {
 class FindTestWebContentsDelegate : public WebContentsDelegate {
  public:
   FindTestWebContentsDelegate();
+
+  FindTestWebContentsDelegate(const FindTestWebContentsDelegate&) = delete;
+  FindTestWebContentsDelegate& operator=(const FindTestWebContentsDelegate&) =
+      delete;
+
   ~FindTestWebContentsDelegate() override;
 
   // Returns the current find results.
@@ -133,8 +138,6 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
   WaitingFor waiting_for_;
 
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindTestWebContentsDelegate);
 };
 
 // Finds the set of all RenderFrameHosts that the FindRequestManager associated

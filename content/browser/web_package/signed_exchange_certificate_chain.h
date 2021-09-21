@@ -42,6 +42,10 @@ class CONTENT_EXPORT SignedExchangeCertificateChain {
         scoped_refptr<net::X509Certificate> certificate);
 
     explicit IgnoreErrorsSPKIList(const base::CommandLine& command_line);
+
+    IgnoreErrorsSPKIList(const IgnoreErrorsSPKIList&) = delete;
+    IgnoreErrorsSPKIList& operator=(const IgnoreErrorsSPKIList&) = delete;
+
     ~IgnoreErrorsSPKIList();
 
     // Used for tests to override the instance. Returns the old instance, which
@@ -61,7 +65,6 @@ class CONTENT_EXPORT SignedExchangeCertificateChain {
         scoped_refptr<net::X509Certificate> certificate);
 
     network::SPKIHashSet hash_set_;
-    DISALLOW_COPY_AND_ASSIGN(IgnoreErrorsSPKIList);
   };
 
   static std::unique_ptr<SignedExchangeCertificateChain> Parse(

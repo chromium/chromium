@@ -126,6 +126,10 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   };
 
   explicit EmbeddedWorkerInstance(ServiceWorkerVersion* owner_version);
+
+  EmbeddedWorkerInstance(const EmbeddedWorkerInstance&) = delete;
+  EmbeddedWorkerInstance& operator=(const EmbeddedWorkerInstance&) = delete;
+
   ~EmbeddedWorkerInstance() override;
 
   // Starts the worker. It is invalid to call this when the worker is not in
@@ -402,8 +406,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   absl::optional<blink::ServiceWorkerToken> token_;
 
   base::WeakPtrFactory<EmbeddedWorkerInstance> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerInstance);
 };
 
 }  // namespace content

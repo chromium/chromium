@@ -89,6 +89,9 @@ class CONTENT_EXPORT FrameTreeNode {
       blink::mojom::FrameOwnerElementType owner_type,
       const blink::FramePolicy& frame_owner);
 
+  FrameTreeNode(const FrameTreeNode&) = delete;
+  FrameTreeNode& operator=(const FrameTreeNode&) = delete;
+
   ~FrameTreeNode();
 
   void AddObserver(Observer* observer);
@@ -725,8 +728,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // before the RenderFrameHostManager's destructor runs.  See also
   // https://crbug.com/1157988.
   RenderFrameHostManager render_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTreeNode);
 };
 
 }  // namespace content

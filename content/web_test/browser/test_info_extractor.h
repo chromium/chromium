@@ -66,6 +66,10 @@ struct TestInfo {
 class TestInfoExtractor {
  public:
   explicit TestInfoExtractor(const base::CommandLine& cmd_line);
+
+  TestInfoExtractor(const TestInfoExtractor&) = delete;
+  TestInfoExtractor& operator=(const TestInfoExtractor&) = delete;
+
   ~TestInfoExtractor();
 
   std::unique_ptr<TestInfo> GetNextTest();
@@ -73,8 +77,6 @@ class TestInfoExtractor {
  private:
   base::CommandLine::StringVector cmdline_args_;
   size_t cmdline_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInfoExtractor);
 };
 
 }  // namespace content

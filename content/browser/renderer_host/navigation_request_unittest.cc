@@ -460,6 +460,12 @@ class GetRenderFrameHostOnFailureNavigationThrottle
   explicit GetRenderFrameHostOnFailureNavigationThrottle(
       NavigationHandle* handle)
       : NavigationThrottle(handle) {}
+
+  GetRenderFrameHostOnFailureNavigationThrottle(
+      const GetRenderFrameHostOnFailureNavigationThrottle&) = delete;
+  GetRenderFrameHostOnFailureNavigationThrottle& operator=(
+      const GetRenderFrameHostOnFailureNavigationThrottle&) = delete;
+
   ~GetRenderFrameHostOnFailureNavigationThrottle() override = default;
 
   NavigationThrottle::ThrottleCheckResult WillFailRequest() override {
@@ -470,9 +476,6 @@ class GetRenderFrameHostOnFailureNavigationThrottle
   const char* GetNameForLogging() override {
     return "GetRenderFrameHostOnFailureNavigationThrottle";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GetRenderFrameHostOnFailureNavigationThrottle);
 };
 
 class ThrottleTestContentBrowserClient : public ContentBrowserClient {

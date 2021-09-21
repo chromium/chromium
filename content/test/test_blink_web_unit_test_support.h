@@ -41,6 +41,11 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
 
   explicit TestBlinkWebUnitTestSupport(
       SchedulerType scheduler_type = SchedulerType::kMockScheduler);
+
+  TestBlinkWebUnitTestSupport(const TestBlinkWebUnitTestSupport&) = delete;
+  TestBlinkWebUnitTestSupport& operator=(const TestBlinkWebUnitTestSupport&) =
+      delete;
+
   ~TestBlinkWebUnitTestSupport() override;
 
   blink::WebString UserAgent() override;
@@ -76,8 +81,6 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   cc::TestTaskGraphRunner test_task_graph_runner_;
 
   base::WeakPtrFactory<TestBlinkWebUnitTestSupport> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestBlinkWebUnitTestSupport);
 };
 
 }  // namespace content

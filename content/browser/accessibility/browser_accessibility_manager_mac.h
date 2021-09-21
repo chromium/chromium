@@ -27,6 +27,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
   BrowserAccessibilityManagerMac(const ui::AXTreeUpdate& initial_tree,
                                  BrowserAccessibilityDelegate* delegate);
 
+  BrowserAccessibilityManagerMac(const BrowserAccessibilityManagerMac&) =
+      delete;
+  BrowserAccessibilityManagerMac& operator=(
+      const BrowserAccessibilityManagerMac&) = delete;
+
   ~BrowserAccessibilityManagerMac() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
@@ -82,8 +87,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
   friend class BrowserAccessibilityManager;
 
   friend class BrowserAccessibilityCocoaBrowserTest;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerMac);
 };
 
 }  // namespace content

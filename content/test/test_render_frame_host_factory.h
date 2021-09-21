@@ -23,6 +23,11 @@ namespace content {
 class TestRenderFrameHostFactory : public RenderFrameHostFactory {
  public:
   TestRenderFrameHostFactory();
+
+  TestRenderFrameHostFactory(const TestRenderFrameHostFactory&) = delete;
+  TestRenderFrameHostFactory& operator=(const TestRenderFrameHostFactory&) =
+      delete;
+
   ~TestRenderFrameHostFactory() override;
 
  protected:
@@ -38,9 +43,6 @@ class TestRenderFrameHostFactory : public RenderFrameHostFactory {
       const blink::LocalFrameToken& frame_token,
       bool renderer_initiated_creation,
       RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestRenderFrameHostFactory);
 };
 
 }  // namespace content

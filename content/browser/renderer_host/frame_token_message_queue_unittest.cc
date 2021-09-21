@@ -20,6 +20,12 @@ namespace {
 class TestFrameTokenMessageQueueClient : public FrameTokenMessageQueue::Client {
  public:
   TestFrameTokenMessageQueueClient() {}
+
+  TestFrameTokenMessageQueueClient(const TestFrameTokenMessageQueueClient&) =
+      delete;
+  TestFrameTokenMessageQueueClient& operator=(
+      const TestFrameTokenMessageQueueClient&) = delete;
+
   ~TestFrameTokenMessageQueueClient() {}
 
   // Resets all method counters.
@@ -36,7 +42,6 @@ class TestFrameTokenMessageQueueClient : public FrameTokenMessageQueue::Client {
  private:
   bool invalid_frame_token_called_ = false;
   uint32_t invalid_frame_token_ = 0u;
-  DISALLOW_COPY_AND_ASSIGN(TestFrameTokenMessageQueueClient);
 };
 
 void TestFrameTokenMessageQueueClient::Reset() {
@@ -55,6 +60,11 @@ void TestFrameTokenMessageQueueClient::OnInvalidFrameToken(
 class TestNonIPCMessageEnqueuer {
  public:
   TestNonIPCMessageEnqueuer() {}
+
+  TestNonIPCMessageEnqueuer(const TestNonIPCMessageEnqueuer&) = delete;
+  TestNonIPCMessageEnqueuer& operator=(const TestNonIPCMessageEnqueuer&) =
+      delete;
+
   ~TestNonIPCMessageEnqueuer() {}
 
   void FrameTokenCallback(base::TimeTicks activation_time);
@@ -65,7 +75,6 @@ class TestNonIPCMessageEnqueuer {
 
  private:
   bool frame_token_callback_called_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestNonIPCMessageEnqueuer);
 };
 
 void TestNonIPCMessageEnqueuer::FrameTokenCallback(
@@ -78,6 +87,11 @@ void TestNonIPCMessageEnqueuer::FrameTokenCallback(
 class FrameTokenMessageQueueTest : public testing::Test {
  public:
   FrameTokenMessageQueueTest();
+
+  FrameTokenMessageQueueTest(const FrameTokenMessageQueueTest&) = delete;
+  FrameTokenMessageQueueTest& operator=(const FrameTokenMessageQueueTest&) =
+      delete;
+
   ~FrameTokenMessageQueueTest() override {}
 
   TestFrameTokenMessageQueueClient* test_client() { return &test_client_; }
@@ -92,7 +106,6 @@ class FrameTokenMessageQueueTest : public testing::Test {
   TestFrameTokenMessageQueueClient test_client_;
   TestNonIPCMessageEnqueuer test_non_ipc_enqueuer_;
   FrameTokenMessageQueue frame_token_message_queue_;
-  DISALLOW_COPY_AND_ASSIGN(FrameTokenMessageQueueTest);
 };
 
 FrameTokenMessageQueueTest::FrameTokenMessageQueueTest() {

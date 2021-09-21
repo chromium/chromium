@@ -133,6 +133,10 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
              OverscrollMode mode,
              const gfx::Rect& content_bounds,
              float max_drag_progress);
+
+  Affordance(const Affordance&) = delete;
+  Affordance& operator=(const Affordance&) = delete;
+
   ~Affordance() override;
 
   // Sets drag progress. 0 means no progress. 1 means full progress. Values more
@@ -206,8 +210,6 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
   float complete_progress_ = 0.f;
 
   std::unique_ptr<gfx::LinearAnimation> animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(Affordance);
 };
 
 Affordance::Affordance(GestureNavSimple* owner,

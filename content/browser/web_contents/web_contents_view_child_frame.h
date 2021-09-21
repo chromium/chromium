@@ -21,6 +21,11 @@ class WebContentsViewChildFrame : public WebContentsView,
   WebContentsViewChildFrame(WebContentsImpl* web_contents,
                             WebContentsViewDelegate* delegate,
                             RenderViewHostDelegateView** delegate_view);
+
+  WebContentsViewChildFrame(const WebContentsViewChildFrame&) = delete;
+  WebContentsViewChildFrame& operator=(const WebContentsViewChildFrame&) =
+      delete;
+
   ~WebContentsViewChildFrame() override;
 
   // WebContentsView implementation --------------------------------------------
@@ -73,8 +78,6 @@ class WebContentsViewChildFrame : public WebContentsView,
 
   // The delegate ownership is passed to WebContentsView.
   std::unique_ptr<WebContentsViewDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewChildFrame);
 };
 
 }  // namespace content

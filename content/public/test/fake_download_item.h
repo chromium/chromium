@@ -26,6 +26,10 @@ namespace content {
 class FakeDownloadItem : public download::DownloadItem {
  public:
   FakeDownloadItem();
+
+  FakeDownloadItem(const FakeDownloadItem&) = delete;
+  FakeDownloadItem& operator=(const FakeDownloadItem&) = delete;
+
   ~FakeDownloadItem() override;
 
   // download::DownloadItem overrides.
@@ -207,8 +211,6 @@ class FakeDownloadItem : public download::DownloadItem {
   GURL dummy_url;
   absl::optional<url::Origin> dummy_origin;
   base::FilePath dummy_file_path;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDownloadItem);
 };
 
 }  // namespace content

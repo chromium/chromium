@@ -21,6 +21,12 @@ class BrowsingDataRemoverCompletionObserver
     : public BrowsingDataRemover::Observer {
  public:
   explicit BrowsingDataRemoverCompletionObserver(BrowsingDataRemover* remover);
+
+  BrowsingDataRemoverCompletionObserver(
+      const BrowsingDataRemoverCompletionObserver&) = delete;
+  BrowsingDataRemoverCompletionObserver& operator=(
+      const BrowsingDataRemoverCompletionObserver&) = delete;
+
   ~BrowsingDataRemoverCompletionObserver() override;
 
   void BlockUntilCompletion();
@@ -50,8 +56,6 @@ class BrowsingDataRemoverCompletionObserver
   base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemover::Observer>
       observation_{this};
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionObserver);
 };
 
 // The completion inhibitor can artificially delay completion of the browsing
@@ -64,6 +68,12 @@ class BrowsingDataRemoverCompletionObserver
 class BrowsingDataRemoverCompletionInhibitor {
  public:
   explicit BrowsingDataRemoverCompletionInhibitor(BrowsingDataRemover* remover);
+
+  BrowsingDataRemoverCompletionInhibitor(
+      const BrowsingDataRemoverCompletionInhibitor&) = delete;
+  BrowsingDataRemoverCompletionInhibitor& operator=(
+      const BrowsingDataRemoverCompletionInhibitor&) = delete;
+
   virtual ~BrowsingDataRemoverCompletionInhibitor();
 
   void Reset();
@@ -92,8 +102,6 @@ class BrowsingDataRemoverCompletionInhibitor {
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure continue_to_completion_callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionInhibitor);
 };
 
 }  // namespace content

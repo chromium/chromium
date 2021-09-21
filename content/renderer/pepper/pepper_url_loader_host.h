@@ -36,6 +36,10 @@ class PepperURLLoaderHost : public ppapi::host::ResourceHost,
                       bool main_document_loader,
                       PP_Instance instance,
                       PP_Resource resource);
+
+  PepperURLLoaderHost(const PepperURLLoaderHost&) = delete;
+  PepperURLLoaderHost& operator=(const PepperURLLoaderHost&) = delete;
+
   ~PepperURLLoaderHost() override;
 
   // ResourceHost implementation.
@@ -136,8 +140,6 @@ class PepperURLLoaderHost : public ppapi::host::ResourceHost,
   // PpapiPluginMsg_URLLoader_ReceivedResponse to the plugin, which introduces
   // ordering constraints on following messages to the plugin.
   bool pending_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperURLLoaderHost);
 };
 
 }  // namespace content

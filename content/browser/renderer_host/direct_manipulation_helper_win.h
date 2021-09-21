@@ -62,6 +62,9 @@ class CONTENT_EXPORT DirectManipulationHelper
       ui::WindowEventTarget* event_target,
       Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport);
 
+  DirectManipulationHelper(const DirectManipulationHelper&) = delete;
+  DirectManipulationHelper& operator=(const DirectManipulationHelper&) = delete;
+
   ~DirectManipulationHelper() override;
 
   // CompositorAnimationObserver implements.
@@ -104,8 +107,6 @@ class CONTENT_EXPORT DirectManipulationHelper
   ui::Compositor* compositor_ = nullptr;
   DWORD view_port_handler_cookie_;
   bool has_animation_observer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectManipulationHelper);
 };
 
 }  // namespace content

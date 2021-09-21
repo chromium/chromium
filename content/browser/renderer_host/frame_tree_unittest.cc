@@ -75,6 +75,10 @@ class TreeWalkingWebContentsLogger : public WebContentsObserver {
   explicit TreeWalkingWebContentsLogger(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  TreeWalkingWebContentsLogger(const TreeWalkingWebContentsLogger&) = delete;
+  TreeWalkingWebContentsLogger& operator=(const TreeWalkingWebContentsLogger&) =
+      delete;
+
   ~TreeWalkingWebContentsLogger() override {
     EXPECT_EQ("", log_) << "Activity logged that was not expected";
   }
@@ -123,8 +127,6 @@ class TreeWalkingWebContentsLogger : public WebContentsObserver {
   }
 
   std::string log_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeWalkingWebContentsLogger);
 };
 
 }  // namespace

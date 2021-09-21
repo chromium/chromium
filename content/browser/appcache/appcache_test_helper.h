@@ -21,6 +21,10 @@ namespace content {
 class AppCacheTestHelper : public AppCacheStorage::Delegate {
  public:
   AppCacheTestHelper();
+
+  AppCacheTestHelper(const AppCacheTestHelper&) = delete;
+  AppCacheTestHelper& operator=(const AppCacheTestHelper&) = delete;
+
   ~AppCacheTestHelper() override;
   void AddGroupAndCache(AppCacheServiceImpl* appcache_service,
                         const GURL& manifest_url);
@@ -40,8 +44,6 @@ class AppCacheTestHelper : public AppCacheStorage::Delegate {
   int response_id_;
   scoped_refptr<AppCacheInfoCollection> appcache_info_;
   std::set<url::Origin>* origins_;  // not owned
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheTestHelper);
 };
 
 }  // namespace content

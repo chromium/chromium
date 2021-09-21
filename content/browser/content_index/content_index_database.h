@@ -36,6 +36,10 @@ class CONTENT_EXPORT ContentIndexDatabase {
   ContentIndexDatabase(
       BrowserContext* browser_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  ContentIndexDatabase(const ContentIndexDatabase&) = delete;
+  ContentIndexDatabase& operator=(const ContentIndexDatabase&) = delete;
+
   ~ContentIndexDatabase();
 
   void AddEntry(int64_t service_worker_registration_id,
@@ -175,8 +179,6 @@ class CONTENT_EXPORT ContentIndexDatabase {
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   base::WeakPtrFactory<ContentIndexDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexDatabase);
 };
 
 }  // namespace content

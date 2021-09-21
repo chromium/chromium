@@ -20,6 +20,10 @@ namespace content {
 class SandboxSupportMacImpl : public mojom::SandboxSupportMac {
  public:
   SandboxSupportMacImpl();
+
+  SandboxSupportMacImpl(const SandboxSupportMacImpl&) = delete;
+  SandboxSupportMacImpl& operator=(const SandboxSupportMacImpl&) = delete;
+
   ~SandboxSupportMacImpl() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::SandboxSupportMac> receiver);
@@ -32,8 +36,6 @@ class SandboxSupportMacImpl : public mojom::SandboxSupportMac {
 
  private:
   mojo::ReceiverSet<mojom::SandboxSupportMac> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxSupportMacImpl);
 };
 
 }  // namespace content

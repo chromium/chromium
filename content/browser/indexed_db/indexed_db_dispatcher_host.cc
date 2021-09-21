@@ -100,6 +100,9 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
                             base::Unretained(this)));
   }
 
+  IndexedDBDataItemReader(const IndexedDBDataItemReader&) = delete;
+  IndexedDBDataItemReader& operator=(const IndexedDBDataItemReader&) = delete;
+
   ~IndexedDBDataItemReader() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     release_callback_.Run();
@@ -191,8 +194,6 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
   scoped_refptr<base::TaskRunner> io_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBDataItemReader);
 };
 
 IndexedDBDispatcherHost::IndexedDBDispatcherHost(

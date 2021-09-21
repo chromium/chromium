@@ -35,6 +35,10 @@ class MockDirectManipulationContent
  public:
   MockDirectManipulationContent();
 
+  MockDirectManipulationContent(const MockDirectManipulationContent&) = delete;
+  MockDirectManipulationContent& operator=(
+      const MockDirectManipulationContent&) = delete;
+
   // IDirectManipulationContent:
   ~MockDirectManipulationContent() override;
 
@@ -76,8 +80,6 @@ class MockDirectManipulationContent
   // (3,1) - x offset
   // (3,2) - y offset.
   std::array<float, kTransformMatrixSize> transforms_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDirectManipulationContent);
 };
 
 }  // namespace content

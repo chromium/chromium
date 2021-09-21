@@ -103,6 +103,10 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
       TasksAvailableCallback notify_tasks_callback,
       TearDownCallback tear_down_callback,
       std::unique_ptr<IndexedDBBackingStore> backing_store);
+
+  IndexedDBStorageKeyState(const IndexedDBStorageKeyState&) = delete;
+  IndexedDBStorageKeyState& operator=(const IndexedDBStorageKeyState&) = delete;
+
   ~IndexedDBStorageKeyState();
 
   void AbortAllTransactions(bool compact);
@@ -246,8 +250,6 @@ class CONTENT_EXPORT IndexedDBStorageKeyState {
   TearDownCallback tear_down_callback_;
 
   base::WeakPtrFactory<IndexedDBStorageKeyState> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBStorageKeyState);
 };
 
 }  // namespace content

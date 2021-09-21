@@ -44,12 +44,16 @@ class ScopedAvoidIdentityHashForTesting {
   // must outlive the created instance of this helper.
   explicit ScopedAvoidIdentityHashForTesting(
       content::V8ValueConverterImpl* converter);
+
+  ScopedAvoidIdentityHashForTesting(const ScopedAvoidIdentityHashForTesting&) =
+      delete;
+  ScopedAvoidIdentityHashForTesting& operator=(
+      const ScopedAvoidIdentityHashForTesting&) = delete;
+
   ~ScopedAvoidIdentityHashForTesting();
 
  private:
   content::V8ValueConverterImpl* converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAvoidIdentityHashForTesting);
 };
 
 ScopedAvoidIdentityHashForTesting::ScopedAvoidIdentityHashForTesting(

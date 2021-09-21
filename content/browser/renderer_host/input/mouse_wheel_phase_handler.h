@@ -53,6 +53,10 @@ enum class FirstScrollUpdateAckState {
 class CONTENT_EXPORT MouseWheelPhaseHandler {
  public:
   MouseWheelPhaseHandler(RenderWidgetHostViewBase* const host_view);
+
+  MouseWheelPhaseHandler(const MouseWheelPhaseHandler&) = delete;
+  MouseWheelPhaseHandler& operator=(const MouseWheelPhaseHandler&) = delete;
+
   ~MouseWheelPhaseHandler() {}
 
   void AddPhaseIfNeededAndScheduleEndEvent(
@@ -128,8 +132,6 @@ class CONTENT_EXPORT MouseWheelPhaseHandler {
   // phase = kPhaseEnded.
   base::TimeDelta max_time_between_phase_ended_and_momentum_phase_began_ =
       base::TimeDelta::FromMilliseconds(100);
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWheelPhaseHandler);
 };
 
 }  // namespace content

@@ -35,6 +35,10 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   static gin::WrapperInfo kWrapperInfo;
 
   WebAXObjectProxy(const blink::WebAXObject& object, Factory* factory);
+
+  WebAXObjectProxy(const WebAXObjectProxy&) = delete;
+  WebAXObjectProxy& operator=(const WebAXObjectProxy&) = delete;
+
   ~WebAXObjectProxy() override;
 
   // gin::Wrappable:
@@ -239,8 +243,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   Factory* factory_;
 
   v8::Persistent<v8::Function> notification_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAXObjectProxy);
 };
 
 class RootWebAXObjectProxy : public WebAXObjectProxy {

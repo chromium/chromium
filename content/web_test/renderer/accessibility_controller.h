@@ -33,6 +33,10 @@ class WebFrameTestProxy;
 class AccessibilityController {
  public:
   explicit AccessibilityController(WebFrameTestProxy* web_frame_test_proxy);
+
+  AccessibilityController(const AccessibilityController&) = delete;
+  AccessibilityController& operator=(const AccessibilityController&) = delete;
+
   ~AccessibilityController();
 
   void Reset();
@@ -78,8 +82,6 @@ class AccessibilityController {
   std::unique_ptr<blink::WebAXContext> ax_context_;
 
   base::WeakPtrFactory<AccessibilityController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityController);
 };
 
 }  // namespace content

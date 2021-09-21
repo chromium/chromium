@@ -21,6 +21,11 @@ namespace content {
 class TestRenderWidgetHostFactory : public RenderWidgetHostFactory {
  public:
   TestRenderWidgetHostFactory();
+
+  TestRenderWidgetHostFactory(const TestRenderWidgetHostFactory&) = delete;
+  TestRenderWidgetHostFactory& operator=(const TestRenderWidgetHostFactory&) =
+      delete;
+
   ~TestRenderWidgetHostFactory() override;
 
   std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
@@ -29,9 +34,6 @@ class TestRenderWidgetHostFactory : public RenderWidgetHostFactory {
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
       bool hidden) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestRenderWidgetHostFactory);
 };
 
 }  // namespace content

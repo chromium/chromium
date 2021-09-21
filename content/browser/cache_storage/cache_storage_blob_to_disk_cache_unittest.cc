@@ -47,6 +47,11 @@ class TestCacheStorageBlobToDiskCache : public CacheStorageBlobToDiskCache {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
       : CacheStorageBlobToDiskCache(quota_manager_proxy, blink::StorageKey()) {}
 
+  TestCacheStorageBlobToDiskCache(const TestCacheStorageBlobToDiskCache&) =
+      delete;
+  TestCacheStorageBlobToDiskCache& operator=(
+      const TestCacheStorageBlobToDiskCache&) = delete;
+
   ~TestCacheStorageBlobToDiskCache() override = default;
 
   void ContinueReadFromBlob() { CacheStorageBlobToDiskCache::ReadFromBlob(); }
@@ -70,8 +75,6 @@ class TestCacheStorageBlobToDiskCache : public CacheStorageBlobToDiskCache {
 
  private:
   bool delay_blob_reads_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCacheStorageBlobToDiskCache);
 };
 
 class CacheStorageBlobToDiskCacheTest : public testing::Test {

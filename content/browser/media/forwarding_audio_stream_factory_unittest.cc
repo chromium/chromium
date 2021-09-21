@@ -41,6 +41,10 @@ class MockStreamFactory final : public audio::FakeStreamFactory,
                                 public media::mojom::LocalMuter {
  public:
   MockStreamFactory() = default;
+
+  MockStreamFactory(const MockStreamFactory&) = delete;
+  MockStreamFactory& operator=(const MockStreamFactory&) = delete;
+
   ~MockStreamFactory() override = default;
 
   bool IsConnected() const { return receiver_.is_bound(); }
@@ -57,13 +61,15 @@ class MockStreamFactory final : public audio::FakeStreamFactory,
   void MuterDisconnected() { muter_receiver_.reset(); }
 
   mojo::AssociatedReceiver<media::mojom::LocalMuter> muter_receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockStreamFactory);
 };
 
 class MockBroker : public AudioStreamBroker {
  public:
   explicit MockBroker(RenderFrameHost* rfh)
       : AudioStreamBroker(rfh->GetProcess()->GetID(), rfh->GetRoutingID()) {}
+
+  MockBroker(const MockBroker&) = delete;
+  MockBroker& operator=(const MockBroker&) = delete;
 
   ~MockBroker() override {}
 
@@ -76,12 +82,15 @@ class MockBroker : public AudioStreamBroker {
 
  private:
   base::WeakPtrFactory<MockBroker> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockBroker);
 };
 
 class MockBrokerFactory final : public AudioStreamBrokerFactory {
  public:
   MockBrokerFactory() = default;
+
+  MockBrokerFactory(const MockBrokerFactory&) = delete;
+  MockBrokerFactory& operator=(const MockBrokerFactory&) = delete;
+
   ~MockBrokerFactory() override {
     EXPECT_TRUE(prepared_input_stream_brokers_.empty())
         << "Input broker creation was expected but didn't happen";
@@ -166,18 +175,18 @@ class MockBrokerFactory final : public AudioStreamBrokerFactory {
   base::queue<std::unique_ptr<MockBroker>> prepared_loopback_stream_brokers_;
   base::queue<std::unique_ptr<MockBroker>> prepared_input_stream_brokers_;
   base::queue<std::unique_ptr<MockBroker>> prepared_output_stream_brokers_;
-  DISALLOW_COPY_AND_ASSIGN(MockBrokerFactory);
 };
 
 class MockLoopbackSink : public AudioStreamBroker::LoopbackSink {
  public:
   MockLoopbackSink() {}
+
+  MockLoopbackSink(const MockLoopbackSink&) = delete;
+  MockLoopbackSink& operator=(const MockLoopbackSink&) = delete;
+
   ~MockLoopbackSink() override {}
 
   MOCK_METHOD0(OnSourceGone, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLoopbackSink);
 };
 
 class ForwardingAudioStreamFactoryTest : public RenderViewHostTestHarness {

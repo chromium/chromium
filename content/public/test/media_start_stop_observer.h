@@ -24,6 +24,10 @@ class MediaStartStopObserver : public WebContentsObserver {
   };
 
   MediaStartStopObserver(WebContents* web_contents, Type type);
+
+  MediaStartStopObserver(const MediaStartStopObserver&) = delete;
+  MediaStartStopObserver& operator=(const MediaStartStopObserver&) = delete;
+
   ~MediaStartStopObserver() override;
 
   // WebContentsObserver implementation.
@@ -41,8 +45,6 @@ class MediaStartStopObserver : public WebContentsObserver {
  private:
   base::RunLoop run_loop_;
   const Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStartStopObserver);
 };
 
 }  // namespace content

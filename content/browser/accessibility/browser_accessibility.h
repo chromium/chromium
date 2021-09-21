@@ -67,6 +67,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       ui::AXPlatformNodeDelegate* delegate);
 
   BrowserAccessibility();
+
+  BrowserAccessibility(const BrowserAccessibility&) = delete;
+  BrowserAccessibility& operator=(const BrowserAccessibility&) = delete;
+
   ~BrowserAccessibility() override;
 
   // Called only once, immediately after construction. The constructor doesn't
@@ -702,8 +706,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   // A unique ID, since node IDs are frame-local.
   ui::AXUniqueId unique_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibility);
 };
 
 }  // namespace content

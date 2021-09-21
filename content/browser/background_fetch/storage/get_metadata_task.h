@@ -34,6 +34,9 @@ class GetMetadataTask : public DatabaseTask {
                   const std::string& developer_id,
                   GetMetadataCallback callback);
 
+  GetMetadataTask(const GetMetadataTask&) = delete;
+  GetMetadataTask& operator=(const GetMetadataTask&) = delete;
+
   ~GetMetadataTask() override;
 
   // DatabaseTask implementation:
@@ -59,8 +62,6 @@ class GetMetadataTask : public DatabaseTask {
   std::unique_ptr<proto::BackgroundFetchMetadata> metadata_proto_;
 
   base::WeakPtrFactory<GetMetadataTask> weak_factory_{this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(GetMetadataTask);
 };
 
 }  // namespace background_fetch

@@ -20,6 +20,12 @@ class TouchpadTapSuppressionController : public TapSuppressionController {
   // The |client| must outlive the TouchpadTapSupressionController.
   TouchpadTapSuppressionController(
       const TapSuppressionController::Config& config);
+
+  TouchpadTapSuppressionController(const TouchpadTapSuppressionController&) =
+      delete;
+  TouchpadTapSuppressionController& operator=(
+      const TouchpadTapSuppressionController&) = delete;
+
   ~TouchpadTapSuppressionController() override;
 
   // Should be called on arrival of MouseDown events. Returns true if the caller
@@ -32,8 +38,6 @@ class TouchpadTapSuppressionController : public TapSuppressionController {
 
  private:
   friend class MockRenderWidgetHost;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchpadTapSuppressionController);
 };
 
 }  // namespace content

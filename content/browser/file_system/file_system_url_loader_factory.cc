@@ -620,6 +620,10 @@ class FileSystemURLLoaderFactory
         params_(std::move(params)),
         io_task_runner_(io_task_runner) {}
 
+  FileSystemURLLoaderFactory(const FileSystemURLLoaderFactory&) = delete;
+  FileSystemURLLoaderFactory& operator=(const FileSystemURLLoaderFactory&) =
+      delete;
+
   ~FileSystemURLLoaderFactory() override = default;
 
  private:
@@ -652,8 +656,6 @@ class FileSystemURLLoaderFactory
 
   const FactoryParams params_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemURLLoaderFactory);
 };
 
 }  // anonymous namespace

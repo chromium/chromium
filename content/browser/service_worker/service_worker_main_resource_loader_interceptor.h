@@ -58,6 +58,11 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       const DedicatedOrSharedWorkerToken& worker_token,
       base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
 
+  ServiceWorkerMainResourceLoaderInterceptor(
+      const ServiceWorkerMainResourceLoaderInterceptor&) = delete;
+  ServiceWorkerMainResourceLoaderInterceptor& operator=(
+      const ServiceWorkerMainResourceLoaderInterceptor&) = delete;
+
   ~ServiceWorkerMainResourceLoaderInterceptor() override;
 
   // NavigationLoaderInterceptor overrides:
@@ -135,8 +140,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMainResourceLoaderInterceptor);
 };
 
 }  // namespace content

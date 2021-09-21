@@ -39,6 +39,10 @@ class MockSharedWorker : public blink::mojom::SharedWorker {
  public:
   explicit MockSharedWorker(
       mojo::PendingReceiver<blink::mojom::SharedWorker> receiver);
+
+  MockSharedWorker(const MockSharedWorker&) = delete;
+  MockSharedWorker& operator=(const MockSharedWorker&) = delete;
+
   ~MockSharedWorker() override;
 
   bool CheckReceivedConnect(int* connection_request_id,
@@ -57,14 +61,16 @@ class MockSharedWorker : public blink::mojom::SharedWorker {
   mojo::Receiver<blink::mojom::SharedWorker> receiver_;
   std::queue<std::pair<int, blink::MessagePortChannel>> connect_received_;
   bool terminate_received_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSharedWorker);
 };
 
 class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
  public:
   explicit MockSharedWorkerFactory(
       mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> receiver);
+
+  MockSharedWorkerFactory(const MockSharedWorkerFactory&) = delete;
+  MockSharedWorkerFactory& operator=(const MockSharedWorkerFactory&) = delete;
+
   ~MockSharedWorkerFactory() override;
 
   bool CheckReceivedCreateSharedWorker(
@@ -120,13 +126,15 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
 
   mojo::Receiver<blink::mojom::SharedWorkerFactory> receiver_;
   std::unique_ptr<CreateParams> create_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSharedWorkerFactory);
 };
 
 class MockSharedWorkerClient : public blink::mojom::SharedWorkerClient {
  public:
   MockSharedWorkerClient();
+
+  MockSharedWorkerClient(const MockSharedWorkerClient&) = delete;
+  MockSharedWorkerClient& operator=(const MockSharedWorkerClient&) = delete;
+
   ~MockSharedWorkerClient() override;
 
   void Bind(mojo::PendingReceiver<blink::mojom::SharedWorkerClient> receiver);
@@ -159,8 +167,6 @@ class MockSharedWorkerClient : public blink::mojom::SharedWorkerClient {
   blink::mojom::WebFeature on_feature_used_feature_ =
       blink::mojom::WebFeature();
   bool on_script_load_failed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSharedWorkerClient);
 };
 
 }  // namespace content

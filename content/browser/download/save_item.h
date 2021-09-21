@@ -34,6 +34,9 @@ class SaveItem {
            int frame_tree_node_id,
            int container_frame_tree_node_id);
 
+  SaveItem(const SaveItem&) = delete;
+  SaveItem& operator=(const SaveItem&) = delete;
+
   ~SaveItem();
 
   void Start();
@@ -103,8 +106,6 @@ class SaveItem {
 
   // Our owning object.
   SavePackage* package_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveItem);
 };
 
 }  // namespace content

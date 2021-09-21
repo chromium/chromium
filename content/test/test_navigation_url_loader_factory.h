@@ -20,6 +20,12 @@ namespace content {
 class TestNavigationURLLoaderFactory : public NavigationURLLoaderFactory {
  public:
   TestNavigationURLLoaderFactory();
+
+  TestNavigationURLLoaderFactory(const TestNavigationURLLoaderFactory&) =
+      delete;
+  TestNavigationURLLoaderFactory& operator=(
+      const TestNavigationURLLoaderFactory&) = delete;
+
   ~TestNavigationURLLoaderFactory() override;
 
   // TestNavigationURLLoaderFactory implementation.
@@ -30,9 +36,6 @@ class TestNavigationURLLoaderFactory : public NavigationURLLoaderFactory {
       ServiceWorkerMainResourceHandle* service_worker_handle,
       NavigationURLLoaderDelegate* delegate,
       NavigationURLLoader::LoaderType loader_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationURLLoaderFactory);
 };
 
 }  // namespace content

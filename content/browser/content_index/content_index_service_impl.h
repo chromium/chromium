@@ -36,6 +36,10 @@ class CONTENT_EXPORT ContentIndexServiceImpl
       const url::Origin& origin,
       scoped_refptr<ContentIndexContextImpl> content_index_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  ContentIndexServiceImpl(const ContentIndexServiceImpl&) = delete;
+  ContentIndexServiceImpl& operator=(const ContentIndexServiceImpl&) = delete;
+
   ~ContentIndexServiceImpl() override;
 
   // blink::mojom::ContentIndexService implementation.
@@ -59,8 +63,6 @@ class CONTENT_EXPORT ContentIndexServiceImpl
   url::Origin origin_;
   scoped_refptr<ContentIndexContextImpl> content_index_context_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexServiceImpl);
 };
 
 }  // namespace content

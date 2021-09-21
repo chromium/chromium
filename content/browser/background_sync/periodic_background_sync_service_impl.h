@@ -32,6 +32,11 @@ class CONTENT_EXPORT PeriodicBackgroundSyncServiceImpl
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver);
 
+  PeriodicBackgroundSyncServiceImpl(const PeriodicBackgroundSyncServiceImpl&) =
+      delete;
+  PeriodicBackgroundSyncServiceImpl& operator=(
+      const PeriodicBackgroundSyncServiceImpl&) = delete;
+
   ~PeriodicBackgroundSyncServiceImpl() override;
 
  private:
@@ -61,8 +66,6 @@ class CONTENT_EXPORT PeriodicBackgroundSyncServiceImpl
 
   base::WeakPtrFactory<PeriodicBackgroundSyncServiceImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PeriodicBackgroundSyncServiceImpl);
 };
 
 }  // namespace content

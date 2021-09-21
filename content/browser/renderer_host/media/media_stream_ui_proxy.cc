@@ -43,6 +43,10 @@ class MediaStreamUIProxy::Core {
  public:
   explicit Core(const base::WeakPtr<MediaStreamUIProxy>& proxy,
                 RenderFrameHostDelegate* test_render_delegate);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request);
@@ -99,8 +103,6 @@ class MediaStreamUIProxy::Core {
   // Used for calls supplied to `ui_`. Invalidated every time a new UI is
   // created.
   base::WeakPtrFactory<Core> weak_factory_for_ui_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 MediaStreamUIProxy::Core::Core(const base::WeakPtr<MediaStreamUIProxy>& proxy,

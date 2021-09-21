@@ -48,6 +48,10 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       BackgroundFetchDelegateProxy* delegate_proxy,
       DevToolsBackgroundServicesContextImpl* devtools_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  BackgroundFetchScheduler(const BackgroundFetchScheduler&) = delete;
+  BackgroundFetchScheduler& operator=(const BackgroundFetchScheduler&) = delete;
+
   ~BackgroundFetchScheduler() override;
 
   // Aborts the background fetch identified by |registration_id|.
@@ -201,8 +205,6 @@ class CONTENT_EXPORT BackgroundFetchScheduler
   int num_running_downloads_ = 0;
 
   base::WeakPtrFactory<BackgroundFetchScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchScheduler);
 };
 
 }  // namespace content

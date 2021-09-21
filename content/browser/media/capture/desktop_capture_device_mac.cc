@@ -22,6 +22,9 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
         device_task_runner_(base::ThreadTaskRunnerHandle::Get()),
         weak_factory_(this) {}
 
+  DesktopCaptureDeviceMac(const DesktopCaptureDeviceMac&) = delete;
+  DesktopCaptureDeviceMac& operator=(const DesktopCaptureDeviceMac&) = delete;
+
   ~DesktopCaptureDeviceMac() override = default;
 
   static float ComputeMinFrameRate(float requested_frame_rate) {
@@ -192,7 +195,6 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
   std::unique_ptr<base::RepeatingTimer> min_frame_rate_enforcement_timer_;
 
   base::WeakPtrFactory<DesktopCaptureDeviceMac> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(DesktopCaptureDeviceMac);
 };
 
 }  // namespace

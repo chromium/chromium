@@ -22,6 +22,11 @@ class CONTENT_EXPORT ScreenCaptureDeviceAndroid
     : public media::VideoCaptureDevice {
  public:
   ScreenCaptureDeviceAndroid();
+
+  ScreenCaptureDeviceAndroid(const ScreenCaptureDeviceAndroid&) = delete;
+  ScreenCaptureDeviceAndroid& operator=(const ScreenCaptureDeviceAndroid&) =
+      delete;
+
   ~ScreenCaptureDeviceAndroid() override;
 
   // VideoCaptureDevice implementation.
@@ -37,8 +42,6 @@ class CONTENT_EXPORT ScreenCaptureDeviceAndroid
 
   media::ScreenCaptureMachineAndroid capture_machine_;
   scoped_refptr<media::ThreadSafeCaptureOracle> oracle_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenCaptureDeviceAndroid);
 };
 
 }  // namespace content

@@ -36,6 +36,9 @@ CONTENT_EXPORT BrowserAccessibilityCocoa* ToBrowserAccessibilityCocoa(
 
 class BrowserAccessibilityMac : public BrowserAccessibility {
  public:
+  BrowserAccessibilityMac(const BrowserAccessibilityMac&) = delete;
+  BrowserAccessibilityMac& operator=(const BrowserAccessibilityMac&) = delete;
+
   // BrowserAccessibility overrides.
   ~BrowserAccessibilityMac() override;
   void OnDataChanged() override;
@@ -77,8 +80,6 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
 
   // Manager of the native cocoa node. We own this object.
   ui::AXPlatformNodeMac* platform_node_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityMac);
 };
 
 }  // namespace content

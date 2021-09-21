@@ -79,6 +79,11 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       scoped_refptr<ServiceWorkerVersion> version);
 
+  ServiceWorkerUpdatedScriptLoader(const ServiceWorkerUpdatedScriptLoader&) =
+      delete;
+  ServiceWorkerUpdatedScriptLoader& operator=(
+      const ServiceWorkerUpdatedScriptLoader&) = delete;
+
   ~ServiceWorkerUpdatedScriptLoader() override;
 
   // network::mojom::URLLoader:
@@ -228,8 +233,6 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   base::OnceCallback<void(net::Error)> write_observer_complete_callback_;
 
   base::WeakPtrFactory<ServiceWorkerUpdatedScriptLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerUpdatedScriptLoader);
 };
 
 }  // namespace content

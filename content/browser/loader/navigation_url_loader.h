@@ -86,6 +86,9 @@ class CONTENT_EXPORT NavigationURLLoader {
   // BackForwardCache when it also starts depending on the requirement.
   static void SetFactoryForTesting(NavigationURLLoaderFactory* factory);
 
+  NavigationURLLoader(const NavigationURLLoader&) = delete;
+  NavigationURLLoader& operator=(const NavigationURLLoader&) = delete;
+
   virtual ~NavigationURLLoader() {}
 
   // Called right after the loader is constructed.
@@ -103,9 +106,6 @@ class CONTENT_EXPORT NavigationURLLoader {
 
  protected:
   NavigationURLLoader() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationURLLoader);
 };
 
 }  // namespace content

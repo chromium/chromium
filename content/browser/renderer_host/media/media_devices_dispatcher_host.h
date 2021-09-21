@@ -32,6 +32,11 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   MediaDevicesDispatcherHost(int render_process_id,
                              int render_frame_id,
                              MediaStreamManager* media_stream_manager);
+
+  MediaDevicesDispatcherHost(const MediaDevicesDispatcherHost&) = delete;
+  MediaDevicesDispatcherHost& operator=(const MediaDevicesDispatcherHost&) =
+      delete;
+
   ~MediaDevicesDispatcherHost() override;
 
   static void Create(
@@ -157,8 +162,6 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       capture_handle_config_callback_for_testing_;
 
   base::WeakPtrFactory<MediaDevicesDispatcherHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDevicesDispatcherHost);
 };
 
 }  // namespace content

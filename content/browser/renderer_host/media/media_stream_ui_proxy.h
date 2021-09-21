@@ -38,6 +38,9 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   static std::unique_ptr<MediaStreamUIProxy> CreateForTests(
       RenderFrameHostDelegate* render_delegate);
 
+  MediaStreamUIProxy(const MediaStreamUIProxy&) = delete;
+  MediaStreamUIProxy& operator=(const MediaStreamUIProxy&) = delete;
+
   virtual ~MediaStreamUIProxy();
 
   // Requests access for the MediaStream by calling
@@ -112,8 +115,6 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   MediaStreamUI::StateChangeCallback state_change_callback_;
 
   base::WeakPtrFactory<MediaStreamUIProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamUIProxy);
 };
 
 class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
@@ -122,6 +123,10 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   // creating the FakeMediaStreamUIProxy creates real RFH objects or true if it
   // just passes in dummy IDs to refer to RFHs.
   explicit FakeMediaStreamUIProxy(bool tests_use_fake_render_frame_hosts);
+
+  FakeMediaStreamUIProxy(const FakeMediaStreamUIProxy&) = delete;
+  FakeMediaStreamUIProxy& operator=(const FakeMediaStreamUIProxy&) = delete;
+
   ~FakeMediaStreamUIProxy() override;
 
   void SetAvailableDevices(const blink::MediaStreamDevices& devices);
@@ -148,8 +153,6 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   // These are used for CheckAccess().
   bool mic_access_;
   bool camera_access_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaStreamUIProxy);
 };
 
 }  // namespace content

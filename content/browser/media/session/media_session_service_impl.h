@@ -24,6 +24,9 @@ class MediaSessionImpl;
 class CONTENT_EXPORT MediaSessionServiceImpl
     : public blink::mojom::MediaSessionService {
  public:
+  MediaSessionServiceImpl(const MediaSessionServiceImpl&) = delete;
+  MediaSessionServiceImpl& operator=(const MediaSessionServiceImpl&) = delete;
+
   ~MediaSessionServiceImpl() override;
 
   static void Create(
@@ -95,8 +98,6 @@ class CONTENT_EXPORT MediaSessionServiceImpl
   // Tracks whether the camera is turned on in a WebRTC session.
   media_session::mojom::CameraState camera_state_ =
       media_session::mojom::CameraState::kUnknown;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionServiceImpl);
 };
 
 }  // namespace content

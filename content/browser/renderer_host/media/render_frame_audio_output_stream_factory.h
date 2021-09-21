@@ -56,6 +56,11 @@ class CONTENT_EXPORT RenderFrameAudioOutputStreamFactory final {
           receiver,
       absl::optional<base::OnceClosure> restricted_callback);
 
+  RenderFrameAudioOutputStreamFactory(
+      const RenderFrameAudioOutputStreamFactory&) = delete;
+  RenderFrameAudioOutputStreamFactory& operator=(
+      const RenderFrameAudioOutputStreamFactory&) = delete;
+
   ~RenderFrameAudioOutputStreamFactory();
 
   void SetAuthorizedDeviceIdForGlobalMediaControls(
@@ -74,8 +79,6 @@ class CONTENT_EXPORT RenderFrameAudioOutputStreamFactory final {
 
   // Used while the frame is disallowed to request output devices.
   std::unique_ptr<RestrictedModeCore> restricted_mode_core_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameAudioOutputStreamFactory);
 };
 
 }  // namespace content

@@ -98,6 +98,10 @@ class RenderWidgetTargeter {
 
   // The delegate must outlive this targeter.
   explicit RenderWidgetTargeter(Delegate* delegate);
+
+  RenderWidgetTargeter(const RenderWidgetTargeter&) = delete;
+  RenderWidgetTargeter& operator=(const RenderWidgetTargeter&) = delete;
+
   ~RenderWidgetTargeter();
 
   // Finds the appropriate target inside |root_view| for |event|, and dispatches
@@ -142,6 +146,10 @@ class RenderWidgetTargeter {
                      RenderWidgetHostAtPointCallback);
     TargetingRequest(TargetingRequest&& request);
     TargetingRequest& operator=(TargetingRequest&& other);
+
+    TargetingRequest(const TargetingRequest&) = delete;
+    TargetingRequest& operator=(const TargetingRequest&) = delete;
+
     ~TargetingRequest();
 
     void RunCallback(RenderWidgetHostViewBase* target,
@@ -165,8 +173,6 @@ class RenderWidgetTargeter {
     // |event| if set is in the coordinate space of |root_view|.
     ui::WebScopedInputEvent event;
     ui::LatencyInfo latency;
-
-    DISALLOW_COPY_AND_ASSIGN(TargetingRequest);
   };
 
   void ResolveTargetingRequest(TargetingRequest);
@@ -259,8 +265,6 @@ class RenderWidgetTargeter {
 
   Delegate* const delegate_;
   base::WeakPtrFactory<RenderWidgetTargeter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetTargeter);
 };
 
 }  // namespace content

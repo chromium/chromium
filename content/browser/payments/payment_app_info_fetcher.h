@@ -50,6 +50,10 @@ class PaymentAppInfoFetcher {
   class SelfDeleteFetcher {
    public:
     explicit SelfDeleteFetcher(PaymentAppInfoFetchCallback callback);
+
+    SelfDeleteFetcher(const SelfDeleteFetcher&) = delete;
+    SelfDeleteFetcher& operator=(const SelfDeleteFetcher&) = delete;
+
     ~SelfDeleteFetcher();
 
     void Start(const GURL& context_url,
@@ -76,8 +80,6 @@ class PaymentAppInfoFetcher {
     std::unique_ptr<PaymentAppInfo> fetched_payment_app_info_;
     PaymentAppInfoFetchCallback callback_;
     base::WeakPtrFactory<SelfDeleteFetcher> weak_ptr_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(SelfDeleteFetcher);
   };
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(PaymentAppInfoFetcher);

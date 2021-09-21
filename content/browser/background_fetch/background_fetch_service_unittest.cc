@@ -93,6 +93,11 @@ class BackgroundFetchServiceTest
       public DevToolsBackgroundServicesContextImpl::EventObserver {
  public:
   BackgroundFetchServiceTest() = default;
+
+  BackgroundFetchServiceTest(const BackgroundFetchServiceTest&) = delete;
+  BackgroundFetchServiceTest& operator=(const BackgroundFetchServiceTest&) =
+      delete;
+
   ~BackgroundFetchServiceTest() override = default;
 
   class ScopedCustomBackgroundFetchService {
@@ -438,8 +443,6 @@ class BackgroundFetchServiceTest
   std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<BackgroundFetchServiceImpl> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchServiceTest);
 };
 
 TEST_F(BackgroundFetchServiceTest, FetchInvalidArguments) {

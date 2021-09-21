@@ -99,6 +99,11 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
     AddDevToolsCallback(
         base::BindOnce(&NotifyNavigationPreloadRequestSent, request));
   }
+
+  DelegatingURLLoaderClient(const DelegatingURLLoaderClient&) = delete;
+  DelegatingURLLoaderClient& operator=(const DelegatingURLLoaderClient&) =
+      delete;
+
   ~DelegatingURLLoaderClient() override {
     if (!completed_) {
       // Let the service worker know that the request has been canceled.
@@ -220,7 +225,6 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
   std::string devtools_request_id_;
   base::queue<base::OnceCallback<void(const WorkerId&, const std::string&)>>
       devtools_callbacks;
-  DISALLOW_COPY_AND_ASSIGN(DelegatingURLLoaderClient);
 };
 
 using EventType = ServiceWorkerMetrics::EventType;
@@ -361,6 +365,9 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
         &ResponseCallback::OnDisconnected, base::Unretained(this)));
   }
 
+  ResponseCallback(const ResponseCallback&) = delete;
+  ResponseCallback& operator=(const ResponseCallback&) = delete;
+
   ~ResponseCallback() override { DCHECK(fetch_event_id_.has_value()); }
 
   void set_fetch_event_id(int id) {
@@ -431,8 +438,6 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
   // handle is passed to the other end (i.e. before any of OnResponse*
   // is called).
   absl::optional<int> fetch_event_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResponseCallback);
 };
 
 // This class keeps the URL loader related assets alive while the FetchEvent is

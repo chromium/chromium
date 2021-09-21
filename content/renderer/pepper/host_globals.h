@@ -21,6 +21,10 @@ class PluginModule;
 class HostGlobals : public ppapi::PpapiGlobals {
  public:
   HostGlobals();
+
+  HostGlobals(const HostGlobals&) = delete;
+  HostGlobals& operator=(const HostGlobals&) = delete;
+
   ~HostGlobals() override;
 
   // Getter for the global singleton. Generally, you should use
@@ -103,8 +107,6 @@ class HostGlobals : public ppapi::PpapiGlobals {
   ModuleMap module_map_;
 
   scoped_refptr<base::TaskRunner> file_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostGlobals);
 };
 
 }  // namespace content

@@ -61,6 +61,10 @@ class PPB_Buffer_Impl : public ppapi::Resource,
 class BufferAutoMapper {
  public:
   explicit BufferAutoMapper(ppapi::thunk::PPB_Buffer_API* api);
+
+  BufferAutoMapper(const BufferAutoMapper&) = delete;
+  BufferAutoMapper& operator=(const BufferAutoMapper&) = delete;
+
   ~BufferAutoMapper();
 
   // Will be NULL on failure to map.
@@ -74,8 +78,6 @@ class BufferAutoMapper {
 
   const uint8_t* data_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferAutoMapper);
 };
 
 }  // namespace content

@@ -62,6 +62,11 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       base::WeakPtr<ServiceWorkerSubresourceLoaderFactory>
           service_worker_subresource_loader_factory);
 
+  ServiceWorkerSubresourceLoader(const ServiceWorkerSubresourceLoader&) =
+      delete;
+  ServiceWorkerSubresourceLoader& operator=(
+      const ServiceWorkerSubresourceLoader&) = delete;
+
   ~ServiceWorkerSubresourceLoader() override;
 
   // ControllerServiceWorkerConnector::Observer overrides:
@@ -207,8 +212,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   network::mojom::FetchResponseSource response_source_;
 
   base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerSubresourceLoader);
 };
 
 // A custom URLLoaderFactory implementation used by Service Worker controllees
@@ -238,6 +241,11 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoaderFactory
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
       WorkerTimingCallback worker_timing_callback);
+
+  ServiceWorkerSubresourceLoaderFactory(
+      const ServiceWorkerSubresourceLoaderFactory&) = delete;
+  ServiceWorkerSubresourceLoaderFactory& operator=(
+      const ServiceWorkerSubresourceLoaderFactory&) = delete;
 
   ~ServiceWorkerSubresourceLoaderFactory() override;
 
@@ -287,8 +295,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoaderFactory
 
   base::WeakPtrFactory<ServiceWorkerSubresourceLoaderFactory> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerSubresourceLoaderFactory);
 };
 
 }  // namespace content

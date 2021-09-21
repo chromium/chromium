@@ -130,6 +130,9 @@ class StorageHandler::CacheStorageObserver
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
   }
 
+  CacheStorageObserver(const CacheStorageObserver&) = delete;
+  CacheStorageObserver& operator=(const CacheStorageObserver&) = delete;
+
   ~CacheStorageObserver() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
   }
@@ -173,8 +176,6 @@ class StorageHandler::CacheStorageObserver
 
   base::WeakPtr<StorageHandler> owner_;
   mojo::Receiver<storage::mojom::CacheStorageObserver> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageObserver);
 };
 
 // Observer that listens on the IDB thread for IndexedDB notifications and
@@ -191,6 +192,9 @@ class StorageHandler::IndexedDBObserver
 
     ReconnectObserver();
   }
+
+  IndexedDBObserver(const IndexedDBObserver&) = delete;
+  IndexedDBObserver& operator=(const IndexedDBObserver&) = delete;
 
   ~IndexedDBObserver() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
 
@@ -256,8 +260,6 @@ class StorageHandler::IndexedDBObserver
   base::flat_set<blink::StorageKey> storage_keys_;
   base::WeakPtr<StorageHandler> owner_;
   mojo::Receiver<storage::mojom::IndexedDBObserver> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBObserver);
 };
 
 StorageHandler::StorageHandler()

@@ -59,6 +59,10 @@ class SignedExchangePrefetchHandler final
       const std::string& accept_langs,
       bool keep_entry_for_prefetch_cache);
 
+  SignedExchangePrefetchHandler(const SignedExchangePrefetchHandler&) = delete;
+  SignedExchangePrefetchHandler& operator=(
+      const SignedExchangePrefetchHandler&) = delete;
+
   ~SignedExchangePrefetchHandler() override;
 
   // This connects |loader_receiver| to the SignedExchangeLoader, and returns
@@ -95,8 +99,6 @@ class SignedExchangePrefetchHandler final
   std::unique_ptr<SignedExchangeLoader> signed_exchange_loader_;
 
   network::mojom::URLLoaderClient* forwarding_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePrefetchHandler);
 };
 
 }  // namespace content

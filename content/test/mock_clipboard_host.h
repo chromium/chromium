@@ -19,6 +19,10 @@ namespace content {
 class MockClipboardHost : public blink::mojom::ClipboardHost {
  public:
   MockClipboardHost();
+
+  MockClipboardHost(const MockClipboardHost&) = delete;
+  MockClipboardHost& operator=(const MockClipboardHost&) = delete;
+
   ~MockClipboardHost() override;
 
   void Bind(mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
@@ -82,8 +86,6 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
   std::map<std::u16string, std::vector<uint8_t>> unsanitized_custom_data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockClipboardHost);
 };
 
 }  // namespace content

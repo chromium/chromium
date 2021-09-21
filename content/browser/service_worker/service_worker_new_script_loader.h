@@ -98,6 +98,10 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
       bool is_throttle_needed,
       const GlobalRenderFrameHostId& requesting_frame_id);
 
+  ServiceWorkerNewScriptLoader(const ServiceWorkerNewScriptLoader&) = delete;
+  ServiceWorkerNewScriptLoader& operator=(const ServiceWorkerNewScriptLoader&) =
+      delete;
+
   ~ServiceWorkerNewScriptLoader() override;
 
   // network::mojom::URLLoader:
@@ -248,8 +252,6 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   const GlobalRenderFrameHostId requesting_frame_id_;
 
   base::WeakPtrFactory<ServiceWorkerNewScriptLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerNewScriptLoader);
 };
 
 }  // namespace content

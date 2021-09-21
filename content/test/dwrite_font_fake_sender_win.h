@@ -96,6 +96,10 @@ class FakeFontCollection : public blink::mojom::DWriteFontProxy {
     kMapCharacters
   };
   FakeFontCollection();
+
+  FakeFontCollection(const FakeFontCollection&) = delete;
+  FakeFontCollection& operator=(const FakeFontCollection&) = delete;
+
   ~FakeFontCollection() override;
 
   FakeFont& AddFont(const std::u16string& font_name);
@@ -140,8 +144,6 @@ class FakeFontCollection : public blink::mojom::DWriteFontProxy {
   std::vector<MessageType> message_types_;
 
   mojo::ReceiverSet<blink::mojom::DWriteFontProxy> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFontCollection);
 };
 
 }  // namespace content

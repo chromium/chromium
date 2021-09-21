@@ -37,10 +37,11 @@ namespace content {
 class AppCacheInternalsUI : public WebUIController {
  public:
   explicit AppCacheInternalsUI(WebUI* web_ui);
-  ~AppCacheInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppCacheInternalsUI);
+  AppCacheInternalsUI(const AppCacheInternalsUI&) = delete;
+  AppCacheInternalsUI& operator=(const AppCacheInternalsUI&) = delete;
+
+  ~AppCacheInternalsUI() override;
 };
 
 class AppCacheInternalsHandler : public WebUIMessageHandler {
@@ -52,6 +53,10 @@ class AppCacheInternalsHandler : public WebUIMessageHandler {
   };
 
   AppCacheInternalsHandler();
+
+  AppCacheInternalsHandler(const AppCacheInternalsHandler&) = delete;
+  AppCacheInternalsHandler& operator=(const AppCacheInternalsHandler&) = delete;
+
   ~AppCacheInternalsHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -139,8 +144,6 @@ class AppCacheInternalsHandler : public WebUIMessageHandler {
   Proxy* GetProxyForPartitionPath(const base::FilePath& path);
   std::list<scoped_refptr<Proxy>> appcache_proxies_;
   base::WeakPtrFactory<AppCacheInternalsHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheInternalsHandler);
 };
 
 }  // namespace content

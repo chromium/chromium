@@ -251,6 +251,10 @@ class TestDownloadHttpResponse {
   TestDownloadHttpResponse(const net::test_server::HttpRequest& request,
                            const Parameters& parameters,
                            OnResponseSentCallback on_response_sent_callback);
+
+  TestDownloadHttpResponse(const TestDownloadHttpResponse&) = delete;
+  TestDownloadHttpResponse& operator=(const TestDownloadHttpResponse&) = delete;
+
   ~TestDownloadHttpResponse();
 
   // Creates a shim HttpResponse object for embedded test server. This life time
@@ -350,8 +354,6 @@ class TestDownloadHttpResponse {
   base::OnceClosure delayed_response_callback_;
 
   base::WeakPtrFactory<TestDownloadHttpResponse> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadHttpResponse);
 };
 
 // Class for creating and monitoring the completed response from the server.
@@ -374,6 +376,11 @@ class TestDownloadResponseHandler {
       const net::test_server::HttpRequest& request);
 
   TestDownloadResponseHandler();
+
+  TestDownloadResponseHandler(const TestDownloadResponseHandler&) = delete;
+  TestDownloadResponseHandler& operator=(const TestDownloadResponseHandler&) =
+      delete;
+
   ~TestDownloadResponseHandler();
 
   // Register to the embedded test |server|.
@@ -401,8 +408,6 @@ class TestDownloadResponseHandler {
   std::unique_ptr<base::RunLoop> run_loop_;
   scoped_refptr<base::SingleThreadTaskRunner> server_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadResponseHandler);
 };
 
 }  // namespace content

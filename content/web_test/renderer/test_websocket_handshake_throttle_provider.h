@@ -16,6 +16,12 @@ class TestWebSocketHandshakeThrottleProvider
     : public blink::WebSocketHandshakeThrottleProvider {
  public:
   TestWebSocketHandshakeThrottleProvider() = default;
+
+  TestWebSocketHandshakeThrottleProvider(
+      const TestWebSocketHandshakeThrottleProvider&) = delete;
+  TestWebSocketHandshakeThrottleProvider& operator=(
+      const TestWebSocketHandshakeThrottleProvider&) = delete;
+
   ~TestWebSocketHandshakeThrottleProvider() override = default;
 
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider> Clone(
@@ -23,9 +29,6 @@ class TestWebSocketHandshakeThrottleProvider
   std::unique_ptr<blink::WebSocketHandshakeThrottle> CreateThrottle(
       int render_frame_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWebSocketHandshakeThrottleProvider);
 };
 
 }  // namespace content

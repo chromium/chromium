@@ -16,6 +16,10 @@ namespace content {
 class NestedMessagePumpAndroid : public base::MessagePumpForUI {
  public:
   NestedMessagePumpAndroid();
+
+  NestedMessagePumpAndroid(const NestedMessagePumpAndroid&) = delete;
+  NestedMessagePumpAndroid& operator=(const NestedMessagePumpAndroid&) = delete;
+
   ~NestedMessagePumpAndroid() override;
 
   void Run(Delegate*) override;
@@ -53,8 +57,6 @@ class NestedMessagePumpAndroid : public base::MessagePumpForUI {
   };
   DeferredWorkType deferred_work_type_ = kNone;
   bool deferred_do_idle_work_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(NestedMessagePumpAndroid);
 };
 
 }  // namespace content

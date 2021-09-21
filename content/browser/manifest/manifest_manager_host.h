@@ -27,6 +27,9 @@ class ManifestManagerHost
     : public RenderDocumentHostUserData<ManifestManagerHost>,
       public blink::mojom::ManifestUrlChangeObserver {
  public:
+  ManifestManagerHost(const ManifestManagerHost&) = delete;
+  ManifestManagerHost& operator=(const ManifestManagerHost&) = delete;
+
   ~ManifestManagerHost() override;
 
   using GetManifestCallback =
@@ -71,7 +74,6 @@ class ManifestManagerHost
       manifest_url_change_observer_receiver_{this};
 
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
-  DISALLOW_COPY_AND_ASSIGN(ManifestManagerHost);
 };
 
 }  // namespace content

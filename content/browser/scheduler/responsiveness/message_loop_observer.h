@@ -31,6 +31,10 @@ class CONTENT_EXPORT MessageLoopObserver : base::TaskObserver {
   // MessageLoop. The destructor will unregister the object.
   MessageLoopObserver(WillProcessTaskCallback will_process_task_callback,
                       DidProcessTaskCallback did_process_task_callback);
+
+  MessageLoopObserver(const MessageLoopObserver&) = delete;
+  MessageLoopObserver& operator=(const MessageLoopObserver&) = delete;
+
   ~MessageLoopObserver() override;
 
  private:
@@ -40,8 +44,6 @@ class CONTENT_EXPORT MessageLoopObserver : base::TaskObserver {
 
   const WillProcessTaskCallback will_process_task_callback_;
   const DidProcessTaskCallback did_process_task_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopObserver);
 };
 
 }  // namespace responsiveness

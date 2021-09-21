@@ -40,6 +40,9 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
       mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
           client);
 
+  AudioOutputStreamBroker(const AudioOutputStreamBroker&) = delete;
+  AudioOutputStreamBroker& operator=(const AudioOutputStreamBroker&) = delete;
+
   ~AudioOutputStreamBroker() final;
 
   // Creates the stream.
@@ -76,8 +79,6 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   DisconnectReason disconnect_reason_ = DisconnectReason::kDocumentDestroyed;
 
   base::WeakPtrFactory<AudioOutputStreamBroker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamBroker);
 };
 
 }  // namespace content

@@ -22,6 +22,11 @@ class TestFileapiOperationWaiter
     : public blink::mojom::FileSystemOperationListener {
  public:
   TestFileapiOperationWaiter();
+
+  TestFileapiOperationWaiter(const TestFileapiOperationWaiter&) = delete;
+  TestFileapiOperationWaiter& operator=(const TestFileapiOperationWaiter&) =
+      delete;
+
   ~TestFileapiOperationWaiter() override;
 
   void WaitForOperationToFinish();
@@ -38,8 +43,6 @@ class TestFileapiOperationWaiter
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFileapiOperationWaiter);
 };
 
 }  // namespace content

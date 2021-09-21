@@ -263,6 +263,9 @@ class CONTENT_EXPORT RenderFrameImpl
   // Overwrites the given URL to use an HTML5 embed if possible.
   blink::WebURL OverrideFlashEmbedWithHTML(const blink::WebURL& url) override;
 
+  RenderFrameImpl(const RenderFrameImpl&) = delete;
+  RenderFrameImpl& operator=(const RenderFrameImpl&) = delete;
+
   ~RenderFrameImpl() override;
 
   // Returns the unique name of the RenderFrame.
@@ -1479,8 +1482,6 @@ class CONTENT_EXPORT RenderFrameImpl
   bool send_content_state_immediately_ = false;
 
   base::WeakPtrFactory<RenderFrameImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameImpl);
 };
 
 }  // namespace content

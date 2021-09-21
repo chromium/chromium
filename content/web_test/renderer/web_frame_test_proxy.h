@@ -37,6 +37,10 @@ class WebFrameTestProxy : public RenderFrameImpl,
  public:
   WebFrameTestProxy(RenderFrameImpl::CreateParams params,
                     TestRunner* test_runner);
+
+  WebFrameTestProxy(const WebFrameTestProxy&) = delete;
+  WebFrameTestProxy& operator=(const WebFrameTestProxy&) = delete;
+
   ~WebFrameTestProxy() override;
 
   // RenderFrameImpl overrides.
@@ -115,8 +119,6 @@ class WebFrameTestProxy : public RenderFrameImpl,
 
   mojo::AssociatedReceiver<mojom::WebTestRenderFrame>
       web_test_render_frame_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebFrameTestProxy);
 };
 
 }  // namespace content

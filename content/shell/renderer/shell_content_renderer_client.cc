@@ -53,6 +53,9 @@ class TestRendererServiceImpl : public mojom::TestService {
         &TestRendererServiceImpl::OnConnectionError, base::Unretained(this)));
   }
 
+  TestRendererServiceImpl(const TestRendererServiceImpl&) = delete;
+  TestRendererServiceImpl& operator=(const TestRendererServiceImpl&) = delete;
+
   ~TestRendererServiceImpl() override {}
 
  private:
@@ -110,8 +113,6 @@ class TestRendererServiceImpl : public mojom::TestService {
   }
 
   mojo::Receiver<mojom::TestService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRendererServiceImpl);
 };
 
 void CreateRendererTestService(

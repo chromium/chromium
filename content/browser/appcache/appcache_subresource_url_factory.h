@@ -29,6 +29,10 @@ class AppCacheServiceImpl;
 class CONTENT_EXPORT AppCacheSubresourceURLFactory
     : public network::mojom::URLLoaderFactory {
  public:
+  AppCacheSubresourceURLFactory(const AppCacheSubresourceURLFactory&) = delete;
+  AppCacheSubresourceURLFactory& operator=(
+      const AppCacheSubresourceURLFactory&) = delete;
+
   ~AppCacheSubresourceURLFactory() override;
 
   // Factory function to create an instance of the factory.
@@ -68,7 +72,6 @@ class CONTENT_EXPORT AppCacheSubresourceURLFactory
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
   base::WeakPtr<AppCacheHost> appcache_host_;
   base::WeakPtrFactory<AppCacheSubresourceURLFactory> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AppCacheSubresourceURLFactory);
 };
 
 }  // namespace content

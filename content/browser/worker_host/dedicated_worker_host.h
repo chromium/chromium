@@ -72,6 +72,10 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter,
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host);
+
+  DedicatedWorkerHost(const DedicatedWorkerHost&) = delete;
+  DedicatedWorkerHost& operator=(const DedicatedWorkerHost&) = delete;
+
   ~DedicatedWorkerHost() final;
 
   void BindBrowserInterfaceBrokerReceiver(
@@ -318,8 +322,6 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DedicatedWorkerHost);
 };
 
 }  // namespace content

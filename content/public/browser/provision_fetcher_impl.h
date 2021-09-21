@@ -32,6 +32,10 @@ class CONTENT_EXPORT ProvisionFetcherImpl
 
   explicit ProvisionFetcherImpl(
       std::unique_ptr<media::ProvisionFetcher> provision_fetcher);
+
+  ProvisionFetcherImpl(const ProvisionFetcherImpl&) = delete;
+  ProvisionFetcherImpl& operator=(const ProvisionFetcherImpl&) = delete;
+
   ~ProvisionFetcherImpl() override;
 
   // media::mojom::ProvisionFetcher implementation.
@@ -48,8 +52,6 @@ class CONTENT_EXPORT ProvisionFetcherImpl
   std::unique_ptr<media::ProvisionFetcher> provision_fetcher_;
 
   base::WeakPtrFactory<ProvisionFetcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProvisionFetcherImpl);
 };
 
 }  // namespace content

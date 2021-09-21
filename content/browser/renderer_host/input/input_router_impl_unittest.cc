@@ -1834,13 +1834,18 @@ class TouchpadPinchInputRouterImplTest
           features::kTouchpadAsyncPinchEvents);
     }
   }
+
+  TouchpadPinchInputRouterImplTest(const TouchpadPinchInputRouterImplTest&) =
+      delete;
+  TouchpadPinchInputRouterImplTest& operator=(
+      const TouchpadPinchInputRouterImplTest&) = delete;
+
   ~TouchpadPinchInputRouterImplTest() = default;
 
   const bool async_events_enabled_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(TouchpadPinchInputRouterImplTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -933,6 +933,9 @@ class BackgroundSyncRestorer {
     SetServiceWorkerOfflineStatus(true);
   }
 
+  BackgroundSyncRestorer(const BackgroundSyncRestorer&) = delete;
+  BackgroundSyncRestorer& operator=(const BackgroundSyncRestorer&) = delete;
+
   ~BackgroundSyncRestorer() { SetServiceWorkerOfflineStatus(false); }
 
   void SetStoragePartition(StoragePartition* storage_partition) {
@@ -973,8 +976,6 @@ class BackgroundSyncRestorer {
   StoragePartition* storage_partition_;
   int64_t offline_sw_registration_id_ =
       blink::mojom::kInvalidServiceWorkerRegistrationId;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncRestorer);
 };
 
 NetworkHandler::NetworkHandler(

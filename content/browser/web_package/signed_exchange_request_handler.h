@@ -43,6 +43,11 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
       URLLoaderThrottlesGetter url_loader_throttles_getter,
       scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
       std::string accept_langs);
+
+  SignedExchangeRequestHandler(const SignedExchangeRequestHandler&) = delete;
+  SignedExchangeRequestHandler& operator=(const SignedExchangeRequestHandler&) =
+      delete;
+
   ~SignedExchangeRequestHandler() override;
 
   // NavigationLoaderInterceptor implementation
@@ -82,8 +87,6 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
   const std::string accept_langs_;
 
   base::WeakPtrFactory<SignedExchangeRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeRequestHandler);
 };
 
 }  // namespace content

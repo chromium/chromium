@@ -37,6 +37,10 @@ class PepperFileRefRendererHost : public ppapi::host::ResourceHost {
                             PP_Resource resource,
                             const base::FilePath& external_path);
 
+  PepperFileRefRendererHost(const PepperFileRefRendererHost&) = delete;
+  PepperFileRefRendererHost& operator=(const PepperFileRefRendererHost&) =
+      delete;
+
   ~PepperFileRefRendererHost() override;
 
   PP_FileSystemType GetFileSystemType() const;
@@ -54,8 +58,6 @@ class PepperFileRefRendererHost : public ppapi::host::ResourceHost {
   std::string internal_path_;
   base::FilePath external_path_;
   base::WeakPtr<PepperFileSystemHost> fs_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileRefRendererHost);
 };
 
 }  // namespace content

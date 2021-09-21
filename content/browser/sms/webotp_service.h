@@ -47,6 +47,10 @@ class CONTENT_EXPORT WebOTPService
                 const OriginList&,
                 RenderFrameHost*,
                 mojo::PendingReceiver<blink::mojom::WebOTPService>);
+
+  WebOTPService(const WebOTPService&) = delete;
+  WebOTPService& operator=(const WebOTPService&) = delete;
+
   ~WebOTPService() override;
 
   using FailureType = SmsFetchFailureType;
@@ -104,8 +108,6 @@ class CONTENT_EXPORT WebOTPService
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<WebOTPService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebOTPService);
 };
 
 }  // namespace content

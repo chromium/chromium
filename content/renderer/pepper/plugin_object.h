@@ -33,6 +33,9 @@ class PluginObject : public gin::Wrappable<PluginObject>,
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  PluginObject(const PluginObject&) = delete;
+  PluginObject& operator=(const PluginObject&) = delete;
+
   ~PluginObject() override;
 
   // Returns the PluginObject which is contained in the given v8 object, or NULL
@@ -87,8 +90,6 @@ class PluginObject : public gin::Wrappable<PluginObject>,
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
 
   base::WeakPtrFactory<PluginObject> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginObject);
 };
 
 }  // namespace content

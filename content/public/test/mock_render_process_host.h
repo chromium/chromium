@@ -65,6 +65,10 @@ class MockRenderProcessHost : public RenderProcessHost {
   MockRenderProcessHost(BrowserContext* browser_context,
                         const StoragePartitionConfig& storage_partition_config,
                         bool is_for_guests_only);
+
+  MockRenderProcessHost(const MockRenderProcessHost&) = delete;
+  MockRenderProcessHost& operator=(const MockRenderProcessHost&) = delete;
+
   ~MockRenderProcessHost() override;
 
   // Provides access to all IPC messages that would have been sent to the
@@ -302,13 +306,16 @@ class MockRenderProcessHost : public RenderProcessHost {
   mojo::PendingReceiver<blink::mojom::CacheStorage> cache_storage_receiver_;
   mojo::PendingReceiver<blink::mojom::IDBFactory> idb_factory_receiver_;
   base::WeakPtrFactory<MockRenderProcessHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderProcessHost);
 };
 
 class MockRenderProcessHostFactory : public RenderProcessHostFactory {
  public:
   MockRenderProcessHostFactory();
+
+  MockRenderProcessHostFactory(const MockRenderProcessHostFactory&) = delete;
+  MockRenderProcessHostFactory& operator=(const MockRenderProcessHostFactory&) =
+      delete;
+
   ~MockRenderProcessHostFactory() override;
 
   RenderProcessHost* CreateRenderProcessHost(
@@ -333,8 +340,6 @@ class MockRenderProcessHostFactory : public RenderProcessHostFactory {
   // A mock URLLoaderFactory which just fails to create a loader.
   std::unique_ptr<network::mojom::URLLoaderFactory>
       default_mock_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderProcessHostFactory);
 };
 
 }  // namespace content

@@ -95,6 +95,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
       RenderAccessibilityManager* const render_accessibility_manager,
       RenderFrameImpl* const render_frame,
       ui::AXMode mode);
+
+  RenderAccessibilityImpl(const RenderAccessibilityImpl&) = delete;
+  RenderAccessibilityImpl& operator=(const RenderAccessibilityImpl&) = delete;
+
   ~RenderAccessibilityImpl() override;
 
   ui::AXMode GetAccessibilityMode() {
@@ -332,8 +336,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   friend class PluginActionHandlingTest;
   friend class RenderAccessibilityImplTest;
   friend class RenderAccessibilityImplUKMTest;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderAccessibilityImpl);
 };
 
 }  // namespace content

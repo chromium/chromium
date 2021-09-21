@@ -55,6 +55,10 @@ class CONTENT_EXPORT ServiceWorkerHost {
                         blink::mojom::ServiceWorkerContainerHost> host_receiver,
                     ServiceWorkerVersion* version,
                     base::WeakPtr<ServiceWorkerContextCore> context);
+
+  ServiceWorkerHost(const ServiceWorkerHost&) = delete;
+  ServiceWorkerHost& operator=(const ServiceWorkerHost&) = delete;
+
   ~ServiceWorkerHost();
 
   int worker_process_id() const { return worker_process_id_; }
@@ -117,8 +121,6 @@ class CONTENT_EXPORT ServiceWorkerHost {
       host_receiver_;
 
   base::WeakPtrFactory<ServiceWorkerHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerHost);
 };
 
 }  // namespace content

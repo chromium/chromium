@@ -58,6 +58,12 @@ static bool IsAtkObjectEditable(AtkObject* object) {
 class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
  public:
   AccessibilityAuraLinuxBrowserTest() = default;
+
+  AccessibilityAuraLinuxBrowserTest(const AccessibilityAuraLinuxBrowserTest&) =
+      delete;
+  AccessibilityAuraLinuxBrowserTest& operator=(
+      const AccessibilityAuraLinuxBrowserTest&) = delete;
+
   ~AccessibilityAuraLinuxBrowserTest() override = default;
 
  protected:
@@ -105,8 +111,6 @@ class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
   // at a given node and for a node with the given role and returns its AtkText
   // interface if found, otherwise returns nullptr.
   AtkText* FindNode(AtkObject* root, const AtkRole role) const;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityAuraLinuxBrowserTest);
 };
 
 void AccessibilityAuraLinuxBrowserTest::CheckTextAtOffset(

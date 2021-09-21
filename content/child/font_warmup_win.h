@@ -18,13 +18,13 @@ namespace content {
 
 class GdiFontPatchData {
  public:
+  GdiFontPatchData(const GdiFontPatchData&) = delete;
+  GdiFontPatchData& operator=(const GdiFontPatchData&) = delete;
+
   virtual ~GdiFontPatchData() {}
 
  protected:
   GdiFontPatchData() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GdiFontPatchData);
 };
 
 // Hook a module's imported GDI font functions to reimplement font enumeration

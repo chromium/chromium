@@ -35,6 +35,10 @@ class TransactionalLevelDBTransaction;
 class CONTENT_EXPORT IndexedDBMetadataCoding {
  public:
   IndexedDBMetadataCoding();
+
+  IndexedDBMetadataCoding(const IndexedDBMetadataCoding&) = delete;
+  IndexedDBMetadataCoding& operator=(const IndexedDBMetadataCoding&) = delete;
+
   virtual ~IndexedDBMetadataCoding();
 
   // Reads the list of database names for the given origin.
@@ -142,9 +146,6 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
       std::u16string new_name,
       std::u16string* old_name,
       blink::IndexedDBIndexMetadata* metadata);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBMetadataCoding);
 };
 
 }  // namespace content

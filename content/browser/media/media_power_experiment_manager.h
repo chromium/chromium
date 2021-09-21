@@ -40,6 +40,11 @@ class CONTENT_EXPORT MediaPowerExperimentManager {
   };
 
   MediaPowerExperimentManager();
+
+  MediaPowerExperimentManager(const MediaPowerExperimentManager&) = delete;
+  MediaPowerExperimentManager& operator=(const MediaPowerExperimentManager&) =
+      delete;
+
   virtual ~MediaPowerExperimentManager();
 
   // May return nullptr if experiments aren't enabled.
@@ -71,8 +76,6 @@ class CONTENT_EXPORT MediaPowerExperimentManager {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPowerExperimentManager);
 };
 
 }  // namespace content

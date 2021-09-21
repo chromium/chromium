@@ -21,6 +21,10 @@ namespace content {
 class NetworkServiceTestHelper {
  public:
   NetworkServiceTestHelper();
+
+  NetworkServiceTestHelper(const NetworkServiceTestHelper&) = delete;
+  NetworkServiceTestHelper& operator=(const NetworkServiceTestHelper&) = delete;
+
   ~NetworkServiceTestHelper();
 
   // Registers the helper's interfaces on |registry|. Note that this object
@@ -34,8 +38,6 @@ class NetworkServiceTestHelper {
       mojo::PendingReceiver<network::mojom::NetworkServiceTest> receiver);
 
   std::unique_ptr<NetworkServiceTestImpl> network_service_test_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceTestHelper);
 };
 
 }  // namespace content

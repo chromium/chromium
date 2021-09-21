@@ -73,6 +73,10 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
   // Allow to be used for single-process mode and for in process gpu mode via
   // options.
   ChildThreadImpl(base::RepeatingClosure quit_closure, const Options& options);
+
+  ChildThreadImpl(const ChildThreadImpl&) = delete;
+  ChildThreadImpl& operator=(const ChildThreadImpl&) = delete;
+
   // ChildProcess::main_thread() is reset after Shutdown(), and before the
   // destructor, so any subsystem that relies on ChildProcess::main_thread()
   // must be terminated before Shutdown returns. In particular, if a subsystem
@@ -238,8 +242,6 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
   scoped_refptr<IOThreadState> io_thread_state_;
 
   base::WeakPtrFactory<ChildThreadImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChildThreadImpl);
 };
 
 struct ChildThreadImpl::Options {

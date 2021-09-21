@@ -11907,6 +11907,12 @@ class HistoryNavigationBeforeCommitInjector
       : DidCommitNavigationInterceptor(web_contents),
         did_trigger_history_navigation_(false),
         url_(url) {}
+
+  HistoryNavigationBeforeCommitInjector(
+      const HistoryNavigationBeforeCommitInjector&) = delete;
+  HistoryNavigationBeforeCommitInjector& operator=(
+      const HistoryNavigationBeforeCommitInjector&) = delete;
+
   ~HistoryNavigationBeforeCommitInjector() override {}
 
   bool did_trigger_history_navigation() const {
@@ -11930,8 +11936,6 @@ class HistoryNavigationBeforeCommitInjector
 
   bool did_trigger_history_navigation_;
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryNavigationBeforeCommitInjector);
 };
 
 // Test which simulates a race condition between a cross-origin, same-process

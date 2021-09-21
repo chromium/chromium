@@ -147,6 +147,9 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   InitState GetInitState() const override;
 
+  LegacyCacheStorageCache(const LegacyCacheStorageCache&) = delete;
+  LegacyCacheStorageCache& operator=(const LegacyCacheStorageCache&) = delete;
+
   // Async operations in progress will cancel and not run their callbacks.
   ~LegacyCacheStorageCache() override;
 
@@ -552,8 +555,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LegacyCacheStorageCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyCacheStorageCache);
 };
 
 }  // namespace content

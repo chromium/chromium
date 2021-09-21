@@ -39,6 +39,11 @@ class ChildHistogramFetcherFactoryImpl
 class ChildHistogramFetcherImpl : public content::mojom::ChildHistogramFetcher {
  public:
   ChildHistogramFetcherImpl();
+
+  ChildHistogramFetcherImpl(const ChildHistogramFetcherImpl&) = delete;
+  ChildHistogramFetcherImpl& operator=(const ChildHistogramFetcherImpl&) =
+      delete;
+
   ~ChildHistogramFetcherImpl() override;
 
  private:
@@ -58,8 +63,6 @@ class ChildHistogramFetcherImpl : public content::mojom::ChildHistogramFetcher {
   // Prepares histogram deltas for transmission.
   std::unique_ptr<base::HistogramDeltaSerialization>
       histogram_delta_serialization_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildHistogramFetcherImpl);
 };
 
 }  // namespace content

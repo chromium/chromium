@@ -43,6 +43,10 @@ class PrefetchBrowserTest
         signed_exchange_enabled_(std::get<0>(GetParam())),
         split_cache_enabled_(std::get<1>(GetParam())),
         split_cache_by_credentials_enabled_(std::get<2>(GetParam())) {}
+
+  PrefetchBrowserTest(const PrefetchBrowserTest&) = delete;
+  PrefetchBrowserTest& operator=(const PrefetchBrowserTest&) = delete;
+
   ~PrefetchBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -73,8 +77,6 @@ class PrefetchBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchBrowserTest);
 };
 
 class PrefetchBrowserTestPrivacyChanges
@@ -84,6 +86,12 @@ class PrefetchBrowserTestPrivacyChanges
   PrefetchBrowserTestPrivacyChanges()
       : privacy_changes_enabled_(GetParam()),
         cross_origin_server_(std::make_unique<net::EmbeddedTestServer>()) {}
+
+  PrefetchBrowserTestPrivacyChanges(const PrefetchBrowserTestPrivacyChanges&) =
+      delete;
+  PrefetchBrowserTestPrivacyChanges& operator=(
+      const PrefetchBrowserTestPrivacyChanges&) = delete;
+
   ~PrefetchBrowserTestPrivacyChanges() override = default;
 
   void SetUp() override {
@@ -104,8 +112,6 @@ class PrefetchBrowserTestPrivacyChanges
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchBrowserTestPrivacyChanges);
 };
 
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTestPrivacyChanges, RedirectNotFollowed) {

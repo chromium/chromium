@@ -23,6 +23,10 @@ class PermissionControllerImpl;
 class NFCHost : public WebContentsObserver {
  public:
   explicit NFCHost(WebContents* web_contents);
+
+  NFCHost(const NFCHost&) = delete;
+  NFCHost& operator=(const NFCHost&) = delete;
+
   ~NFCHost() override;
 
   void GetNFC(RenderFrameHost* render_frame_host,
@@ -45,8 +49,6 @@ class NFCHost : public WebContentsObserver {
 
   // Permission change subscription ID provided by |permission_controller_|.
   PermissionController::SubscriptionId subscription_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(NFCHost);
 };
 
 }  // namespace content

@@ -127,6 +127,9 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   TestRenderFrameObserver(RenderFrame* frame, TestRunner* test_runner)
       : RenderFrameObserver(frame), test_runner_(test_runner) {}
 
+  TestRenderFrameObserver(const TestRenderFrameObserver&) = delete;
+  TestRenderFrameObserver& operator=(const TestRenderFrameObserver&) = delete;
+
   ~TestRenderFrameObserver() override {}
 
  private:
@@ -221,7 +224,6 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   }
 
   TestRunner* const test_runner_;
-  DISALLOW_COPY_AND_ASSIGN(TestRenderFrameObserver);
 };
 
 }  // namespace

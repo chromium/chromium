@@ -67,6 +67,11 @@ class CONTENT_EXPORT BackgroundFetchJobController
       uint64_t upload_total,
       ProgressCallback progress_callback,
       FinishedCallback finished_callback);
+
+  BackgroundFetchJobController(const BackgroundFetchJobController&) = delete;
+  BackgroundFetchJobController& operator=(const BackgroundFetchJobController&) =
+      delete;
+
   ~BackgroundFetchJobController() override;
 
   // Initializes the job controller with the status of the active and completed
@@ -217,8 +222,6 @@ class CONTENT_EXPORT BackgroundFetchJobController
   FinishedCallback finished_callback_;
 
   base::WeakPtrFactory<BackgroundFetchJobController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchJobController);
 };
 
 }  // namespace content

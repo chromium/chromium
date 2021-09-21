@@ -27,6 +27,12 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
       public TouchSelectionControllerClientManager {
  public:
   explicit TouchSelectionControllerClientAura(RenderWidgetHostViewAura* rwhva);
+
+  TouchSelectionControllerClientAura(
+      const TouchSelectionControllerClientAura&) = delete;
+  TouchSelectionControllerClientAura& operator=(
+      const TouchSelectionControllerClientAura&) = delete;
+
   ~TouchSelectionControllerClientAura() override;
 
   // Called when |rwhva_|'s window is moved, to update the quick menu's
@@ -140,8 +146,6 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
 
   // An event observer that deactivates touch selection on certain input events.
   std::unique_ptr<EnvEventObserver> env_event_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerClientAura);
 };
 
 }  // namespace content

@@ -35,6 +35,11 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   MediaStreamDispatcherHost(int render_process_id,
                             int render_frame_id,
                             MediaStreamManager* media_stream_manager);
+
+  MediaStreamDispatcherHost(const MediaStreamDispatcherHost&) = delete;
+  MediaStreamDispatcherHost& operator=(const MediaStreamDispatcherHost&) =
+      delete;
+
   ~MediaStreamDispatcherHost() override;
   static void Create(
       int render_process_id,
@@ -129,8 +134,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   scoped_refptr<Broker> broker_;
 
   base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamDispatcherHost);
 };
 
 }  // namespace content

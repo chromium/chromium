@@ -104,6 +104,11 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
     RenderWidgetHostFactory::RegisterFactory(this);
   }
 
+  TracingRenderWidgetHostFactory(const TracingRenderWidgetHostFactory&) =
+      delete;
+  TracingRenderWidgetHostFactory& operator=(
+      const TracingRenderWidgetHostFactory&) = delete;
+
   ~TracingRenderWidgetHostFactory() override {
     RenderWidgetHostFactory::UnregisterFactory();
   }
@@ -117,14 +122,15 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
     return std::make_unique<TracingRenderWidgetHost>(
         frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TracingRenderWidgetHostFactory);
 };
 
 class MouseLatencyBrowserTest : public ContentBrowserTest {
  public:
   MouseLatencyBrowserTest() {}
+
+  MouseLatencyBrowserTest(const MouseLatencyBrowserTest&) = delete;
+  MouseLatencyBrowserTest& operator=(const MouseLatencyBrowserTest&) = delete;
+
   ~MouseLatencyBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -301,8 +307,6 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   std::unique_ptr<base::RunLoop> runner_;
   base::Value trace_data_;
   TracingRenderWidgetHostFactory widget_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseLatencyBrowserTest);
 };
 
 // Ensures that LatencyInfo async slices are reported correctly for MouseUp and

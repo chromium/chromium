@@ -52,6 +52,12 @@ class MockAudioOutputStreamProviderClient
     : public media::mojom::AudioOutputStreamProviderClient {
  public:
   MockAudioOutputStreamProviderClient() = default;
+
+  MockAudioOutputStreamProviderClient(
+      const MockAudioOutputStreamProviderClient&) = delete;
+  MockAudioOutputStreamProviderClient& operator=(
+      const MockAudioOutputStreamProviderClient&) = delete;
+
   ~MockAudioOutputStreamProviderClient() override {}
 
   void Created(mojo::PendingRemote<media::mojom::AudioOutputStream>,
@@ -78,12 +84,15 @@ class MockAudioOutputStreamProviderClient
 
  private:
   mojo::Receiver<media::mojom::AudioOutputStreamProviderClient> receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockAudioOutputStreamProviderClient);
 };
 
 class MockStreamFactory final : public audio::FakeStreamFactory {
  public:
   MockStreamFactory() = default;
+
+  MockStreamFactory(const MockStreamFactory&) = delete;
+  MockStreamFactory& operator=(const MockStreamFactory&) = delete;
+
   ~MockStreamFactory() override = default;
 
   // State of an expected stream creation. |output_device_id|, |params|,
@@ -135,7 +144,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
   }
 
   StreamRequestData* stream_request_data_;
-  DISALLOW_COPY_AND_ASSIGN(MockStreamFactory);
 };
 
 // This struct collects test state we need without doing anything fancy.

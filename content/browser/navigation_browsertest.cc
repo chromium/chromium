@@ -1566,6 +1566,11 @@ class PreviewsStateContentBrowserClient : public ContentBrowserClient {
         determine_allowed_previews_called_(false),
         determine_committed_previews_called_(false) {}
 
+  PreviewsStateContentBrowserClient(const PreviewsStateContentBrowserClient&) =
+      delete;
+  PreviewsStateContentBrowserClient& operator=(
+      const PreviewsStateContentBrowserClient&) = delete;
+
   ~PreviewsStateContentBrowserClient() override {}
 
   blink::PreviewsState DetermineAllowedPreviews(
@@ -1617,8 +1622,6 @@ class PreviewsStateContentBrowserClient : public ContentBrowserClient {
   blink::PreviewsState previews_state_;
   bool determine_allowed_previews_called_;
   bool determine_committed_previews_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewsStateContentBrowserClient);
 };
 
 }  // namespace

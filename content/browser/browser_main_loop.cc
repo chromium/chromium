@@ -397,6 +397,10 @@ const base::Feature kBrowserDynamicCodeDisabled{
 class OopDataDecoder : public data_decoder::ServiceProvider {
  public:
   OopDataDecoder() { data_decoder::ServiceProvider::Set(this); }
+
+  OopDataDecoder(const OopDataDecoder&) = delete;
+  OopDataDecoder& operator=(const OopDataDecoder&) = delete;
+
   ~OopDataDecoder() override { data_decoder::ServiceProvider::Set(nullptr); }
 
   // data_decoder::ServiceProvider implementation:
@@ -409,9 +413,6 @@ class OopDataDecoder : public data_decoder::ServiceProvider {
             .WithDisplayName("Data Decoder Service")
             .Pass());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OopDataDecoder);
 };
 
 void BindHidManager(mojo::PendingReceiver<device::mojom::HidManager> receiver) {

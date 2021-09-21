@@ -30,6 +30,10 @@ namespace {
 class ServiceProcessTracker {
  public:
   ServiceProcessTracker() : ui_task_runner_(GetUIThreadTaskRunner({})) {}
+
+  ServiceProcessTracker(const ServiceProcessTracker&) = delete;
+  ServiceProcessTracker& operator=(const ServiceProcessTracker&) = delete;
+
   ~ServiceProcessTracker() = default;
 
   ServiceProcessInfo AddProcess(const base::Process& process,
@@ -148,8 +152,6 @@ class ServiceProcessTracker {
 
   // Observers are owned and used exclusively on the UI thread.
   base::ObserverList<ServiceProcessHost::Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessTracker);
 };
 
 ServiceProcessTracker& GetServiceProcessTracker() {
@@ -164,6 +166,10 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
  public:
   explicit UtilityProcessClient(const std::string& service_interface_name)
       : service_interface_name_(service_interface_name) {}
+
+  UtilityProcessClient(const UtilityProcessClient&) = delete;
+  UtilityProcessClient& operator=(const UtilityProcessClient&) = delete;
+
   ~UtilityProcessClient() override = default;
 
   // UtilityProcessHost::Client:
@@ -190,8 +196,6 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
  private:
   const std::string service_interface_name_;
   absl::optional<ServiceProcessInfo> process_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(UtilityProcessClient);
 };
 
 // TODO(crbug.com/977637): Once UtilityProcessHost is used only by service

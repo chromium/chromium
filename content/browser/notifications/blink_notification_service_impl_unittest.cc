@@ -106,6 +106,11 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
         std::make_unique<MockPlatformNotificationService>(&browser_context_));
   }
 
+  BlinkNotificationServiceImplTest(const BlinkNotificationServiceImplTest&) =
+      delete;
+  BlinkNotificationServiceImplTest& operator=(
+      const BlinkNotificationServiceImplTest&) = delete;
+
   ~BlinkNotificationServiceImplTest() override = default;
 
   // ::testing::Test overrides.
@@ -437,8 +442,6 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
   absl::optional<blink::NotificationResources> get_notification_resources_;
 
   bool read_notification_data_callback_result_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BlinkNotificationServiceImplTest);
 };
 
 TEST_F(BlinkNotificationServiceImplTest, GetPermissionStatus) {

@@ -63,6 +63,9 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
       factory_->OnDeviceCreated(this);
     }
 
+    WrappedDevice(const WrappedDevice&) = delete;
+    WrappedDevice& operator=(const WrappedDevice&) = delete;
+
     ~WrappedDevice() override { factory_->OnDeviceDestroyed(this); }
 
     void AllocateAndStart(const media::VideoCaptureParams& params,
@@ -95,8 +98,6 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
    private:
     const std::unique_ptr<media::VideoCaptureDevice> device_;
     WrappedDeviceFactory* const factory_;
-
-    DISALLOW_COPY_AND_ASSIGN(WrappedDevice);
   };
 
   static const media::VideoFacingMode DEFAULT_FACING =
@@ -218,6 +219,10 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
 class VideoCaptureManagerTest : public testing::Test {
  public:
   VideoCaptureManagerTest() {}
+
+  VideoCaptureManagerTest(const VideoCaptureManagerTest&) = delete;
+  VideoCaptureManagerTest& operator=(const VideoCaptureManagerTest&) = delete;
+
   ~VideoCaptureManagerTest() override {}
 
   void HandleEnumerationResult(
@@ -356,9 +361,6 @@ class VideoCaptureManagerTest : public testing::Test {
   std::unique_ptr<MockFrameObserver> frame_observer_;
   WrappedDeviceFactory* video_capture_device_factory_;
   blink::MediaStreamDevices devices_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureManagerTest);
 };
 
 // Test cases

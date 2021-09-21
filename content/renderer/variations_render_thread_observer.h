@@ -28,6 +28,12 @@ class VariationsRenderThreadObserver
       public mojom::RendererVariationsConfiguration {
  public:
   VariationsRenderThreadObserver();
+
+  VariationsRenderThreadObserver(const VariationsRenderThreadObserver&) =
+      delete;
+  VariationsRenderThreadObserver& operator=(
+      const VariationsRenderThreadObserver&) = delete;
+
   ~VariationsRenderThreadObserver() override;
 
   // Appends throttles if the browser has sent a variations header to the
@@ -56,8 +62,6 @@ class VariationsRenderThreadObserver
   void OnRendererConfigurationAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::RendererVariationsConfiguration>
           receiver);
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsRenderThreadObserver);
 };
 
 }  // namespace content

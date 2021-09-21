@@ -14,15 +14,16 @@ namespace content {
 class TestContentClient : public ContentClient {
  public:
   TestContentClient();
+
+  TestContentClient(const TestContentClient&) = delete;
+  TestContentClient& operator=(const TestContentClient&) = delete;
+
   ~TestContentClient() override;
 
   // ContentClient:
   base::StringPiece GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestContentClient);
 };
 
 }  // namespace content

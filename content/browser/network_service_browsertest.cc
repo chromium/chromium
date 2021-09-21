@@ -148,6 +148,10 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
 class TestWebUIDataSource : public URLDataSource {
  public:
   TestWebUIDataSource() {}
+
+  TestWebUIDataSource(const TestWebUIDataSource&) = delete;
+  TestWebUIDataSource& operator=(const TestWebUIDataSource&) = delete;
+
   ~TestWebUIDataSource() override {}
 
   std::string GetSource() override { return "webui"; }
@@ -164,9 +168,6 @@ class TestWebUIDataSource : public URLDataSource {
   std::string GetMimeType(const std::string& path) override {
     return "text/html";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWebUIDataSource);
 };
 
 class NetworkServiceBrowserTest : public ContentBrowserTest {

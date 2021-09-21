@@ -32,6 +32,10 @@ class CONTENT_EXPORT IndexedDBControlWrapper
           file_system_access_context,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
+
+  IndexedDBControlWrapper(const IndexedDBControlWrapper&) = delete;
+  IndexedDBControlWrapper& operator=(const IndexedDBControlWrapper&) = delete;
+
   ~IndexedDBControlWrapper() override;
 
   // mojom::IndexedDBControl implementation:
@@ -72,8 +76,6 @@ class CONTENT_EXPORT IndexedDBControlWrapper
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<IndexedDBControlWrapper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBControlWrapper);
 };
 
 }  // namespace content

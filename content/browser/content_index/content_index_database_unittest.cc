@@ -112,6 +112,9 @@ class ContentIndexDatabaseTest : public ::testing::Test {
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         embedded_worker_test_helper_(base::FilePath() /* in memory */) {}
 
+  ContentIndexDatabaseTest(const ContentIndexDatabaseTest&) = delete;
+  ContentIndexDatabaseTest& operator=(const ContentIndexDatabaseTest&) = delete;
+
   ~ContentIndexDatabaseTest() override = default;
 
   void SetUp() override {
@@ -294,8 +297,6 @@ class ContentIndexDatabaseTest : public ::testing::Test {
   EmbeddedWorkerTestHelper embedded_worker_test_helper_;
   scoped_refptr<ServiceWorkerRegistration> service_worker_registration_;
   std::unique_ptr<ContentIndexDatabase> database_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexDatabaseTest);
 };
 
 TEST_F(ContentIndexDatabaseTest, DatabaseOperations) {

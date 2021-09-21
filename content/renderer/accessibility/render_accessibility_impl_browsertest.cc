@@ -82,6 +82,10 @@ class TestAXImageAnnotator : public AXImageAnnotator {
       mojo::PendingRemote<image_annotation::mojom::Annotator> annotator)
       : AXImageAnnotator(render_accessibility,
                          std::move(annotator)) {}
+
+  TestAXImageAnnotator(const TestAXImageAnnotator&) = delete;
+  TestAXImageAnnotator& operator=(const TestAXImageAnnotator&) = delete;
+
   ~TestAXImageAnnotator() override = default;
 
  private:
@@ -98,13 +102,15 @@ class TestAXImageAnnotator : public AXImageAnnotator {
         image.GetNode().To<blink::WebElement>().GetAttribute("SRC").Utf8();
     return image_id;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestAXImageAnnotator);
 };
 
 class MockAnnotationService : public image_annotation::mojom::Annotator {
  public:
   MockAnnotationService() = default;
+
+  MockAnnotationService(const MockAnnotationService&) = delete;
+  MockAnnotationService& operator=(const MockAnnotationService&) = delete;
+
   ~MockAnnotationService() override = default;
 
   mojo::PendingRemote<image_annotation::mojom::Annotator> GetRemote() {
@@ -141,8 +147,6 @@ class MockAnnotationService : public image_annotation::mojom::Annotator {
   }
 
   mojo::ReceiverSet<image_annotation::mojom::Annotator> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAnnotationService);
 };
 
 class RenderAccessibilityHostInterceptor
@@ -261,6 +265,11 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     RenderFrameImpl::InstallCreateHook(
         &RenderAccessibilityTestRenderFrame::CreateTestRenderFrame);
   }
+
+  RenderAccessibilityImplTest(const RenderAccessibilityImplTest&) = delete;
+  RenderAccessibilityImplTest& operator=(const RenderAccessibilityImplTest&) =
+      delete;
+
   ~RenderAccessibilityImplTest() override = default;
 
   void ScheduleSendPendingAccessibilityEvents() {
@@ -399,8 +408,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
 
  private:
   IPC::TestSink* sink_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderAccessibilityImplTest);
 };
 
 TEST_F(RenderAccessibilityImplTest, SendFullAccessibilityTreeOnReload) {
@@ -932,6 +939,12 @@ class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
     root_node_ =
         std::make_unique<ui::AXNode>(ax_tree_.get(), nullptr, root_node_id, 0);
   }
+
+  MockPluginAccessibilityTreeSource(const MockPluginAccessibilityTreeSource&) =
+      delete;
+  MockPluginAccessibilityTreeSource& operator=(
+      const MockPluginAccessibilityTreeSource&) = delete;
+
   ~MockPluginAccessibilityTreeSource() override {}
   bool GetTreeData(ui::AXTreeData* data) const override { return true; }
   ui::AXNode* GetRoot() const override { return root_node_.get(); }
@@ -977,7 +990,6 @@ class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
   std::unique_ptr<ui::AXTree> ax_tree_;
   std::unique_ptr<ui::AXNode> root_node_;
   bool action_target_called_ = false;
-  DISALLOW_COPY_AND_ASSIGN(MockPluginAccessibilityTreeSource);
 };
 
 TEST_F(RenderAccessibilityImplTest, TestAXActionTargetFromNodeId) {
@@ -1230,6 +1242,10 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
  public:
   AXImageAnnotatorTest() = default;
+
+  AXImageAnnotatorTest(const AXImageAnnotatorTest&) = delete;
+  AXImageAnnotatorTest& operator=(const AXImageAnnotatorTest&) = delete;
+
   ~AXImageAnnotatorTest() override = default;
 
  protected:
@@ -1261,8 +1277,6 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   MockAnnotationService mock_annotator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXImageAnnotatorTest);
 };
 
 TEST_F(AXImageAnnotatorTest, OnImageAdded) {

@@ -13,6 +13,10 @@ namespace content {
 class AudioLogFactory : public media::mojom::AudioLogFactory {
  public:
   AudioLogFactory();
+
+  AudioLogFactory(const AudioLogFactory&) = delete;
+  AudioLogFactory& operator=(const AudioLogFactory&) = delete;
+
   ~AudioLogFactory() override;
 
   // media::mojom::AudioLogFactory implementation.
@@ -20,9 +24,6 @@ class AudioLogFactory : public media::mojom::AudioLogFactory {
                       int32_t component_id,
                       mojo::PendingReceiver<media::mojom::AudioLog>
                           audio_log_receiver) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioLogFactory);
 };
 
 }  // namespace content

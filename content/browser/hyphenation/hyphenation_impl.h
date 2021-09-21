@@ -16,6 +16,10 @@ namespace hyphenation {
 class HyphenationImpl : public blink::mojom::Hyphenation {
  public:
   HyphenationImpl();
+
+  HyphenationImpl(const HyphenationImpl&) = delete;
+  HyphenationImpl& operator=(const HyphenationImpl&) = delete;
+
   ~HyphenationImpl() override;
 
   static void Create(mojo::PendingReceiver<blink::mojom::Hyphenation>);
@@ -34,8 +38,6 @@ class HyphenationImpl : public blink::mojom::Hyphenation {
 #if !defined(OS_ANDROID)
   static void SetDirectory(const base::FilePath& dir);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HyphenationImpl);
 };
 
 }  // namespace hyphenation

@@ -68,6 +68,9 @@ class CONTENT_EXPORT PepperFileRefHost
                     PP_Resource resource,
                     const base::FilePath& external_path);
 
+  PepperFileRefHost(const PepperFileRefHost&) = delete;
+  PepperFileRefHost& operator=(const PepperFileRefHost&) = delete;
+
   ~PepperFileRefHost() override;
 
   // ResourceHost overrides.
@@ -106,8 +109,6 @@ class CONTENT_EXPORT PepperFileRefHost
   std::unique_ptr<PepperFileRefBackend> backend_;
   base::WeakPtr<PepperFileSystemBrowserHost> file_system_host_;
   PP_FileSystemType fs_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileRefHost);
 };
 
 }  // namespace content

@@ -26,12 +26,12 @@ class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
     TRACE_EVENT_ASYNC_BEGIN0("input", "MouseWheelEventQueue::QueueEvent", this);
   }
 
+  QueuedWebMouseWheelEvent(const QueuedWebMouseWheelEvent&) = delete;
+  QueuedWebMouseWheelEvent& operator=(const QueuedWebMouseWheelEvent&) = delete;
+
   ~QueuedWebMouseWheelEvent() {
     TRACE_EVENT_ASYNC_END0("input", "MouseWheelEventQueue::QueueEvent", this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueuedWebMouseWheelEvent);
 };
 
 // Interface with which MouseWheelEventQueue can forward mouse wheel events,
@@ -76,6 +76,9 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   // |IsWheelScrollInProgress| indicates whether mouse wheel events should
   // generate Scroll[Begin|Update|End] on unhandled acknowledge events.
   MouseWheelEventQueue(MouseWheelEventQueueClient* client);
+
+  MouseWheelEventQueue(const MouseWheelEventQueue&) = delete;
+  MouseWheelEventQueue& operator=(const MouseWheelEventQueue&) = delete;
 
   ~MouseWheelEventQueue();
 
@@ -128,8 +131,6 @@ class CONTENT_EXPORT MouseWheelEventQueue {
   bool send_wheel_events_async_;
 
   blink::WebGestureDevice scrolling_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWheelEventQueue);
 };
 
 }  // namespace content

@@ -80,6 +80,10 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   WebBluetoothServiceImpl(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
+
+  WebBluetoothServiceImpl(const WebBluetoothServiceImpl&) = delete;
+  WebBluetoothServiceImpl& operator=(const WebBluetoothServiceImpl&) = delete;
+
   ~WebBluetoothServiceImpl() override;
 
   void CrashRendererAndClosePipe(bad_message::BadMessageReason reason);
@@ -497,8 +501,6 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 
   WebBluetoothPairingManager pairing_manager_;
   base::WeakPtrFactory<WebBluetoothServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebBluetoothServiceImpl);
 };
 
 }  // namespace content

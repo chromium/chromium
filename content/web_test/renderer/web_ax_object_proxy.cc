@@ -235,6 +235,10 @@ void GetBoundariesForOneWord(const blink::WebAXObject& object,
 class AttributesCollector {
  public:
   AttributesCollector() {}
+
+  AttributesCollector(const AttributesCollector&) = delete;
+  AttributesCollector& operator=(const AttributesCollector&) = delete;
+
   ~AttributesCollector() {}
 
   void CollectAttributes(const blink::WebAXObject& object) {
@@ -246,8 +250,6 @@ class AttributesCollector {
 
  private:
   std::string attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AttributesCollector);
 };
 
 }  // namespace

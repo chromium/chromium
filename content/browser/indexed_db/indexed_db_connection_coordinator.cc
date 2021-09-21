@@ -62,6 +62,9 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
         connection_coordinator_(connection_coordinator),
         tasks_available_callback_(std::move(tasks_available_callback)) {}
 
+  ConnectionRequest(const ConnectionRequest&) = delete;
+  ConnectionRequest& operator=(const ConnectionRequest&) = delete;
+
   virtual ~ConnectionRequest() {}
 
   // Called when the request makes it to the front of the queue. The state()
@@ -114,9 +117,6 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
   TasksAvailableCallback tasks_available_callback_;
 
   leveldb::Status saved_leveldb_status_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConnectionRequest);
 };
 
 class IndexedDBConnectionCoordinator::OpenRequest

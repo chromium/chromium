@@ -24,6 +24,11 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
                                      public SpeechRecognitionEventListener {
  public:
   FakeSpeechRecognitionManager();
+
+  FakeSpeechRecognitionManager(const FakeSpeechRecognitionManager&) = delete;
+  FakeSpeechRecognitionManager& operator=(const FakeSpeechRecognitionManager&) =
+      delete;
+
   ~FakeSpeechRecognitionManager() override;
 
   const std::string& grammar() const {
@@ -102,8 +107,6 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   base::OnceClosure recognition_ended_closure_;
   base::OnceClosure on_fake_response_sent_closure_;
   SpeechRecognitionManagerDelegate* delegate_ = nullptr;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSpeechRecognitionManager);
 };
 
 }  // namespace content

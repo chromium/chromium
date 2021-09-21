@@ -46,6 +46,10 @@ class CONTENT_EXPORT PepperVideoEncoderHost
   PepperVideoEncoderHost(RendererPpapiHost* host,
                          PP_Instance instance,
                          PP_Resource resource);
+
+  PepperVideoEncoderHost(const PepperVideoEncoderHost&) = delete;
+  PepperVideoEncoderHost& operator=(const PepperVideoEncoderHost&) = delete;
+
   ~PepperVideoEncoderHost() override;
 
  private:
@@ -180,8 +184,6 @@ class CONTENT_EXPORT PepperVideoEncoderHost
 #endif
 
   base::WeakPtrFactory<PepperVideoEncoderHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVideoEncoderHost);
 };
 
 }  // namespace content

@@ -39,6 +39,10 @@ class MediaResourceGetterImpl : public media::MediaResourceGetter {
                           storage::FileSystemContext* file_system_context,
                           int render_process_id,
                           int render_frame_id);
+
+  MediaResourceGetterImpl(const MediaResourceGetterImpl&) = delete;
+  MediaResourceGetterImpl& operator=(const MediaResourceGetterImpl&) = delete;
+
   ~MediaResourceGetterImpl() override;
 
   // media::MediaResourceGetter implementation.
@@ -76,8 +80,6 @@ class MediaResourceGetterImpl : public media::MediaResourceGetter {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaResourceGetterImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaResourceGetterImpl);
 };
 
 }  // namespace content

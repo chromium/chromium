@@ -27,6 +27,10 @@ class MojoBlobReaderDelegate : public storage::MojoBlobReader::Delegate {
   using CompletionCallback = base::OnceCallback<void(net::Error net_error)>;
   explicit MojoBlobReaderDelegate(CompletionCallback completion_callback)
       : completion_callback_(std::move(completion_callback)) {}
+
+  MojoBlobReaderDelegate(const MojoBlobReaderDelegate&) = delete;
+  MojoBlobReaderDelegate& operator=(const MojoBlobReaderDelegate&) = delete;
+
   ~MojoBlobReaderDelegate() override = default;
   RequestSideData DidCalculateSize(uint64_t total_size,
                                    uint64_t content_size) override {
@@ -40,7 +44,6 @@ class MojoBlobReaderDelegate : public storage::MojoBlobReader::Delegate {
 
  private:
   CompletionCallback completion_callback_;
-  DISALLOW_COPY_AND_ASSIGN(MojoBlobReaderDelegate);
 };
 
 void OnReadComplete(web_package::mojom::BundleDataSource::ReadCallback callback,

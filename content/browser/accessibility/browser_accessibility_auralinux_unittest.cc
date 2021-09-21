@@ -20,6 +20,12 @@ namespace content {
 class BrowserAccessibilityAuraLinuxTest : public testing::Test {
  public:
   BrowserAccessibilityAuraLinuxTest();
+
+  BrowserAccessibilityAuraLinuxTest(const BrowserAccessibilityAuraLinuxTest&) =
+      delete;
+  BrowserAccessibilityAuraLinuxTest& operator=(
+      const BrowserAccessibilityAuraLinuxTest&) = delete;
+
   ~BrowserAccessibilityAuraLinuxTest() override;
 
  protected:
@@ -31,8 +37,6 @@ class BrowserAccessibilityAuraLinuxTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAuraLinuxTest);
 };
 
 BrowserAccessibilityAuraLinuxTest::BrowserAccessibilityAuraLinuxTest()

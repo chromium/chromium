@@ -39,6 +39,12 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   AccessibilityNotificationWaiter(WebContents* web_contents,
                                   ui::AXMode accessibility_mode,
                                   ui::AXEventGenerator::Event event);
+
+  AccessibilityNotificationWaiter(const AccessibilityNotificationWaiter&) =
+      delete;
+  AccessibilityNotificationWaiter& operator=(
+      const AccessibilityNotificationWaiter&) = delete;
+
   ~AccessibilityNotificationWaiter() override;
 
   // Blocks until the specific accessibility notification registered in
@@ -123,8 +129,6 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   RenderFrameHostImpl* event_render_frame_host_ = nullptr;
 
   base::WeakPtrFactory<AccessibilityNotificationWaiter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityNotificationWaiter);
 };
 
 }  // namespace content

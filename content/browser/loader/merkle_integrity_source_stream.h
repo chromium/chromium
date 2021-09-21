@@ -26,6 +26,11 @@ class CONTENT_EXPORT MerkleIntegritySourceStream
  public:
   MerkleIntegritySourceStream(base::StringPiece digest_header_value,
                               std::unique_ptr<SourceStream> upstream);
+
+  MerkleIntegritySourceStream(const MerkleIntegritySourceStream&) = delete;
+  MerkleIntegritySourceStream& operator=(const MerkleIntegritySourceStream&) =
+      delete;
+
   ~MerkleIntegritySourceStream() override;
 
   // net::FilterSourceStream
@@ -80,8 +85,6 @@ class CONTENT_EXPORT MerkleIntegritySourceStream
   bool failed_ = false;
   // Whether the final record has been processed.
   bool final_record_done_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MerkleIntegritySourceStream);
 };
 
 }  // namespace content

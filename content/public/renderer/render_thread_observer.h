@@ -23,6 +23,10 @@ namespace content {
 class CONTENT_EXPORT RenderThreadObserver {
  public:
   RenderThreadObserver() {}
+
+  RenderThreadObserver(const RenderThreadObserver&) = delete;
+  RenderThreadObserver& operator=(const RenderThreadObserver&) = delete;
+
   virtual ~RenderThreadObserver() {}
 
   // Allows handling incoming Mojo requests.
@@ -36,9 +40,6 @@ class CONTENT_EXPORT RenderThreadObserver {
 
   // Called when the renderer cache of the plugin list has changed.
   virtual void PluginListChanged() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderThreadObserver);
 };
 
 }  // namespace content

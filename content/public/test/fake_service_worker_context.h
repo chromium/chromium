@@ -33,6 +33,10 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
       std::tuple<GURL, blink::TransferableMessage, ResultCallback>;
 
   FakeServiceWorkerContext();
+
+  FakeServiceWorkerContext(const FakeServiceWorkerContext&) = delete;
+  FakeServiceWorkerContext& operator=(const FakeServiceWorkerContext&) = delete;
+
   ~FakeServiceWorkerContext() override;
 
   void AddObserver(ServiceWorkerContextObserver* observer) override;
@@ -123,8 +127,6 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   std::vector<url::Origin> stop_all_service_workers_for_origin_calls_;
 
   base::ObserverList<ServiceWorkerContextObserver, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeServiceWorkerContext);
 
   std::set<url::Origin> registered_origins_;
 };

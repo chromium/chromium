@@ -14,6 +14,10 @@ namespace content {
 class ShellPermissionManager : public PermissionControllerDelegate {
  public:
   ShellPermissionManager();
+
+  ShellPermissionManager(const ShellPermissionManager&) = delete;
+  ShellPermissionManager& operator=(const ShellPermissionManager&) = delete;
+
   ~ShellPermissionManager() override;
 
   // PermissionManager implementation.
@@ -51,9 +55,6 @@ class ShellPermissionManager : public PermissionControllerDelegate {
       override;
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellPermissionManager);
 };
 
 }  // namespace content

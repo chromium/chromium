@@ -270,6 +270,9 @@ class DownloadFileWithDelay : public download::DownloadFileImpl {
       base::WeakPtr<download::DownloadDestinationObserver> observer,
       base::WeakPtr<DownloadFileWithDelayFactory> owner);
 
+  DownloadFileWithDelay(const DownloadFileWithDelay&) = delete;
+  DownloadFileWithDelay& operator=(const DownloadFileWithDelay&) = delete;
+
   ~DownloadFileWithDelay() override;
 
   // Wraps DownloadFileImpl::Rename* and intercepts the return callback,
@@ -298,14 +301,17 @@ class DownloadFileWithDelay : public download::DownloadFileImpl {
   // DownloadFileWithDelay lives on the file thread, but
   // DownloadFileWithDelayFactory is purely a UI thread object.
   base::WeakPtr<DownloadFileWithDelayFactory> owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFileWithDelay);
 };
 
 // All routines on this class must be called on the UI thread.
 class DownloadFileWithDelayFactory : public download::DownloadFileFactory {
  public:
   DownloadFileWithDelayFactory();
+
+  DownloadFileWithDelayFactory(const DownloadFileWithDelayFactory&) = delete;
+  DownloadFileWithDelayFactory& operator=(const DownloadFileWithDelayFactory&) =
+      delete;
+
   ~DownloadFileWithDelayFactory() override;
 
   // DownloadFileFactory interface.
@@ -326,8 +332,6 @@ class DownloadFileWithDelayFactory : public download::DownloadFileFactory {
   std::vector<base::OnceClosure> rename_callbacks_;
   base::OnceClosure stop_waiting_;
   base::WeakPtrFactory<DownloadFileWithDelayFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFileWithDelayFactory);
 };
 
 DownloadFileWithDelay::DownloadFileWithDelay(
@@ -540,6 +544,12 @@ class ErrorInjectionDownloadFile : public download::DownloadFileImpl {
 class ErrorInjectionDownloadFileFactory : public download::DownloadFileFactory {
  public:
   ErrorInjectionDownloadFileFactory() : download_file_(nullptr) {}
+
+  ErrorInjectionDownloadFileFactory(const ErrorInjectionDownloadFileFactory&) =
+      delete;
+  ErrorInjectionDownloadFileFactory& operator=(
+      const ErrorInjectionDownloadFileFactory&) = delete;
+
   ~ErrorInjectionDownloadFileFactory() override = default;
 
   // DownloadFileFactory interface.
@@ -590,8 +600,6 @@ class ErrorInjectionDownloadFileFactory : public download::DownloadFileFactory {
   int64_t injected_error_length_ = 0;
   base::WeakPtrFactory<ErrorInjectionDownloadFileFactory> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorInjectionDownloadFileFactory);
 };
 
 class TestShellDownloadManagerDelegate : public ShellDownloadManagerDelegate {
@@ -763,6 +771,10 @@ class NavigationStartObserver : public WebContentsObserver {
  public:
   explicit NavigationStartObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
+
+  NavigationStartObserver(const NavigationStartObserver&) = delete;
+  NavigationStartObserver& operator=(const NavigationStartObserver&) = delete;
+
   ~NavigationStartObserver() override {}
 
   void WaitForFinished(int navigation_count) {
@@ -786,7 +798,6 @@ class NavigationStartObserver : public WebContentsObserver {
   int navigation_count_ = 0;
   int start_count_ = 0;
   base::OnceClosure completion_closure_;
-  DISALLOW_COPY_AND_ASSIGN(NavigationStartObserver);
 };
 
 bool IsDownloadInState(download::DownloadItem::DownloadState state,

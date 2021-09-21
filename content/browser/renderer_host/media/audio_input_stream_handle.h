@@ -36,6 +36,9 @@ class CONTENT_EXPORT AudioInputStreamHandle {
           create_delegate_callback,
       DeleterCallback deleter_callback);
 
+  AudioInputStreamHandle(const AudioInputStreamHandle&) = delete;
+  AudioInputStreamHandle& operator=(const AudioInputStreamHandle&) = delete;
+
   ~AudioInputStreamHandle();
 
   const base::UnguessableToken& id() const { return stream_id_; }
@@ -55,8 +58,6 @@ class CONTENT_EXPORT AudioInputStreamHandle {
   mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
       pending_stream_client_;
   media::MojoAudioInputStream stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputStreamHandle);
 };
 
 }  // namespace content

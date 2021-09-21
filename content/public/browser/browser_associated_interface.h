@@ -60,6 +60,10 @@ class BrowserAssociatedInterface : public Interface {
         base::BindOnce(&InternalState::ClearReceivers, internal_state_));
   }
 
+  BrowserAssociatedInterface(const BrowserAssociatedInterface&) = delete;
+  BrowserAssociatedInterface& operator=(const BrowserAssociatedInterface&) =
+      delete;
+
   ~BrowserAssociatedInterface() { internal_state_->ClearReceivers(); }
 
  private:
@@ -101,8 +105,6 @@ class BrowserAssociatedInterface : public Interface {
   };
 
   scoped_refptr<InternalState> internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAssociatedInterface);
 };
 
 }  // namespace content

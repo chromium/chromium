@@ -76,6 +76,10 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                        content_security_policies,
                    const network::CrossOriginEmbedderPolicy&
                        creator_cross_origin_embedder_policy);
+
+  SharedWorkerHost(const SharedWorkerHost&) = delete;
+  SharedWorkerHost& operator=(const SharedWorkerHost&) = delete;
+
   ~SharedWorkerHost() override;
 
   // Returns the RenderProcessHost where this shared worker lives.
@@ -322,8 +326,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerHost);
 };
 
 }  // namespace content

@@ -39,6 +39,9 @@ class CONTENT_EXPORT ChildProcessHostImpl
       public IPC::Listener,
       public mojom::ChildProcessHost {
  public:
+  ChildProcessHostImpl(const ChildProcessHostImpl&) = delete;
+  ChildProcessHostImpl& operator=(const ChildProcessHostImpl&) = delete;
+
   ~ChildProcessHostImpl() override;
 
   // Returns a unique ID to identify a child process. On construction, this
@@ -122,8 +125,6 @@ class CONTENT_EXPORT ChildProcessHostImpl
   // thread, we don't have a IPC::ChannelProxy and so we manage filters
   // manually.
   std::vector<scoped_refptr<IPC::MessageFilter> > filters_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessHostImpl);
 };
 
 }  // namespace content

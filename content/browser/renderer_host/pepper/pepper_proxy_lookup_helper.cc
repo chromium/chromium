@@ -35,6 +35,9 @@ class PepperProxyLookupHelper::UIThreadHelper
                        url, std::move(look_up_proxy_for_url_callback)));
   }
 
+  UIThreadHelper(const UIThreadHelper&) = delete;
+  UIThreadHelper& operator=(const UIThreadHelper&) = delete;
+
   ~UIThreadHelper() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
 
  private:
@@ -68,8 +71,6 @@ class PepperProxyLookupHelper::UIThreadHelper
 
   LookUpCompleteCallback look_up_complete_callback_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIThreadHelper);
 };
 
 PepperProxyLookupHelper::PepperProxyLookupHelper() {}

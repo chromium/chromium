@@ -20,6 +20,11 @@ class ProcessInternalsHandlerImpl : public ::mojom::ProcessInternalsHandler {
   ProcessInternalsHandlerImpl(
       BrowserContext* browser_context,
       mojo::PendingReceiver<::mojom::ProcessInternalsHandler> receiver);
+
+  ProcessInternalsHandlerImpl(const ProcessInternalsHandlerImpl&) = delete;
+  ProcessInternalsHandlerImpl& operator=(const ProcessInternalsHandlerImpl&) =
+      delete;
+
   ~ProcessInternalsHandlerImpl() override;
 
   // mojom::ProcessInternalsHandler overrides:
@@ -35,8 +40,6 @@ class ProcessInternalsHandlerImpl : public ::mojom::ProcessInternalsHandler {
  private:
   BrowserContext* browser_context_;
   mojo::Receiver<::mojom::ProcessInternalsHandler> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessInternalsHandlerImpl);
 };
 
 }  // namespace content

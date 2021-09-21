@@ -19,6 +19,10 @@ class CONTENT_EXPORT TimeoutMonitor {
   typedef base::RepeatingClosure TimeoutHandler;
 
   explicit TimeoutMonitor(const TimeoutHandler& timeout_handler);
+
+  TimeoutMonitor(const TimeoutMonitor&) = delete;
+  TimeoutMonitor& operator=(const TimeoutMonitor&) = delete;
+
   ~TimeoutMonitor();
 
   // Schedule the timeout timer to fire at |delay| into the future. If a timeout
@@ -44,8 +48,6 @@ class CONTENT_EXPORT TimeoutMonitor {
 
   // This timer runs to check if |time_when_considered_timed_out_| has past.
   base::OneShotTimer timeout_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeoutMonitor);
 };
 
 }  // namespace content

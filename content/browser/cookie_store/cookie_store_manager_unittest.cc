@@ -45,6 +45,10 @@ class CookieStoreSync {
   // The caller must ensure that the CookieStore service outlives this.
   explicit CookieStoreSync(blink::mojom::CookieStore* cookie_store_service)
       : cookie_store_service_(cookie_store_service) {}
+
+  CookieStoreSync(const CookieStoreSync&) = delete;
+  CookieStoreSync& operator=(const CookieStoreSync&) = delete;
+
   ~CookieStoreSync() = default;
 
   bool AddSubscriptions(int64_t service_worker_registration_id,
@@ -93,8 +97,6 @@ class CookieStoreSync {
 
  private:
   blink::mojom::CookieStore* cookie_store_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieStoreSync);
 };
 
 const char kExampleScope[] = "https://example.com/a/";
@@ -118,6 +120,10 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
    public:
     explicit ServiceWorker(CookieStoreWorkerTestHelper* worker_helper)
         : FakeServiceWorker(worker_helper), worker_helper_(worker_helper) {}
+
+    ServiceWorker(const ServiceWorker&) = delete;
+    ServiceWorker& operator=(const ServiceWorker&) = delete;
+
     ~ServiceWorker() override = default;
 
     // Used to implement WaitForActivateEvent().
@@ -141,8 +147,6 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
 
    private:
     CookieStoreWorkerTestHelper* const worker_helper_;
-
-    DISALLOW_COPY_AND_ASSIGN(ServiceWorker);
   };
 
   std::unique_ptr<FakeServiceWorker> CreateServiceWorker() override {

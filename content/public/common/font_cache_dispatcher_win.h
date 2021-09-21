@@ -21,6 +21,10 @@ namespace content {
 class CONTENT_EXPORT FontCacheDispatcher : public mojom::FontCacheWin {
  public:
   FontCacheDispatcher();
+
+  FontCacheDispatcher(const FontCacheDispatcher&) = delete;
+  FontCacheDispatcher& operator=(const FontCacheDispatcher&) = delete;
+
   ~FontCacheDispatcher() override;
 
   static void Create(mojo::PendingReceiver<mojom::FontCacheWin> receiver);
@@ -30,8 +34,6 @@ class CONTENT_EXPORT FontCacheDispatcher : public mojom::FontCacheWin {
   void PreCacheFont(const LOGFONT& log_font,
                     PreCacheFontCallback callback) override;
   void ReleaseCachedFonts() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FontCacheDispatcher);
 };
 
 }  // namespace content

@@ -55,6 +55,10 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   IndexedDBFactoryImpl(IndexedDBContextImpl* context,
                        IndexedDBClassFactory* indexed_db_class_factory,
                        base::Clock* clock);
+
+  IndexedDBFactoryImpl(const IndexedDBFactoryImpl&) = delete;
+  IndexedDBFactoryImpl& operator=(const IndexedDBFactoryImpl&) = delete;
+
   ~IndexedDBFactoryImpl() override;
 
   // content::IndexedDBFactory overrides:
@@ -244,7 +248,6 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   base::WeakPtrFactory<IndexedDBFactoryImpl>
       storage_key_state_destruction_weak_factory_{this};
   base::WeakPtrFactory<IndexedDBFactoryImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBFactoryImpl);
 };
 
 }  // namespace content

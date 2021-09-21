@@ -32,6 +32,10 @@ class WebUIDataSource;
 class CONTENT_EXPORT URLDataManager : public base::SupportsUserData::Data {
  public:
   explicit URLDataManager(BrowserContext* browser_context);
+
+  URLDataManager(const URLDataManager&) = delete;
+  URLDataManager& operator=(const URLDataManager&) = delete;
+
   ~URLDataManager() override;
 
   // Adds a DataSource to the collection of data sources. This *must* be invoked
@@ -88,8 +92,6 @@ class CONTENT_EXPORT URLDataManager : public base::SupportsUserData::Data {
   // |data_sources_| that are no longer referenced and scheduled for deletion.
   // Protected by g_delete_lock in the .cc file.
   static URLDataSources* data_sources_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLDataManager);
 };
 
 }  // namespace content

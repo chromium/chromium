@@ -33,6 +33,10 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
       const blink::StorageKey& storage_key,
       base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       scoped_refptr<base::SequencedTaskRunner> idb_runner);
+
+  TransactionImpl(const TransactionImpl&) = delete;
+  TransactionImpl& operator=(const TransactionImpl&) = delete;
+
   ~TransactionImpl() override;
 
   // blink::mojom::IDBTransaction implementation
@@ -72,8 +76,6 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<TransactionImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransactionImpl);
 };
 
 }  // namespace content

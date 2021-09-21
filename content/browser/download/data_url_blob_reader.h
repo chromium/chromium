@@ -36,6 +36,9 @@ class CONTENT_EXPORT DataURLBlobReader : public mojo::DataPipeDrainer::Client {
       mojo::PendingRemote<blink::mojom::Blob> data_url_blob,
       ReadCompletionCallback read_completion_callback);
 
+  DataURLBlobReader(const DataURLBlobReader&) = delete;
+  DataURLBlobReader& operator=(const DataURLBlobReader&) = delete;
+
   ~DataURLBlobReader() override;
 
  private:
@@ -63,8 +66,6 @@ class CONTENT_EXPORT DataURLBlobReader : public mojo::DataPipeDrainer::Client {
   base::OnceClosure callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DataURLBlobReader);
 };
 
 }  // namespace content

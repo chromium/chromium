@@ -67,6 +67,9 @@ class Text;
 
 class Node {
  public:
+  Node(const Node&) = delete;
+  Node& operator=(const Node&) = delete;
+
   virtual ~Node() {}
   static std::unique_ptr<Node> CreateRandom(Random* rnd);
 
@@ -92,8 +95,6 @@ class Node {
  private:
   friend class NodeList;
   static std::unique_ptr<Node> ParseJson(const base::Value& value);
-
-  DISALLOW_COPY_AND_ASSIGN(Node);
 };
 
 using Attrs = std::map<std::string, std::string>;

@@ -45,6 +45,10 @@ class SpeechRecognizerImpl::OnDataConverter
  public:
   OnDataConverter(const AudioParameters& input_params,
                   const AudioParameters& output_params);
+
+  OnDataConverter(const OnDataConverter&) = delete;
+  OnDataConverter& operator=(const OnDataConverter&) = delete;
+
   ~OnDataConverter() override;
 
   // Converts input audio |data| bus into an AudioChunk where the input format
@@ -67,8 +71,6 @@ class SpeechRecognizerImpl::OnDataConverter
   const AudioParameters input_parameters_;
   const AudioParameters output_parameters_;
   bool data_was_converted_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnDataConverter);
 };
 
 namespace {

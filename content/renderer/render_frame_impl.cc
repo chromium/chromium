@@ -1229,6 +1229,9 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
     body_loader_->StartLoadingBody(this, nullptr /*code_cache_host*/);
   }
 
+  MHTMLBodyLoaderClient(const MHTMLBodyLoaderClient&) = delete;
+  MHTMLBodyLoaderClient& operator=(const MHTMLBodyLoaderClient&) = delete;
+
   ~MHTMLBodyLoaderClient() override {
     // MHTMLBodyLoaderClient is reset in several different places. Either:
     CHECK(
@@ -1293,8 +1296,6 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
   std::unique_ptr<blink::WebNavigationBodyLoader> body_loader_;
   base::OnceCallback<void(std::unique_ptr<blink::WebNavigationParams>)>
       done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MHTMLBodyLoaderClient);
 };
 
 class RenderFrameImpl::FrameURLLoaderFactory
@@ -1302,6 +1303,9 @@ class RenderFrameImpl::FrameURLLoaderFactory
  public:
   explicit FrameURLLoaderFactory(base::WeakPtr<RenderFrameImpl> frame)
       : frame_(std::move(frame)) {}
+
+  FrameURLLoaderFactory(const FrameURLLoaderFactory&) = delete;
+  FrameURLLoaderFactory& operator=(const FrameURLLoaderFactory&) = delete;
 
   ~FrameURLLoaderFactory() override = default;
 
@@ -1338,8 +1342,6 @@ class RenderFrameImpl::FrameURLLoaderFactory
 
  private:
   base::WeakPtr<RenderFrameImpl> frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameURLLoaderFactory);
 };
 
 std::string UniqueNameForWebFrame(blink::WebFrame* frame) {

@@ -21,6 +21,12 @@ namespace content {
 class WebTestDownloadManagerDelegate : public ShellDownloadManagerDelegate {
  public:
   WebTestDownloadManagerDelegate();
+
+  WebTestDownloadManagerDelegate(const WebTestDownloadManagerDelegate&) =
+      delete;
+  WebTestDownloadManagerDelegate& operator=(
+      const WebTestDownloadManagerDelegate&) = delete;
+
   ~WebTestDownloadManagerDelegate() override;
 
   // ShellDownloadManagerDelegate implementation.
@@ -34,9 +40,6 @@ class WebTestDownloadManagerDelegate : public ShellDownloadManagerDelegate {
       bool from_download_cross_origin_redirect,
       bool content_initiated,
       content::CheckDownloadAllowedCallback check_download_allowed_cb) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebTestDownloadManagerDelegate);
 };
 
 }  // namespace content

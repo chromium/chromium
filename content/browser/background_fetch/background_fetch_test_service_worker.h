@@ -21,6 +21,12 @@ namespace content {
 class BackgroundFetchTestServiceWorker : public FakeServiceWorker {
  public:
   explicit BackgroundFetchTestServiceWorker(EmbeddedWorkerTestHelper* helper);
+
+  BackgroundFetchTestServiceWorker(const BackgroundFetchTestServiceWorker&) =
+      delete;
+  BackgroundFetchTestServiceWorker& operator=(
+      const BackgroundFetchTestServiceWorker&) = delete;
+
   ~BackgroundFetchTestServiceWorker() override;
 
   // Toggles whether the named Service Worker event should fail.
@@ -89,8 +95,6 @@ class BackgroundFetchTestServiceWorker : public FakeServiceWorker {
   base::OnceClosure fetched_event_closure_;
 
   blink::mojom::BackgroundFetchRegistrationPtr last_registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchTestServiceWorker);
 };
 
 }  // namespace content

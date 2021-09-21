@@ -57,6 +57,11 @@ class CONTENT_EXPORT EmbeddedWorkerInstanceClientImpl
       mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
           receiver);
 
+  EmbeddedWorkerInstanceClientImpl(const EmbeddedWorkerInstanceClientImpl&) =
+      delete;
+  EmbeddedWorkerInstanceClientImpl& operator=(
+      const EmbeddedWorkerInstanceClientImpl&) = delete;
+
   ~EmbeddedWorkerInstanceClientImpl() override;
 
   // Destroys |this|. Called from ServiceWorkerContextClient.
@@ -94,8 +99,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstanceClientImpl
 
   // nullptr means worker is not running.
   std::unique_ptr<ServiceWorkerContextClient> service_worker_context_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerInstanceClientImpl);
 };
 
 }  // namespace content

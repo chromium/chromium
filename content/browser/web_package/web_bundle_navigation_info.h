@@ -22,6 +22,10 @@ class WebBundleNavigationInfo {
   WebBundleNavigationInfo(std::unique_ptr<WebBundleSource> source,
                           const GURL& target_inner_url,
                           base::WeakPtr<WebBundleReader> weak_reader);
+
+  WebBundleNavigationInfo(const WebBundleNavigationInfo&) = delete;
+  WebBundleNavigationInfo& operator=(const WebBundleNavigationInfo&) = delete;
+
   ~WebBundleNavigationInfo();
 
   const WebBundleSource& source() const;
@@ -34,8 +38,6 @@ class WebBundleNavigationInfo {
   std::unique_ptr<WebBundleSource> source_;
   const GURL target_inner_url_;
   const base::WeakPtr<WebBundleReader> weak_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleNavigationInfo);
 };
 }  // namespace content
 

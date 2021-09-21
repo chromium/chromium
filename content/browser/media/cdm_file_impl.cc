@@ -78,6 +78,10 @@ struct FileLockKey {
 class FileLockMap {
  public:
   FileLockMap() = default;
+
+  FileLockMap(const FileLockMap&) = delete;
+  FileLockMap& operator=(const FileLockMap&) = delete;
+
   ~FileLockMap() = default;
 
   // Acquire a lock on the file represented by |key|. Returns true if |key|
@@ -112,7 +116,6 @@ class FileLockMap {
   std::set<FileLockKey> file_lock_map_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(FileLockMap);
 };
 
 // The FileLockMap is a global lock map shared by all CdmFileImpl instances.

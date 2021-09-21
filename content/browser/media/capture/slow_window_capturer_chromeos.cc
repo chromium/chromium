@@ -158,6 +158,9 @@ class SlowWindowCapturerChromeOS::InFlightFrame final
                 base::MappedReadOnlyRegion buffer)
       : capturer_(std::move(capturer)), buffer_(std::move(buffer)) {}
 
+  InFlightFrame(const InFlightFrame&) = delete;
+  InFlightFrame& operator=(const InFlightFrame&) = delete;
+
   ~InFlightFrame() final { Done(); }
 
   base::ReadOnlySharedMemoryRegion CloneBufferHandle() {
@@ -207,8 +210,6 @@ class SlowWindowCapturerChromeOS::InFlightFrame final
   scoped_refptr<VideoFrame> video_frame_;
   gfx::Rect content_rect_;
   SlowCaptureOverlayChromeOS::OnceRenderer overlay_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InFlightFrame);
 };
 
 void SlowWindowCapturerChromeOS::OnOverlayConnectionLost(

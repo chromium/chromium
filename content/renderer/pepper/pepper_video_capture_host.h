@@ -36,6 +36,9 @@ class PepperVideoCaptureHost : public ppapi::host::ResourceHost {
                          PP_Instance instance,
                          PP_Resource resource);
 
+  PepperVideoCaptureHost(const PepperVideoCaptureHost&) = delete;
+  PepperVideoCaptureHost& operator=(const PepperVideoCaptureHost&) = delete;
+
   ~PepperVideoCaptureHost() override;
 
   bool Init();
@@ -117,8 +120,6 @@ class PepperVideoCaptureHost : public ppapi::host::ResourceHost {
   ppapi::host::ReplyMessageContext open_reply_context_;
 
   PepperDeviceEnumerationHostHelper enumeration_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVideoCaptureHost);
 };
 
 }  // namespace content

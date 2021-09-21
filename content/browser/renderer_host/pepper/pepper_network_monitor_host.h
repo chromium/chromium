@@ -27,6 +27,9 @@ class CONTENT_EXPORT PepperNetworkMonitorHost
                            PP_Instance instance,
                            PP_Resource resource);
 
+  PepperNetworkMonitorHost(const PepperNetworkMonitorHost&) = delete;
+  PepperNetworkMonitorHost& operator=(const PepperNetworkMonitorHost&) = delete;
+
   ~PepperNetworkMonitorHost() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver interface.
@@ -45,8 +48,6 @@ class CONTENT_EXPORT PepperNetworkMonitorHost
   network::NetworkConnectionTracker* network_connection_tracker_;
 
   base::WeakPtrFactory<PepperNetworkMonitorHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperNetworkMonitorHost);
 };
 
 }  // namespace content

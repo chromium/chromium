@@ -20,6 +20,11 @@ class CONTENT_EXPORT DelegatedFrameHostClientAura
  public:
   explicit DelegatedFrameHostClientAura(
       RenderWidgetHostViewAura* render_widget_host_view);
+
+  DelegatedFrameHostClientAura(const DelegatedFrameHostClientAura&) = delete;
+  DelegatedFrameHostClientAura& operator=(const DelegatedFrameHostClientAura&) =
+      delete;
+
   ~DelegatedFrameHostClientAura() override;
 
  protected:
@@ -40,8 +45,6 @@ class CONTENT_EXPORT DelegatedFrameHostClientAura
 
  private:
   RenderWidgetHostViewAura* render_widget_host_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHostClientAura);
 };
 
 }  // namespace content

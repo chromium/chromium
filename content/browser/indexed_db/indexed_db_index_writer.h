@@ -48,6 +48,9 @@ class IndexWriter {
       int64_t database_id,
       int64_t object_store_id) const;
 
+  IndexWriter(const IndexWriter&) = delete;
+  IndexWriter& operator=(const IndexWriter&) = delete;
+
   ~IndexWriter();
 
  private:
@@ -62,8 +65,6 @@ class IndexWriter {
 
   const blink::IndexedDBIndexMetadata index_metadata_;
   const std::vector<blink::IndexedDBKey> keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexWriter);
 };
 
 bool MakeIndexWriters(IndexedDBTransaction* transaction,

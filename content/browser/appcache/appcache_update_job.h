@@ -65,6 +65,10 @@ class CONTENT_EXPORT AppCacheUpdateJob
   };
 
   AppCacheUpdateJob(AppCacheServiceImpl* service, AppCacheGroup* group);
+
+  AppCacheUpdateJob(const AppCacheUpdateJob&) = delete;
+  AppCacheUpdateJob& operator=(const AppCacheUpdateJob&) = delete;
+
   ~AppCacheUpdateJob() override;
 
   // Triggers the update process or adds more info if this update is already
@@ -335,8 +339,6 @@ class CONTENT_EXPORT AppCacheUpdateJob
   base::WeakPtrFactory<AppCacheUpdateJob> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheGroupTest, QueueUpdate);
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheUpdateJob);
 };
 
 }  // namespace content

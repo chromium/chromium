@@ -19,6 +19,10 @@ class SyntheticGestureTarget;
 class CONTENT_EXPORT SyntheticPointerDriver {
  public:
   SyntheticPointerDriver();
+
+  SyntheticPointerDriver(const SyntheticPointerDriver&) = delete;
+  SyntheticPointerDriver& operator=(const SyntheticPointerDriver&) = delete;
+
   virtual ~SyntheticPointerDriver();
 
   static std::unique_ptr<SyntheticPointerDriver> Create(
@@ -69,9 +73,6 @@ class CONTENT_EXPORT SyntheticPointerDriver {
   // a valid sequence of pointer actions.
   virtual bool UserInputCheck(
       const SyntheticPointerActionParams& params) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyntheticPointerDriver);
 };
 
 }  // namespace content

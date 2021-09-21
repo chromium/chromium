@@ -60,6 +60,10 @@ class CONTENT_EXPORT FileSystemManagerImpl
       int process_id,
       scoped_refptr<storage::FileSystemContext> file_system_context,
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context);
+
+  FileSystemManagerImpl(const FileSystemManagerImpl&) = delete;
+  FileSystemManagerImpl& operator=(const FileSystemManagerImpl&) = delete;
+
   ~FileSystemManagerImpl() override;
   base::WeakPtr<FileSystemManagerImpl> GetWeakPtr();
 
@@ -224,8 +228,6 @@ class CONTENT_EXPORT FileSystemManagerImpl
       in_transit_snapshot_files_;
 
   base::WeakPtrFactory<FileSystemManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemManagerImpl);
 };
 
 }  // namespace content

@@ -33,6 +33,10 @@ class ContentBrowserTestSuite : public ContentTestSuiteBase {
   ContentBrowserTestSuite(int argc, char** argv)
       : ContentTestSuiteBase(argc, argv) {
   }
+
+  ContentBrowserTestSuite(const ContentBrowserTestSuite&) = delete;
+  ContentBrowserTestSuite& operator=(const ContentBrowserTestSuite&) = delete;
+
   ~ContentBrowserTestSuite() override {}
 
  protected:
@@ -46,13 +50,16 @@ class ContentBrowserTestSuite : public ContentTestSuiteBase {
     RegisterInProcessThreads();
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ContentBrowserTestSuite);
 };
 
 class ContentTestLauncherDelegate : public TestLauncherDelegate {
  public:
   ContentTestLauncherDelegate() {}
+
+  ContentTestLauncherDelegate(const ContentTestLauncherDelegate&) = delete;
+  ContentTestLauncherDelegate& operator=(const ContentTestLauncherDelegate&) =
+      delete;
+
   ~ContentTestLauncherDelegate() override {}
 
   int RunTestSuite(int argc, char** argv) override {
@@ -69,9 +76,6 @@ class ContentTestLauncherDelegate : public TestLauncherDelegate {
     return new ContentBrowserTestShellMainDelegate();
   }
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentTestLauncherDelegate);
 };
 
 }  // namespace content

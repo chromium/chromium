@@ -24,6 +24,10 @@ class ShellPlatformDelegate;
 class ShellBrowserMainParts : public BrowserMainParts {
  public:
   explicit ShellBrowserMainParts(const MainFunctionParams& parameters);
+
+  ShellBrowserMainParts(const ShellBrowserMainParts&) = delete;
+  ShellBrowserMainParts& operator=(const ShellBrowserMainParts&) = delete;
+
   ~ShellBrowserMainParts() override;
 
   // BrowserMainParts overrides.
@@ -68,8 +72,6 @@ class ShellBrowserMainParts : public BrowserMainParts {
 
   std::unique_ptr<performance_manager::PerformanceManagerLifetime>
       performance_manager_lifetime_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellBrowserMainParts);
 };
 
 }  // namespace content

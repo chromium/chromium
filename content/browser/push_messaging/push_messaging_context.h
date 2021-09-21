@@ -28,6 +28,10 @@ class PushMessagingContext : public ServiceWorkerContextCoreObserver {
   PushMessagingContext(
       BrowserContext* browser_context,
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context);
+
+  PushMessagingContext(const PushMessagingContext&) = delete;
+  PushMessagingContext& operator=(const PushMessagingContext&) = delete;
+
   ~PushMessagingContext() override;
 
   // ServiceWorkerContextCoreObserver methods
@@ -40,8 +44,6 @@ class PushMessagingContext : public ServiceWorkerContextCoreObserver {
   BrowserContext* browser_context_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingContext);
 };
 
 }  // namespace content

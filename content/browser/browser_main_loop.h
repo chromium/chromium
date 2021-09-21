@@ -124,6 +124,10 @@ class CONTENT_EXPORT BrowserMainLoop {
   explicit BrowserMainLoop(
       const MainFunctionParams& parameters,
       std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence> fence);
+
+  BrowserMainLoop(const BrowserMainLoop&) = delete;
+  BrowserMainLoop& operator=(const BrowserMainLoop&) = delete;
+
   virtual ~BrowserMainLoop();
 
   void Init();
@@ -391,8 +395,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   std::unique_ptr<SmsProvider> sms_provider_;
 
   // DO NOT add members here. Add them to the right categories above.
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserMainLoop);
 };
 
 }  // namespace content

@@ -629,12 +629,16 @@ class DataUrlNavigationBrowserTestWithFeatureFlag
     scoped_feature_list_.InitAndEnableFeature(
         features::kAllowContentInitiatedDataUrlNavigations);
   }
+
+  DataUrlNavigationBrowserTestWithFeatureFlag(
+      const DataUrlNavigationBrowserTestWithFeatureFlag&) = delete;
+  DataUrlNavigationBrowserTestWithFeatureFlag& operator=(
+      const DataUrlNavigationBrowserTestWithFeatureFlag&) = delete;
+
   ~DataUrlNavigationBrowserTestWithFeatureFlag() override {}
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataUrlNavigationBrowserTestWithFeatureFlag);
 };
 
 // Tests that a content initiated navigation to a data URL is allowed if

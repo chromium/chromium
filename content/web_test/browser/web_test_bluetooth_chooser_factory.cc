@@ -24,6 +24,9 @@ class WebTestBluetoothChooserFactory::Chooser : public BluetoothChooser {
     factory->choosers_.insert(this);
   }
 
+  Chooser(const Chooser&) = delete;
+  Chooser& operator=(const Chooser&) = delete;
+
   ~Chooser() override {
     CheckFactory();
     factory_->choosers_.erase(this);
@@ -87,8 +90,6 @@ class WebTestBluetoothChooserFactory::Chooser : public BluetoothChooser {
   }
 
   base::WeakPtr<WebTestBluetoothChooserFactory> factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(Chooser);
 };
 
 WebTestBluetoothChooserFactory::WebTestBluetoothChooserFactory() {}

@@ -118,6 +118,10 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
  public:
   ScrollBehaviorBrowserTest() : disable_threaded_scrolling_(GetParam()) {}
 
+  ScrollBehaviorBrowserTest(const ScrollBehaviorBrowserTest&) = delete;
+  ScrollBehaviorBrowserTest& operator=(const ScrollBehaviorBrowserTest&) =
+      delete;
+
   ~ScrollBehaviorBrowserTest() override = default;
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -239,8 +243,6 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
 
   std::unique_ptr<base::RunLoop> run_loop_;
   bool disable_threaded_scrolling_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollBehaviorBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ScrollBehaviorBrowserTest, ::testing::Bool());

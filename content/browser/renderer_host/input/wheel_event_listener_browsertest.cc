@@ -53,6 +53,11 @@ namespace content {
 class WheelEventListenerBrowserTest : public ContentBrowserTest {
  public:
   WheelEventListenerBrowserTest() = default;
+
+  WheelEventListenerBrowserTest(const WheelEventListenerBrowserTest&) = delete;
+  WheelEventListenerBrowserTest& operator=(
+      const WheelEventListenerBrowserTest&) = delete;
+
   ~WheelEventListenerBrowserTest() override = default;
 
  protected:
@@ -108,7 +113,6 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(WheelEventListenerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WheelEventListenerBrowserTest,

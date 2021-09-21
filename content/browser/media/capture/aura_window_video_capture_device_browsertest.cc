@@ -37,6 +37,12 @@ class AuraWindowVideoCaptureDeviceBrowserTest
       public FrameTestUtil {
  public:
   AuraWindowVideoCaptureDeviceBrowserTest() = default;
+
+  AuraWindowVideoCaptureDeviceBrowserTest(
+      const AuraWindowVideoCaptureDeviceBrowserTest&) = delete;
+  AuraWindowVideoCaptureDeviceBrowserTest& operator=(
+      const AuraWindowVideoCaptureDeviceBrowserTest&) = delete;
+
   ~AuraWindowVideoCaptureDeviceBrowserTest() override = default;
 
   aura::Window* GetCapturedWindow() const {
@@ -184,9 +190,6 @@ class AuraWindowVideoCaptureDeviceBrowserTest
   }
 
   void WaitForFirstFrame() final { WaitForFrameWithColor(SK_ColorBLACK); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuraWindowVideoCaptureDeviceBrowserTest);
 };
 
 // Tests that the device refuses to start if the target window was destroyed

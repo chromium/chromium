@@ -14,10 +14,11 @@ namespace content {
 class NetworkErrorsListingUI : public WebUIController {
  public:
   explicit NetworkErrorsListingUI(WebUI* web_ui);
-  ~NetworkErrorsListingUI() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkErrorsListingUI);
+  NetworkErrorsListingUI(const NetworkErrorsListingUI&) = delete;
+  NetworkErrorsListingUI& operator=(const NetworkErrorsListingUI&) = delete;
+
+  ~NetworkErrorsListingUI() override {}
 };
 
 }  // namespace content

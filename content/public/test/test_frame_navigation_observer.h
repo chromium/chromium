@@ -22,6 +22,10 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   // the navigation (e.g. if the content commits in a new renderer process).
   explicit TestFrameNavigationObserver(const ToRenderFrameHost& adapter);
 
+  TestFrameNavigationObserver(const TestFrameNavigationObserver&) = delete;
+  TestFrameNavigationObserver& operator=(const TestFrameNavigationObserver&) =
+      delete;
+
   ~TestFrameNavigationObserver() override;
 
   ui::PageTransition transition_type() { return transition_type_.value(); }
@@ -65,8 +69,6 @@ class TestFrameNavigationObserver : public WebContentsObserver {
 
   // The RunLoop used to spin the message loop.
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFrameNavigationObserver);
 };
 
 }  // namespace content

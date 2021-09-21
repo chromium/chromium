@@ -52,6 +52,10 @@ struct TestInfo;
 class WebTestResultPrinter {
  public:
   WebTestResultPrinter(std::ostream* output, std::ostream* error);
+
+  WebTestResultPrinter(const WebTestResultPrinter&) = delete;
+  WebTestResultPrinter& operator=(const WebTestResultPrinter&) = delete;
+
   ~WebTestResultPrinter() = default;
 
   void reset() { state_ = DURING_TEST; }
@@ -104,8 +108,6 @@ class WebTestResultPrinter {
 
   bool capture_text_only_ = false;
   bool encode_binary_data_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestResultPrinter);
 };
 
 class WebTestControlHost : public WebContentsObserver,

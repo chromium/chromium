@@ -39,19 +39,26 @@ namespace content {
 class RenderViewHostTestBrowserClient : public TestContentBrowserClient {
  public:
   RenderViewHostTestBrowserClient() {}
+
+  RenderViewHostTestBrowserClient(const RenderViewHostTestBrowserClient&) =
+      delete;
+  RenderViewHostTestBrowserClient& operator=(
+      const RenderViewHostTestBrowserClient&) = delete;
+
   ~RenderViewHostTestBrowserClient() override {}
 
   bool IsHandledURL(const GURL& url) override {
     return url.scheme() == url::kFileScheme;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostTestBrowserClient);
 };
 
 class RenderViewHostTest : public RenderViewHostImplTestHarness {
  public:
   RenderViewHostTest() : old_browser_client_(nullptr) {}
+
+  RenderViewHostTest(const RenderViewHostTest&) = delete;
+  RenderViewHostTest& operator=(const RenderViewHostTest&) = delete;
+
   ~RenderViewHostTest() override {}
 
   void SetUp() override {
@@ -67,8 +74,6 @@ class RenderViewHostTest : public RenderViewHostImplTestHarness {
  private:
   RenderViewHostTestBrowserClient test_browser_client_;
   ContentBrowserClient* old_browser_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostTest);
 };
 
 // Ensure we do not grant bindings to a process shared with unprivileged views.

@@ -73,11 +73,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
    public:
     explicit PendingEntryRef(
         base::WeakPtr<NavigationControllerImpl> controller);
+
+    PendingEntryRef(const PendingEntryRef&) = delete;
+    PendingEntryRef& operator=(const PendingEntryRef&) = delete;
+
     ~PendingEntryRef();
 
    private:
     base::WeakPtr<NavigationControllerImpl> controller_;
-    DISALLOW_COPY_AND_ASSIGN(PendingEntryRef);
   };
 
   NavigationControllerImpl(BrowserContext* browser_context,

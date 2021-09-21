@@ -87,6 +87,10 @@ static void JNI_NavigationControllerImpl_AddNavigationEntryToHistory(
 class MapData : public base::SupportsUserData::Data {
  public:
   MapData() = default;
+
+  MapData(const MapData&) = delete;
+  MapData& operator=(const MapData&) = delete;
+
   ~MapData() override = default;
 
   static MapData* Get(content::NavigationEntry* entry) {
@@ -110,8 +114,6 @@ class MapData : public base::SupportsUserData::Data {
 
  private:
   base::flat_map<std::string, std::u16string> map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MapData);
 };
 
 }  // namespace

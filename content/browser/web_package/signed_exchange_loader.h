@@ -81,6 +81,10 @@ class CONTENT_EXPORT SignedExchangeLoader final
       scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
       const std::string& accept_langs,
       bool keep_entry_for_prefetch_cache);
+
+  SignedExchangeLoader(const SignedExchangeLoader&) = delete;
+  SignedExchangeLoader& operator=(const SignedExchangeLoader&) = delete;
+
   ~SignedExchangeLoader() override;
 
 
@@ -207,8 +211,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
   std::unique_ptr<SignedExchangeValidityPinger> validity_pinger_;
 
   base::WeakPtrFactory<SignedExchangeLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeLoader);
 };
 
 }  // namespace content

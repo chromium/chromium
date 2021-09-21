@@ -35,6 +35,10 @@ class ShellBrowserContext : public BrowserContext {
   // CreateBrowserContextServices() for this BrowserContext.
   ShellBrowserContext(bool off_the_record,
                       bool delay_services_creation = false);
+
+  ShellBrowserContext(const ShellBrowserContext&) = delete;
+  ShellBrowserContext& operator=(const ShellBrowserContext&) = delete;
+
   ~ShellBrowserContext() override;
 
   void set_client_hints_controller_delegate(
@@ -69,10 +73,11 @@ class ShellBrowserContext : public BrowserContext {
   class ShellResourceContext : public ResourceContext {
    public:
     ShellResourceContext();
-    ~ShellResourceContext() override;
 
-  private:
-    DISALLOW_COPY_AND_ASSIGN(ShellResourceContext);
+    ShellResourceContext(const ShellResourceContext&) = delete;
+    ShellResourceContext& operator=(const ShellResourceContext&) = delete;
+
+    ~ShellResourceContext() override;
   };
 
   bool ignore_certificate_errors() const { return ignore_certificate_errors_; }
@@ -94,8 +99,6 @@ class ShellBrowserContext : public BrowserContext {
   base::FilePath path_;
   std::unique_ptr<SimpleFactoryKey> key_;
   ClientHintsControllerDelegate* client_hints_controller_delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellBrowserContext);
 };
 
 }  // namespace content

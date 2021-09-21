@@ -119,6 +119,9 @@ class EmbeddedWorkerInstance::DevToolsProxy {
         agent_route_id_(agent_route_id),
         devtools_id_(devtools_id) {}
 
+  DevToolsProxy(const DevToolsProxy&) = delete;
+  DevToolsProxy& operator=(const DevToolsProxy&) = delete;
+
   ~DevToolsProxy() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     ServiceWorkerDevToolsManager::GetInstance()->WorkerStopped(process_id_,
@@ -155,14 +158,15 @@ class EmbeddedWorkerInstance::DevToolsProxy {
   const int agent_route_id_;
   const base::UnguessableToken devtools_id_;
   bool worker_stop_ignored_notified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsProxy);
 };
 
 // Tracks how long a service worker runs for, for UMA purposes.
 class EmbeddedWorkerInstance::ScopedLifetimeTracker {
  public:
   ScopedLifetimeTracker() : start_ticks_(base::TimeTicks::Now()) {}
+
+  ScopedLifetimeTracker(const ScopedLifetimeTracker&) = delete;
+  ScopedLifetimeTracker& operator=(const ScopedLifetimeTracker&) = delete;
 
   ~ScopedLifetimeTracker() {
     if (!start_ticks_.is_null()) {
@@ -177,8 +181,6 @@ class EmbeddedWorkerInstance::ScopedLifetimeTracker {
 
  private:
   base::TimeTicks start_ticks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLifetimeTracker);
 };
 
 // A handle for a renderer process managed by ServiceWorkerProcessManager.
@@ -198,6 +200,9 @@ class EmbeddedWorkerInstance::WorkerProcessHandle {
     DCHECK_NE(ChildProcessHost::kInvalidUniqueID, process_id_);
   }
 
+  WorkerProcessHandle(const WorkerProcessHandle&) = delete;
+  WorkerProcessHandle& operator=(const WorkerProcessHandle&) = delete;
+
   ~WorkerProcessHandle() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     process_manager_->ReleaseWorkerProcess(embedded_worker_id_);
@@ -210,8 +215,6 @@ class EmbeddedWorkerInstance::WorkerProcessHandle {
 
   const int embedded_worker_id_;
   const int process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerProcessHandle);
 };
 
 // Info that is recorded as UMA on OnStarted().

@@ -33,6 +33,11 @@ class CONTENT_EXPORT WebServiceWorkerProviderImpl
     : public blink::WebServiceWorkerProvider {
  public:
   explicit WebServiceWorkerProviderImpl(ServiceWorkerProviderContext* context);
+
+  WebServiceWorkerProviderImpl(const WebServiceWorkerProviderImpl&) = delete;
+  WebServiceWorkerProviderImpl& operator=(const WebServiceWorkerProviderImpl&) =
+      delete;
+
   ~WebServiceWorkerProviderImpl() override;
 
   void SetClient(blink::WebServiceWorkerProviderClient* client) override;
@@ -99,8 +104,6 @@ class CONTENT_EXPORT WebServiceWorkerProviderImpl
   blink::WebServiceWorkerProviderClient* provider_client_;
 
   base::WeakPtrFactory<WebServiceWorkerProviderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebServiceWorkerProviderImpl);
 };
 
 }  // namespace content

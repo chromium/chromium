@@ -130,6 +130,10 @@ Shell* OpenWindow(WebContentsImpl* web_contents, const GURL& url);
 class FrameTreeVisualizer {
  public:
   FrameTreeVisualizer();
+
+  FrameTreeVisualizer(const FrameTreeVisualizer&) = delete;
+  FrameTreeVisualizer& operator=(const FrameTreeVisualizer&) = delete;
+
   ~FrameTreeVisualizer();
 
   // Formats and returns a diagram for the provided FrameTreeNode.
@@ -142,8 +146,6 @@ class FrameTreeVisualizer {
   // Elements are site instance ids. The index of the SiteInstance in the vector
   // determines the abbreviated name (0->A, 1->B) for that SiteInstance.
   std::vector<SiteInstanceId> seen_site_instance_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTreeVisualizer);
 };
 
 // Uses FrameTreeVisualizer to draw a text representation of the FrameTree that
@@ -218,6 +220,10 @@ class FrameTestNavigationManager : public TestNavigationManager {
 class UrlCommitObserver : WebContentsObserver {
  public:
   explicit UrlCommitObserver(FrameTreeNode* frame_tree_node, const GURL& url);
+
+  UrlCommitObserver(const UrlCommitObserver&) = delete;
+  UrlCommitObserver& operator=(const UrlCommitObserver&) = delete;
+
   ~UrlCommitObserver() override;
 
   void Wait();
@@ -233,8 +239,6 @@ class UrlCommitObserver : WebContentsObserver {
 
   // The RunLoop used to spin the message loop.
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlCommitObserver);
 };
 
 // Waits for a kill of the given RenderProcessHost and returns the
@@ -270,6 +274,10 @@ class ShowPopupWidgetWaiter
  public:
   ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                         RenderFrameHostImpl* frame_host);
+
+  ShowPopupWidgetWaiter(const ShowPopupWidgetWaiter&) = delete;
+  ShowPopupWidgetWaiter& operator=(const ShowPopupWidgetWaiter&) = delete;
+
   ~ShowPopupWidgetWaiter() override;
 
   gfx::Rect last_initial_rect() const { return initial_rect_; }
@@ -304,8 +312,6 @@ class ShowPopupWidgetWaiter
 #if defined(OS_MAC) || defined(OS_ANDROID)
   WebContentsImpl* web_contents_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ShowPopupWidgetWaiter);
 };
 
 // A BrowserMessageFilter that drops a blacklisted message.
@@ -357,6 +363,11 @@ class ObserveMessageFilter : public BrowserMessageFilter {
 class UnresponsiveRendererObserver : public WebContentsObserver {
  public:
   explicit UnresponsiveRendererObserver(WebContents* web_contents);
+
+  UnresponsiveRendererObserver(const UnresponsiveRendererObserver&) = delete;
+  UnresponsiveRendererObserver& operator=(const UnresponsiveRendererObserver&) =
+      delete;
+
   ~UnresponsiveRendererObserver() override;
 
   RenderProcessHost* Wait(base::TimeDelta timeout = base::TimeDelta::Max());
@@ -367,8 +378,6 @@ class UnresponsiveRendererObserver : public WebContentsObserver {
 
   RenderProcessHost* captured_render_process_host_ = nullptr;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnresponsiveRendererObserver);
 };
 
 // Helper class that overrides the JavaScriptDialogManager of a WebContents
@@ -377,6 +386,11 @@ class BeforeUnloadBlockingDelegate : public JavaScriptDialogManager,
                                      public WebContentsDelegate {
  public:
   explicit BeforeUnloadBlockingDelegate(WebContentsImpl* web_contents);
+
+  BeforeUnloadBlockingDelegate(const BeforeUnloadBlockingDelegate&) = delete;
+  BeforeUnloadBlockingDelegate& operator=(const BeforeUnloadBlockingDelegate&) =
+      delete;
+
   ~BeforeUnloadBlockingDelegate() override;
   void Wait();
 
@@ -412,8 +426,6 @@ class BeforeUnloadBlockingDelegate : public JavaScriptDialogManager,
   DialogClosedCallback callback_;
 
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-
-  DISALLOW_COPY_AND_ASSIGN(BeforeUnloadBlockingDelegate);
 };
 
 // A helper class to get DevTools inspector log messages (e.g. network errors).

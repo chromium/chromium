@@ -313,12 +313,12 @@ class ScopedSetSkCanvas {
     SynchronousCompositorSetSkCanvas(canvas);
   }
 
+  ScopedSetSkCanvas(const ScopedSetSkCanvas&) = delete;
+  ScopedSetSkCanvas& operator=(const ScopedSetSkCanvas&) = delete;
+
   ~ScopedSetSkCanvas() {
     SynchronousCompositorSetSkCanvas(nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetSkCanvas);
 };
 
 }
@@ -349,12 +349,14 @@ bool SynchronousCompositorHost::DemandDrawSwInProc(SkCanvas* canvas) {
 class SynchronousCompositorHost::ScopedSendZeroMemory {
  public:
   ScopedSendZeroMemory(SynchronousCompositorHost* host) : host_(host) {}
+
+  ScopedSendZeroMemory(const ScopedSendZeroMemory&) = delete;
+  ScopedSendZeroMemory& operator=(const ScopedSendZeroMemory&) = delete;
+
   ~ScopedSendZeroMemory() { host_->SendZeroMemory(); }
 
  private:
   SynchronousCompositorHost* const host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSendZeroMemory);
 };
 
 struct SynchronousCompositorHost::SharedMemoryWithSize {

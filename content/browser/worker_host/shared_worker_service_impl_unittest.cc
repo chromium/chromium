@@ -1208,6 +1208,12 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest3) {
 class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
  public:
   TestSharedWorkerServiceObserver() = default;
+
+  TestSharedWorkerServiceObserver(const TestSharedWorkerServiceObserver&) =
+      delete;
+  TestSharedWorkerServiceObserver& operator=(
+      const TestSharedWorkerServiceObserver&) = delete;
+
   ~TestSharedWorkerServiceObserver() override = default;
 
   // SharedWorkerService::Observer:
@@ -1255,8 +1261,6 @@ class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
  private:
   base::flat_map<blink::SharedWorkerToken, std::set<GlobalRenderFrameHostId>>
       shared_workers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSharedWorkerServiceObserver);
 };
 
 TEST_F(SharedWorkerServiceImplTest, Observer) {

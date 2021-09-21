@@ -37,6 +37,11 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   using Overlay = viz::mojom::FrameSinkVideoCaptureOverlay;
 
   MouseCursorOverlayController();
+
+  MouseCursorOverlayController(const MouseCursorOverlayController&) = delete;
+  MouseCursorOverlayController& operator=(const MouseCursorOverlayController&) =
+      delete;
+
   ~MouseCursorOverlayController();
 
   // Sets a new target view to monitor for mouse cursor updates.
@@ -170,8 +175,6 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // stop showing.
   static constexpr base::TimeDelta kIdleTimeout =
       base::TimeDelta::FromSeconds(2);
-
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorOverlayController);
 };
 
 }  // namespace content

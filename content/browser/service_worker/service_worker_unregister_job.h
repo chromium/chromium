@@ -39,6 +39,11 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
                              const GURL& scope,
                              const blink::StorageKey& key,
                              bool is_immediate);
+
+  ServiceWorkerUnregisterJob(const ServiceWorkerUnregisterJob&) = delete;
+  ServiceWorkerUnregisterJob& operator=(const ServiceWorkerUnregisterJob&) =
+      delete;
+
   ~ServiceWorkerUnregisterJob() override;
 
   // Registers a callback to be called when the job completes (whether
@@ -69,8 +74,6 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   std::vector<UnregistrationCallback> callbacks_;
   bool is_promise_resolved_ = false;
   base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerUnregisterJob);
 };
 }  // namespace content
 

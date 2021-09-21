@@ -183,6 +183,9 @@ class CacheStorageDispatcherHost::CacheImpl
     DCHECK(host_);
   }
 
+  CacheImpl(const CacheImpl&) = delete;
+  CacheImpl& operator=(const CacheImpl&) = delete;
+
   ~CacheImpl() override { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   // blink::mojom::CacheStorageCache implementation:
@@ -614,7 +617,6 @@ class CacheStorageDispatcherHost::CacheImpl
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CacheImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CacheImpl);
 };
 
 // Implements the mojom interface CacheStorage. It's owned by the
@@ -650,6 +652,9 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
       }
     }
   }
+
+  CacheStorageImpl(const CacheStorageImpl&) = delete;
+  CacheStorageImpl& operator=(const CacheStorageImpl&) = delete;
 
   ~CacheStorageImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -958,7 +963,6 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CacheStorageImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageImpl);
 };
 
 CacheStorageDispatcherHost::CacheStorageDispatcherHost(

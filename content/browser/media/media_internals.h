@@ -54,6 +54,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
 
   static MediaInternals* GetInstance();
 
+  MediaInternals(const MediaInternals&) = delete;
+  MediaInternals& operator=(const MediaInternals&) = delete;
+
   ~MediaInternals() override;
 
   // NotificationObserver implementation.
@@ -182,8 +185,6 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   bool can_update_;
   base::DictionaryValue audio_streams_cached_data_;
   int owner_ids_[media::AudioLogFactory::AUDIO_COMPONENT_MAX];
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInternals);
 };
 
 }  // namespace content

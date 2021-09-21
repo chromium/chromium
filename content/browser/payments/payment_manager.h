@@ -27,6 +27,9 @@ class CONTENT_EXPORT PaymentManager : public payments::mojom::PaymentManager {
       const url::Origin& origin,
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver);
 
+  PaymentManager(const PaymentManager&) = delete;
+  PaymentManager& operator=(const PaymentManager&) = delete;
+
   ~PaymentManager() override;
 
  private:
@@ -69,7 +72,6 @@ class CONTENT_EXPORT PaymentManager : public payments::mojom::PaymentManager {
   GURL context_url_;
   GURL scope_;
   base::WeakPtrFactory<PaymentManager> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PaymentManager);
 };
 
 }  // namespace content

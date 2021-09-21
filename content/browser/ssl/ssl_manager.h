@@ -56,6 +56,10 @@ class CONTENT_EXPORT SSLManager {
 
   // Construct an SSLManager for the specified tab.
   explicit SSLManager(NavigationControllerImpl* controller);
+
+  SSLManager(const SSLManager&) = delete;
+  SSLManager& operator=(const SSLManager&) = delete;
+
   virtual ~SSLManager();
 
   // The navigation controller associated with this SSLManager.  The
@@ -113,8 +117,6 @@ class CONTENT_EXPORT SSLManager {
 
   // Delegate that manages SSL state specific to each host.
   SSLHostStateDelegate* ssl_host_state_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLManager);
 };
 
 }  // namespace content

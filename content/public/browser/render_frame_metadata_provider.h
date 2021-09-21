@@ -50,15 +50,17 @@ class CONTENT_EXPORT RenderFrameMetadataProvider {
   };
 
   RenderFrameMetadataProvider() = default;
+
+  RenderFrameMetadataProvider(const RenderFrameMetadataProvider&) = delete;
+  RenderFrameMetadataProvider& operator=(const RenderFrameMetadataProvider&) =
+      delete;
+
   virtual ~RenderFrameMetadataProvider() = default;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
   virtual const cc::RenderFrameMetadata& LastRenderFrameMetadata() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataProvider);
 };
 
 }  // namespace content

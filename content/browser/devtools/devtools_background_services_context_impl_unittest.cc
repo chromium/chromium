@@ -96,6 +96,11 @@ class DevToolsBackgroundServicesContextTest
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         embedded_worker_test_helper_(base::FilePath() /* in memory */) {}
 
+  DevToolsBackgroundServicesContextTest(
+      const DevToolsBackgroundServicesContextTest&) = delete;
+  DevToolsBackgroundServicesContextTest& operator=(
+      const DevToolsBackgroundServicesContextTest&) = delete;
+
   ~DevToolsBackgroundServicesContextTest() override = default;
 
   void SetUp() override {
@@ -261,8 +266,6 @@ class DevToolsBackgroundServicesContextTest
   scoped_refptr<DevToolsBackgroundServicesContextImpl> context_;
   scoped_refptr<ServiceWorkerRegistration> service_worker_registration_;
   std::unique_ptr<ContentBrowserClient> browser_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsBackgroundServicesContextTest);
 };
 
 TEST_F(DevToolsBackgroundServicesContextTest,

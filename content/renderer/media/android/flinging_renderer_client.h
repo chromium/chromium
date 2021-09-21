@@ -39,6 +39,9 @@ class CONTENT_EXPORT FlingingRendererClient
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
       media::RemotePlayStateChangeCB remote_play_state_change_cb);
 
+  FlingingRendererClient(const FlingingRendererClient&) = delete;
+  FlingingRendererClient& operator=(const FlingingRendererClient&) = delete;
+
   ~FlingingRendererClient() override;
 
   // media::MojoRendererWrapper overrides.
@@ -62,8 +65,6 @@ class CONTENT_EXPORT FlingingRendererClient
 
   mojo::Receiver<FlingingRendererClientExtension> client_extension_receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(FlingingRendererClient);
 };
 
 }  // namespace content

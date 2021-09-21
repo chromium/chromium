@@ -26,6 +26,10 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
  public:
   SensorProviderProxyImpl(PermissionControllerImpl* permission_controller,
                           RenderFrameHost* render_frame_host);
+
+  SensorProviderProxyImpl(const SensorProviderProxyImpl&) = delete;
+  SensorProviderProxyImpl& operator=(const SensorProviderProxyImpl&) = delete;
+
   ~SensorProviderProxyImpl() override;
 
   void Bind(mojo::PendingReceiver<device::mojom::SensorProvider> receiver);
@@ -54,8 +58,6 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
   mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
 
   base::WeakPtrFactory<SensorProviderProxyImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SensorProviderProxyImpl);
 };
 
 }  // namespace content

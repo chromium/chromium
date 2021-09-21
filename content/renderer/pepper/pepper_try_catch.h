@@ -57,6 +57,10 @@ class PepperTryCatchV8 : public PepperTryCatch {
   PepperTryCatchV8(PepperPluginInstanceImpl* instance,
                    V8VarConverter* var_converter,
                    v8::Isolate* isolate);
+
+  PepperTryCatchV8(const PepperTryCatchV8&) = delete;
+  PepperTryCatchV8& operator=(const PepperTryCatchV8&) = delete;
+
   ~PepperTryCatchV8() override;
 
   bool ThrowException();
@@ -70,8 +74,6 @@ class PepperTryCatchV8 : public PepperTryCatch {
 
  private:
   PP_Var exception_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperTryCatchV8);
 };
 
 // Catches v8 exceptions and emits a var exception.
@@ -83,6 +85,10 @@ class PepperTryCatchVar : public PepperTryCatch {
   PepperTryCatchVar(PepperPluginInstanceImpl* instance,
                     V8VarConverter* var_converter,
                     PP_Var* exception);
+
+  PepperTryCatchVar(const PepperTryCatchVar&) = delete;
+  PepperTryCatchVar& operator=(const PepperTryCatchVar&) = delete;
+
   ~PepperTryCatchVar() override;
 
   // PepperTryCatch
@@ -101,8 +107,6 @@ class PepperTryCatchVar : public PepperTryCatch {
 
   PP_Var* exception_;
   bool exception_is_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperTryCatchVar);
 };
 
 }  // namespace content

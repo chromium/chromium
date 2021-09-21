@@ -30,6 +30,10 @@ class CONTENT_EXPORT PepperWebSocketHost
   explicit PepperWebSocketHost(RendererPpapiHost* host,
                                PP_Instance instance,
                                PP_Resource resource);
+
+  PepperWebSocketHost(const PepperWebSocketHost&) = delete;
+  PepperWebSocketHost& operator=(const PepperWebSocketHost&) = delete;
+
   ~PepperWebSocketHost() override;
 
   int32_t OnResourceMessageReceived(
@@ -89,8 +93,6 @@ class CONTENT_EXPORT PepperWebSocketHost
   // Keeps the WebKit side WebSocket object. This is used for calling WebKit
   // side functions via WebKit API.
   std::unique_ptr<blink::WebPepperSocket> websocket_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperWebSocketHost);
 };
 
 }  // namespace content

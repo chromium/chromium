@@ -407,6 +407,9 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
         browser_context_(browser_context),
         resource_context_(browser_context->GetResourceContext()) {}
 
+  SecurityState(const SecurityState&) = delete;
+  SecurityState& operator=(const SecurityState&) = delete;
+
   ~SecurityState() {
     storage::IsolatedContext* isolated_context =
         storage::IsolatedContext::GetInstance();
@@ -737,8 +740,6 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
 
   BrowserContext* browser_context_;
   ResourceContext* resource_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityState);
 };
 
 // IsolatedOriginEntry implementation.

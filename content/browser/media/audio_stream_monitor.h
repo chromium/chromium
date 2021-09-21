@@ -38,6 +38,10 @@ class WebContents;
 class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
  public:
   explicit AudioStreamMonitor(WebContents* contents);
+
+  AudioStreamMonitor(const AudioStreamMonitor&) = delete;
+  AudioStreamMonitor& operator=(const AudioStreamMonitor&) = delete;
+
   ~AudioStreamMonitor() override;
 
   // Returns true if audio has recently been audible from the tab.  This is
@@ -164,8 +168,6 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
   // Started only when an indicator is toggled on, to turn it off again in the
   // future.
   base::OneShotTimer off_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioStreamMonitor);
 };
 
 }  // namespace content

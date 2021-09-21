@@ -29,6 +29,10 @@ class MockTapSuppressionController : public TapSuppressionController {
   MockTapSuppressionController(const TapSuppressionController::Config& config)
       : TapSuppressionController(config), last_actions_(NONE), time_() {}
 
+  MockTapSuppressionController(const MockTapSuppressionController&) = delete;
+  MockTapSuppressionController& operator=(const MockTapSuppressionController&) =
+      delete;
+
   ~MockTapSuppressionController() override {}
 
   void NotifyGestureFlingCancelStoppedFling() {
@@ -75,8 +79,6 @@ class MockTapSuppressionController : public TapSuppressionController {
   int last_actions_;
 
   base::TimeTicks time_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTapSuppressionController);
 };
 
 class TapSuppressionControllerTest : public testing::Test {

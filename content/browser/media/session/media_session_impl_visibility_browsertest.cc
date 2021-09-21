@@ -69,6 +69,11 @@ class MediaSessionImplVisibilityBrowserTest
                                           BackgroundResuming::ENABLED);
   }
 
+  MediaSessionImplVisibilityBrowserTest(
+      const MediaSessionImplVisibilityBrowserTest&) = delete;
+  MediaSessionImplVisibilityBrowserTest& operator=(
+      const MediaSessionImplVisibilityBrowserTest&) = delete;
+
   ~MediaSessionImplVisibilityBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -170,8 +175,6 @@ class MediaSessionImplVisibilityBrowserTest
 
   WebContents* web_contents_;
   MediaSessionImpl* media_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionImplVisibilityBrowserTest);
 };
 
 namespace {

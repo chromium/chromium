@@ -29,6 +29,10 @@ namespace responsiveness {
 class CONTENT_EXPORT Calculator {
  public:
   Calculator();
+
+  Calculator(const Calculator&) = delete;
+  Calculator& operator=(const Calculator&) = delete;
+
   virtual ~Calculator();
 
   // Must be called from the UI thread.
@@ -207,8 +211,6 @@ class CONTENT_EXPORT Calculator {
   const std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Calculator);
 };
 
 }  // namespace responsiveness

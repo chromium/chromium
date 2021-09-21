@@ -24,6 +24,10 @@ class WebContents;
 class PepperPlaybackObserver {
  public:
   explicit PepperPlaybackObserver(WebContents* contents);
+
+  PepperPlaybackObserver(const PepperPlaybackObserver&) = delete;
+  PepperPlaybackObserver& operator=(const PepperPlaybackObserver&) = delete;
+
   virtual ~PepperPlaybackObserver();
 
   void RenderFrameDeleted(RenderFrameHost* render_frame_host);
@@ -57,8 +61,6 @@ class PepperPlaybackObserver {
 
   // Weak reference to WebContents.
   WebContents* contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlaybackObserver);
 };
 
 }  // namespace content

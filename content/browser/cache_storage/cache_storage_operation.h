@@ -28,6 +28,9 @@ class CONTENT_EXPORT CacheStorageOperation {
                         CacheStorageSchedulerPriority priority,
                         scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  CacheStorageOperation(const CacheStorageOperation&) = delete;
+  CacheStorageOperation& operator=(const CacheStorageOperation&) = delete;
+
   ~CacheStorageOperation();
 
   // Run the closure passed to the constructor.
@@ -59,8 +62,6 @@ class CONTENT_EXPORT CacheStorageOperation {
   const CacheStorageSchedulerPriority priority_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<CacheStorageOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageOperation);
 };
 
 }  // namespace content

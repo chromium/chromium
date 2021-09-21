@@ -60,6 +60,9 @@ class SerialTest : public RenderViewHostImplTestHarness {
         .WillByDefault(testing::SaveArg<1>(&observer_));
   }
 
+  SerialTest(const SerialTest&) = delete;
+  SerialTest& operator=(const SerialTest&) = delete;
+
   ~SerialTest() override = default;
 
   void SetUp() override {
@@ -84,8 +87,6 @@ class SerialTest : public RenderViewHostImplTestHarness {
   ContentBrowserClient* original_client_ = nullptr;
   device::FakeSerialPortManager port_manager_;
   SerialDelegate::Observer* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialTest);
 };
 
 }  // namespace

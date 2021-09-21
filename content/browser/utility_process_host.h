@@ -69,6 +69,10 @@ class CONTENT_EXPORT UtilityProcessHost
 
   UtilityProcessHost();
   explicit UtilityProcessHost(std::unique_ptr<Client> client);
+
+  UtilityProcessHost(const UtilityProcessHost&) = delete;
+  UtilityProcessHost& operator=(const UtilityProcessHost&) = delete;
+
   ~UtilityProcessHost() override;
 
   base::WeakPtr<UtilityProcessHost> AsWeakPtr();
@@ -165,8 +169,6 @@ class CONTENT_EXPORT UtilityProcessHost
 
   // Used to vend weak pointers, and should always be declared last.
   base::WeakPtrFactory<UtilityProcessHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UtilityProcessHost);
 };
 
 }  // namespace content

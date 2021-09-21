@@ -22,6 +22,10 @@ namespace content {
 class CONTENT_EXPORT SyntheticPinchGesture : public SyntheticGesture {
  public:
   explicit SyntheticPinchGesture(const SyntheticPinchGestureParams& params);
+
+  SyntheticPinchGesture(const SyntheticPinchGesture&) = delete;
+  SyntheticPinchGesture& operator=(const SyntheticPinchGesture&) = delete;
+
   ~SyntheticPinchGesture() override;
 
   SyntheticGesture::Result ForwardInputEvents(
@@ -33,8 +37,6 @@ class CONTENT_EXPORT SyntheticPinchGesture : public SyntheticGesture {
  private:
   SyntheticPinchGestureParams params_;
   std::unique_ptr<SyntheticGesture> lazy_gesture_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticPinchGesture);
 };
 
 }  // namespace content

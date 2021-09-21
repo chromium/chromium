@@ -40,6 +40,9 @@ class TestDevToolsClientHost : public DevToolsAgentHostClient {
  public:
   TestDevToolsClientHost() : closed_(false) {}
 
+  TestDevToolsClientHost(const TestDevToolsClientHost&) = delete;
+  TestDevToolsClientHost& operator=(const TestDevToolsClientHost&) = delete;
+
   ~TestDevToolsClientHost() override { EXPECT_TRUE(closed_); }
 
   void Close() {
@@ -70,8 +73,6 @@ class TestDevToolsClientHost : public DevToolsAgentHostClient {
  private:
   bool closed_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDevToolsClientHost);
 };
 
 int TestDevToolsClientHost::close_counter = 0;

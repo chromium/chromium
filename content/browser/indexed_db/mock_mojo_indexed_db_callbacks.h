@@ -24,6 +24,11 @@ namespace content {
 class MockMojoIndexedDBCallbacks : public blink::mojom::IDBCallbacks {
  public:
   explicit MockMojoIndexedDBCallbacks();
+
+  MockMojoIndexedDBCallbacks(const MockMojoIndexedDBCallbacks&) = delete;
+  MockMojoIndexedDBCallbacks& operator=(const MockMojoIndexedDBCallbacks&) =
+      delete;
+
   ~MockMojoIndexedDBCallbacks() override;
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
@@ -75,8 +80,6 @@ class MockMojoIndexedDBCallbacks : public blink::mojom::IDBCallbacks {
 
  private:
   mojo::AssociatedReceiver<blink::mojom::IDBCallbacks> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoIndexedDBCallbacks);
 };
 
 }  // namespace content

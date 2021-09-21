@@ -25,6 +25,10 @@ class SandboxIPCHandler : public base::DelegateSimpleThread::Delegate {
   // the other end of.
   // browser_socket: the browser's end of the sandbox IPC socketpair.
   SandboxIPCHandler(int lifeline_fd, int browser_socket);
+
+  SandboxIPCHandler(const SandboxIPCHandler&) = delete;
+  SandboxIPCHandler& operator=(const SandboxIPCHandler&) = delete;
+
   ~SandboxIPCHandler() override;
 
   void Run() override;
@@ -42,8 +46,6 @@ class SandboxIPCHandler : public base::DelegateSimpleThread::Delegate {
 
   const int lifeline_fd_;
   const int browser_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxIPCHandler);
 };
 
 }  // namespace content

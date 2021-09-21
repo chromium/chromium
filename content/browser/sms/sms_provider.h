@@ -47,6 +47,10 @@ class CONTENT_EXPORT SmsProvider {
   };
 
   SmsProvider();
+
+  SmsProvider(const SmsProvider&) = delete;
+  SmsProvider& operator=(const SmsProvider&) = delete;
+
   virtual ~SmsProvider();
 
   // Listen to the next incoming SMS and notify observers (exactly once) when
@@ -75,7 +79,6 @@ class CONTENT_EXPORT SmsProvider {
 
  private:
   base::ObserverList<Observer> observers_;
-  DISALLOW_COPY_AND_ASSIGN(SmsProvider);
 };
 
 }  // namespace content

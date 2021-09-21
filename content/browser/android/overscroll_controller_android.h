@@ -48,6 +48,10 @@ class CONTENT_EXPORT OverscrollControllerAndroid
       std::unique_ptr<ui::OverscrollGlow> glow_effect,
       std::unique_ptr<ui::OverscrollRefresh> refresh_effect);
 
+  OverscrollControllerAndroid(const OverscrollControllerAndroid&) = delete;
+  OverscrollControllerAndroid& operator=(const OverscrollControllerAndroid&) =
+      delete;
+
   ~OverscrollControllerAndroid() override;
 
   // Returns true if |event| is consumed by an overscroll effect, in which
@@ -99,8 +103,6 @@ class CONTENT_EXPORT OverscrollControllerAndroid
   // TODO(jdduke): Factor out a common API from the two overscroll effects.
   std::unique_ptr<ui::OverscrollGlow> glow_effect_;
   std::unique_ptr<ui::OverscrollRefresh> refresh_effect_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerAndroid);
 };
 
 }  // namespace content

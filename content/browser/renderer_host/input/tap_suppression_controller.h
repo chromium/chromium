@@ -30,6 +30,10 @@ class CONTENT_EXPORT TapSuppressionController {
   };
 
   TapSuppressionController(const Config& config);
+
+  TapSuppressionController(const TapSuppressionController&) = delete;
+  TapSuppressionController& operator=(const TapSuppressionController&) = delete;
+
   virtual ~TapSuppressionController();
 
   // Should be called whenever a GestureFlingCancel actually stopped a fling and
@@ -69,8 +73,6 @@ class CONTENT_EXPORT TapSuppressionController {
   // Replace the use of base::TimeTicks with an accurate event time when they
   // become available post http://crbug.com/119556.
   base::TimeTicks fling_cancel_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(TapSuppressionController);
 };
 
 }  // namespace content

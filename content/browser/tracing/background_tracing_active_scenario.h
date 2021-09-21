@@ -28,6 +28,12 @@ class BackgroundTracingActiveScenario {
       std::unique_ptr<BackgroundTracingConfigImpl> config,
       BackgroundTracingManager::ReceiveCallback receive_callback,
       base::OnceClosure on_aborted_callback);
+
+  BackgroundTracingActiveScenario(const BackgroundTracingActiveScenario&) =
+      delete;
+  BackgroundTracingActiveScenario& operator=(
+      const BackgroundTracingActiveScenario&) = delete;
+
   virtual ~BackgroundTracingActiveScenario();
 
   void StartTracingIfConfigNeedsIt();
@@ -92,7 +98,6 @@ class BackgroundTracingActiveScenario {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<BackgroundTracingActiveScenario> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingActiveScenario);
 };
 
 }  // namespace content

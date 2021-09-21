@@ -21,6 +21,10 @@ namespace content {
 class AudioServiceTestHelper {
  public:
   AudioServiceTestHelper();
+
+  AudioServiceTestHelper(const AudioServiceTestHelper&) = delete;
+  AudioServiceTestHelper& operator=(const AudioServiceTestHelper&) = delete;
+
   ~AudioServiceTestHelper();
 
  private:
@@ -30,8 +34,6 @@ class AudioServiceTestHelper {
       mojo::PendingReceiver<audio::mojom::TestingApi> receiver);
 
   std::unique_ptr<TestingApi> testing_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioServiceTestHelper);
 };
 
 }  // namespace content

@@ -49,6 +49,10 @@ struct CONTENT_EXPORT ContentIndexEntry {
 class CONTENT_EXPORT ContentIndexProvider {
  public:
   ContentIndexProvider();
+
+  ContentIndexProvider(const ContentIndexProvider&) = delete;
+  ContentIndexProvider& operator=(const ContentIndexProvider&) = delete;
+
   virtual ~ContentIndexProvider();
 
   // Returns the number of icons needed and their ideal sizes (in pixels).
@@ -62,8 +66,6 @@ class CONTENT_EXPORT ContentIndexProvider {
   virtual void OnContentDeleted(int64_t service_worker_registration_id,
                                 const url::Origin& origin,
                                 const std::string& description_id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexProvider);
 };
 
 }  // namespace content

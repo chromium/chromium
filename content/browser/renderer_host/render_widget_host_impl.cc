@@ -198,6 +198,11 @@ base::LazyInstance<RoutingIDWidgetMap>::DestructorAtExit
 class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator {
  public:
   RenderWidgetHostIteratorImpl() = default;
+
+  RenderWidgetHostIteratorImpl(const RenderWidgetHostIteratorImpl&) = delete;
+  RenderWidgetHostIteratorImpl& operator=(const RenderWidgetHostIteratorImpl&) =
+      delete;
+
   ~RenderWidgetHostIteratorImpl() override = default;
 
   void Add(RenderWidgetHost* host) {
@@ -218,8 +223,6 @@ class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator {
  private:
   std::vector<RenderWidgetHostID> hosts_;
   size_t current_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostIteratorImpl);
 };
 
 std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {

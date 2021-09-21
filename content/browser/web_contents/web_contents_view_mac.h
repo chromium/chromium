@@ -59,6 +59,10 @@ class WebContentsViewMac : public WebContentsView,
   // because that's what was easiest when they were split.
   WebContentsViewMac(WebContentsImpl* web_contents,
                      WebContentsViewDelegate* delegate);
+
+  WebContentsViewMac(const WebContentsViewMac&) = delete;
+  WebContentsViewMac& operator=(const WebContentsViewMac&) = delete;
+
   ~WebContentsViewMac() override;
 
   // WebContentsView implementation --------------------------------------------
@@ -223,8 +227,6 @@ class WebContentsViewMac : public WebContentsView,
 
   // Used by CloseTabAfterEventTrackingIfNeeded.
   base::WeakPtrFactory<WebContentsViewMac> deferred_close_weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewMac);
 };
 
 }  // namespace content

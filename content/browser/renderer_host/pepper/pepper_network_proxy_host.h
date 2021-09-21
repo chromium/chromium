@@ -44,6 +44,9 @@ class CONTENT_EXPORT PepperNetworkProxyHost : public ppapi::host::ResourceHost {
                          PP_Instance instance,
                          PP_Resource resource);
 
+  PepperNetworkProxyHost(const PepperNetworkProxyHost&) = delete;
+  PepperNetworkProxyHost& operator=(const PepperNetworkProxyHost&) = delete;
+
   ~PepperNetworkProxyHost() override;
 
  private:
@@ -104,8 +107,6 @@ class CONTENT_EXPORT PepperNetworkProxyHost : public ppapi::host::ResourceHost {
       pending_requests_;
 
   base::WeakPtrFactory<PepperNetworkProxyHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperNetworkProxyHost);
 };
 
 }  // namespace content

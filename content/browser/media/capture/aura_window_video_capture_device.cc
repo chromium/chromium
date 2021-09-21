@@ -55,6 +55,9 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
         base::BindOnce(&WindowTracker::ResolveTarget, AsWeakPtr(), source_id));
   }
 
+  WindowTracker(const WindowTracker&) = delete;
+  WindowTracker& operator=(const WindowTracker&) = delete;
+
   ~WindowTracker() final {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -182,8 +185,6 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
   aura::ScopedWindowCaptureRequest capture_request_;
   FrameSinkVideoCaptureDevice::VideoCaptureTarget target_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTracker);
 };
 
 AuraWindowVideoCaptureDevice::AuraWindowVideoCaptureDevice(

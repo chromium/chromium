@@ -79,6 +79,12 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       public viz::HitTestRegionObserver {
  public:
   RenderWidgetHostInputEventRouter();
+
+  RenderWidgetHostInputEventRouter(const RenderWidgetHostInputEventRouter&) =
+      delete;
+  RenderWidgetHostInputEventRouter& operator=(
+      const RenderWidgetHostInputEventRouter&) = delete;
+
   ~RenderWidgetHostInputEventRouter() final;
 
   void OnRenderWidgetHostViewBaseDestroyed(
@@ -459,8 +465,6 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
 
   base::WeakPtrFactory<RenderWidgetHostInputEventRouter> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostInputEventRouter);
   friend class RenderWidgetHostInputEventRouterTest;
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
                            CacheCoordinateTransformUponMouseDown);

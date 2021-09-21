@@ -47,6 +47,10 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       RenderProcessHost& render_process_host,
       int render_frame_id,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  PushMessagingManager(const PushMessagingManager&) = delete;
+  PushMessagingManager& operator=(const PushMessagingManager&) = delete;
+
   ~PushMessagingManager() override;
 
   void AddPushMessagingReceiver(
@@ -174,8 +178,6 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
   mojo::ReceiverSet<blink::mojom::PushMessaging> receivers_;
 
   base::WeakPtrFactory<PushMessagingManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingManager);
 };
 
 }  // namespace content

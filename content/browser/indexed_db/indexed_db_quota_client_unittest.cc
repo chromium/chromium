@@ -73,6 +73,9 @@ class IndexedDBQuotaClientTest : public testing::Test {
     ASSERT_TRUE(base::CreateDirectory(idb_context_->data_path()));
   }
 
+  IndexedDBQuotaClientTest(const IndexedDBQuotaClientTest&) = delete;
+  IndexedDBQuotaClientTest& operator=(const IndexedDBQuotaClientTest&) = delete;
+
   ~IndexedDBQuotaClientTest() override {
     base::RunLoop().RunUntilIdle();
     idb_context_ = nullptr;
@@ -182,8 +185,6 @@ class IndexedDBQuotaClientTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   base::WeakPtrFactory<IndexedDBQuotaClientTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBQuotaClientTest);
 };
 
 TEST_F(IndexedDBQuotaClientTest, GetStorageKeyUsage) {

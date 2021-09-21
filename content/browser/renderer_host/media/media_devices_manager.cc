@@ -324,6 +324,11 @@ class MediaDevicesManager::AudioServiceDeviceListener
     : public audio::mojom::DeviceListener {
  public:
   AudioServiceDeviceListener() { ConnectToService(); }
+
+  AudioServiceDeviceListener(const AudioServiceDeviceListener&) = delete;
+  AudioServiceDeviceListener& operator=(const AudioServiceDeviceListener&) =
+      delete;
+
   ~AudioServiceDeviceListener() override = default;
 
   void DevicesChanged() override {
@@ -367,8 +372,6 @@ class MediaDevicesManager::AudioServiceDeviceListener
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AudioServiceDeviceListener> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioServiceDeviceListener);
 };
 
 MediaDevicesManager::MediaDevicesManager(

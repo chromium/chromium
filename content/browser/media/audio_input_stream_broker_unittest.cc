@@ -47,6 +47,12 @@ class MockRendererAudioInputStreamFactoryClient
     : public blink::mojom::RendererAudioInputStreamFactoryClient {
  public:
   MockRendererAudioInputStreamFactoryClient() = default;
+
+  MockRendererAudioInputStreamFactoryClient(
+      const MockRendererAudioInputStreamFactoryClient&) = delete;
+  MockRendererAudioInputStreamFactoryClient& operator=(
+      const MockRendererAudioInputStreamFactoryClient&) = delete;
+
   ~MockRendererAudioInputStreamFactoryClient() override = default;
 
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
@@ -81,12 +87,15 @@ class MockRendererAudioInputStreamFactoryClient
       this};
   mojo::Remote<media::mojom::AudioInputStream> input_stream_;
   mojo::PendingReceiver<media::mojom::AudioInputStreamClient> client_receiver_;
-  DISALLOW_COPY_AND_ASSIGN(MockRendererAudioInputStreamFactoryClient);
 };
 
 class MockStreamFactory final : public audio::FakeStreamFactory {
  public:
   MockStreamFactory() = default;
+
+  MockStreamFactory(const MockStreamFactory&) = delete;
+  MockStreamFactory& operator=(const MockStreamFactory&) = delete;
+
   ~MockStreamFactory() override = default;
 
   // State of an expected stream creation. |device_id| and |params| are set
@@ -143,7 +152,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
   }
 
   StreamRequestData* stream_request_data_;
-  DISALLOW_COPY_AND_ASSIGN(MockStreamFactory);
 };
 
 struct TestEnvironment {

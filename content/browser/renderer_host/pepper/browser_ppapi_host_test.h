@@ -20,6 +20,10 @@ class BrowserPpapiHostImpl;
 class BrowserPpapiHostTest {
  public:
   BrowserPpapiHostTest();
+
+  BrowserPpapiHostTest(const BrowserPpapiHostTest&) = delete;
+  BrowserPpapiHostTest& operator=(const BrowserPpapiHostTest&) = delete;
+
   virtual ~BrowserPpapiHostTest();
 
   ppapi::proxy::ResourceMessageTestSink& sink() { return sink_; }
@@ -29,8 +33,6 @@ class BrowserPpapiHostTest {
   ppapi::proxy::ResourceMessageTestSink sink_;
 
   std::unique_ptr<BrowserPpapiHostImpl> ppapi_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPpapiHostTest);
 };
 
 }  // namespace content

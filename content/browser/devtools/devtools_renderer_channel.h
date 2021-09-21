@@ -38,6 +38,10 @@ class CONTENT_EXPORT DevToolsRendererChannel
     : public blink::mojom::DevToolsAgentHost {
  public:
   explicit DevToolsRendererChannel(DevToolsAgentHostImpl* owner);
+
+  DevToolsRendererChannel(const DevToolsRendererChannel&) = delete;
+  DevToolsRendererChannel& operator=(const DevToolsRendererChannel&) = delete;
+
   ~DevToolsRendererChannel() override;
 
   // Dedicated workers use non-associated version,
@@ -96,8 +100,6 @@ class CONTENT_EXPORT DevToolsRendererChannel
   bool wait_for_debugger_ = false;
   base::OnceClosure set_report_completion_callback_;
   base::WeakPtrFactory<DevToolsRendererChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsRendererChannel);
 };
 
 }  // namespace content

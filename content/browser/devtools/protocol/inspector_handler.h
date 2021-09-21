@@ -20,6 +20,10 @@ class InspectorHandler : public DevToolsDomainHandler,
                          public Inspector::Backend {
  public:
   InspectorHandler();
+
+  InspectorHandler(const InspectorHandler&) = delete;
+  InspectorHandler& operator=(const InspectorHandler&) = delete;
+
   ~InspectorHandler() override;
 
   static std::vector<InspectorHandler*> ForAgentHost(
@@ -40,8 +44,6 @@ class InspectorHandler : public DevToolsDomainHandler,
   std::unique_ptr<Inspector::Frontend> frontend_;
   RenderFrameHostImpl* host_ = nullptr;
   bool target_crashed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorHandler);
 };
 
 }  // namespace protocol

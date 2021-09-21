@@ -90,6 +90,11 @@ class GpuDataManagerImplPrivateTest : public testing::Test {
   class ScopedGpuDataManagerImpl {
    public:
     ScopedGpuDataManagerImpl() { EXPECT_TRUE(impl_.private_.get()); }
+
+    ScopedGpuDataManagerImpl(const ScopedGpuDataManagerImpl&) = delete;
+    ScopedGpuDataManagerImpl& operator=(const ScopedGpuDataManagerImpl&) =
+        delete;
+
     ~ScopedGpuDataManagerImpl() = default;
 
     GpuDataManagerImpl* get() { return &impl_; }
@@ -97,7 +102,6 @@ class GpuDataManagerImplPrivateTest : public testing::Test {
 
    private:
     GpuDataManagerImpl impl_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedGpuDataManagerImpl);
   };
 
   // We want to test the code path where GpuDataManagerImplPrivate is created
@@ -105,6 +109,12 @@ class GpuDataManagerImplPrivateTest : public testing::Test {
   class ScopedGpuDataManagerImplPrivate {
    public:
     ScopedGpuDataManagerImplPrivate() { EXPECT_TRUE(impl_.private_.get()); }
+
+    ScopedGpuDataManagerImplPrivate(const ScopedGpuDataManagerImplPrivate&) =
+        delete;
+    ScopedGpuDataManagerImplPrivate& operator=(
+        const ScopedGpuDataManagerImplPrivate&) = delete;
+
     ~ScopedGpuDataManagerImplPrivate() = default;
 
     // NO_THREAD_SAFETY_ANALYSIS should be fine below, because unit tests
@@ -118,7 +128,6 @@ class GpuDataManagerImplPrivateTest : public testing::Test {
 
    private:
     GpuDataManagerImpl impl_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedGpuDataManagerImplPrivate);
   };
 
   base::Time JustBeforeExpiration(const GpuDataManagerImplPrivate* manager);

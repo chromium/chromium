@@ -75,6 +75,12 @@ namespace content {
 class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
  public:
   MainThreadEventQueueBrowserTest() {}
+
+  MainThreadEventQueueBrowserTest(const MainThreadEventQueueBrowserTest&) =
+      delete;
+  MainThreadEventQueueBrowserTest& operator=(
+      const MainThreadEventQueueBrowserTest&) = delete;
+
   ~MainThreadEventQueueBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -188,9 +194,6 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
     EXPECT_EQ(35, last_touch_x);
     EXPECT_EQ(40, last_touch_y);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MainThreadEventQueueBrowserTest);
 };
 
 // Disabled due to flaky test results: crbug.com/805666.

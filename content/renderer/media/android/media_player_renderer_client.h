@@ -53,6 +53,10 @@ class CONTENT_EXPORT MediaPlayerRendererClient
       media::ScopedStreamTextureWrapper stream_texture_wrapper,
       media::VideoRendererSink* sink);
 
+  MediaPlayerRendererClient(const MediaPlayerRendererClient&) = delete;
+  MediaPlayerRendererClient& operator=(const MediaPlayerRendererClient&) =
+      delete;
+
   ~MediaPlayerRendererClient() override;
 
   // media::Renderer implementation (inherited from media::MojoRendererWrapper).
@@ -116,8 +120,6 @@ class CONTENT_EXPORT MediaPlayerRendererClient
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaPlayerRendererClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerRendererClient);
 };
 
 }  // namespace content

@@ -31,6 +31,12 @@ class TouchSelectionControllerClientManagerAndroid
   explicit TouchSelectionControllerClientManagerAndroid(
       RenderWidgetHostViewAndroid* rwhv,
       viz::HostFrameSinkManager* frame_host_sink_manager);
+
+  TouchSelectionControllerClientManagerAndroid(
+      const TouchSelectionControllerClientManagerAndroid&) = delete;
+  TouchSelectionControllerClientManagerAndroid& operator=(
+      const TouchSelectionControllerClientManagerAndroid&) = delete;
+
   ~TouchSelectionControllerClientManagerAndroid() override;
 
   // TouchSelectionControllerClientManager implementation.
@@ -83,8 +89,6 @@ class TouchSelectionControllerClientManagerAndroid
   gfx::SelectionBound manager_selection_end_;
   base::ObserverList<TouchSelectionControllerClientManager::Observer>
       observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerClientManagerAndroid);
 };
 
 }  // namespace content

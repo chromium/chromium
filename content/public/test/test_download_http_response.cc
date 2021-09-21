@@ -76,6 +76,10 @@ class HttpResponse : public net::test_server::HttpResponse {
  public:
   explicit HttpResponse(base::WeakPtr<TestDownloadHttpResponse> owner)
       : owner_(owner) {}
+
+  HttpResponse(const HttpResponse&) = delete;
+  HttpResponse& operator=(const HttpResponse&) = delete;
+
   ~HttpResponse() override = default;
 
  private:
@@ -87,7 +91,6 @@ class HttpResponse : public net::test_server::HttpResponse {
   }
 
   base::WeakPtr<TestDownloadHttpResponse> owner_;
-  DISALLOW_COPY_AND_ASSIGN(HttpResponse);
 };
 
 }  // namespace

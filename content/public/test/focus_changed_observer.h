@@ -15,6 +15,10 @@ namespace content {
 class FocusChangedObserver : public WebContentsObserver {
  public:
   explicit FocusChangedObserver(WebContents*);
+
+  FocusChangedObserver(const FocusChangedObserver&) = delete;
+  FocusChangedObserver& operator=(const FocusChangedObserver&) = delete;
+
   ~FocusChangedObserver() override;
 
   // Waits until focus changes in the page. Returns the observed details.
@@ -25,8 +29,6 @@ class FocusChangedObserver : public WebContentsObserver {
 
   base::RunLoop run_loop_;
   absl::optional<FocusedNodeDetails> observed_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusChangedObserver);
 };
 
 }  // namespace content

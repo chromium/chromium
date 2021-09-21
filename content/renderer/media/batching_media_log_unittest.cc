@@ -44,6 +44,9 @@ class BatchingMediaLogTest : public testing::Test {
     log_.SetTickClockForTesting(&tick_clock_);
   }
 
+  BatchingMediaLogTest(const BatchingMediaLogTest&) = delete;
+  BatchingMediaLogTest& operator=(const BatchingMediaLogTest&) = delete;
+
   ~BatchingMediaLogTest() override { task_runner_->ClearPendingTasks(); }
 
   template <media::MediaLogEvent T, typename... Opt>
@@ -85,9 +88,6 @@ class BatchingMediaLogTest : public testing::Test {
 
  protected:
   BatchingMediaLog log_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BatchingMediaLogTest);
 };
 
 void TestEventHandler::SendQueuedMediaEvents(

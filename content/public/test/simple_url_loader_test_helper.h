@@ -21,6 +21,11 @@ namespace content {
 class SimpleURLLoaderTestHelper {
  public:
   SimpleURLLoaderTestHelper();
+
+  SimpleURLLoaderTestHelper(const SimpleURLLoaderTestHelper&) = delete;
+  SimpleURLLoaderTestHelper& operator=(const SimpleURLLoaderTestHelper&) =
+      delete;
+
   ~SimpleURLLoaderTestHelper();
 
   // Returns a BodyAsStringCallback for use with a SimpleURLLoader. May be
@@ -49,8 +54,6 @@ class SimpleURLLoaderTestHelper {
   std::unique_ptr<std::string> response_body_;
 
   base::WeakPtrFactory<SimpleURLLoaderTestHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderTestHelper);
 };
 
 }  // namespace content

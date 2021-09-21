@@ -44,6 +44,10 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   ServiceWorkerObjectHost(base::WeakPtr<ServiceWorkerContextCore> context,
                           ServiceWorkerContainerHost* container_host,
                           scoped_refptr<ServiceWorkerVersion> version);
+
+  ServiceWorkerObjectHost(const ServiceWorkerObjectHost&) = delete;
+  ServiceWorkerObjectHost& operator=(const ServiceWorkerObjectHost&) = delete;
+
   ~ServiceWorkerObjectHost() override;
 
   // ServiceWorkerVersion::Observer overrides.
@@ -118,8 +122,6 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   mojo::AssociatedRemoteSet<blink::mojom::ServiceWorkerObject> remote_objects_;
 
   base::WeakPtrFactory<ServiceWorkerObjectHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerObjectHost);
 };
 
 }  // namespace content

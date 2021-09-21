@@ -34,6 +34,9 @@ class CreateMetadataTask : public DatabaseTask {
                      bool start_paused,
                      CreateMetadataCallback callback);
 
+  CreateMetadataTask(const CreateMetadataTask&) = delete;
+  CreateMetadataTask& operator=(const CreateMetadataTask&) = delete;
+
   ~CreateMetadataTask() override;
 
   void Start() override;
@@ -78,8 +81,6 @@ class CreateMetadataTask : public DatabaseTask {
 
   base::WeakPtrFactory<CreateMetadataTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(CreateMetadataTask);
 };
 
 }  // namespace background_fetch

@@ -29,6 +29,9 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
   static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
       NavigationHandle* handle);
 
+  AncestorThrottle(const AncestorThrottle&) = delete;
+  AncestorThrottle& operator=(const AncestorThrottle&) = delete;
+
   ~AncestorThrottle() override;
 
   NavigationThrottle::ThrottleCheckResult WillRedirectRequest() override;
@@ -60,8 +63,6 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
       const std::vector<network::mojom::ContentSecurityPolicyPtr>&
           content_security_policy);
   CheckResult EvaluateEmbeddingOptIn(LoggingDisposition logging);
-
-  DISALLOW_COPY_AND_ASSIGN(AncestorThrottle);
 };
 
 }  // namespace content

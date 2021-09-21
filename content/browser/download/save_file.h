@@ -24,6 +24,10 @@ namespace content {
 class SaveFile {
  public:
   SaveFile(std::unique_ptr<SaveFileCreateInfo> info, bool calculate_hash);
+
+  SaveFile(const SaveFile&) = delete;
+  SaveFile& operator=(const SaveFile&) = delete;
+
   virtual ~SaveFile();
 
   // BaseFile delegated functions.
@@ -56,8 +60,6 @@ class SaveFile {
  private:
   download::BaseFile file_;
   std::unique_ptr<SaveFileCreateInfo> info_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveFile);
 };
 
 }  // namespace content

@@ -29,6 +29,9 @@ struct NativeWebKeyboardEvent;
 // Perhaps "WebContentsEmbedderDelegate" would be better?
 class CONTENT_EXPORT BrowserPluginEmbedder {
  public:
+  BrowserPluginEmbedder(const BrowserPluginEmbedder&) = delete;
+  BrowserPluginEmbedder& operator=(const BrowserPluginEmbedder&) = delete;
+
   ~BrowserPluginEmbedder();
 
   static BrowserPluginEmbedder* Create(WebContentsImpl* web_contents);
@@ -63,8 +66,6 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
 
   // Pointer to the WebContentsImpl that owns this object.
   WebContentsImpl* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPluginEmbedder);
 };
 
 }  // namespace content

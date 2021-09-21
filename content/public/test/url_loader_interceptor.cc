@@ -240,6 +240,9 @@ class URLLoaderInterceptor::Interceptor
         &Interceptor::OnConnectionError, base::Unretained(this)));
   }
 
+  Interceptor(const Interceptor&) = delete;
+  Interceptor& operator=(const Interceptor&) = delete;
+
   ~Interceptor() override {}
 
   void BindReceiver(
@@ -296,8 +299,6 @@ class URLLoaderInterceptor::Interceptor
   base::OnceClosure error_handler_;
   std::vector<std::unique_ptr<URLLoaderClientInterceptor>>
       url_loader_client_interceptors_;
-
-  DISALLOW_COPY_AND_ASSIGN(Interceptor);
 };
 
 // This class intercepts calls to each StoragePartition's URLLoaderFactoryGetter
@@ -367,6 +368,9 @@ class URLLoaderInterceptor::BrowserProcessWrapper {
     interceptor_.BindReceiver(std::move(factory_receiver));
   }
 
+  BrowserProcessWrapper(const BrowserProcessWrapper&) = delete;
+  BrowserProcessWrapper& operator=(const BrowserProcessWrapper&) = delete;
+
   ~BrowserProcessWrapper() {}
 
  private:
@@ -376,8 +380,6 @@ class URLLoaderInterceptor::BrowserProcessWrapper {
 
   Interceptor interceptor_;
   mojo::Remote<network::mojom::URLLoaderFactory> original_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessWrapper);
 };
 
 // This class is used (e.g. sent in a RenderFrame commit message, or used to
@@ -404,6 +406,9 @@ class URLLoaderInterceptor::RenderProcessHostWrapper {
         base::Unretained(parent), this));
   }
 
+  RenderProcessHostWrapper(const RenderProcessHostWrapper&) = delete;
+  RenderProcessHostWrapper& operator=(const RenderProcessHostWrapper&) = delete;
+
   ~RenderProcessHostWrapper() {}
 
  private:
@@ -413,8 +418,6 @@ class URLLoaderInterceptor::RenderProcessHostWrapper {
 
   Interceptor interceptor_;
   mojo::Remote<network::mojom::URLLoaderFactory> original_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostWrapper);
 };
 
 URLLoaderInterceptor::RequestParams::RequestParams() = default;

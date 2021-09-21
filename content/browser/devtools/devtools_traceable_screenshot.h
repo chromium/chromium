@@ -21,6 +21,10 @@ class DevToolsTraceableScreenshot
 
   DevToolsTraceableScreenshot(const SkBitmap& bitmap);
 
+  DevToolsTraceableScreenshot(const DevToolsTraceableScreenshot&) = delete;
+  DevToolsTraceableScreenshot& operator=(const DevToolsTraceableScreenshot&) =
+      delete;
+
   ~DevToolsTraceableScreenshot() override;
 
   // base::trace_event::ConvertableToTraceFormat implementation.
@@ -30,8 +34,6 @@ class DevToolsTraceableScreenshot
   static base::subtle::Atomic32 number_of_instances_;
 
   SkBitmap frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsTraceableScreenshot);
 };
 
 }  // namespace content

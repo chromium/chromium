@@ -431,6 +431,9 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
       : blink::MediaStreamVideoSource(base::ThreadTaskRunnerHandle::Get()),
         host_(std::move(host)) {}
 
+  VideoSource(const VideoSource&) = delete;
+  VideoSource& operator=(const VideoSource&) = delete;
+
   ~VideoSource() final { StopSourceImpl(); }
 
   void StartSourceImpl(
@@ -464,8 +467,6 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
 
   const base::WeakPtr<PepperMediaStreamVideoTrackHost> host_;
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoSource);
 };
 
 void PepperMediaStreamVideoTrackHost::DidConnectPendingHostToResource() {

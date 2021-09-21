@@ -39,6 +39,10 @@ class ServiceBinderImpl {
   explicit ServiceBinderImpl(
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner)
       : main_thread_task_runner_(std::move(main_thread_task_runner)) {}
+
+  ServiceBinderImpl(const ServiceBinderImpl&) = delete;
+  ServiceBinderImpl& operator=(const ServiceBinderImpl&) = delete;
+
   ~ServiceBinderImpl() = default;
 
   void BindServiceInterface(mojo::GenericPendingReceiver* receiver) {
@@ -131,8 +135,6 @@ class ServiceBinderImpl {
   std::unique_ptr<mojo::ServiceFactory> io_thread_services_;
 
   base::WeakPtrFactory<ServiceBinderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceBinderImpl);
 };
 
 ChildThreadImpl::Options::ServiceBinder GetServiceBinder() {

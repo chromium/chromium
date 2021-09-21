@@ -19,6 +19,11 @@ class BrowserOnlineStateObserver
       public content::NotificationObserver {
  public:
   BrowserOnlineStateObserver();
+
+  BrowserOnlineStateObserver(const BrowserOnlineStateObserver&) = delete;
+  BrowserOnlineStateObserver& operator=(const BrowserOnlineStateObserver&) =
+      delete;
+
   ~BrowserOnlineStateObserver() override;
 
   // MaxBandwidthObserver implementation
@@ -33,8 +38,6 @@ class BrowserOnlineStateObserver
 
  private:
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserOnlineStateObserver);
 };
 
 }  // namespace content

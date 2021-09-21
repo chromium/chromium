@@ -33,6 +33,10 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
  public:
   explicit Receiver(FakeVideoCaptureStack* capture_stack)
       : capture_stack_(capture_stack) {}
+
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
+
   ~Receiver() override = default;
 
  private:
@@ -108,8 +112,6 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
 
   FakeVideoCaptureStack* const capture_stack_;
   base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_;
-
-  DISALLOW_COPY_AND_ASSIGN(Receiver);
 };
 
 std::unique_ptr<media::VideoFrameReceiver>

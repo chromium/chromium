@@ -43,6 +43,10 @@ class FindRequestManagerTest : public ContentBrowserTest,
   FindRequestManagerTest()
       : normal_delegate_(nullptr),
         last_request_id_(0) {}
+
+  FindRequestManagerTest(const FindRequestManagerTest&) = delete;
+  FindRequestManagerTest& operator=(const FindRequestManagerTest&) = delete;
+
   ~FindRequestManagerTest() override {}
 
   void SetUpOnMainThread() override {
@@ -143,8 +147,6 @@ class FindRequestManagerTest : public ContentBrowserTest,
 
   // The ID of the last find request requested.
   int last_request_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindRequestManagerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(FindRequestManagerTests,
@@ -898,6 +900,12 @@ class ZoomToFindInPageRectMessageFilter
       : impl_(rwhi->frame_widget_host_receiver_for_testing().SwapImplForTesting(
             this)),
         widget_message_seen_(false) {}
+
+  ZoomToFindInPageRectMessageFilter(const ZoomToFindInPageRectMessageFilter&) =
+      delete;
+  ZoomToFindInPageRectMessageFilter& operator=(
+      const ZoomToFindInPageRectMessageFilter&) = delete;
+
   ~ZoomToFindInPageRectMessageFilter() override {}
 
   blink::mojom::FrameWidgetHost* GetForwardingInterface() override {
@@ -932,8 +940,6 @@ class ZoomToFindInPageRectMessageFilter
   gfx::Rect widget_rect_seen_;
   bool widget_message_seen_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomToFindInPageRectMessageFilter);
 };
 
 }  // namespace

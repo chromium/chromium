@@ -27,6 +27,10 @@ class WebFrameTestProxy;
 class TextInputController {
  public:
   explicit TextInputController(WebFrameTestProxy* web_frame_test_proxy);
+
+  TextInputController(const TextInputController&) = delete;
+  TextInputController& operator=(const TextInputController&) = delete;
+
   ~TextInputController();
 
   void Install(blink::WebLocalFrame* frame);
@@ -58,8 +62,6 @@ class TextInputController {
   WebFrameTestProxy* const web_frame_test_proxy_;
 
   base::WeakPtrFactory<TextInputController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputController);
 };
 
 }  // namespace content

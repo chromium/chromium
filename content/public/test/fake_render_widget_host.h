@@ -25,6 +25,10 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
                              public blink::mojom::WidgetInputHandlerHost {
  public:
   FakeRenderWidgetHost();
+
+  FakeRenderWidgetHost(const FakeRenderWidgetHost&) = delete;
+  FakeRenderWidgetHost& operator=(const FakeRenderWidgetHost&) = delete;
+
   ~FakeRenderWidgetHost() override;
 
   std::pair<mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>,
@@ -131,8 +135,6 @@ class FakeRenderWidgetHost : public blink::mojom::FrameWidgetHost,
       widget_input_handler_host_{this};
   mojo::AssociatedRemote<blink::mojom::FrameWidgetInputHandler>
       frame_widget_input_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRenderWidgetHost);
 };
 
 }  // namespace content

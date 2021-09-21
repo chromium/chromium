@@ -44,6 +44,11 @@ class CONTENT_EXPORT RenderAccessibilityManager
     : public mojom::RenderAccessibility {
  public:
   RenderAccessibilityManager(RenderFrameImpl* const render_frame);
+
+  RenderAccessibilityManager(const RenderAccessibilityManager&) = delete;
+  RenderAccessibilityManager& operator=(const RenderAccessibilityManager&) =
+      delete;
+
   ~RenderAccessibilityManager() override;
 
   // Binds the |receiver| to process mojo messages. This method is expected to
@@ -94,8 +99,6 @@ class CONTENT_EXPORT RenderAccessibilityManager
 
   // Endpoint to send messages to the browser process.
   mojo::Remote<mojom::RenderAccessibilityHost> render_accessibility_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderAccessibilityManager);
 };
 
 }  // namespace content

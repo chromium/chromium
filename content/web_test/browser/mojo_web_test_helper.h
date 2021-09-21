@@ -16,15 +16,16 @@ namespace content {
 class MojoWebTestHelper : public mojom::MojoWebTestHelper {
  public:
   MojoWebTestHelper();
+
+  MojoWebTestHelper(const MojoWebTestHelper&) = delete;
+  MojoWebTestHelper& operator=(const MojoWebTestHelper&) = delete;
+
   ~MojoWebTestHelper() override;
 
   static void Create(mojo::PendingReceiver<mojom::MojoWebTestHelper> receiver);
 
   // mojom::MojoWebTestHelper:
   void Reverse(const std::string& message, ReverseCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoWebTestHelper);
 };
 
 }  // namespace content

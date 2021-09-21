@@ -24,6 +24,12 @@ namespace content {
 class CONTENT_EXPORT BackgroundFetchRegistrationNotifier {
  public:
   BackgroundFetchRegistrationNotifier();
+
+  BackgroundFetchRegistrationNotifier(
+      const BackgroundFetchRegistrationNotifier&) = delete;
+  BackgroundFetchRegistrationNotifier& operator=(
+      const BackgroundFetchRegistrationNotifier&) = delete;
+
   ~BackgroundFetchRegistrationNotifier();
 
   // Registers the |observer| to be notified when fetches for the registration
@@ -82,8 +88,6 @@ class CONTENT_EXPORT BackgroundFetchRegistrationNotifier {
   std::map<std::string, std::pair<int, int>> num_requests_and_updates_;
 
   base::WeakPtrFactory<BackgroundFetchRegistrationNotifier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchRegistrationNotifier);
 };
 
 }  // namespace content

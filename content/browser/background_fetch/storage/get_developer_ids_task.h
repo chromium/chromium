@@ -31,6 +31,9 @@ class GetDeveloperIdsTask : public DatabaseTask {
       const blink::StorageKey& storage_key,
       blink::mojom::BackgroundFetchService::GetDeveloperIdsCallback callback);
 
+  GetDeveloperIdsTask(const GetDeveloperIdsTask&) = delete;
+  GetDeveloperIdsTask& operator=(const GetDeveloperIdsTask&) = delete;
+
   ~GetDeveloperIdsTask() override;
 
   // DatabaseTask implementation:
@@ -57,8 +60,6 @@ class GetDeveloperIdsTask : public DatabaseTask {
 
   base::WeakPtrFactory<GetDeveloperIdsTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(GetDeveloperIdsTask);
 };
 
 }  // namespace background_fetch

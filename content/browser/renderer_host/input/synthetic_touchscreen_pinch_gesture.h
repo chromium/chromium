@@ -22,6 +22,12 @@ class CONTENT_EXPORT SyntheticTouchscreenPinchGesture
  public:
   explicit SyntheticTouchscreenPinchGesture(
       const SyntheticPinchGestureParams& params);
+
+  SyntheticTouchscreenPinchGesture(const SyntheticTouchscreenPinchGesture&) =
+      delete;
+  SyntheticTouchscreenPinchGesture& operator=(
+      const SyntheticTouchscreenPinchGesture&) = delete;
+
   ~SyntheticTouchscreenPinchGesture() override;
 
   SyntheticGesture::Result ForwardInputEvents(
@@ -58,9 +64,6 @@ class CONTENT_EXPORT SyntheticTouchscreenPinchGesture
   GestureState state_;
   base::TimeTicks start_time_;
   base::TimeTicks stop_time_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTouchscreenPinchGesture);
 };
 
 }  // namespace content

@@ -14,6 +14,10 @@ namespace content {
 class ShellContentGpuClient : public ContentGpuClient {
  public:
   ShellContentGpuClient();
+
+  ShellContentGpuClient(const ShellContentGpuClient&) = delete;
+  ShellContentGpuClient& operator=(const ShellContentGpuClient&) = delete;
+
   ~ShellContentGpuClient() override;
 
   // ContentGpuClient:
@@ -21,8 +25,6 @@ class ShellContentGpuClient : public ContentGpuClient {
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       mojo::BinderMap* binders) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellContentGpuClient);
 };
 
 }  // namespace content

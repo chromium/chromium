@@ -91,6 +91,9 @@ class CONTENT_EXPORT GeneratedCodeCache {
                      int max_size_bytes,
                      CodeCacheType cache_type);
 
+  GeneratedCodeCache(const GeneratedCodeCache&) = delete;
+  GeneratedCodeCache& operator=(const GeneratedCodeCache&) = delete;
+
   ~GeneratedCodeCache();
 
   // Runs the callback with a raw pointer to the backend. If we could not create
@@ -232,8 +235,6 @@ class CONTENT_EXPORT GeneratedCodeCache {
   CodeCacheType cache_type_;
 
   base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedCodeCache);
 };
 
 }  // namespace content

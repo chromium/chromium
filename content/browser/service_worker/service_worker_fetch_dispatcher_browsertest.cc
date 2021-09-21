@@ -65,6 +65,10 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
     scoped_context_observation_.Observe(context);
   }
 
+  WorkerRunningStatusObserver(const WorkerRunningStatusObserver&) = delete;
+  WorkerRunningStatusObserver& operator=(const WorkerRunningStatusObserver&) =
+      delete;
+
   ~WorkerRunningStatusObserver() override = default;
 
   int64_t version_id() { return version_id_; }
@@ -79,8 +83,6 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
   base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
       scoped_context_observation_{this};
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerRunningStatusObserver);
 };
 
 // An observer that waits until all inflight events complete.

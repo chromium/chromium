@@ -84,6 +84,11 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // |frame_proxy_in_parent_renderer| corresponds to A2 in the example above.
   explicit CrossProcessFrameConnector(
       RenderFrameProxyHost* frame_proxy_in_parent_renderer);
+
+  CrossProcessFrameConnector(const CrossProcessFrameConnector&) = delete;
+  CrossProcessFrameConnector& operator=(const CrossProcessFrameConnector&) =
+      delete;
+
   virtual ~CrossProcessFrameConnector();
 
   // |view| corresponds to B2's RenderWidgetHostViewChildFrame in the example
@@ -428,8 +433,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Closure that will be run whenever a sad frame is shown and its visibility
   // metrics have been logged. Used for testing only.
   base::OnceClosure child_frame_crash_shown_closure_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrossProcessFrameConnector);
 };
 
 }  // namespace content

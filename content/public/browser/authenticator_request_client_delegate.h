@@ -155,6 +155,12 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   };
 
   AuthenticatorRequestClientDelegate();
+
+  AuthenticatorRequestClientDelegate(
+      const AuthenticatorRequestClientDelegate&) = delete;
+  AuthenticatorRequestClientDelegate& operator=(
+      const AuthenticatorRequestClientDelegate&) = delete;
+
   ~AuthenticatorRequestClientDelegate() override;
 
   // SetRelyingPartyId sets the RP ID for this request. This is called after
@@ -264,9 +270,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   void OnSampleCollected(int bio_samples_remaining) override;
   void FinishCollectToken() override;
   void OnRetryUserVerification(int attempts) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestClientDelegate);
 };
 
 }  // namespace content

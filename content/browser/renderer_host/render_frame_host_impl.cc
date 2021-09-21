@@ -1210,6 +1210,10 @@ class RenderFrameHostImpl::DroppedInterfaceRequestLogger
     receiver_.Bind(std::move(receiver));
   }
 
+  DroppedInterfaceRequestLogger(const DroppedInterfaceRequestLogger&) = delete;
+  DroppedInterfaceRequestLogger& operator=(
+      const DroppedInterfaceRequestLogger&) = delete;
+
   ~DroppedInterfaceRequestLogger() override {
     UMA_HISTOGRAM_EXACT_LINEAR("RenderFrameHostImpl.DroppedInterfaceRequests",
                                num_dropped_requests_, 20);
@@ -1231,8 +1235,6 @@ class RenderFrameHostImpl::DroppedInterfaceRequestLogger
  private:
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> receiver_{this};
   int num_dropped_requests_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DroppedInterfaceRequestLogger);
 };
 
 struct PendingNavigation {

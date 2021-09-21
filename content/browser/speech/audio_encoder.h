@@ -19,6 +19,10 @@ class AudioChunk;
 class AudioEncoder {
  public:
   AudioEncoder(int sampling_rate, int bits_per_sample);
+
+  AudioEncoder(const AudioEncoder&) = delete;
+  AudioEncoder& operator=(const AudioEncoder&) = delete;
+
   ~AudioEncoder();
 
   // Encodes |raw audio| to the internal buffer. Use
@@ -40,8 +44,6 @@ class AudioEncoder {
 
   FLAC__StreamEncoder* encoder_;
   bool is_encoder_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioEncoder);
 };
 
 }  // namespace content

@@ -38,6 +38,10 @@ class TetheringHandler : public DevToolsDomainHandler,
   // is accepted.
   TetheringHandler(CreateServerSocketCallback socket_callback,
                    scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  TetheringHandler(const TetheringHandler&) = delete;
+  TetheringHandler& operator=(const TetheringHandler&) = delete;
+
   ~TetheringHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -58,8 +62,6 @@ class TetheringHandler : public DevToolsDomainHandler,
   base::WeakPtrFactory<TetheringHandler> weak_factory_{this};
 
   static TetheringImpl* impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TetheringHandler);
 };
 
 }  // namespace protocol

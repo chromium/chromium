@@ -34,6 +34,10 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
     : public blink::WebAudioDevice,
       public media::AudioRendererSink::RenderCallback {
  public:
+  RendererWebAudioDeviceImpl(const RendererWebAudioDeviceImpl&) = delete;
+  RendererWebAudioDeviceImpl& operator=(const RendererWebAudioDeviceImpl&) =
+      delete;
+
   ~RendererWebAudioDeviceImpl() override;
 
   static std::unique_ptr<RendererWebAudioDeviceImpl> Create(
@@ -125,8 +129,6 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   // Used to trigger one single textlog indicating that rendering started as
   // intended. Set to true once in the first call to the Render callback.
   bool is_rendering_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererWebAudioDeviceImpl);
 };
 
 }  // namespace content

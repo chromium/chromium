@@ -79,13 +79,18 @@ class RenderWidgetHostLatencyTrackerTestBrowserClient
     : public TestContentBrowserClient {
  public:
   RenderWidgetHostLatencyTrackerTestBrowserClient() {}
+
+  RenderWidgetHostLatencyTrackerTestBrowserClient(
+      const RenderWidgetHostLatencyTrackerTestBrowserClient&) = delete;
+  RenderWidgetHostLatencyTrackerTestBrowserClient& operator=(
+      const RenderWidgetHostLatencyTrackerTestBrowserClient&) = delete;
+
   ~RenderWidgetHostLatencyTrackerTestBrowserClient() override {}
 
   ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
 
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostLatencyTrackerTestBrowserClient);
 };
 
 class RenderWidgetHostLatencyTrackerTest

@@ -21,10 +21,11 @@ class CONTENT_EXPORT SerialChooser {
   using Callback = base::OnceCallback<void(device::mojom::SerialPortInfoPtr)>;
 
   SerialChooser();
-  virtual ~SerialChooser();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SerialChooser);
+  SerialChooser(const SerialChooser&) = delete;
+  SerialChooser& operator=(const SerialChooser&) = delete;
+
+  virtual ~SerialChooser();
 };
 
 }  // namespace content

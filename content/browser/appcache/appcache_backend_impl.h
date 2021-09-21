@@ -24,6 +24,10 @@ class CONTENT_EXPORT AppCacheBackendImpl
   AppCacheBackendImpl(AppCacheServiceImpl* service,
                       int process_id,
                       int routing_id);
+
+  AppCacheBackendImpl(const AppCacheBackendImpl&) = delete;
+  AppCacheBackendImpl& operator=(const AppCacheBackendImpl&) = delete;
+
   ~AppCacheBackendImpl() override;
 
   // blink::mojom::AppCacheBackend
@@ -39,8 +43,6 @@ class CONTENT_EXPORT AppCacheBackendImpl
   const int process_id_;
   const int routing_id_;
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheBackendImpl);
 };
 
 }  // namespace

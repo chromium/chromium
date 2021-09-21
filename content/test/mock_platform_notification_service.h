@@ -31,6 +31,12 @@ class BrowserContext;
 class MockPlatformNotificationService : public PlatformNotificationService {
  public:
   MockPlatformNotificationService(BrowserContext* context);
+
+  MockPlatformNotificationService(const MockPlatformNotificationService&) =
+      delete;
+  MockPlatformNotificationService& operator=(
+      const MockPlatformNotificationService&) = delete;
+
   ~MockPlatformNotificationService() override;
 
   // Simulates a click on the notification titled |title|. |action_index|
@@ -81,8 +87,6 @@ class MockPlatformNotificationService : public PlatformNotificationService {
   std::unordered_map<std::string, std::string> notification_id_map_;
 
   int64_t next_persistent_notification_id_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPlatformNotificationService);
 };
 
 }  // content

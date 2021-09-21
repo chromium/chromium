@@ -151,6 +151,10 @@ class RenderWidgetHostViewAura::EventObserverForPopupExit
                           {ui::ET_MOUSE_PRESSED, ui::ET_TOUCH_PRESSED});
   }
 
+  EventObserverForPopupExit(const EventObserverForPopupExit&) = delete;
+  EventObserverForPopupExit& operator=(const EventObserverForPopupExit&) =
+      delete;
+
   ~EventObserverForPopupExit() override {
     aura::Env::GetInstance()->RemoveEventObserver(this);
   }
@@ -162,8 +166,6 @@ class RenderWidgetHostViewAura::EventObserverForPopupExit
 
  private:
   RenderWidgetHostViewAura* rwhva_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventObserverForPopupExit);
 };
 
 void RenderWidgetHostViewAura::ApplyEventObserverForPopupExit(
@@ -206,6 +208,9 @@ class RenderWidgetHostViewAura::WindowObserver : public aura::WindowObserver {
     view_->window_->AddObserver(this);
   }
 
+  WindowObserver(const WindowObserver&) = delete;
+  WindowObserver& operator=(const WindowObserver&) = delete;
+
   ~WindowObserver() override { view_->window_->RemoveObserver(this); }
 
   // Overridden from aura::WindowObserver:
@@ -231,8 +236,6 @@ class RenderWidgetHostViewAura::WindowObserver : public aura::WindowObserver {
 
  private:
   RenderWidgetHostViewAura* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowObserver);
 };
 
 // This class provides functionality to observe the ancestors of the RWHVA for
@@ -258,6 +261,9 @@ class RenderWidgetHostViewAura::WindowAncestorObserver
     }
   }
 
+  WindowAncestorObserver(const WindowAncestorObserver&) = delete;
+  WindowAncestorObserver& operator=(const WindowAncestorObserver&) = delete;
+
   ~WindowAncestorObserver() override {
     RemoveAncestorObservers();
   }
@@ -280,8 +286,6 @@ class RenderWidgetHostViewAura::WindowAncestorObserver
 
   RenderWidgetHostViewAura* view_;
   std::set<aura::Window*> ancestors_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowAncestorObserver);
 };
 
 

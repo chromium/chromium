@@ -43,6 +43,11 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       BrowserContext* browser_context);
 
+  PlatformNotificationServiceProxy(const PlatformNotificationServiceProxy&) =
+      delete;
+  PlatformNotificationServiceProxy& operator=(
+      const PlatformNotificationServiceProxy&) = delete;
+
   ~PlatformNotificationServiceProxy();
 
   // To be called when the |browser_context_| has been shutdown. This
@@ -118,8 +123,6 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
       this};
   base::WeakPtrFactory<PlatformNotificationServiceProxy> weak_ptr_factory_io_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformNotificationServiceProxy);
 };
 
 }  // namespace content

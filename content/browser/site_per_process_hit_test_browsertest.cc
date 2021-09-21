@@ -89,6 +89,9 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
     host_->AddInputEventObserver(this);
   }
 
+  TestInputEventObserver(const TestInputEventObserver&) = delete;
+  TestInputEventObserver& operator=(const TestInputEventObserver&) = delete;
+
   ~TestInputEventObserver() override { host_->RemoveInputEventObserver(this); }
 
   bool EventWasReceived() const { return !events_received_.empty(); }
@@ -123,8 +126,6 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
   std::vector<blink::WebInputEvent::Type> events_received_;
   std::vector<blink::mojom::InputEventResultSource> events_acked_;
   ui::WebScopedInputEvent event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputEventObserver);
 };
 
 // |position_in_widget| is in the coord space of |rwhv|.
@@ -751,6 +752,10 @@ class SetMouseCaptureInterceptor
 class SystemEventRewriter : public ui::EventRewriter {
  public:
   SystemEventRewriter() = default;
+
+  SystemEventRewriter(const SystemEventRewriter&) = delete;
+  SystemEventRewriter& operator=(const SystemEventRewriter&) = delete;
+
   ~SystemEventRewriter() override = default;
 
  private:
@@ -759,8 +764,6 @@ class SystemEventRewriter : public ui::EventRewriter {
       const Continuation continuation) override {
     return DiscardEvent(continuation);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SystemEventRewriter);
 };
 #endif
 
@@ -3268,6 +3271,10 @@ class TooltipMonitor : public RenderWidgetHostViewBase::TooltipObserver {
     DCHECK(rwhv);
     rwhv->SetTooltipObserverForTesting(this);
   }
+
+  TooltipMonitor(const TooltipMonitor&) = delete;
+  TooltipMonitor& operator=(const TooltipMonitor&) = delete;
+
   ~TooltipMonitor() override {}
 
   void Reset() {
@@ -3292,8 +3299,6 @@ class TooltipMonitor : public RenderWidgetHostViewBase::TooltipObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::u16string tooltip_text_wanted_;
   std::vector<std::u16string> tooltips_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipMonitor);
 };  // class TooltipMonitor
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
@@ -5754,6 +5759,10 @@ class ContextMenuObserverDelegate : public WebContentsDelegate {
       : context_menu_created_(false),
         message_loop_runner_(new MessageLoopRunner) {}
 
+  ContextMenuObserverDelegate(const ContextMenuObserverDelegate&) = delete;
+  ContextMenuObserverDelegate& operator=(const ContextMenuObserverDelegate&) =
+      delete;
+
   ~ContextMenuObserverDelegate() override {}
 
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
@@ -5778,8 +5787,6 @@ class ContextMenuObserverDelegate : public WebContentsDelegate {
 
   // The MessageLoopRunner used to spin the message loop.
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuObserverDelegate);
 };
 
 // Helper function to run the CreateContextMenuTest in either normal

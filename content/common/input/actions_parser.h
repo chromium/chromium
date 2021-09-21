@@ -41,6 +41,10 @@ namespace content {
 class CONTENT_EXPORT ActionsParser {
  public:
   explicit ActionsParser(base::Value value);
+
+  ActionsParser(const ActionsParser&) = delete;
+  ActionsParser& operator=(const ActionsParser&) = delete;
+
   ~ActionsParser();
   bool Parse();
   const std::string& error_message() const { return error_message_; }
@@ -103,8 +107,6 @@ class CONTENT_EXPORT ActionsParser {
 
   base::Value action_sequence_list_;
   std::set<std::string> pointer_name_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionsParser);
 };
 
 }  // namespace content

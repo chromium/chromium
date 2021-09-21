@@ -50,6 +50,10 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
       Delegate* delegate,
       RenderFrameHost* render_frame_host,
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client);
+
+  PopupMenuHelper(const PopupMenuHelper&) = delete;
+  PopupMenuHelper& operator=(const PopupMenuHelper&) = delete;
+
   ~PopupMenuHelper() override;
   void Hide();
 
@@ -88,8 +92,6 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
   std::unique_ptr<base::ScopedPumpMessagesInPrivateModes> pump_in_fade_;
 
   base::WeakPtrFactory<PopupMenuHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PopupMenuHelper);
 };
 
 }  // namespace content

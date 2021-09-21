@@ -64,6 +64,10 @@ class WebContentsImpl;
 class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
  public:
   explicit MediaWebContentsObserver(WebContentsImpl* web_contents);
+
+  MediaWebContentsObserver(const MediaWebContentsObserver&) = delete;
+  MediaWebContentsObserver& operator=(const MediaWebContentsObserver&) = delete;
+
   ~MediaWebContentsObserver() override;
 
   // Called by WebContentsImpl when the audible state may have changed.
@@ -305,7 +309,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   MediaPlayerRemotesMap media_player_remotes_;
 
   base::WeakPtrFactory<MediaWebContentsObserver> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MediaWebContentsObserver);
 };
 
 }  // namespace content

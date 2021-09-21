@@ -18,6 +18,10 @@ namespace protocol {
 class DevToolsDomainHandler {
  public:
   explicit DevToolsDomainHandler(const std::string& name);
+
+  DevToolsDomainHandler(const DevToolsDomainHandler&) = delete;
+  DevToolsDomainHandler& operator=(const DevToolsDomainHandler&) = delete;
+
   virtual ~DevToolsDomainHandler();
 
   virtual void SetRenderer(int process_host_id,
@@ -34,8 +38,6 @@ class DevToolsDomainHandler {
  private:
   std::string name_;
   DevToolsSession* session_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsDomainHandler);
 };
 
 }  // namespace protocol

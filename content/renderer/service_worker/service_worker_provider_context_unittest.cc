@@ -133,6 +133,10 @@ class MockWebServiceWorkerProviderClientImpl
 class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
  public:
   FakeURLLoaderFactory() = default;
+
+  FakeURLLoaderFactory(const FakeURLLoaderFactory&) = delete;
+  FakeURLLoaderFactory& operator=(const FakeURLLoaderFactory&) = delete;
+
   ~FakeURLLoaderFactory() override = default;
 
   void AddReceiver(
@@ -173,8 +177,6 @@ class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
   std::vector<mojo::PendingRemote<network::mojom::URLLoaderClient>> clients_;
   base::OnceClosure start_loader_callback_;
   GURL last_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeURLLoaderFactory);
 };
 
 // A fake ControllerServiceWorker implementation that basically does nothing but
@@ -183,6 +185,11 @@ class FakeControllerServiceWorker
     : public blink::mojom::ControllerServiceWorker {
  public:
   FakeControllerServiceWorker() = default;
+
+  FakeControllerServiceWorker(const FakeControllerServiceWorker&) = delete;
+  FakeControllerServiceWorker& operator=(const FakeControllerServiceWorker&) =
+      delete;
+
   ~FakeControllerServiceWorker() override = default;
 
   // blink::mojom::ControllerServiceWorker:
@@ -220,8 +227,6 @@ class FakeControllerServiceWorker
   blink::mojom::FetchAPIRequestPtr fetch_event_request_;
   base::OnceClosure fetch_event_callback_;
   mojo::ReceiverSet<blink::mojom::ControllerServiceWorker> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeControllerServiceWorker);
 };
 
 class FakeServiceWorkerContainerHost
@@ -231,6 +236,12 @@ class FakeServiceWorkerContainerHost
       mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
           receiver)
       : associated_receiver_(this, std::move(receiver)) {}
+
+  FakeServiceWorkerContainerHost(const FakeServiceWorkerContainerHost&) =
+      delete;
+  FakeServiceWorkerContainerHost& operator=(
+      const FakeServiceWorkerContainerHost&) = delete;
+
   ~FakeServiceWorkerContainerHost() override = default;
 
   // Implements blink::mojom::ServiceWorkerContainerHost.
@@ -273,7 +284,6 @@ class FakeServiceWorkerContainerHost
   mojo::ReceiverSet<blink::mojom::ServiceWorkerContainerHost> receivers_;
   mojo::AssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
       associated_receiver_;
-  DISALLOW_COPY_AND_ASSIGN(FakeServiceWorkerContainerHost);
 };
 
 class ServiceWorkerProviderContextTest : public testing::Test {

@@ -20,6 +20,10 @@ class RenderProcessHost;
 class LeakDetector {
  public:
   LeakDetector();
+
+  LeakDetector(const LeakDetector&) = delete;
+  LeakDetector& operator=(const LeakDetector&) = delete;
+
   ~LeakDetector();
 
   struct LeakDetectionReport {
@@ -43,8 +47,6 @@ class LeakDetector {
   blink::mojom::LeakDetectionResultPtr previous_result_;
   ReportCallback callback_;
   base::WeakPtrFactory<LeakDetector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LeakDetector);
 };
 
 }  // namespace content

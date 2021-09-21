@@ -54,6 +54,12 @@ enum class JobCompletionStatus { kRunning, kCompleted, kAborted };
 class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
  public:
   BackgroundFetchJobControllerTest() = default;
+
+  BackgroundFetchJobControllerTest(const BackgroundFetchJobControllerTest&) =
+      delete;
+  BackgroundFetchJobControllerTest& operator=(
+      const BackgroundFetchJobControllerTest&) = delete;
+
   ~BackgroundFetchJobControllerTest() override = default;
 
   // Returns the status for the active job for |registration_id|. The
@@ -236,8 +242,6 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
     finished_requests_[registration_id] = reason_to_abort;
     pending_requests_counts_.erase(iter);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchJobControllerTest);
 };
 
 TEST_F(BackgroundFetchJobControllerTest, SingleRequestJob) {

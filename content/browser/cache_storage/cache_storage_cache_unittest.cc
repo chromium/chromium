@@ -438,6 +438,9 @@ class TestCacheStorageCache : public LegacyCacheStorageCache {
                                 0 /* cache_padding */),
         delay_backend_creation_(false) {}
 
+  TestCacheStorageCache(const TestCacheStorageCache&) = delete;
+  TestCacheStorageCache& operator=(const TestCacheStorageCache&) = delete;
+
   ~TestCacheStorageCache() override { base::RunLoop().RunUntilIdle(); }
 
   void CreateBackend(ErrorCallback callback) override {
@@ -488,8 +491,6 @@ class TestCacheStorageCache : public LegacyCacheStorageCache {
  private:
   bool delay_backend_creation_;
   ErrorCallback backend_creation_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCacheStorageCache);
 };
 
 class MockLegacyCacheStorage : public LegacyCacheStorage {

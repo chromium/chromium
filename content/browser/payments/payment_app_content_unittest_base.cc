@@ -63,6 +63,11 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
       : EmbeddedWorkerTestHelper(base::FilePath()),
         last_sw_registration_id_(
             blink::mojom::kInvalidServiceWorkerRegistrationId) {}
+
+  PaymentAppForWorkerTestHelper(const PaymentAppForWorkerTestHelper&) = delete;
+  PaymentAppForWorkerTestHelper& operator=(
+      const PaymentAppForWorkerTestHelper&) = delete;
+
   ~PaymentAppForWorkerTestHelper() override {}
 
   class EmbeddedWorkerInstanceClient : public FakeEmbeddedWorkerInstanceClient {
@@ -71,6 +76,11 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
         PaymentAppForWorkerTestHelper* worker_helper)
         : FakeEmbeddedWorkerInstanceClient(worker_helper),
           worker_helper_(worker_helper) {}
+
+    EmbeddedWorkerInstanceClient(const EmbeddedWorkerInstanceClient&) = delete;
+    EmbeddedWorkerInstanceClient& operator=(
+        const EmbeddedWorkerInstanceClient&) = delete;
+
     ~EmbeddedWorkerInstanceClient() override = default;
 
     void StartWorker(
@@ -85,14 +95,16 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
 
    private:
     PaymentAppForWorkerTestHelper* const worker_helper_;
-
-    DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerInstanceClient);
   };
 
   class ServiceWorker : public FakeServiceWorker {
    public:
     explicit ServiceWorker(PaymentAppForWorkerTestHelper* worker_helper)
         : FakeServiceWorker(worker_helper), worker_helper_(worker_helper) {}
+
+    ServiceWorker(const ServiceWorker&) = delete;
+    ServiceWorker& operator=(const ServiceWorker&) = delete;
+
     ~ServiceWorker() override = default;
 
     void DispatchCanMakePaymentEvent(
@@ -139,8 +151,6 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
 
    private:
     PaymentAppForWorkerTestHelper* const worker_helper_;
-
-    DISALLOW_COPY_AND_ASSIGN(ServiceWorker);
   };
 
   std::unique_ptr<FakeEmbeddedWorkerInstanceClient> CreateInstanceClient()
@@ -159,9 +169,6 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
   bool respond_payment_request_immediately_ = true;
   mojo::Remote<payments::mojom::PaymentHandlerResponseCallback>
       response_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppForWorkerTestHelper);
 };
 
 PaymentAppContentUnitTestBase::PaymentAppContentUnitTestBase()

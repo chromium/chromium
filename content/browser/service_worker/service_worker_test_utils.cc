@@ -65,6 +65,10 @@ class FakeNavigationClient : public mojom::NavigationClient {
   explicit FakeNavigationClient(
       ReceivedProviderInfoCallback on_received_callback)
       : on_received_callback_(std::move(on_received_callback)) {}
+
+  FakeNavigationClient(const FakeNavigationClient&) = delete;
+  FakeNavigationClient& operator=(const FakeNavigationClient&) = delete;
+
   ~FakeNavigationClient() override = default;
 
  private:
@@ -108,8 +112,6 @@ class FakeNavigationClient : public mojom::NavigationClient {
   }
 
   ReceivedProviderInfoCallback on_received_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationClient);
 };
 
 class ResourceWriter {

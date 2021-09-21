@@ -17,6 +17,10 @@ class CONTENT_EXPORT SyntheticTouchDriver : public SyntheticPointerDriver {
  public:
   SyntheticTouchDriver();
   explicit SyntheticTouchDriver(blink::SyntheticWebTouchEvent touch_event);
+
+  SyntheticTouchDriver(const SyntheticTouchDriver&) = delete;
+  SyntheticTouchDriver& operator=(const SyntheticTouchDriver&) = delete;
+
   ~SyntheticTouchDriver() override;
 
   void DispatchEvent(SyntheticGestureTarget* target,
@@ -71,8 +75,6 @@ class CONTENT_EXPORT SyntheticTouchDriver : public SyntheticPointerDriver {
 
   blink::SyntheticWebTouchEvent touch_event_;
   PointerIdIndexMap pointer_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTouchDriver);
 };
 
 }  // namespace content

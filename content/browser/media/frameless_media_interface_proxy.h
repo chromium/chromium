@@ -33,6 +33,11 @@ class CONTENT_EXPORT FramelessMediaInterfaceProxy final
     : public media::mojom::InterfaceFactory {
  public:
   FramelessMediaInterfaceProxy();
+
+  FramelessMediaInterfaceProxy(const FramelessMediaInterfaceProxy&) = delete;
+  FramelessMediaInterfaceProxy& operator=(const FramelessMediaInterfaceProxy&) =
+      delete;
+
   ~FramelessMediaInterfaceProxy() final;
 
   void Add(mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
@@ -86,7 +91,6 @@ class CONTENT_EXPORT FramelessMediaInterfaceProxy final
   mojo::ReceiverSet<media::mojom::InterfaceFactory> receivers_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(FramelessMediaInterfaceProxy);
 };
 
 }  // namespace content

@@ -82,6 +82,10 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
           browser_interface_broker,
       ukm::SourceId ukm_source_id,
       const std::vector<std::string>& cors_exempt_header_list);
+
+  EmbeddedSharedWorkerStub(const EmbeddedSharedWorkerStub&) = delete;
+  EmbeddedSharedWorkerStub& operator=(const EmbeddedSharedWorkerStub&) = delete;
+
   ~EmbeddedSharedWorkerStub() override;
 
   // blink::WebSharedWorkerClient implementation.
@@ -115,8 +119,6 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
   // used by this worker (typically the network service).
   mojo::Remote<network::mojom::URLLoaderFactory>
       default_factory_disconnect_handler_holder_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedSharedWorkerStub);
 };
 
 }  // namespace content

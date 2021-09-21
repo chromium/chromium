@@ -21,6 +21,10 @@ namespace content {
 class TestWebUI : public WebUI {
  public:
   TestWebUI();
+
+  TestWebUI(const TestWebUI&) = delete;
+  TestWebUI& operator=(const TestWebUI&) = delete;
+
   ~TestWebUI() override;
 
   void ClearTrackedCalls();
@@ -129,8 +133,6 @@ class TestWebUI : public WebUI {
 
   // Observers to be notified on all javascript calls.
   base::ObserverList<JavascriptCallObserver> javascript_call_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebUI);
 };
 
 }  // namespace content

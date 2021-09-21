@@ -506,6 +506,10 @@ void WebContentsViewAura::AsyncDropNavigationObserver::DidFinishNavigation(
 class WebContentsViewAura::AsyncDropTempFileDeleter {
  public:
   AsyncDropTempFileDeleter() = default;
+
+  AsyncDropTempFileDeleter(const AsyncDropTempFileDeleter&) = delete;
+  AsyncDropTempFileDeleter& operator=(const AsyncDropTempFileDeleter&) = delete;
+
   ~AsyncDropTempFileDeleter();
   void RegisterFile(const base::FilePath& path);
 
@@ -514,7 +518,6 @@ class WebContentsViewAura::AsyncDropTempFileDeleter {
   void DeleteFileAsync(const base::FilePath& path) const;
 
   std::vector<base::FilePath> scoped_files_to_delete_;
-  DISALLOW_COPY_AND_ASSIGN(AsyncDropTempFileDeleter);
 };
 
 WebContentsViewAura::AsyncDropTempFileDeleter::~AsyncDropTempFileDeleter() {
@@ -548,6 +551,9 @@ class WebContentsViewAura::WindowObserver
   explicit WindowObserver(WebContentsViewAura* view) : view_(view) {
     view_->window_->AddObserver(this);
   }
+
+  WindowObserver(const WindowObserver&) = delete;
+  WindowObserver& operator=(const WindowObserver&) = delete;
 
   ~WindowObserver() override {
     view_->window_->RemoveObserver(this);
@@ -680,8 +686,6 @@ class WebContentsViewAura::WindowObserver
   aura::Window* host_window_ = nullptr;
 
   std::unique_ptr<PendingWindowChanges> pending_window_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowObserver);
 };
 
 // static

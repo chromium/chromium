@@ -34,12 +34,17 @@ class CONTENT_EXPORT ScopedNotifyNativeEventProcessorObserver {
       base::ObserverList<NativeEventProcessorObserver>::Unchecked*
           observer_list,
       NSEvent* event);
+
+  ScopedNotifyNativeEventProcessorObserver(
+      const ScopedNotifyNativeEventProcessorObserver&) = delete;
+  ScopedNotifyNativeEventProcessorObserver& operator=(
+      const ScopedNotifyNativeEventProcessorObserver&) = delete;
+
   ~ScopedNotifyNativeEventProcessorObserver();
 
  private:
   base::ObserverList<NativeEventProcessorObserver>::Unchecked* observer_list_;
   NSEvent* event_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedNotifyNativeEventProcessorObserver);
 };
 
 }  // namespace content

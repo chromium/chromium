@@ -22,6 +22,10 @@ class CONTENT_EXPORT ContactsManagerImpl
       mojo::PendingReceiver<blink::mojom::ContactsManager> receiver);
 
   explicit ContactsManagerImpl(RenderFrameHostImpl* render_frame_host);
+
+  ContactsManagerImpl(const ContactsManagerImpl&) = delete;
+  ContactsManagerImpl& operator=(const ContactsManagerImpl&) = delete;
+
   ~ContactsManagerImpl() override;
 
   void Select(bool multiple,
@@ -37,8 +41,6 @@ class CONTENT_EXPORT ContactsManagerImpl
 
   // The source id to use when reporting back UKM statistics.
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
-
-  DISALLOW_COPY_AND_ASSIGN(ContactsManagerImpl);
 };
 
 }  // namespace content

@@ -54,6 +54,11 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
       const BrowserContextGetter& browser_context_getter,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       ukm::SourceId worker_source_id);
+
+  WorkerScriptLoaderFactory(const WorkerScriptLoaderFactory&) = delete;
+  WorkerScriptLoaderFactory& operator=(const WorkerScriptLoaderFactory&) =
+      delete;
+
   ~WorkerScriptLoaderFactory() override;
 
   // network::mojom::URLLoaderFactory:
@@ -84,8 +89,6 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
   // mojo::PendingReceiver<URLLoader>, and invalidated after receiver completion
   // or failure.
   base::WeakPtr<WorkerScriptLoader> script_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerScriptLoaderFactory);
 };
 
 }  // namespace content

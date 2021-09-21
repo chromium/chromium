@@ -16,6 +16,10 @@ namespace content {
 class BrowserAccessibilityTest : public testing::Test {
  public:
   BrowserAccessibilityTest();
+
+  BrowserAccessibilityTest(const BrowserAccessibilityTest&) = delete;
+  BrowserAccessibilityTest& operator=(const BrowserAccessibilityTest&) = delete;
+
   ~BrowserAccessibilityTest() override;
 
  protected:
@@ -27,8 +31,6 @@ class BrowserAccessibilityTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityTest);
 };
 
 BrowserAccessibilityTest::BrowserAccessibilityTest()

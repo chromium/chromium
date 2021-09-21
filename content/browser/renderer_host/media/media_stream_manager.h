@@ -145,6 +145,9 @@ class CONTENT_EXPORT MediaStreamManager
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       std::unique_ptr<VideoCaptureProvider> video_capture_provider);
 
+  MediaStreamManager(const MediaStreamManager&) = delete;
+  MediaStreamManager& operator=(const MediaStreamManager&) = delete;
+
   ~MediaStreamManager() override;
 
   // Used to access VideoCaptureManager.
@@ -680,8 +683,6 @@ class CONTENT_EXPORT MediaStreamManager
   std::unique_ptr<AudioServiceListener> audio_service_listener_;
 
   GenerateStreamTestCallback generate_stream_test_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamManager);
 };
 
 }  // namespace content

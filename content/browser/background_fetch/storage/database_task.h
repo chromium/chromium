@@ -72,6 +72,9 @@ class DatabaseTask : public DatabaseTaskHost {
   using StorageVersionCallback =
       base::OnceCallback<void(proto::BackgroundFetchStorageVersion)>;
 
+  DatabaseTask(const DatabaseTask&) = delete;
+  DatabaseTask& operator=(const DatabaseTask&) = delete;
+
   ~DatabaseTask() override;
 
   virtual void Start() = 0;
@@ -175,8 +178,6 @@ class DatabaseTask : public DatabaseTaskHost {
       cache_storage_cache_remote_;
 
   base::WeakPtrFactory<DatabaseTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseTask);
 };
 
 }  // namespace background_fetch

@@ -36,6 +36,9 @@ class TestNotificationTracker : public NotificationObserver {
   // ListenFor for the notifications you are interested in.
   TestNotificationTracker();
 
+  TestNotificationTracker(const TestNotificationTracker&) = delete;
+  TestNotificationTracker& operator=(const TestNotificationTracker&) = delete;
+
   ~TestNotificationTracker() override;
 
   // Makes this object listen for the given notification with the given source.
@@ -80,8 +83,6 @@ class TestNotificationTracker : public NotificationObserver {
 
   // Lists all received since last cleared, in the order they were received.
   std::vector<Event> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNotificationTracker);
 };
 
 }  // namespace content

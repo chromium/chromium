@@ -80,6 +80,10 @@ class WebBundleURLLoaderFactory::EntryLoader final
         base::BindOnce(&EntryLoader::OnResponseReady,
                        weak_factory_.GetWeakPtr()));
   }
+
+  EntryLoader(const EntryLoader&) = delete;
+  EntryLoader& operator=(const EntryLoader&) = delete;
+
   ~EntryLoader() override = default;
 
  private:
@@ -179,8 +183,6 @@ class WebBundleURLLoaderFactory::EntryLoader final
   absl::optional<net::HttpByteRange> byte_range_;
 
   base::WeakPtrFactory<EntryLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EntryLoader);
 };
 
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(

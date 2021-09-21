@@ -29,15 +29,16 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
   // created by the builder, which also defines the ownership semantics.
   struct TestResponse {
     TestResponse();
+
+    TestResponse(const TestResponse&) = delete;
+    TestResponse& operator=(const TestResponse&) = delete;
+
     ~TestResponse();
 
     bool succeeded = false;
     bool pending = false;
     scoped_refptr<net::HttpResponseHeaders> headers;
     std::string data;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestResponse);
   };
 
   // Builder for creating a TestResponse object with the given data.
@@ -46,6 +47,10 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
   class TestResponseBuilder {
    public:
     explicit TestResponseBuilder(int response_code);
+
+    TestResponseBuilder(const TestResponseBuilder&) = delete;
+    TestResponseBuilder& operator=(const TestResponseBuilder&) = delete;
+
     ~TestResponseBuilder();
 
     TestResponseBuilder& AddResponseHeader(const std::string& name,
@@ -60,8 +65,6 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
 
    private:
     std::unique_ptr<TestResponse> response_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestResponseBuilder);
   };
 
   MockBackgroundFetchDelegate();

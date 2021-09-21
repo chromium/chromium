@@ -97,6 +97,9 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     }
   }
 
+  NetworkServiceTestImpl(const NetworkServiceTestImpl&) = delete;
+  NetworkServiceTestImpl& operator=(const NetworkServiceTestImpl&) = delete;
+
   ~NetworkServiceTestImpl() override {
     network::NetworkContext::SetCertVerifierForTesting(nullptr);
   }
@@ -314,8 +317,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   base::MemoryPressureListener::MemoryPressureLevel
       latest_memory_pressure_level_ =
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceTestImpl);
 };
 
 NetworkServiceTestHelper::NetworkServiceTestHelper()

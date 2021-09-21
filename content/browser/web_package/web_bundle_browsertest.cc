@@ -119,6 +119,10 @@ class DownloadObserver : public DownloadManager::Observer {
   explicit DownloadObserver(DownloadManager* manager) : manager_(manager) {
     manager_->AddObserver(this);
   }
+
+  DownloadObserver(const DownloadObserver&) = delete;
+  DownloadObserver& operator=(const DownloadObserver&) = delete;
+
   ~DownloadObserver() override { manager_->RemoveObserver(this); }
 
   void WaitUntilDownloadCreated() { run_loop_.Run(); }
@@ -135,8 +139,6 @@ class DownloadObserver : public DownloadManager::Observer {
   DownloadManager* manager_;
   base::RunLoop run_loop_;
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadObserver);
 };
 
 class MockParserFactory;
@@ -158,6 +160,10 @@ class MockParser final : public web_package::mojom::WebBundleParser {
         primary_url_(primary_url),
         simulate_parse_metadata_crash_(simulate_parse_metadata_crash),
         simulate_parse_response_crash_(simulate_parse_response_crash) {}
+
+  MockParser(const MockParser&) = delete;
+  MockParser& operator=(const MockParser&) = delete;
+
   ~MockParser() override = default;
 
  private:
@@ -173,8 +179,6 @@ class MockParser final : public web_package::mojom::WebBundleParser {
   const GURL primary_url_;
   const bool simulate_parse_metadata_crash_;
   const bool simulate_parse_response_crash_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockParser);
 };
 
 class MockParserFactory final
@@ -218,6 +222,10 @@ class MockParserFactory final
             base::BindRepeating(&MockParserFactory::BindWebBundleParserFactory,
                                 base::Unretained(this)));
   }
+
+  MockParserFactory(const MockParserFactory&) = delete;
+  MockParserFactory& operator=(const MockParserFactory&) = delete;
+
   ~MockParserFactory() override = default;
 
   int GetParserCreationCount() const { return parser_creation_count_; }
@@ -266,8 +274,6 @@ class MockParserFactory final
   int parser_creation_count_ = 0;
   base::flat_map<GURL, web_package::mojom::BundleIndexValuePtr> index_;
   const GURL primary_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockParserFactory);
 };
 
 void MockParser::ParseMetadata(ParseMetadataCallback callback) {
@@ -308,6 +314,10 @@ void MockParser::ParseResponse(uint64_t response_offset,
 class TestBrowserClient : public ContentBrowserClient {
  public:
   TestBrowserClient() = default;
+
+  TestBrowserClient(const TestBrowserClient&) = delete;
+  TestBrowserClient& operator=(const TestBrowserClient&) = delete;
+
   ~TestBrowserClient() override = default;
   bool CanAcceptUntrustedExchangesIfNeeded() override { return true; }
   std::string GetAcceptLangs(BrowserContext* context) override {
@@ -317,7 +327,6 @@ class TestBrowserClient : public ContentBrowserClient {
 
  private:
   std::string accept_langs_ = "en";
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserClient);
 };
 
 class WebBundleBrowserTestBase : public ContentBrowserTest {

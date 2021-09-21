@@ -20,6 +20,11 @@ class BluetoothAllowedDevices;
 class CONTENT_EXPORT BluetoothAllowedDevicesMap {
  public:
   BluetoothAllowedDevicesMap();
+
+  BluetoothAllowedDevicesMap(const BluetoothAllowedDevicesMap&) = delete;
+  BluetoothAllowedDevicesMap& operator=(const BluetoothAllowedDevicesMap&) =
+      delete;
+
   ~BluetoothAllowedDevicesMap();
 
   // Gets a BluetoothAllowedDevices for each origin; creates one if it doesn't
@@ -33,8 +38,6 @@ class CONTENT_EXPORT BluetoothAllowedDevicesMap {
  private:
   std::map<url::Origin, content::BluetoothAllowedDevices>
       origin_to_allowed_devices_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAllowedDevicesMap);
 };
 
 }  //  namespace content

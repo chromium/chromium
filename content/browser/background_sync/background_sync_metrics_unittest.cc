@@ -15,12 +15,15 @@ using blink::mojom::BackgroundSyncType;
 class BackgroundSyncMetricsTest : public ::testing::Test {
  public:
   BackgroundSyncMetricsTest() = default;
+
+  BackgroundSyncMetricsTest(const BackgroundSyncMetricsTest&) = delete;
+  BackgroundSyncMetricsTest& operator=(const BackgroundSyncMetricsTest&) =
+      delete;
+
   ~BackgroundSyncMetricsTest() override = default;
 
  protected:
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncMetricsTest);
 };
 
 TEST_F(BackgroundSyncMetricsTest, RecordEventStarted) {

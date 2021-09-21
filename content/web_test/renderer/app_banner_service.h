@@ -21,6 +21,10 @@ namespace content {
 class AppBannerService : public blink::mojom::AppBannerService {
  public:
   AppBannerService();
+
+  AppBannerService(const AppBannerService&) = delete;
+  AppBannerService& operator=(const AppBannerService&) = delete;
+
   ~AppBannerService() override;
 
   mojo::Remote<blink::mojom::AppBannerController>& controller() {
@@ -40,8 +44,6 @@ class AppBannerService : public blink::mojom::AppBannerService {
   mojo::Receiver<blink::mojom::AppBannerService> receiver_{this};
   mojo::Remote<blink::mojom::AppBannerEvent> event_;
   mojo::Remote<blink::mojom::AppBannerController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppBannerService);
 };
 
 }  // namespace content

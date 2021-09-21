@@ -20,6 +20,11 @@ class ShellJavaScriptDialog;
 class ShellJavaScriptDialogManager : public JavaScriptDialogManager {
  public:
   ShellJavaScriptDialogManager();
+
+  ShellJavaScriptDialogManager(const ShellJavaScriptDialogManager&) = delete;
+  ShellJavaScriptDialogManager& operator=(const ShellJavaScriptDialogManager&) =
+      delete;
+
   ~ShellJavaScriptDialogManager() override;
 
   // JavaScriptDialogManager:
@@ -67,8 +72,6 @@ class ShellJavaScriptDialogManager : public JavaScriptDialogManager {
   bool beforeunload_success_;
 
   DialogClosedCallback before_unload_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellJavaScriptDialogManager);
 };
 
 }  // namespace content

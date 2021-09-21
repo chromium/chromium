@@ -124,13 +124,17 @@ class MediaInternals::MediaInternalLogRecordsImpl
  public:
   MediaInternalLogRecordsImpl(content::MediaInternals* media_internals,
                               int render_process_id);
+
+  MediaInternalLogRecordsImpl(const MediaInternalLogRecordsImpl&) = delete;
+  MediaInternalLogRecordsImpl& operator=(const MediaInternalLogRecordsImpl&) =
+      delete;
+
   ~MediaInternalLogRecordsImpl() override = default;
   void Log(const std::vector<::media::MediaLogRecord>& arr) override;
 
  private:
   content::MediaInternals* const media_internals_;
   const int render_process_id_;
-  DISALLOW_COPY_AND_ASSIGN(MediaInternalLogRecordsImpl);
 };
 
 MediaInternals::MediaInternalLogRecordsImpl::MediaInternalLogRecordsImpl(
@@ -153,6 +157,10 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
                int component_id,
                int render_process_id,
                int render_frame_id);
+
+  AudioLogImpl(const AudioLogImpl&) = delete;
+  AudioLogImpl& operator=(const AudioLogImpl&) = delete;
+
   ~AudioLogImpl() override;
 
   void OnCreated(const media::AudioParameters& params,
@@ -188,8 +196,6 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
   const int component_id_;
   const int render_process_id_;
   const int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioLogImpl);
 };
 
 MediaInternals::AudioLogImpl::AudioLogImpl(

@@ -33,6 +33,10 @@ enum class FilterGestureEventResult {
 class CONTENT_EXPORT TouchActionFilter {
  public:
   TouchActionFilter();
+
+  TouchActionFilter(const TouchActionFilter&) = delete;
+  TouchActionFilter& operator=(const TouchActionFilter&) = delete;
+
   ~TouchActionFilter();
 
   // Returns kFilterGestureEventFiltered if the supplied gesture event should be
@@ -151,8 +155,6 @@ class CONTENT_EXPORT TouchActionFilter {
 
   // Debugging only.
   std::string gesture_sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchActionFilter);
 };
 
 }  // namespace content

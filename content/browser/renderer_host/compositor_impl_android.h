@@ -69,6 +69,10 @@ class CONTENT_EXPORT CompositorImpl
       public display::DisplayObserver {
  public:
   CompositorImpl(CompositorClient* client, gfx::NativeWindow root_window);
+
+  CompositorImpl(const CompositorImpl&) = delete;
+  CompositorImpl& operator=(const CompositorImpl&) = delete;
+
   ~CompositorImpl() override;
 
   static bool IsInitialized();
@@ -279,8 +283,6 @@ class CONTENT_EXPORT CompositorImpl
   display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorImpl);
 };
 
 }  // namespace content

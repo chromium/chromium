@@ -29,6 +29,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   BrowserAccessibilityManagerWin(const ui::AXTreeUpdate& initial_tree,
                                  BrowserAccessibilityDelegate* delegate);
 
+  BrowserAccessibilityManagerWin(const BrowserAccessibilityManagerWin&) =
+      delete;
+  BrowserAccessibilityManagerWin& operator=(
+      const BrowserAccessibilityManagerWin&) = delete;
+
   ~BrowserAccessibilityManagerWin() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
@@ -160,8 +165,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   // the map is cleared in |FinalizeAccessibilityEvents|.
   SelectionEventsMap ia2_selection_events_;
   SelectionEventsMap uia_selection_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerWin);
 };
 
 }  // namespace content

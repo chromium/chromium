@@ -5522,6 +5522,12 @@ class PageEffectiveURLContentBrowserClient : public ContentBrowserClient {
   PageEffectiveURLContentBrowserClient(const GURL& url_to_modify,
                                        const GURL& url_to_return)
       : url_to_modify_(url_to_modify), url_to_return_(url_to_return) {}
+
+  PageEffectiveURLContentBrowserClient(
+      const PageEffectiveURLContentBrowserClient&) = delete;
+  PageEffectiveURLContentBrowserClient& operator=(
+      const PageEffectiveURLContentBrowserClient&) = delete;
+
   ~PageEffectiveURLContentBrowserClient() override = default;
 
  private:
@@ -5534,8 +5540,6 @@ class PageEffectiveURLContentBrowserClient : public ContentBrowserClient {
 
   GURL url_to_modify_;
   GURL url_to_return_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageEffectiveURLContentBrowserClient);
 };
 
 // Ensure that same-document navigations for URLs with effective URLs don't
@@ -8667,6 +8671,12 @@ class RenderFrameHostManagerDefaultProcessTest
     feature_list_.InitAndEnableFeature(
         features::kProcessSharingWithStrictSiteInstances);
   }
+
+  RenderFrameHostManagerDefaultProcessTest(
+      const RenderFrameHostManagerDefaultProcessTest&) = delete;
+  RenderFrameHostManagerDefaultProcessTest& operator=(
+      const RenderFrameHostManagerDefaultProcessTest&) = delete;
+
   ~RenderFrameHostManagerDefaultProcessTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -8681,8 +8691,6 @@ class RenderFrameHostManagerDefaultProcessTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostManagerDefaultProcessTest);
 };
 
 // Ensure that the default process can be used for URLs that don't assign a site
@@ -8977,14 +8985,17 @@ class RenderFrameHostManagerNoSiteIsolationTest
     : public RenderFrameHostManagerTest {
  public:
   RenderFrameHostManagerNoSiteIsolationTest() = default;
+
+  RenderFrameHostManagerNoSiteIsolationTest(
+      const RenderFrameHostManagerNoSiteIsolationTest&) = delete;
+  RenderFrameHostManagerNoSiteIsolationTest& operator=(
+      const RenderFrameHostManagerNoSiteIsolationTest&) = delete;
+
   ~RenderFrameHostManagerNoSiteIsolationTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostManagerNoSiteIsolationTest);
 };
 
 // Ensure that when a process that allows any site gets reused by new

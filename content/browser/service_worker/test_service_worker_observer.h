@@ -28,6 +28,11 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
  public:
   explicit TestServiceWorkerObserver(
       scoped_refptr<ServiceWorkerContextWrapper> wrapper);
+
+  TestServiceWorkerObserver(const TestServiceWorkerObserver&) = delete;
+  TestServiceWorkerObserver& operator=(const TestServiceWorkerObserver&) =
+      delete;
+
   ~TestServiceWorkerObserver() override;
 
   // Returns when |version| reaches |status|.
@@ -55,8 +60,6 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
   ServiceWorkerVersion::Status status_for_status_change_ =
       ServiceWorkerVersion::NEW;
   base::OnceClosure quit_closure_for_status_change_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestServiceWorkerObserver);
 };
 
 }  // namespace content

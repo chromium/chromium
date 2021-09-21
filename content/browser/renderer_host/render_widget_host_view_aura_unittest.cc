@@ -180,6 +180,10 @@ class TestWindowObserver : public aura::WindowObserver {
       : window_(window_to_observe) {
     window_->AddObserver(this);
   }
+
+  TestWindowObserver(const TestWindowObserver&) = delete;
+  TestWindowObserver& operator=(const TestWindowObserver&) = delete;
+
   ~TestWindowObserver() override {
     if (window_)
       window_->RemoveObserver(this);
@@ -200,8 +204,6 @@ class TestWindowObserver : public aura::WindowObserver {
 
   // Was |window_| destroyed?
   bool destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowObserver);
 };
 
 class FakeWindowEventDispatcher : public aura::WindowEventDispatcher {
@@ -234,6 +236,10 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
       : RenderWidgetHostViewAura(widget) {
     InstallDelegatedFrameHostClient(this);
   }
+
+  FakeRenderWidgetHostViewAura(const FakeRenderWidgetHostViewAura&) = delete;
+  FakeRenderWidgetHostViewAura& operator=(const FakeRenderWidgetHostViewAura&) =
+      delete;
 
   ~FakeRenderWidgetHostViewAura() override = default;
 
@@ -277,16 +283,16 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
 
   gfx::Size last_frame_size_;
   FakeWindowEventDispatcher* dispatcher_;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRenderWidgetHostViewAura);
 };
 
 // A layout manager that always resizes a child to the root window size.
 class FullscreenLayoutManager : public aura::LayoutManager {
  public:
   explicit FullscreenLayoutManager(aura::Window* owner) : owner_(owner) {}
+
+  FullscreenLayoutManager(const FullscreenLayoutManager&) = delete;
+  FullscreenLayoutManager& operator=(const FullscreenLayoutManager&) = delete;
+
   ~FullscreenLayoutManager() override {}
 
   // Overridden from aura::LayoutManager:
@@ -310,7 +316,6 @@ class FullscreenLayoutManager : public aura::LayoutManager {
 
  private:
   aura::Window* owner_;
-  DISALLOW_COPY_AND_ASSIGN(FullscreenLayoutManager);
 };
 
 class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
@@ -436,6 +441,10 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
 class TestScopedKeyboardHook : public aura::ScopedKeyboardHook {
  public:
   TestScopedKeyboardHook();
+
+  TestScopedKeyboardHook(const TestScopedKeyboardHook&) = delete;
+  TestScopedKeyboardHook& operator=(const TestScopedKeyboardHook&) = delete;
+
   ~TestScopedKeyboardHook() override;
 
   // aura::ScopedKeyboardHook override.
@@ -449,8 +458,6 @@ class TestScopedKeyboardHook : public aura::ScopedKeyboardHook {
  private:
   bool keyboard_lock_active_ = false;
   absl::optional<ui::DomCode> locked_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScopedKeyboardHook);
 };
 
 TestScopedKeyboardHook::TestScopedKeyboardHook() = default;
@@ -5397,11 +5404,16 @@ class TouchpadRenderWidgetHostViewAuraTest
  public:
   TouchpadRenderWidgetHostViewAuraTest()
       : WithFeatureOverride(features::kTouchpadAsyncPinchEvents) {}
+
+  TouchpadRenderWidgetHostViewAuraTest(
+      const TouchpadRenderWidgetHostViewAuraTest&) = delete;
+  TouchpadRenderWidgetHostViewAuraTest& operator=(
+      const TouchpadRenderWidgetHostViewAuraTest&) = delete;
+
   ~TouchpadRenderWidgetHostViewAuraTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(TouchpadRenderWidgetHostViewAuraTest);
 };
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(TouchpadRenderWidgetHostViewAuraTest);
@@ -5745,6 +5757,12 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
  public:
    RenderWidgetHostViewAuraWithViewHarnessTest()
       : view_(nullptr) {}
+
+   RenderWidgetHostViewAuraWithViewHarnessTest(
+       const RenderWidgetHostViewAuraWithViewHarnessTest&) = delete;
+   RenderWidgetHostViewAuraWithViewHarnessTest& operator=(
+       const RenderWidgetHostViewAuraWithViewHarnessTest&) = delete;
+
    ~RenderWidgetHostViewAuraWithViewHarnessTest() override {}
 
  protected:
@@ -5769,8 +5787,6 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
 
  private:
   RenderWidgetHostViewAura* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraWithViewHarnessTest);
 };
 
 // Provides a mock implementation of the WebContentsViewDelegate class.
@@ -5780,6 +5796,10 @@ class MockWebContentsViewDelegate : public WebContentsViewDelegate {
  public:
   MockWebContentsViewDelegate()
       : context_menu_request_received_(false) {}
+
+  MockWebContentsViewDelegate(const MockWebContentsViewDelegate&) = delete;
+  MockWebContentsViewDelegate& operator=(const MockWebContentsViewDelegate&) =
+      delete;
 
   ~MockWebContentsViewDelegate() override {}
 
@@ -5806,8 +5826,6 @@ class MockWebContentsViewDelegate : public WebContentsViewDelegate {
  private:
   bool context_menu_request_received_;
   ContextMenuParams context_menu_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWebContentsViewDelegate);
 };
 
 // On Windows we don't want the context menu to be displayed in the context of
@@ -5881,6 +5899,10 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
 class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
  public:
   InputMethodAuraTestBase() = default;
+
+  InputMethodAuraTestBase(const InputMethodAuraTestBase&) = delete;
+  InputMethodAuraTestBase& operator=(const InputMethodAuraTestBase&) = delete;
+
   ~InputMethodAuraTestBase() override = default;
 
   void SetUp() override {
@@ -6007,8 +6029,6 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
   std::unique_ptr<AgentSchedulingGroupHost> third_agent_scheduling_group_host_;
   MockRenderWidgetHostImpl* widget_host_for_third_process_;
   TestRenderWidgetHostView* view_for_third_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodAuraTestBase);
 };
 
 // A group of tests which verify that the IME method results are routed to the
@@ -6021,6 +6041,11 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 class InputMethodResultAuraTest : public InputMethodAuraTestBase {
  public:
   InputMethodResultAuraTest() {}
+
+  InputMethodResultAuraTest(const InputMethodResultAuraTest&) = delete;
+  InputMethodResultAuraTest& operator=(const InputMethodResultAuraTest&) =
+      delete;
+
   ~InputMethodResultAuraTest() override {}
 
  protected:
@@ -6031,9 +6056,6 @@ class InputMethodResultAuraTest : public InputMethodAuraTestBase {
     std::move(closure).Run();
     return process->sink().GetFirstMessageMatching(message_id);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodResultAuraTest);
 };
 
 // This test verifies ui::TextInputClient::SetCompositionText.
@@ -6227,6 +6249,10 @@ TEST_F(InputMethodResultAuraTest, ChangeTextDirectionAndLayoutAlignment) {
 class InputMethodStateAuraTest : public InputMethodAuraTestBase {
  public:
   InputMethodStateAuraTest() {}
+
+  InputMethodStateAuraTest(const InputMethodStateAuraTest&) = delete;
+  InputMethodStateAuraTest& operator=(const InputMethodStateAuraTest&) = delete;
+
   ~InputMethodStateAuraTest() override {}
 
  protected:
@@ -6241,9 +6267,6 @@ class InputMethodStateAuraTest : public InputMethodAuraTestBase {
     return gfx::Rect(view->TransformPointToRootCoordSpace(rect.origin()),
                      rect.size());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodStateAuraTest);
 };
 
 // This test is for caret bounds which are calculated based on the tracked value
@@ -6537,6 +6560,12 @@ class RenderWidgetHostViewAuraInputMethodTest
       public ui::InputMethodObserver {
  public:
   RenderWidgetHostViewAuraInputMethodTest() = default;
+
+  RenderWidgetHostViewAuraInputMethodTest(
+      const RenderWidgetHostViewAuraInputMethodTest&) = delete;
+  RenderWidgetHostViewAuraInputMethodTest& operator=(
+      const RenderWidgetHostViewAuraInputMethodTest&) = delete;
+
   ~RenderWidgetHostViewAuraInputMethodTest() override {}
   void SetUp() override {
     input_method_ = new ui::MockInputMethod(nullptr);
@@ -6560,8 +6589,6 @@ class RenderWidgetHostViewAuraInputMethodTest
   // Not owned.
   ui::MockInputMethod* input_method_ = nullptr;
   const ui::TextInputClient* text_input_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraInputMethodTest);
 };
 
 // This test is for notifying InputMethod for surrounding text changes.
@@ -6684,6 +6711,12 @@ class RenderWidgetHostViewAuraKeyboardTest
     : public RenderWidgetHostViewAuraTest {
  public:
   RenderWidgetHostViewAuraKeyboardTest() = default;
+
+  RenderWidgetHostViewAuraKeyboardTest(
+      const RenderWidgetHostViewAuraKeyboardTest&) = delete;
+  RenderWidgetHostViewAuraKeyboardTest& operator=(
+      const RenderWidgetHostViewAuraKeyboardTest&) = delete;
+
   ~RenderWidgetHostViewAuraKeyboardTest() override {}
   void SetUp() override {
     input_method_ = new RenderWidgetHostViewAuraKeyboardMockInputMethod();
@@ -6700,7 +6733,6 @@ class RenderWidgetHostViewAuraKeyboardTest
  private:
   // Not owned.
   RenderWidgetHostViewAuraKeyboardMockInputMethod* input_method_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraKeyboardTest);
 };
 #endif
 

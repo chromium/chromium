@@ -68,6 +68,11 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
  public:
   explicit RendererBlinkPlatformImpl(
       blink::scheduler::WebThreadScheduler* main_thread_scheduler);
+
+  RendererBlinkPlatformImpl(const RendererBlinkPlatformImpl&) = delete;
+  RendererBlinkPlatformImpl& operator=(const RendererBlinkPlatformImpl&) =
+      delete;
+
   ~RendererBlinkPlatformImpl() override;
 
   blink::scheduler::WebThreadScheduler* main_thread_scheduler() {
@@ -303,8 +308,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
 #endif
 
   THREAD_CHECKER(main_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RendererBlinkPlatformImpl);
 };
 
 }  // namespace content

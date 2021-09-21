@@ -28,6 +28,10 @@ class CONTENT_EXPORT DevToolsManager {
   static DevToolsManager* GetInstance();
 
   DevToolsManager();
+
+  DevToolsManager(const DevToolsManager&) = delete;
+  DevToolsManager& operator=(const DevToolsManager&) = delete;
+
   virtual ~DevToolsManager();
 
   DevToolsManagerDelegate* delegate() const { return delegate_.get(); }
@@ -42,8 +46,6 @@ class CONTENT_EXPORT DevToolsManager {
   std::unique_ptr<DevToolsManagerDelegate> delegate_;
   std::unique_ptr<DevToolsHttpHandler> http_handler_;
   std::unique_ptr<DevToolsPipeHandler> pipe_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsManager);
 };
 
 }  // namespace content

@@ -31,6 +31,10 @@ class CONTENT_EXPORT PermissionServiceImpl
  public:
   PermissionServiceImpl(PermissionServiceContext* context,
                         const url::Origin& origin);
+
+  PermissionServiceImpl(const PermissionServiceImpl&) = delete;
+  PermissionServiceImpl& operator=(const PermissionServiceImpl&) = delete;
+
   ~PermissionServiceImpl() override;
 
  private:
@@ -75,8 +79,6 @@ class CONTENT_EXPORT PermissionServiceImpl
   PermissionServiceContext* context_;
   const url::Origin origin_;
   base::WeakPtrFactory<PermissionServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionServiceImpl);
 };
 
 }  // namespace content

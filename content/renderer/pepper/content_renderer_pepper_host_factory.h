@@ -20,6 +20,12 @@ class RendererPpapiHostImpl;
 class ContentRendererPepperHostFactory : public ppapi::host::HostFactory {
  public:
   explicit ContentRendererPepperHostFactory(RendererPpapiHostImpl* host);
+
+  ContentRendererPepperHostFactory(const ContentRendererPepperHostFactory&) =
+      delete;
+  ContentRendererPepperHostFactory& operator=(
+      const ContentRendererPepperHostFactory&) = delete;
+
   ~ContentRendererPepperHostFactory() override;
 
   std::unique_ptr<ppapi::host::ResourceHost> CreateResourceHost(
@@ -33,8 +39,6 @@ class ContentRendererPepperHostFactory : public ppapi::host::HostFactory {
 
   // Non-owning pointer.
   RendererPpapiHostImpl* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentRendererPepperHostFactory);
 };
 
 }  // namespace content

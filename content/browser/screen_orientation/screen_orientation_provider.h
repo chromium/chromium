@@ -28,6 +28,10 @@ class CONTENT_EXPORT ScreenOrientationProvider
  public:
   ScreenOrientationProvider(WebContents* web_contents);
 
+  ScreenOrientationProvider(const ScreenOrientationProvider&) = delete;
+  ScreenOrientationProvider& operator=(const ScreenOrientationProvider&) =
+      delete;
+
   ~ScreenOrientationProvider() override;
 
   void BindScreenOrientation(
@@ -83,8 +87,6 @@ class CONTENT_EXPORT ScreenOrientationProvider
   LockOrientationCallback pending_callback_;
 
   RenderFrameHostReceiverSet<device::mojom::ScreenOrientation> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationProvider);
 };
 
 }  // namespace content

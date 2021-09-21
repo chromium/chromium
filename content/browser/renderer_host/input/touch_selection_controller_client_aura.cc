@@ -67,6 +67,9 @@ class TouchSelectionControllerClientAura::EnvEventObserver
     env->AddEventObserver(this, env, types);
   }
 
+  EnvEventObserver(const EnvEventObserver&) = delete;
+  EnvEventObserver& operator=(const EnvEventObserver&) = delete;
+
   ~EnvEventObserver() override {
     aura::Env::GetInstance()->RemoveEventObserver(this);
   }
@@ -99,8 +102,6 @@ class TouchSelectionControllerClientAura::EnvEventObserver
 
   ui::TouchSelectionController* selection_controller_;
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnvEventObserver);
 };
 
 TouchSelectionControllerClientAura::TouchSelectionControllerClientAura(

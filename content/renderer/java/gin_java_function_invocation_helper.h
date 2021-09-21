@@ -22,6 +22,12 @@ class GinJavaFunctionInvocationHelper {
   GinJavaFunctionInvocationHelper(
       const std::string& method_name,
       const base::WeakPtr<GinJavaBridgeDispatcher>& dispatcher);
+
+  GinJavaFunctionInvocationHelper(const GinJavaFunctionInvocationHelper&) =
+      delete;
+  GinJavaFunctionInvocationHelper& operator=(
+      const GinJavaFunctionInvocationHelper&) = delete;
+
   ~GinJavaFunctionInvocationHelper();
 
   v8::Local<v8::Value> Invoke(gin::Arguments* args);
@@ -30,8 +36,6 @@ class GinJavaFunctionInvocationHelper {
   std::string method_name_;
   base::WeakPtr<GinJavaBridgeDispatcher> dispatcher_;
   std::unique_ptr<GinJavaBridgeValueConverter> converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaFunctionInvocationHelper);
 };
 
 }  // namespace content

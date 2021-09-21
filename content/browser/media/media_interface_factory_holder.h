@@ -28,6 +28,11 @@ class MediaInterfaceFactoryHolder {
   // |media_service_getter| will be called from the UI thread.
   MediaInterfaceFactoryHolder(MediaServiceGetter media_service_getter,
                               FrameServicesGetter frame_services_getter);
+
+  MediaInterfaceFactoryHolder(const MediaInterfaceFactoryHolder&) = delete;
+  MediaInterfaceFactoryHolder& operator=(const MediaInterfaceFactoryHolder&) =
+      delete;
+
   ~MediaInterfaceFactoryHolder();
 
   // Gets the MediaService |interface_factory_remote_|. The returned pointer is
@@ -42,8 +47,6 @@ class MediaInterfaceFactoryHolder {
   mojo::Remote<media::mojom::InterfaceFactory> interface_factory_remote_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInterfaceFactoryHolder);
 };
 
 }  // namespace content

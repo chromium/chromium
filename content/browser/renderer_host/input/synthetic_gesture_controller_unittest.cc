@@ -750,13 +750,17 @@ class DummySyntheticGestureControllerDelegate
     : public SyntheticGestureController::Delegate {
  public:
   DummySyntheticGestureControllerDelegate() {}
+
+  DummySyntheticGestureControllerDelegate(
+      const DummySyntheticGestureControllerDelegate&) = delete;
+  DummySyntheticGestureControllerDelegate& operator=(
+      const DummySyntheticGestureControllerDelegate&) = delete;
+
   ~DummySyntheticGestureControllerDelegate() override {}
 
  private:
   // SyntheticGestureController::Delegate:
   bool HasGestureStopped() override { return true; }
-
-  DISALLOW_COPY_AND_ASSIGN(DummySyntheticGestureControllerDelegate);
 };
 
 }  // namespace

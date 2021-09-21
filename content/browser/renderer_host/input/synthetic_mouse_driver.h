@@ -14,6 +14,10 @@ namespace content {
 class CONTENT_EXPORT SyntheticMouseDriver : public SyntheticPointerDriver {
  public:
   SyntheticMouseDriver();
+
+  SyntheticMouseDriver(const SyntheticMouseDriver&) = delete;
+  SyntheticMouseDriver& operator=(const SyntheticMouseDriver&) = delete;
+
   ~SyntheticMouseDriver() override;
 
   void DispatchEvent(SyntheticGestureTarget* target,
@@ -73,8 +77,6 @@ class CONTENT_EXPORT SyntheticMouseDriver : public SyntheticPointerDriver {
   base::TimeTicks last_mouse_click_time_ = base::TimeTicks::Now();
   float last_x_ = 0;
   float last_y_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticMouseDriver);
 };
 
 }  // namespace content

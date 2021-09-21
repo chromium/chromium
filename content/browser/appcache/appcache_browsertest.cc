@@ -41,11 +41,12 @@ class AppCacheNetworkServiceBrowserTest : public ContentBrowserTest {
  public:
   AppCacheNetworkServiceBrowserTest() = default;
 
+  AppCacheNetworkServiceBrowserTest(const AppCacheNetworkServiceBrowserTest&) =
+      delete;
+  AppCacheNetworkServiceBrowserTest& operator=(
+      const AppCacheNetworkServiceBrowserTest&) = delete;
+
   ~AppCacheNetworkServiceBrowserTest() override = default;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheNetworkServiceBrowserTest);
 };
 
 // This test validates that navigating to a TLD which has an AppCache

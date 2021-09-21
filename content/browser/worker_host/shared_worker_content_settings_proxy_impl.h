@@ -30,6 +30,11 @@ class CONTENT_EXPORT SharedWorkerContentSettingsProxyImpl
       SharedWorkerHost* owner,
       mojo::PendingReceiver<blink::mojom::WorkerContentSettingsProxy> receiver);
 
+  SharedWorkerContentSettingsProxyImpl(
+      const SharedWorkerContentSettingsProxyImpl&) = delete;
+  SharedWorkerContentSettingsProxyImpl& operator=(
+      const SharedWorkerContentSettingsProxyImpl&) = delete;
+
   ~SharedWorkerContentSettingsProxyImpl() override;
 
   // blink::mojom::WorkerContentSettingsProxy implementation.
@@ -43,8 +48,6 @@ class CONTENT_EXPORT SharedWorkerContentSettingsProxyImpl
   const url::Origin origin_;
   SharedWorkerHost* owner_;
   mojo::Receiver<blink::mojom::WorkerContentSettingsProxy> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerContentSettingsProxyImpl);
 };
 
 }  // namespace content

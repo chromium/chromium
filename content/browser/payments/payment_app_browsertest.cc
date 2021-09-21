@@ -74,6 +74,10 @@ void InvokePaymentAppCallback(base::OnceClosure done_callback,
 class PaymentAppBrowserTest : public ContentBrowserTest {
  public:
   PaymentAppBrowserTest() {}
+
+  PaymentAppBrowserTest(const PaymentAppBrowserTest&) = delete;
+  PaymentAppBrowserTest& operator=(const PaymentAppBrowserTest&) = delete;
+
   ~PaymentAppBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -251,8 +255,6 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppBrowserTest);
 };
 
 // TODO(crbug.com/869790) Flakes on linux-chromeos-dbg

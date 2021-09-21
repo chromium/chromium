@@ -100,6 +100,10 @@ class VideoCaptureTest : public testing::Test,
         audio_system_(
             std::make_unique<media::AudioSystemImpl>(audio_manager_.get())),
         task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+
+  VideoCaptureTest(const VideoCaptureTest&) = delete;
+  VideoCaptureTest& operator=(const VideoCaptureTest&) = delete;
+
   ~VideoCaptureTest() override { audio_manager_->Shutdown(); }
 
   void SetUp() override {
@@ -318,8 +322,6 @@ class VideoCaptureTest : public testing::Test,
 
   std::unique_ptr<VideoCaptureHost> host_;
   mojo::Receiver<media::mojom::VideoCaptureObserver> observer_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureTest);
 };
 
 // Construct and destruct all objects. This is a non trivial sequence.

@@ -43,6 +43,10 @@ const int kFile3ID = 3;
 class FakeBackend : public QuotaReservationManager::QuotaBackend {
  public:
   FakeBackend() {}
+
+  FakeBackend(const FakeBackend&) = delete;
+  FakeBackend& operator=(const FakeBackend&) = delete;
+
   ~FakeBackend() override {}
 
   void ReserveQuota(
@@ -67,9 +71,6 @@ class FakeBackend : public QuotaReservationManager::QuotaBackend {
                            storage::FileSystemType type) override {}
   void DecrementDirtyCount(const url::Origin& origin,
                            storage::FileSystemType type) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeBackend);
 };
 
 }  // namespace
@@ -77,6 +78,10 @@ class FakeBackend : public QuotaReservationManager::QuotaBackend {
 class QuotaReservationTest : public testing::Test {
  public:
   QuotaReservationTest() {}
+
+  QuotaReservationTest(const QuotaReservationTest&) = delete;
+  QuotaReservationTest& operator=(const QuotaReservationTest&) = delete;
+
   ~QuotaReservationTest() override {}
 
   void SetUp() override {
@@ -126,8 +131,6 @@ class QuotaReservationTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir work_dir_;
   std::unique_ptr<storage::QuotaReservationManager> reservation_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaReservationTest);
 };
 
 void GotReservedQuota(int64_t* reserved_quota_ptr,

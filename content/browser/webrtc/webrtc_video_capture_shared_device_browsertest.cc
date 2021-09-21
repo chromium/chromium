@@ -79,6 +79,11 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest
     scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
   }
 
+  WebRtcVideoCaptureSharedDeviceBrowserTest(
+      const WebRtcVideoCaptureSharedDeviceBrowserTest&) = delete;
+  WebRtcVideoCaptureSharedDeviceBrowserTest& operator=(
+      const WebRtcVideoCaptureSharedDeviceBrowserTest&) = delete;
+
   ~WebRtcVideoCaptureSharedDeviceBrowserTest() override {}
 
   void OpenDeviceViaService() {
@@ -210,8 +215,6 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest
   mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber_;
   base::WeakPtrFactory<WebRtcVideoCaptureSharedDeviceBrowserTest> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureSharedDeviceBrowserTest);
 };
 
 // Tests that a single fake video capture device can be opened via JavaScript

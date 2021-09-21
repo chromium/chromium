@@ -51,6 +51,10 @@ class DevToolsHttpHandler {
       std::unique_ptr<DevToolsSocketFactory> server_socket_factory,
       const base::FilePath& active_port_output_directory,
       const base::FilePath& debug_frontend_dir);
+
+  DevToolsHttpHandler(const DevToolsHttpHandler&) = delete;
+  DevToolsHttpHandler& operator=(const DevToolsHttpHandler&) = delete;
+
   ~DevToolsHttpHandler();
 
  private:
@@ -114,8 +118,6 @@ class DevToolsHttpHandler {
   DevToolsManagerDelegate* delegate_;
   std::unique_ptr<DevToolsSocketFactory> socket_factory_;
   base::WeakPtrFactory<DevToolsHttpHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsHttpHandler);
 };
 
 }  // namespace content

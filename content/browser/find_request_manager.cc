@@ -174,6 +174,9 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
   FrameObserver(WebContentsImpl* web_contents, FindRequestManager* manager)
       : WebContentsObserver(web_contents), manager_(manager) {}
 
+  FrameObserver(const FrameObserver&) = delete;
+  FrameObserver& operator=(const FrameObserver&) = delete;
+
   ~FrameObserver() override = default;
 
   void DidFinishLoad(RenderFrameHost* rfh, const GURL& validated_url) override {
@@ -207,8 +210,6 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
 
   // The FindRequestManager that owns this FrameObserver.
   FindRequestManager* const manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameObserver);
 };
 
 FindRequestManager::FindRequest::FindRequest() = default;

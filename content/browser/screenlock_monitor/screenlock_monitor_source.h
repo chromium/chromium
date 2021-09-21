@@ -15,15 +15,16 @@ namespace content {
 class CONTENT_EXPORT ScreenlockMonitorSource {
  public:
   ScreenlockMonitorSource();
+
+  ScreenlockMonitorSource(const ScreenlockMonitorSource&) = delete;
+  ScreenlockMonitorSource& operator=(const ScreenlockMonitorSource&) = delete;
+
   virtual ~ScreenlockMonitorSource();
 
   enum ScreenlockEvent { SCREEN_LOCK_EVENT, SCREEN_UNLOCK_EVENT };
 
   // ProcessScreenlockEvent should only be called from a single thread.
   static void ProcessScreenlockEvent(ScreenlockEvent event_id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenlockMonitorSource);
 };
 
 }  // namespace content

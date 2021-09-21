@@ -18,6 +18,11 @@ class ServiceWorkerVersion;
 class CONTENT_EXPORT ServiceWorkerPingController final {
  public:
   explicit ServiceWorkerPingController(ServiceWorkerVersion* version);
+
+  ServiceWorkerPingController(const ServiceWorkerPingController&) = delete;
+  ServiceWorkerPingController& operator=(const ServiceWorkerPingController&) =
+      delete;
+
   ~ServiceWorkerPingController();
 
   void Activate();
@@ -45,8 +50,6 @@ class CONTENT_EXPORT ServiceWorkerPingController final {
   // The time the most recent ping was sent.
   base::TimeTicks last_ping_time_;
   PingState ping_state_ = PingState::kNotPinging;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPingController);
 };
 
 }  // namespace content

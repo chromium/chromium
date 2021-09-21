@@ -28,6 +28,10 @@ class SecurityHandler : public DevToolsDomainHandler,
       base::OnceCallback<void(content::CertificateRequestResultType)>;
 
   SecurityHandler();
+
+  SecurityHandler(const SecurityHandler&) = delete;
+  SecurityHandler& operator=(const SecurityHandler&) = delete;
+
   ~SecurityHandler() override;
 
   static std::vector<SecurityHandler*> ForAgentHost(
@@ -70,8 +74,6 @@ class SecurityHandler : public DevToolsDomainHandler,
   enum class CertErrorOverrideMode { kDisabled, kHandleEvents, kIgnoreAll };
   CertErrorOverrideMode cert_error_override_mode_ =
       CertErrorOverrideMode::kDisabled;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityHandler);
 };
 
 }  // namespace protocol

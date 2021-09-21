@@ -25,6 +25,11 @@ class CONTENT_EXPORT RendererMainPlatformDelegate {
  public:
   explicit RendererMainPlatformDelegate(
       const MainFunctionParams& parameters);
+
+  RendererMainPlatformDelegate(const RendererMainPlatformDelegate&) = delete;
+  RendererMainPlatformDelegate& operator=(const RendererMainPlatformDelegate&) =
+      delete;
+
   ~RendererMainPlatformDelegate();
 
   // Called first thing and last thing in the process' lifecycle, i.e. before
@@ -44,8 +49,6 @@ class CONTENT_EXPORT RendererMainPlatformDelegate {
   std::unique_ptr<blink::FuchsiaAudioDeviceFactory>
       fuchsia_audio_device_factory_;
 #endif  // defined(OS_FUCHSIA)
-
-  DISALLOW_COPY_AND_ASSIGN(RendererMainPlatformDelegate);
 };
 
 }  // namespace content

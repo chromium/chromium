@@ -152,6 +152,12 @@ class StoragePartitionRemovalTestStoragePartition
   StoragePartitionRemovalTestStoragePartition() {
     set_network_context(&network_context_);
   }
+
+  StoragePartitionRemovalTestStoragePartition(
+      const StoragePartitionRemovalTestStoragePartition&) = delete;
+  StoragePartitionRemovalTestStoragePartition& operator=(
+      const StoragePartitionRemovalTestStoragePartition&) = delete;
+
   ~StoragePartitionRemovalTestStoragePartition() override = default;
 
   void ClearDataForOrigin(uint32_t remove_mask,
@@ -217,8 +223,6 @@ class StoragePartitionRemovalTestStoragePartition
  private:
   std::vector<StoragePartitionRemovalData> storage_partition_removal_data_;
   network::TestNetworkContext network_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoragePartitionRemovalTestStoragePartition);
 };
 
 // Custom matcher to test the equivalence of two URL filters. Since those are
@@ -340,14 +344,15 @@ class RemoveDownloadsTester {
     EXPECT_CALL(*download_manager_, Shutdown());
   }
 
+  RemoveDownloadsTester(const RemoveDownloadsTester&) = delete;
+  RemoveDownloadsTester& operator=(const RemoveDownloadsTester&) = delete;
+
   ~RemoveDownloadsTester() = default;
 
   MockDownloadManager* download_manager() { return download_manager_; }
 
  private:
   MockDownloadManager* download_manager_;  // Owned by browser context.
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveDownloadsTester);
 };
 
 // Test Class ----------------------------------------------------------------
@@ -358,6 +363,10 @@ class BrowsingDataRemoverImplTest : public testing::Test {
     remover_ = static_cast<BrowsingDataRemoverImpl*>(
         browser_context_->GetBrowsingDataRemover());
   }
+
+  BrowsingDataRemoverImplTest(const BrowsingDataRemoverImplTest&) = delete;
+  BrowsingDataRemoverImplTest& operator=(const BrowsingDataRemoverImplTest&) =
+      delete;
 
   ~BrowsingDataRemoverImplTest() override = default;
 
@@ -486,8 +495,6 @@ class BrowsingDataRemoverImplTest : public testing::Test {
   std::vector<StoragePartitionRemovalData> storage_partition_removal_data_;
 
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverImplTest);
 };
 
 // Tests ---------------------------------------------------------------------

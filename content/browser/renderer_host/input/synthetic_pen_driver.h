@@ -14,12 +14,13 @@ namespace content {
 class CONTENT_EXPORT SyntheticPenDriver : public SyntheticMouseDriver {
  public:
   SyntheticPenDriver();
+
+  SyntheticPenDriver(const SyntheticPenDriver&) = delete;
+  SyntheticPenDriver& operator=(const SyntheticPenDriver&) = delete;
+
   ~SyntheticPenDriver() override;
 
   void Leave(int index = 0) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyntheticPenDriver);
 };
 
 }  // namespace content

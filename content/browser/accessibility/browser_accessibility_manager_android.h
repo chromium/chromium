@@ -46,6 +46,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
       base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
       BrowserAccessibilityDelegate* delegate);
 
+  BrowserAccessibilityManagerAndroid(
+      const BrowserAccessibilityManagerAndroid&) = delete;
+  BrowserAccessibilityManagerAndroid& operator=(
+      const BrowserAccessibilityManagerAndroid&) = delete;
+
   ~BrowserAccessibilityManagerAndroid() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
@@ -167,8 +172,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // with each atomic update to prevent superfluous cache clear calls.
   std::unordered_set<int32_t> nodes_already_cleared_ =
       std::unordered_set<int32_t>();
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAndroid);
 };
 
 }  // namespace content

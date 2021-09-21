@@ -46,6 +46,9 @@ class CONTENT_EXPORT AudioInputStreamBroker final
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client);
 
+  AudioInputStreamBroker(const AudioInputStreamBroker&) = delete;
+  AudioInputStreamBroker& operator=(const AudioInputStreamBroker&) = delete;
+
   ~AudioInputStreamBroker() final;
 
   // Creates the stream.
@@ -86,8 +89,6 @@ class CONTENT_EXPORT AudioInputStreamBroker final
           kDocumentDestroyed;
 
   base::WeakPtrFactory<AudioInputStreamBroker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputStreamBroker);
 };
 
 }  // namespace content

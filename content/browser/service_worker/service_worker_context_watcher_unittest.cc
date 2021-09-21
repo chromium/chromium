@@ -41,6 +41,9 @@ class WatcherCallback {
  public:
   WatcherCallback() {}
 
+  WatcherCallback(const WatcherCallback&) = delete;
+  WatcherCallback& operator=(const WatcherCallback&) = delete;
+
   ~WatcherCallback() {}
 
   scoped_refptr<ServiceWorkerContextWatcher> StartWatch(
@@ -118,8 +121,6 @@ class WatcherCallback {
   int callback_count_ = 0;
 
   base::WeakPtrFactory<WatcherCallback> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherCallback);
 };
 
 }  // namespace

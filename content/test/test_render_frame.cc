@@ -59,6 +59,10 @@ TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote() {
 class MockFrameHost : public mojom::FrameHost {
  public:
   MockFrameHost() {}
+
+  MockFrameHost(const MockFrameHost&) = delete;
+  MockFrameHost& operator=(const MockFrameHost&) = delete;
+
   ~MockFrameHost() override = default;
 
   mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams() {
@@ -223,8 +227,6 @@ class MockFrameHost : public mojom::FrameHost {
   bool is_page_state_updated_ = false;
 
   bool is_url_opened_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFrameHost);
 };
 
 // static

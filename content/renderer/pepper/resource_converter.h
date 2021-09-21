@@ -60,6 +60,10 @@ class CONTENT_EXPORT ResourceConverter {
 class ResourceConverterImpl : public ResourceConverter {
  public:
   explicit ResourceConverterImpl(PP_Instance instance);
+
+  ResourceConverterImpl(const ResourceConverterImpl&) = delete;
+  ResourceConverterImpl& operator=(const ResourceConverterImpl&) = delete;
+
   ~ResourceConverterImpl() override;
 
   // ResourceConverter overrides.
@@ -98,8 +102,6 @@ class ResourceConverterImpl : public ResourceConverter {
   std::vector<IPC::Message> browser_host_create_messages_;
   // A list of the resource vars associated with browser hosts.
   std::vector<scoped_refptr<HostResourceVar> > browser_vars_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceConverterImpl);
 };
 
 }  // namespace content

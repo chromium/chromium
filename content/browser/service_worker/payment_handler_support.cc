@@ -45,6 +45,11 @@ class ShowPaymentHandlerWindowReplier {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
   }
 
+  ShowPaymentHandlerWindowReplier(const ShowPaymentHandlerWindowReplier&) =
+      delete;
+  ShowPaymentHandlerWindowReplier& operator=(
+      const ShowPaymentHandlerWindowReplier&) = delete;
+
   ~ShowPaymentHandlerWindowReplier() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (response_callback_) {
@@ -66,8 +71,6 @@ class ShowPaymentHandlerWindowReplier {
   PaymentHandlerSupport::OpenWindowFallback fallback_;
   blink::mojom::ServiceWorkerHost::OpenPaymentHandlerWindowCallback
       response_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShowPaymentHandlerWindowReplier);
 };
 
 }  // namespace

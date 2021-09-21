@@ -23,6 +23,10 @@ namespace content {
 class PpapiBlinkPlatformImpl : public BlinkPlatformImpl {
  public:
   PpapiBlinkPlatformImpl();
+
+  PpapiBlinkPlatformImpl(const PpapiBlinkPlatformImpl&) = delete;
+  PpapiBlinkPlatformImpl& operator=(const PpapiBlinkPlatformImpl&) = delete;
+
   ~PpapiBlinkPlatformImpl() override;
 
   // Shutdown must be called just prior to shutting down blink.
@@ -43,8 +47,6 @@ class PpapiBlinkPlatformImpl : public BlinkPlatformImpl {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   sk_sp<font_service::FontLoader> font_loader_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiBlinkPlatformImpl);
 };
 
 }  // namespace content

@@ -22,6 +22,11 @@ class CONTENT_EXPORT InputDeviceChangeObserver
     : public ui::InputDeviceEventObserver {
  public:
   InputDeviceChangeObserver(RenderViewHostImpl* rvh);
+
+  InputDeviceChangeObserver(const InputDeviceChangeObserver&) = delete;
+  InputDeviceChangeObserver& operator=(const InputDeviceChangeObserver&) =
+      delete;
+
   ~InputDeviceChangeObserver() override;
 
   // InputDeviceEventObserver public overrides.
@@ -29,7 +34,6 @@ class CONTENT_EXPORT InputDeviceChangeObserver
 
  private:
   RenderViewHostImpl* render_view_host_impl_;
-  DISALLOW_COPY_AND_ASSIGN(InputDeviceChangeObserver);
 };
 
 }  // namespace content

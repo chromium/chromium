@@ -14,6 +14,11 @@ namespace content {
 class MockSmsWebContentsDelegate : public WebContentsDelegate {
  public:
   MockSmsWebContentsDelegate();
+
+  MockSmsWebContentsDelegate(const MockSmsWebContentsDelegate&) = delete;
+  MockSmsWebContentsDelegate& operator=(const MockSmsWebContentsDelegate&) =
+      delete;
+
   ~MockSmsWebContentsDelegate() override;
 
   MOCK_METHOD5(CreateSmsPrompt,
@@ -22,9 +27,6 @@ class MockSmsWebContentsDelegate : public WebContentsDelegate {
                     const std::string&,
                     base::OnceCallback<void()> on_confirm,
                     base::OnceCallback<void()> on_cancel));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSmsWebContentsDelegate);
 };
 
 }  // namespace content

@@ -25,6 +25,10 @@ class RenderFrameHost;
 class WebContentsObserverProxy : public WebContentsObserver {
  public:
   WebContentsObserverProxy(JNIEnv* env, jobject obj, WebContents* web_contents);
+
+  WebContentsObserverProxy(const WebContentsObserverProxy&) = delete;
+  WebContentsObserverProxy& operator=(const WebContentsObserverProxy&) = delete;
+
   ~WebContentsObserverProxy() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -77,8 +81,6 @@ class WebContentsObserverProxy : public WebContentsObserver {
 
   base::android::ScopedJavaGlobalRef<jobject> java_observer_;
   GURL base_url_of_last_started_data_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserverProxy);
 };
 
 }  // namespace content

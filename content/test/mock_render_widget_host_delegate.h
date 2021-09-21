@@ -21,6 +21,11 @@ class RenderWidgetHostImpl;
 class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
  public:
   MockRenderWidgetHostDelegate();
+
+  MockRenderWidgetHostDelegate(const MockRenderWidgetHostDelegate&) = delete;
+  MockRenderWidgetHostDelegate& operator=(const MockRenderWidgetHostDelegate&) =
+      delete;
+
   ~MockRenderWidgetHostDelegate() override;
 
   const NativeWebKeyboardEvent* last_event() const { return last_event_.get(); }
@@ -72,8 +77,6 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
       KeyboardEventProcessingResult::NOT_HANDLED;
   StubRenderViewHostDelegateView rvh_delegate_view_;
   bool should_ignore_input_events_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderWidgetHostDelegate);
 };
 
 }  // namespace content

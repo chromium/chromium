@@ -15,6 +15,11 @@ namespace content {
 class ShellContentUtilityClient : public ContentUtilityClient {
  public:
   explicit ShellContentUtilityClient(bool is_browsertest = false);
+
+  ShellContentUtilityClient(const ShellContentUtilityClient&) = delete;
+  ShellContentUtilityClient& operator=(const ShellContentUtilityClient&) =
+      delete;
+
   ~ShellContentUtilityClient() override;
 
   // ContentUtilityClient:
@@ -27,8 +32,6 @@ class ShellContentUtilityClient : public ContentUtilityClient {
   std::unique_ptr<NetworkServiceTestHelper> network_service_test_helper_;
   std::unique_ptr<AudioServiceTestHelper> audio_service_test_helper_;
   bool register_sandbox_status_helper_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellContentUtilityClient);
 };
 
 }  // namespace content

@@ -31,6 +31,10 @@ class CONTENT_EXPORT IndexedDBConnection {
                       base::RepeatingClosure on_version_change_ignored,
                       base::OnceCallback<void(IndexedDBConnection*)> on_close,
                       scoped_refptr<IndexedDBDatabaseCallbacks> callbacks);
+
+  IndexedDBConnection(const IndexedDBConnection&) = delete;
+  IndexedDBConnection& operator=(const IndexedDBConnection&) = delete;
+
   virtual ~IndexedDBConnection();
 
   enum class CloseErrorHandling {
@@ -111,8 +115,6 @@ class CONTENT_EXPORT IndexedDBConnection {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<IndexedDBConnection> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBConnection);
 };
 
 }  // namespace content

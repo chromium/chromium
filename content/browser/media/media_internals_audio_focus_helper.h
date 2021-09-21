@@ -21,6 +21,12 @@ class MediaInternalsAudioFocusHelper
     : public media_session::mojom::AudioFocusObserver {
  public:
   MediaInternalsAudioFocusHelper();
+
+  MediaInternalsAudioFocusHelper(const MediaInternalsAudioFocusHelper&) =
+      delete;
+  MediaInternalsAudioFocusHelper& operator=(
+      const MediaInternalsAudioFocusHelper&) = delete;
+
   ~MediaInternalsAudioFocusHelper() override;
 
   // Sends all audio focus information to media internals.
@@ -76,8 +82,6 @@ class MediaInternalsAudioFocusHelper
   bool enabled_ = false;
 
   mojo::Receiver<media_session::mojom::AudioFocusObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInternalsAudioFocusHelper);
 };
 
 }  // namespace content

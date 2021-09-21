@@ -19,6 +19,10 @@ class PowerMonitorTestImpl : public base::PowerStateObserver,
       mojo::PendingReceiver<mojom::PowerMonitorTest> receiver);
 
   PowerMonitorTestImpl();
+
+  PowerMonitorTestImpl(const PowerMonitorTestImpl&) = delete;
+  PowerMonitorTestImpl& operator=(const PowerMonitorTestImpl&) = delete;
+
   ~PowerMonitorTestImpl() override;
 
  private:
@@ -33,8 +37,6 @@ class PowerMonitorTestImpl : public base::PowerStateObserver,
   QueryNextStateCallback callback_;
   bool on_battery_power_ = false;
   bool need_to_report_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTestImpl);
 };
 
 }  // namespace content

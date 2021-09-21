@@ -17,15 +17,17 @@ class TouchscreenTapSuppressionController : public TapSuppressionController {
  public:
   TouchscreenTapSuppressionController(
       const TapSuppressionController::Config& config);
+
+  TouchscreenTapSuppressionController(
+      const TouchscreenTapSuppressionController&) = delete;
+  TouchscreenTapSuppressionController& operator=(
+      const TouchscreenTapSuppressionController&) = delete;
+
   ~TouchscreenTapSuppressionController() override;
 
   // Should be called on arrival of any tap-related events. Returns true if the
   // caller should stop normal handling of the gesture.
   bool FilterTapEvent(const GestureEventWithLatencyInfo& event);
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(TouchscreenTapSuppressionController);
 };
 
 }  // namespace content

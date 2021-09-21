@@ -17,6 +17,11 @@ class CONTENT_EXPORT AudioOutputStreamObserverImpl
   AudioOutputStreamObserverImpl(int render_process_id,
                                 int render_frame_id,
                                 int stream_id);
+
+  AudioOutputStreamObserverImpl(const AudioOutputStreamObserverImpl&) = delete;
+  AudioOutputStreamObserverImpl& operator=(
+      const AudioOutputStreamObserverImpl&) = delete;
+
   ~AudioOutputStreamObserverImpl() override;
 
   // media::mojom::AudioOutputStreamObserver implementation
@@ -31,8 +36,6 @@ class CONTENT_EXPORT AudioOutputStreamObserverImpl
   bool did_start_playing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamObserverImpl);
 };
 
 }  // namespace content

@@ -20,6 +20,10 @@ class CONTENT_EXPORT IdleMonitor : public base::LinkNode<IdleMonitor> {
   IdleMonitor(mojo::PendingRemote<blink::mojom::IdleMonitor> monitor,
               blink::mojom::IdleStatePtr last_state,
               base::TimeDelta threshold);
+
+  IdleMonitor(const IdleMonitor&) = delete;
+  IdleMonitor& operator=(const IdleMonitor&) = delete;
+
   ~IdleMonitor();
 
   const blink::mojom::IdleState& last_state() const {
@@ -35,8 +39,6 @@ class CONTENT_EXPORT IdleMonitor : public base::LinkNode<IdleMonitor> {
   blink::mojom::IdleMonitorPtr client_;
   blink::mojom::IdleStatePtr last_state_;
   base::TimeDelta threshold_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleMonitor);
 };
 
 }  // namespace content

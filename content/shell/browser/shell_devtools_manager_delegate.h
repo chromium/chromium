@@ -21,6 +21,11 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
   static int GetHttpHandlerPort();
 
   explicit ShellDevToolsManagerDelegate(BrowserContext* browser_context);
+
+  ShellDevToolsManagerDelegate(const ShellDevToolsManagerDelegate&) = delete;
+  ShellDevToolsManagerDelegate& operator=(const ShellDevToolsManagerDelegate&) =
+      delete;
+
   ~ShellDevToolsManagerDelegate() override;
 
   // DevToolsManagerDelegate implementation.
@@ -36,7 +41,6 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
  private:
   BrowserContext* browser_context_;
   base::flat_set<content::DevToolsAgentHostClient*> clients_;
-  DISALLOW_COPY_AND_ASSIGN(ShellDevToolsManagerDelegate);
 };
 
 }  // namespace content

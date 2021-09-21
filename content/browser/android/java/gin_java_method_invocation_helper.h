@@ -30,17 +30,22 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
   class DispatcherDelegate {
    public:
     DispatcherDelegate() {}
+
+    DispatcherDelegate(const DispatcherDelegate&) = delete;
+    DispatcherDelegate& operator=(const DispatcherDelegate&) = delete;
+
     virtual ~DispatcherDelegate() {}
     virtual JavaObjectWeakGlobalRef GetObjectWeakRef(
         GinJavaBoundObject::ObjectID object_id) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DispatcherDelegate);
   };
 
   class ObjectDelegate {
    public:
     ObjectDelegate() {}
+
+    ObjectDelegate(const ObjectDelegate&) = delete;
+    ObjectDelegate& operator=(const ObjectDelegate&) = delete;
+
     virtual ~ObjectDelegate() {}
     virtual base::android::ScopedJavaLocalRef<jobject> GetLocalRef(
         JNIEnv* env) = 0;
@@ -50,9 +55,6 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
                                          size_t num_parameters) = 0;
     virtual bool IsObjectGetClassMethod(const JavaMethod* method) = 0;
     virtual const base::android::JavaRef<jclass>& GetSafeAnnotationClass() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ObjectDelegate);
   };
 
   GinJavaMethodInvocationHelper(std::unique_ptr<ObjectDelegate> object,

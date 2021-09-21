@@ -47,6 +47,10 @@ void SimulateNavigation(RenderFrameHost** rfh, const GURL& url) {
 class RunLoopWithExpectedCount {
  public:
   RunLoopWithExpectedCount() = default;
+
+  RunLoopWithExpectedCount(const RunLoopWithExpectedCount&) = delete;
+  RunLoopWithExpectedCount& operator=(const RunLoopWithExpectedCount&) = delete;
+
   ~RunLoopWithExpectedCount() { DCHECK_EQ(0, remaining_quit_calls_); }
 
   void Run(int expected_quit_calls) {
@@ -66,8 +70,6 @@ class RunLoopWithExpectedCount {
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   int remaining_quit_calls_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RunLoopWithExpectedCount);
 };
 
 }  // namespace

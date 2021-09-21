@@ -56,6 +56,9 @@ class CastSystemTracingSession {
     DETACH_FROM_SEQUENCE(worker_sequence_checker_);
   }
 
+  CastSystemTracingSession(const CastSystemTracingSession&) = delete;
+  CastSystemTracingSession& operator=(const CastSystemTracingSession&) = delete;
+
   ~CastSystemTracingSession() {
     worker_task_runner_->PostTask(FROM_HERE,
                                   base::BindOnce(&DestroySystemTracerOnWorker,
@@ -147,8 +150,6 @@ class CastSystemTracingSession {
 
   bool is_tracing_ = false;
   std::unique_ptr<chromecast::SystemTracer> system_tracer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastSystemTracingSession);
 };
 
 namespace {

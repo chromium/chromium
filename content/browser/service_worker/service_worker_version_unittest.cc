@@ -724,6 +724,10 @@ class DelayMessageWorker : public FakeServiceWorker {
  public:
   explicit DelayMessageWorker(EmbeddedWorkerTestHelper* helper)
       : FakeServiceWorker(helper) {}
+
+  DelayMessageWorker(const DelayMessageWorker&) = delete;
+  DelayMessageWorker& operator=(const DelayMessageWorker&) = delete;
+
   ~DelayMessageWorker() override = default;
 
   void DispatchExtendableMessageEvent(
@@ -751,8 +755,6 @@ class DelayMessageWorker : public FakeServiceWorker {
   blink::mojom::ExtendableMessageEventPtr event_;
   DispatchExtendableMessageEventCallback callback_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayMessageWorker);
 };
 
 TEST_F(ServiceWorkerVersionTest, RequestTimeout) {

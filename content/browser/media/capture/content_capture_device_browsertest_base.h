@@ -34,6 +34,12 @@ class FrameSinkVideoCaptureDevice;
 class ContentCaptureDeviceBrowserTestBase : public ContentBrowserTest {
  public:
   ContentCaptureDeviceBrowserTestBase();
+
+  ContentCaptureDeviceBrowserTestBase(
+      const ContentCaptureDeviceBrowserTestBase&) = delete;
+  ContentCaptureDeviceBrowserTestBase& operator=(
+      const ContentCaptureDeviceBrowserTestBase&) = delete;
+
   ~ContentCaptureDeviceBrowserTestBase() override;
 
   FakeVideoCaptureStack* capture_stack() { return &capture_stack_; }
@@ -132,8 +138,6 @@ class ContentCaptureDeviceBrowserTestBase : public ContentBrowserTest {
   static constexpr char kSingleFramePath[] = "/single.html";
   static constexpr char kAlternateHostname[] = "alternate.com";
   static constexpr char kAlternatePath[] = "/alternate.html";
-
-  DISALLOW_COPY_AND_ASSIGN(ContentCaptureDeviceBrowserTestBase);
 };
 
 }  // namespace content

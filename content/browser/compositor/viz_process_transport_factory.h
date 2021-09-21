@@ -54,6 +54,11 @@ class VizProcessTransportFactory : public ui::ContextFactory,
       gpu::GpuChannelEstablishFactory* gpu_channel_establish_factory,
       scoped_refptr<base::SingleThreadTaskRunner> resize_task_runner,
       viz::CompositingModeReporterImpl* compositing_mode_reporter);
+
+  VizProcessTransportFactory(const VizProcessTransportFactory&) = delete;
+  VizProcessTransportFactory& operator=(const VizProcessTransportFactory&) =
+      delete;
+
   ~VizProcessTransportFactory() override;
 
   // Connects HostFrameSinkManager to FrameSinkManagerImpl in viz process.
@@ -145,8 +150,6 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   bool is_gpu_compositing_disabled_ = false;
 
   base::WeakPtrFactory<VizProcessTransportFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VizProcessTransportFactory);
 };
 
 }  // namespace content

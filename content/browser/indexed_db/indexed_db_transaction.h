@@ -237,6 +237,10 @@ class CONTENT_EXPORT IndexedDBTransaction {
   class TaskQueue {
    public:
     TaskQueue();
+
+    TaskQueue(const TaskQueue&) = delete;
+    TaskQueue& operator=(const TaskQueue&) = delete;
+
     ~TaskQueue();
     bool empty() const { return queue_.empty(); }
     void push(Operation task) { queue_.push(std::move(task)); }
@@ -245,13 +249,15 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
    private:
     base::queue<Operation> queue_;
-
-    DISALLOW_COPY_AND_ASSIGN(TaskQueue);
   };
 
   class TaskStack {
    public:
     TaskStack();
+
+    TaskStack(const TaskStack&) = delete;
+    TaskStack& operator=(const TaskStack&) = delete;
+
     ~TaskStack();
     bool empty() const { return stack_.empty(); }
     void push(AbortOperation task) { stack_.push(std::move(task)); }
@@ -260,8 +266,6 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
    private:
     base::stack<AbortOperation> stack_;
-
-    DISALLOW_COPY_AND_ASSIGN(TaskStack);
   };
 
   TaskQueue task_queue_;

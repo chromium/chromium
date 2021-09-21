@@ -72,6 +72,10 @@ class StartupTracingInProcessTest : public ContentBrowserTest {
 class LargeTraceEventData : public base::trace_event::ConvertableToTraceFormat {
  public:
   LargeTraceEventData() = default;
+
+  LargeTraceEventData(const LargeTraceEventData&) = delete;
+  LargeTraceEventData& operator=(const LargeTraceEventData&) = delete;
+
   ~LargeTraceEventData() override = default;
 
   const size_t kLargeMessageSize = 100 * 1024;
@@ -79,9 +83,6 @@ class LargeTraceEventData : public base::trace_event::ConvertableToTraceFormat {
     std::string large_string(kLargeMessageSize, '.');
     out->append(large_string);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LargeTraceEventData);
 };
 
 // This will fill a massive amount of startup tracing data into a

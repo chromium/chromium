@@ -22,6 +22,9 @@ class DidCommitNavigationInterceptor::FrameAgent
     rfhi_->SetCommitCallbackInterceptorForTesting(this);
   }
 
+  FrameAgent(const FrameAgent&) = delete;
+  FrameAgent& operator=(const FrameAgent&) = delete;
+
   ~FrameAgent() override {
     rfhi_->SetCommitCallbackInterceptorForTesting(nullptr);
   }
@@ -39,8 +42,6 @@ class DidCommitNavigationInterceptor::FrameAgent
   DidCommitNavigationInterceptor* interceptor_;
 
   RenderFrameHostImpl* rfhi_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameAgent);
 };
 
 DidCommitNavigationInterceptor::DidCommitNavigationInterceptor(

@@ -38,6 +38,12 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
       public base::SupportsWeakPtr<RendererWebMediaPlayerDelegate> {
  public:
   explicit RendererWebMediaPlayerDelegate(content::RenderFrame* render_frame);
+
+  RendererWebMediaPlayerDelegate(const RendererWebMediaPlayerDelegate&) =
+      delete;
+  RendererWebMediaPlayerDelegate& operator=(
+      const RendererWebMediaPlayerDelegate&) = delete;
+
   ~RendererWebMediaPlayerDelegate() override;
 
   // Returns true if this RenderFrame has ever seen media playback before.
@@ -143,8 +149,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // Records the peak player count for this render frame.
   size_t peak_player_count_ = 0u;
   std::unique_ptr<base::SingleSampleMetric> peak_player_count_uma_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegate);
 };
 
 }  // namespace media

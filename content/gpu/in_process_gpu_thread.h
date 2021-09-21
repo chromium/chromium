@@ -21,6 +21,10 @@ class InProcessGpuThread : public base::Thread {
  public:
   explicit InProcessGpuThread(const InProcessChildThreadParams& params,
                               const gpu::GpuPreferences& gpu_preferences);
+
+  InProcessGpuThread(const InProcessGpuThread&) = delete;
+  InProcessGpuThread& operator=(const InProcessGpuThread&) = delete;
+
   ~InProcessGpuThread() override;
 
  protected:
@@ -34,8 +38,6 @@ class InProcessGpuThread : public base::Thread {
   GpuProcess* gpu_process_;
 
   gpu::GpuPreferences gpu_preferences_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessGpuThread);
 };
 
 CONTENT_EXPORT base::Thread* CreateInProcessGpuThread(

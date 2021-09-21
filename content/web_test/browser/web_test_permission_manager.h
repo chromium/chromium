@@ -24,6 +24,10 @@ class WebTestPermissionManager
       public blink::test::mojom::PermissionAutomation {
  public:
   WebTestPermissionManager();
+
+  WebTestPermissionManager(const WebTestPermissionManager&) = delete;
+  WebTestPermissionManager& operator=(const WebTestPermissionManager&) = delete;
+
   ~WebTestPermissionManager() override;
 
   // PermissionManager overrides.
@@ -122,8 +126,6 @@ class WebTestPermissionManager
   SubscriptionId::Generator subscription_id_generator_;
 
   mojo::ReceiverSet<blink::test::mojom::PermissionAutomation> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestPermissionManager);
 };
 
 }  // namespace content

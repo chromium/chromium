@@ -78,6 +78,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // instance always outlives the ContainerHostIterator one.
   class CONTENT_EXPORT ContainerHostIterator {
    public:
+    ContainerHostIterator(const ContainerHostIterator&) = delete;
+    ContainerHostIterator& operator=(const ContainerHostIterator&) = delete;
+
     ~ContainerHostIterator();
     ServiceWorkerContainerHost* GetContainerHost();
     void Advance();
@@ -94,8 +97,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     ContainerHostByClientUUIDMap* const map_;
     ContainerHostPredicate predicate_;
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
-
-    DISALLOW_COPY_AND_ASSIGN(ContainerHostIterator);
   };
 
   // This is owned by ServiceWorkerContextWrapper. |observer_list| is created in

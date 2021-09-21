@@ -22,6 +22,11 @@ class CompositedTouchHandleDrawable : public ui::TouchHandleDrawable {
  public:
   CompositedTouchHandleDrawable(gfx::NativeView view,
                                 const base::android::JavaRef<jobject>& context);
+
+  CompositedTouchHandleDrawable(const CompositedTouchHandleDrawable&) = delete;
+  CompositedTouchHandleDrawable& operator=(
+      const CompositedTouchHandleDrawable&) = delete;
+
   ~CompositedTouchHandleDrawable() override;
 
   // ui::TouchHandleDrawable implementation.
@@ -43,8 +48,6 @@ class CompositedTouchHandleDrawable : public ui::TouchHandleDrawable {
   ui::TouchHandleOrientation orientation_;
   gfx::PointF origin_position_;
   scoped_refptr<cc::UIResourceLayer> layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositedTouchHandleDrawable);
 };
 
 }  // namespace content

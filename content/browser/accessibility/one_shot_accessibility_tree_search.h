@@ -84,6 +84,12 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   // they will all be within the subtree of the *parent* of |scope| - in other
   // words, siblings of |scope| and their descendants.
   explicit OneShotAccessibilityTreeSearch(BrowserAccessibility* scope);
+
+  OneShotAccessibilityTreeSearch(const OneShotAccessibilityTreeSearch&) =
+      delete;
+  OneShotAccessibilityTreeSearch& operator=(
+      const OneShotAccessibilityTreeSearch&) = delete;
+
   virtual ~OneShotAccessibilityTreeSearch();
 
   //
@@ -151,8 +157,6 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   std::vector<BrowserAccessibility*> matches_;
 
   bool did_search_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotAccessibilityTreeSearch);
 };
 
 }  // namespace content

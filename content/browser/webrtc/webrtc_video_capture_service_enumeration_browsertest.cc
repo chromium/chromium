@@ -65,6 +65,11 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
     scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
   }
 
+  WebRtcVideoCaptureServiceEnumerationBrowserTest(
+      const WebRtcVideoCaptureServiceEnumerationBrowserTest&) = delete;
+  WebRtcVideoCaptureServiceEnumerationBrowserTest& operator=(
+      const WebRtcVideoCaptureServiceEnumerationBrowserTest&) = delete;
+
   ~WebRtcVideoCaptureServiceEnumerationBrowserTest() override {}
 
   void ConnectToService() {
@@ -229,8 +234,6 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;
   base::OnceClosure closure_to_be_called_on_devices_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureServiceEnumerationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,

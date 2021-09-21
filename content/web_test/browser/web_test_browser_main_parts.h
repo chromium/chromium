@@ -19,6 +19,10 @@ class ShellPluginServiceFilter;
 class WebTestBrowserMainParts : public ShellBrowserMainParts {
  public:
   explicit WebTestBrowserMainParts(const MainFunctionParams& parameters);
+
+  WebTestBrowserMainParts(const WebTestBrowserMainParts&) = delete;
+  WebTestBrowserMainParts& operator=(const WebTestBrowserMainParts&) = delete;
+
   ~WebTestBrowserMainParts() override;
 
  private:
@@ -30,8 +34,6 @@ class WebTestBrowserMainParts : public ShellBrowserMainParts {
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<ShellPluginServiceFilter> plugin_service_filter_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestBrowserMainParts);
 };
 
 }  // namespace content

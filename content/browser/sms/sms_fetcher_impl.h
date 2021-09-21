@@ -33,6 +33,9 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   explicit SmsFetcherImpl(SmsProvider* provider);
   using FailureType = SmsFetchFailureType;
 
+  SmsFetcherImpl(const SmsFetcherImpl&) = delete;
+  SmsFetcherImpl& operator=(const SmsFetcherImpl&) = delete;
+
   ~SmsFetcherImpl() override;
 
   // Called by devices that do not have telephony capabilities and exclusively
@@ -78,8 +81,6 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SmsFetcherImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SmsFetcherImpl);
 };
 
 }  // namespace content

@@ -31,6 +31,9 @@ class CONTENT_EXPORT PepperTrueTypeFontHost : public ppapi::host::ResourceHost {
                          PP_Resource resource,
                          const ppapi::proxy::SerializedTrueTypeFontDesc& desc);
 
+  PepperTrueTypeFontHost(const PepperTrueTypeFontHost&) = delete;
+  PepperTrueTypeFontHost& operator=(const PepperTrueTypeFontHost&) = delete;
+
   ~PepperTrueTypeFontHost() override;
 
   int32_t OnResourceMessageReceived(
@@ -63,8 +66,6 @@ class CONTENT_EXPORT PepperTrueTypeFontHost : public ppapi::host::ResourceHost {
   bool initialize_completed_;
 
   base::WeakPtrFactory<PepperTrueTypeFontHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperTrueTypeFontHost);
 };
 
 }  // namespace content

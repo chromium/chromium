@@ -21,6 +21,10 @@ class IOHandler : public DevToolsDomainHandler,
                   public IO::Backend {
  public:
   explicit IOHandler(DevToolsIOContext* io_context);
+
+  IOHandler(const IOHandler&) = delete;
+  IOHandler& operator=(const IOHandler&) = delete;
+
   ~IOHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -46,8 +50,6 @@ class IOHandler : public DevToolsDomainHandler,
   BrowserContext* browser_context_;
   StoragePartition* storage_partition_;
   base::WeakPtrFactory<IOHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOHandler);
 };
 
 }  // namespace protocol

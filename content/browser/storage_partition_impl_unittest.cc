@@ -119,6 +119,10 @@ const uint32_t kAllQuotaRemoveMask =
 class AwaitCompletionHelper {
  public:
   AwaitCompletionHelper() : start_(false), already_quit_(false) {}
+
+  AwaitCompletionHelper(const AwaitCompletionHelper&) = delete;
+  AwaitCompletionHelper& operator=(const AwaitCompletionHelper&) = delete;
+
   virtual ~AwaitCompletionHelper() = default;
 
   void BlockUntilNotified() {
@@ -148,8 +152,6 @@ class AwaitCompletionHelper {
   // immediately.
   bool start_;
   bool already_quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwaitCompletionHelper);
 };
 
 class RemoveCookieTester {
@@ -256,6 +258,9 @@ class RemoveLocalStorageTester {
       : task_environment_(task_environment),
         storage_partition_(browser_context->GetDefaultStoragePartition()),
         dom_storage_context_(storage_partition_->GetDOMStorageContext()) {}
+
+  RemoveLocalStorageTester(const RemoveLocalStorageTester&) = delete;
+  RemoveLocalStorageTester& operator=(const RemoveLocalStorageTester&) = delete;
 
   ~RemoveLocalStorageTester() {
     // Tests which bring up a real Local Storage context need to shut it down
@@ -391,8 +396,6 @@ class RemoveLocalStorageTester {
   std::vector<content::StorageUsageInfo> infos_;
 
   AwaitCompletionHelper await_completion_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveLocalStorageTester);
 };
 
 class RemoveCodeCacheTester {

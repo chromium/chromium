@@ -37,6 +37,12 @@ class MockAudioInputDeviceManagerListener
     : public MediaStreamProviderListener {
  public:
   MockAudioInputDeviceManagerListener() {}
+
+  MockAudioInputDeviceManagerListener(
+      const MockAudioInputDeviceManagerListener&) = delete;
+  MockAudioInputDeviceManagerListener& operator=(
+      const MockAudioInputDeviceManagerListener&) = delete;
+
   ~MockAudioInputDeviceManagerListener() override {}
 
   MOCK_METHOD2(Opened,
@@ -48,9 +54,6 @@ class MockAudioInputDeviceManagerListener
   MOCK_METHOD2(Aborted,
                void(blink::mojom::MediaStreamType,
                     const base::UnguessableToken&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAudioInputDeviceManagerListener);
 };
 
 // TODO(henrika): there are special restrictions for Android since

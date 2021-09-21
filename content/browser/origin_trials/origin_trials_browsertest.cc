@@ -41,6 +41,10 @@ namespace content {
 class OriginTrialsBrowserTest : public content::ContentBrowserTest {
  public:
   OriginTrialsBrowserTest() : ContentBrowserTest() {}
+
+  OriginTrialsBrowserTest(const OriginTrialsBrowserTest&) = delete;
+  OriginTrialsBrowserTest& operator=(const OriginTrialsBrowserTest&) = delete;
+
   ~OriginTrialsBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -99,8 +103,6 @@ class OriginTrialsBrowserTest : public content::ContentBrowserTest {
 
  private:
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginTrialsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(OriginTrialsBrowserTest, Basic) {

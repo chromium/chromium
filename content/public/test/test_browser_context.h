@@ -27,6 +27,10 @@ class TestBrowserContext : public BrowserContext {
  public:
   explicit TestBrowserContext(
       base::FilePath browser_context_dir_path = base::FilePath());
+
+  TestBrowserContext(const TestBrowserContext&) = delete;
+  TestBrowserContext& operator=(const TestBrowserContext&) = delete;
+
   ~TestBrowserContext() override;
 
   // Takes ownership of the temporary directory so that it's not deleted when
@@ -75,8 +79,6 @@ class TestBrowserContext : public BrowserContext {
   std::unique_ptr<MockBackgroundSyncController> background_sync_controller_;
   std::unique_ptr<PlatformNotificationService> platform_notification_service_;
   bool is_off_the_record_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserContext);
 };
 
 }  // namespace content

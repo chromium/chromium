@@ -35,6 +35,9 @@ class CONTENT_EXPORT BluetoothBlocklist final {
     EXCLUDE_WRITES  // Excluded from write operations.
   };
 
+  BluetoothBlocklist(const BluetoothBlocklist&) = delete;
+  BluetoothBlocklist& operator=(const BluetoothBlocklist&) = delete;
+
   ~BluetoothBlocklist();
 
   // Returns a singleton instance of the blocklist.
@@ -97,8 +100,6 @@ class CONTENT_EXPORT BluetoothBlocklist final {
 
   // Map of UUID to blocklisted value.
   std::map<device::BluetoothUUID, Value> blocklisted_uuids_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothBlocklist);
 };
 
 }  // namespace content

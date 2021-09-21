@@ -50,6 +50,10 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   struct Frame {
     Frame();
+
+    Frame(const Frame&) = delete;
+    Frame& operator=(const Frame&) = delete;
+
     ~Frame();
 
     // Movable type.
@@ -61,9 +65,6 @@ class CONTENT_EXPORT SynchronousCompositor {
     // Invalid if |frame| is nullptr.
     viz::LocalSurfaceId local_surface_id;
     absl::optional<viz::HitTestRegionList> hit_test_region_list;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Frame);
   };
 
   class FrameFuture : public base::RefCountedThreadSafe<FrameFuture> {

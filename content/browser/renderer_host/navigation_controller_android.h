@@ -24,6 +24,11 @@ class CONTENT_EXPORT NavigationControllerAndroid {
  public:
   explicit NavigationControllerAndroid(
       NavigationControllerImpl* navigation_controller);
+
+  NavigationControllerAndroid(const NavigationControllerAndroid&) = delete;
+  NavigationControllerAndroid& operator=(const NavigationControllerAndroid&) =
+      delete;
+
   ~NavigationControllerAndroid();
 
   NavigationControllerImpl* navigation_controller() const {
@@ -149,8 +154,6 @@ class CONTENT_EXPORT NavigationControllerAndroid {
  private:
   NavigationControllerImpl* navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerAndroid);
 };
 
 }  // namespace content

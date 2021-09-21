@@ -120,6 +120,10 @@ class FetchEventServiceWorker : public FakeServiceWorker {
       : FakeServiceWorker(helper),
         task_environment_(task_environment),
         embedded_worker_instance_client_(embedded_worker_instance_client) {}
+
+  FetchEventServiceWorker(const FetchEventServiceWorker&) = delete;
+  FetchEventServiceWorker& operator=(const FetchEventServiceWorker&) = delete;
+
   ~FetchEventServiceWorker() override = default;
 
   // Tells this worker to dispatch a fetch event 1s after the fetch event is
@@ -390,8 +394,6 @@ class FetchEventServiceWorker : public FakeServiceWorker {
 
   std::string cache_storage_cache_name_;
   base::Time response_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(FetchEventServiceWorker);
 };
 
 // Returns typical response info for a resource load that went through a service

@@ -68,6 +68,9 @@ class ServiceWorkerContainerHost::PendingUpdateVersion {
     version_ = std::move(other.version_);
   }
 
+  PendingUpdateVersion(const PendingUpdateVersion&) = delete;
+  PendingUpdateVersion& operator=(const PendingUpdateVersion&) = delete;
+
   ~PendingUpdateVersion() {
     if (version_)
       version_->DecrementPendingUpdateHintCount();
@@ -85,7 +88,6 @@ class ServiceWorkerContainerHost::PendingUpdateVersion {
 
  private:
   scoped_refptr<ServiceWorkerVersion> version_;
-  DISALLOW_COPY_AND_ASSIGN(PendingUpdateVersion);
 };
 
 ServiceWorkerContainerHost::ServiceWorkerContainerHost(

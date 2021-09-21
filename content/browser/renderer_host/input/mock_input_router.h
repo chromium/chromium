@@ -26,6 +26,10 @@ class MockInputRouter : public InputRouter {
         send_touch_event_not_cancelled_(false),
         has_handlers_(false),
         client_(client) {}
+
+  MockInputRouter(const MockInputRouter&) = delete;
+  MockInputRouter& operator=(const MockInputRouter&) = delete;
+
   ~MockInputRouter() override {}
 
   // InputRouter:
@@ -62,8 +66,6 @@ class MockInputRouter : public InputRouter {
 
  private:
   InputRouterClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputRouter);
 };
 
 }  // namespace content

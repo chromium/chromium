@@ -39,6 +39,10 @@ class PepperMediaDeviceManager
  public:
   static base::WeakPtr<PepperMediaDeviceManager> GetForRenderFrame(
       RenderFrame* render_frame);
+
+  PepperMediaDeviceManager(const PepperMediaDeviceManager&) = delete;
+  PepperMediaDeviceManager& operator=(const PepperMediaDeviceManager&) = delete;
+
   ~PepperMediaDeviceManager() override;
 
   // PepperDeviceEnumerationHostHelper::Delegate implementation:
@@ -122,8 +126,6 @@ class PepperMediaDeviceManager
       media_devices_dispatcher_;
 
   mojo::ReceiverSet<blink::mojom::MediaDevicesListener> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperMediaDeviceManager);
 };
 
 }  // namespace content

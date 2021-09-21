@@ -28,6 +28,10 @@ class MockPlatformNotificationService;
 class WebTestBrowserContext final : public ShellBrowserContext {
  public:
   explicit WebTestBrowserContext(bool off_the_record);
+
+  WebTestBrowserContext(const WebTestBrowserContext&) = delete;
+  WebTestBrowserContext& operator=(const WebTestBrowserContext&) = delete;
+
   ~WebTestBrowserContext() override;
 
   // ShellBrowserContext overrides.
@@ -53,8 +57,6 @@ class WebTestBrowserContext final : public ShellBrowserContext {
   std::unique_ptr<ClientHintsControllerDelegate>
       client_hints_controller_delegate_;
   std::unique_ptr<WebTestStorageAccessManager> storage_access_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestBrowserContext);
 };
 
 }  // namespace content

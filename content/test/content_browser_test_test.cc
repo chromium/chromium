@@ -323,12 +323,15 @@ class ContentBrowserTestScopedFeatureListTest : public ContentBrowserTest {
                                           {kTestFeatureForBrowserTest4});
   }
 
+  ContentBrowserTestScopedFeatureListTest(
+      const ContentBrowserTestScopedFeatureListTest&) = delete;
+  ContentBrowserTestScopedFeatureListTest& operator=(
+      const ContentBrowserTestScopedFeatureListTest&) = delete;
+
   ~ContentBrowserTestScopedFeatureListTest() override {}
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentBrowserTestScopedFeatureListTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTestScopedFeatureListTest,

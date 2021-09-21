@@ -30,6 +30,10 @@ class ContextMenuModel : public ui::SimpleMenuModel,
         params_(params) {
     AddItem(COMMAND_OPEN_DEVTOOLS, u"Inspect Element");
   }
+
+  ContextMenuModel(const ContextMenuModel&) = delete;
+  ContextMenuModel& operator=(const ContextMenuModel&) = delete;
+
   ~ContextMenuModel() override {}
 
   // ui::SimpleMenuModel::Delegate:
@@ -51,8 +55,6 @@ class ContextMenuModel : public ui::SimpleMenuModel,
 
   WebContents* web_contents_;
   ContextMenuParams params_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuModel);
 };
 
 }  // namespace

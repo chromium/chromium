@@ -47,6 +47,10 @@ class TargetHandler : public DevToolsDomainHandler,
                 const std::string& owner_target_id,
                 TargetAutoAttacher* auto_attacher,
                 DevToolsSession* root_session);
+
+  TargetHandler(const TargetHandler&) = delete;
+  TargetHandler& operator=(const TargetHandler&) = delete;
+
   ~TargetHandler() override;
 
   static std::vector<TargetHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -189,8 +193,6 @@ class TargetHandler : public DevToolsDomainHandler,
   base::flat_set<Throttle*> throttles_;
   absl::optional<net::ProxyConfig> pending_proxy_config_;
   base::WeakPtrFactory<TargetHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TargetHandler);
 };
 
 }  // namespace protocol

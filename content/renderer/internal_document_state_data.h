@@ -26,6 +26,11 @@ class NavigationState;
 class InternalDocumentStateData : public base::SupportsUserData::Data {
  public:
   InternalDocumentStateData();
+
+  InternalDocumentStateData(const InternalDocumentStateData&) = delete;
+  InternalDocumentStateData& operator=(const InternalDocumentStateData&) =
+      delete;
+
   ~InternalDocumentStateData() override;
 
   static InternalDocumentStateData* FromDocumentLoader(
@@ -74,8 +79,6 @@ class InternalDocumentStateData : public base::SupportsUserData::Data {
       net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
   int request_id_ = -1;
   std::unique_ptr<NavigationState> navigation_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalDocumentStateData);
 };
 
 }  // namespace content

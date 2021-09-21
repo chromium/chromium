@@ -35,6 +35,10 @@ class BackgroundFetchTestBase : public ::testing::Test {
   using TestResponseBuilder = MockBackgroundFetchDelegate::TestResponseBuilder;
 
   BackgroundFetchTestBase();
+
+  BackgroundFetchTestBase(const BackgroundFetchTestBase&) = delete;
+  BackgroundFetchTestBase& operator=(const BackgroundFetchTestBase&) = delete;
+
   ~BackgroundFetchTestBase() override;
 
   // ::testing::Test overrides.
@@ -111,8 +115,6 @@ class BackgroundFetchTestBase : public ::testing::Test {
 
   bool set_up_called_ = false;
   bool tear_down_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchTestBase);
 };
 
 }  // namespace content

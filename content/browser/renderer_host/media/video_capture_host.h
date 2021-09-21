@@ -36,6 +36,10 @@ class CONTENT_EXPORT VideoCaptureHost
   class RenderProcessHostDelegate;
   VideoCaptureHost(std::unique_ptr<RenderProcessHostDelegate> delegate,
                    MediaStreamManager* media_stream_manager);
+
+  VideoCaptureHost(const VideoCaptureHost&) = delete;
+  VideoCaptureHost& operator=(const VideoCaptureHost&) = delete;
+
   ~VideoCaptureHost() override;
 
   static void Create(
@@ -137,8 +141,6 @@ class CONTENT_EXPORT VideoCaptureHost
       device_id_to_observer_map_;
 
   base::WeakPtrFactory<VideoCaptureHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureHost);
 };
 
 }  // namespace content

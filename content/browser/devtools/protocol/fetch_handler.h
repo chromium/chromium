@@ -34,6 +34,10 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
 
   FetchHandler(DevToolsIOContext* io_context,
                UpdateLoaderFactoriesCallback update_loader_factories_callback);
+
+  FetchHandler(const FetchHandler&) = delete;
+  FetchHandler& operator=(const FetchHandler&) = delete;
+
   ~FetchHandler() override;
 
   static std::vector<FetchHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -107,8 +111,6 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   std::unique_ptr<DevToolsURLLoaderInterceptor> interceptor_;
   UpdateLoaderFactoriesCallback update_loader_factories_callback_;
   base::WeakPtrFactory<FetchHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FetchHandler);
 };
 
 }  // namespace protocol

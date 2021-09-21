@@ -60,6 +60,9 @@ class RunCallbackOnActivation : public WebContentsDelegate {
   explicit RunCallbackOnActivation(base::OnceClosure closure)
       : closure_(std::move(closure)) {}
 
+  RunCallbackOnActivation(const RunCallbackOnActivation&) = delete;
+  RunCallbackOnActivation& operator=(const RunCallbackOnActivation&) = delete;
+
   ~RunCallbackOnActivation() override = default;
 
   // WebContentsDelegate:
@@ -69,8 +72,6 @@ class RunCallbackOnActivation : public WebContentsDelegate {
 
  private:
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunCallbackOnActivation);
 };
 
 class TestDragDropClient : public aura::client::DragDropClient {

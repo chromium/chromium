@@ -45,6 +45,10 @@ class AppCacheNavigationHandle {
  public:
   AppCacheNavigationHandle(ChromeAppCacheService* appcache_service,
                            int process_id);
+
+  AppCacheNavigationHandle(const AppCacheNavigationHandle&) = delete;
+  AppCacheNavigationHandle& operator=(const AppCacheNavigationHandle&) = delete;
+
   ~AppCacheNavigationHandle();
 
   const base::UnguessableToken& appcache_host_id() const {
@@ -62,8 +66,6 @@ class AppCacheNavigationHandle {
  private:
   const base::UnguessableToken appcache_host_id_;
   std::unique_ptr<AppCacheHost> precreated_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppCacheNavigationHandle);
 };
 
 }  // namespace content

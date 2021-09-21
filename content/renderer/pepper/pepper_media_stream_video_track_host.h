@@ -44,6 +44,11 @@ class PepperMediaStreamVideoTrackHost : public PepperMediaStreamTrackHostBase,
                                   PP_Instance instance,
                                   PP_Resource resource);
 
+  PepperMediaStreamVideoTrackHost(const PepperMediaStreamVideoTrackHost&) =
+      delete;
+  PepperMediaStreamVideoTrackHost& operator=(
+      const PepperMediaStreamVideoTrackHost&) = delete;
+
   ~PepperMediaStreamVideoTrackHost() override;
 
   bool IsMediaStreamVideoTrackHost() override;
@@ -119,8 +124,6 @@ class PepperMediaStreamVideoTrackHost : public PepperMediaStreamTrackHostBase,
   scoped_refptr<FrameDeliverer> frame_deliverer_;
 
   base::WeakPtrFactory<PepperMediaStreamVideoTrackHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperMediaStreamVideoTrackHost);
 };
 
 }  // namespace content

@@ -31,6 +31,10 @@ class VideoCaptureHost::RenderProcessHostDelegateImpl
   explicit RenderProcessHostDelegateImpl(uint32_t render_process_id)
       : render_process_id_(render_process_id) {}
 
+  RenderProcessHostDelegateImpl(const RenderProcessHostDelegateImpl&) = delete;
+  RenderProcessHostDelegateImpl& operator=(
+      const RenderProcessHostDelegateImpl&) = delete;
+
   ~RenderProcessHostDelegateImpl() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
   }
@@ -54,7 +58,6 @@ class VideoCaptureHost::RenderProcessHostDelegateImpl
 
  private:
   const uint32_t render_process_id_;
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostDelegateImpl);
 };
 
 VideoCaptureHost::VideoCaptureHost(uint32_t render_process_id,

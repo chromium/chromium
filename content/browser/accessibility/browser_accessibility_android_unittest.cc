@@ -46,6 +46,12 @@ class MockContentClient : public TestContentClient {
 class BrowserAccessibilityAndroidTest : public testing::Test {
  public:
   BrowserAccessibilityAndroidTest();
+
+  BrowserAccessibilityAndroidTest(const BrowserAccessibilityAndroidTest&) =
+      delete;
+  BrowserAccessibilityAndroidTest& operator=(
+      const BrowserAccessibilityAndroidTest&) = delete;
+
   ~BrowserAccessibilityAndroidTest() override;
 
  protected:
@@ -57,7 +63,6 @@ class BrowserAccessibilityAndroidTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   MockContentClient client_;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAndroidTest);
 };
 
 BrowserAccessibilityAndroidTest::BrowserAccessibilityAndroidTest()

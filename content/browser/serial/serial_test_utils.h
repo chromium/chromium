@@ -17,6 +17,10 @@ namespace content {
 class MockSerialDelegate : public SerialDelegate {
  public:
   MockSerialDelegate();
+
+  MockSerialDelegate(const MockSerialDelegate&) = delete;
+  MockSerialDelegate& operator=(const MockSerialDelegate&) = delete;
+
   ~MockSerialDelegate() override;
 
   std::unique_ptr<SerialChooser> RunChooser(
@@ -34,14 +38,17 @@ class MockSerialDelegate : public SerialDelegate {
   MOCK_METHOD2(AddObserver, void(RenderFrameHost* frame, Observer* observer));
   MOCK_METHOD2(RemoveObserver,
                void(RenderFrameHost* frame, Observer* observer));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSerialDelegate);
 };
 
 class SerialTestContentBrowserClient : public ContentBrowserClient {
  public:
   SerialTestContentBrowserClient();
+
+  SerialTestContentBrowserClient(const SerialTestContentBrowserClient&) =
+      delete;
+  SerialTestContentBrowserClient& operator=(
+      const SerialTestContentBrowserClient&) = delete;
+
   ~SerialTestContentBrowserClient() override;
 
   MockSerialDelegate& delegate() { return delegate_; }
@@ -51,8 +58,6 @@ class SerialTestContentBrowserClient : public ContentBrowserClient {
 
  private:
   MockSerialDelegate delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialTestContentBrowserClient);
 };
 
 }  // namespace content

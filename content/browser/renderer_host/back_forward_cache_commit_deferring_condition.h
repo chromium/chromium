@@ -25,6 +25,11 @@ class BackForwardCacheCommitDeferringCondition
   static std::unique_ptr<CommitDeferringCondition> MaybeCreate(
       NavigationRequest& navigation_request);
 
+  BackForwardCacheCommitDeferringCondition(
+      const BackForwardCacheCommitDeferringCondition&) = delete;
+  BackForwardCacheCommitDeferringCondition& operator=(
+      const BackForwardCacheCommitDeferringCondition&) = delete;
+
   ~BackForwardCacheCommitDeferringCondition() override;
 
   Result WillCommitNavigation(base::OnceClosure resume) override;
@@ -34,8 +39,6 @@ class BackForwardCacheCommitDeferringCondition
       NavigationRequest& navigation_request);
 
   NavigationRequest& navigation_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackForwardCacheCommitDeferringCondition);
 };
 
 }  // namespace content

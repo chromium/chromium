@@ -76,6 +76,10 @@ void DeferredQuitRunLoop(base::OnceClosure quit_task, int num_quit_deferrals) {
 class TaskObserver : public base::TaskObserver {
  public:
   TaskObserver() = default;
+
+  TaskObserver(const TaskObserver&) = delete;
+  TaskObserver& operator=(const TaskObserver&) = delete;
+
   ~TaskObserver() override = default;
 
   // TaskObserver overrides.
@@ -96,7 +100,6 @@ class TaskObserver : public base::TaskObserver {
 
  private:
   bool processed_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TaskObserver);
 };
 
 // Adapter that makes a WindowedNotificationObserver::ConditionTestCallback from

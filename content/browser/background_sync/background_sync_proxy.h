@@ -32,6 +32,10 @@ class CONTENT_EXPORT BackgroundSyncProxy {
  public:
   explicit BackgroundSyncProxy(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  BackgroundSyncProxy(const BackgroundSyncProxy&) = delete;
+  BackgroundSyncProxy& operator=(const BackgroundSyncProxy&) = delete;
+
   virtual ~BackgroundSyncProxy();
 
   virtual void ScheduleDelayedProcessing(
@@ -51,8 +55,6 @@ class CONTENT_EXPORT BackgroundSyncProxy {
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncProxy);
 };
 
 }  // namespace content

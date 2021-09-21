@@ -41,6 +41,9 @@ class CONTENT_EXPORT FlingingRenderer : public media::Renderer,
       const std::string& presentation_id,
       mojo::PendingRemote<ClientExtension> client_extension);
 
+  FlingingRenderer(const FlingingRenderer&) = delete;
+  FlingingRenderer& operator=(const FlingingRenderer&) = delete;
+
   ~FlingingRenderer() override;
 
   // media::Renderer implementation
@@ -84,8 +87,6 @@ class CONTENT_EXPORT FlingingRenderer : public media::Renderer,
   mojo::Remote<ClientExtension> client_extension_;
 
   std::unique_ptr<media::FlingingController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlingingRenderer);
 };
 
 }  // namespace content
