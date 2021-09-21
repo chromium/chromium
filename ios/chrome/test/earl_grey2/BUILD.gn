@@ -189,7 +189,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
 chrome_ios_eg2_test("ios_chrome_variations_smoke_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = [ "//ios/chrome/test/earl_grey2:eg2_tests" ]
+  deps = [ "//ios/chrome/test/variations_smoke_test:eg2_tests" ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 
   # Current seed to be injected in variations smoke test.
@@ -198,15 +198,7 @@ chrome_ios_eg2_test("ios_chrome_variations_smoke_eg2tests_module") {
 
   data = [ _variations_seed_abs_path ]
 
-  # Run a subset of tests in EG2 smoke tests to ensure enough time for a
-  # variations seed fetch meanwhile do not last too long.
   executable_args = [
-    "--test-cases",
-    "SmokeTestCase/testOpenTab",
-    "--test-cases",
-    "SmokeTestCase/testTapToolsMenu",
-    "--test-cases",
-    "SmokeTestCase/testURLNavigation",
     "--variations-seed-path",
     "@WrappedPath(" + rebase_path(_variations_seed_abs_path, root_build_dir) +
         ")",

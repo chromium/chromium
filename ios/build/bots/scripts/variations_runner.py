@@ -19,6 +19,8 @@ _LOCAL_STATE_SEED_NAME = 'variations_compressed_seed'
 _LOCAL_STATE_SEED_SIGNATURE_NAME = 'variations_seed_signature'
 _LOCAL_STATE_VARIATIONS_LAST_FETCH_TIME_KEY = 'variations_last_fetch_time'
 _ONE_DAY_IN_MICROSECONDS = 24 * 3600 * 1000000
+# Test argument to make EG2 test verify the fetch happens in current app launch.
+_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG = '--verify-fetched-in-current-launch'
 LOGGER = logging.getLogger(__name__)
 
 
@@ -132,16 +134,22 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     return local_state.get(_LOCAL_STATE_SEED_NAME, None), local_state.get(
         _LOCAL_STATE_SEED_SIGNATURE_NAME, None)
 
-  def _launch_app_once(self, out_sub_dir):
+  def _launch_app_once(self, out_sub_dir, verify_fetched_within_launch=False):
     """Launches app once.
 
     Args:
       out_sub_dir: (str) Sub dir under |self.out_dir| for this attempt output.
+      verify_fetched_within_launch: (bool) Whether to verify that the fetch
+        would happens in current launch.
 
     Returns:
       (test_result_util.ResultCollection): Raw EG test result of the launch.
     """
     launch_out_dir = os.path.join(self.out_dir, out_sub_dir)
+
+    if verify_fetched_within_launch:
+      self.test_app.test_args.append(_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG)
+
     cmd = self.test_app.command(launch_out_dir, 'id=%s' % self.udid, 1)
     proc = subprocess.Popen(
         cmd,
@@ -150,6 +158,9 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
         stderr=subprocess.STDOUT,
     )
     output = test_runner.print_process_output(proc)
+
+    if _VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG in self.test_app.test_args:
+      self.test_app.test_args.remove(_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG)
     return self.log_parser.collect_test_results(launch_out_dir, output)
 
   def _launch_variations_smoke_test(self):
@@ -160,16 +171,18 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     """
     # Launch app once to install app and create Local State file.
     first_launch_result = self._launch_app_once('first_launch')
-    # A passed result in set means app launch succeeded.
-    if not first_launch_result.passed_tests():
-      log = 'Test failure at app first launch(to install app).'
+    # Test will fail because there isn't EulaAccepted pref in Local State and no
+    # fetch will happen.
+    if first_launch_result.passed_tests():
+      log = 'Test passed (expected to fail) at first launch (to install app).'
       LOGGER.error(log)
       return False, log
 
     self._write_accepted_eula()
 
     # Launch app to make it fetch seed from server.
-    fetch_launch_result = self._launch_app_once('fetch_launch')
+    fetch_launch_result = self._launch_app_once(
+        'fetch_launch', verify_fetched_within_launch=True)
     if not fetch_launch_result.passed_tests():
       log = 'Test failure at app launch to fetch variations seed.'
       LOGGER.error(log)
@@ -204,12 +217,13 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
       LOGGER.error(log)
       return False, log
 
-    # Reset last fetch timestamp. On mobile devices the fetch will only happen
-    # after 30 min.
+    # Reset last fetch timestamp to one day before now. On mobile devices a
+    # fetch will only happen after 30 min of last fetch.
     self._reset_last_fetch_time()
 
-    # Launch app again to refetch and update the injected seed with a delta
-    update_launch_result = self._launch_app_once('update_launch')
+    # Launch app again to refetch and update the injected seed with a delta.
+    update_launch_result = self._launch_app_once(
+        'update_launch', verify_fetched_within_launch=True)
     if not update_launch_result.passed_tests():
       log = 'Test failure at app launch to update seed with a delta.'
       LOGGER.error(log)

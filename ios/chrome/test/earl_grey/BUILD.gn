@@ -162,6 +162,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/variations_smoke_test:eg_app_support+eg2",
     "//ios/testing:block_swizzler",
     "//ios/testing:hardware_keyboarr_support",
     "//ios/testing:nserror_support",
