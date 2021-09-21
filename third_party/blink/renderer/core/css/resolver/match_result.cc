@@ -60,7 +60,6 @@ void MatchResult::AddMatchedProperties(
           options.GetValidPropertyFilter());
   new_properties.types_.layer_order =
       clampTo<uint16_t>(options.GetLayerOrder());
-  new_properties.types_.is_inline_style = options.IsInlineStyle();
   new_properties.types_.origin = current_origin_;
   new_properties.types_.tree_order = current_tree_order_;
 }

@@ -151,9 +151,6 @@ bool CachedMatchedProperties::operator==(
     if (properties[i].types_.valid_property_filter !=
         matched_properties_types[i].valid_property_filter)
       return false;
-    if (properties[i].types_.is_inline_style !=
-        matched_properties_types[i].is_inline_style)
-      return false;
   }
   return true;
 }

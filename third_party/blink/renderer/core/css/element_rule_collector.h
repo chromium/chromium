@@ -131,8 +131,7 @@ class CORE_EXPORT ElementRuleCollector {
   void SortAndTransferMatchedRules();
   void ClearMatchedRules();
   void AddElementStyleProperties(const CSSPropertyValueSet*,
-                                 bool is_cacheable = true,
-                                 bool is_inline_style = false);
+                                 bool is_cacheable = true);
   void FinishAddingUARules() { result_.FinishAddingUARules(); }
   void FinishAddingUserRules() {
     result_.FinishAddingUserRules();
