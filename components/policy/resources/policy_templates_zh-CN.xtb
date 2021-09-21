@@ -372,13 +372,6 @@
 
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
 <translation id="1488724823347505879">允许将 Android 应用中的内容分享给 Web 应用</translation>
-<translation id="1495817006535797003">如果您设置了此政策，逗号分隔列表中指定的每个来源都将在自己的进程中运行，以子网域形式指定的来源也会被隔离。例如，指定 https://example.com/ 会导致 https://foo.example.com/ 被隔离（作为 https://example.com/ 网站的一部分）。请注意，从 <ph name="PRODUCT_NAME" /> 版本 77 起，Android 会在默认情况下隔离某些敏感网站，并且此政策会扩展该模式，以隔离其他特定的来源。
-
-      如果将此政策设为停用，系统会关闭所有形式的网站隔离功能，包括隔离敏感网站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的现场试验，以及其他网站隔离模式。不过，用户仍可以通过命令行标记手动开启 IsolateOrigins。
-
-      如果您不设置此政策，用户便可更改此设置。
-
-      注意：在 Android 上隔离过多网站可能会导致性能问题，尤其是在低内存设备上。此政策仅适用于在符合条件（RAM 不小于 1 GB）的设备上运行的 Android 版 Chrome。如需在非 Android 平台上应用此政策，请改用 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />。</translation>
 <translation id="1502843533062797703">禁止插入第三方软件</translation>
 <translation id="1503969899251962413">通过设置此政策，您可为该设备指定 <ph name="PLUGIN_VM_NAME" /> 许可密钥。
 
@@ -1997,11 +1990,6 @@
 
           仅当闲置操作为注销或关机时，系统才会显示警告消息。</translation>
 <translation id="3363360928811201045">针对受管理的帐号添加限制</translation>
-<translation id="3367868895271989224">如果此政策已启用，系统会隔离所有网站。（每个网站都在自己的进程内运行。）如果此政策已停用或未设置，系统将不会关闭网站隔离功能，但用户可以选择停用此功能（例如，使用 chrome://flags 中的“停用网站隔离”）。
-
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 还可用于精确地调整来源。在 <ph name="PRODUCT_OS_NAME" /> 76 版及更低版本中，请将 <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> 设备政策设为相同的值。（因为如果这两项政策的值不一致，当进入用户会话时，系统可能会出现延迟。）
-
-      注意：对于 Android 设备，请改用 <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="3373381043600809954">启用“<ph name="PRODUCT_NAME" />”。</translation>
 <translation id="3374587000313305002">配置供 <ph name="PRODUCT_NAME" /> 用于存储用户数据的目录。
 
@@ -5209,11 +5197,6 @@
       如果您不设置此政策，当从 Internet Explorer 中启动 <ph name="PRODUCT_NAME" /> 时，<ph name="IE_PRODUCT_NAME" /> 将会自动检测 <ph name="PRODUCT_NAME" /> 自有的可执行文件路径。
 
       注意：如果相应设备未安装适用于 <ph name="IE_PRODUCT_NAME" /> 的“旧版浏览器支持”插件，此政策不会产生任何效力。</translation>
-<translation id="7507131973617884092">如果您设置了此政策，逗号分隔列表中指定的每个来源都将在自己的进程中运行，以子网域形式指定的来源也会被隔离。例如，指定 https://example.com/ 会导致 https://foo.example.com/ 被隔离（作为 https://example.com/ 网站的一部分）。
-
-      如果此政策已停用或未设置，用户便可更改此设置。
-
-      请注意：对于 Android 设备，请改用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="7507553960917214561">停用远程访问主机的幕布模式</translation>
 <translation id="7508067364927180229">此设置旨在为 <ph name="LACROS_NAME" /> 浏览器提供多个可用性选项。
 
@@ -5367,13 +5350,6 @@
 
           指定的政策值应以毫秒为单位，且不得大于屏幕关闭延迟时间（若已设置）和闲置延迟时间。</translation>
 <translation id="7680437377926096177">在用户关闭最后一个窗口时不显示让用户确认退出登录的对话框。</translation>
-<translation id="7681958144280390173">如果此政策已启用，系统会隔离所有网站（每个网站都在自己的进程内运行）。请注意，从 <ph name="PRODUCT_NAME" /> 版本 77 起，Android 会在默认情况下隔离某些敏感网站，并且此政策会扩展该默认网站隔离模式，以将其应用于所有网站。
-
-      如果将此政策设为停用，系统会关闭所有形式的网站隔离功能，包括隔离敏感网站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的现场试验，以及其他网站隔离模式。不过，用户仍可以手动开启此政策。
-
-      如果您未设置此政策，用户便能更改此设置。
-
-      注意：对在 Android 设备上隔离每个网站的支持将会不断完善，但目前它可能会导致性能问题，尤其是在低端设备上。此政策仅适用于在符合条件（RAM 不小于 1 GB）的设备上运行的 Android 版 Chrome。如果想要既隔离特定网站，又减少给用户带来的性能影响，请使用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 来指定您想隔离的一系列网站。如需在非 Android 平台上应用此政策，请改用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
 <translation id="7683777542468165012">动态政策刷新</translation>
 <translation id="7687943045976362719">如果设置了此政策，则指定的内容类型由 <ph name="PRODUCT_FRAME_NAME" />处理。
 
@@ -6029,7 +6005,7 @@
 
       如果此政策与 <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> 搭配使用，设备版本可还原到特定的旧版本。
 
-      警告：最好不要配置版本限制，因为这些限制可能会妨碍用户接收软件更新以及重要的安全性修补程序。将所能更新到的版本限制为特定版本可能会将用户置于风险之中。</translation>
+      警告：最好不要配置版本限制，因为这些限制可能会妨碍用户接收软件更新以及重要的安全性修补程序。限制设备更新为特定版本可能会将用户置于风险之中。</translation>
 <translation id="8520064498689833152">强制在 Google 搜索中使用级别至少为“中等”的安全搜索功能，也强制使用级别至少为“中等”的 YouTube 受限模式</translation>
 <translation id="8524334245528364388">包含一系列打印服务器的 JSON 文件的网址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>

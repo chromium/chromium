@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Kijelentkezik, és kikapcsolja a szinkronizálást?</translation>
 <translation id="1373696734384179344">Nincs elegendő memória a kiválasztott tartalom letöltéséhez.</translation>
 <translation id="1376578503827013741">Számítás…</translation>
+<translation id="1382912999714108023">Nem látja aktuális adatait? A frissítés érdekében forduljon bankjához.</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1384704387250346179">Google Lens-képfordítás <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> napja volt aktív</translation>
@@ -351,6 +352,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3214996641768123781">Amikor be van jelentkezve, a <ph name="BEGIN_LINK1" />keresési előzményeket<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />más tevékenységtípusokat<ph name="END_LINK2" /> a rendszer elmentheti az Ön Google-fiókjába. Bármikor törölheti őket.</translation>
 <translation id="321773570071367578">Ha elfelejtette összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />állítsa alaphelyzetbe a szinkronizálást<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Jelszavai szinkronizálásához igazolja személyazonosságát</translation>
+<translation id="3223522355830797639">Bankja ellenőrizni kívánja a személyazonosságát.</translation>
 <translation id="3227557059438308877">A Google Chrome mint biztonsági kulcs</translation>
 <translation id="3232754137068452469">Internetes alkalmazás</translation>
 <translation id="3234978181857588512">Mentés az eszközre</translation>
@@ -817,6 +819,7 @@ A Privacy Sandbox próbaverziói még mindig aktív fejlesztés alatt állnak, �
 <translation id="605721222689873409">ÉÉ</translation>
 <translation id="6059830886158432458">Itt kezelheti a híreket és a tevékenységeket</translation>
 <translation id="6069177176307973611">Az adatvédelmi és biztonsági beállítások áttekintése</translation>
+<translation id="6070730414166672373">Kapcsolatfelvétel a bankjával</translation>
 <translation id="6085886413119427067">Meghatározza, hogyan lehet csatlakozni webhelyekhez biztonságos kapcsolat használatával</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> óra van hátra</translation>
 <translation id="6108923351542677676">A telepítés folyamatban...</translation>

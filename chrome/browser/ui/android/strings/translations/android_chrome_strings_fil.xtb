@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Mag-sign out at i-off ang pag-sync?</translation>
 <translation id="1373696734384179344">Hindi sapat ang memory upang ma-download ang napiling content.</translation>
 <translation id="1376578503827013741">Kino-compute…</translation>
+<translation id="1382912999714108023">Hindi mo nakikita ang iyong kasalukuyan impormasyon? Makipag-ugnayan sa iyong bangko para ma-update ito.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1384704387250346179">Isalin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktibo <ph name="LAST_UPDATED" /> (na) araw ang nakalipas</translation>
@@ -351,6 +352,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3214996641768123781">Posibleng ma-save sa iyong Google Account ang <ph name="BEGIN_LINK1" />history ng paghahanap<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />iba pang anyo ng aktibidad<ph name="END_LINK2" /> kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
 <translation id="321773570071367578">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Para ma-sync ang iyong mga password, i-verify na ikaw ito</translation>
+<translation id="3223522355830797639">Gustong kumpirmahin ng bangko mo na ikaw nga ito.</translation>
 <translation id="3227557059438308877">Google Chrome bilang Security Key</translation>
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3234978181857588512">I-save sa device</translation>
@@ -817,6 +819,7 @@ Kasalukuyan pa ring dine-develop ang mga trial ng Privacy Sandbox at available a
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kontrolin ang iyong mga kuwento at aktibidad dito</translation>
 <translation id="6069177176307973611">Suriin ang mga setting ng privacy at seguridad</translation>
+<translation id="6070730414166672373">Nakikipag-ugnayan sa iyong bangko</translation>
 <translation id="6085886413119427067">Tinutukoy kung paano kumonekta sa mga website sa secure na koneksyon</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6108923351542677676">Kasalukuyang sine-setup…</translation>

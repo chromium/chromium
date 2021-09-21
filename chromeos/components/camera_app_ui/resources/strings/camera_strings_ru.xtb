@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Отключено устройство <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">Таймер на 3 сек.</translation>
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Обычный</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Доступно сканирование документов.</translation>
 <translation id="5268823927180092501">Включить режим документа на всех камерах</translation>
 <translation id="5444515100983837161">Расположите документ внутри рамки. Для повышения качества отсканированного изображения цвета документа и фона должны различаться.</translation>
+<translation id="5588258280684580073">Включить запись в формате GIF</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5746169159649715125">Сохранить как PDF</translation>
 <translation id="5753488212459587150">Включить режим эксперта</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">Разрешение видео</translation>
 <translation id="7337660886763914220">Ошибки файловой системы.</translation>
 <translation id="7450541714075000668">Текст скопирован.</translation>
+<translation id="7488619942230388918">Записать видео в формате GIF</translation>
 <translation id="7557677699350329807">Переключиться на следующую камеру</translation>
 <translation id="7607002721634913082">Приостановлен</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7670511624014457267">60 кадров/с</translation>
+<translation id="7726641833034062494">Записать обычное видео</translation>
 <translation id="7983668134180549431">Обнаружен текст.</translation>
 <translation id="8067883171444229417">Смотреть видео</translation>
 <translation id="8120146556401698679">Панорамирование, изменение ракурса, масштабирование</translation>

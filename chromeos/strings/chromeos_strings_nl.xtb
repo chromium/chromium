@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
 <translation id="1204296502688602597">DNS-latentie</translation>
 <translation id="123124571410524056">Vermoedelijke portal</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
 <translation id="1930797645656624981">Invoermethodeservice voor Chrome OS</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
+<translation id="197386857804679933">Ga naar Instellingen om opnieuw verbinding te maken</translation>
 <translation id="1979103255016296513">Wachtwoord moet dringend worden gewijzigd</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectiviteit</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">GESLAAGD</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2860473693272905224">Leg een andere pagina op de scanner</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Pagina <ph name="PAGE_NUMBER" /> scannen…</translation>
 <translation id="315738237743207937">Captive portal waargenomen</translation>
+<translation id="3170673040743561620">Leg je document op de scanner</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Pagina opnieuw scannen}=1{Pagina {PAGE_NUMBER} opnieuw scannen}other{Pagina {PAGE_NUMBER} opnieuw scannen}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Niet verbonden</translation>
 <translation id="3749289110408117711">Bestandsnaam</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Mijn Drive</translation>
 <translation id="4429881212383817840">Kerberos-ticket verloopt binnenkort</translation>
 <translation id="4431821876790500265">Rapport bekijken</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Pagina verwijderen}=1{Pagina {PAGE_NUMBER} verwijderen}other{Pagina {PAGE_NUMBER} verwijderen}}</translation>
 <translation id="445059817448385655">Oud wachtwoord</translation>
 <translation id="4453205916657964690">Subnetmasker</translation>
 <translation id="4454245904991689773">Scannen naar</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Verbinding</translation>
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
 <translation id="4835901797422965222">Geen actieve netwerken</translation>
+<translation id="484790837831576105">(Android) DNS-resolutie</translation>
 <translation id="4848429997038228357">ACTIEF</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
 <translation id="4880328057631981605">Naam van toegangspunt</translation>
@@ -291,6 +294,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6050189528197190982">Grijstinten</translation>
 <translation id="6058625436358447366">Geef je oude en nieuwe wachtwoord op om te voltooien</translation>
 <translation id="6061772781719867950">Mislukte HTTPS-verzoeken</translation>
+<translation id="6075872808778243331">(Android) HTTP-vertraging</translation>
 <translation id="6104112872696127344">Scannen is geannuleerd</translation>
 <translation id="6106186594183574873">Geef je oude wachtwoord op om te voltooien</translation>
 <translation id="6108689792487843350">Gateway is onbereikbaar</translation>
@@ -333,6 +337,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6704062477274546131">DNS-resolutie</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> is uitgezet</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
 <translation id="6756731097889387912">Kan scannen niet annuleren</translation>
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
@@ -342,11 +347,13 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6910312834584889076">De klep van de scanner staat open. Sluit de klep en probeer het opnieuw.</translation>
 <translation id="6911383237894364323">Kan geen verbinding maken met mediaservers</translation>
 <translation id="6957231940976260713">Servicenaam</translation>
+<translation id="6961170852793647506">Leg je document op de scanner om aan de slag te gaan</translation>
 <translation id="6977381486153291903">Firmwarerevisie</translation>
 <translation id="6982876849933694860">Als je een nieuwe verbinding wilt instellen, ga je naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" />-toetsenbord</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7058278511608979688">Beëindigen en opslaan</translation>
 <translation id="7059230779847288458">Opladen, vol over <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">GESTOPT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
-<translation id="7257889006063274246">Weet je zeker dat je de pagina <ph name="CURRENT_PAGE" /> wilt verwijderen?</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>
@@ -411,6 +417,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
+<translation id="811820734797650957">(Android) Gateway kan worden gepingd</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Verkeerstellers aanvragen</translation>
 <translation id="8206859287963243715">Mobiel</translation>
@@ -482,6 +489,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
+<translation id="9126720536733509015">Meerder pagina's opslaan in 1 pdf-bestand</translation>
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>

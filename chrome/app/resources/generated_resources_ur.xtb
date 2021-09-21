@@ -267,6 +267,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> اَن انسٹال نہیں ہو سکی</translation>
 <translation id="1277020343994096713">‏ایک ایسا نیا PIN تخلیق کریں جو موجودہ PIN سے مختلف ہو</translation>
 <translation id="1278859221870828664">‏Google Play ایپس اور سروسز کا جائزہ لیں</translation>
+<translation id="1279024913354609713">اجازت نہ دیں</translation>
 <translation id="127946606521051357">قریبی آلہ اشتراک کر رہا ہے</translation>
 <translation id="1280965841156951489">فائلز میں ترمیم کریں</translation>
 <translation id="1282465000333679776">سسٹم آڈیو کا اشتراک کریں</translation>
@@ -2193,6 +2194,7 @@
 <translation id="33022249435934718">‏GDI ہینڈلز</translation>
 <translation id="3302388252085547855">جواز درج کریں...</translation>
 <translation id="3303260552072730022">ایک ایکسٹینشن نے پوری اسکرین کو تحریک دی۔</translation>
+<translation id="3303795387212510132">ایپ کو <ph name="PROTOCOL_SCHEME" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="3303818374450886607">کاپیاں</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> کی رعایت</translation>
@@ -2270,6 +2272,7 @@
 <translation id="339178315942519818">اپنے <ph name="DEVICE_TYPE" /> پر اپنی چیٹ ایپس کی اطلاعات دیکھیں</translation>
 <translation id="3393554941209044235">‏Chrome کی دستاویز کا تجزیہ</translation>
 <translation id="3394850431319394743">تحفظ یافتہ مواد کو چلانے کیلئے شناخت کنندگان کو استعمال کرنے کی اجازت دی گئی</translation>
+<translation id="3396744558790608201">‏دائیں طرف کلک کریں اور "Google لینز سے تصاویر تلاش کریں" منتخب کر کے سائٹ کا کوئی بھی حصہ تلاش کریں تاکہ ویب پر براؤز اور خریداری کرتے وقت نظر آنے والے ویژوئل مواد کے بارے میں مزید جان سکیں۔</translation>
 <translation id="3396800784455899911">‏"قبول کریں اور جاری رکھیں" بٹن پر کلک کر کے، آپ ان Google سروسز کیلئے اوپر وضاحت کردہ کارروائی سے اتفاق کرتے ہیں۔</translation>
 <translation id="339722927132407568">منجمد ہو جاتی ہے</translation>
 <translation id="3399432415385675819">معلومات غیر فعال ہو جائیں گي</translation>
@@ -3180,6 +3183,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ایک ونڈو کا اشتراک کر رہی ہے۔</translation>
 <translation id="4364830672918311045">اطلاعات ڈسپلے کریں</translation>
 <translation id="4366138410738374926">پرنٹنگ شروع ہو گئی ہے</translation>
+<translation id="4369121877634339065">تلاش کرنے کے لیے کسی بھی تصویر پر گھسیٹیں</translation>
 <translation id="4370975561335139969">آپ کی جانب سے درج کردہ ای میل اور پاس ورڈ مماثل نہیں ہیں</translation>
 <translation id="4371452868325715552">‏سرور سے منسلک نہیں ہو سکا۔ براہ کرم اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔ اگر آپ کو اب بھی مشکل درپیش ہے تو اپنا Chromebook ری سٹارٹ کرنے کی کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="4373966964907728675">ڈیسک ٹاپ کاسٹ کیا جا رہا ہے</translation>
@@ -3624,6 +3628,7 @@
 <translation id="485088796993065002">سائٹس موسیقی، ویڈیوز اور دیگر میڈیا کے لیے آڈیو فراہم کرنے کے لیے آواز چلا سکتی ہیں</translation>
 <translation id="4853020600495124913">&amp;نئی ونڈو میں کھولیں</translation>
 <translation id="4854317507773910281">منظوری کے لیے والد/والدہ کا اکاؤنٹ منتخب کریں</translation>
+<translation id="485480310608090163">مزید ترتیبات اور اجازتیں</translation>
 <translation id="4856478137399998590">آپ کی موبائل ڈیٹا سروس کو فعال کر دیا گیا ہے اور وہ استعمال کیلئے تیار ہے</translation>
 <translation id="4858792381671956233">آپ نے اپنے والدین سے پوچھا کہ کیا یہ سائٹ ملاحظہ کرنا ٹھیک ہے</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -5767,6 +5772,10 @@
 <translation id="7222204278952406003">‏Chrome آپ کا ڈیفالٹ براؤزر ہے</translation>
 <translation id="7222232353993864120">ای میل پتہ</translation>
 <translation id="7225179976675429563">نیٹ ورک کی قسم غائب ہے</translation>
+<translation id="7226485026248318204">‏Google تصاویر سے آپ کی یادیں یہاں دکھائی دیتی ہیں۔ یہ آپ کے سائن ان ہونے پر ہی دکھائی دیتی ہیں۔
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        یادوں میں جو کچھ نظر آتا ہے اس کا نظم <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> پر کریں۔</translation>
 <translation id="7228479291753472782">وہ ترتیبات استعمال کریں جو تعین کرتی ہیں کہ آیا ویب سائٹس جغرافیائی مقام، مائیکروفون، کیمرا وغیرہ جیسی خصوصیات استعمال کر سکتی ہیں۔</translation>
 <translation id="7228523857728654909">اسکرین لاک اور سائن ان</translation>
 <translation id="7230222852462421043">&amp;ونڈو بحال کریں</translation>
@@ -6196,6 +6205,7 @@
 <translation id="767147716926917172">‏Google کو خودکار طور پر ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجتا ہے</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، <ph name="PAGE_TITLE" /> میں۔</translation>
 <translation id="7674416868315480713">‏Linux میں فارورڈ کی جا رہی سبھی پورٹس کو غیر فعال کریں</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> ایپس</translation>
 <translation id="7674542105240814168">مقام تک رسائی کو مسترد کر دیا گیا</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' کیلئے <ph name="NUM" /> ٹیب ملا</translation>
 <translation id="7676867886086876795">‏کسی بھی متنی فیلڈ میں املا کی اجازت دینے کیلئے Google کو اپنی آواز بھیجیں۔</translation>
@@ -6630,7 +6640,6 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> ایکسٹینشن سے پراکسی کی ترتیبات کا استعمال کر رہا ہے</translation>
 <translation id="8097959162767603171">‏آپ کے منتظم کو پہلے منتظم کنسول Chrome آلہ کی فہرست میں سروس کی شرائط کو قبول کرنا ہوگا۔</translation>
 <translation id="8098616321286360457">نیٹ ورک کنکشن درکار ہے</translation>
-<translation id="8099495042588009598">مزید اجازتیں</translation>
 <translation id="810068641062493918">‏<ph name="LANGUAGE" /> کا انتخاب کیا گیا۔ غیر منتخب کرنے کیلئے، Search اور Space دبائیں۔</translation>
 <translation id="810185532889603849">حسب ضرورت رنگ</translation>
 <translation id="8101987792947961127">اگلے ریبوٹ پر پاور واش درکار ہوگا</translation>

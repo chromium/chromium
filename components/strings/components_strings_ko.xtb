@@ -32,6 +32,7 @@
 <translation id="1074497978438210769">주의 요함</translation>
 <translation id="1076113272840682464">Chrome 다운로드 관리</translation>
 <translation id="1080116354587839789">너비에 맞춤</translation>
+<translation id="1081061862829655580">트레이 19</translation>
 <translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">카드 명의 추가</translation>
 <translation id="1089439967362294234">비밀번호 변경</translation>
@@ -70,6 +71,7 @@
 <translation id="1209221128712833642">양식 만들기 버튼, Enter를 눌러 Google Forms에서 빠르게 양식 만들기</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" />에 접속하려 했으나 서버가 안전성이 낮은 키가 포함된 인증서를 전달했습니다. 공격자가 비공개 키를 손상시켰을 수 있으며 서버를 가장한 공격자와 통신 중일 수 있습니다.</translation>
 <translation id="1219129156119358924">시스템 보안</translation>
+<translation id="1222060260947439312">오른쪽 트레이</translation>
 <translation id="1227224963052638717">알 수 없는 정책입니다.</translation>
 <translation id="1228893227497259893">잘못된 개체 식별자</translation>
 <translation id="1232569758102978740">제목 없음</translation>
@@ -91,11 +93,13 @@
 <translation id="1257553931232494454">확대/축소 수준</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정 관리</translation>
 <translation id="1263231323834454256">읽기 목록</translation>
+<translation id="1264309058268477500">대체</translation>
 <translation id="1269096320618100013">접근성 설정 관리 버튼, Enter를 눌러 Chrome OS 설정의 접근성 도구 맞춤설정</translation>
 <translation id="1269516672602708785">Google Sites에서 빠르게 새 사이트 만들기</translation>
 <translation id="1270502636509132238">픽업 방법</translation>
 <translation id="1281476433249504884">스태커 1</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
+<translation id="1292571435393770077">트레이 16</translation>
 <translation id="1292701964462482250">'컴퓨터의 소프트웨어로 인해 Chrome이 안전하게 웹에 접속할 수 없습니다'(Windows 컴퓨터만 해당)</translation>
 <translation id="1294154142200295408">명령줄 변형</translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
@@ -203,6 +207,7 @@
 <translation id="1592005682883173041">로컬 데이터 액세스</translation>
 <translation id="1594030484168838125">선택</translation>
 <translation id="161042844686301425">청록색</translation>
+<translation id="1611101756749861742">2번째 롤</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1623104350909869708">이 페이지가 추가적인 대화를 생성하지 않도록 차단</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -275,14 +280,17 @@
 <translation id="182139138257690338">자동 다운로드</translation>
 <translation id="1821930232296380041">잘못된 요청 또는 요청 매개변수</translation>
 <translation id="1822540298136254167">방문 웹사이트 및 접속 시간</translation>
+<translation id="1824402189105105503">8번째 롤</translation>
 <translation id="1826516787628120939">확인 중</translation>
 <translation id="1834321415901700177">이 사이트에 유해한 프로그램이 있습니다.</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
 <translation id="1839551713262164453">오류가 발생하여 정책 값의 유효성을 검사하지 못했습니다.</translation>
 <translation id="1842969606798536927">결제</translation>
 <translation id="1856713167556118146">시크릿 모드에서 제공되지 않는 기능</translation>
+<translation id="1863257867908022953">트레이 12</translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
 <translation id="1871284979644508959">필수 입력란</translation>
+<translation id="1875025161375567525">사진 트레이</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">시작 페이지 열기</translation>
 <translation id="1883255238294161206">접기 목록</translation>
@@ -308,6 +316,7 @@
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 북마크</translation>
 <translation id="1973335181906896915">일련화 오류</translation>
 <translation id="1974060860693918893">고급</translation>
+<translation id="1975457531113383421">입력 트레이</translation>
 <translation id="1975584088563498795">메일박스 10</translation>
 <translation id="1978555033938440688">펌웨어 버전</translation>
 <translation id="1988881251331415125">철자가 올바르다면 <ph name="BEGIN_LINK" />연결 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
@@ -321,6 +330,7 @@
 <translation id="2025186561304664664">프록시가 자동 설정되도록 지정됩니다.</translation>
 <translation id="2025891858974379949">안전하지 않은 콘텐츠</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />프록시 및 방화벽 확인<ph name="END_LINK" /></translation>
+<translation id="2036983605131262583">대체 롤</translation>
 <translation id="2042213636306070719">트레이 7</translation>
 <translation id="204357726431741734">Google 계정에 저장된 비밀번호를 사용하여 로그인</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
@@ -476,6 +486,7 @@
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="254947805923345898">정책 값이 유효하지 않습니다.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" />에서 잘못된 응답을 전송했습니다.</translation>
+<translation id="2552246211866555379">엽서</translation>
 <translation id="2552295903035773204">지금부터 화면 잠금을 사용하여 카드 확인</translation>
 <translation id="2553853292994445426">보안 DNS 설정을 확인하세요. 연결되지 않는 보안 DNS 서버를 설정했을 수도 있습니다.</translation>
 <translation id="2556876185419854533">수정 실행 취소(&amp;U)</translation>
@@ -526,6 +537,7 @@
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="2721148159707890343">요청 성공</translation>
+<translation id="2726001110728089263">측면 트레이</translation>
 <translation id="2728127805433021124">서버의 인증서가 안전성이 낮은 서명 알고리즘을 사용하여 서명되어 있습니다.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />연결 진단 프로그램 실행<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">수령 주소 선택</translation>
@@ -557,6 +569,7 @@
 <translation id="2880660355386638022">창 배치</translation>
 <translation id="2881276955470682203">카드를 저장하시겠습니까?</translation>
 <translation id="2882949212241984732">더블 게이트 폴드</translation>
+<translation id="2893773853358652045">4번째 롤</translation>
 <translation id="2900528713135656174">일정 만들기</translation>
 <translation id="2903493209154104877">주소</translation>
 <translation id="290376772003165898">페이지 언어가 <ph name="LANGUAGE" />가 아닌가요?</translation>
@@ -615,6 +628,7 @@
 <translation id="3096100844101284527">수령 주소 추가</translation>
 <translation id="3105172416063519923">애셋 ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />보안 DNS 구성 확인<ph name="END_LINK" /></translation>
+<translation id="3108943290502734357">중간 트레이</translation>
 <translation id="3109728660330352905">이 페이지를 볼 수 있는 권한이 없습니다.</translation>
 <translation id="3113284927548439113">세 번째 근무조</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" />에서 데이터를 백업하고 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다.</translation>
@@ -628,6 +642,7 @@
 <translation id="3154506275960390542">이 페이지에 포함된 양식은 안전하게 제출되지 않을 수 있습니다. 전송되는 데이터는 전송 중에 다른 사람이 볼 수 있으며 서버에서 수신하는 데이터를 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
 <translation id="315504272643575312">내 계정은 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="3157931365184549694">복구</translation>
+<translation id="3158539265159265653">디스크</translation>
 <translation id="3162559335345991374">사용 중인 Wi-Fi에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">섬</translation>
@@ -791,6 +806,7 @@
 <translation id="3658742229777143148">개정</translation>
 <translation id="3664782872746246217">키워드:</translation>
 <translation id="3671540257457995106">크기 조절을 허용하시겠습니까?</translation>
+<translation id="3675563144891642599">3번째 롤</translation>
 <translation id="3676592649209844519">기기 ID:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;을(를) 찾으셨나요?</translation>
 <translation id="3678029195006412963">요청을 서명할 수 없음</translation>
@@ -905,6 +921,7 @@
 <translation id="4084120443451129199">검색 모드, Enter 키를 눌러 <ph name="KEYWORD_SUFFIX" /> 검색</translation>
 <translation id="4087296516249690906">일정 만들기 버튼, Enter를 눌러 Google Calendar에서 빠르게 새 일정 만들기</translation>
 <translation id="4088981014127559358">첫 번째 면 이미지 Y 시프트</translation>
+<translation id="4089152113577680600">트레이 14</translation>
 <translation id="4098354747657067197">사기성 사이트 주의</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome의 글꼴 크기와 서체 맞춤설정</translation>
 <translation id="4101413244023615925">텍스트 및 그래픽</translation>
@@ -939,6 +956,7 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">지금은 카드를 저장할 수 없습니다.</translation>
 <translation id="4196861286325780578">이동 다시 실행(&amp;R)</translation>
+<translation id="4202554117186904723">5번째 롤</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />방화벽 및 바이러스 백신 소프트웨어 설정 확인<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">크게</translation>
 <translation id="4209166701302774460">대상 서버인 <ph name="ORIGIN" />에서 서버로 전송되는 모든 요청에 출처 정책을 적용하도록 요청했습니다. 하지만 현재 정책을 전달하는 데 실패하여 브라우저에서 <ph name="SITE" />에 관한 요청을 처리할 수 없습니다. 사이트 운영자는 출처 정책을 사용해 사이트의 보안 및 기타 속성을 구성할 수 있습니다.</translation>
@@ -996,6 +1014,7 @@
 <translation id="4314815835985389558">동기화 관리</translation>
 <translation id="4318312030194671742">페인트 미리보기 합성 서비스</translation>
 <translation id="4318566738941496689">기기 이름 및 네트워크 주소</translation>
+<translation id="4325600325087822253">트레이 17</translation>
 <translation id="4325863107915753736">도움말을 찾지 못했습니다.</translation>
 <translation id="4326324639298822553">만료일을 확인한 후 다시 시도해 주세요.</translation>
 <translation id="4329871760342656885">정책 파싱 오류: <ph name="ERROR" /></translation>
@@ -1007,6 +1026,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" />에 대한 연결이 안전하지 않음</translation>
 <translation id="4349531505348777662">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> 등 동일한 비밀번호를 사용한 사이트로 이동하여 비밀번호를 변경하시기 바랍니다.</translation>
+<translation id="4350629523305688469">다기능 트레이</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" />에서 주변 블루투스 기기를 검색하려고 합니다. 다음 기기가 발견되었습니다.</translation>
 <translation id="4356973930735388585">이 사이트의 공격자가 사용자 정보(예: 사진, 비밀번호, 메시지, 신용카드)를 도용하거나 삭제하는 위험한 프로그램을 컴퓨터에 설치하려고 시도할 수 있습니다.</translation>
 <translation id="4358059973562876591">지정한 템플릿이 DnsOverHttpsMode 정책 오류로 인해 적용되지 않을 수 있습니다.</translation>
@@ -1061,6 +1081,7 @@
 <translation id="4515275063822566619">카드와 주소는 Chrome 및 Google 계정(<ph name="ACCOUNT_EMAIL" />)에서 가져왔습니다. 이 정보는 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="4517607026994743406">Comm-10(봉투)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" />×<ph name="HEIGHT" />mm(<ph name="ORIENTATION" />)</translation>
+<translation id="4521916730539354575">왼쪽 트레이</translation>
 <translation id="4522570452068850558">세부정보</translation>
 <translation id="4524138615196389145">지금부터 WebAuthn을 사용하여 빠르게 카드를 확인합니다.</translation>
 <translation id="4524805452350978254">카드 관리</translation>
@@ -1175,6 +1196,7 @@
 <translation id="4889420713887366944">시크릿 창 열기 버튼, 새 시크릿 창을 열어 비공개적으로 탐색하려면 Enter 누르기</translation>
 <translation id="4892518386797173871">후면</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
+<translation id="4900217275619098670">9번째 롤</translation>
 <translation id="4901778704868714008">저장...</translation>
 <translation id="4913987521957242411">왼쪽 상단 펀칭</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> 설치(다운로드 필요 없음)</translation>
@@ -1223,6 +1245,7 @@
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1개 사용 중)}other{(#개 사용 중)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />프록시 주소 확인<ph name="END_LINK" /></translation>
+<translation id="5070838744279127212">10번째 롤</translation>
 <translation id="507130231501693183">메일박스 4</translation>
 <translation id="5087286274860437796">서버의 인증서가 현재 유효하지 않습니다.</translation>
 <translation id="5087580092889165836">카드 추가</translation>
@@ -1235,6 +1258,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">안전하지 않은 사이트</translation>
 <translation id="5112422516732747637">A5</translation>
+<translation id="5114288597538800140">트레이 18</translation>
 <translation id="5114987907971894280">가상 현실</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">제한된 관리 게스트 세션 재정의</translation>
@@ -1268,8 +1292,10 @@
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
 <translation id="5205222826937269299">이름은 필수입니다.</translation>
 <translation id="5209518306177824490">SHA-1 지문</translation>
+<translation id="5209670883520018268">트레이 20</translation>
 <translation id="5215116848420601511">Google Pay에 사용되는 결제 수단 및 주소</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
+<translation id="521659676233207110">트레이 13</translation>
 <translation id="5222812217790122047">이메일은 필수입니다.</translation>
 <translation id="5230733896359313003">배송지 주소</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -1473,6 +1499,7 @@
 <translation id="5967592137238574583">연락처 정보 수정</translation>
 <translation id="5967867314010545767">기록에서 삭제</translation>
 <translation id="5968793460449681917">방문할 때마다</translation>
+<translation id="5974052231147553524">6번째 롤</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1627,11 +1654,13 @@
 <translation id="6499038740797743453">비밀번호를 재설정하시겠습니까?</translation>
 <translation id="6502991525169604759">변경사항 제외</translation>
 <translation id="6505563257409036437">시크릿 창 닫기</translation>
+<translation id="6506959208958864820">봉투</translation>
 <translation id="6508722015517270189">Chrome 다시 시작하기</translation>
 <translation id="6513005815064132016">카메라 위치 추적을 요청할 수 있음</translation>
 <translation id="6517596291481585650">경고: 이 정책은 목록이 아니므로 정책에 명시된 대로 목록으로 병합되지 않았습니다.</translation>
 <translation id="6518133107902771759">확인</translation>
 <translation id="6521745193039995384">활성화되지 않음</translation>
+<translation id="6529173248185917884">7번째 롤</translation>
 <translation id="6529602333819889595">삭제 다시 실행(&amp;R)</translation>
 <translation id="6545864417968258051">블루투스 검색</translation>
 <translation id="6547208576736763147">왼쪽 2공 펀칭</translation>
@@ -1666,6 +1695,7 @@
 <translation id="6652101503459149953">Windows Hello 사용</translation>
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6660413144148052430">위치</translation>
+<translation id="6662457027866368246">1번째 롤</translation>
 <translation id="666259744093848177">(x86_64 번역 버전)</translation>
 <translation id="6665553082534466207">오른쪽 3공 펀칭</translation>
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
@@ -1712,6 +1742,7 @@
 <translation id="6846340164947227603">가상 카드 번호 사용...</translation>
 <translation id="6852204201400771460">앱을 새로고침하시겠습니까?</translation>
 <translation id="6865412394715372076">지금은 이 카드를 인증할 수 없습니다.</translation>
+<translation id="6873456682041376666">맨위 트레이</translation>
 <translation id="6874604403660855544">추가 다시 실행(&amp;R)</translation>
 <translation id="6881240511396774766">빠르게 새 Google 문서 만들기</translation>
 <translation id="6883221904761970440">보안 결제 사용자 인증 정보 승인 시트가 닫힘</translation>
@@ -1792,6 +1823,7 @@
 <translation id="7135130955892390533">상태 보기</translation>
 <translation id="7138472120740807366">배달 방법</translation>
 <translation id="7139724024395191329">에미레이트</translation>
+<translation id="7139892792842608322">기본 트레이</translation>
 <translation id="714064300541049402">두 번째 면 이미지 X 시프트</translation>
 <translation id="7152423860607593928">Number-14(봉투)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
@@ -1830,6 +1862,7 @@
 <translation id="7251437084390964440">네트워크 설정이 ONC 표준을 준수하지 않습니다. 일부 설정을 가져오지 못했을 수도 있습니다.
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7256634549594854023">후면 트레이</translation>
 <translation id="725866823122871198">컴퓨터의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="7260504762447901703">액세스 취소</translation>
 <translation id="7275334191706090484">관리 북마크</translation>
@@ -1984,9 +2017,11 @@
 <translation id="7734285854693414638">Google Forms에서 빠르게 새 양식 만들기</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" />로 된 페이지를 항상 번역</translation>
 <translation id="7740996059027112821">표준</translation>
+<translation id="77424286611022110">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">위험한 콘텐츠 차단됨</translation>
 <translation id="7751971323486164747">Chrome의 글꼴 크기 및 서체 맞춤설정</translation>
 <translation id="7752995774971033316">관리되지 않음</translation>
+<translation id="7755624218968747854">기본 롤</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">방화벽이나 바이러스 백신 소프트웨어가 연결을 차단했을 수 있습니다.</translation>
 <translation id="776110834126722255">지원 중단됨</translation>
@@ -2064,6 +2099,7 @@
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}other{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}}</translation>
 <translation id="8025119109950072390">이 사이트의 공격자가 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드)를 공개하는 등의 위험한 행동을 하도록 사용자를 속일 수 있습니다.</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
+<translation id="8027077570865220386">트레이 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Forms에서 빠르게 새 양식 만들기</translation>
 <translation id="8028960012888758725">각 작업 뒤에 트림</translation>
 <translation id="8034522405403831421">이 페이지는 <ph name="SOURCE_LANGUAGE" />로 되어 있습니다. <ph name="TARGET_LANGUAGE" />로 번역하시겠습니까?</translation>
@@ -2123,6 +2159,7 @@
 <translation id="8228419419708659934">두 페이지씩 보기</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">플랫폼 온도</translation>
+<translation id="8233773197406738106">파일 준비 중</translation>
 <translation id="8238581221633243064">새 시크릿 창에서 페이지 열기</translation>
 <translation id="8241707690549784388">찾고 있는 페이지에서 사용자가 입력한 정보를 사용했습니다. 해당 페이지로 돌아가면 기존 작업을 반복할 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="8241712895048303527">이 사이트에서 차단</translation>
@@ -2140,6 +2177,7 @@
 <translation id="8270242299912238708">PDF 문서</translation>
 <translation id="8275952078857499577">이 사이트 번역 옵션을 제공하지 않음</translation>
 <translation id="8277900682056760511">결제 핸들러 시트가 열림</translation>
+<translation id="8280630997017109758">트레이 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">고유 기기 식별자 조회</translation>
 <translation id="8284769179630993263">Chrome 설정에서 세이프 브라우징 등 관리</translation>
@@ -2288,6 +2326,7 @@
 <translation id="8807160976559152894">각 페이지 뒤에 트림</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 Chrome을 업데이트하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="8820817407110198400">북마크</translation>
+<translation id="882338992931677877">수동 슬롯</translation>
 <translation id="883848425547221593">기타 북마크</translation>
 <translation id="884264119367021077">배송지 주소</translation>
 <translation id="884923133447025588">폐기 매커니즘을 찾을 수 없습니다.</translation>
@@ -2346,6 +2385,7 @@
 <translation id="9036306139374661733">마이크 권한을 허용하시겠습니까?</translation>
 <translation id="9038649477754266430">빠른 페이지 로드를 위해 예상 검색어 서비스 사용</translation>
 <translation id="9039213469156557790">또한 이 페이지에는 안전하지 않은 다른 리소스가 포함되어 있습니다. 이러한 리소스는 전송 중에 다른 사람이 볼 수 있으며 페이지의 작동을 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
+<translation id="9042617223719777575">대용량</translation>
 <translation id="9044359186343685026">Touch ID 사용</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" />에 접속하려 했지만 서버가 잘못된 인증서를 전달했습니다.</translation>

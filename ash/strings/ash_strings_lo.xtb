@@ -494,7 +494,6 @@
 <translation id="4665114317261903604">ປິດເປີດຫ້າມລົບກວນ. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">ປົດລັອກອຸປະກອນດ້ວຍລະຫັດພໍ່ແມ່</translation>
 <translation id="4702647871202761252">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວປິດຢູ່</translation>
-<translation id="4705716602320768426">ຄຳຕິຊົມໄຟລ໌</translation>
 <translation id="4706121060329443414">ຈະລອງດາວໂຫຼດໃໝ່ໃນພາຍຫຼັງ. ການເວົ້າຈະຖືກສົ່ງໄປໃຫ້ Google ເພື່ອປະມວນຜົນສຳລັບຕອນນີ້.</translation>
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
 <translation id="4734965478015604180">ລວງນອນ</translation>
@@ -771,6 +770,7 @@
 <translation id="6919251195245069855">ບໍ່ສາມາດຮັບຮູ້ບັດອັດສະລິຍະຂອງທ່ານໄດ້. ລອງໃໝ່.</translation>
 <translation id="6921188888306725546">ມີການປັບປຸງຄີລັດແລ້ວ</translation>
 <translation id="6929655271276551705">ການຕັ້ງຄ່າວັນທີ</translation>
+<translation id="6931576957638141829">ບັນ​ທຶກ​ໄປ​ໃສ່</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="6961121602502368900">ປິດສຽງໂທລະສັບບໍ່ສາມາດໃຊ້ໄດ້ໃນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ</translation>
 <translation id="6961840794482373852">ຄີລັດ Alt + ລູກສອນຂຶ້ນຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Page Up, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນຂຶ້ນ.</translation>
@@ -907,6 +907,7 @@
 <translation id="79341161159229895">ບັນຊີທີ່ຈັດການໂດຍ <ph name="FIRST_PARENT_EMAIL" /> ແລະ <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">ກົດ <ph name="SHORTCUT_KEY_NAME" /> + V ເພື່ອເບິ່ງຄລິບບອດຂອງທ່ານ. 5 ລາຍການສຸດທ້າຍທີ່ທ່ານສຳເນົາໄວ້ຈະຖືກບັນທຶກໄວ້ໃນຄລິບບອດຂອງທ່ານ.</translation>
 <translation id="7955885781510802139">ໂໝດສີຕັດກັນສູງ</translation>
+<translation id="7968693143708939792">ເລືອກໂຟນເດີ...</translation>
 <translation id="7977927628060636163">ກຳລັງຊອກຫາເຄືອຂ່າຍມືຖື...</translation>
 <translation id="7980780401175799550">ລອງວິທີໃໝ່ໃນການໄປຫາສ່ວນຕ່າງໆຂອງ Chrome OS</translation>
 <translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>

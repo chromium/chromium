@@ -375,13 +375,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Nota: Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="1488724823347505879">Habilitar el uso compartido de apps para Android a aplicaciones web</translation>
-<translation id="1495817006535797003">Si estableces la política, se ejecutarán en su propios procesos los orígenes designados en una lista de elementos separados por comas. Además, se aislarán los orígenes designados a partir de subdominios. Por ejemplo, si especificas https://example.com/, también se aislará https://foo.example.com/ como parte del sitio https://example.com/.  Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" /> y que esta política extiende ese modo para aislar orígenes adicionales específicos.
-
-      Si inhabilitas la política, se desactivará toda forma de aislamiento de sitios, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento de sitios. Los usuarios aún podrán activar IsolateOrigins de forma manual usando esa función experimental de línea de comandos.
-
-      Si no estableces la política, los usuarios podrán cambiar esta configuración.
-
-      Nota: Si aíslas demasiados sitios en Android, es posible que se generen problemas de rendimiento, en especial en dispositivos con poca memoria. Esta política solo se aplica a Chrome cuando se ejecuta en dispositivos con Android que tienen exclusivamente más de 1 GB de RAM. Para aplicar la política en plataformas que no tienen Android, utiliza <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="1503969899251962413">Si estableces la política, se especificará la clave de licencia <ph name="PLUGIN_VM_NAME" /> para este dispositivo.
 
@@ -2031,11 +2024,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
           Solo se muestra el mensaje de advertencia si la acción de inactividad es salir de la cuenta o apagar el dispositivo.</translation>
 <translation id="3363360928811201045">Agregar restricciones en cuentas administradas</translation>
-<translation id="3367868895271989224">Si habilitas la política, se aislarán todos los sitios (cada sitio se ejecutará en su propio proceso). Si inhabilitas la política o no la estableces, no se desactivará el aislamiento de sitios, pero los usuarios podrán inhabilitarlo (p. ej., mediante la entrada para inhabilitar el aislamiento de sitios en chrome://flags).
-
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> también puede ser útil para aislar orígenes más precisos. En la versión 76 y anteriores del <ph name="PRODUCT_OS_NAME" />, establece la política de dispositivo <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> en el mismo valor (dado que, si los valores no coinciden, pueden producirse retrasos cuando se ingresa una sesión de usuario).
-
-      Nota: En Android, usa la política <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> en su lugar.</translation>
 <translation id="3373381043600809954">Habilita <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Configura el directorio que empleará <ph name="PRODUCT_NAME" /> para almacenar datos del usuario.
 
@@ -5283,11 +5271,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si no estableces la política, <ph name="IE_PRODUCT_NAME" /> detectará la propia ruta ejecutable de <ph name="PRODUCT_NAME" /> de forma automática cuando se ejecuta <ph name="PRODUCT_NAME" /> desde Internet Explorer.
 
       Nota: Si no está instalado el complemento de Compatibilidad con navegadores heredados para <ph name="IE_PRODUCT_NAME" />, esta política no tendrá ningún efecto.</translation>
-<translation id="7507131973617884092">Si estableces la política, se ejecutarán en su propios procesos los orígenes designados en una lista de elementos separados por comas. Además, se aislarán los orígenes designados a partir de subdominios. Por ejemplo, si especificas https://example.com/, también se aislará https://foo.example.com/ como parte del sitio https://example.com/.
-
-      Si la inhabilitas o no la estableces, los usuarios podrán cambiar esta configuración.
-
-      Nota: Para Android, usa la política <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> en su lugar.</translation>
 <translation id="7507553960917214561">Inhabilitar el modo encubierto para el host de acceso remoto</translation>
 <translation id="7508067364927180229">Esta configuración brinda diferentes opciones de disponibilidad para el navegador <ph name="LACROS_NAME" />.
 
@@ -5441,13 +5424,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
           El valor de la política debe especificarse en milisegundos. Los valores deben ser menores o iguales que la demora de pantalla apagada (si está configurada) y la demora por inactividad.</translation>
 <translation id="7680437377926096177">No mostrar el diálogo de salida cuando se cierra la última ventana</translation>
-<translation id="7681958144280390173">Si habilitas la política, se aislarán todos los sitios (cada sitio se ejecutará en su propio proceso). Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" /> y que esta política extiende la aplicación de ese modo predeterminado de aislamiento de sitios a todos los sitios.
-
-      Si inhabilitas la política, se desactivará toda forma de aislamiento de sitios, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento de sitios. Los usuarios aún podrán activar la política manualmente.
-
-      Si no estableces la política, los usuarios podrán cambiar esta configuración.
-
-      Nota: Mejorará la compatibilidad para aislar todos los sitios en Android, pero, por el momento, es posible que esta acción genere problemas de rendimiento, en especial en dispositivos de gama baja. Esta política solo se aplica a Chrome cuando se ejecuta en dispositivos con Android que tienen exclusivamente más de 1 GB de RAM. Para aislar sitios específicos y limitar el impacto del rendimiento para los usuarios, utiliza <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> con una lista de los sitios que quieras aislar.  Para aplicar la política en plataformas que no tienen Android, utiliza <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="7683777542468165012">Actualizar política dinámica</translation>
 <translation id="7687943045976362719">Si se configura esta política, <ph name="PRODUCT_FRAME_NAME" /> determinará los tipos de contenido especificados.
 

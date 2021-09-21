@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> ni priključena.</translation>
 <translation id="1473110567575736769">3-sekundni časovnik</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Običajen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Optično branje dokumentov je zdaj na voljo</translation>
 <translation id="5268823927180092501">Omogočanje načina dokumentov v vseh fotoaparatih</translation>
 <translation id="5444515100983837161">Postavite vse robe dokumenta znotraj okvira. Optično branje deluje najbolje, če sta dokument in ozadje različnih barv.</translation>
+<translation id="5588258280684580073">Omogoči snemanje GIF-ov</translation>
 <translation id="5671277269877808209">Kvadratno</translation>
 <translation id="5746169159649715125">Shrani kot PDF</translation>
 <translation id="5753488212459587150">Omogoči poznavalski način</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">Ločljivost videoposnetka</translation>
 <translation id="7337660886763914220">Napake datotečnega sistema.</translation>
 <translation id="7450541714075000668">Besedilo je kopirano.</translation>
+<translation id="7488619942230388918">Snemanje videoposnetka GIF</translation>
 <translation id="7557677699350329807">Preklop na naslednji fotoaparat</translation>
 <translation id="7607002721634913082">Začasno ustavljeno</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7670511624014457267">60 sličic/s</translation>
+<translation id="7726641833034062494">Snemanje običajnega videoposnetka</translation>
 <translation id="7983668134180549431">Zaznano je bilo besedilo.</translation>
 <translation id="8067883171444229417">Predvajanje videa</translation>
 <translation id="8120146556401698679">Premikanje, nagibanje in povečanje/pomanjšanje</translation>

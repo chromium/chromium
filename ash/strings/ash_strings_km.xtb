@@ -494,7 +494,6 @@
 <translation id="4665114317261903604">បិទ/បើក​មុខងារ​ "កុំរំខាន"។ <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">ដោះ​សោ​ឧបករណ៍​ដោយ​ប្រើ​កូដ​សម្រាប់​មាតា​បិតា</translation>
 <translation id="4702647871202761252">អេក្រង់​ឯកជនភាព​ត្រូវបានបិទ</translation>
-<translation id="4705716602320768426">ដាក់បញ្ជូនមតិកែលម្អ</translation>
 <translation id="4706121060329443414">នឹងព្យាយាម​ទាញយក​នៅពេលក្រោយ។ ការនិយាយ​នឹងត្រូវបានផ្ញើទៅ Google ដើម្បីដំណើរការ​សម្រាប់ពេលនេះ។</translation>
 <translation id="4731797938093519117">សិទ្ធិចូលប្រើប្រាស់​សម្រាប់មាតាបិតា</translation>
 <translation id="4734965478015604180">ផ្ដេក​</translation>
@@ -771,6 +770,7 @@
 <translation id="6919251195245069855">មិន​ស្គាល់​កាត​ឆ្លាតវៃរបស់អ្នកទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="6921188888306725546">ផ្លូវកាត់​ក្ដារ​ចុចត្រូវបានកែលម្អ</translation>
 <translation id="6929655271276551705">ការកំណត់​កាលបរិច្ឆេទ</translation>
+<translation id="6931576957638141829">រក្សា​ទុក​ទៅ</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="6961121602502368900">មិនអាចប្រើមុខងារបិទសំឡេងទូរសព្ទនៅលើកម្រងព័ត៌មានការងារបានទេ</translation>
 <translation id="6961840794482373852">បានប្ដូរផ្លូវកាត់ក្ដារចុច Alt + ព្រួញឡើងលើ។ ដើម្បីប្រើគ្រាប់ចុច Page Up សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ព្រួញឡើងលើ។</translation>
@@ -907,6 +907,7 @@
 <translation id="79341161159229895">គណនី​ស្ថិត​ក្រោមការគ្រប់គ្រង​របស់ <ph name="FIRST_PARENT_EMAIL" /> និង <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">ចុច <ph name="SHORTCUT_KEY_NAME" /> + V ដើម្បីមើល​ឃ្លីបបតរបស់អ្នក។ ធាតុ 5 ចុងក្រោយ​ដែលអ្នកបានចម្លង​ត្រូវបានរក្សាទុក​ទៅក្នុងឃ្លីបបតរបស់អ្នក។</translation>
 <translation id="7955885781510802139">មុខងារ​ភាពដិត​កម្រិតខ្ពស់</translation>
+<translation id="7968693143708939792">ជ្រើសរើស​ថត...</translation>
 <translation id="7977927628060636163">កំពុង​ស្វែងរក​បណ្ដាញ​ទូរសព្ទ​ចល័ត...</translation>
 <translation id="7980780401175799550">សាកល្បងវិធីថ្មីក្នុងការរុករក Chrome OS</translation>
 <translation id="7982789257301363584">បណ្តាញ</translation>

@@ -267,6 +267,7 @@
 <translation id="1276994519141842946">Non se puido desinstalar <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Crea un PIN novo que sexa diferente do actual</translation>
 <translation id="1278859221870828664">Revisar as aplicacións e os servizos de Google Play</translation>
+<translation id="1279024913354609713">Non permitir</translation>
 <translation id="127946606521051357">Dispositivo próximo compartindo contido</translation>
 <translation id="1280965841156951489">Editar ficheiros</translation>
 <translation id="1282465000333679776">Compartir audio do sistema</translation>
@@ -2192,6 +2193,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="33022249435934718">Indicadores GDI</translation>
 <translation id="3302388252085547855">Escribe unha xustificación...</translation>
 <translation id="3303260552072730022">Unha extensión activou a pantalla completa.</translation>
+<translation id="3303795387212510132">Queres darlle permiso á aplicación para que abra ligazóns <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copias</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de desconto</translation>
@@ -2269,6 +2271,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="339178315942519818">Accede ás notificacións das aplicacións de chat no teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="3393554941209044235">Análise de documentos de Chrome</translation>
 <translation id="3394850431319394743">Sitios aos que se lles permite usar identificadores para reproducir contido protexido</translation>
+<translation id="3396744558790608201">Fai clic co botón dereito e selecciona "Buscar imaxes con Google Lens" se queres buscar calquera zona do sitio para obter máis información sobre o contido visual que ves mentres navegas e compras por Internet.</translation>
 <translation id="3396800784455899911">Ao facer clic no botón Aceptar e continuar, aceptarás o procesamento descrito anteriormente para estes servizos de Google.</translation>
 <translation id="339722927132407568">A imaxe conxélase</translation>
 <translation id="3399432415385675819">Desactivaranse as notificacións</translation>
@@ -3179,6 +3182,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4364567974334641491"><ph name="APP_NAME" /> está compartindo unha ventá.</translation>
 <translation id="4364830672918311045">Mostrar notificacións</translation>
 <translation id="4366138410738374926">Comezou a impresión</translation>
+<translation id="4369121877634339065">Arrastra o cursor sobre calquera imaxe para buscala</translation>
 <translation id="4370975561335139969">O correo electrónico e o contrasinal inseridos non coinciden</translation>
 <translation id="4371452868325715552">Non se puido establecer a conexión co servidor. Comproba a túa conexión de rede e téntao de novo. Se segues tendo problemas, proba a reiniciar o Chromebook. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Emitindo escritorio</translation>
@@ -3623,6 +3627,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="485088796993065002">Os sitios poderían reproducir o audio do contido multimedia (música, vídeos…)</translation>
 <translation id="4853020600495124913">Abrir nunha ventá &amp;nova</translation>
 <translation id="4854317507773910281">Escolle a conta parental para a aprobación</translation>
+<translation id="485480310608090163">Máis opcións de configuración e permisos</translation>
 <translation id="4856478137399998590">O teu servizo de datos móbiles está activado e listo para utilizarse</translation>
 <translation id="4858792381671956233">Preguntaches aos teus pais se podes visitar este sitio</translation>
 <translation id="4858913220355269194">Balón de fútbol</translation>
@@ -5766,6 +5771,10 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7222204278952406003">Chrome é o teu navegador predeterminado</translation>
 <translation id="7222232353993864120">Enderezo de correo electrónico</translation>
 <translation id="7225179976675429563">Non se atopa o tipo de rede</translation>
+<translation id="7226485026248318204">Aquí móstranse as túas lembranzas de Google Fotos. Só podes velas cando tes a sesión iniciada.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Manipula a configuración que determina se os sitios web poden utilizar funcións como a xeolocalización, o micrófono, a cámara etc.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla e inicio de sesión</translation>
 <translation id="7230222852462421043">&amp;Restaurar ventá</translation>
@@ -6195,6 +6204,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="767147716926917172">Envía automaticamente datos de uso e diagnóstico a Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, en <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Desactivar todos os portos que se estean encamiñando en Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicacións</translation>
 <translation id="7674542105240814168">Denegouse o acceso á localización</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> pestana atopada para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía a túa voz a Google para utilizar o ditado en calquera campo de texto.</translation>
@@ -6628,7 +6638,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> utiliza a configuración de proxy dunha extensión</translation>
 <translation id="8097959162767603171">O teu administrador ten que aceptar as condicións de servizo que se atopan na lista de dispositivos Chrome, na consola de administración.</translation>
 <translation id="8098616321286360457">Necesítase conexión de rede</translation>
-<translation id="8099495042588009598">Máis permisos</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seleccionado. Preme Buscar e Espazo para anular a selección.</translation>
 <translation id="810185532889603849">Cor personalizada</translation>
 <translation id="8101987792947961127">No seguinte reinicio é necesario un Powerwash</translation>

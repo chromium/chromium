@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">İstifadəçi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur.</translation>
+<translation id="1181037720776840403">Silin</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
 <translation id="1204296502688602597">DNS Gecikməsi</translation>
 <translation id="123124571410524056">Portal şübhəsi var</translation>
@@ -139,7 +140,6 @@
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="3708186454126126312">Öncə qoşulmuş cihazlar</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Səhifəni yenidən skanlayın}=1{{PAGE_NUMBER} saylı səhifəni yenidən skanlayın}other{{PAGE_NUMBER} saylı səhifəni yenidən skanlayın}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
@@ -177,7 +177,6 @@
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4429881212383817840">Kerberos biletinin vaxtı tezliklə başa çatacaq</translation>
 <translation id="4431821876790500265">Hesabata baxın</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Səhifəni silin}=1{{PAGE_NUMBER} saylı səhifəni silin}other{{PAGE_NUMBER} saylı səhifəni silin}}</translation>
 <translation id="445059817448385655">Köhnə parol</translation>
 <translation id="4453205916657964690">Alt şəbəkə maskası</translation>
 <translation id="4454245904991689773">Skanı burada saxlayın</translation>
@@ -358,7 +357,6 @@
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7216409898977639127">Mobil provayder</translation>
-<translation id="7257889006063274246"><ph name="CURRENT_PAGE" /> saylı səhifəni silmək istədiyinizə əminsiniz?</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Divar kağızı kolleksiyaları</translation>

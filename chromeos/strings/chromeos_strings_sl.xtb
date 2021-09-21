@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">To napravo <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Odstrani</translation>
 <translation id="1195447618553298278">Neznana napaka.</translation>
 <translation id="1204296502688602597">Zakasnitev DNS-ja</translation>
 <translation id="123124571410524056">Sum na portal</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Neuspele zahteve UDP</translation>
 <translation id="1930797645656624981">Storitev načina vnosa v okolju OS Chrome</translation>
 <translation id="1947737735496445907">Natisnjeno</translation>
+<translation id="197386857804679933">Odprite nastavitve, če želite znova vzpostaviti povezavo.</translation>
 <translation id="1979103255016296513">Rok za spremembo gesla je potekel</translation>
 <translation id="1999615961760456652">Prestrezni portal</translation>
 <translation id="2006864819935886708">Povezljivost</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">USPEŠNO</translation>
 <translation id="2789486458103222910">V redu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
+<translation id="2860473693272905224">Postavite novo stran na optični bralnik.</translation>
 <translation id="2872961005593481000">Zaustavitev</translation>
 <translation id="2878387241690264070">Izpraznjeno: <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
 <translation id="3156846309055100599">Optično branje <ph name="PAGE_NUMBER" />. strani ...</translation>
 <translation id="315738237743207937">Zaznan je bil prestrezni portal</translation>
+<translation id="3170673040743561620">Postavite dokument na optični bralnik.</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Predhodno povezane naprave</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Znova optično preberi stran}=1{Znova optično preberi {PAGE_NUMBER}. stran}one{Znova optično preberi {PAGE_NUMBER}. stran}two{Znova optično preberi {PAGE_NUMBER}. stran}few{Znova optično preberi {PAGE_NUMBER}. stran}other{Znova optično preberi {PAGE_NUMBER}. stran}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (število mnenj: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Povezava ni vzpostavljena</translation>
 <translation id="3749289110408117711">Ime datoteke</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kartonček za Kerberos kmalu poteče</translation>
 <translation id="4431821876790500265">Ogled poročila</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Odstrani stran}=1{Odstrani {PAGE_NUMBER}. stran}one{Odstrani {PAGE_NUMBER}. stran}two{Odstrani {PAGE_NUMBER}. stran}few{Odstrani {PAGE_NUMBER}. stran}other{Odstrani {PAGE_NUMBER}. stran}}</translation>
 <translation id="445059817448385655">Staro geslo</translation>
 <translation id="4453205916657964690">Maska podomrežja</translation>
 <translation id="4454245904991689773">Skeniraj v</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Povezava</translation>
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
 <translation id="4835901797422965222">Ni aktivnih omrežij</translation>
+<translation id="484790837831576105">Razrešitev DNS-ja (Android)</translation>
 <translation id="4848429997038228357">IZVAJANJE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskuse}other{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusov}}</translation>
 <translation id="4880328057631981605">Ime dostopne točke</translation>
@@ -291,6 +294,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6050189528197190982">Sivine</translation>
 <translation id="6058625436358447366">Za dokončanje vnesite staro in novo geslo</translation>
 <translation id="6061772781719867950">Neuspele zahteve HTTP</translation>
+<translation id="6075872808778243331">Zakasnitev HTTP (Android)</translation>
 <translation id="6104112872696127344">Optično branje je preklicano</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
@@ -333,6 +337,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6704062477274546131">Razrešitev DNS-ja</translation>
+<translation id="6714650824879092633">Omrežje <ph name="NETWORK_NAME" /> je bilo onemogočeno.</translation>
 <translation id="6747215703636344499">Ustavljeno – izhodni pladenj je poln</translation>
 <translation id="6756731097889387912">Optičnega branja ni bilo mogoče preklicati</translation>
 <translation id="6766275201586212568">Neuspele razrešitve DNS</translation>
@@ -342,11 +347,13 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6910312834584889076">Pokrov optičnega bralnika je odprt. Zaprite ga in poskusite znova.</translation>
 <translation id="6911383237894364323">Povezave s strežniki za predstavnost ni bilo mogoče vzpostaviti.</translation>
 <translation id="6957231940976260713">Ime storitve</translation>
+<translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
 <translation id="6982876849933694860">Če želite nastaviti novo povezavo, odprite <ph name="BEGIN_LINK" />nastavitve<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7039041976777695848">Tipkovnica <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operater</translation>
+<translation id="7058278511608979688">Končaj in shrani</translation>
 <translation id="7059230779847288458">Polnjenje; do napolnjenosti še <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">USTAVLJENO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
-<translation id="7257889006063274246">Ali ste prepričani, da želite odstraniti <ph name="CURRENT_PAGE" />. stran?</translation>
 <translation id="7271040990581020067">Optični bralnik je trenutno v uporabi. Poskusite pozneje.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Zbirke zaslonskih ozadij</translation>
@@ -411,6 +417,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8075838845814659848">Preostanek polnjenja</translation>
 <translation id="808894953321890993">Sprememba gesla</translation>
+<translation id="811820734797650957">Prehod je mogoče preveriti (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zahtevaj števce prometa</translation>
 <translation id="8206859287963243715">Prenosni</translation>
@@ -482,6 +489,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
 <translation id="9111102763498581341">Odkleni</translation>
+<translation id="9126720536733509015">Shranjevanje več strani v eno datoteko PDF.</translation>
 <translation id="9137526406337347448">Googlove storitve</translation>
 <translation id="9149391708638971077">Zaženi preizkus pomnilnika</translation>
 <translation id="9173638680043580060">Še manj kot minuta</translation>

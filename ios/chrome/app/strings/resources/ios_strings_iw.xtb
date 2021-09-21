@@ -526,6 +526,7 @@
 <translation id="6189413832092199491">פריטים שלא נקראו</translation>
 <translation id="6196207969502475924">חיפוש קולי</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}two{סגירת {COUNT} כרטיסיות}many{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />אלו הדברים שאפשר לסנכרן<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">לא לתרגם אף פעם</translation>
 <translation id="6223816392543092032">קבלת הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים.</translation>
 <translation id="6232329973559504466">חיפוש במצב אנונימי</translation>
@@ -724,6 +725,7 @@
 
 אתרים יכולים להשתמש בקובצי cookie כדי לראות את פעילות הגלישה שלך באתרים שונים, למשל לצורך התאמה אישית של מודעות.</translation>
 <translation id="7971521879845308059">חסימת חלונות קופצים</translation>
+<translation id="797413074872316787">כדי לסנכרן ולהתאים אישית את החוויה במכשירים שונים, צריך להפעיל את הסנכרון.</translation>
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7993619969781047893">ייתכן שהתכונות של חלק מהאתרים לא יפעלו כראוי</translation>
 <translation id="800361585186029508">‏פתיחת כתובות ה-URL שהוזנו ב-Google Chrome.</translation>
@@ -740,6 +742,7 @@
 <translation id="8076014560081431679">הגדרות אתרים שנשמרו לא יימחקו ועשויות לשקף את הרגלי הגלישה שלך. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ההגדרה הזו מנוהלת. יש ללחוץ פעמיים לקבלת מידע נוסף</translation>
 <translation id="8080028325999236607">סגור את כל הכרטיסיות</translation>
+<translation id="8103864314410529527">הארגון שלך מגביל את מה שאפשר לסנכרן. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">כיבוי</translation>
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
 <translation id="8156478151976189188">סנכרון הסיסמאות לא פועל</translation>

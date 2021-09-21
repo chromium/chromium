@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Người dùng</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý.</translation>
+<translation id="1181037720776840403">Xóa</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1204296502688602597">Độ trễ DNS</translation>
 <translation id="123124571410524056">Nghi là có cổng</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Không gửi được yêu cầu UDP</translation>
 <translation id="1930797645656624981">Dịch vụ cung cấp phương thức nhập trên Chrome OS</translation>
 <translation id="1947737735496445907">Đã in</translation>
+<translation id="197386857804679933">Truy cập phần Cài đặt để kết nối lại</translation>
 <translation id="1979103255016296513">Đã quá hạn thay đổi mật khẩu</translation>
 <translation id="1999615961760456652">Trang xác thực</translation>
 <translation id="2006864819935886708">Kết nối</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">ĐÃ ĐẠT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
+<translation id="2860473693272905224">Đặt một trang khác lên máy quét</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Dữ liệu di động</translation>
 <translation id="3156846309055100599">Đang quét trang <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Đã phát hiện thấy trang xác thực</translation>
+<translation id="3170673040743561620">Đặt tài liệu của bạn lên máy quét</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3199982728237701504">Khay nạp tài liệu (2 mặt)</translation>
 <translation id="3226405216343213872">Đang tìm máy quét</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP 802.1x</translation>
 <translation id="3689839747745352263">Kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Từng được kết nối</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Quét lại trang}=1{Quét lại trang {PAGE_NUMBER}}other{Quét lại trang {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> bài đánh giá)</translation>
 <translation id="3748026146096797577">Chưa được kết nối</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Drive của tôi</translation>
 <translation id="4429881212383817840">Vé Kerberos sẽ sớm hết hạn</translation>
 <translation id="4431821876790500265">Xem báo cáo</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Xóa trang}=1{Xóa trang {PAGE_NUMBER}}other{Xóa trang {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Mật khẩu cũ</translation>
 <translation id="4453205916657964690">Mặt nạ mạng con</translation>
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Kết nối</translation>
 <translation id="4832079907277790330">Chọn thư mục trong ứng dụng Files...</translation>
 <translation id="4835901797422965222">Không có mạng nào đang hoạt động</translation>
+<translation id="484790837831576105">(Android) Quá trình phân giải DNS</translation>
 <translation id="4848429997038228357">ĐANG CHẠY</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
 <translation id="4880328057631981605">Tên điểm truy cập</translation>
@@ -291,6 +294,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6050189528197190982">Thang độ xám</translation>
 <translation id="6058625436358447366">Để hoàn tất, hãy nhập cả mật khẩu cũ và mật khẩu mới của bạn</translation>
 <translation id="6061772781719867950">Yêu cầu HTTP không thành công</translation>
+<translation id="6075872808778243331">(Android) Độ trễ của yêu cầu HTTP</translation>
 <translation id="6104112872696127344">Đã hủy quá trình quét</translation>
 <translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
 <translation id="6108689792487843350">Không thể kết nối với cổng</translation>
@@ -333,6 +337,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6643016212128521049">Xóa</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6704062477274546131">Phân giải DNS</translation>
+<translation id="6714650824879092633">Đã vô hiệu hóa <ph name="NETWORK_NAME" /></translation>
 <translation id="6747215703636344499">Đã dừng – Khay giấy ra đã đầy</translation>
 <translation id="6756731097889387912">Không thể hủy quá trình quét</translation>
 <translation id="6766275201586212568">Quá trình phân giải DNS không thành công</translation>
@@ -342,11 +347,13 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6910312834584889076">Nắp của máy quét đang mở. Hãy đóng nắp máy quét rồi thử lại.</translation>
 <translation id="6911383237894364323">Không thể kết nối với máy chủ phương tiện</translation>
 <translation id="6957231940976260713">Tên dịch vụ</translation>
+<translation id="6961170852793647506">Hãy đặt tài liệu của bạn lên máy quét để bắt đầu</translation>
 <translation id="6977381486153291903">Hiệu chỉnh chương trình cơ sở</translation>
 <translation id="6982876849933694860">Để thiết lập một kết nối mới, hãy chuyển tới phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="7039041976777695848">Bàn phím <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Nhà mạng</translation>
+<translation id="7058278511608979688">Kết thúc và lưu</translation>
 <translation id="7059230779847288458">Đang sạc, còn <ph name="TIME_VALUE" /> nữa là pin đầy</translation>
 <translation id="708426984172631313">ĐÃ DỪNG</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
-<translation id="7257889006063274246">Bạn có chắc chắn muốn xóa trang <ph name="CURRENT_PAGE" /> không?</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Bộ sưu tập hình nền</translation>
@@ -411,6 +417,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8041089156583427627">Gửi ý kiến phản hồi</translation>
 <translation id="8075838845814659848">Mức pin còn lại</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
+<translation id="811820734797650957">(Android) Có thể ping cổng vào</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Yêu cầu Bộ đếm lưu lượng truy cập</translation>
 <translation id="8206859287963243715">Di động</translation>
@@ -482,6 +489,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Đang quét trang <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>
+<translation id="9126720536733509015">Lưu nhiều trang thành một tệp PDF</translation>
 <translation id="9137526406337347448">Dịch vụ của Google</translation>
 <translation id="9149391708638971077">Chạy quá trình Kiểm tra bộ nhớ</translation>
 <translation id="9173638680043580060">Còn chưa đầy 1 phút</translation>

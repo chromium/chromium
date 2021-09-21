@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Skrá út og slökkva á samstillingu?</translation>
 <translation id="1373696734384179344">Ekki nægt minni til að sækja valda efnið.</translation>
 <translation id="1376578503827013741">Reiknar…</translation>
+<translation id="1382912999714108023">Sérðu ekki núverandi upplýsingar? Hafðu samband við bankann þinn til að uppfæra þær.</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1384704387250346179">Þýða mynd með Google linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Virkt fyrir <ph name="LAST_UPDATED" /> dögum</translation>
@@ -351,6 +352,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Leitarferill<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />aðrar aðgerðir<ph name="END_LINK2" /> kunna að vera vistaðar á Google reikningnum þínum ef þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.</translation>
 <translation id="321773570071367578">Ef þú hefur gleymt aðgangsorðinu eða þig langar að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Staðfestu að þetta sért þú til að samstilla aðgangsorðin þín</translation>
+<translation id="3223522355830797639">Bankinn vill staðfesta að þetta sért þú.</translation>
 <translation id="3227557059438308877">Google Chrome sem öryggislykill</translation>
 <translation id="3232754137068452469">Vefforrit</translation>
 <translation id="3234978181857588512">Vista í tæki</translation>
@@ -817,6 +819,7 @@ Prufuútgáfur Privacy Sandbox eru enn í þróun og eru í boði á völdum sv�
 <translation id="605721222689873409">ÁÁ</translation>
 <translation id="6059830886158432458">Stjórnaðu sögunum þínum og virkni hér</translation>
 <translation id="6069177176307973611">Yfirfarðu stillingar fyrir persónuvernd og öryggi</translation>
+<translation id="6070730414166672373">Hefur samband við bankann</translation>
 <translation id="6085886413119427067">Ákvarðar hvernig á að tengjast vefsvæðum um örugga tengingu</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> klst. eftir</translation>
 <translation id="6108923351542677676">Uppsetning fer fram…</translation>

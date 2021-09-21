@@ -268,6 +268,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરી શક્યાં નહીં</translation>
 <translation id="1277020343994096713">એક નવો પિન બનાવો જે તમારા વર્તમાન પિનથી અલગ હોય</translation>
 <translation id="1278859221870828664">Google Play ઍપ અને સેવાઓનો રિવ્યૂ કરો</translation>
+<translation id="1279024913354609713">મંજૂરી આપશો નહીં</translation>
 <translation id="127946606521051357">નજીકનું ડિવાઇસ શેર કરી રહ્યું છે</translation>
 <translation id="1280965841156951489">ફાઇલોમાં ફેરફાર કરો</translation>
 <translation id="1282465000333679776">સિસ્ટમ ઑડિયો શેર કરો</translation>
@@ -2192,6 +2193,7 @@
 <translation id="33022249435934718">GDI હેન્ડલ્સ</translation>
 <translation id="3302388252085547855">કારણ દાખલ કરો...</translation>
 <translation id="3303260552072730022">એક્સટેંશને પૂર્ણ સ્ક્રીન ટ્રિગર કરેલી છે.</translation>
+<translation id="3303795387212510132">શું ઍપને <ph name="PROTOCOL_SCHEME" /> લિંક ખોલવાની મંજૂરી આપીએ?</translation>
 <translation id="3303818374450886607">કોપિસ</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" />ની છૂટ</translation>
@@ -2269,6 +2271,7 @@
 <translation id="339178315942519818">તમારા <ph name="DEVICE_TYPE" /> પર તમારી ચૅટ ઍપના નોટિફિકેશન જુઓ</translation>
 <translation id="3393554941209044235">Chromeના દસ્તાવેજનું વિશ્લેષણ</translation>
 <translation id="3394850431319394743">સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, ઓળખકર્તાઓનો ઉપયોગ કરવાની મંજૂરી છે</translation>
+<translation id="3396744558790608201">તમે જ્યારે વેબ બ્રાઉઝ કરો કે ખરીદી કરો, ત્યારે તમને દેખાઈ રહેલા વિઝ્યુઅલ કન્ટેન્ટ વિશે વધુ જાણવા સાઇટના કોઈપણ વિભાગમાં શોધવા માટે, રાઇટ ક્લિક કરીને “Google Lens વડે છબીઓ શોધો” પસંદ કરો.</translation>
 <translation id="3396800784455899911">"સ્વીકારો અને ચાલુ રાખો" બટન પર ક્લિક કરીને, તમે આ Google સેવાઓ માટે ઉપર વર્ણવેલી પ્રક્રિયા સાથે સંમત થાઓ છો.</translation>
 <translation id="339722927132407568">થોભી જતો</translation>
 <translation id="3399432415385675819">સૂચનાઓ અક્ષમ કરવામાં આવશે</translation>
@@ -3179,6 +3182,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" />, એક વિંડો શેર કરી રહી છે.</translation>
 <translation id="4364830672918311045">નોટિફિકેશન બતાવો</translation>
 <translation id="4366138410738374926">પ્રિન્ટ કરવાનું શરૂ થયું</translation>
+<translation id="4369121877634339065">શોધવા માટે કોઈપણ છબી અહીં ખેંચી લાવો</translation>
 <translation id="4370975561335139969">તમે દાખલ કરેલ ઇમેઇલ અને પાસવર્ડ મેળ ખાતા નથી</translation>
 <translation id="4371452868325715552">સર્વર સાથે કનેક્ટ કરી શકાયું નથી. કૃપા કરીને તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો. જો તમને હજી પણ મુશ્કેલી આવી રહી હોય, તો તમારી Chromebookને ફરી શરૂ કરવાનો પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">ડેસ્કટૉપ કાસ્ટ કરી રહ્યાં છે</translation>
@@ -3623,6 +3627,7 @@
 <translation id="485088796993065002">મ્યુઝિક, વીડિયો અને અન્ય મીડિયા માટે ઑડિયો આપવા માટે, સાઇટ સાઉન્ડ વગાડી શકે છે</translation>
 <translation id="4853020600495124913">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="4854317507773910281">મંજૂરી માટે માતાપિતાનું એકાઉન્ટ પસંદ કરો</translation>
+<translation id="485480310608090163">વધુ સેટિંગ અને પરવાનગીઓ</translation>
 <translation id="4856478137399998590">તમારી મોબાઇલ ડેટા સેવા સક્રિય થઈ છે અને ઉપયોગ માટે તૈયાર છે</translation>
 <translation id="4858792381671956233">તમે આ સાઇટની મુલાકાત લો છો તે ઠીક છે કે કેમ તેવું તમે તમારા માતાપિતાને પૂછ્યું</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -5768,6 +5773,10 @@ USB ડિવાઇસ</translation>
 <translation id="7222204278952406003">Chrome તમારું ડિફૉલ્ટ બ્રાઉઝર છે</translation>
 <translation id="7222232353993864120">ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="7225179976675429563">નેટવર્ક પ્રકાર ખૂટે છે</translation>
+<translation id="7226485026248318204">Google Photosમાંની તમારી યાદગીરીઓ અહીં બતાવવામાં આવે છે. તમે સાઇન ઇન થયેલા હો, ત્યારે જ તે જોઈ શકાય છે.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> પર તમે તમારી યાદગીરીઓમાં શું જોઈ શકો, તે અહીં મેનેજ કરો.</translation>
 <translation id="7228479291753472782">વેબસાઇટ ભૌગોલિક સ્થાન, માઇક્રોફોન, કૅમેરા, વગેરે જેવી સુવિધાઓને ઉપયોગમાં લઈ શકે છે કે કેમ તેનો ઉલ્લેખ કરતા સેટિંગમાં ફેરફાર કરો.</translation>
 <translation id="7228523857728654909">સ્ક્રીન લૉક અને સાઇન ઇન</translation>
 <translation id="7230222852462421043">&amp;વિન્ડો રિસ્ટોર કરો</translation>
@@ -6197,6 +6206,7 @@ USB ડિવાઇસ</translation>
 <translation id="767147716926917172">Googleને ઑટોમૅટિક રીતે નિદાન અને વપરાશનો ડેટા મોકલવામાં આવે છે</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />માં <ph name="HUNG_IFRAME_URL" />.</translation>
 <translation id="7674416868315480713">Linuxમાં ફૉરવર્ડ કરવામાં આવી રહેતા બધા પોર્ટ નિષ્ક્રિય કરો</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> ઍપ</translation>
 <translation id="7674542105240814168">સ્થાનનો ઍક્સેસ નકારવામાં આવ્યો</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' માટે <ph name="NUM" /> ટૅબ મળી છે</translation>
 <translation id="7676867886086876795">કોઈપણ ટેક્સ્ટ ફીલ્ડમાં શ્રુતલેખનને મંજૂરી આપવા માટે Googleને તમારો અવાજ મોકલો.</translation>
@@ -6626,7 +6636,6 @@ USB ડિવાઇસ</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> એક્સ્ટેંશનનાં પ્રૉક્સી સેટિંગનો ઉપયોગ કરી રહ્યું છે</translation>
 <translation id="8097959162767603171">તમારા વ્યવસ્થાપકે એડમિન કન્સોલ Chrome ડિવાઇસની સૂચિમાં પહેલા સેવાની શરતો સ્વીકારવી આવશ્યક છે.</translation>
 <translation id="8098616321286360457">નેટવર્ક કનેક્શન આવશ્યક છે</translation>
-<translation id="8099495042588009598">વધુ પરવાનગીઓ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> પસંદ કરી છે. નાપસંદ કરવા માટે 'શોધો' અને Space દબાવો.</translation>
 <translation id="810185532889603849">કસ્ટમ રંગ</translation>
 <translation id="8101987792947961127">આગલા રીબૂટ પર Powerwash આવશ્યક છે</translation>

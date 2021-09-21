@@ -102,6 +102,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1108600514891325577">&amp;रोकें</translation>
 <translation id="1110155001042129815">प्रतीक्षा करें</translation>
+<translation id="1110965959145884739">चुनें कि इस डिवाइस पर कौनसी भाषाएं इंस्टॉल करनी है. डिस्क में बचा स्टोरेज बचाने के लिए, भाषा फ़ाइलों को उपयोगकर्ताओं में शेयर किया जाता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">बैकग्राउंड टैब ब्लूटूथ का इस्तेमाल कर रहा है</translation>
 <translation id="1113892970288677790">चुनिंदा आर्टवर्क और इमेज चुनें</translation>
@@ -549,6 +550,7 @@
 <translation id="1580772913177567930">अपने एडमिन से संपर्क करें</translation>
 <translation id="1581962803218266616">खोजकर्ता में दिखाएं</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] मिटाएं</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" /> को स्थानीय तौर पर प्रोसेस किया जाता है और यह ऑफ़लाइन काम करती है</translation>
 <translation id="1584990664401018068">आप जिस वाई-फ़ाई नेटवर्क (<ph name="NETWORK_ID" />) का उपयोग कर रहे हैं उसे प्रमाणीकरण की आवश्‍यकता है.</translation>
 <translation id="1585717515139318619">आपके कंप्‍यूटर पर किसी अन्‍य प्रोग्राम ने ऐसी थीम जोड़ी है जो Chrome के काम करने के तरीके को बदल सकती है.
 
@@ -767,6 +769,7 @@
 <translation id="177989070088644880">ऐप्लिकेशन (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">ग्रुप बंद करें</translation>
 <translation id="1780273119488802839">बुकमार्क आयात कर रहा है ...</translation>
+<translation id="178092663238929451">अपने आस-पास के लोगों से फ़ाइलें पाने और भेजने के लिए, 'आस-पास शेयर करना' सेट अप करें</translation>
 <translation id="1781291988450150470">मौजूदा पिन</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अभी वाई-फ़ाई से कनेक्ट करें और अपडेट डाउनलोड करें.</translation>
 <translation id="1781502536226964113">'नया टैब' पेज खोलें</translation>
@@ -1603,6 +1606,7 @@
 <translation id="265390580714150011">फ़ील्ड मान</translation>
 <translation id="2654166010170466751">साइटों को भुगतान हैंडलर इंस्टॉल करने की अनुमति दें</translation>
 <translation id="2654553774144920065">प्रिंट करने का अनुरोध</translation>
+<translation id="2658941648214598230">क्या आप मूल कॉन्टेंट दिखाना चाहते हैं?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />डिवाइस के हिसाब से सुविधाएं अलग-अलग हो सकती हैं</translation>
 <translation id="2659971421398561408">Crostini में डिस्क का साइज़ बदलना</translation>
 <translation id="2660779039299703961">इवेंट</translation>
@@ -2468,6 +2472,7 @@
 <translation id="3564848315152754834">USB सुरक्षा चाबी</translation>
 <translation id="3566325075220776093">इस डिवाइस से</translation>
 <translation id="3566721612727112615">कोई साइट नहीं जोड़ी गई</translation>
+<translation id="3567284462585300767">अपने आस-पास के लोगों से फ़ाइलें पाने और स्वीकार करने के लिए, 'दिखने' लगें</translation>
 <translation id="3569382839528428029">क्या आप चाहते हैं कि <ph name="APP_NAME" /> आपकी स्क्रीन को शेयर करे?</translation>
 <translation id="3569407787324516067">स्क्रीन सेवर</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों और फ़ोल्डर काे देख सकती है</translation>
@@ -3558,6 +3563,7 @@
 <translation id="475088594373173692">पहला उपयोगकर्ता</translation>
 <translation id="4756378406049221019">रोकें/फिर से लोड करें</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
+<translation id="4759126501639448579">यादें कभी न दिखाएं</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
 <translation id="4762718786438001384">डिवाइस के डिस्क में बहुत कम स्पेस है</translation>
@@ -3644,6 +3650,7 @@
 <translation id="485088796993065002">साइटें संगीत, वीडियो और अन्य मीडिया से जुड़े ऑडियो देने के लिए साउंड चला सकती हैं</translation>
 <translation id="4853020600495124913">&amp;नई विंडो में खोलें</translation>
 <translation id="4854317507773910281">मंज़ूरी के लिए माता-पिता का खाता चुनें</translation>
+<translation id="485480310608090163">ज़्यादा सेटिंग और अनुमतियां</translation>
 <translation id="4856478137399998590">आपकी मोबाइल डेटा सेवा सक्रिय कर दी गई है और उपयोग के लिए तैयार है</translation>
 <translation id="4858792381671956233">आपने अपने अभिभावकों से पूछा है कि इस साइट पर जाना ठीक है या नहीं</translation>
 <translation id="4858913220355269194">फ्रिट्ज़</translation>
@@ -3881,6 +3888,7 @@
 <translation id="51143538739122961">अपनी सुरक्षा कुंजी लगाएं और उसे छुएं</translation>
 <translation id="5115309401544567011">कृपया अपने <ph name="DEVICE_TYPE" /> को पावर स्रोत में प्लग करें.</translation>
 <translation id="5115338116365931134">एसएसओ (SSO)</translation>
+<translation id="511632863918093828">सभी यादों को छिपा दिया गया है</translation>
 <translation id="5116628073786783676">इस रूप में ऑडियो स&amp;हेजें...</translation>
 <translation id="5117139026559873716">अपने फ़ोन को <ph name="DEVICE_TYPE" /> से डिसकनेक्ट करें. अब वे अपने आप नहीं जुड़ेंगे.</translation>
 <translation id="5117930984404104619">विज़िट किए गए यूआरएल के साथ-साथ दूसरे एक्सटेंशन के व्यवहार की निगरानी करें</translation>
@@ -5024,6 +5032,7 @@
 <translation id="6374469231428023295">फिर से कोशिश करें</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' के लिए एक नतीजा मिला है</translation>
 <translation id="6380143666419481200">स्वीकार करें और जारी रखें</translation>
+<translation id="6382958439467370461">ऐसे शॉर्टकट नहीं हैं जो काम नहीं करते</translation>
 <translation id="638418309848716977">सहायता लिंक</translation>
 <translation id="6384275966486438344">अपनी खोज सेटिंग इसमें बदलें: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{ऐसा ग्रुप जिसका नाम नहीं है - 1 टैब}one{ऐसा ग्रुप जिसका नाम नहीं है - # टैब}other{ऐसा ग्रुप जिसका नाम नहीं है - # टैब}}</translation>
@@ -5901,6 +5910,7 @@
 <translation id="7354341762311560488">आपके कीबोर्ड पर सबसे नीचे बाईं ओर वाली कुंजी, फ़िंगरप्रिंट सेंसर है. किसी भी उंगली से इसे हल्के से छुएं.</translation>
 <translation id="7356908624372060336">नेटवर्क लॉग</translation>
 <translation id="735745346212279324">VPN डिसकनेक्ट है</translation>
+<translation id="7358324924540718595">आज के लिए यादों को छिपा दिया गया है</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> पर <ph name="PAGE_NUMBER" /> पेज हैं</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> चलाने के लिए राइट-क्लिक करें</translation>
 <translation id="7362387053578559123">साइटें, ब्लूटूथ डिवाइसों से कनेक्ट करने की अनुमति मांग सकती हैं</translation>
@@ -6301,6 +6311,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> से टेक्स्ट शेयर किया गया</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">अपने डेस्कटॉप की सीमाएं समायोजित करें</translation>
+<translation id="7759276754544429366">आज के लिए यादें छिपाएं</translation>
 <translation id="7760004034676677601">क्या यह वही शुरुआती पन्ना है जिसकी आप अपेक्षा कर रहे थे?</translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> से <ph name="DOWNLOAD_RECEIVED" /></translation>
@@ -6655,7 +6666,6 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> एक एक्सटेंशन की प्रॉक्सी सेटिंग इस्तेमाल कर रहा है</translation>
 <translation id="8097959162767603171">आपके एडमिन को सबसे पहले, Admin console की Chrome डिवाइस सूची में जाकर, सेवा की शर्तों को स्वीकार करना होगा.</translation>
 <translation id="8098616321286360457">इंटरनेट ज़रूरी है</translation>
-<translation id="8099495042588009598">ज़्यादा अनुमतियां</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> चुनी गई. चुने का निशान हटाने के लिए, Search के साथ Space दबाएं.</translation>
 <translation id="810185532889603849">पसंद के मुताबिक रंग</translation>
 <translation id="8101987792947961127">अगली बार रीबूट करने पर पावरवॉश ज़रूरी है</translation>
@@ -6972,6 +6982,7 @@
 <translation id="8457451314607652708">बुकमार्क आयात करें</translation>
 <translation id="8458341576712814616">शॉर्टकट</translation>
 <translation id="8458627787104127436">सभी यूआरएल (<ph name="URL_COUNT" />) नई विंडो में खोलें</translation>
+<translation id="8460490661223303637">मेमोरी बचाने के लिए, Chrome ने कुछ कॉन्टेंट हटा दिया है</translation>
 <translation id="8460932807646981183">सर्च इंजन और साइट खोज को मैनेज करें</translation>
 <translation id="84613761564611563">नेटवर्क कॉन्फ़िगर यूज़र इंटरफ़ेस (यूआई) का अनुरोध किया गया, कृृपया प्रतीक्षा करें...</translation>
 <translation id="8461914792118322307">प्रॉक्सी</translation>

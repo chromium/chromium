@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> no està endollada.</translation>
 <translation id="1473110567575736769">Temporitzador de 3 segons</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">L'escaneig de documents ja està disponible</translation>
 <translation id="5268823927180092501">Activa el mode de document en totes les càmeres</translation>
 <translation id="5444515100983837161">Col·loca totes les vores del document dins del marc. L'escaneig funciona millor si el document i el fons tenen colors diferents.</translation>
+<translation id="5588258280684580073">Activa la gravació en format GIF</translation>
 <translation id="5671277269877808209">Quadrat</translation>
 <translation id="5746169159649715125">Desa com a PDF</translation>
 <translation id="5753488212459587150">Activa el mode expert</translation>
@@ -98,12 +100,14 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="7243947652761655814">Resolució del vídeo</translation>
 <translation id="7337660886763914220">Hi ha errors al sistema de fitxers.</translation>
 <translation id="7450541714075000668">El text s'ha copiat</translation>
+<translation id="7488619942230388918">Grava un vídeo en format GIF</translation>
 <translation id="7557677699350329807">Canvia a la càmera següent</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7608223098072244877">4 per 4</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Grava un vídeo normal</translation>
 <translation id="7983668134180549431">Text detectat.</translation>
 <translation id="8067883171444229417">Reprodueix el vídeo</translation>
 <translation id="8120146556401698679">Panoràmica, inclinació i zoom</translation>

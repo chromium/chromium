@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Đăng xuất và tắt tính năng đồng bộ hóa?</translation>
 <translation id="1373696734384179344">Không đủ bộ nhớ để tải xuống nội dung được chọn.</translation>
 <translation id="1376578503827013741">Đang tính toán...</translation>
+<translation id="1382912999714108023">Bạn không thấy thông tin hiện tại của mình? Xin vui lòng liên hệ với ngân hàng của bạn để cập nhật thông tin.</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384704387250346179">Dịch hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Hoạt động <ph name="LAST_UPDATED" /> ngày trước</translation>
@@ -351,6 +352,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Nhật ký tìm kiếm<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />các hình thức hoạt động khác<ph name="END_LINK2" /> có thể được lưu vào Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những dữ liệu này bất cứ lúc nào.</translation>
 <translation id="321773570071367578">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại đồng bộ hóa<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Để đồng bộ hóa các mật khẩu, hãy xác minh danh tính của bạn</translation>
+<translation id="3223522355830797639">Ngân hàng của bạn muốn xác nhận đó là bạn.</translation>
 <translation id="3227557059438308877">Dùng Google Chrome làm khóa bảo mật</translation>
 <translation id="3232754137068452469">Ứng dụng web</translation>
 <translation id="3234978181857588512">Lưu vào thiết bị</translation>
@@ -817,6 +819,7 @@ Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong gia
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Kiểm soát tin bài và hoạt động của bạn tại đây</translation>
 <translation id="6069177176307973611">Xem xét các chế độ cài đặt về quyền riêng tư và bảo mật</translation>
+<translation id="6070730414166672373">Đang liên hệ với ngân hàng của bạn…</translation>
 <translation id="6085886413119427067">Xác định cách kết nối với các trang web qua đường kết nối an toàn</translation>
 <translation id="60923314841986378">Còn <ph name="HOURS" /> giờ</translation>
 <translation id="6108923351542677676">Đang thiết lập…</translation>

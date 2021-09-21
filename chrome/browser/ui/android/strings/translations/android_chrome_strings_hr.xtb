@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Odjaviti se i isključiti sinkronizaciju?</translation>
 <translation id="1373696734384179344">Nema dovoljno memorije za preuzimanje odabranog sadržaja.</translation>
 <translation id="1376578503827013741">Izračunavanje…</translation>
+<translation id="1382912999714108023">Ne vidite svoje trenutačne podatke? Obratite se svojoj banci da biste ih ažurirali.</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1384704387250346179">Prevedite sliku pomoću Objektiva <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktivan prije <ph name="LAST_UPDATED" /> dana</translation>
@@ -351,6 +352,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Povijest pretraživanja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu se spremati na vaš Google račun kad ste prijavljeni. Uvijek ih možete izbrisati.</translation>
 <translation id="321773570071367578">Ako ste zaboravili šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizaciju<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Za sinkroniziranje zaporki potvrdite da ste to vi</translation>
+<translation id="3223522355830797639">Vaša banka želi potvrditi vaš identitet.</translation>
 <translation id="3227557059438308877">Google Chrome kao sigurnosni ključ</translation>
 <translation id="3232754137068452469">Web-aplikacija</translation>
 <translation id="3234978181857588512">Spremi na uređaj</translation>
@@ -817,6 +819,7 @@ Probe Privacy Sandboxa i dalje su u aktivnom razvoju i dostupne su u odabranim r
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Svojim pričama i aktivnostima upravljajte ovdje</translation>
 <translation id="6069177176307973611">Pregled postavki privatnosti i sigurnosti</translation>
+<translation id="6070730414166672373">Kontaktiranje banke\u2026</translation>
 <translation id="6085886413119427067">Određuje kako se povezati na web-lokacije sigurnom vezom</translation>
 <translation id="60923314841986378">Preostalo sati: <ph name="HOURS" /></translation>
 <translation id="6108923351542677676">Postavljanje je u tijeku…</translation>

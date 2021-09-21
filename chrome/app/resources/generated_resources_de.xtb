@@ -3559,7 +3559,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">eSIM-Mobilfunknetz umbenennen</translation>
 <translation id="4780321648949301421">Seite speichern unter...</translation>
-<translation id="4784559565779618838">Wenn Sie auf einer bestimmten Website oder in einem bestimmten Bereich von Chrome suchen möchten, können Sie die Kürzel hier in die Adressleiste eingeben und dann die Tabulator- oder Leertaste drücken.</translation>
+<translation id="4784559565779618838">Wenn Sie auf einer bestimmten Website oder in einem bestimmten Bereich von Chrome suchen möchten, können Sie diese Kürzel in die Adressleiste eingeben und dann die Tabulator- oder Leertaste drücken.</translation>
 <translation id="4785719467058219317">Sie verwenden einen Sicherheitsschlüssel, der nicht auf dieser Website registriert ist</translation>
 <translation id="4788092183367008521">Bitte überprüfen Sie die Netzwerkverbindung und versuchen Sie es noch einmal.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> Foto(s)</translation>
@@ -3626,6 +3626,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="485088796993065002">Websites geben möglicherweise Audio für Musik, Videos und weitere Medien wieder</translation>
 <translation id="4853020600495124913">In &amp;neuem Fenster öffnen</translation>
 <translation id="4854317507773910281">Elternkonto für die Genehmigung auswählen</translation>
+<translation id="485480310608090163">Weitere Einstellungen und Berechtigungen</translation>
 <translation id="4856478137399998590">Ihr mobiler Datendienst ist aktiviert und einsatzbereit.</translation>
 <translation id="4858792381671956233">Du hast deine Eltern gefragt, ob du diese Website besuchen darfst</translation>
 <translation id="4858913220355269194">Fußball</translation>
@@ -5266,7 +5267,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6664774537677393800">Beim Öffnen Ihres Profils ist ein Fehler aufgetreten. Melden Sie sich bitte ab und dann wieder an.</translation>
 <translation id="666731172850799929">In <ph name="APP_NAME" /> öffnen</translation>
 <translation id="6670142487971298264">Die App "<ph name="APP_NAME" />" ist jetzt verfügbar</translation>
-<translation id="6670767097276846646">Einige Erweiterungen können Chrome Suchmaschinen hinzufügen</translation>
+<translation id="6670767097276846646">Mit einigen Erweiterungen können Suchmaschinen zu Chrome hinzugefügt werden</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{eine Adresse}other{# Adressen}}</translation>
 <translation id="6671497123040790595">Verwaltung durch <ph name="MANAGER" /> wird eingerichtet</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -5741,7 +5742,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7196020411877309443">Warum wird diese Meldung angezeigt?</translation>
 <translation id="7196913789568937443">In Google Drive sichern: Sie können Ihre Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. Ihre Sicherung enthält App-Daten. Sicherungen werden bei Google hochgeladen und mit dem Passwort Ihres Google-Kontos verschlüsselt. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Cleverer suchen und surfen mit Google</translation>
-<translation id="719791532916917144">Tastaturkürzel</translation>
+<translation id="719791532916917144">Tastenkürzel</translation>
 <translation id="7198503619164954386">Sie müssen ein unternehmenseigenes Gerät haben</translation>
 <translation id="7199158086730159431">H&amp;ilfe erhalten</translation>
 <translation id="7200083590239651963">Konfiguration auswählen</translation>
@@ -6635,7 +6636,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> verwendet Proxy-Einstellungen einer Erweiterung</translation>
 <translation id="8097959162767603171">Ihr Administrator muss zuerst die Nutzungsbedingungen in der Chrome-Geräteliste der Admin-Konsole akzeptieren.</translation>
 <translation id="8098616321286360457">Netzwerkverbindung erforderlich</translation>
-<translation id="8099495042588009598">Weitere Berechtigungen</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ausgewählt. Drücken Sie zum Aufheben der Auswahl die Suchtaste + Leertaste.</translation>
 <translation id="810185532889603849">Personalisierte Farbe</translation>
 <translation id="8101987792947961127">Powerwash beim nächsten Neustart erforderlich</translation>

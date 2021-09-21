@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> 카메라의 연결이 해제되었습니다.</translation>
 <translation id="1473110567575736769">3초 타이머</translation>
 <translation id="1545749641540134597">QR 코드 스캔</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">일반</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1627744224761163218">4x4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">이제 문서를 스캔할 수 있습니다.</translation>
 <translation id="5268823927180092501">모든 카메라에서 문서 모드 사용 설정</translation>
 <translation id="5444515100983837161">프레임 안에 문서의 네 모서리를 위치시키세요. 문서와 배경이 서로 다른 색상일 때 스캔이 가장 잘 작동합니다.</translation>
+<translation id="5588258280684580073">GIF 녹화 사용 설정</translation>
 <translation id="5671277269877808209">정사각형</translation>
 <translation id="5746169159649715125">PDF로 저장</translation>
 <translation id="5753488212459587150">전문가 모드 사용 설정</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">동영상 해상도</translation>
 <translation id="7337660886763914220">파일 시스템 오류가 발생했습니다.</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>
+<translation id="7488619942230388918">GIF 동영상 녹화</translation>
 <translation id="7557677699350329807">다음 카메라로 전환</translation>
 <translation id="7607002721634913082">일시중지됨</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7670511624014457267">60FPS</translation>
+<translation id="7726641833034062494">일반 동영상 녹화</translation>
 <translation id="7983668134180549431">텍스트가 감지되었습니다.</translation>
 <translation id="8067883171444229417">동영상 재생</translation>
 <translation id="8120146556401698679">이동, 기울이기, 확대/축소</translation>

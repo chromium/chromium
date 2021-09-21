@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">المستخدم</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">إزالة</translation>
 <translation id="1195447618553298278">خطأ  غير محدّد.</translation>
 <translation id="1204296502688602597">وقت استجابة نظام أسماء النطاقات</translation>
 <translation id="123124571410524056">تم الاشتباه في مدخل.</translation>
@@ -139,7 +140,6 @@
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{إعادة مسح الصفحة ضوئيًا}=1{إعادة مسح صفحة واحدة ({PAGE_NUMBER}) ضوئيًا}two{إعادة مسح صفحتين ({PAGE_NUMBER}) ضوئيًا}few{إعادة مسح {PAGE_NUMBER} صفحات ضوئيًا}many{إعادة مسح {PAGE_NUMBER} صفحة ضوئيًا}other{إعادة مسح {PAGE_NUMBER} صفحة ضوئيًا}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مراجعة)</translation>
 <translation id="3748026146096797577">غير متصل</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
@@ -177,7 +177,6 @@
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
 <translation id="4431821876790500265">عرض التقرير</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{إزالة الصفحة}=1{إزالة صفحة واحدة ({PAGE_NUMBER})}two{إزالة صفحتين ({PAGE_NUMBER})}few{إزالة {PAGE_NUMBER} صفحات}many{إزالة {PAGE_NUMBER} صفحة}other{إزالة {PAGE_NUMBER} صفحة}}</translation>
 <translation id="445059817448385655">كلمة المرور القديمة</translation>
 <translation id="4453205916657964690">قناع الشبكة الفرعية</translation>
 <translation id="4454245904991689773">حفظ الملفات التي تم مسحها ضوئيًا في</translation>
@@ -359,7 +358,6 @@
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
-<translation id="7257889006063274246">هل تريد فعلاً إزالة صفحة <ph name="CURRENT_PAGE" />؟</translation>
 <translation id="7271040990581020067">يتم حاليًا استخدام الماسح الضوئي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">مجموعات الخلفيات</translation>

@@ -526,6 +526,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6189413832092199491">بغیر پڑھے ہوئے</translation>
 <translation id="6196207969502475924">صوتی تلاش</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ٹیب بند کریں}other{{COUNT} ٹیبز بند کریں}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />دیکھیں کہ آپ کیا سنک کر سکتے ہیں<ph name="END_LINK" />۔</translation>
 <translation id="6219688215832490856">کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="6223816392543092032">اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کریں۔</translation>
 <translation id="6232329973559504466">پوشیدگی تلاش</translation>
@@ -724,6 +725,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 
 سائٹس مختلف سائٹس پر آپ کی براؤزنگ کی سرگرمی دیکھنے کیلئے کوکیز کا استعمال کر سکتی ہیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانا۔</translation>
 <translation id="7971521879845308059">پاپ اپس کو مسدود کریں</translation>
+<translation id="797413074872316787">سبھی آلات پر سِنک کرنے اور ذاتی نوعیت سازی کیلئے، سِنک کو آن کریں۔</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
 <translation id="7993619969781047893">کچھ سائٹس پر خصوصیات میں خلل ہو سکتا ہے۔</translation>
 <translation id="800361585186029508">‏درج کردہ URLs کو Google Chrome میں کھولتا ہے۔</translation>
@@ -740,6 +742,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8076014560081431679">محفوظ کردہ سائٹ کی ترتیبات حذف نہیں کی جائیں گی اور یہ آپ کے براؤزنگ کی عادات کی عکاسی کر سکتی ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">یہ ترتیب نظم کردہ ہے، مزید معلومات کیلئے دوبار تھپتھپائیں</translation>
 <translation id="8080028325999236607">سبھی ٹیبز بند کریں</translation>
+<translation id="8103864314410529527">آپ کی تنظیم یہ محدود کرتی ہے کہ آپ کیا سنک کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">آف کریں</translation>
 <translation id="8114753159095730575">فائل ڈاؤن لوڈ دستیاب ہے۔ اختیارات اسکرین کے نچلے حصے کے قریب دستیاب ہیں۔</translation>
 <translation id="8156478151976189188">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>

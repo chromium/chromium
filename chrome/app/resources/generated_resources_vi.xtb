@@ -102,6 +102,7 @@
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Dừng</translation>
 <translation id="1110155001042129815">Chờ</translation>
+<translation id="1110965959145884739">Chọn ngôn ngữ để cài đặt trên thiết bị này. Các tệp ngôn ngữ được chia sẻ giữa những người dùng để tiết kiệm dung lượng ổ đĩa. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Máy chiếu</translation>
 <translation id="1112420131909513020">Thẻ nền đang sử dụng Bluetooth</translation>
 <translation id="1113892970288677790">Chọn các hình ảnh và tác phẩm nghệ thuật tuyển chọn</translation>
@@ -548,6 +549,7 @@
 <translation id="1580772913177567930">Liên hệ với quản trị viên của bạn</translation>
 <translation id="1581962803218266616">Hiển thị trong Trình tìm kiếm</translation>
 <translation id="1582955169539260415">xóa [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" /> được xử lý cục bộ và hoạt động ngoại tuyến</translation>
 <translation id="1584990664401018068">Mạng Wi-Fi bạn đang sử dụng (<ph name="NETWORK_ID" />) có thể yêu cầu xác thực.</translation>
 <translation id="1585717515139318619">Một chương trình khác trên máy tính của bạn đã thêm một chủ đề có thể thay đổi cách Chrome hoạt động.
 
@@ -766,6 +768,7 @@
 <translation id="177989070088644880">Ứng dụng (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Đóng nhóm</translation>
 <translation id="1780273119488802839">Nhập dấu trang...</translation>
+<translation id="178092663238929451">Thiết lập tính năng Chia sẻ lân cận để nhận và gửi tệp với những người xung quanh bạn</translation>
 <translation id="1781291988450150470">Mã PIN hiện tại</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> yêu cầu bạn kết nối Wi-Fi ngay bây giờ và tải bản cập nhật xuống.</translation>
 <translation id="1781502536226964113">Mở trang thẻ mới</translation>
@@ -1602,6 +1605,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="265390580714150011">Giá trị Trường</translation>
 <translation id="2654166010170466751">Cho phép các trang web cài đặt trình xử lý thanh toán</translation>
 <translation id="2654553774144920065">Yêu cầu in</translation>
+<translation id="2658941648214598230">Hiện nội dung gốc?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Các tính năng có thể khác nhau tùy theo thiết bị</translation>
 <translation id="2659971421398561408">Đổi kích thước ổ đĩa Crostini</translation>
 <translation id="2660779039299703961">Sự kiện</translation>
@@ -2468,6 +2472,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3564848315152754834">Khóa bảo mật USB</translation>
 <translation id="3566325075220776093">Từ thiết bị này</translation>
 <translation id="3566721612727112615">Chưa thêm trang web nào</translation>
+<translation id="3567284462585300767">Hãy hiển thị thiết bị để nhận và gửi tệp với những người xung quanh bạn</translation>
 <translation id="3569382839528428029">Bạn có muốn <ph name="APP_NAME" /> chia sẻ màn hình của bạn không?</translation>
 <translation id="3569407787324516067">Trình bảo vệ màn hình</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> có thể xem các tệp và thư mục sau</translation>
@@ -3559,6 +3564,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="475088594373173692">Người dùng đầu tiên</translation>
 <translation id="4756378406049221019">Dừng/Tải lại</translation>
 <translation id="4756388243121344051">&amp;Lịch sử</translation>
+<translation id="4759126501639448579">Không bao giờ hiện kỷ niệm</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4761104368405085019">Sử dụng micrô của bạn</translation>
 <translation id="4762718786438001384">Dung lượng đĩa của thiết bị quá thấp</translation>
@@ -3645,6 +3651,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="485088796993065002">Các trang web có thể phát âm thanh để cung cấp âm thanh cho nhạc, video và nội dung nghe nhìn khác</translation>
 <translation id="4853020600495124913">Mở trong &amp;cửa sổ mới</translation>
 <translation id="4854317507773910281">Chọn tài khoản của cha mẹ sẽ dùng để phê duyệt</translation>
+<translation id="485480310608090163">Các quyền và tùy chọn cài đặt khác</translation>
 <translation id="4856478137399998590">Dịch vụ dữ liệu di động của bạn đã được kích hoạt và sẵn sàng để sử dụng</translation>
 <translation id="4858792381671956233">Bạn đã hỏi cha mẹ mình xem có thể truy cập vào trang này hay không</translation>
 <translation id="4858913220355269194">Nam cầu thủ Fritz</translation>
@@ -3882,6 +3889,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="51143538739122961">Cắm và chạm vào khóa bảo mật</translation>
 <translation id="5115309401544567011">Hãy cắm <ph name="DEVICE_TYPE" /> của bạn vào nguồn điện.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">Đã ẩn tất cả kỷ niệm</translation>
 <translation id="5116628073786783676">Lư&amp;u Âm thanh Dưới dạng...</translation>
 <translation id="5117139026559873716">Ngắt kết nối điện thoại khỏi <ph name="DEVICE_TYPE" />. Hai thiết bị này sẽ không tự động kết nối nữa.</translation>
 <translation id="5117930984404104619">Giám sát hoạt động của các tiện ích khác, bao gồm cả các URL đã truy cập</translation>
@@ -5025,6 +5033,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6374469231428023295">Thử lại</translation>
 <translation id="6377268785556383139">1 kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">Đồng ý và tiếp tục</translation>
+<translation id="6382958439467370461">Không có phím tắt không hoạt động</translation>
 <translation id="638418309848716977">Các đường liên kết được hỗ trợ</translation>
 <translation id="6384275966486438344">Thay đổi cài đặt tìm kiếm của bạn thành: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Nhóm chưa có tên – 1 thẻ}other{Nhóm chưa có tên – # thẻ}}</translation>
@@ -5902,6 +5911,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7354341762311560488">Cảm biến vân tay là phím dưới cùng bên trái của bàn phím. Hãy chạm nhẹ ngón tay bất kỳ vào đó.</translation>
 <translation id="7356908624372060336">Nhật ký mạng</translation>
 <translation id="735745346212279324">Đã ngắt kết nối VPN</translation>
+<translation id="7358324924540718595">Đã ẩn những kỷ niệm cho hôm nay</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> trang tới <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Nhấp chuột phải để chạy <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Trang web có thể yêu cầu kết nối với thiết bị Bluetooth</translation>
@@ -6302,6 +6312,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7757787379047923882">Văn bản được chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Điều chỉnh ranh giới cho màn hình của bạn</translation>
+<translation id="7759276754544429366">Ẩn những kỷ niệm cho hôm nay</translation>
 <translation id="7760004034676677601">Đây có phải là trang khởi động bạn muốn không?</translation>
 <translation id="7764225426217299476">Thêm địa chỉ</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> từ <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6657,7 +6668,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> sẽ dùng tùy chọn cài đặt proxy của một tiện ích</translation>
 <translation id="8097959162767603171">Trước tiên, quản trị viên của bạn phải chấp nhận điều khoản dịch vụ trong danh sách thiết bị Chrome trên Bảng điều khiển dành cho quản trị viên.</translation>
 <translation id="8098616321286360457">Cần kết nối mạng</translation>
-<translation id="8099495042588009598">Các quyền khác</translation>
 <translation id="810068641062493918">Đã chọn <ph name="LANGUAGE" />. Hãy nhấn phím Tìm kiếm + Phím cách để bỏ chọn.</translation>
 <translation id="810185532889603849">Màu tùy chỉnh</translation>
 <translation id="8101987792947961127">Yêu cầu Powerwash trong lần khởi động lại tiếp theo</translation>
@@ -6974,6 +6984,7 @@ Nhấn một công tắc đã gán để xóa</translation>
 <translation id="8457451314607652708">Nhập dấu trang</translation>
 <translation id="8458341576712814616">Lối tắt</translation>
 <translation id="8458627787104127436">Mở tất cả (<ph name="URL_COUNT" />) trong cửa sổ mới</translation>
+<translation id="8460490661223303637">Chrome đã xóa một số nội dung để tiết kiệm bộ nhớ</translation>
 <translation id="8460932807646981183">Quản lý công cụ tìm kiếm và công cụ tìm kiếm trang web</translation>
 <translation id="84613761564611563">Yêu cầu giao diện người dùng định cấu hình mạng, vui lòng chờ...</translation>
 <translation id="8461914792118322307">Proxy</translation>

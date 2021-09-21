@@ -373,13 +373,6 @@
 
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="1488724823347505879">允許從 Android 應用程式分享內容到網頁應用程式</translation>
-<translation id="1495817006535797003">如果設定這項政策，系統會以獨立程序分別執行逗號分隔清單中指定的每個來源，並隔離以子網域命名的來源。例如指定 https://example.com/ 將會導致 https://foo.example.com/ 遭到隔離，因為後者屬於 https://example.com/ 網站的一部分。請注意，自 <ph name="PRODUCT_NAME" /> 第 77 版起，Android 會預設隔離某些敏感網站，此政策會將這個隔離模式擴及其他特定的來源。
-
-      如果將這項政策設為停用，則會關閉所有形式的網站隔離功能，包括隔離敏感網站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的實測，以及其他網站隔離模式。使用者仍可透過指令列旗標來手動啟用 IsolateOrigins。
-
-      如果未設定這項政策，使用者可以自行變更這項設定。
-
-      注意：在 Android 中隔離太多網站可能會導致效能問題 (尤其是在低階裝置上)。執行 Chrome 的 Android 系統必須運行於 RAM 實際超過 1 GB 的裝置上，才適用這項政策。如要在非 Android 平台上套用這項政策，請使用 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />。</translation>
 <translation id="1502843533062797703">啟用禁止第三方軟體置入可執行程式碼的政策</translation>
 <translation id="1503969899251962413">你可以透過這項政策，指定這部裝置的 <ph name="PLUGIN_VM_NAME" /> 授權金鑰。
 
@@ -1457,6 +1450,7 @@
 <translation id="2725855586003209701">如果將這項政策設為啟用或不設定，已註冊的裝置會回報近期登入的裝置使用者清單。
 
       如果將這項政策設為停用，已註冊的裝置不會回報使用者清單。</translation>
+<translation id="2730419309754848345">預設以圖片形式列印 PDF</translation>
 <translation id="2731627323327011390">禁止 ARC 應用程式使用「<ph name="PRODUCT_OS_NAME" />」憑證</translation>
 <translation id="2742843273354638707">在新分頁和 <ph name="PRODUCT_OS_NAME" />應用程式啟動畫面中隱藏 Chrome 線上應用程式商店和底端連結。
 
@@ -1996,11 +1990,6 @@
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
 <translation id="3363360928811201045">對受管理帳戶設定限制</translation>
-<translation id="3367868895271989224">如果將這項政策設為啟用，系統會隔離所有網站。(每個網站將各自以獨立程序執行)。如果將這項政策設為停用或不設定，系統不會停用網站隔離，但使用者可以選擇停用 (例如：在 chrome://flags 中透過停用網站隔離的方式進行停用)。
-
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 也可用於微調來源。請在 <ph name="PRODUCT_OS_NAME" /> 76 以下版本中，將 <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> 裝置政策設為相同值。(原因是如果兩者的值不相符，在進入使用者工作階段時可能會發生延遲。)
-
-      注意：在 Android 上請改用 <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="3373381043600809954">啟用「<ph name="PRODUCT_NAME" />」</translation>
 <translation id="3374587000313305002">設定 <ph name="PRODUCT_NAME" /> 用來儲存使用者資料的目錄。
 
@@ -3192,6 +3181,7 @@
 <translation id="4988291787868618635">在達到閒置延遲時間時要採取的動作</translation>
 <translation id="4996068111491152684">使用者無法利用 <ph name="PRODUCT_OS_NAME" />登入憑證進行網路驗證。</translation>
 <translation id="4996086761250834365">允許 <ph name="PLUGIN_VM_NAME" /> 產品分析</translation>
+<translation id="4997074784107449343">在 PDF 文件的列印預覽畫面中，「以圖片形式列印」不是預設選項 (如果有)。</translation>
 <translation id="500149597848135831">啟用所有變化版本</translation>
 <translation id="5017369989680827157">如果將這項政策設為 True 或不設定，使用者即可控制 UI 中的地址自動填入功能。
 
@@ -3923,6 +3913,13 @@
 
       如果將這項政策設為停用，系統會禁止使用 QUIC 通訊協定。</translation>
 <translation id="5921713479449475707">允許透過 HTTP 自動更新下載</translation>
+<translation id="5928633129285224981">控制在列印 PDF 時，<ph name="PRODUCT_NAME" /> 是否會預設使用「以圖片形式列印」選項。
+
+      如果將這項政策設為 Enabled，列印 PDF 時，<ph name="PRODUCT_NAME" /> 就會在列印預覽中預設使用「以圖片形式列印」選項。
+
+      如果將這項政策設為 Disabled 或不設定，<ph name="PRODUCT_NAME" />　就不會在一開始為使用者選擇「以圖片形式列印」選項。使用者可以針對個別 PDF 列印工作選擇是否使用該選項 (如果有)。
+
+      對於 <ph name="MS_WIN_NAME" /> 或 <ph name="MAC_OS_NAME" />，這項政策需要一併啟用 <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> 才會生效。</translation>
 <translation id="5929855945144989709">允許裝置在 Chrome 作業系統上執行虛擬機器</translation>
 <translation id="5932767795525445337">這項政策也可用於固定 Android 應用程式。</translation>
 <translation id="5934763632608026594">你可以透過這項政策控管 <ph name="PRODUCT_NAME" /> 的網頁應用程式管理設定。
@@ -5191,11 +5188,6 @@
       如果未設定這項政策，從 Internet Explorer 啟動 <ph name="PRODUCT_NAME" /> 時，<ph name="IE_PRODUCT_NAME" /> 會自動偵測 <ph name="PRODUCT_NAME" /> 自己的可執行路徑。
 
       注意：如果未安裝適用於 <ph name="IE_PRODUCT_NAME" /> 的「舊版瀏覽器支援」增益集，這項政策將不會生效。</translation>
-<translation id="7507131973617884092">如果設定這項政策，系統會以獨立程序分別執行逗號分隔清單中指定的每個來源，並隔離以子網域命名的來源。例如指定 https://example.com/ 將會導致 https://foo.example.com/ 遭到隔離，因為後者屬於 https://example.com/ 網站的一部分。
-
-      如果將這項政策設為關閉或不設定，則使用者可以變更這項設定。
-
-      注意：在 Android 上請改用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="7507553960917214561">停用遠端存取主機的簾幕模式</translation>
 <translation id="7508067364927180229">這項設定針對 <ph name="LACROS_NAME" /> 瀏覽器提供了多個可用性選項。
 
@@ -5343,13 +5335,6 @@
 
           指定政策值時需以毫秒為單位。設定值必須小於或等於螢幕的關閉延遲時間 (如有設定) 和閒置延遲時間。</translation>
 <translation id="7680437377926096177">不在最後一個關閉的視窗上顯示登出對話方塊。</translation>
-<translation id="7681958144280390173">如果將這項政策設為啟用，系統會隔離所有網站 (每個網站將各自以獨立程序執行)。請注意，自 <ph name="PRODUCT_NAME" /> 第 77 版起，Android 會預設隔離某些敏感網站，此政策會將這個預設的網站隔離模式擴及所有網站。
-
-      如果將這項政策設為停用，則會關閉所有形式的網站隔離功能，包括隔離敏感網站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的實測，以及其他網站隔離模式。使用者仍可手動啟用政策。
-
-      如果未設定這項政策，使用者可變更這項設定。
-
-      注意：目前 Android 對於隔離所有網站的支援功能可能會導致效能問題 (尤其是在低階裝置上)，但日後將會改善。執行 Chrome 的 Android 系統必須運行於 RAM 實際超過 1 GB 的裝置上，才適用這項政策。如果想在隔離特定網站的同時限縮對使用者的效能影響，請將 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 與打算隔離的網站清單搭配使用。如要在非 Android 平台上套用這項政策，請使用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
 <translation id="7683777542468165012">動態政策更新</translation>
 <translation id="7687943045976362719">如果設定這項政策，指定的內容類型會由 <ph name="PRODUCT_FRAME_NAME" />處理。
 
@@ -5710,6 +5695,7 @@
       如果將這項政策設為停用或不設定，系統不會傳送任何封包。</translation>
 <translation id="816783746144552109">設定裝置的 Chrome 作業系統最低版本限制。</translation>
 <translation id="8171924760436219650">在登入畫面上將滑鼠的主要按鈕切換為右鍵</translation>
+<translation id="8173864651667424191">在 PDF 文件的列印預覽畫面中，「以圖片形式列印」是預設選項 (如果有)。</translation>
 <translation id="8176035528522326671">僅允許企業使用者成為多重設定檔的主要使用者 (受企業管理的使用者的預設行為)</translation>
 <translation id="8179161412673077784">禁止具有濫用行為的網站開啟新視窗或新分頁</translation>
 <translation id="8183108371184777472">禁止啟動瀏覽器視窗</translation>

@@ -494,7 +494,6 @@
 <translation id="4665114317261903604">አትረብሽ የሚለውን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">በወላጅ ኮድ መሣሪያን ክፈት</translation>
 <translation id="4702647871202761252">የግላዊነት ማያ ገጽ ጠፍቷል</translation>
-<translation id="4705716602320768426">የፋይል ግብረመልስ</translation>
 <translation id="4706121060329443414">ማውረድ በኋላ ላይ ይሞከራል። ለአሁን ንግግር ለመሰናዳት ወደ Google ይላካል።</translation>
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
 <translation id="4734965478015604180">አግድማዊ</translation>
@@ -771,6 +770,7 @@
 <translation id="6919251195245069855">የእርስዎን ዘመናዊ ካርድ ለይቶ ማወቅ አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="6921188888306725546">የቁልፍ ሰሌዳ አቋራጮች ተሻሽለዋል</translation>
 <translation id="6929655271276551705">የቀን ቅንብሮች</translation>
+<translation id="6931576957638141829">አስቀምጥ ወደ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6961121602502368900">በሥራ መገለጫ ላይ የስልክ ድምጽን ማጥፋት አይገኝም</translation>
 <translation id="6961840794482373852">የAlt + የላይ ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የላይ ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የላይ ቀስት ይጫኑ።</translation>
@@ -907,6 +907,7 @@
 <translation id="79341161159229895">መለያው በ<ph name="FIRST_PARENT_EMAIL" /> እና <ph name="SECOND_PARENT_EMAIL" /> ነው የሚቀናበረው</translation>
 <translation id="793716872548410480">የእርስዎን ቅንጥብ ሰሌዳ ለመመልከት <ph name="SHORTCUT_KEY_NAME" /> + Vን ይጫኑ። እርስዎ የቀዷቸው የመጨረሻዎቹ 5 ንጥሎች ቅንጥብ ሰሌዳዎ ላይ ተቀምጠዋል።</translation>
 <translation id="7955885781510802139">ባለከፍተኛ ንፅፅር ሁነታ</translation>
+<translation id="7968693143708939792">አቃፊ ምረጥ...</translation>
 <translation id="7977927628060636163">የተንቀሳቃሽ ስልክ አውታረ መረቦችን በመፈለግ ላይ...</translation>
 <translation id="7980780401175799550">Chrome OSን የሚዳስሱበት አዲስ መንገዶችን ይሞክሩ</translation>
 <translation id="7982789257301363584">አውታረ መረብ</translation>

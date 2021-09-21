@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Verwyder</translation>
 <translation id="1195447618553298278">Onbekende fout.</translation>
 <translation id="1204296502688602597">DNS-traagheid</translation>
 <translation id="123124571410524056">Portaal vermoed</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
 <translation id="1930797645656624981">Chrome-bedryfstelsel se invoermetodediens</translation>
 <translation id="1947737735496445907">Gedruk</translation>
+<translation id="197386857804679933">Besoek Instellings om weer te koppel</translation>
 <translation id="1979103255016296513">Wagwoord moes al verander geword het</translation>
 <translation id="1999615961760456652">Kontroleringsportaal</translation>
 <translation id="2006864819935886708">Konnektiwiteit</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">GESLAAG</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Programme</translation>
+<translation id="2860473693272905224">Plaas 'n ander bladsy op die skandeerder</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Skandeer tans bladsy <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Kontroleringsportaal is bespeur</translation>
+<translation id="3170673040743561620">Plaas jou dokument op die skandeerder</translation>
 <translation id="3188257591659621405">My lêers</translation>
 <translation id="3199982728237701504">Dokumentvoerder (twee kante)</translation>
 <translation id="3226405216343213872">Soek skandeerders</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />-toets</translation>
 <translation id="3708186454126126312">Voorheen gekoppel</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Herskandeer bladsy}=1{Herskandeer bladsy {PAGE_NUMBER}}other{Herskandeer bladsy {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> resensies)</translation>
 <translation id="3748026146096797577">Nie gekoppel nie</translation>
 <translation id="3749289110408117711">Lêernaam</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos-kaartjie verval binnekort</translation>
 <translation id="4431821876790500265">Sien verslag</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Verwyder bladsy}=1{Verwyder bladsy {PAGE_NUMBER}}other{Verwyder bladsy {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Ou wagwoord</translation>
 <translation id="4453205916657964690">Subnetmasker</translation>
 <translation id="4454245904991689773">Skandeer na</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Verbinding</translation>
 <translation id="4832079907277790330">Kies vouer in Lêers-program …</translation>
 <translation id="4835901797422965222">Geen aktiewe netwerke nie</translation>
+<translation id="484790837831576105">(Android) DNS-resolusie</translation>
 <translation id="4848429997038228357">LOOP TANS</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} poging oor}other{<ph name="ERROR_MESSAGE" /> {0} pogings oor}}</translation>
 <translation id="4880328057631981605">Toegangspuntnaam</translation>
@@ -291,6 +294,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6050189528197190982">Grysskaal</translation>
 <translation id="6058625436358447366">Voer jou ou en nuwe wagwoord in om dit te voltooi</translation>
 <translation id="6061772781719867950">Mislukte HTTP-versoeke</translation>
+<translation id="6075872808778243331">(Android) HTTP-traagheid</translation>
 <translation id="6104112872696127344">Skandering is gekanselleer.</translation>
 <translation id="6106186594183574873">Voer jou ou wagwoord in om dit te voltooi</translation>
 <translation id="6108689792487843350">Kan nie deurgang bereik nie</translation>
@@ -333,6 +337,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> is gedeaktiveer</translation>
 <translation id="6747215703636344499">Gestop – uitvoer is vol</translation>
 <translation id="6756731097889387912">Kon nie skandering kanselleer nie</translation>
 <translation id="6766275201586212568">Mislukte DNS-resolusies</translation>
@@ -342,11 +347,13 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6910312834584889076">Die skandeerder se deksel is oop. Maak die deksel toe en probeer weer.</translation>
 <translation id="6911383237894364323">Kan nie aan mediabedieners koppel nie</translation>
 <translation id="6957231940976260713">Diensnaam</translation>
+<translation id="6961170852793647506">Plaas jou dokument op die skandeerder om te begin</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
 <translation id="6982876849933694860">Gaan na <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om 'n nuwe verbinding op te stel.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" />-sleutelbord</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
+<translation id="7058278511608979688">Beëindig en stoor</translation>
 <translation id="7059230779847288458">Laai tans; <ph name="TIME_VALUE" /> tot vol</translation>
 <translation id="708426984172631313">GESTOP</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
-<translation id="7257889006063274246">Is jy seker jy wil bladsy <ph name="CURRENT_PAGE" /> verwyder?</translation>
 <translation id="7271040990581020067">Skandeerder word tans gebruik Probeer later weer.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Muurpapierversamelings</translation>
@@ -411,6 +417,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8041089156583427627">Stuur terugvoer</translation>
 <translation id="8075838845814659848">Oorblywende batterykrag</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>
+<translation id="811820734797650957">(Android) Deurgang kan gepieng word</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Versoek verkeertellers</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
@@ -482,6 +489,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="910415269708673980">Herlaai kaartjie vir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skandeer tans bladsy <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ontsluit</translation>
+<translation id="9126720536733509015">Stoor veelvuldige bladsye as een PDF</translation>
 <translation id="9137526406337347448">Google-dienste</translation>
 <translation id="9149391708638971077">Laat loop geheuetoets</translation>
 <translation id="9173638680043580060">Minder as 'n minuut oor</translation>

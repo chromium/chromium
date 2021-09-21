@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
 <translation id="1373696734384179344">Der er ikke nok hukommelse til at downloade det valgte indhold.</translation>
 <translation id="1376578503827013741">Beregner…</translation>
+<translation id="1382912999714108023">Kan du ikke se dine aktuelle oplysninger? Kontakt din bank for at få dem opdateret.</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384704387250346179">Oversæt billedet med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dage siden</translation>
@@ -351,6 +352,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Søgehistorik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />andre former for aktivitet<ph name="END_LINK2" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="321773570071367578">Hvis du har glemt din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Bekræft din identitet for at synkronisere dine adgangskoder</translation>
+<translation id="3223522355830797639">Din bank vil gerne bekræfte, at det er dig.</translation>
 <translation id="3227557059438308877">Google Chrome som sikkerhedsnøgle</translation>
 <translation id="3232754137068452469">Webapp</translation>
 <translation id="3234978181857588512">Gem på enheden</translation>
@@ -817,6 +819,7 @@ Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i u
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Administrer dine historier og din aktivitet her</translation>
 <translation id="6069177176307973611">Gennemgå privatlivs- og sikkerhedsindstillinger</translation>
+<translation id="6070730414166672373">Kontakter din bank\u2026</translation>
 <translation id="6085886413119427067">Bestemmer, hvordan der skal oprettes forbindelse til websites via en sikker forbindelse</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timer tilbage</translation>
 <translation id="6108923351542677676">Konfigurationen er i gang...</translation>

@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">ユーザー</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。</translation>
+<translation id="1181037720776840403">削除</translation>
 <translation id="1195447618553298278">不明なエラーです。</translation>
 <translation id="1204296502688602597">DNS レイテンシ</translation>
 <translation id="123124571410524056">ポータルの可能性があります</translation>
@@ -139,7 +140,6 @@
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{ページを再スキャン}=1{{PAGE_NUMBER} ページを再スキャン}other{{PAGE_NUMBER} ページを再スキャン}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 件のレビュー）</translation>
 <translation id="3748026146096797577">接続されていません</translation>
 <translation id="3749289110408117711">ファイル名</translation>
@@ -177,7 +177,6 @@
 <translation id="4425149324548788773">マイドライブ</translation>
 <translation id="4429881212383817840">Kerberos チケットはまもなく有効期限が切れます</translation>
 <translation id="4431821876790500265">レポートを表示</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{ページを削除}=1{{PAGE_NUMBER} ページを削除}other{{PAGE_NUMBER} ページを削除}}</translation>
 <translation id="445059817448385655">古いパスワード</translation>
 <translation id="4453205916657964690">サブネット マスク</translation>
 <translation id="4454245904991689773">スキャンの保存先</translation>
@@ -359,7 +358,6 @@
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
-<translation id="7257889006063274246">ページ <ph name="CURRENT_PAGE" /> を削除してもよろしいですか？</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">壁紙のコレクション</translation>

@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> अनप्लग किया गया.</translation>
 <translation id="1473110567575736769">तीन सेकंड का टाइमर</translation>
 <translation id="1545749641540134597">QR कोड स्कैन करें</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">दस्तावेज़ को स्कैन करने की सुविधा अब उपलब्ध है</translation>
 <translation id="5268823927180092501">सभी कैमरे के लिए दस्तावेज़ मोड चालू करें</translation>
 <translation id="5444515100983837161">दस्तावेज़ के सभी कोने फ़्रेम के अंदर रखें. दस्तावेज़ और बैकग्राउंड का रंग अलग-अलग होने पर स्कैन बेहतर होता है.</translation>
+<translation id="5588258280684580073">GIF रिकॉर्डिंग चालू करें</translation>
 <translation id="5671277269877808209">वर्ग</translation>
 <translation id="5746169159649715125">PDF के रूप में सेव करें</translation>
 <translation id="5753488212459587150">एक्सपर्ट मोड चालू करें</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">वीडियो का रिज़ॉल्यूशन</translation>
 <translation id="7337660886763914220">फ़ाइल सिस्टम की गड़बड़ियां.</translation>
 <translation id="7450541714075000668">टेक्स्ट कॉपी किया गया</translation>
+<translation id="7488619942230388918">GIF वीडियो रिकॉर्ड करें</translation>
 <translation id="7557677699350329807">अगले कैमरे का इस्तेमाल करें</translation>
 <translation id="7607002721634913082">रोका गया</translation>
 <translation id="7608223098072244877">4 गुणा 4</translation>
 <translation id="7649070708921625228">सहायता</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7670511624014457267">60 FPS (फ़्रेम प्रति सेकंड)</translation>
+<translation id="7726641833034062494">सामान्य वीडियो रिकॉर्ड करें</translation>
 <translation id="7983668134180549431">टेक्स्ट पहचाना गया.</translation>
 <translation id="8067883171444229417">वीडियो चलाएं</translation>
 <translation id="8120146556401698679">पैन करें, झुकाएं, और ज़ूम करें</translation>

@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> gestiona el dispositivo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1181037720776840403">Quitar</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Errores de solicitud UDP</translation>
 <translation id="1930797645656624981">Servicio de método de introducción de Chrome OS</translation>
 <translation id="1947737735496445907">Impreso</translation>
+<translation id="197386857804679933">Ve a los ajustes para volver a conectarla</translation>
 <translation id="1979103255016296513">Ya ha terminado el plazo para cambiar la contraseña</translation>
 <translation id="1999615961760456652">Portal cautivo</translation>
 <translation id="2006864819935886708">Conectividad</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
+<translation id="2860473693272905224">Coloca otra página en el escáner</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878387241690264070">Se ha descargado un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="3008341117444806826">RENOVAR</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Redes móviles</translation>
 <translation id="3156846309055100599">Escaneando página <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Portal cautivo detectado</translation>
+<translation id="3170673040743561620">Coloca el documento en el escáner</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3689839747745352263">Prueba <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Volver a escanear la página}=1{Volver a escanear la página {PAGE_NUMBER}}other{Volver a escanear la página {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reseñas)</translation>
 <translation id="3748026146096797577">No conectado</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Mi unidad</translation>
 <translation id="4429881212383817840">El ticket de Kerberos caducará pronto</translation>
 <translation id="4431821876790500265">Ver informe</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Quitar página}=1{Quitar página {PAGE_NUMBER}}other{Quitar página {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Contraseña antigua</translation>
 <translation id="4453205916657964690">Máscara de subred</translation>
 <translation id="4454245904991689773">Guardar en</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Conexión</translation>
 <translation id="4832079907277790330">Seleccionar carpeta en aplicación Files...</translation>
 <translation id="4835901797422965222">No hay redes activas</translation>
+<translation id="484790837831576105">(Android) Resolución de DNS</translation>
 <translation id="4848429997038228357">EN CURSO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
 <translation id="4880328057631981605">Nombre del punto de acceso</translation>
@@ -290,6 +293,7 @@
 <translation id="6050189528197190982">Escala de grises</translation>
 <translation id="6058625436358447366">Para finalizar, introduce tu contraseña anterior y la nueva</translation>
 <translation id="6061772781719867950">Solicitudes HTTPS con errores</translation>
+<translation id="6075872808778243331">(Android) Latencia de HTTP</translation>
 <translation id="6104112872696127344">Se ha cancelado el análisis</translation>
 <translation id="6106186594183574873">Para finalizar, introduce tu contraseña anterior</translation>
 <translation id="6108689792487843350">No se puede acceder a la puerta de enlace</translation>
@@ -332,6 +336,7 @@
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
+<translation id="6714650824879092633">Se ha inhabilitado <ph name="NETWORK_NAME" /></translation>
 <translation id="6747215703636344499">Detenido: bandeja de salida llena</translation>
 <translation id="6756731097889387912">No se ha podido cancelar el análisis</translation>
 <translation id="6766275201586212568">Errores de resoluciones de DNS</translation>
@@ -341,11 +346,13 @@
 <translation id="6910312834584889076">La cubierta del escáner está abierta. Ciérrala y vuelve a intentarlo.</translation>
 <translation id="6911383237894364323">No se ha podido conectar con los servidores multimedia</translation>
 <translation id="6957231940976260713">Nombre de servicio</translation>
+<translation id="6961170852793647506">Para empezar, coloca el documento en el escáner</translation>
 <translation id="6977381486153291903">Revisión del firmware</translation>
 <translation id="6982876849933694860">Para configurar una nueva conexión, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, las contraseñas y el correo electrónico.</translation>
 <translation id="7039041976777695848">Teclado <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="7058278511608979688">Finalizar y guardar</translation>
 <translation id="7059230779847288458">Cargando (<ph name="TIME_VALUE" /> para completar la carga)</translation>
 <translation id="708426984172631313">DETENIDA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -358,7 +365,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
-<translation id="7257889006063274246">¿Seguro que quieres quitar la página <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Colecciones de fondos de pantalla</translation>
@@ -410,6 +416,7 @@
 <translation id="8041089156583427627">Enviar</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
+<translation id="811820734797650957">(Android) Se puede hacer ping a la pasarela</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8206859287963243715">Móvil</translation>
@@ -481,6 +488,7 @@
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
+<translation id="9126720536733509015">Guardar varias páginas en un PDF</translation>
 <translation id="9137526406337347448">Servicios de Google</translation>
 <translation id="9149391708638971077">Realizar prueba de memoria</translation>
 <translation id="9173638680043580060">Queda menos de 1 minuto</translation>

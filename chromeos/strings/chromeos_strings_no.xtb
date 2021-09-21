@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Fjern</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
 <translation id="1204296502688602597">DNS-tidsforsinkelse</translation>
 <translation id="123124571410524056">Mistanke om portal</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Mislykkede UDP-forespørsler</translation>
 <translation id="1930797645656624981">Tjeneste for Chrome OS-inndatametode</translation>
 <translation id="1947737735496445907">Skrevet ut</translation>
+<translation id="197386857804679933">Gå til Innstillinger for å koble til på nytt</translation>
 <translation id="1979103255016296513">Det er på høy tid å endre passordet</translation>
 <translation id="1999615961760456652">Obligatorisk side</translation>
 <translation id="2006864819935886708">Tilkobling</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">BESTÅTT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apper</translation>
+<translation id="2860473693272905224">Legg en ny side på skanneren</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Skanner side <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Oppdaget en obligatorisk side</translation>
+<translation id="3170673040743561620">Legg dokumentet på skanneren</translation>
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
 <translation id="3226405216343213872">Ser etter skannere</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Skann siden på nytt}=1{Skann side {PAGE_NUMBER} på nytt}other{Skann side {PAGE_NUMBER} på nytt}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke tilkoblet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Min disk</translation>
 <translation id="4429881212383817840">Kerberos-saken utløper snart</translation>
 <translation id="4431821876790500265">Se rapporten</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Fjern side}=1{Fjern side {PAGE_NUMBER}}other{Fjern side {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Gammelt passord</translation>
 <translation id="4453205916657964690">Nettverksmaske</translation>
 <translation id="4454245904991689773">Skann til</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Tilkobling</translation>
 <translation id="4832079907277790330">Velg en mappe i Filer-appen …</translation>
 <translation id="4835901797422965222">Ingen aktive nettverk</translation>
+<translation id="484790837831576105">(Android) DNS-oppslag</translation>
 <translation id="4848429997038228357">KJØRER</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}other{<ph name="ERROR_MESSAGE" /> {0} forsøk igjen}}</translation>
 <translation id="4880328057631981605">Navn på tilgangspunkt</translation>
@@ -291,6 +294,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6050189528197190982">Gråtoner</translation>
 <translation id="6058625436358447366">For å fullføre passordendringen, skriv inn det gamle og det nye passordet</translation>
 <translation id="6061772781719867950">Mislykkede HTTP-forespørsler</translation>
+<translation id="6075872808778243331">(Android) HTTP-tidsforsinkelse</translation>
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
@@ -333,6 +337,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> er deaktivert</translation>
 <translation id="6747215703636344499">Stoppet – utskriftsmottaket er fullt</translation>
 <translation id="6756731097889387912">Kunne ikke avbryte skanningen</translation>
 <translation id="6766275201586212568">Mislykkede DNS-oppslag</translation>
@@ -342,11 +347,13 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6910312834584889076">Skannerens deksel er åpent. Lukk dekselet, og prøv på nytt.</translation>
 <translation id="6911383237894364323">Kan ikke koble til medietjenere</translation>
 <translation id="6957231940976260713">Tjenestenavn</translation>
+<translation id="6961170852793647506">For å begynne, legg dokumentet på skanneren</translation>
 <translation id="6977381486153291903">Fastvareversjon</translation>
 <translation id="6982876849933694860">For å konfigurere en ny tilkobling, gå til <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" />-tastatur</translation>
 <translation id="7040230719604914234">Operatør</translation>
+<translation id="7058278511608979688">Avslutt og lagre</translation>
 <translation id="7059230779847288458">Lader – fulladet om <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">STOPPET</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7216409898977639127">Mobiloperatør</translation>
-<translation id="7257889006063274246">Er du sikker på at du vil fjerne siden <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Skanneren er i bruk for øyeblikket. Prøv igjen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlinger av bakgrunnsbilder</translation>
@@ -411,6 +417,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="808894953321890993">Endre passord</translation>
+<translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Be om trafikktellere</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -482,6 +489,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
+<translation id="9126720536733509015">Lagre flere sider som én PDF-fil</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9149391708638971077">Kjør minnetest</translation>
 <translation id="9173638680043580060">Mindre enn et minutt igjen</translation>

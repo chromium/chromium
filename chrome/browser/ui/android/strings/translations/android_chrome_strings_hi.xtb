@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">साइन आउट करें और सिंक बंद करें?</translation>
 <translation id="1373696734384179344">चयनित सामग्री डाउनलोड करने के लिए मेमोरी अपर्याप्‍त है.</translation>
 <translation id="1376578503827013741">गणना की जा रही है…</translation>
+<translation id="1382912999714108023">क्या आप अपनी मौजूदा जानकारी नहीं देख पा रहे हैं? इसे अपडेट करने के लिए कृपया अपने बैंक से संपर्क करें.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />नए<ph name="END_NEW" /> Google Lens से इमेज का अनुवाद करें</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />दिन पहले सिंक किया गया</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />अन्य तरह की गतिविधियां<ph name="END_LINK2" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="321773570071367578">अगर आप अपना 'पासफ़्रेज़' भूल गए हैं या यह सेटिंग बदलना चाहते हैं, तो <ph name="BEGIN_LINK" /> सिंक रीसेट करें<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">पासवर्ड सिंक करने के लिए अपनी पहचान की पुष्टि करें</translation>
+<translation id="3223522355830797639">आपका बैंक, आपकी पहचान की पुष्टि करना चाहता है.</translation>
 <translation id="3227557059438308877">Google Chrome, सुरक्षा कुंजी के रूप में</translation>
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
 <translation id="3234978181857588512">डिवाइस में सेव करें</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">अपनी खबरों और गतिविधि को यहां नियंत्रित करें</translation>
 <translation id="6069177176307973611">निजता और सुरक्षा सेटिंग की समीक्षा करें</translation>
+<translation id="6070730414166672373">अपने बैंक से संपर्क किया जा रहा है</translation>
 <translation id="6085886413119427067">वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करें</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> घंटे शेष</translation>
 <translation id="6108923351542677676">सेटअप प्रगति में है…</translation>

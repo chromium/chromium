@@ -494,7 +494,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4665114317261903604">Ative/desative o modo Não incomodar. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
-<translation id="4705716602320768426">Envie comentários</translation>
 <translation id="4706121060329443414">Tentar-se-á a transferência mais tarde. Por enquanto, a voz será enviada para a Google para processamento.</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
@@ -771,6 +770,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>
 <translation id="6921188888306725546">Os atalhos de teclado foram melhorados</translation>
 <translation id="6929655271276551705">Definições de data</translation>
+<translation id="6931576957638141829">Guardar em</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6961121602502368900">A funcionalidade Silenciar telemóvel não está disponível no perfil de trabalho.</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima foi alterado. Para utilizar a tecla Página para cima, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
@@ -907,6 +907,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>
 <translation id="7955885781510802139">Modo de alto contraste</translation>
+<translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="7977927628060636163">A pesquisar redes móveis...</translation>
 <translation id="7980780401175799550">Experimente novas formas de navegar no Chrome OS</translation>
 <translation id="7982789257301363584">Rede</translation>

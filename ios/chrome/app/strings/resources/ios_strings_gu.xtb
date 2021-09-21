@@ -526,6 +526,7 @@
 <translation id="6189413832092199491">વાંચ્યા વગરની</translation>
 <translation id="6196207969502475924">વૉઇસ શોધ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />તમે શું સિંક કરી શકો, તે જાણો<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="6223816392543092032">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક્સ, ઇતિહાસ, પાસવર્ડ અન્ય સેટિંગ મેળવો.</translation>
 <translation id="6232329973559504466">છૂપી શોધ</translation>
@@ -724,6 +725,7 @@
 
 સાઇટ વિભિન્ન સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે કુકીનો ઉપયોગ કરી શકે છે, ઉદાહરણ તરીકે, મનગમતી જાહેરાતો બનાવવા માટે.</translation>
 <translation id="7971521879845308059">પૉપ-અપ્સ અવરોધિત કરો</translation>
+<translation id="797413074872316787">એકથી વધુ ડિવાઇસને સિંક અને મનગમતા બનાવવા માટે, સિંકની સુવિધા ચાલુ કરો.</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7993619969781047893">અમુક સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="800361585186029508">ઇનપુટ કરેલા URLsને Google Chromeમાં ખોલે છે.</translation>
@@ -740,6 +742,7 @@
 <translation id="8076014560081431679">સાચવેલા સાઇટ સેટિંગ ડિલીટ કરવામાં આવશે નહીં અને તે તમારી બ્રાઉઝિંગ ટેવોને પ્રતિબિંબિત કરી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">આ સેટિંગ મેનેજ કરવામાં આવે છે, વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
 <translation id="8080028325999236607">બધા ટૅબ્સ બંધ કરો</translation>
+<translation id="8103864314410529527">તમે શું સિંક કરી શકો, તે તમારી સંસ્થા નિયંત્રિત કરે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">બંધ કરો</translation>
 <translation id="8114753159095730575">ફાઇલ ડાઉનલોડ માટે ઉપલબ્ધ છે. સ્ક્રીનના તળિયે વિકલ્પો ઉપલબ્ધ છે.</translation>
 <translation id="8156478151976189188">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>

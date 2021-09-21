@@ -494,7 +494,6 @@
 <translation id="4665114317261903604">Εναλλαγή λειτουργίας Μην ενοχλείτε. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Ξεκλείδωμα συσκευής με κωδικό γονέα</translation>
 <translation id="4702647871202761252">Η οθόνη απορρήτου είναι απενεργοποιημένη.</translation>
-<translation id="4705716602320768426">Υποβολή σχολίων</translation>
 <translation id="4706121060329443414">Θα γίνει προσπάθεια για λήψη αργότερα. Προς το παρόν, η ομιλία θα σταλεί στην Google για επεξεργασία.</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
@@ -771,6 +770,7 @@
 <translation id="6919251195245069855">Δεν ήταν δυνατή η αναγνώριση της έξυπνης κάρτας σας. Επανάληψη.</translation>
 <translation id="6921188888306725546">Οι συντομεύσεις πληκτρολογίου έχουν βελτιωθεί</translation>
 <translation id="6929655271276551705">Ρυθμίσεις ημερομηνίας</translation>
+<translation id="6931576957638141829">Αποθήκευση σε</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6961121602502368900">Η Σίγαση τηλεφώνου δεν είναι διαθέσιμη στο προφίλ εργασίας</translation>
 <translation id="6961840794482373852">Η συντόμευση πληκτρολογίου Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Up, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Επάνω βέλος.</translation>
@@ -907,6 +907,7 @@
 <translation id="79341161159229895">Ο λογαριασμός είναι διαχειριζόμενος από τους χρήστες <ph name="FIRST_PARENT_EMAIL" /> και <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Πιέστε <ph name="SHORTCUT_KEY_NAME" /> + V για να δείτε το πρόχειρο. Τα τελευταία 5 στοιχεία που αντιγράψατε αποθηκεύονται στο πρόχειρο.</translation>
 <translation id="7955885781510802139">Λειτουργία υψηλής αντίθεσης</translation>
+<translation id="7968693143708939792">Επιλογή φακέλου…</translation>
 <translation id="7977927628060636163">Αναζήτηση για δίκτυα κινητής τηλεφωνίας…</translation>
 <translation id="7980780401175799550">Δοκιμάστε νέους τρόπους πλοήγησης στο Chrome OS</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>

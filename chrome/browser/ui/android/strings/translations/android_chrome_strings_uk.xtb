@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Вийти й вимкнути синхронізацію?</translation>
 <translation id="1373696734384179344">Недостатньо пам’яті, щоб завантажити вибраний вміст.</translation>
 <translation id="1376578503827013741">Обчислення…</translation>
+<translation id="1382912999714108023">Не відображається актуальна інформація? Попросіть представника банку оновити її.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384704387250346179">Переклад через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">У мережі <ph name="LAST_UPDATED" /> дн. тому</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">Коли ви входите в обліковий запис Google, у ньому можуть зберігатись <ph name="BEGIN_LINK1" />Історія пошуку<ph name="END_LINK1" /> та <ph name="BEGIN_LINK2" />дані про інші дії<ph name="END_LINK2" />. Ви можете будь-коли видалити їх.</translation>
 <translation id="321773570071367578">Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />скиньте синхронізацію<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Щоб синхронізувати паролі, підтвердьте свою особу</translation>
+<translation id="3223522355830797639">Банку потрібне підтвердження вашої особи.</translation>
 <translation id="3227557059438308877">Google Chrome як ключ безпеки</translation>
 <translation id="3232754137068452469">Веб-додаток</translation>
 <translation id="3234978181857588512">Зберегти на пристрій</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">РР</translation>
 <translation id="6059830886158432458">Керуйте новинами й діями тут</translation>
 <translation id="6069177176307973611">Переглянути налаштування конфіденційності та безпеки</translation>
+<translation id="6070730414166672373">З’єднання з банком\u2026</translation>
 <translation id="6085886413119427067">Визначає, як безпечно підключатися до веб-сайтів</translation>
 <translation id="60923314841986378">Залишилося <ph name="HOURS" /> год</translation>
 <translation id="6108923351542677676">Виконується налаштування…</translation>

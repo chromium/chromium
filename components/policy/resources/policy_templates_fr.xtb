@@ -375,13 +375,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Remarque : S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="1488724823347505879">Activer le partage des applis Android vers les applis Web</translation>
-<translation id="1495817006535797003">Si cette règle est activée, chacune des origines définies et répertoriées dans une liste d'éléments séparés par une virgule exécute son propre processus et isole les origines par sous-domaines. Par exemple, si vous indiquez https://example.com/, https://foo.example.com/ est isolé en tant que partie du site https://example.com/.  Sachez qu'Android isole certains sites sensibles par défaut depuis <ph name="PRODUCT_NAME" /> 77. Cette règle étend ce mode d'isolation aux sites d'autres origines en particulier.
-
-      Si cette règle est désactivée, toute forme d'isolation de sites l'est aussi, y compris l'isolation des sites sensibles et des tests en conditions réelles d'IsolateOriginsAndroid et de SitePerProcessAndroid, et les autres modes d'isolation de sites. Les utilisateurs peuvent quand même activer manuellement IsolateOrigins à l'aide de l'indicateur de ligne de commande.
-
-      Si cette règle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
-
-      Remarque : L'isolation de trop nombreux sites sur Android peut entraîner des problèmes de performances, surtout sur les appareils disposant de peu de mémoire. Cette règle ne concerne que les appareils Android dans Chrome, qui ont plus de 1 Go de RAM. Pour l'appliquer sur des plates-formes autres qu'Android, utilisez <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="1502843533062797703">Activer le blocage de l'injection de logiciels tiers</translation>
 <translation id="1503969899251962413">Cette règle permet de spécifier la clé de licence <ph name="PLUGIN_VM_NAME" /> pour cet appareil.
 
@@ -1483,6 +1476,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2725855586003209701">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent la liste des utilisateurs qui se sont récemment connectés.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas cette liste.</translation>
+<translation id="2730419309754848345">Imprimer le document PDF en tant qu'image par défaut</translation>
 <translation id="2731627323327011390">Désactiver l'utilisation de certificats <ph name="PRODUCT_OS_NAME" /> pour les applications ARC</translation>
 <translation id="2742843273354638707">Masque l'application Chrome Web Store et le lien de bas de page sur la page Nouvel onglet et dans le lanceur d'applications de <ph name="PRODUCT_OS_NAME" />.
 
@@ -2030,11 +2024,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
 <translation id="3363360928811201045">Ajouter des restrictions aux comptes gérés</translation>
-<translation id="3367868895271989224">Si cette règle est activée, tous les sites sont isolés. (Chaque site exécute son propre processus.) Si cette règle est désactivée ou si elle n'est pas configurée, les utilisateurs peuvent désactiver l'isolation de sites (en accédant à l'option "Désactiver l'isolation de sites" sur la page chrome://flags, par exemple).
-
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> peut être également utile pour le réglage des origines. Pour <ph name="PRODUCT_OS_NAME" /> 76 ou version antérieure, attribuez la même valeur à la règle <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> relative aux appareils. En effet, si les valeurs ne sont pas identiques, un retard peut être constaté lors de l'ouverture d'une session utilisateur.
-
-      Remarque : Sous Android, utilisez la règle <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> à la place.</translation>
 <translation id="3373381043600809954">Activer <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3374587000313305002">Permet de configurer le répertoire utilisé par <ph name="PRODUCT_NAME" /> pour le stockage des données de l'utilisateur.
 
@@ -3233,6 +3222,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4988291787868618635">Action à effectuer au terme du délai d'inactivité</translation>
 <translation id="4996068111491152684">Les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> ne seront pas utilisés pour l'authentification réseau.</translation>
 <translation id="4996086761250834365">Autoriser l'analyse de produit <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="4997074784107449343">Lorsqu'elle est disponible, l'option "Imprimer en tant qu'image" permettant de générer un aperçu avant impression d'un PDF n'est pas proposée par défaut.</translation>
 <translation id="500149597848135831">Activer toutes les variantes</translation>
 <translation id="5017369989680827157">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs contrôlent la saisie automatique des adresses dans l'interface utilisateur.
 
@@ -3992,6 +3982,13 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si cette règle est désactivée, l'utilisation du protocole QUIC n'est pas autorisée.</translation>
 <translation id="5921713479449475707">Autoriser les téléchargements de mise à jour automatique via HTTP</translation>
+<translation id="5928633129285224981">Détermine si <ph name="PRODUCT_NAME" /> propose l'option "Imprimer en tant qu'image" par défaut lors de l'impression de documents PDF.
+
+      Lorsque cette règle est activée, <ph name="PRODUCT_NAME" /> propose l'option "Imprimer en tant qu'image" par défaut dans l'aperçu avant impression d'un PDF.
+
+      Si cette règle est désactivée ou n'est pas configurée, l'option "Imprimer en tant qu'image" n'est pas proposée à l'utilisateur de <ph name="PRODUCT_NAME" />.  Si l'option est disponible, l'utilisateur pourra la sélectionner pour chaque tâche d'impression PDF.
+
+      Pour <ph name="MS_WIN_NAME" /> ou <ph name="MAC_OS_NAME" />, cette règle n'est effective que si <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> est également activée.</translation>
 <translation id="5929855945144989709">Autoriser les appareils à exécuter des machines virtuelles sur Chrome OS</translation>
 <translation id="5932767795525445337">Ces règles peuvent également être utilisées pour épingler des applications Android.</translation>
 <translation id="5934763632608026594">Cette règle permet de contrôler les paramètres de gestion de l'application Web pour <ph name="PRODUCT_NAME" />.
@@ -5285,11 +5282,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle n'est pas configurée, <ph name="IE_PRODUCT_NAME" /> détecte automatiquement le chemin d'accès au fichier exécutable de <ph name="PRODUCT_NAME" /> lors du lancement de <ph name="PRODUCT_NAME" /> depuis Internet Explorer.
 
       Remarque : Si le module complémentaire Legacy Browser Support pour <ph name="IE_PRODUCT_NAME" /> n'est pas installé, cette règle n'a aucune incidence.</translation>
-<translation id="7507131973617884092">Si cette règle est activée, chacune des origines définies et répertoriées dans une liste d'éléments séparés par une virgule exécute son propre processus et isole les origines par sous-domaines. Par exemple, si vous indiquez https://example.com/, https://foo.example.com/ est isolé en tant que partie du site https://example.com/.
-
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
-
-      Remarque : Sous Android, utilisez la règle <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> à la place.</translation>
 <translation id="7507553960917214561">Désactiver le mode Rideau de l'hôte d'accès à distance</translation>
 <translation id="7508067364927180229">Ce paramètre offre plusieurs options de disponibilité pour le navigateur <ph name="LACROS_NAME" />.
 
@@ -5443,13 +5435,6 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'arrêt de l'écran (le cas échéant) et au délai d'inactivité.</translation>
 <translation id="7680437377926096177">Ne plus afficher la boîte de dialogue de déconnexion sur la dernière fenêtre fermée.</translation>
-<translation id="7681958144280390173">Si cette règle est activée, tous les sites sont isolés (chaque site exécute son propre processus). Sachez qu'Android isole certains sites sensibles par défaut depuis <ph name="PRODUCT_NAME" /> 77. Cette règle étend ce mode d'isolation par défaut à tous les sites.
-
-      Si cette règle est désactivée, toute forme d'isolation de sites l'est aussi, y compris l'isolation des sites sensibles et des tests en conditions réelles d'IsolateOriginsAndroid et de SitePerProcessAndroid, et les autres modes d'isolation de sites. Les utilisateurs peuvent toujours activer manuellement la règle.
-
-      Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas modifier ce paramètre.
-
-      Remarque : Il est possible que l'isolation de tous les sites sur Android entraîne actuellement des problèmes de performances, surtout sur les appareils bas de gamme. Des améliorations vont donc y être apportées. Cette règle ne concerne que les appareils Android dans Chrome, qui ont plus de 1 Go de RAM. Pour isoler des sites spécifiques en limitant l'impact sur les performances pour les utilisateurs, servez-vous de <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> avec une liste des sites que vous voulez isoler.  Pour l'appliquer sur des plates-formes autres qu'Android, utilisez <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="7683777542468165012">Actualisation dynamique des stratégies</translation>
 <translation id="7687943045976362719">Si cette règle est configurée, les types de contenus spécifiés sont traités par <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -5818,6 +5803,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
       Si cette règle est désactivée ou qu'elle n'est pas configurée, aucun paquet n'est transmis.</translation>
 <translation id="816783746144552109">Configurer la version Chrome OS minimale autorisée de l'appareil.</translation>
 <translation id="8171924760436219650">Définir le bouton droit de la souris comme bouton principal sur l'écran de connexion</translation>
+<translation id="8173864651667424191">L'option "Imprimer en tant qu'image" par défaut permettant de générer un aperçu avant impression d'un PDF, lorsque cette option est disponible, est proposée.</translation>
 <translation id="8176035528522326671">Autoriser l'utilisateur d'entreprise à participer aux sessions à plusieurs profils en tant qu'utilisateur principal seulement (comportement par défaut pour les utilisateurs gérés par une entreprise)</translation>
 <translation id="8179161412673077784">Empêcher les sites aux expériences abusives d'ouvrir de nouvelles fenêtres ou de nouveaux onglets</translation>
 <translation id="8183108371184777472">Empêcher l'ouverture de la fenêtre du navigateur</translation>

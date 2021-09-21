@@ -102,6 +102,7 @@
 <translation id="1103523840287552314">ແປ <ph name="LANGUAGE" /> ຢູ່ສະເໝີ</translation>
 <translation id="1108600514891325577">ຢຸດ</translation>
 <translation id="1110155001042129815">ລໍ​ຖ້າ</translation>
+<translation id="1110965959145884739">ເລືອກພາສາທີ່ຈະຕິດຕັ້ງຢູ່ອຸປະກອນນີ້. ໄຟລ໌ພາສາແມ່ນມີການແບ່ງປັນລະຫວ່າງຜູ້ໃຊ້ເພື່ອປະຢັດພື້ນທີ່ດິສກ໌. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">ແຖບໃນພື້ນຫຼັງກຳລັງໃຊ້ Bluetooth ຢູ່</translation>
 <translation id="1113892970288677790">ເລືອກໜ້າປົກ ແລະ ຮູບທີ່ຄັດສັນມາ</translation>
@@ -546,6 +547,7 @@
 <translation id="1580772913177567930">ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="1581962803218266616">ສະແດງຢູ່ໃນຕົວຊອກ​ຫາ</translation>
 <translation id="1582955169539260415">ລຶບ [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" /> ແມ່ນປະມວນຜົນໃນເຄື່ອງ ແລະ ເຮັດວຽກແບບອອບລາຍ</translation>
 <translation id="1584990664401018068">ເຄືອ​ຂ່າຍ Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້ (<ph name="NETWORK_ID" />) ອາດ​ຈະ​ຕ້ອງ​ການ​ໃຫ້​ມີ​ການ​ຮັບ​ຮອງ.</translation>
 <translation id="1585717515139318619">ໂປຣແກຣມອື່ນຢູ່ໃນຄອມພິວເຕີຂອງທ່ານ​ໄດ້​ເພີ່ມ​ທີມ​ທີ່​ອາດ​ຈະ​ປ່ຽນ​ແປງວິ​ທີ Chrome ເຮັດ​ວຽກ​ແລ້ວ.
 
@@ -764,6 +766,7 @@
 <translation id="177989070088644880">ແອັບ (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">ປິດກຸ່ມ</translation>
 <translation id="1780273119488802839">ກຳລັງນຳບຸກມາກເຂົ້າ</translation>
+<translation id="178092663238929451">ຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງເພື່ອຮັບ ແລະ ສົ່ງໄຟລ໌ກັບຄົນອ້ອມຕົວທ່ານ</translation>
 <translation id="1781291988450150470">PIN ປັດຈຸບັນ</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> ກຳນົດໃຫ້ທ່ານຕ້ອງເຊື່ອມຕໍ່ກັບ Wi-Fi ຕອນນີ້ ແລະ ດາວໂຫຼດການອັບເດດ.</translation>
 <translation id="1781502536226964113">ເປີດໜ້າແຖບໃໝ່</translation>
@@ -1599,6 +1602,7 @@
 <translation id="265390580714150011">ຄ່າບ່ອນໃສ່ຂໍ້ມູນ</translation>
 <translation id="2654166010170466751">ອະນຸຍາດໃຫ້ເວັບໄຊຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນ</translation>
 <translation id="2654553774144920065">ຄຳຂໍພິມ</translation>
+<translation id="2658941648214598230">ສະແດງເນື້ອຫາຕົ້ນສະບັບບໍ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ຄຸນສົມບັດແຕກຕ່າງກັນຕາມແຕ່ລະອຸປະກອນ</translation>
 <translation id="2659971421398561408">ການປັບຂະໜາດດິສ Crostini</translation>
 <translation id="2660779039299703961">ເຫດ​ການ</translation>
@@ -2465,6 +2469,7 @@
 <translation id="3564848315152754834">ກະແຈຄວາມປອດໄພ USB</translation>
 <translation id="3566325075220776093">ຈາກອຸປະກອນນີ້</translation>
 <translation id="3566721612727112615">ບໍ່ໄດ້ເພີ່ມເວັບໄຊໃດ</translation>
+<translation id="3567284462585300767">ເພື່ອຮັບ ແລະ ຍອມຮັບໄຟລ໌ກັບຄົນອ້ອມຕົວທ່ານ, ທ່ານຈະຕ້ອງສະແດງຕົວກ່ອນ</translation>
 <translation id="3569382839528428029">ທ່ານຕ້ອງການໃຫ້ <ph name="APP_NAME" /> ແຊຣ໌ໜ້າຈໍ ແລະສຽງອອກມາຂອງທ່ານ?</translation>
 <translation id="3569407787324516067">ພາບພັກໜ້າຈໍ</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ສາມາດເບິ່ງໄຟລ໌ ແລະ ໂຟນເດີຕໍ່ໄປນີ້ໄດ້</translation>
@@ -3556,6 +3561,7 @@
 <translation id="475088594373173692">ຜູ້​ໃຊ້​ທໍາ​ອິດ</translation>
 <translation id="4756378406049221019">ຢຸດ/ໂຫຼດຄືນໃໝ່</translation>
 <translation id="4756388243121344051">ປະຫວັດ</translation>
+<translation id="4759126501639448579">ຢ່າສະແດງຄວາມຊົງຈຳ</translation>
 <translation id="4759238208242260848">ດາວ​ໂຫຼດ</translation>
 <translation id="4761104368405085019">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="4762718786438001384">ພື້ນທີ່ດິສກ໌ໃນອຸປະກອນເຫຼືອໜ້ອຍທີ່ສຸດ</translation>
@@ -3642,6 +3648,7 @@
 <translation id="485088796993065002">ເວັບໄຊອາດຈະຫຼິ້ນສຽງເພື່ອໃຫ້ສຽງສຳລັບເພງ, ວິດີໂອ ແລະ ສື່ອື່ນໆໄດ້</translation>
 <translation id="4853020600495124913">ເປີດ​ຢູ່​ໃນໜ້າ​ຕ່າງ​ໃຫມ່</translation>
 <translation id="4854317507773910281">ເລືອກບັນຊີພໍ່ແມ່ສຳລັບການອະນຸມັດ</translation>
+<translation id="485480310608090163">ການຕັ້ງຄ່າ ແລະ ການອະນຸຍາດເພີ່ມເຕີມ</translation>
 <translation id="4856478137399998590">ຂໍ້ມູນມືຖືຂອງທ່ານເປີດໃຊ້ງານ ແລະພ້ອມໃຊ້ແລ້ວ</translation>
 <translation id="4858792381671956233">ທ່ານໄດ້ຖາມພໍ່ແມ່ຂອງທ່ານວ່າທ່ານເຂົ້າເບິ່ງເວັບໄຊນີ້ໄດ້ຫຼືບໍ່</translation>
 <translation id="4858913220355269194">ຖືກທໍາລາຍ</translation>
@@ -3879,6 +3886,7 @@
 <translation id="51143538739122961">ສຽບກະແຈຄວາມປອດໄພຂອງທ່ານ ແລ້ວແຕະມັນ</translation>
 <translation id="5115309401544567011">ກະລຸນາສຽບ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໃສ່ແຫຼ່ງໄຟຟ້າ.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">ເຊື່ອງຄວາມຊົງຈຳທັງໝົດໄວ້ແລ້ວ</translation>
 <translation id="5116628073786783676">ບັນທຶກສຽງເປັນ...</translation>
 <translation id="5117139026559873716">ຕັດເຊື່ອມຕໍ່ໂທລະສັບຂອງທ່ານຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ພວກມັນຈະບໍ່ເຊື່ອມຕໍ່ໂດຍອັດຕະໂນມັດອີກຕໍ່ໄປ.</translation>
 <translation id="5117930984404104619">ຕິດຕາມພຶດຕິກໍາຂອງສ່ວນຂະຫຍາຍອື່ນ, ລວມທັງ URLs ທີ່ເຂົ້າເບິ່ງແລ້ວ</translation>
@@ -5022,6 +5030,7 @@
 <translation id="6374469231428023295">ລອງໃໝ່ອີກ</translation>
 <translation id="6377268785556383139">1 ຜົນການຊອກຫາສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">ຍອມ​ຮັບ​ ແລະ​ສືບ​ຕໍ່</translation>
+<translation id="6382958439467370461">ບໍ່ມີທາງລັດທີ່ບໍ່ເຮັດວຽກ</translation>
 <translation id="638418309848716977">ລິ້ງທີ່ຮອງຮັບ</translation>
 <translation id="6384275966486438344">ປ່ຽນການຕັ້ງຄ່າການຄົ້ນຫາຂອງທ່ານເປັນ​: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{ກຸ່ມບໍ່ມີຊື່ - 1 ແຖບ}other{ກຸ່ມບໍ່ມີຊື່ - # ແຖບ}}</translation>
@@ -5899,6 +5908,7 @@
 <translation id="7354341762311560488">ເຊັນເຊີລາຍນິ້ວມືແມ່ນປຸ່ມຊ້າຍມືລຸ່ມສຸດໃນແປ້ນພິມຂອງທ່ານ. ໃຊ້ນິ້ວມືແຕະມັນເບົາໆ.</translation>
 <translation id="7356908624372060336">ບັນທຶກເຄືອຂ່າຍ</translation>
 <translation id="735745346212279324">VPN ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
+<translation id="7358324924540718595">ເຊື່ອງຄວາມຊົງຈຳສຳລັບມື້ນີ້ແລ້ວ</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> ໜ້າໄປຫາ <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">ຄລິກຂວາເພື່ອເປີດໃຊ້ <ph name="PLUGIN_NAME" />.</translation>
 <translation id="7362387053578559123">ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth ໄດ້</translation>
@@ -6299,6 +6309,7 @@
 <translation id="7757787379047923882">ຂໍ້ຄວາມທີ່ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ປັບຂອບເຂດຂອງຈໍສະແດງຜົນຂອງທ່ານ</translation>
+<translation id="7759276754544429366">ເຊື່ອງຄວາມຊົງຈຳສຳລັບມື້ນີ້</translation>
 <translation id="7760004034676677601">ນີ້ແມ່ນໜ້າເລີ່ມຕົ້ນທີ່ທ່ານຄາດໄວ້ບໍ?</translation>
 <translation id="7764225426217299476">ເພີ່ມ​ທີ່​ຢູ່</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> ຈາກ <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6652,7 +6663,6 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> ກຳລັງໃຊ້ການຕັ້ງຄ່າພຣັອກຊີຈາກສ່ວນຂະຫຍາຍ</translation>
 <translation id="8097959162767603171">ກ່ອນອື່ນຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕ້ອງຍອມຮັບຂໍ້ກຳນົດການບໍລິການໃນລາຍຊື່ອຸປະກອນ Chrome ຂອງຄອນໂຊນຜູ້ເບິ່ງແຍງລະບົບ.</translation>
 <translation id="8098616321286360457">ຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</translation>
-<translation id="8099495042588009598">ການອະນຸຍາດເພີ່ມເຕີມ</translation>
 <translation id="810068641062493918">ເລືອກ <ph name="LANGUAGE" /> ແລ້ວ ກົດປຸ່ມຊອກຫາພ້ອມກັບປຸ່ມຍະຫວ່າງເພື່ອຍົກເລີກການເລືອກ.</translation>
 <translation id="810185532889603849">ສີກຳນົດເອງ</translation>
 <translation id="8101987792947961127">ຕ້ອງມີ Powerwash ຢູ່ໃນການປິດເປີດໃໝ່ຄັ້ງຕໍ່ໄປ</translation>
@@ -6969,6 +6979,7 @@
 <translation id="8457451314607652708">ນໍາບຸກມາກສ໌ເຂົ້າມາ</translation>
 <translation id="8458341576712814616">ທາງລັດ</translation>
 <translation id="8458627787104127436">ເປີດທັງໝົດ (<ph name="URL_COUNT" />) ໃນໜ້າຈໍໃໝ່</translation>
+<translation id="8460490661223303637">ເພື່ອປະຢັດໜ່ວຍຄວາມຈຳ, Chrome ໄດ້ລຶບເນື້ອຫາບາງຢ່າງອອກແລ້ວ</translation>
 <translation id="8460932807646981183">ຈັດການໂປຣແກຣມຊອກຫາ ແລະ ການຊອກຫາເວັບໄຊ</translation>
 <translation id="84613761564611563">ໄດ້ຮ້ອງຂໍ UI ກຳນົດຄ່າເຄືອຂ່າຍແລ້ວ, ກະລຸນາລໍຖ້າ...</translation>
 <translation id="8461914792118322307">ພຣັອກຊີ</translation>

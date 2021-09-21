@@ -102,6 +102,7 @@
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">Wait</translation>
+<translation id="1110965959145884739">Choose which languages to install on this device. Language files are shared among users to save disk space. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Background tab is using Bluetooth</translation>
 <translation id="1113892970288677790">Select curated artwork and images</translation>
@@ -548,6 +549,7 @@
 <translation id="1580772913177567930">Contact your administrator</translation>
 <translation id="1581962803218266616">Show in Finder</translation>
 <translation id="1582955169539260415">delete [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" /> is processed locally and works offline</translation>
 <translation id="1584990664401018068">The Wi-Fi network that you are using (<ph name="NETWORK_ID" />) may require authentication.</translation>
 <translation id="1585717515139318619">Another program on your computer added a theme that may change the way Chrome works.
 
@@ -766,6 +768,7 @@
 <translation id="177989070088644880"><ph name="ANDROID_PACKAGE_NAME" />, app</translation>
 <translation id="1780152987505130652">Close group</translation>
 <translation id="1780273119488802839">Importing bookmarks...</translation>
+<translation id="178092663238929451">Set up Nearby Share to receive and send files with people around you</translation>
 <translation id="1781291988450150470">Current PIN</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> requires you to connect to Wi-Fi now and download an update.</translation>
 <translation id="1781502536226964113">Open the New Tab page</translation>
@@ -1602,6 +1605,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="265390580714150011">Field Value</translation>
 <translation id="2654166010170466751">Allow sites to install payment handlers</translation>
 <translation id="2654553774144920065">Print request</translation>
+<translation id="2658941648214598230">Show original content?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Features vary by device</translation>
 <translation id="2659971421398561408">Crostini disk resize</translation>
 <translation id="2660779039299703961">Event</translation>
@@ -2468,6 +2472,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3564848315152754834">USB security key</translation>
 <translation id="3566325075220776093">From this device</translation>
 <translation id="3566721612727112615">No sites added</translation>
+<translation id="3567284462585300767">To receive and accept files with people around you, become visible</translation>
 <translation id="3569382839528428029">Do you want <ph name="APP_NAME" /> to share your screen?</translation>
 <translation id="3569407787324516067">Screensaver</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> can view the following files and folders</translation>
@@ -3559,6 +3564,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="475088594373173692">First user</translation>
 <translation id="4756378406049221019">Stop/Reload</translation>
 <translation id="4756388243121344051">&amp;History</translation>
+<translation id="4759126501639448579">Never show memories</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4761104368405085019">Use your microphone</translation>
 <translation id="4762718786438001384">Device disk space critically low</translation>
@@ -3645,6 +3651,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="485088796993065002">Sites might play sound to provide audio for music, videos and other media</translation>
 <translation id="4853020600495124913">Open in &amp;new window</translation>
 <translation id="4854317507773910281">Choose parent account for approval</translation>
+<translation id="485480310608090163">More settings and permissions</translation>
 <translation id="4856478137399998590">Your data service is activated and ready to use</translation>
 <translation id="4858792381671956233">You asked your parents if it's OK to visit this site</translation>
 <translation id="4858913220355269194">Footy</translation>
@@ -3882,6 +3889,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="51143538739122961">Insert your security key and touch it</translation>
 <translation id="5115309401544567011">Please plug your <ph name="DEVICE_TYPE" /> into a power source.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">All memories hidden</translation>
 <translation id="5116628073786783676">Sa&amp;ve Audio As...</translation>
 <translation id="5117139026559873716">Disconnect your phone from your <ph name="DEVICE_TYPE" />. They will no longer connect automatically.</translation>
 <translation id="5117930984404104619">Monitor the behaviour of other extensions, including visited URLs</translation>
@@ -5025,6 +5033,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6374469231428023295">Try Again</translation>
 <translation id="6377268785556383139">1 result for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">Accept and continue</translation>
+<translation id="6382958439467370461">No inactive shortcuts</translation>
 <translation id="638418309848716977">Supported links</translation>
 <translation id="6384275966486438344">Change your search settings to: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Unnamed group – 1 tab}other{Unnamed group – # tabs}}</translation>
@@ -5902,6 +5911,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7354341762311560488">The fingerprint sensor is the bottom-left key on your keyboard. Touch it lightly with any finger.</translation>
 <translation id="7356908624372060336">Network logs</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
+<translation id="7358324924540718595">Memories hidden for today</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> pages to <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Right-click to run <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Sites can ask to connect to Bluetooth devices</translation>
@@ -6302,6 +6312,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Adjust the boundaries of your display</translation>
+<translation id="7759276754544429366">Hide memories for today</translation>
 <translation id="7760004034676677601">Is this the start-up page that you were expecting?</translation>
 <translation id="7764225426217299476">Add address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> from <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6657,7 +6668,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> is using proxy settings from an extension</translation>
 <translation id="8097959162767603171">Your administrator must first accept the Terms of Service in the Admin console Chrome device list.</translation>
 <translation id="8098616321286360457">Network connection required</translation>
-<translation id="8099495042588009598">More permissions</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> selected. Press 'Search' plus 'Space' to unselect.</translation>
 <translation id="810185532889603849">Custom colour</translation>
 <translation id="8101987792947961127">Powerwash required on next reboot</translation>
@@ -6974,6 +6984,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8457451314607652708">Import bookmarks</translation>
 <translation id="8458341576712814616">Shortcut</translation>
 <translation id="8458627787104127436">Open all (<ph name="URL_COUNT" />) in new window</translation>
+<translation id="8460490661223303637">To save memory, Chrome removed some content</translation>
 <translation id="8460932807646981183">Manage search engines and site search</translation>
 <translation id="84613761564611563">Network configure UI requested, please wait...</translation>
 <translation id="8461914792118322307">Proxy</translation>

@@ -375,13 +375,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="1488724823347505879">Delen van Android-apps naar web-apps aanzetten</translation>
-<translation id="1495817006535797003">Als je dit beleid toepast, wordt elk van de benoemde herkomsten (origins) in een door komma's gescheiden lijst uitgevoerd in een eigen proces. Hiermee worden ook herkomsten geïsoleerd die worden benoemd door subdomeinen. Als je bijvoorbeeld https://example.com/ opgeeft, wordt ook https://foo.example.com/ geïsoleerd als onderdeel van de site https://example.com/.  Android isoleert bepaalde gevoelige sites standaard vanaf versie 77 van <ph name="PRODUCT_NAME" />. Dit beleid breidt die modus uit om specifieke extra herkomsten (origins) te isoleren.
-
-      Als je het beleid niet toepast, worden alle vormen van site-isolatie uitgezet, waaronder isolatie van gevoelige sites en praktijktests van IsolateOriginsAndroid, SitePerProcessAndroid en andere site-isolatiemodussen. Gebruikers kunnen IsolateOrigins nog altijd handmatig aanzetten via de opdrachtregelmarkering.
-
-      Als je het beleid niet instelt, kunnen gebruikers deze instelling zelf wijzigen.
-
-      Opmerking: Als je te veel sites isoleert in Android, kunnen er prestatieproblemen optreden, met name op apparaten met weinig geheugen. Dit beleid is alleen van toepassing op Chrome op Android-apparaten met meer dan 1 GB RAM-geheugen. Gebruik <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> om het beleid toe te passen op andere platforms dan Android.</translation>
 <translation id="1502843533062797703">Injectie van software van derden blokkeren</translation>
 <translation id="1503969899251962413">Als je het beleid instelt, kun je de <ph name="PLUGIN_VM_NAME" />-licentiecode voor dit apparaat opgeven.
 
@@ -1456,6 +1449,7 @@ Maar als dit beleid is uitgezet, wordt deze vereiste niet afgedwongen en wordt g
 <translation id="2725855586003209701">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met apparaatgebruikers die onlangs zijn ingelogd.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de lijst met gebruikers niet.</translation>
+<translation id="2730419309754848345">Pdf standaard afdrukken als afbeelding</translation>
 <translation id="2731627323327011390">Gebruik van certificaten van <ph name="PRODUCT_OS_NAME" /> voor ARC-apps uitzetten</translation>
 <translation id="2742843273354638707">De app en voettekstlink voor de Chrome Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher van <ph name="PRODUCT_OS_NAME" />.
 
@@ -2000,11 +1994,6 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 
           Het waarschuwingsbericht wordt alleen getoond als de inactieve actie 'uitloggen' of 'afsluiten' is.</translation>
 <translation id="3363360928811201045">Beperkingen op beheerde accounts beheren</translation>
-<translation id="3367868895271989224">Als je dit beleid toepast, worden alle sites geïsoleerd. (Elke site wordt in een eigen proces uitgevoerd.) Als je het beleid niet toepast of niet instelt, wordt site-isolatie niet uitgezet maar kunnen gebruikers zich voor deze functie afmelden (bijvoorbeeld door site-isolatie uit te zetten in chrome://flags).
-
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> kan ook handig zijn voor fijnafstemming van oorsprongen. In <ph name="PRODUCT_OS_NAME" /> versie 76 en eerder stel je het apparaatbeleid van <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> in op dezelfde waarde. (Omdat er een vertraging kan optreden als de waarden niet overeenkomen bij het starten van een gebruikerssessie.)
-
-      Opmerking: Voor Android gebruik je het beleid <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="3374587000313305002">Hiermee wordt de directory geconfigureerd die <ph name="PRODUCT_NAME" /> gebruikt voor het opslaan van gebruikersgegevens.
 
@@ -3201,6 +3190,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4988291787868618635">Actie die wordt ondernomen wanneer de inactieve vertraging wordt bereikt</translation>
 <translation id="4996068111491152684">De inloggegevens van <ph name="PRODUCT_OS_NAME" /> worden niet gebruikt voor netwerkverificatie.</translation>
 <translation id="4996086761250834365">Productanalyse van <ph name="PLUGIN_VM_NAME" /> toestaan</translation>
+<translation id="4997074784107449343">Als de optie Afdrukken als afbeelding beschikbaar is, wordt deze standaard niet ingesteld voor afdrukvoorbeelden van pdf-documenten.</translation>
 <translation id="500149597848135831">Alle varianten aanzetten</translation>
 <translation id="5017369989680827157">Als je het beleid instelt op 'True' of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor adressen in de UI.
 
@@ -3948,6 +3938,13 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 
       Als je het beleid niet toepast, mag het QUIC-protocol niet worden gebruikt.</translation>
 <translation id="5921713479449475707">Downloads voor automatische updates via HTTP toestaan</translation>
+<translation id="5928633129285224981">Hiermee bepaal je of <ph name="PRODUCT_NAME" /> de optie Afdrukken als afbeelding instelt als standaard bij het afdrukken van pdf-bestanden.
+
+      Als je dit beleid toepast, stelt <ph name="PRODUCT_NAME" /> de optie Afdrukken als afbeelding in als standaard in het afdrukvoorbeeld als er een pdf wordt afgedrukt.
+
+      Als je dit beleid niet toepast of niet instelt, is de gebruikersselectie voor de optie Afdrukken als afbeelding in eerste instantie niet ingesteld voor <ph name="PRODUCT_NAME" />.  De gebruiker kan dit selecteren voor elke afzonderlijke afdruktaak voor pdf-bestanden als de optie beschikbaar is.
+
+      Voor <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" /> heeft dit beleid alleen invloed als <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> ook aanstaat.</translation>
 <translation id="5929855945144989709">Sta apparaten toe virtuele machines uit te voeren op Chrome OS</translation>
 <translation id="5932767795525445337">Dit beleid kan ook worden gebruikt om Android-apps vast te zetten.</translation>
 <translation id="5934763632608026594">Stel het beleid in om de instellingen voor het beheer van web-apps te beheren voor <ph name="PRODUCT_NAME" />.
@@ -5214,11 +5211,6 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
       Als je het beleid niet instelt, detecteert <ph name="IE_PRODUCT_NAME" /> het eigen pad van <ph name="PRODUCT_NAME" /> naar een uitvoerbaar bestand als <ph name="PRODUCT_NAME" /> wordt gestart vanuit Internet Explorer.
 
       Opmerking: Als de add-in 'Ondersteuning voor oudere browsers' van <ph name="IE_PRODUCT_NAME" /> niet is geïnstalleerd, heeft dit beleid geen effect.</translation>
-<translation id="7507131973617884092">Als je dit beleid toepast, wordt elk van de benoemde herkomsten (origins) in een door komma's gescheiden lijst uitgevoerd in een eigen proces. Hiermee worden ook herkomsten geïsoleerd die worden benoemd door subdomeinen. Als je bijvoorbeeld https://example.com/ opgeeft, wordt ook https://foo.example.com/ geïsoleerd als onderdeel van de site https://example.com/.
-
-      Als je het beleid niet toepast of niet instelt, kunnen gebruikers deze instelling wijzigen.
-
-      Opmerking: Gebruik voor Android het beleid <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="7507553960917214561">Afscherming van de host voor externe toegang uitzetten</translation>
 <translation id="7508067364927180229">Deze instelling biedt verschillende beschikbaarheidsopties voor de <ph name="LACROS_NAME" />-browser.
 
@@ -5371,13 +5363,6 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de vertraging van de uitschakeling van het scherm (indien ingesteld) en van de inactieve vertraging.</translation>
 <translation id="7680437377926096177">Dialoogvenster voor uitloggen niet tonen als het laatste venster wordt gesloten.</translation>
-<translation id="7681958144280390173">Als je dit beleid toepast, worden alle sites geïsoleerd (elke site wordt in een eigen proces uitgevoerd). Android isoleert bepaalde gevoelige sites standaard vanaf versie 77 van <ph name="PRODUCT_NAME" />. Dit beleid breidt die standaard site-isolatiemodus uit naar alle sites.
-
-      Als je het beleid niet toepast, worden alle vormen van site-isolatie uitgezet, waaronder isolatie van gevoelige sites en praktijktests van IsolateOriginsAndroid, SitePerProcessAndroid en andere site-isolatiemodussen. Gebruikers kunnen het beleid nog steeds handmatig toepassen.
-
-      Als je het beleid niet instelt, kunnen gebruikers deze instelling wijzigen.
-
-      Opmerking: De ondersteuning voor isolatie van elke site in Android wordt verbeterd, maar er kunnen momenteel prestatieproblemen optreden, met name op basisapparaten. Dit beleid is alleen van toepassing op Chrome op Android-apparaten met meer dan 1 GB RAM-geheugen. Als je specifieke sites wilt isoleren terwijl dit zo min mogelijk impact heeft op de prestaties voor gebruikers, gebruik je <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> met een lijst van de sites die je wilt isoleren.  Gebruik <ph name="SITE_PER_PROCESS_POLICY_NAME" /> om het beleid toe te passen op andere platforms dan Android.</translation>
 <translation id="7683777542468165012">Beleid dynamisch vernieuwen</translation>
 <translation id="7687943045976362719">Als dit beleid is ingesteld, worden de opgegeven contenttypen verwerkt door <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -5743,6 +5728,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
       Als je het beleid niet toepast of niet instelt, worden er geen pakketten gestuurd.</translation>
 <translation id="816783746144552109">Configureer de minimaal toegestane Chrome OS-versie voor het apparaat.</translation>
 <translation id="8171924760436219650">De rechtermuisknop instellen als de primaire muisknop op het inlogscherm</translation>
+<translation id="8173864651667424191">Als de optie Afdrukken als afbeelding beschikbaar is, wordt deze standaard ingesteld voor afdrukvoorbeelden van pdf-documenten.</translation>
 <translation id="8176035528522326671">Toestaan dat Enterprise-gebruiker alleen primair gebruiker van meerdere profielen is (standaardgedrag voor beheerde Enterprise-gebruikers)</translation>
 <translation id="8179161412673077784">Niet toestaan dat sites met misleidende functionaliteit nieuwe vensters of tabbladen openen</translation>
 <translation id="8183108371184777472">Lancering van browservenster onderdrukken</translation>

@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
 <translation id="1373696734384179344">Insufficient memory to download the selected content.</translation>
 <translation id="1376578503827013741">Computing…</translation>
+<translation id="1382912999714108023">Not seeing your current info? Please contact your bank to update it.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">Translate image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Active <ph name="LAST_UPDATED" /> days ago</translation>
@@ -351,6 +352,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Search history<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />other forms of activity<ph name="END_LINK2" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="321773570071367578">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">To sync your passwords, verify that it's you</translation>
+<translation id="3223522355830797639">Your bank wants to confirm that it\u2019s you.</translation>
 <translation id="3227557059438308877">Google Chrome as a security key</translation>
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3234978181857588512">Save to device</translation>
@@ -817,6 +819,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
 <translation id="6069177176307973611">Review privacy and security settings</translation>
+<translation id="6070730414166672373">Contacting your bank\u2026</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> hours left</translation>
 <translation id="6108923351542677676">Setup in progress…</translation>

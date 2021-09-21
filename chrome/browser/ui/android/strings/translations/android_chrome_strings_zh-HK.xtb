@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">要登出並停用同步功能嗎？</translation>
 <translation id="1373696734384179344">記憶體不足，無法下載所選內容。</translation>
 <translation id="1376578503827013741">正在運算…</translation>
+<translation id="1382912999714108023">目前的資料不正確？請通知銀行更新。</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384704387250346179">使用「Google 智能鏡頭」翻譯圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">曾於 <ph name="LAST_UPDATED" /> 天前在線</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">在您登入後，<ph name="BEGIN_LINK1" />搜尋記錄<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活動<ph name="END_LINK2" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。</translation>
 <translation id="321773570071367578">如果您忘記密碼短語，或希望變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">如要同步密碼，請驗證您的身分</translation>
+<translation id="3223522355830797639">銀行希望確認您的身分。</translation>
 <translation id="3227557059438308877">以 Google Chrome 作為安全密鑰</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
 <translation id="3234978181857588512">儲存至裝置</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
 <translation id="6069177176307973611">查看私隱和安全設定</translation>
+<translation id="6070730414166672373">正在聯絡銀行\u2026</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連接網站</translation>
 <translation id="60923314841986378">尚餘 <ph name="HOURS" /> 小時</translation>
 <translation id="6108923351542677676">設定中…</translation>

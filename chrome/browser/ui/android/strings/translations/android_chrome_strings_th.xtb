@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">ออกจากระบบและปิดการซิงค์ไหม</translation>
 <translation id="1373696734384179344">หน่วยความจำไม่เพียงพอที่จะดาวน์โหลดเนื้อหาที่เลือก</translation>
 <translation id="1376578503827013741">กำลังประมวลผล…</translation>
+<translation id="1382912999714108023">หากไม่เห็นข้อมูลปัจจุบันของคุณ โปรดติดต่อธนาคารเพื่ออัปเดต</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1384704387250346179">แปลรูปภาพด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">ใช้งานเมื่อ <ph name="LAST_UPDATED" /> วันที่ผ่านมา</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">ระบบอาจบันทึก<ph name="BEGIN_LINK1" />ประวัติการค้นหา<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />กิจกรรมรูปแบบอื่น<ph name="END_LINK2" />ในบัญชี Google เมื่อคุณลงชื่อเข้าใช้ คุณลบข้อมูลนี้ได้ทุกเมื่อ</translation>
 <translation id="321773570071367578">หากคุณลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />รีเซ็ตการซิงค์<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">หากต้องการซิงค์รหัสผ่าน โปรดยืนยันว่าเป็นคุณ</translation>
+<translation id="3223522355830797639">ธนาคารต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="3227557059438308877">ใช้ Google Chrome เป็นคีย์ความปลอดภัย</translation>
 <translation id="3232754137068452469">เว็บแอป</translation>
 <translation id="3234978181857588512">บันทึกลงในอุปกรณ์</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">ปป</translation>
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
 <translation id="6069177176307973611">ตรวจสอบการตั้งค่าความเป็นส่วนตัวและความปลอดภัย</translation>
+<translation id="6070730414166672373">กำลังติดต่อธนาคาร\u2026</translation>
 <translation id="6085886413119427067">กำหนดวิธีเชื่อมต่อเว็บไซต์ผ่านการเชื่อมต่อที่ปลอดภัย</translation>
 <translation id="60923314841986378">เหลือ <ph name="HOURS" /> ชั่วโมง</translation>
 <translation id="6108923351542677676">กำลังดำเนินการตั้งค่า…</translation>

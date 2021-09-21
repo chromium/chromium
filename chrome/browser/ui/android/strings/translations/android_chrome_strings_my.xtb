@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">ထွက်ပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုသလား။</translation>
 <translation id="1373696734384179344">ရွေးချယ်ထားသည့် အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် မှတ်ဉာဏ် မလုံလောက်ပါ။</translation>
 <translation id="1376578503827013741">တွက်ချက်နေသည်…</translation>
+<translation id="1382912999714108023">လက်ရှိအချက်အလက်ကို မတွေ့ပါက အချက်အလက်သစ်ထည့်ရန် သင့်ဘဏ်ကိုဆက်သွယ်ပါ။</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="1384704387250346179">Google Lens ဖြင့် ပုံကိုပြန်ဆိုရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">ပြီးခဲ့သော <ph name="LAST_UPDATED" /> ရက်က အသုံးပြုထားသည်</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">သင်လက်မှတ်ထိုးဝင်သောအခါ <ph name="BEGIN_LINK1" />ရှာဖွေမှတ်တမ်း<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />အခြားသော လုပ်ဆောင်ချက်<ph name="END_LINK2" /> တို့ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်။ ၎င်းတို့ကို အချိန်မရွေး ဖျက်နိုင်သည်။</translation>
 <translation id="321773570071367578">သင့်စကားဝှက်ကိုမေ့သွားလျှင် သို့မဟုတ် ဤဆက်တင်ကိုပြောင်းလဲလိုလျှင်၊ <ph name="BEGIN_LINK" />စင့်ခ်ပြုလုပ်ခြင်းကို ပြန်လည်သတ်မှတ်ပါ<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">သင့်စကားဝှက်များကို စင့်ခ်လုပ်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
+<translation id="3223522355830797639">သင့်ဘဏ်က သင်ဖြစ်ကြောင်း သေချာလိုပါသည်။</translation>
 <translation id="3227557059438308877">Google Chrome ကို 'လုံခြုံရေးကီး' အဖြစ်</translation>
 <translation id="3232754137068452469">ဝဘ် အက်ပ်</translation>
 <translation id="3234978181857588512">စက်တွင်သိမ်းရန်</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">သင့်သတင်းများနှင့် လုပ်ဆောင်ချက်ကို ဤနေရာတွင် ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="6069177176307973611">ကိုယ်ရေးအချက်အလက်နှင့် လုံခြုံရေး ဆက်တင်များ စိစစ်ရန်</translation>
+<translation id="6070730414166672373">သင့်ဘဏ်ကို ဆက်သွယ်နေသည်\u2026</translation>
 <translation id="6085886413119427067">လုံခြုံသည့် ချိတ်ဆက်မှုမှတစ်ဆင့် ဝဘ်ဆိုက်များသို့ ချိတ်ဆက်ရန်နည်းလမ်းကို ဆုံးဖြတ်ပေးသည်</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> နာရီ ကျန်သည်</translation>
 <translation id="6108923351542677676">စဖွင့် သတ်မှတ်မှု လုပ်ကိုင်…</translation>

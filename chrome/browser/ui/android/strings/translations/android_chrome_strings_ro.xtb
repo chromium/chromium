@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Te deconectezi și dezactivezi sincronizarea?</translation>
 <translation id="1373696734384179344">Memorie insuficientă pentru descărcarea conținutului selectat.</translation>
 <translation id="1376578503827013741">Se calculează…</translation>
+<translation id="1382912999714108023">Nu apar informațiile curente? Contactează banca pentru a le actualiza.</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384704387250346179">Tradu imaginea cu Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Activ acum <ph name="LAST_UPDATED" /> zile</translation>
@@ -351,6 +352,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Istoricul căutărilor<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />alte tipuri de activități<ph name="END_LINK2" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
 <translation id="321773570071367578">Dacă ai uitat expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />resetează sincronizarea<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Pentru a sincroniza parolele, confirmă-ți identitatea</translation>
+<translation id="3223522355830797639">Banca dorește să îți confirme identitatea.</translation>
 <translation id="3227557059438308877">Google Chrome drept cheie de securitate</translation>
 <translation id="3232754137068452469">Aplicație web</translation>
 <translation id="3234978181857588512">Salvează pe dispozitiv</translation>
@@ -817,6 +819,7 @@ Versiunile de încercare Privacy Sandbox sunt încă în dezvoltare și sunt dis
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gestionează subiectele și activitatea aici</translation>
 <translation id="6069177176307973611">Examinează setările de confidențialitate și securitate</translation>
+<translation id="6070730414166672373">Se contactează banca\u2026</translation>
 <translation id="6085886413119427067">Stabilește modul de conectare la site-uri printr-o conexiune securizată</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ore rămase</translation>
 <translation id="6108923351542677676">Configurare în curs...</translation>

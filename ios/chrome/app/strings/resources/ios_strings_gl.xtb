@@ -526,6 +526,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6189413832092199491">Mensaxes non lidas</translation>
 <translation id="6196207969502475924">Busca por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Pechar {COUNT} pestana}other{Pechar {COUNT} pestanas}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Consulta o que podes sincronizar<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Non traducir nunca</translation>
 <translation id="6223816392543092032">Accede aos teus marcadores, historial, contrasinais e outras opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="6232329973559504466">Busca do modo de incógnito</translation>
@@ -724,6 +725,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 
 Tamén poden utilizalas para ver a túa actividade de navegación en varios sitios (por exemplo, co fin de personalizar os anuncios).</translation>
 <translation id="7971521879845308059">Bloq. ventás em.</translation>
+<translation id="797413074872316787">Para sincronizar e personalizar o contido de todos os teus dispositivos, activa a sincronización.</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7993619969781047893">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="800361585186029508">Abre os URL introducidos en Google Chrome.</translation>
@@ -740,6 +742,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8076014560081431679">As opcións de configuración dos sitios gardados non se eliminarán e quizais se reflictan os teus hábitos de navegación. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Esta opción de configuración está xestionada polo administrador. Toca dúas veces para obter máis información</translation>
 <translation id="8080028325999236607">Pechar pestanas</translation>
+<translation id="8103864314410529527">A túa organización limita o que podes sincronizar. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">Podes descargar ficheiros. Tes opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="8156478151976189188">A sincronización de contrasinais non funciona</translation>

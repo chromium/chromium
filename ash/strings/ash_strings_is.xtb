@@ -494,7 +494,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4665114317261903604">Kveikja/slökkva á „Ónáðið ekki“. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Opna tæki með kóða foreldris</translation>
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
-<translation id="4705716602320768426">Skrá ábendingu</translation>
 <translation id="4706121060329443414">Reynt verður að hlaða niður síðar. Tal verður sent til Google til úrvinnslu í millitíðinni.</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
 <translation id="4734965478015604180">Lárétt</translation>
@@ -771,6 +770,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6919251195245069855">Ekki var hægt að bera kennsl á snjallkortið þitt. Reyndu aftur.</translation>
 <translation id="6921188888306725546">Flýtilyklar hafa verið endurbættir</translation>
 <translation id="6929655271276551705">Dagsetningarstillingar</translation>
+<translation id="6931576957638141829">Vista í</translation>
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6961121602502368900">Ekki er hægt að slökkva á hljóði símans í vinnusniði</translation>
 <translation id="6961840794482373852">Flýtilyklinum „Alt + ör upp“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör upp til að nota Page Up-lykilinn.</translation>
@@ -907,6 +907,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /> stjórna þessum reikningi</translation>
 <translation id="793716872548410480">Ýttu á <ph name="SHORTCUT_KEY_NAME" /> + V til að skoða klippiborðið. Síðustu 5 atriðin sem þú afritaðir eru vistuð á klippiborðinu.</translation>
 <translation id="7955885781510802139">Mikil birtuskil</translation>
+<translation id="7968693143708939792">Veldu möppu...</translation>
 <translation id="7977927628060636163">Leitar að farsímakerfum...</translation>
 <translation id="7980780401175799550">Prófaðu nýjar leiðir til að nota Chrome OS</translation>
 <translation id="7982789257301363584">Net</translation>

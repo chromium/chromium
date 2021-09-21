@@ -32,6 +32,7 @@
 <translation id="1074497978438210769">Not secure</translation>
 <translation id="1076113272840682464">Manage downloads in Chrome</translation>
 <translation id="1080116354587839789">Fit to width</translation>
+<translation id="1081061862829655580">Tray 19</translation>
 <translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Add Name on Card</translation>
 <translation id="1089439967362294234">Change password</translation>
@@ -70,6 +71,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1209221128712833642">Create form button: press Enter to create a new form in Google Forms quickly</translation>
 <translation id="121201262018556460">You attempted to reach <ph name="DOMAIN" />, but the server presented a certificate containing a weak key. An attacker could have broken the private key and the server may not be the server you expected (you may be communicating with an attacker).</translation>
 <translation id="1219129156119358924">System Security</translation>
+<translation id="1222060260947439312">Right tray</translation>
 <translation id="1227224963052638717">Unknown policy.</translation>
 <translation id="1228893227497259893">Wrong entity identifier</translation>
 <translation id="1232569758102978740">Untitled</translation>
@@ -91,11 +93,13 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1257553931232494454">zoom levels</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage your Chrome settings</translation>
 <translation id="1263231323834454256">Reading list</translation>
+<translation id="1264309058268477500">Alternative</translation>
 <translation id="1269096320618100013">Manage accessibility settings button; press Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="1269516672602708785">Create a new site in Google Sites quickly</translation>
 <translation id="1270502636509132238">Pickup Method</translation>
 <translation id="1281476433249504884">Stacker 1</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
+<translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">'Software on your computer is stopping Chrome from safely connecting to the web' (Windows computers only)</translation>
 <translation id="1294154142200295408">Command-line variations</translation>
 <translation id="129553762522093515">Recently closed</translation>
@@ -203,6 +207,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1592005682883173041">Local Data Access</translation>
 <translation id="1594030484168838125">Choose</translation>
 <translation id="161042844686301425">Cyan</translation>
+<translation id="1611101756749861742">Second roll</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623104350909869708">Prevent this page from creating additional dialogues</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -278,14 +283,17 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="182139138257690338">automatic downloads</translation>
 <translation id="1821930232296380041">Invalid request or request parameters</translation>
 <translation id="1822540298136254167">Websites that you visit and time spent on them</translation>
+<translation id="1824402189105105503">Eighth roll</translation>
 <translation id="1826516787628120939">Checking</translation>
 <translation id="1834321415901700177">This site contains harmful programs</translation>
 <translation id="1838374766361614909">Clear search</translation>
 <translation id="1839551713262164453">Validation of policy values has failed with errors</translation>
 <translation id="1842969606798536927">Pay</translation>
 <translation id="1856713167556118146">What Incognito doesn’t do</translation>
+<translation id="1863257867908022953">Tray 12</translation>
 <translation id="1871208020102129563">Proxy is set to use fixed proxy servers, not a .pac script URL.</translation>
 <translation id="1871284979644508959">Required field</translation>
+<translation id="1875025161375567525">Photo tray</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">Open startup pages</translation>
 <translation id="1883255238294161206">Collapse list</translation>
@@ -311,6 +319,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
 <translation id="1973335181906896915">Serialisation error</translation>
 <translation id="1974060860693918893">Advanced</translation>
+<translation id="1975457531113383421">Input tray</translation>
 <translation id="1975584088563498795">Mailbox 10</translation>
 <translation id="1978555033938440688">Firmware Version</translation>
 <translation id="1988881251331415125">If spelling is correct, <ph name="BEGIN_LINK" />try running connectivity Diagnostics<ph name="END_LINK" />.</translation>
@@ -324,6 +333,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2025186561304664664">Proxy is set to auto-configured.</translation>
 <translation id="2025891858974379949">Insecure content</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Checking the proxy and the firewall<ph name="END_LINK" /></translation>
+<translation id="2036983605131262583">Alternative roll</translation>
 <translation id="2042213636306070719">Tray 7</translation>
 <translation id="204357726431741734">Sign in to use passwords saved in your Google Account</translation>
 <translation id="2053111141626950936">Pages in <ph name="LANGUAGE" /> will not be translated.</translation>
@@ -479,6 +489,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="254947805923345898">Policy value is not valid.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> sent an invalid response.</translation>
+<translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Use screen lock to confirm cards from now on</translation>
 <translation id="2553853292994445426">Check your secure DNS settings. You may have configured a secure DNS server to which connections are failing.</translation>
 <translation id="2556876185419854533">&amp;Undo Edit</translation>
@@ -529,6 +540,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2713444072780614174">White</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to manage your payments and credit card info in Chrome settings</translation>
 <translation id="2721148159707890343">Request succeeded</translation>
+<translation id="2726001110728089263">Side tray</translation>
 <translation id="2728127805433021124">Server's certificate is signed using a weak signature algorithm.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Running Connectivity Diagnostics<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Choose pickup address</translation>
@@ -560,6 +572,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2880660355386638022">Window placement</translation>
 <translation id="2881276955470682203">Save card?</translation>
 <translation id="2882949212241984732">Double-gate fold</translation>
+<translation id="2893773853358652045">Fourth roll</translation>
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2903493209154104877">Addresses</translation>
 <translation id="290376772003165898">Page is not in <ph name="LANGUAGE" />?</translation>
@@ -618,6 +631,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3096100844101284527">Add pickup address</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Checking the secure DNS configuration<ph name="END_LINK" /></translation>
+<translation id="3108943290502734357">Middle tray</translation>
 <translation id="3109728660330352905">You don't have authorisation to view this page.</translation>
 <translation id="3113284927548439113">Third shift</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" />.</translation>
@@ -631,6 +645,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3154506275960390542">This page includes a form that may not submit securely. Data that you send can be viewed by others while in transit or could be modified by an attacker to change what the server receives.</translation>
 <translation id="315504272643575312">Your account is managed by <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Restore</translation>
+<translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Island</translation>
@@ -794,6 +809,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3658742229777143148">Revision</translation>
 <translation id="3664782872746246217">Keywords:</translation>
 <translation id="3671540257457995106">Allow resizing?</translation>
+<translation id="3675563144891642599">Third roll</translation>
 <translation id="3676592649209844519">Device ID:</translation>
 <translation id="3677008721441257057">Did you mean &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Request could not be signed</translation>
@@ -909,6 +925,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4084120443451129199">Search mode, press 'Enter' to search <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4087296516249690906">Create event button: press Enter to create a new event in Google Calendar quickly</translation>
 <translation id="4088981014127559358">Side 1 image Y shift</translation>
+<translation id="4089152113577680600">Tray 14</translation>
 <translation id="4098354747657067197">Deceptive site ahead</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to customise font sizes and typefaces in Chrome</translation>
 <translation id="4101413244023615925">Text and graphic</translation>
@@ -943,6 +960,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Your card can't be saved at the moment</translation>
 <translation id="4196861286325780578">&amp;Redo move</translation>
+<translation id="4202554117186904723">Fifth roll</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Checking firewall and antivirus configurations<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Large</translation>
 <translation id="4209166701302774460">The server that you are going to, <ph name="ORIGIN" />, has requested that
@@ -1004,6 +1022,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4314815835985389558">Manage sync</translation>
 <translation id="4318312030194671742">Paint preview compositor service</translation>
 <translation id="4318566738941496689">Your device name and network address</translation>
+<translation id="4325600325087822253">Tray 17</translation>
 <translation id="4325863107915753736">Failed to find article</translation>
 <translation id="4326324639298822553">Check your expiry date and try again</translation>
 <translation id="4329871760342656885">Policy parsing error: <ph name="ERROR" /></translation>
@@ -1015,6 +1034,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">The connection to <ph name="SITE" /> is not secure</translation>
 <translation id="4349531505348777662">You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> and other sites where you use this password, and changing it now.</translation>
+<translation id="4350629523305688469">Multifunctional tray</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wants to scan for nearby Bluetooth devices. The following devices have been found:</translation>
 <translation id="4356973930735388585">Attackers on this site might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages and credit cards).</translation>
 <translation id="4358059973562876591">The templates that you've specified may not be applied due to an error with the DnsOverHttpsMode policy.</translation>
@@ -1069,6 +1089,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4515275063822566619">Cards and addresses are from Chrome and your Google Account (<ph name="ACCOUNT_EMAIL" />). You can manage them in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (Envelope)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
+<translation id="4521916730539354575">Left tray</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4524138615196389145">Confirm your cards faster by using WebAuthn from now on</translation>
 <translation id="4524805452350978254">Manage cards</translation>
@@ -1183,6 +1204,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4889420713887366944">Open incognito window button; press enter to open a new incognito window to browse privately</translation>
 <translation id="4892518386797173871">Rear</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
+<translation id="4900217275619098670">Ninth roll</translation>
 <translation id="4901778704868714008">Save...</translation>
 <translation id="4913987521957242411">Punch top left</translation>
 <translation id="4918221908152712722">Install <ph name="APP_NAME" /> (no download required)</translation>
@@ -1231,6 +1253,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 in use)}other{(# in use)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Checking the proxy address<ph name="END_LINK" /></translation>
+<translation id="5070838744279127212">Tenth roll</translation>
 <translation id="507130231501693183">Mailbox 4</translation>
 <translation id="5087286274860437796">Server's certificate is not valid at this time.</translation>
 <translation id="5087580092889165836">Add card</translation>
@@ -1243,6 +1266,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Site is not secure</translation>
 <translation id="5112422516732747637">A5</translation>
+<translation id="5114288597538800140">Tray 18</translation>
 <translation id="5114987907971894280">virtual reality</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Restricted managed Guest session override</translation>
@@ -1276,8 +1300,10 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5201306358585911203">An embedded page on this page says</translation>
 <translation id="5205222826937269299">Name required</translation>
 <translation id="5209518306177824490">SHA-1 Fingerprint</translation>
+<translation id="5209670883520018268">Tray 20</translation>
 <translation id="5215116848420601511">Payment methods and addresses using Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
+<translation id="521659676233207110">Tray 13</translation>
 <translation id="5222812217790122047">Email (required)</translation>
 <translation id="5230733896359313003">Delivery Address</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -1481,6 +1507,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5967592137238574583">Edit Contact Info</translation>
 <translation id="5967867314010545767">Remove from history</translation>
 <translation id="5968793460449681917">On every visit</translation>
+<translation id="5974052231147553524">Sixth roll</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1635,11 +1662,13 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6499038740797743453">Reset password?</translation>
 <translation id="6502991525169604759">Without your changes</translation>
 <translation id="6505563257409036437">Close incognito windows</translation>
+<translation id="6506959208958864820">Envelope</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
 <translation id="6513005815064132016">Can ask to track your camera position</translation>
 <translation id="6517596291481585650">Warning: This policy was not merged as a list as specified by policy because it is not a list.</translation>
 <translation id="6518133107902771759">Verify</translation>
 <translation id="6521745193039995384">Not active</translation>
+<translation id="6529173248185917884">Seventh roll</translation>
 <translation id="6529602333819889595">&amp;Redo Delete</translation>
 <translation id="6545864417968258051">Bluetooth scanning</translation>
 <translation id="6547208576736763147">Dual punch left</translation>
@@ -1674,6 +1703,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6652101503459149953">Use Windows Hello</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6660413144148052430">location</translation>
+<translation id="6662457027866368246">First roll</translation>
 <translation id="666259744093848177">(x86_64 translated)</translation>
 <translation id="6665553082534466207">Triple punch right</translation>
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
@@ -1720,6 +1750,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6846340164947227603">Use a virtual card number…</translation>
 <translation id="6852204201400771460">Reload app?</translation>
 <translation id="6865412394715372076">This card can't be verified at the moment</translation>
+<translation id="6873456682041376666">Top tray</translation>
 <translation id="6874604403660855544">&amp;Redo add</translation>
 <translation id="6881240511396774766">Create a new Google Doc quickly</translation>
 <translation id="6883221904761970440">Secure payment credential authentication sheet is closed</translation>
@@ -1800,6 +1831,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7135130955892390533">Show status</translation>
 <translation id="7138472120740807366">Delivery method</translation>
 <translation id="7139724024395191329">Emirate</translation>
+<translation id="7139892792842608322">Primary tray</translation>
 <translation id="714064300541049402">Side 2 image X shift</translation>
 <translation id="7152423860607593928">Number-14 (Envelope)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}}</translation>
@@ -1838,6 +1870,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7251437084390964440">The network configuration doesn't comply to the ONC standard. Parts of the configuration may not be imported.
 Additional details:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7256634549594854023">Rear tray</translation>
 <translation id="725866823122871198">A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your computer's date and time (<ph name="DATE_AND_TIME" />) are incorrect.</translation>
 <translation id="7260504762447901703">Revoke access</translation>
 <translation id="7275334191706090484">Managed Bookmarks</translation>
@@ -1993,9 +2026,11 @@ Additional details:
 <translation id="7734285854693414638">Create a new form in Google Forms quickly</translation>
 <translation id="773466115871691567">Always translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="7740996059027112821">Standard</translation>
+<translation id="77424286611022110">This site shows intrusive or misleading ads. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Dangerous content blocked.</translation>
 <translation id="7751971323486164747">Customise font sizes and typefaces in Chrome</translation>
 <translation id="7752995774971033316">Unmanaged</translation>
+<translation id="7755624218968747854">Primary roll</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Firewall or antivirus software may have blocked the connection.</translation>
 <translation id="776110834126722255">Deprecated</translation>
@@ -2073,6 +2108,7 @@ Additional details:
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{This card and its billing address will be saved. You'll be able to use it when signed in to <ph name="USER_EMAIL" />.}other{These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example passwords, phone numbers or credit cards).</translation>
 <translation id="8026334261755873520">Clear browsing data</translation>
+<translation id="8027077570865220386">Tray 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new form in Google Forms quickly</translation>
 <translation id="8028960012888758725">Trim after job</translation>
 <translation id="8034522405403831421">This page is in <ph name="SOURCE_LANGUAGE" />. Translate it to <ph name="TARGET_LANGUAGE" />?</translation>
@@ -2132,6 +2168,7 @@ Additional details:
 <translation id="8228419419708659934">Two-page view</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Platform temperature</translation>
+<translation id="8233773197406738106">Preparing file</translation>
 <translation id="8238581221633243064">Open page in a new Incognito tab</translation>
 <translation id="8241707690549784388">The page that you're looking for used information that you entered. Returning to that page might cause any action that you took to be repeated. Do you want to continue?</translation>
 <translation id="8241712895048303527">Block on this site</translation>
@@ -2149,6 +2186,7 @@ Additional details:
 <translation id="8270242299912238708">PDF documents</translation>
 <translation id="8275952078857499577">Don‘t offer to translate this site</translation>
 <translation id="8277900682056760511">Payment handler sheet is opened</translation>
+<translation id="8280630997017109758">Tray 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Know your unique device identifier</translation>
 <translation id="8284769179630993263">Manage your Safe Browsing and more in Chrome settings</translation>
@@ -2297,6 +2335,7 @@ Additional details:
 <translation id="8807160976559152894">Trim after each page</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to update Chrome from your Chrome settings</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="882338992931677877">Manual slot</translation>
 <translation id="883848425547221593">Other Bookmarks</translation>
 <translation id="884264119367021077">Delivery address</translation>
 <translation id="884923133447025588">No revocation mechanism found.</translation>
@@ -2355,6 +2394,7 @@ Additional details:
 <translation id="9036306139374661733">Allow microphone?</translation>
 <translation id="9038649477754266430">Use a prediction service to load pages more quickly</translation>
 <translation id="9039213469156557790">Furthermore, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the behaviour of the page.</translation>
+<translation id="9042617223719777575">Large capacity</translation>
 <translation id="9044359186343685026">Use Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">You attempted to reach <ph name="DOMAIN" />, but the server presented an invalid certificate.</translation>

@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Ta bort</translation>
 <translation id="1195447618553298278">Okänt fel.</translation>
 <translation id="1204296502688602597">DNS-latens</translation>
 <translation id="123124571410524056">Misstänkt portal</translation>
@@ -139,7 +140,6 @@
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Skanna om sidan}=1{Skanna om sidan {PAGE_NUMBER}}other{Skanna om sidan {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioner)</translation>
 <translation id="3748026146096797577">Ej ansluten</translation>
 <translation id="3749289110408117711">Filnamn</translation>
@@ -177,7 +177,6 @@
 <translation id="4425149324548788773">Min enhet</translation>
 <translation id="4429881212383817840">Kerberos-biljetten upphör snart att gälla</translation>
 <translation id="4431821876790500265">Visa rapporten</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Ta bort sidan}=1{Ta bort sidan {PAGE_NUMBER}}other{Ta bort sidan {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Gammalt lösenord</translation>
 <translation id="4453205916657964690">Delnätsmask</translation>
 <translation id="4454245904991689773">Skanningar sparas i</translation>
@@ -359,7 +358,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7177485034254901881">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />. Administratörer kan fjärrkonfigurera enheten.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
-<translation id="7257889006063274246">Vill du ta bort sidan <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlingar med bakgrunder</translation>

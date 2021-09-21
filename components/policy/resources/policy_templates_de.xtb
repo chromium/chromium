@@ -375,13 +375,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 
       Trennen Sie mehrere Servernamen durch Kommas. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="1488724823347505879">Freigabe zwischen Android-Apps und Webanwendungen aktivieren</translation>
-<translation id="1495817006535797003">Wenn die Richtlinie konfiguriert ist, wird für jeden der benannten Ursprünge in einer durch Kommas getrennten Liste ein eigener Prozess ausgeführt. Dabei werden auch durch Subdomains benannte Ursprünge isoliert. Wenn Sie z. B. „https://beispiel.de/“ angeben, wird auch „https://xyz.beispiel.de/“ als Teil der Website „https://beispiel.de/“ isoliert.  Beachten Sie, dass Android bestimmte sensible Websites ab <ph name="PRODUCT_NAME" /> Version 77 standardmäßig isoliert. Diese Richtlinie weitet diesen Modus aus, sodass bestimmte zusätzliche Ursprünge isoliert werden.
-
-      Wenn diese Einstellung deaktiviert ist, wird jegliche Form der Website-Isolierung deaktiviert, einschließlich der Isolierung sensibler Websites und Tests von IsolateOriginsAndroid, SitePerProcessAndroid und anderer Website-Isolierungsmodi. Nutzer können aber weiterhin Befehlszeilen-Flags verwenden, um IsolateOrigins manuell zu aktivieren.
-
-      Ist diese Richtlinie nicht konfiguriert, können Nutzer diese Einstellung ändern.
-
-      Hinweis: Wenn unter Android zu viele Websites isoliert werden, kann dies Leistungsprobleme verursachen, vor allem auf leistungsschwächeren Geräten. Diese Richtlinie ist nur für Chrome unter Android auf Geräten mit mehr als 1 GB RAM gültig. Möchten Sie die Richtlinie auf anderen Plattformen als Android nutzen, verwenden Sie dafür <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="1502843533062797703">Blockieren von Codeeinschleusungen durch Drittanbieter-Software aktivieren</translation>
 <translation id="1503969899251962413">Mit dieser Richtlinie wird der <ph name="PLUGIN_VM_NAME" />-Lizenzschlüssel für dieses Gerät angegeben.
 
@@ -2015,11 +2008,6 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
           Die Warnung wird nur eingeblendet, wenn infolge der Inaktivität der Nutzer abgemeldet oder das Gerät heruntergefahren wird.</translation>
 <translation id="3363360928811201045">Einschränkungen für verwaltete Konten hinzufügen</translation>
-<translation id="3367868895271989224">Wenn die Richtlinie aktiviert ist, werden alle Websites isoliert. Jede Website wird dann in einem eigenen Prozess ausgeführt. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird die Website-Isolierung nicht deaktiviert, kann aber vom Nutzer deaktiviert werden, zum Beispiel mit "Disable site isolation" in chrome://flags.
-
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> kann für die Differenzierung von Ursprüngen nützlich sein. Setzen Sie unter <ph name="PRODUCT_OS_NAME" /> bis Version 76 die Geräterichtlinie <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> auf denselben Wert. Wenn die Werte nicht übereinstimmen, kann es beim Beginn von Nutzersitzungen zu einer Verzögerung kommen.
-
-      Hinweis: Nutzen Sie unter Android stattdessen die Richtlinie <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="3373381043600809954">"<ph name="PRODUCT_NAME" />" aktivieren</translation>
 <translation id="3374587000313305002">Hiermit wird das Verzeichnis konfiguriert, in dem <ph name="PRODUCT_NAME" /> die Nutzerdaten speichert.
 
@@ -4933,7 +4921,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="7063895219334505671">Pop-ups auf diesen Websites zulassen</translation>
-<translation id="7066292150801784098">Nicht zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit geöffneten Fenstern interagieren können</translation>
+<translation id="7066292150801784098">Nicht zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit Administratorfenstern interagieren können</translation>
 <translation id="706669471845501145">Anzeige von Desktop-Benachrichtigungen durch Websites zulassen</translation>
 <translation id="7070525176564511548">Passworteingabe wöchentlich erforderlich (alle 168 Stunden)</translation>
 <translation id="7072208053150563108">Änderungsrate des Computerpassworts</translation>
@@ -5251,11 +5239,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Ist die Richtlinie nicht konfiguriert, erkennt <ph name="IE_PRODUCT_NAME" /> den Pfad zur ausführbaren Datei von <ph name="PRODUCT_NAME" /> automatisch, wenn <ph name="PRODUCT_NAME" /> über Internet Explorer geöffnet wird.
 
       Hinweis: Wenn das Add-in "Unterstützung älterer Browser" für <ph name="IE_PRODUCT_NAME" /> nicht installiert ist, hat die Richtlinie keine Auswirkung.</translation>
-<translation id="7507131973617884092">Wenn die Richtlinie konfiguriert ist, wird für jeden der benannten Ursprünge in einer durch Kommas getrennten Liste ein eigener Prozess ausgeführt. Dabei werden auch durch Subdomains benannte Ursprünge isoliert. Wenn Sie z. B. https://example.com/ angeben, wird auch https://foo.example.com/ als Teil der Website https://example.com/ isoliert.
-
-      Ist sie deaktiviert oder nicht konfiguriert, können Nutzer diese Einstellung ändern.
-
-      Hinweis: Verwenden Sie für Android stattdessen die Richtlinie "<ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />".</translation>
 <translation id="7507553960917214561">Vorhangmodus für den Host für den Remote-Zugriff deaktivieren</translation>
 <translation id="7508067364927180229">Diese Einstellung bietet mehrere Verfügbarkeitsoptionen für den <ph name="LACROS_NAME" />-Browser.
 
@@ -5407,13 +5390,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert der Verzögerung für die Bildschirmabschaltung (falls angegeben) und der Inaktivitätsverzögerung sein.</translation>
 <translation id="7680437377926096177">Dialogfeld für die Abmeldung beim Schließen des letzten Fensters nicht anzeigen.</translation>
-<translation id="7681958144280390173">Wenn die Richtlinie aktiviert ist, werden alle Websites isoliert. Jede Website wird dann in einem eigenen Prozess ausgeführt. Beachten Sie, dass Android bestimmte sensible Websites ab <ph name="PRODUCT_NAME" />-Version 77 standardmäßig isoliert. Diese Richtlinie weitet diesen standardmäßigen Website-Isolierungsmodus auf alle Websites aus.
-
-      Wenn diese Einstellung deaktiviert ist, wird jegliche Form der Website-Isolierung deaktiviert, einschließlich der Isolierung sensibler Websites und Tests von IsolateOriginsAndroid, SitePerProcessAndroid und anderer Website-Isolierungsmodi. Nutzer können die Richtlinie aber weiterhin manuell aktivieren.
-
-      Wenn die Richtlinie nicht konfiguriert ist, können Nutzer diese Einstellung ändern.
-
-      Hinweis: Die Unterstützung der Isolierung jeder Website unter Android wird weiter verbessert. Derzeit kann sie aber Leistungsprobleme verursachen, vor allem auf leistungsschwächeren Geräten. Diese Richtlinie ist nur für Chrome unter Android auf Geräten mit mehr als 1 GB RAM gültig. Wenn Sie bestimmte Websites isolieren und die Leistungseinbußen dabei so gering wie möglich halten möchten, verwenden Sie <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> für eine Liste der Websites, die isoliert werden sollen.  Möchten Sie die Richtlinie auf anderen Plattformen als Android nutzen, verwenden Sie dafür <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="7683777542468165012">Dynamische Richtlinienaktualisierung</translation>
 <translation id="7687943045976362719">Wenn diese Richtlinie konfiguriert ist, wird für alle angegebenen Inhaltstypen <ph name="PRODUCT_FRAME_NAME" /> verwendet.
 

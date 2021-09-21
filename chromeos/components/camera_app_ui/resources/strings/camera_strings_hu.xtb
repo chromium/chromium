@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> nincs csatlakoztatva.</translation>
 <translation id="1473110567575736769">Három másodperces időzítő</translation>
 <translation id="1545749641540134597">QR-kód beolvasása</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">A dokumentumbeolvasás már használható</translation>
 <translation id="5268823927180092501">Dokumentum mód engedélyezése az összes kamerán</translation>
 <translation id="5444515100983837161">A dokumentum összes szélének a kereten belül kell lennie. A beolvasás akkor működik a legjobban, ha a dokumentum és a háttér színei különbözőek.</translation>
+<translation id="5588258280684580073">GIF-rögzítés engedélyezése</translation>
 <translation id="5671277269877808209">Négyzet</translation>
 <translation id="5746169159649715125">Mentés PDF-ként</translation>
 <translation id="5753488212459587150">Szakértői mód bekapcsolása</translation>
@@ -98,12 +100,14 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="7243947652761655814">Videó felbontása</translation>
 <translation id="7337660886763914220">Fájlrendszerbeli hibák.</translation>
 <translation id="7450541714075000668">Szöveg vágólapra másolva</translation>
+<translation id="7488619942230388918">GIF-videó rögzítése</translation>
 <translation id="7557677699350329807">Váltás a következő kamerára</translation>
 <translation id="7607002721634913082">Szünet</translation>
 <translation id="7608223098072244877">Négyszer négyes</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Normál videó rögzítése</translation>
 <translation id="7983668134180549431">Szöveg észlelve.</translation>
 <translation id="8067883171444229417">Videó lejátszása</translation>
 <translation id="8120146556401698679">Pásztázás, döntés, nagyítás/kicsinyítés</translation>

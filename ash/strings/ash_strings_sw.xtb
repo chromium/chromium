@@ -494,7 +494,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4665114317261903604">Washa/zima 'Usinisumbue'. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
 <translation id="4702647871202761252">Skrini ya faragha imezimwa</translation>
-<translation id="4705716602320768426">Tuma maoni</translation>
 <translation id="4706121060329443414">Itajaribu kupakua baadaye. Kwa sasa, matamshi yatatumwa kwa Google ili yachakatwe.</translation>
 <translation id="4731797938093519117">Idhini ya mzazi</translation>
 <translation id="4734965478015604180">Kimlalo</translation>
@@ -771,6 +770,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6919251195245069855">Imeshindwa kutambua kadi yako mahiri. Jaribu tena.</translation>
 <translation id="6921188888306725546">Mikato ya kibodi imeboreshwa</translation>
 <translation id="6929655271276551705">Mipangilio ya tarehe</translation>
+<translation id="6931576957638141829">Hifadhi kwenye</translation>
 <translation id="6945221475159498467">Chagua</translation>
 <translation id="6961121602502368900">Kipengele cha kuzima mlio wa simu hakipatikani kwenye wasifu wa kazini</translation>
 <translation id="6961840794482373852">Mikato ya kibodi ya Alt + Kishale cha Juu imebadilika. Ili utumie kitufe cha Page Up, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Juu.</translation>
@@ -908,6 +908,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="79341161159229895">Akaunti inasimamiwa na <ph name="FIRST_PARENT_EMAIL" /> na <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Bonyeza <ph name="SHORTCUT_KEY_NAME" /> + V ili uangalie ubao wako wa kunakili. Vipengee vitano vya mwisho ulivyovinakili vimehifadhiwa kwenye ubao wako wa kunakili.</translation>
 <translation id="7955885781510802139">Hali ya utofautishaji wa juu</translation>
+<translation id="7968693143708939792">Chagua folda...</translation>
 <translation id="7977927628060636163">Inatafuta mitandao ya simu...</translation>
 <translation id="7980780401175799550">Jaribu njia mpya za kutumia Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="7982789257301363584">Mtandao</translation>

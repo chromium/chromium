@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Kullanıcı</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
+<translation id="1181037720776840403">Kaldır</translation>
 <translation id="1195447618553298278">Bilinmeyen hata.</translation>
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
 <translation id="123124571410524056">Portal olabilir</translation>
@@ -139,7 +140,6 @@
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="3708186454126126312">Daha önce bağlanılmış cihazlar</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Sayfayı yeniden tara}=1{{PAGE_NUMBER}. sayfayı yeniden tara}other{{PAGE_NUMBER}. sayfayı yeniden tara}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> yorum)</translation>
 <translation id="3748026146096797577">Bağlı Değil</translation>
 <translation id="3749289110408117711">Dosya adı</translation>
@@ -177,7 +177,6 @@
 <translation id="4425149324548788773">Drive'ım</translation>
 <translation id="4429881212383817840">Kerberos biletinin süresi yakında doluyor</translation>
 <translation id="4431821876790500265">Raporu göster</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Sayfayı kaldır}=1{{PAGE_NUMBER}. sayfayı kaldır}other{{PAGE_NUMBER}. sayfayı kaldır}}</translation>
 <translation id="445059817448385655">Eski şifre</translation>
 <translation id="4453205916657964690">Alt ağ maskesi</translation>
 <translation id="4454245904991689773">Taramayı şuraya kaydet:</translation>
@@ -359,7 +358,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
-<translation id="7257889006063274246"><ph name="CURRENT_PAGE" /> sayfasını kaldırmak istediğinizden emin misiniz?</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>

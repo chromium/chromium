@@ -98,6 +98,7 @@
 <translation id="1103523840287552314">सँधै अनुवाद गर्नुहोस् <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;रोक्नुहोस्</translation>
 <translation id="1110155001042129815">प्रतिक्षा गर्नुहोस्</translation>
+<translation id="1110965959145884739">तपाईं यो डिभाइसमा जुन जुन भाषा इन्स्टल गर्न चाहनुहुन्छ ती भाषा चयन गर्नुहोस्। डिस्कमा ठाउँ बचत गर्न प्रयोगकर्ताहरूसँग भाषा विशेषका फाइलहरू सेयर गरिन्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">प्रोजेक्टर</translation>
 <translation id="1112420131909513020">पृष्ठभूमि ट्याबले ब्लुटुथ प्रयोग गर्दै छ</translation>
 <translation id="1113892970288677790">छनौट गरिएका कलाकृति तथा फोटोहरू चयन गर्नुहोस्</translation>
@@ -544,6 +545,7 @@
 <translation id="1580772913177567930">आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्</translation>
 <translation id="1581962803218266616">फाइन्डरमा देखाउनुहोस्</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] मेट्नुहोस्</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" /> भाषा डिभाइसभित्रै प्रोसेस गरिन्छ र उक्त भाषा अफलाइन प्रयोग गर्न मिल्छ</translation>
 <translation id="1584990664401018068">तपाईँले प्रयोग गरिरहनुभएको ( <ph name="NETWORK_ID" /> ) Wi-Fi नेटवर्कको प्रमाणीकरण आवश्यक हुन सक्छ।</translation>
 <translation id="1585717515139318619">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विषयवस्तु थप्यो जसले Chrome को कार्य गर्ने तरिका बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
 <translation id="1587129667417059148">यस कार्यले <ph name="ORIGIN_NAME" /> ले भण्डारण गरेका सबै डेटा र कुकीहरू हटाउने छ</translation>
@@ -752,6 +754,7 @@
 <translation id="177989070088644880">एप (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">समूह बन्द गर्नुहोस्</translation>
 <translation id="1780273119488802839">बुकमार्क इम्पोर्ट गरिँदै छन्...</translation>
+<translation id="178092663238929451">तपाईं आफू वरपरका मान्छेले पठाएका फाइल प्राप्त गर्न र ती मान्छेलाई फाइल पठाउन चाहनुहुन्छ भने नजिकैका डिभाइससँग सेयर गर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="1781291988450150470">हालको PIN</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> का अनुसार तपाईंले अहिले नै Wi-Fi मार्फत अपडेट डाउनलोड गर्नु पर्ने हुन्छ।</translation>
 <translation id="1781502536226964113">नयाँ ट्याब पेज खोल्नुहोस्</translation>
@@ -1584,6 +1587,7 @@
 <translation id="265390580714150011">फाँट मान</translation>
 <translation id="2654166010170466751">साइटहरूलाई भुक्तानी ह्यान्ड्लर स्थापना गर्ने अनुमति दिनुहोस्‌</translation>
 <translation id="2654553774144920065">छपाइका लागि अनुरोध</translation>
+<translation id="2658941648214598230">मूल सामग्री देखाउने हो?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />यन्त्रअनुसार सुविधाहरू फरक हुन्छन्</translation>
 <translation id="2659971421398561408">Crostini का लागि छुट्याइएको डिस्कको आकार बदल्ने</translation>
 <translation id="2660779039299703961">घटना</translation>
@@ -2451,6 +2455,7 @@
 <translation id="3564848315152754834">USB सुरक्षा साँचो</translation>
 <translation id="3566325075220776093">यो यन्त्रबाट</translation>
 <translation id="3566721612727112615">कुनै साइट थपिएको छैन</translation>
+<translation id="3567284462585300767">तपाईं आफू वरपरका मान्छेले पठाएका फाइल प्राप्त गर्न र स्वीकार गर्न चाहनुहुन्छ भने आफ्नो डिभाइस सबैले देख्ने बनाउनुहोस्</translation>
 <translation id="3569382839528428029">के तपाईं <ph name="APP_NAME" /> आफ्नो स्क्रिन साझा गर्न चाहनुहुन्छ?</translation>
 <translation id="3569407787324516067">स्क्रिन सेभर</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> ले निम्न फाइल र फोल्डरहरू हेर्न सक्छ</translation>
@@ -3540,6 +3545,7 @@
 <translation id="475088594373173692">पहिलो प्रयोगकर्ता</translation>
 <translation id="4756378406049221019">रोक्नुहोस्/पुनः लोड गर्नुहोस्</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
+<translation id="4759126501639448579">कहिल्यै पनि "स्मरणमा" नदेखाइयोस्</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
 <translation id="4762718786438001384">यन्त्रको डिस्कमा खाली ठाउँ अत्यन्त कम छ</translation>
@@ -3626,6 +3632,7 @@
 <translation id="485088796993065002">साइटहरूले संगीत, भिडियो र अन्य मिडियाका लागि अडियो प्रदान गर्न ध्वनि प्ले गर्न सक्छन्</translation>
 <translation id="4853020600495124913">&amp;नयाँ विण्डो खोल्नुहोस्</translation>
 <translation id="4854317507773910281">अनुमोदनका लागि अभिभावकको खाता चयन गर्नुहोस्</translation>
+<translation id="485480310608090163">थप सेटिङ तथा अनुमति</translation>
 <translation id="4856478137399998590">तपाइँको मोबाइल सेवा सक्रिय गरिएको छ र प्रयोगको लागि तैयार छ</translation>
 <translation id="4858792381671956233">तपाईंले यो पृष्ठमा जानु ठिक हुन्छ वा हुँदैन भनेर आफ्ना अभिभावकहरूलाई सोध्नुभएको थियो</translation>
 <translation id="4858913220355269194">फ्रिट्ज</translation>
@@ -3863,6 +3870,7 @@
 <translation id="51143538739122961">आफ्नो सुरक्षा साँचो प्रविष्टि गर्नुहोस् र यसलाई छोएर सक्रिय गर्नुहोस्</translation>
 <translation id="5115309401544567011">कृपया आफ्नो <ph name="DEVICE_TYPE" /> लाई पावर स्रोतमा जोड्नुहोस्‌।</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">सबै स्मरणमा लुकाइएका छन्</translation>
 <translation id="5116628073786783676">अडियोको रूपमा &amp;बचत गर्नुहोस्...</translation>
 <translation id="5117139026559873716">आफ्नो <ph name="DEVICE_TYPE" /> बाट आफ्नो फोन विच्छेद गर्नुहोस्। तिनीहरू अब उप्रान्त स्वतः जोडिने छैनन्।</translation>
 <translation id="5117930984404104619">गरिएका युआरएलहरू समावेश गर्दै, अन्य विस्तारहरूको व्यवहारलाई सञ्चालन अनुश्रवण गर्नुहोस्।</translation>
@@ -5005,6 +5013,7 @@
 <translation id="6374469231428023295">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' को १ परिणाम</translation>
 <translation id="6380143666419481200">स्वीकार्नुहोस् र जारी राख्नुहोस्</translation>
+<translation id="6382958439467370461">कुनै पनि निष्क्रिय सर्टकट छैन</translation>
 <translation id="638418309848716977">खोल्न मिल्ने लिंकहरू</translation>
 <translation id="6384275966486438344">तपाईंको खोज सेटिङहरूलाई यसमा परिवर्तन गर्नुहोस्: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{नाम नभएको समूह - १ ट्याब}other{नाम नभएको समूह - # वटा ट्याब}}</translation>
@@ -5882,6 +5891,7 @@
 <translation id="7354341762311560488">तपाईंको किबोर्डको बायाँतिर फेदमा रहेको कुञ्जी फिंगरप्रिन्ट सेन्सर हो। यसलाई जुनसुकै औँलाले हल्का छुनुहोस्।</translation>
 <translation id="7356908624372060336">नेटवर्क लगहरू</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
+<translation id="7358324924540718595">आजका लागि स्मरणमा लुकाइएका छन्</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> मा <ph name="PAGE_NUMBER" /> पृष्ठहरू</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> सञ्चालन गर्नका लागि दायाँ-क्लिक गर्नुहोस्</translation>
 <translation id="7362387053578559123">साइटहरूले ब्लुटुथ चल्ने यन्त्रमा कनेक्ट गर्ने अनुमति माग्न सक्छन्</translation>
@@ -6282,6 +6292,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको पाठ</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">आफ्नो प्रदर्शनका सीमाहरूलाई समायोजन गर्नुहोस्</translation>
+<translation id="7759276754544429366">आजका लागि स्मरणमा लुकाइऊन्</translation>
 <translation id="7760004034676677601">के तपाइँले अपेक्षा गरिरहनुभएको सुरुवात पृष्ठ यो हो?</translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> देखि <ph name="DOWNLOAD_RECEIVED" /></translation>
@@ -6636,7 +6647,6 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> ले विस्तारका प्रोक्सी सेटिङ प्रयोग गरिरहेको छ</translation>
 <translation id="8097959162767603171">तपाईंका एड्मिनले सर्वप्रथम एड्मिन कन्सोलमा रहेको Chrome यन्त्रको सूचीमा गई सेवाका सर्तहरू स्वीकार्नु पर्ने हुन्छ।</translation>
 <translation id="8098616321286360457">इन्टरनेट चाहिन्छ</translation>
-<translation id="8099495042588009598">थप अनुमति</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> चयन गरियो। चयन गरिएको भाषा नचलाउन 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
 <translation id="810185532889603849">आफूले रोजेको रङ</translation>
 <translation id="8101987792947961127">अर्को रिबुटमा पावरवास आवश्यक छ</translation>
@@ -6953,6 +6963,7 @@
 <translation id="8457451314607652708">बुकमार्कहरू आयात गर्नुहोस्</translation>
 <translation id="8458341576712814616">सर्टकट</translation>
 <translation id="8458627787104127436">सबै (<ph name="URL_COUNT" />) URL नयाँ विन्डोमा खोल्नुहोस्</translation>
+<translation id="8460490661223303637">Chrome ले मेमोरी बचत गर्ने प्रयोजनका लागि केही सामग्री हटाएको छ</translation>
 <translation id="8460932807646981183">साइटमा भएको कुरा खोज्ने सुविधा र सर्च इन्जिन व्यवस्थापन गर्नुहोस्</translation>
 <translation id="84613761564611563">नेटवर्क कन्फिगर गर्ने UI को अनुरोध गरियो, कृपया कुर्नुहोस्...</translation>
 <translation id="8461914792118322307">प्रोक्सी</translation>

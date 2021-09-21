@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Odjava in izklop sinhronizacije?</translation>
 <translation id="1373696734384179344">Za prenos izbrane vsebine ni dovolj pomnilnika.</translation>
 <translation id="1376578503827013741">Računanje …</translation>
+<translation id="1382912999714108023">Niso prikazani najnovejši podatki? Obrnite se na banko in jih posodobite.</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1384704387250346179">Prevedi sliko z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktivna pred toliko dnevi: <ph name="LAST_UPDATED" /></translation>
@@ -351,6 +352,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Zgodovina iskanja<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />druge oblike dejavnosti<ph name="END_LINK2" /> se morda shranjujejo v računu Google, ko ste prijavljeni. Izbrišete jih lahko kadar koli.</translation>
 <translation id="321773570071367578">Če ste pozabili geslo ali želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />ponastavite sinhronizacijo<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Če želite sinhronizirati gesla, potrdite, da ste to vi.</translation>
+<translation id="3223522355830797639">Vaša banka želi potrditi, da ste to vi.</translation>
 <translation id="3227557059438308877">Google Chrome kot varnostni ključ</translation>
 <translation id="3232754137068452469">Spletna aplikacija</translation>
 <translation id="3234978181857588512">Shrani v napravo</translation>
@@ -817,6 +819,7 @@ Preizkusi peskovnika za zasebnost so še vedno v aktivnem razvoju in na voljo le
 <translation id="605721222689873409">LL</translation>
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
 <translation id="6069177176307973611">Preglejte nastavitve zasebnosti in varnosti.</translation>
+<translation id="6070730414166672373">Vzpostavljanje stika z banko</translation>
 <translation id="6085886413119427067">Določa, kako vzpostaviti povezavo s spletnimi mesti prek varne povezave</translation>
 <translation id="60923314841986378">Še <ph name="HOURS" /> h</translation>
 <translation id="6108923351542677676">Poteka nastavitev …</translation>

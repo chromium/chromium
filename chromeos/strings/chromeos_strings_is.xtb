@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Notandi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> er í umsjón <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1195447618553298278">Óþekkt villa.</translation>
 <translation id="1204296502688602597">DNS-biðtími</translation>
 <translation id="123124571410524056">Grunur um gátt</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">UDP-beiðnir mistókust</translation>
 <translation id="1930797645656624981">Innfærsluaðferð Chrome OS þjónustu</translation>
 <translation id="1947737735496445907">Prentað</translation>
+<translation id="197386857804679933">Opnaðu stillingar til að tengjast aftur</translation>
 <translation id="1979103255016296513">Breyting á aðgangsorði komin fram yfir tíma</translation>
 <translation id="1999615961760456652">Innskráningarsíða</translation>
 <translation id="2006864819935886708">Tenging</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">STÓÐST</translation>
 <translation id="2789486458103222910">Í lagi</translation>
 <translation id="2805756323405976993">Forrit</translation>
+<translation id="2860473693272905224">Settu aðra síðu á skannann</translation>
 <translation id="2872961005593481000">Slökkva</translation>
 <translation id="2878387241690264070">Afhleðsla nam <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Farsímagögn</translation>
 <translation id="3156846309055100599">Skannar síðu <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Innskráningarsíða greind</translation>
+<translation id="3170673040743561620">Settu skjalið á skannann</translation>
 <translation id="3188257591659621405">Skrárnar mínar</translation>
 <translation id="3199982728237701504">Skjalamatari (tvíhliða)</translation>
 <translation id="3226405216343213872">Leitar að skönnum</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
 <translation id="3708186454126126312">Áður tengt</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Skanna aftur síðu}=1{Skanna aftur síðu {PAGE_NUMBER}}one{Skanna aftur síðu {PAGE_NUMBER}}other{Skanna aftur síðu {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> umsagnir)</translation>
 <translation id="3748026146096797577">Ótengt</translation>
 <translation id="3749289110408117711">Skráarheiti</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Drifið mitt</translation>
 <translation id="4429881212383817840">Kerberos-miði rennur út fljótlega</translation>
 <translation id="4431821876790500265">Skoða skýrslu</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Fjarlægja síðu}=1{Fjarlægja síðu {PAGE_NUMBER}}one{Fjarlægja síðu {PAGE_NUMBER}}other{Fjarlægja síðu {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Eldra aðgangsorð</translation>
 <translation id="4453205916657964690">Undirnetssía</translation>
 <translation id="4454245904991689773">Skanna í</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Tenging</translation>
 <translation id="4832079907277790330">Velja möppu í forritinu Skrár...</translation>
 <translation id="4835901797422965222">Engin virk net</translation>
+<translation id="484790837831576105">(Android) DNS-lausn</translation>
 <translation id="4848429997038228357">Í GANGI</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
 <translation id="4880328057631981605">Heiti aðgangsstaðar</translation>
@@ -291,6 +294,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6050189528197190982">Grátónar</translation>
 <translation id="6058625436358447366">Sláðu inn gamla aðgangsorðið og það nýja til að ganga frá þessu</translation>
 <translation id="6061772781719867950">HTTP-beiðnir mistókust</translation>
+<translation id="6075872808778243331">(Android) HTTP-biðtími</translation>
 <translation id="6104112872696127344">Hætt var við að skanna</translation>
 <translation id="6106186594183574873">Sláðu inn gamla aðgangsorðið þitt til að ganga frá þessu</translation>
 <translation id="6108689792487843350">Ekki næst í gátt</translation>
@@ -333,6 +337,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6704062477274546131">DNS-upplausn</translation>
+<translation id="6714650824879092633">Slökkt er á <ph name="NETWORK_NAME" /></translation>
 <translation id="6747215703636344499">Stöðvað – úttakið er fullt</translation>
 <translation id="6756731097889387912">Ekki tókst að hætta við að skanna</translation>
 <translation id="6766275201586212568">DNS-úrlausn mistókst</translation>
@@ -342,11 +347,13 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6910312834584889076">Lokið á skannanum er opið. Lokaðu skannanum og reyndu aftur.</translation>
 <translation id="6911383237894364323">Ekki er hægt að tengjast efnisþjónum</translation>
 <translation id="6957231940976260713">Heiti þjónustu</translation>
+<translation id="6961170852793647506">Settu skjalið á skannann til að hefjast handa</translation>
 <translation id="6977381486153291903">Útgáfa fastbúnaðar</translation>
 <translation id="6982876849933694860">Opnaðu <ph name="BEGIN_LINK" />stillingar<ph name="END_LINK" /> til að setja upp nýja tengingu.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hefur umsjón með þessu tæki og hefur aðgang að allri notendavirkni, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> lyklaborð</translation>
 <translation id="7040230719604914234">Símafyrirtæki</translation>
+<translation id="7058278511608979688">Ljúka og vista</translation>
 <translation id="7059230779847288458">Í hleðslu, <ph name="TIME_VALUE" /> þar til full hleðsla næst</translation>
 <translation id="708426984172631313">STÖÐVAÐ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7177485034254901881"><ph name="MANAGER" /> hefur umsjón með þessu <ph name="DEVICE_TYPE" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
-<translation id="7257889006063274246">Viltu örugglega fjarlægja síðuna <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Veggfóðurssöfn</translation>
@@ -411,6 +417,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
+<translation id="811820734797650957">(Android) Hægt er að ping-prófa gátt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Biðja um talningu umferðar</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
@@ -482,6 +489,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Taka úr lás</translation>
+<translation id="9126720536733509015">Vista margar síður í einu PDF-skjali</translation>
 <translation id="9137526406337347448">Google þjónustur</translation>
 <translation id="9149391708638971077">Keyra minnispróf</translation>
 <translation id="9173638680043580060">Innan við mínúta eftir</translation>

@@ -527,6 +527,7 @@
 <translation id="6189413832092199491">न वाचलेले</translation>
 <translation id="6196207969502475924">व्हॉइस शोध</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} टॅब बंद करा}other{{COUNT} टॅब बंद करा}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />तुम्ही काय सिंक करू शकता ते पहा<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">कधीही भाषांतर करू नका</translation>
 <translation id="6223816392543092032">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज मिळवा.</translation>
 <translation id="6232329973559504466">गुप्त शोध</translation>
@@ -726,6 +727,7 @@
 
 वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी.</translation>
 <translation id="7971521879845308059">पॉप-अप अवरोधित करा</translation>
+<translation id="797413074872316787">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा.</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7993619969781047893">काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="800361585186029508">Google Chrome मध्ये इनपुट केलेल्या URL उघडते.</translation>
@@ -742,6 +744,7 @@
 <translation id="8076014560081431679">सेव्ह केलेल्या साइट सेटिंग्ज हटविल्या जाणार नाहीत आणि कदाचित आपल्या ब्राउझिंग सवयी दर्शवेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">हे सेटिंग व्यवस्थापित केले, अधिक माहितीसाठी दोनदा टॅप करा</translation>
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
+<translation id="8103864314410529527">तुम्ही काय सिंक करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">बंद करा</translation>
 <translation id="8114753159095730575">फाइल डाउनलोड उपलब्ध आहे. स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत.</translation>
 <translation id="8156478151976189188">पासवर्ड सिंक काम करत नाही</translation>

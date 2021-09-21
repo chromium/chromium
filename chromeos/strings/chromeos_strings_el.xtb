@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Χρήστης</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1195447618553298278">Άγνωστο σφάλμα.</translation>
 <translation id="1204296502688602597">Λανθάνων χρόνος DNS</translation>
 <translation id="123124571410524056">Πιθανή ύπαρξη πύλης</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Σφάλματα αιτήματος UDP</translation>
 <translation id="1930797645656624981">Υπηρεσία μεθόδου εισαγωγής Chrome OS</translation>
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
+<translation id="197386857804679933">Επισκεφτείτε τις Ρυθμίσεις για επανασύνδεση</translation>
 <translation id="1979103255016296513">Εκπρόθεσμη αλλαγή κωδικού πρόσβασης</translation>
 <translation id="1999615961760456652">Πύλη υποδοχής</translation>
 <translation id="2006864819935886708">Συνδεσιμότητα</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">ΕΠΙΤΥΧΗΣ ΟΛΟΚΛΗΡΩΣΗ</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
+<translation id="2860473693272905224">Τοποθετήστε μια άλλη σελίδα στον σαρωτή</translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="2878387241690264070">Εκφόρτιση <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
 <translation id="3156846309055100599">Σάρωση σελίδας <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Εντοπίστηκε πύλη υποδοχής</translation>
+<translation id="3170673040743561620">Τοποθετήστε το έγγραφό σας στον σαρωτή</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="3199982728237701504">Τροφοδότης εγγράφων (Διπλής όψης)</translation>
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Συνδέθηκαν στο παρελθόν</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Επανάληψη σάρωσης σελίδας}=1{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER}}other{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> αξιολογήσεις)</translation>
 <translation id="3748026146096797577">Εκτός σύνδεσης</translation>
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Το Drive μου</translation>
 <translation id="4429881212383817840">Το εισιτήριο Kerberos θα λήξει σύντομα</translation>
 <translation id="4431821876790500265">Προβολή αναφοράς</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Κατάργηση σελίδας}=1{Κατάργηση σελίδας {PAGE_NUMBER}}other{Κατάργηση σελίδας {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Παλιός κωδικός πρόσβασης</translation>
 <translation id="4453205916657964690">Μάσκα υποδικτύου</translation>
 <translation id="4454245904991689773">Σάρωση σε</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Σύνδεση</translation>
 <translation id="4832079907277790330">Επιλογή φακέλου στην εφαρμογή Αρχεία…</translation>
 <translation id="4835901797422965222">Δεν υπάρχουν ενεργά δίκτυα</translation>
+<translation id="484790837831576105">(Android) Επίλυση DNS</translation>
 <translation id="4848429997038228357">ΕΚΤΕΛΕΙΤΑΙ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Απομένει {0} προσπάθεια}other{<ph name="ERROR_MESSAGE" /> Απομένουν {0} προσπάθειες}}</translation>
 <translation id="4880328057631981605">Όνομα σημείου πρόσβασης</translation>
@@ -291,6 +294,7 @@
 <translation id="6050189528197190982">Κλίμακα του γκρι</translation>
 <translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
 <translation id="6061772781719867950">Αποτυχημένα αιτήματα HTTP</translation>
+<translation id="6075872808778243331">(Android) Λανθάνων χρόνος HTTP</translation>
 <translation id="6104112872696127344">Η σάρωση ακυρώθηκε</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6108689792487843350">Μη προσβάσιμη πύλη</translation>
@@ -333,6 +337,7 @@
 <translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6657585470893396449">Κωδικός Πρόσβασης</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
+<translation id="6714650824879092633">Το δίκτυο <ph name="NETWORK_NAME" /> έχει απενεργοποιηθεί</translation>
 <translation id="6747215703636344499">Διακοπή - Ο δίσκος εξόδου είναι γεμάτος</translation>
 <translation id="6756731097889387912">Δεν ήταν δυνατή η ακύρωση της σάρωσης.</translation>
 <translation id="6766275201586212568">Αποτυχημένες αναλύσεις DNS</translation>
@@ -342,11 +347,13 @@
 <translation id="6910312834584889076">Το καπάκι του σαρωτή είναι ανοικτό. Κλείστε το καπάκι και δοκιμάστε ξανά.</translation>
 <translation id="6911383237894364323">Δεν είναι δυνατή η σύνδεση σε διακομιστές πολυμέσων.</translation>
 <translation id="6957231940976260713">Όνομα υπηρεσίας</translation>
+<translation id="6961170852793647506">Για να ξεκινήσετε, τοποθετήστε το έγγραφό σας στον σαρωτή</translation>
 <translation id="6977381486153291903">Έκδοση υλικολογισμικού</translation>
 <translation id="6982876849933694860">Για να ρυθμίσετε μια νέα σύνδεση, μεταβείτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και έχει πρόσβαση σε όλη τη δραστηριότητα των χρηστών, συμπεριλαμβανομένων των ιστοσελίδων που επισκέπτεστε, των κωδικών πρόσβασης και του ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="7039041976777695848">Πληκτρολόγιο <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Χειριστής</translation>
+<translation id="7058278511608979688">Λήξη και αποθήκευση</translation>
 <translation id="7059230779847288458">Φόρτιση, απομένουν <ph name="TIME_VALUE" /> μέχρι την ολοκλήρωση</translation>
 <translation id="708426984172631313">ΔΙΑΚΟΠΗΚΕ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
-<translation id="7257889006063274246">Είστε σίγουροι ότι θέλετε να καταργήσετε τη σελίδα <ph name="CURRENT_PAGE" />;</translation>
 <translation id="7271040990581020067">Ο σαρωτής χρησιμοποιείται αυτήν τη στιγμή. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Συλλογές ταπετσαρίας</translation>
@@ -411,6 +417,7 @@
 <translation id="8041089156583427627">Αποστολή σχολίων</translation>
 <translation id="8075838845814659848">Υπόλοιπο φόρτισης</translation>
 <translation id="808894953321890993">Αλλαγή κωδικού πρόσβασης</translation>
+<translation id="811820734797650957">(Android) Η πύλη λαμβάνει ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Αίτημα για μετρητές επισκεψιμότητας</translation>
 <translation id="8206859287963243715">Κινητό</translation>
@@ -482,6 +489,7 @@
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
+<translation id="9126720536733509015">Αποθηκεύστε πολλές σελίδες σε ένα PDF</translation>
 <translation id="9137526406337347448">Υπηρεσίες Google</translation>
 <translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
 <translation id="9173638680043580060">Απομένει λιγότερο από ένα λεπτό</translation>

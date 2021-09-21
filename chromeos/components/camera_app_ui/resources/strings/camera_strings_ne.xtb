@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> निकालिएको छ।</translation>
 <translation id="1473110567575736769">३ सेकेन्डको टाइमर</translation>
 <translation id="1545749641540134597">QR कोड स्क्यान गर्नुहोस्</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1627744224761163218">४ x ४</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">तपाईं अब डकुमेन्ट स्क्यान गर्न सक्नुहुन्छ</translation>
 <translation id="5268823927180092501">सबै क्यामेराहरूमा डकुमेन्ट मोड अन गरियोस्</translation>
 <translation id="5444515100983837161">डकुमेन्टका सबै किनारा फ्रेमभित्र पार्नुहोस्। डकुमेन्ट र पृष्ठभूमि बेग्लाबेग्लै रङका भएका खण्डमा स्क्यान गर्ने सुविधाले सबैभन्दा राम्ररी काम गर्छ।</translation>
+<translation id="5588258280684580073">GIF फर्म्याटमा रेकर्ड गर्ने सुविधा अन गरियोस्</translation>
 <translation id="5671277269877808209">वर्गाकार</translation>
 <translation id="5746169159649715125">पीडीएपको रूपमा बचत गर्नुहोस्</translation>
 <translation id="5753488212459587150">विशेषज्ञ मोड अन गर्नुहोस्</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">भिडियोको रिजोल्युसन</translation>
 <translation id="7337660886763914220">फाइल प्रणालीसम्बन्धी त्रुटिहरू।</translation>
 <translation id="7450541714075000668">टेक्स्ट कपी गरियो</translation>
+<translation id="7488619942230388918">GIF भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="7557677699350329807">अर्को क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7608223098072244877">४ गुणा ४</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7670511624014457267">६० FPS</translation>
+<translation id="7726641833034062494">सामान्य भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="7983668134180549431">टेक्स्ट भेट्टियो।</translation>
 <translation id="8067883171444229417">भिडियो प्ले गर्नुहोस्</translation>
 <translation id="8120146556401698679">प्यान गर्नुहोस्, ढल्काउनुहोस्, जुम गर्नुहोस्</translation>

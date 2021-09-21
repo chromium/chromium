@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem.</translation>
+<translation id="1181037720776840403">Ukloni</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
 <translation id="1204296502688602597">Kašnjenje DNS-a</translation>
 <translation id="123124571410524056">Sumnja se na portal</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Neuspeli UDP zahtevi</translation>
 <translation id="1930797645656624981">Usluga metoda unosa za Chrome OS</translation>
 <translation id="1947737735496445907">Odštampano</translation>
+<translation id="197386857804679933">Posetite Podešavanja da biste se ponovo povezali</translation>
 <translation id="1979103255016296513">Rok za promenu lozinke je istekao</translation>
 <translation id="1999615961760456652">Ulazni portal</translation>
 <translation id="2006864819935886708">Uspostavljanje veze</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">PROŠLO</translation>
 <translation id="2789486458103222910">Potvrdi</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
+<translation id="2860473693272905224">Postavite još jednu stranicu na skener</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Mobilni podaci</translation>
 <translation id="3156846309055100599">Skenira se <ph name="PAGE_NUMBER" />. stranica...</translation>
 <translation id="315738237743207937">Otkriven je ulazni portal</translation>
+<translation id="3170673040743561620">Postavite dokument na skener</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
 <translation id="3226405216343213872">Traže se skeneri</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">WiFi mreža je obezbeđena slabim protokolom WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Prethodno povezani</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Ponovo skeniraj stranicu}=1{Ponovo skeniraj {PAGE_NUMBER}. stranicu}one{Ponovo skeniraj {PAGE_NUMBER}. stranicu}few{Ponovo skeniraj {PAGE_NUMBER}. stranicu}other{Ponovo skeniraj {PAGE_NUMBER}. stranicu}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenzije: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nije povezano</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Moj disk</translation>
 <translation id="4429881212383817840">Kerberos tiket uskoro ističe</translation>
 <translation id="4431821876790500265">Prikaži izveštaj</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Ukloni stranicu}=1{Ukloni {PAGE_NUMBER}. stranicu}one{Ukloni {PAGE_NUMBER}. stranicu}few{Ukloni {PAGE_NUMBER}. stranicu}other{Ukloni {PAGE_NUMBER}. stranicu}}</translation>
 <translation id="445059817448385655">Stara lozinka</translation>
 <translation id="4453205916657964690">Maska podmreže</translation>
 <translation id="4454245904991689773">Skeniraj u:</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Veza</translation>
 <translation id="4832079907277790330">Izaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
+<translation id="484790837831576105">(Android) DNS razrešavanje</translation>
 <translation id="4848429997038228357">U TOKU</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
 <translation id="4880328057631981605">Naziv pristupne tačke</translation>
@@ -291,6 +294,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6050189528197190982">Sivi tonovi</translation>
 <translation id="6058625436358447366">Da biste završili, unesite staru i novu lozinku</translation>
 <translation id="6061772781719867950">Neuspešni HTTPS zahtevi</translation>
+<translation id="6075872808778243331">(Android) HTTP kašnjenje</translation>
 <translation id="6104112872696127344">Skeniranje je otkazano</translation>
 <translation id="6106186594183574873">Da biste završili, unesite staru lozinku</translation>
 <translation id="6108689792487843350">Mrežni prolaz je nedostupan</translation>
@@ -333,6 +337,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6704062477274546131">DNS razrešavanje</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> mreža je onemogućena</translation>
 <translation id="6747215703636344499">Zaustavljeno – posuda za odštampani materijal je puna</translation>
 <translation id="6756731097889387912">Otkazivanje skeniranja nije uspelo</translation>
 <translation id="6766275201586212568">Neuspešna DNS razrešavanja</translation>
@@ -342,11 +347,13 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite ga i probajte ponovo.</translation>
 <translation id="6911383237894364323">Povezivanje sa medijskim serverima nije uspelo</translation>
 <translation id="6957231940976260713">Naziv usluge</translation>
+<translation id="6961170852793647506">Da biste započeli, postavite dokument na skener</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
 <translation id="6982876849933694860">Da biste podesili novu vezu, idite u <ph name="BEGIN_LINK" />Podešavanja.<ph name="END_LINK" /></translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
 <translation id="7039041976777695848">Tastatura <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Mobilni operater</translation>
+<translation id="7058278511608979688">Završi i sačuvaj</translation>
 <translation id="7059230779847288458">Puni se. <ph name="TIME_VALUE" /> do kraja punjenja</translation>
 <translation id="708426984172631313">ZAUSTAVLJENO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
-<translation id="7257889006063274246">Želite li stvarno da uklonite stranicu <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Probajte ponovo kasnije.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Kolekcije pozadina</translation>
@@ -411,6 +417,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
+<translation id="811820734797650957">(Android) Mrežni prolaz može da se pinguje</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
@@ -482,6 +489,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="910415269708673980">Osvežite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se <ph name="PAGE_NUMBER" />. stranica</translation>
 <translation id="9111102763498581341">Otključaj</translation>
+<translation id="9126720536733509015">Sačuvajte više stranica u jedan PDF dokument</translation>
 <translation id="9137526406337347448">Google usluge</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9173638680043580060">Preostalo je manje od minuta</translation>

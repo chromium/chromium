@@ -494,7 +494,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4665114317261903604">Activa o desactiva el mode No molestis. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
-<translation id="4705716602320768426">Envia suggeriments</translation>
 <translation id="4706121060329443414">La baixada s'intentarà més tard. Per ara, la parla s'enviarà a Google perquè la processi.</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
@@ -771,6 +770,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="6921188888306725546">S'han millorat les tecles de drecera</translation>
 <translation id="6929655271276551705">Configuració de la data</translation>
+<translation id="6931576957638141829">Desa a</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6961121602502368900">Silencia el telèfon no està disponible al perfil de treball</translation>
 <translation id="6961840794482373852">La tecla de drecera Alt+fletxa amunt ha canviat. Per fer servir la tecla de retrocedir pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa amunt.</translation>
@@ -907,6 +907,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="79341161159229895">Compte gestionat per <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Prem <ph name="SHORTCUT_KEY_NAME" />+V per veure el porta-retalls. Els 5 darrers elements que has copiat estan desats al porta-retalls.</translation>
 <translation id="7955885781510802139">Mode d'alt contrast</translation>
+<translation id="7968693143708939792">Selecciona una carpeta...</translation>
 <translation id="7977927628060636163">S'estan cercant xarxes mòbils…</translation>
 <translation id="7980780401175799550">Prova maneres noves de navegar per Chrome OS</translation>
 <translation id="7982789257301363584">Xarxa</translation>

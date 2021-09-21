@@ -495,7 +495,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4665114317261903604">Attiva/disattiva Non disturbare. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
 <translation id="4702647871202761252">Schermata sulla privacy non attiva</translation>
-<translation id="4705716602320768426">Invia feedback</translation>
 <translation id="4706121060329443414">Verrà effettuato un tentativo di download in un secondo tempo. Per ora ciò che dici viene inviato a Google per l'elaborazione.</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
@@ -772,6 +771,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="6921188888306725546">Le scorciatoie da tastiera sono state migliorate</translation>
 <translation id="6929655271276551705">Impostazioni data</translation>
+<translation id="6931576957638141829">Salva in</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
 <translation id="6961840794482373852">La scorciatoia da tastiera Alt + Freccia su è cambiata. Per usare il tasto Pagina su, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia su.</translation>
@@ -908,6 +908,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="79341161159229895">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Premi <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare gli appunti. Gli ultimi 5 elementi copiati sono stati salvati negli appunti.</translation>
 <translation id="7955885781510802139">Modalità ad alto contrasto</translation>
+<translation id="7968693143708939792">Seleziona cartella…</translation>
 <translation id="7977927628060636163">Ricerca di reti mobili...</translation>
 <translation id="7980780401175799550">Prova nuove modalità di esplorazione di Chrome OS</translation>
 <translation id="7982789257301363584">Rete</translation>

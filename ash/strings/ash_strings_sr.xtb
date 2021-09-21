@@ -494,7 +494,6 @@
 <translation id="4665114317261903604">Укључите/искључите режим Не узнемиравај. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Откључајте уређај помоћу кода родитеља</translation>
 <translation id="4702647871202761252">Екран за приватност је искључен</translation>
-<translation id="4705716602320768426">Пошаљите повратне информације</translation>
 <translation id="4706121060329443414">Пробаћемо преузимање касније. Говор ће за сада бити послат Google-у ради обраде.</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
@@ -771,6 +770,7 @@
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
 <translation id="6921188888306725546">Тастерске пречице су побољшане</translation>
 <translation id="6929655271276551705">Подешавања датума</translation>
+<translation id="6931576957638141829">Сачувајте у</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
 <translation id="6961840794482373852">Тастерска пречица Ctrl + стрелица нагоре је промењена. Да бисте користили тастер Page Up, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре.</translation>
@@ -907,6 +907,7 @@
 <translation id="79341161159229895">Налогом управљају <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Притисните <ph name="SHORTCUT_KEY_NAME" /> + V да бисте видели привремену меморију. Последњих 5 ставки које сте копирали се чувају у привременој меморији.</translation>
 <translation id="7955885781510802139">Режим високог контраста</translation>
+<translation id="7968693143708939792">Изаберите фолдер…</translation>
 <translation id="7977927628060636163">Траже се мобилне мреже…</translation>
 <translation id="7980780401175799550">Испробајте нове начине за кретање кроз Chrome ОС</translation>
 <translation id="7982789257301363584">Мрежа</translation>

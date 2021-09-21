@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Hindi nakasaksak ang <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3 segundong timer</translation>
 <translation id="1545749641540134597">I-scan ang QR Code</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Available na ang pag-scan ng dokumento</translation>
 <translation id="5268823927180092501">I-enable ang document mode sa lahat ng camera</translation>
 <translation id="5444515100983837161">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento. Pinakamahusay na gumagana ang pag-scan kung magkaiba ng kulay ang dokumento at background.</translation>
+<translation id="5588258280684580073">I-enable ang pag-record ng GIF</translation>
 <translation id="5671277269877808209">Parisukat</translation>
 <translation id="5746169159649715125">I-save bilang PDF</translation>
 <translation id="5753488212459587150">I-enable ang expert mode</translation>
@@ -98,12 +100,14 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="7243947652761655814">Resolution ng video</translation>
 <translation id="7337660886763914220">Mga error sa file system.</translation>
 <translation id="7450541714075000668">Nakopya ang text</translation>
+<translation id="7488619942230388918">Mag-record ng GIF na video</translation>
 <translation id="7557677699350329807">Lumipat sa susunod na camera</translation>
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Mag-record ng karaniwang video</translation>
 <translation id="7983668134180549431">Na-detect na text.</translation>
 <translation id="8067883171444229417">I-play ang video</translation>
 <translation id="8120146556401698679">I-pan i-tilt i-zoom</translation>

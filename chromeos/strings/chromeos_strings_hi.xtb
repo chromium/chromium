@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है.</translation>
+<translation id="1181037720776840403">हटाएं</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
 <translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">यूडीपी अनुरोध पूरे नहीं हो पाए</translation>
 <translation id="1930797645656624981">Chrome OS के इनपुट के तरीके की सेवा</translation>
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
+<translation id="197386857804679933">फिर से कनेक्ट करने के लिए, सेटिंग पर जाएं</translation>
 <translation id="1979103255016296513">पासवर्ड बदलने का समय निकल चुका है</translation>
 <translation id="1999615961760456652">कैप्टिव पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिविटी</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">जांच में पास</translation>
 <translation id="2789486458103222910">ठीक है</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
+<translation id="2860473693272905224">स्कैनर पर कोई अन्य पेज रखें</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है...</translation>
 <translation id="315738237743207937">कैप्टिव पोर्टल की पहचान की गई</translation>
+<translation id="3170673040743561620">अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
 <translation id="3199982728237701504">डॉक्यूमेंट फ़ीडर (दो तरफ़ वाला)</translation>
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
 <translation id="3708186454126126312">पहले कनेक्ट किए गए डिवाइस</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{पेज दोबारा स्कैन करें}=1{{PAGE_NUMBER} पेज दोबारा स्कैन करें}one{{PAGE_NUMBER} पेज दोबारा स्कैन करें}other{{PAGE_NUMBER} पेज दोबारा स्कैन करें}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> समीक्षाएं)</translation>
 <translation id="3748026146096797577">कनेक्ट नहीं है</translation>
 <translation id="3749289110408117711">फ़ाइल नाम</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">मेरी डिस्क</translation>
 <translation id="4429881212383817840">Kerberos टिकट की समयसीमा जल्द ही खत्म होने वाली है</translation>
 <translation id="4431821876790500265">रिपोर्ट देखें</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{पेज हटाएं}=1{{PAGE_NUMBER} पेज हटाएं}one{{PAGE_NUMBER} पेज हटाएं}other{{PAGE_NUMBER} पेज हटाएं}}</translation>
 <translation id="445059817448385655">पुराना पासवर्ड</translation>
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">स्कैन की हुई फ़ाइल यहां सेव करें</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">कनेक्शन</translation>
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
 <translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
+<translation id="484790837831576105">(Android) डीएनएस रिज़ॉल्यूशन</translation>
 <translation id="4848429997038228357">चल रहा है</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}one{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}other{<ph name="ERROR_MESSAGE" /> आप {0} बार और कोशिश कर सकते हैं}}</translation>
 <translation id="4880328057631981605">एक्सेस पॉइंट नाम</translation>
@@ -291,6 +294,7 @@
 <translation id="6050189528197190982">ग्रेस्‍केल</translation>
 <translation id="6058625436358447366">पूरा करने के लिए, पुराना और नया पासवर्ड डालें</translation>
 <translation id="6061772781719867950">वे एचटीटीपी अनुरोध जो नहीं किए जा सके</translation>
+<translation id="6075872808778243331">(Android) एचटीटीपी के इंतज़ार का समय</translation>
 <translation id="6104112872696127344">स्कैन करने की प्रोसेस रद्द कर दी गई है</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6108689792487843350">गेटवे से कनेक्ट नहीं किया जा सका</translation>
@@ -333,6 +337,7 @@
 <translation id="6643016212128521049">साफ़ करें</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> को बंद कर दिया गया है</translation>
 <translation id="6747215703636344499">बंद हो गया - आउटपुट भर गया</translation>
 <translation id="6756731097889387912">स्कैन करने की प्रोसेस रद्द नहीं हो सकी</translation>
 <translation id="6766275201586212568">वे डीएनएस रिज़ॉल्यूशन जो नहीं हो पाए</translation>
@@ -342,11 +347,13 @@
 <translation id="6910312834584889076">स्कैनर का कवर खुला हुआ है. कवर बंद करें और फिर से कोशिश करें.</translation>
 <translation id="6911383237894364323">मीडिया सर्वर से कनेक्ट नहीं किया जा सका</translation>
 <translation id="6957231940976260713">सेवा का नाम</translation>
+<translation id="6961170852793647506">शुरू करने के लिए, अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="6977381486153291903">फ़र्मवेयर पुनरीक्षण</translation>
 <translation id="6982876849933694860">कोई नया कनेक्शन सेटअप करने के लिए, <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> कीबोर्ड</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
+<translation id="7058278511608979688">बंद करें और सेव करें</translation>
 <translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
 <translation id="708426984172631313">रोका गया</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
-<translation id="7257889006063274246">क्या आप वाकई <ph name="CURRENT_PAGE" /> पेज को हटाना चाहते हैं?</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">वॉलपेपर कलेक्शन</translation>
@@ -411,6 +417,7 @@
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
+<translation id="811820734797650957">(Android) गेटवे पिंग किया जा सकता है</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ट्रैफ़िक काउंटर का अनुरोध करें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
@@ -482,6 +489,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>
+<translation id="9126720536733509015">सारे पेज सेव करके एक PDF बना लें</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">मेमोरी टेस्ट चलाएं</translation>
 <translation id="9173638680043580060">एक मिनट से कम बचा है</translation>

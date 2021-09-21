@@ -269,6 +269,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइंस्टॉल करता आले नाही</translation>
 <translation id="1277020343994096713">तुमच्या सध्याच्या पिनपेक्षा वेगळा नवीन पिन तयार करा</translation>
 <translation id="1278859221870828664">Google Play च्या अ‍ॅप्स आणि सेवांचे पुनरावलोकन करा</translation>
+<translation id="1279024913354609713">अनुमती देऊ नका</translation>
 <translation id="127946606521051357">जवळपासचे डिव्हाइस शेअर करत आहे</translation>
 <translation id="1280965841156951489">फाइल संपादित करा</translation>
 <translation id="1282465000333679776">सिस्टम ऑडिओ शेअर करा</translation>
@@ -2208,6 +2209,7 @@
 <translation id="33022249435934718">GDI हँडल</translation>
 <translation id="3302388252085547855">कारण एंटर करा...</translation>
 <translation id="3303260552072730022">एका एक्स्टेंशनने फुल स्क्रीनला वेग दिला.</translation>
+<translation id="3303795387212510132">अ‍ॅपला <ph name="PROTOCOL_SCHEME" /> लिंक उघडण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="3303818374450886607">प्रती</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> सूट</translation>
@@ -2285,6 +2287,7 @@
 <translation id="339178315942519818">तुमच्या चॅट ॲप्सवरील सूचना तुमच्या <ph name="DEVICE_TYPE" /> वर पहा</translation>
 <translation id="3393554941209044235">Chrome दस्तऐवज विश्लेषण</translation>
 <translation id="3394850431319394743">संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरण्याची अनुमती आहे</translation>
+<translation id="3396744558790608201">तुम्ही वेबवर ब्राउझ किंवा खरेदी करत असताना तुम्हाला त्यावर दिसत असलेल्या व्हिज्युअल आशयाबद्दल अधिक जाणून घेण्यासाठी साइटचा कोणताही भाग शोधण्याकरिता राइट क्लिक करा आणि “Google Lens वापरून इमेज शोधा” हे निवडा.</translation>
 <translation id="3396800784455899911">"स्वीकारा आणि सुरू ठेवा" या बटणावर क्लिक करून तुम्ही या Google सेवांसाठी वर वर्णन केलेल्या प्रक्रियांना सहमती दर्शवता.</translation>
 <translation id="339722927132407568">थांबतो</translation>
 <translation id="3399432415385675819">सूचना बंद केल्या जातील</translation>
@@ -3193,6 +3196,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> विंडो शेअर करीत आहे.</translation>
 <translation id="4364830672918311045">सूचना डिस्प्ले करा</translation>
 <translation id="4366138410738374926">प्रिंट करण्याच्या प्रक्रियेला सुरुवात झाली</translation>
+<translation id="4369121877634339065">शोधण्यासाठी कोणत्याही इमेजवर ड्रॅग करा</translation>
 <translation id="4370975561335139969">तुम्ही एंटर केलेला ईमेल आणि पासवर्ड जुळत नाही</translation>
 <translation id="4371452868325715552">सर्व्हरशी कनेक्ट करता आले नाही. कृपया तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा. तुम्हाला तरीही समस्या येत असल्यास, तुमचे Chromebook रीस्टार्ट करण्याचा प्रयत्न करा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">डेस्कटॉप कास्ट करीत आहे</translation>
@@ -3638,6 +3642,7 @@
 <translation id="485088796993065002">संगीत, व्हिडिओ आणि इतर मीडियासाठी ऑडिओ पुरवण्याकरिता साइट आवाज प्ले करू शकतात</translation>
 <translation id="4853020600495124913">&amp;नवीन विंडोमध्ये उघडा</translation>
 <translation id="4854317507773910281">मंजुरीसाठी पालक खाते निवडा</translation>
+<translation id="485480310608090163">आणखी सेटिंग्ज आणि परवानग्या</translation>
 <translation id="4856478137399998590">तुमची मोबाइल सेवा सक्रिय झाली आणि वापरण्यासाठी तयार आहे</translation>
 <translation id="4858792381671956233">या साइटला भेट देणे ठीक आहे का ते तुम्ही तुमच्या पालकांना विचारले</translation>
 <translation id="4858913220355269194">फ्रिटझ</translation>
@@ -5782,6 +5787,10 @@
 <translation id="7222204278952406003">तुमचे डीफॉल्ट ब्राउझर Chrome आहे</translation>
 <translation id="7222232353993864120">ईमेल ॲड्रेस</translation>
 <translation id="7225179976675429563">नेटवर्क प्रकार गहाळ</translation>
+<translation id="7226485026248318204">Google Photos मधील तुमच्या मेमरी येथे दाखवल्या आहेत. तुम्ही साइन इन केलेले असते फक्त तेव्हा, त्या दिसतात.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तुमच्या मेमरीमध्ये तुम्हाला काय दिसावे ते <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> येथे व्यवस्थापित करा.</translation>
 <translation id="7228479291753472782">वेबसाइट भौगोलिक स्थान, मायक्रोफोन, कॅमेरा, इ. वैशिष्‍ट्ये वापरू शकतात किंवा नाही ते नमूद करणार्‍या सेटिंग्ज कुशलतेने हाताळा.</translation>
 <translation id="7228523857728654909">स्क्रीन लॉक आणि साइन इन</translation>
 <translation id="7230222852462421043">&amp;विंडो रिस्टोअर करा</translation>
@@ -6211,6 +6220,7 @@
 <translation id="767147716926917172">Google ला निदान आणि वापर डेटा आपोआप पाठवते</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> मध्ये <ph name="HUNG_IFRAME_URL" />.</translation>
 <translation id="7674416868315480713">Linux मध्ये पाठवले जाणारे सर्व पोर्ट बंद करा</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> अ‍ॅप्स</translation>
 <translation id="7674542105240814168">स्थान अ‍ॅक्सेस नाकारला</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' साठी <ph name="NUM" /> टॅब आढळला</translation>
 <translation id="7676867886086876795">कोणत्याही मजकूर फील्डमध्ये डिक्टेशनला अनुमती देण्यासाठी Google ला तुमचा व्हॉइस पाठवा.</translation>
@@ -6644,7 +6654,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> हे एक्स्टेंशनमधून प्रॉक्सी सेटिंग्ज वापरत आहे</translation>
 <translation id="8097959162767603171">तुमच्या अ‍ॅडमिनिस्ट्रेटरने प्रथमतः ॲडमिन कन्सोल Chrome डिव्हाइस सूचीमधील सेवा अटी स्वीकारणे आवश्यक आहे.</translation>
 <translation id="8098616321286360457">नेटवर्क कनेक्शन आवश्यक आहे</translation>
-<translation id="8099495042588009598">अधिक परवानग्या</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> निवडली. निवड रद्द करण्यासाठी सर्च आणि स्पेस दाबा.</translation>
 <translation id="810185532889603849">रंग कस्टमाइझ करा</translation>
 <translation id="8101987792947961127">पुढील रीबूटवर Powerwash आवश्यक</translation>

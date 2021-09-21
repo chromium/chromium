@@ -2269,7 +2269,7 @@
 <translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看聊天应用内的通知</translation>
 <translation id="3393554941209044235">Chrome 文档分析</translation>
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
-<translation id="3396744558790608201">在网络上浏览和购物时，如果您想详细了解所看到的视觉内容，只需右键点击相应内容并选择“使用 Google 智能镜头搜索图片”，即可在网站上的任何区域中进行搜索。</translation>
+<translation id="3396744558790608201">在网络上浏览和购物时，如果您想详细了解所看到的视觉内容，只需右键点击相应内容并选择“使用 Google 智能镜头搜索图片”，即可搜索网站的任何区域。</translation>
 <translation id="3396800784455899911">点击“接受并继续”按钮，即表示您同意上述针对这些 Google 服务的处理方式。</translation>
 <translation id="339722927132407568">卡顿</translation>
 <translation id="3399432415385675819">通知将被停用</translation>
@@ -3624,6 +3624,7 @@
 <translation id="485088796993065002">网站可能会播放声音来为音乐、视频和其他媒体提供音频</translation>
 <translation id="4853020600495124913">在新窗口中打开(&amp;O)</translation>
 <translation id="4854317507773910281">请选择家长帐号以寻求批准</translation>
+<translation id="485480310608090163">更多设置和权限</translation>
 <translation id="4856478137399998590">您的移动数据服务已激活，可以立即使用</translation>
 <translation id="4858792381671956233">您已向父母发送请求，询问他们是否允许您访问此网站</translation>
 <translation id="4858913220355269194">足球</translation>
@@ -5770,7 +5771,7 @@
 <translation id="7226485026248318204">此处会显示您的 Google 相册中的“回忆”集锦。您必须登录才能看到它们。
         <ph name="BREAK" />
         <ph name="BREAK" />
-        您可在 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 上管理您会在“回忆”集锦中看到什么。</translation>
+        您可在 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 上管理“回忆”集锦显示的内容。</translation>
 <translation id="7228479291753472782">管理用于指定网站可否使用地理位置信息、麦克风、摄像头等功能的设置</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
 <translation id="7230222852462421043">恢复窗口(&amp;R)</translation>
@@ -6635,7 +6636,6 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> 使用的是由某款扩展程序指定的代理设置</translation>
 <translation id="8097959162767603171">您的管理员必须先接受管理控制台 Chrome 设备列表中的服务条款。</translation>
 <translation id="8098616321286360457">需要连接网络</translation>
-<translation id="8099495042588009598">更多权限</translation>
 <translation id="810068641062493918">已选择“<ph name="LANGUAGE" />”。按搜索键 + 空格键即可取消选择。</translation>
 <translation id="810185532889603849">自定义颜色</translation>
 <translation id="8101987792947961127">必须在下次重启时执行 Powerwash</translation>

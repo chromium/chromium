@@ -270,6 +270,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ইনষ্টল কৰিব পৰা নগ’ল</translation>
 <translation id="1277020343994096713">আপোনাৰ বৰ্তমান পিনটোতকৈ পৃথক এটা নতুন পিন সৃষ্টি কৰক</translation>
 <translation id="1278859221870828664">Google Play এপ্‌ আৰু সেৱাসমূহৰ পৰ্যালোচনা কৰক</translation>
+<translation id="1279024913354609713">অনুমতি নিদিব</translation>
 <translation id="127946606521051357">ওচৰৰ ডিভাইচে শ্বেয়াৰ কৰি আছে</translation>
 <translation id="1280965841156951489">ফাইলসমূহ সম্পাদনা কৰক</translation>
 <translation id="1282465000333679776">ছিষ্টেমৰ অডিঅ’ শ্বেয়াৰ কৰক</translation>
@@ -2206,6 +2207,7 @@
 <translation id="33022249435934718">GDI নিয়ন্ত্ৰণসমূহ</translation>
 <translation id="3302388252085547855">যুক্তিযুক্ততা দিয়ক...</translation>
 <translation id="3303260552072730022">এটা এক্সটেনশ্বনে সম্পূৰ্ণ স্ক্রীণৰ ম’ডটো সক্রিয় কৰিলে।</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> লিংক খুলিবলৈ এপ্‌টোক অনুমতি দিবনে?</translation>
 <translation id="3303818374450886607">প্ৰতিলিপিসমূহ</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> ৰেহাই</translation>
@@ -2283,6 +2285,7 @@
 <translation id="339178315942519818">আপোনাৰ <ph name="DEVICE_TYPE" />ত আপোনাৰ চাট এপৰ পৰা জাননী চাওক</translation>
 <translation id="3393554941209044235">Chromeৰ নথি বিশ্লেষণ</translation>
 <translation id="3394850431319394743">সুৰক্ষিত সমল প্লে’ কৰিবলৈ চিনাক্তকাৰী ব্যৱহাৰ কৰাৰ অনুমতি আছে</translation>
+<translation id="3396744558790608201">আপুনি ৱেবত ব্ৰাউজ আৰু ক্ৰয় কৰোঁতে দেখা পোৱা দৃশ্যমান সমলৰ বিষয়ে অধিক জানিবৰ বাবে ছাইটটোৰ যিকোনো অঞ্চলত সন্ধান কৰিবৰ বাবে ৰাইট-ক্লিক কৰক আৰু “Google Lensৰ সহায়ত প্ৰতিচ্ছবি সন্ধান কৰক” বাছনি কৰক।</translation>
 <translation id="3396800784455899911">“মই সন্মত আৰু অব্যাহত ৰাখক” বুটামত ক্লিক কৰি আপুনি ওপৰত বৰ্ণনা কৰাৰ এই Google সেৱাসমূহৰ প্ৰক্ৰিয়াত সন্মতি দিছে।</translation>
 <translation id="339722927132407568">স্থিৰ হৈ যায়</translation>
 <translation id="3399432415385675819">জাননী অক্ষম কৰা হ’ব</translation>
@@ -3192,6 +3195,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" />এ এখন ৱিণ্ড' শ্বেয়াৰ কৰি আছে।</translation>
 <translation id="4364830672918311045">জাননী দেখুওৱা</translation>
 <translation id="4366138410738374926">প্ৰিণ্ট কৰা আৰম্ভ হৈছে</translation>
+<translation id="4369121877634339065">সন্ধান কৰিবলৈ যিকোনো প্ৰতিচ্ছবিৰ ওপৰেদি টানি আনি এৰক</translation>
 <translation id="4370975561335139969">আপুনি দিয়া ইমেইল আৰু পাছৱৰ্ড মিলা নাই</translation>
 <translation id="4371452868325715552">ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। আপুনি যদি এতিয়াও সমস্যাৰ সন্মুখীন হৈ আছে, আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰি চাওক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="4373966964907728675">ডেস্কটপ কাষ্ট কৰি থকা হৈছে</translation>
@@ -3637,6 +3641,7 @@
 <translation id="485088796993065002">ছাইটসমূহে সংগীত, ভিডিঅ' আৰু অন্য মিডিয়াত অডিঅ' প্ৰদান কৰিবলৈ ধ্বনি প্লে' কৰিব পাৰে</translation>
 <translation id="4853020600495124913">&amp;নতুন ৱিণ্ড'ত খোলক</translation>
 <translation id="4854317507773910281">অনুমোদনৰ বাবে অভিভাৱকৰ একাউণ্ট বাছনি কৰক</translation>
+<translation id="485480310608090163">অধিক ছেটিং আৰু অনুমতিসমূহ</translation>
 <translation id="4856478137399998590">আপোনাৰ ম’বাইল ডেটাৰ সেৱা সক্রিয় কৰা হৈছে আৰু সেয়া ব্যৱহাৰ কৰিবলৈ সাজু</translation>
 <translation id="4858792381671956233">আপুনি আপোনাৰ অভিভাৱকক এই ছাইটটোলৈ যোৱাটো ঠিক হ’বনে নহয় সুধিছে</translation>
 <translation id="4858913220355269194">ফ্ৰিটজ</translation>
@@ -5780,6 +5785,10 @@
 <translation id="7222204278952406003">Chrome হৈছে আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ</translation>
 <translation id="7222232353993864120">ইমেইল ঠিকনা</translation>
 <translation id="7225179976675429563">নেটৱৰ্কৰ প্ৰকাৰ নাই</translation>
+<translation id="7226485026248318204">Google Photosৰ পৰা আপোনাৰ স্মৃতিসমূহ ইয়াত দেখুওৱা হয়। কেৱল আপুনি ছাইন ইন হৈ থকাৰ সময়তহে সেইবিলাক দৃশ্যমান হয়।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+         <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />ত আপোনাৰ স্মৃতিসমূহত আপুনি কি দেখা পায় সেয়া পৰিচালনা কৰক।</translation>
 <translation id="7228479291753472782">ৱেবছাইটে ভৌগলিক অৱস্থান, মাইক্ৰ'ফ'ন. কেমেৰা ইত্যাদি সুবিধাসমূহ ব্যৱহাৰ কৰিব পাৰিব নে নাই সেয়া নির্দিষ্ট কৰা ছেটিংসমূহ সলনি সাল সলনি কৰে।</translation>
 <translation id="7228523857728654909">স্ক্ৰীণ লক আৰু ছাইন-ইন</translation>
 <translation id="7230222852462421043">ৱিণ্ড’ পুনঃস্থাপন কৰক</translation>
@@ -6209,6 +6218,7 @@
 <translation id="767147716926917172">স্বয়ংক্ৰিয়ভাৱে Googleলৈ ডায়গন’ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়ায়</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" />ত।</translation>
 <translation id="7674416868315480713">Linuxত ফৰৱাৰ্ড হৈ থকা সকলো প’ৰ্ট নিষ্ক্ৰিয় কৰক</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> টা এপ্‌</translation>
 <translation id="7674542105240814168">অৱস্থানৰ এক্সেছ অস্বীকাৰ কৰা হৈছে</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />'ৰ বাবে <ph name="NUM" /> টা টেব বিচাৰি পোৱা গৈছে</translation>
 <translation id="7676867886086876795">সকলো পাঠৰ ক্ষেত্ৰত Googleএ চিনাক্তকৰণৰ অনুমতি দিবলৈ Googleলৈ আপোনাৰ কণ্ঠস্বৰ পঠিয়াওক।</translation>
@@ -6642,7 +6652,6 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" />এ এটা এক্সটেনশ্বন প্ৰক্সি ছেটিংসমূহ ব্যৱহাৰ কৰি আছে</translation>
 <translation id="8097959162767603171">আপোনাৰ প্ৰশাসকে প্ৰথমতে প্ৰশাসকৰ কনছ’ল Chrome ডিভাইচৰ সূচীত সেৱাৰ চৰ্তাৱলী মানি ল’বই লাগিব।</translation>
 <translation id="8098616321286360457">নেটৱৰ্ক সংযোগৰ আৱশ্যক</translation>
-<translation id="8099495042588009598">অধিক অনুমতি</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> বাছনি কৰা হ'ল। বাছনিৰ পৰা আঁতৰাবলৈ সন্ধান কৰক আৰু স্পে’চ টিপক।</translation>
 <translation id="810185532889603849">কাষ্টম ৰং</translation>
 <translation id="8101987792947961127">পৰৱর্তী ৰিবুটৰ বাবে পাৱাৰৱাশ্বৰ আৱশ্যক</translation>

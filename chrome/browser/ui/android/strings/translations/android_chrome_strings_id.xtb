@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Logout dan nonaktifkan sinkronisasi?</translation>
 <translation id="1373696734384179344">Memori tidak cukup untuk mendownload konten yang dipilih.</translation>
 <translation id="1376578503827013741">Menghitung…</translation>
+<translation id="1382912999714108023">Info Anda yang ditampilkan bukan yang terbaru? Hubungi bank Anda untuk memperbaruinya.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1384704387250346179">Terjemahkan gambar dengan Google Lens <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktif <ph name="LAST_UPDATED" /> hari lalu</translation>
@@ -351,6 +352,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Histori penelusuran<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />bentuk aktivitas lainnya<ph name="END_LINK2" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="321773570071367578">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Untuk menyinkronkan sandi, verifikasi diri Anda</translation>
+<translation id="3223522355830797639">Bank Anda ingin memastikan bahwa ini memang Anda.</translation>
 <translation id="3227557059438308877">Google Chrome sebagai Kunci Keamanan</translation>
 <translation id="3232754137068452469">Aplikasi Web</translation>
 <translation id="3234978181857588512">Simpan ke perangkat</translation>
@@ -817,6 +819,7 @@ Uji coba Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wi
 <translation id="605721222689873409">TT</translation>
 <translation id="6059830886158432458">Kontrol artikel dan aktivitas Anda di sini</translation>
 <translation id="6069177176307973611">Meninjau setelan privasi dan keamanan</translation>
+<translation id="6070730414166672373">Menghubungi bank Anda \u2026</translation>
 <translation id="6085886413119427067">Menentukan cara terhubung ke situs melalui koneksi yang aman</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> jam lagi</translation>
 <translation id="6108923351542677676">Penyiapan sedang berlangsung...</translation>

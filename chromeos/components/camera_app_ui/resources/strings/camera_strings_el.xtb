@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Η κάμερα <ph name="CAMERA" /> είναι αποσυνδεδεμένη.</translation>
 <translation id="1473110567575736769">Χρονόμετρο 3 δευτερολέπτων</translation>
 <translation id="1545749641540134597">Σάρωση κωδικού QR</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Κανονική λειτουργία</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Η σάρωση εγγράφων είναι πλέον διαθέσιμη</translation>
 <translation id="5268823927180092501">Ενεργοποίηση λειτουργίας εγγράφου σε όλες τις κάμερες</translation>
 <translation id="5444515100983837161">Τοποθετήστε όλες τις άκρες του εγγράφου μέσα στο πλαίσιο. Η σάρωση λειτουργεί καλύτερα εάν το έγγραφο και το φόντο έχουν διαφορετικά χρώματα.</translation>
+<translation id="5588258280684580073">Ενεργοποίηση εγγραφής GIF</translation>
 <translation id="5671277269877808209">Τετράγωνο</translation>
 <translation id="5746169159649715125">Αποθήκευση ως PDF</translation>
 <translation id="5753488212459587150">Ενεργοποίηση λειτουργίας Expert</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">Ανάλυση βίντεο</translation>
 <translation id="7337660886763914220">Σφάλματα συστήματος αρχείων.</translation>
 <translation id="7450541714075000668">Το κείμενο αντιγράφηκε</translation>
+<translation id="7488619942230388918">Εγγραφή βίντεο GIF</translation>
 <translation id="7557677699350329807">Μετάβαση στην επόμενη κάμερα</translation>
 <translation id="7607002721634913082">Έγινε παύση</translation>
 <translation id="7608223098072244877">4 επί 4</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7670511624014457267">60 καρέ ανά δευτερόλεπτο</translation>
+<translation id="7726641833034062494">Εγγραφή κανονικού βίντεο</translation>
 <translation id="7983668134180549431">Εντοπίστηκε κείμενο.</translation>
 <translation id="8067883171444229417">Αναπαραγωγή βίντεο</translation>
 <translation id="8120146556401698679">Μετακίνηση, κλίση και εστίαση</translation>

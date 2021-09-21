@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Eemalda</translation>
 <translation id="1195447618553298278">Tundmatu viga.</translation>
 <translation id="1204296502688602597">DNS-i latentsusaeg</translation>
 <translation id="123124571410524056">Kahtlustatakse portaali</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
 <translation id="1930797645656624981">Chrome OS sisestusmeetodi teenus</translation>
 <translation id="1947737735496445907">Prinditud</translation>
+<translation id="197386857804679933">Uuesti ühendamiseks vaadake menüüd Seadeid</translation>
 <translation id="1979103255016296513">Parooli muutmise tähtaeg on möödunud</translation>
 <translation id="1999615961760456652">Hõiveportaal</translation>
 <translation id="2006864819935886708">Ühenduvus</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">LÄBITUD</translation>
 <translation id="2789486458103222910">Selge</translation>
 <translation id="2805756323405976993">Rakendused</translation>
+<translation id="2860473693272905224">Asetage skannerile veel üks leht</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
 <translation id="2878387241690264070">Tühjenes <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundiga.</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Mobiilne andmeside</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. lehe skannimine …</translation>
 <translation id="315738237743207937">Tuvastati hõiveportaal</translation>
+<translation id="3170673040743561620">Asetage dokument skannerisse</translation>
 <translation id="3188257591659621405">Minu failid</translation>
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
 <translation id="3226405216343213872">Skannerite otsimine</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Varem ühendatud</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Skanni leht uuesti}=1{Skanni {PAGE_NUMBER}. leht uuesti}other{Skanni {PAGE_NUMBER}. leht uuesti}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
 <translation id="3748026146096797577">Ühendus puudub</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Minu ketas</translation>
 <translation id="4429881212383817840">Kerberose pilet aegub peagi</translation>
 <translation id="4431821876790500265">Kuva aruanne</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Eemalda leht}=1{Eemalda {PAGE_NUMBER}. leht}other{Eemalda {PAGE_NUMBER}. leht}}</translation>
 <translation id="445059817448385655">Vana parool</translation>
 <translation id="4453205916657964690">Alamvõrgu mask</translation>
 <translation id="4454245904991689773">Skanni asukohta</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Ühendus</translation>
 <translation id="4832079907277790330">Valige rakenduses Failid kaust …</translation>
 <translation id="4835901797422965222">Aktiivseid võrke pole</translation>
+<translation id="484790837831576105">(Android) DNS-lahendus</translation>
 <translation id="4848429997038228357">POOLELI</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} katse jäänud}other{<ph name="ERROR_MESSAGE" /> {0} katset jäänud}}</translation>
 <translation id="4880328057631981605">Pääsupunkti nimi</translation>
@@ -291,6 +294,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6050189528197190982">Hallskaala</translation>
 <translation id="6058625436358447366">Toimingu lõpuleviimiseks sisestage oma vana ja uus parool</translation>
 <translation id="6061772781719867950">Ebaõnnestunud HTTP-päringud</translation>
+<translation id="6075872808778243331">(Android) HTTP latentsusaeg</translation>
 <translation id="6104112872696127344">Skannimine tühistati</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
@@ -333,6 +337,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6704062477274546131">DNS-lahendus</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> on keelatud</translation>
 <translation id="6747215703636344499">Peatatud – väljastussalv on täis</translation>
 <translation id="6756731097889387912">Skannimist ei õnnestunud tühistada</translation>
 <translation id="6766275201586212568">Ebaõnnestunud DNS-lahendused</translation>
@@ -342,11 +347,13 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6910312834584889076">Skanneri kaas on avatud. Sulgege kaas ja proovige uuesti.</translation>
 <translation id="6911383237894364323">Meediaserveritega ei õnnestu ühendust luua</translation>
 <translation id="6957231940976260713">Teenuse nimi</translation>
+<translation id="6961170852793647506">Alustamiseks asetage dokument skannerisse</translation>
 <translation id="6977381486153291903">Püsivara redaktsioon</translation>
 <translation id="6982876849933694860">Uue ühenduse seadistamiseks avage <ph name="BEGIN_LINK" />seaded<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> haldab seda seadet ja sellel on juurdepääs kogu kasutaja tegevusele. sealhulgas külastatud veebilehed, paroolid ja e-post.</translation>
 <translation id="7039041976777695848">Klaviatuur (<ph name="CONNECTION_TYPE" />)</translation>
 <translation id="7040230719604914234">Operaator</translation>
+<translation id="7058278511608979688">Lõpeta ja salvesta</translation>
 <translation id="7059230779847288458">Laadimine, täislaadimiseks kulub <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">PEATATUD</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
-<translation id="7257889006063274246">Kas soovite kindlasti <ph name="CURRENT_PAGE" />. lehe eemaldada?</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Taustapiltide kogud</translation>
@@ -411,6 +417,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8041089156583427627">Saada tagasiside</translation>
 <translation id="8075838845814659848">Aku laetuse tase</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
+<translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>
 <translation id="8206859287963243715">Mobiil</translation>
@@ -482,6 +489,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>
 <translation id="9111102763498581341">Ava lukk</translation>
+<translation id="9126720536733509015">Mitme lehe ühte PDF-faili salvestamine</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Käita mälutest</translation>
 <translation id="9173638680043580060">Jäänud on alla minuti</translation>

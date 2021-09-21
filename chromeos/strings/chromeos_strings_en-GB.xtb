@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Remove</translation>
 <translation id="1195447618553298278">Unknown error.</translation>
 <translation id="1204296502688602597">DNS latency</translation>
 <translation id="123124571410524056">Portal suspected</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">UDP request failures</translation>
 <translation id="1930797645656624981">Chrome OS Input Method Service</translation>
 <translation id="1947737735496445907">Printed</translation>
+<translation id="197386857804679933">Visit Settings to reconnect</translation>
 <translation id="1979103255016296513">Password change overdue</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connectivity</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">PASSED</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2860473693272905224">Place another page on the scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="3008341117444806826">REFRESH</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Captive portal detected</translation>
+<translation id="3170673040743561620">Place your document on the scanner</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="3199982728237701504">Document feeder (two-sided)</translation>
 <translation id="3226405216343213872">Looking for scanners</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
 <translation id="3708186454126126312">Previously connected</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Rescan page}=1{Rescan page {PAGE_NUMBER}}other{Rescan page {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Not Connected</translation>
 <translation id="3749289110408117711">File name</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">Kerberos ticket expires soon</translation>
 <translation id="4431821876790500265">See report</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Remove page}=1{Remove page {PAGE_NUMBER}}other{Remove page {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Old password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Scan to</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Connection</translation>
 <translation id="4832079907277790330">Select folder in the Files app…</translation>
 <translation id="4835901797422965222">No active networks</translation>
+<translation id="484790837831576105">(Android) DNS resolution</translation>
 <translation id="4848429997038228357">RUNNING</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} attempt left}other{<ph name="ERROR_MESSAGE" /> {0} attempts left}}</translation>
 <translation id="4880328057631981605">Access point name</translation>
@@ -291,6 +294,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6050189528197190982">Greyscale</translation>
 <translation id="6058625436358447366">To finish, enter your old and new passwords</translation>
 <translation id="6061772781719867950">Failed HTTP requests</translation>
+<translation id="6075872808778243331">(Android) HTTP Latency</translation>
 <translation id="6104112872696127344">Scanning has been cancelled</translation>
 <translation id="6106186594183574873">To finish, enter your old password</translation>
 <translation id="6108689792487843350">Gateway is unreachable</translation>
@@ -333,6 +337,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> has been disabled</translation>
 <translation id="6747215703636344499">Stopped – output full</translation>
 <translation id="6756731097889387912">Couldn't cancel scanning</translation>
 <translation id="6766275201586212568">Failed DNS resolutions</translation>
@@ -342,11 +347,13 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6910312834584889076">The scanner’s cover is open. Close the cover and try again.</translation>
 <translation id="6911383237894364323">Unable to connect to media servers</translation>
 <translation id="6957231940976260713">Service name</translation>
+<translation id="6961170852793647506">To get started, place your document on the scanner</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
 <translation id="6982876849933694860">To set up a new connection, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> keyboard</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7058278511608979688">End and save</translation>
 <translation id="7059230779847288458">Charging; <ph name="TIME_VALUE" /> until full</translation>
 <translation id="708426984172631313">STOPPED</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
-<translation id="7257889006063274246">Are you sure that you want to remove page <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Wallpaper collections</translation>
@@ -411,6 +417,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="808894953321890993">Change password</translation>
+<translation id="811820734797650957">(Android) Gateway can be pinged</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Request traffic counters</translation>
 <translation id="8206859287963243715">Mobile</translation>
@@ -482,6 +489,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="910415269708673980">Refresh ticket for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanning page <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Unlock</translation>
+<translation id="9126720536733509015">Save multiple pages to one PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Run memory test</translation>
 <translation id="9173638680043580060">Less than a minute remaining</translation>

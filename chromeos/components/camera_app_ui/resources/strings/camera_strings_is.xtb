@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> er ekki í sambandi.</translation>
 <translation id="1473110567575736769">3 sekúndna teljari</translation>
 <translation id="1545749641540134597">Skanna QR-kóða</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Venjuleg</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Nú er skjalaskönnun í boði</translation>
 <translation id="5268823927180092501">Virkja skjalastillingu í öllum myndavélum</translation>
 <translation id="5444515100983837161">Settu öll horn skjalsins í rammann. Skönnun virkar betur ef skjalið og bakgrunnurinn eru í mismunandi litum.</translation>
+<translation id="5588258280684580073">Virkja GIF-upptöku</translation>
 <translation id="5671277269877808209">Ferningur</translation>
 <translation id="5746169159649715125">Vista sem PDF</translation>
 <translation id="5753488212459587150">Nota ítarlegar stillingar</translation>
@@ -98,12 +100,14 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7243947652761655814">Upplausn myndskeiðs</translation>
 <translation id="7337660886763914220">Villur eru í skráakerfi.</translation>
 <translation id="7450541714075000668">Texti afritaður</translation>
+<translation id="7488619942230388918">Taka upp GIF-vídeó</translation>
 <translation id="7557677699350329807">Skipta yfir í næstu myndavél</translation>
 <translation id="7607002721634913082">Hlé</translation>
 <translation id="7608223098072244877">4 sinnum 4</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7670511624014457267">60 rammar/sek.</translation>
+<translation id="7726641833034062494">Taka upp venjulegt vídeó</translation>
 <translation id="7983668134180549431">Texti greindist.</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>
 <translation id="8120146556401698679">Hliðrun, halli og aðdráttur</translation>

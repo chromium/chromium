@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Fjern</translation>
 <translation id="1195447618553298278">Ukendt fejl.</translation>
 <translation id="1204296502688602597">DNS-forsinkelse</translation>
 <translation id="123124571410524056">Der er muligvis en portal</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
 <translation id="1930797645656624981">Indtastningsmetodetjeneste for Chrome OS</translation>
 <translation id="1947737735496445907">Udskrevet</translation>
+<translation id="197386857804679933">Gå til Indstillinger for at genoprette forbindelsen</translation>
 <translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="1999615961760456652">Loginportal</translation>
 <translation id="2006864819935886708">Forbindelse</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2860473693272905224">Placer en ny side i scanneren</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="3008341117444806826">OPDATER</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Scanner side <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Der blev registreret en loginportal</translation>
+<translation id="3170673040743561620">Placer dit dokument i scanneren</translation>
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
 <translation id="3226405216343213872">Søger efter scannere</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Tidligere forbundne enheder</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Scan siden igen}=1{Scan side {PAGE_NUMBER} igen}one{Rescan page {PAGE_NUMBER}}other{Scan side {PAGE_NUMBER} igen}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke forbundet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
 <translation id="4431821876790500265">Se rapport</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Fjern side}=1{Fjern side {PAGE_NUMBER}}one{Remove page {PAGE_NUMBER}}other{Fjern side {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Gammel adgangskode</translation>
 <translation id="4453205916657964690">Undernetmaske</translation>
 <translation id="4454245904991689773">Scan til</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Forbindelse</translation>
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4835901797422965222">Ingen aktive netværk</translation>
+<translation id="484790837831576105">(Android) DNS-oversættelse</translation>
 <translation id="4848429997038228357">KØRER</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}one{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}other{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}}</translation>
 <translation id="4880328057631981605">Navn på adgangspunkt</translation>
@@ -290,6 +293,7 @@
 <translation id="6050189528197190982">Gråtone</translation>
 <translation id="6058625436358447366">Angiv din gamle og nye adgangskode for at afslutte</translation>
 <translation id="6061772781719867950">Mislykkede HTTP-anmodninger</translation>
+<translation id="6075872808778243331">(Android) HTTP-forsinkelse</translation>
 <translation id="6104112872696127344">Scanningen blev annulleret</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
 <translation id="6108689792487843350">Denne gateway kan ikke nås</translation>
@@ -332,6 +336,7 @@
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> er blevet deaktiveret</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
 <translation id="6756731097889387912">Scanningen kunne ikke annulleres</translation>
 <translation id="6766275201586212568">Mislykkede DNS-opslag</translation>
@@ -341,11 +346,13 @@
 <translation id="6910312834584889076">Scannerens er åben. Luk den, og prøv igen.</translation>
 <translation id="6911383237894364323">Der kunne ikke oprettes forbindelse til medieservere</translation>
 <translation id="6957231940976260713">Tjenestens navn</translation>
+<translation id="6961170852793647506">Kom godt i gang ved at placere dit dokument i scanneren</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
 <translation id="6982876849933694860">Du kan konfigurere en ny forbindelse ved at gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" />-tastatur</translation>
 <translation id="7040230719604914234">Udbyder</translation>
+<translation id="7058278511608979688">Afslut, og gem</translation>
 <translation id="7059230779847288458">Oplader, fuldt opladet om <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">STOPPET</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -358,7 +365,6 @@
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7216409898977639127">Mobilselskab</translation>
-<translation id="7257889006063274246">Er du sikker på, at du vil fjerne siden <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Samlinger med baggrunde</translation>
@@ -410,6 +416,7 @@
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
+<translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Anmod om trafiktællere</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -481,6 +488,7 @@
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås op</translation>
+<translation id="9126720536733509015">Gem flere sider i én PDF-fil</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9149391708638971077">Kør hukommelsestest</translation>
 <translation id="9173638680043580060">Mindre end ét minut tilbage</translation>

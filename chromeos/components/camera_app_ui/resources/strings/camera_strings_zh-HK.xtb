@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">抆走咗 <ph name="CAMERA" />。</translation>
 <translation id="1473110567575736769">3 秒計時器</translation>
 <translation id="1545749641540134597">掃描二維條碼</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">一般</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">文件掃瞄功能現已推出</translation>
 <translation id="5268823927180092501">在所有相機上啟用文件模式</translation>
 <translation id="5444515100983837161">將鏡頭對準文件，確認各邊都在方框內。如要獲得最佳的掃瞄效果，請將文件與背景的顏色區分起來。</translation>
+<translation id="5588258280684580073">啟用 GIF 錄影功能</translation>
 <translation id="5671277269877808209">正方形</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5753488212459587150">啟用專業模式</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">影片解像度</translation>
 <translation id="7337660886763914220">檔案系統錯誤。</translation>
 <translation id="7450541714075000668">已複製文字</translation>
+<translation id="7488619942230388918">錄製 GIF 影片</translation>
 <translation id="7557677699350329807">切換至下一部相機</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7608223098072244877">4 乘 4</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">每秒畫格數：60</translation>
+<translation id="7726641833034062494">錄製一般影片</translation>
 <translation id="7983668134180549431">已偵測到文字。</translation>
 <translation id="8067883171444229417">播放影片</translation>
 <translation id="8120146556401698679">平移 傾斜 縮放</translation>

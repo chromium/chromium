@@ -102,6 +102,7 @@
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Зупинити</translation>
 <translation id="1110155001042129815">Зачекайте</translation>
+<translation id="1110965959145884739">Виберіть, які мови встановити на цьому пристрої. Мовні пакети спільні для користувачів задля економії місця на диску. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Проектор</translation>
 <translation id="1112420131909513020">Фонова вкладка використовує Bluetooth</translation>
 <translation id="1113892970288677790">Вибрати рекомендовані твори мистецтва й зображення</translation>
@@ -551,6 +552,7 @@
 <translation id="1580772913177567930">Зв'яжіться з адміністратором</translation>
 <translation id="1581962803218266616">Показати в програмі Finder</translation>
 <translation id="1582955169539260415">видалити [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276">Мовлення (<ph name="LANGUAGE" />) обробляється лише на пристрої, функція працює в режимі офлайн</translation>
 <translation id="1584990664401018068">Можливо, щоб під’єднатися до цієї мережі Wi-Fi (<ph name="NETWORK_ID" />), потрібно ввести облікові дані.</translation>
 <translation id="1585717515139318619">Інша програма на вашому комп’ютері додала тему, яка може впливати на роботу Chrome.
 
@@ -769,6 +771,7 @@
 <translation id="177989070088644880">Додаток (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Закрити групу</translation>
 <translation id="1780273119488802839">Імпорт закладок...</translation>
+<translation id="178092663238929451">Налаштуйте "Передавання поблизу", щоб обмінюватися файлами з користувачами неподалік</translation>
 <translation id="1781291988450150470">Поточний PIN-код</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" />: підключіться до мережі Wi-Fi та завантажте оновлення.</translation>
 <translation id="1781502536226964113">Відкрити сторінку нової вкладки</translation>
@@ -1605,6 +1608,7 @@
 <translation id="265390580714150011">Значення поля</translation>
 <translation id="2654166010170466751">Дозволити сайтам встановлювати обробники платежів</translation>
 <translation id="2654553774144920065">Запит на друк</translation>
+<translation id="2658941648214598230">Показати оригінальний контент?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />На різних пристроях функції можуть бути іншими</translation>
 <translation id="2659971421398561408">Змінити розмір диска в Crostini</translation>
 <translation id="2660779039299703961">Подія</translation>
@@ -2471,6 +2475,7 @@
 <translation id="3564848315152754834">Ключ безпеки USB</translation>
 <translation id="3566325075220776093">З цього пристрою</translation>
 <translation id="3566721612727112615">Немає сайтів</translation>
+<translation id="3567284462585300767">Щоб отримувати та приймати файли від користувачів поблизу, зробіть свій пристрій видимим для них</translation>
 <translation id="3569382839528428029">Надати програмі <ph name="APP_NAME" /> доступ до вашого екрана?</translation>
 <translation id="3569407787324516067">Заставка</translation>
 <translation id="3569682580018832495">Сайт <ph name="ORIGIN" /> може переглядати вказані нижче файли й папки</translation>
@@ -3562,6 +3567,7 @@
 <translation id="475088594373173692">Перший користувач</translation>
 <translation id="4756378406049221019">Зупинити/оновити</translation>
 <translation id="4756388243121344051">&amp;Історія</translation>
+<translation id="4759126501639448579">Ніколи не показувати спогади</translation>
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4761104368405085019">Використовувати ваш мікрофон</translation>
 <translation id="4762718786438001384">На диску пристрою дуже мало вільного місця</translation>
@@ -3648,6 +3654,7 @@
 <translation id="485088796993065002">Сайти можуть відтворювати звук, щоб транслювати аудіо з музики, відео й іншого медіаконтенту</translation>
 <translation id="4853020600495124913">Відкрити в &amp;новому вікні</translation>
 <translation id="4854317507773910281">Вибери батьківський обліковий запис, який має надати дозвіл</translation>
+<translation id="485480310608090163">Додаткові налаштування та дозволи</translation>
 <translation id="4856478137399998590">Службу пересилання мобільних даних активовано. Нею можна користуватися</translation>
 <translation id="4858792381671956233">Ви надіслали батькам запит на перегляд цього сайту</translation>
 <translation id="4858913220355269194">Футбол</translation>
@@ -3885,6 +3892,7 @@
 <translation id="51143538739122961">Вставте ключ безпеки й торкніться його</translation>
 <translation id="5115309401544567011">Підключіть пристрій <ph name="DEVICE_TYPE" /> до джерела живлення.</translation>
 <translation id="5115338116365931134">Система єдиного входу (SSO)</translation>
+<translation id="511632863918093828">Усі спогади приховано</translation>
 <translation id="5116628073786783676">Збере&amp;гти аудіо як...</translation>
 <translation id="5117139026559873716">Від'єднайте телефон від <ph name="DEVICE_TYPE" />. Вони більше не під'єднуватимуться автоматично.</translation>
 <translation id="5117930984404104619">Відстежувати поведінку інших розширень, зокрема відвідані URL-адреси</translation>
@@ -5028,6 +5036,7 @@
 <translation id="6374469231428023295">Повторити спробу</translation>
 <translation id="6377268785556383139">1 результат для запиту "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Прийняти та продовжити</translation>
+<translation id="6382958439467370461">Немає неактивних комбінацій клавіш</translation>
 <translation id="638418309848716977">Підтримувані посилання</translation>
 <translation id="6384275966486438344">Використовувати пошукову систему <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Група без назви – 1 вкладка}one{Група без назви – # вкладка}few{Група без назви – # вкладки}many{Група без назви – # вкладок}other{Група без назви – # вкладки}}</translation>
@@ -5905,6 +5914,7 @@
 <translation id="7354341762311560488">Сканер відбитків пальців – це нижня клавіша ліворуч на клавіатурі. Легко натисніть її будь-яким пальцем.</translation>
 <translation id="7356908624372060336">Журнали мережі</translation>
 <translation id="735745346212279324">VPN від’єднано</translation>
+<translation id="7358324924540718595">На сьогодні спогади приховано</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> с. на <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Натисніть праву кнопку миші, щоб запустити плагін <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Сайти можуть запитувати дозвіл на підключення до пристроїв із Bluetooth</translation>
@@ -6305,6 +6315,7 @@
 <translation id="7757787379047923882">Текст, надісланий із пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Налаштуйте межі дисплея</translation>
+<translation id="7759276754544429366">Приховати спогади на сьогодні</translation>
 <translation id="7760004034676677601">Це стартова сторінка, яку ви очікували?</translation>
 <translation id="7764225426217299476">Додати адресу</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> з домену <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6660,7 +6671,6 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> використовує налаштування проксі-сервера розширення</translation>
 <translation id="8097959162767603171">Адміністратор має прийняти Умови використання в списку пристроїв Chrome на консолі адміністратора.</translation>
 <translation id="8098616321286360457">Потрібне з'єднання з мережею</translation>
-<translation id="8099495042588009598">Інші дозволи</translation>
 <translation id="810068641062493918">Вибрана мова: <ph name="LANGUAGE" />. Щоб скасувати вибір, натисніть комбінацію клавіш Search і пробіл.</translation>
 <translation id="810185532889603849">Спеціальний колір</translation>
 <translation id="8101987792947961127">Під час наступного перезавантаження потрібно виконати Powerwash</translation>
@@ -6977,6 +6987,7 @@
 <translation id="8457451314607652708">Імпортувати закладки</translation>
 <translation id="8458341576712814616">Команда</translation>
 <translation id="8458627787104127436">Відкрити всі (<ph name="URL_COUNT" />) у новому вікні</translation>
+<translation id="8460490661223303637">Щоб заощадити обсяг пам’яті, веб-переглядач Chrome вилучив деякий контент</translation>
 <translation id="8460932807646981183">Керувати пошуковими системами та пошуком на сайтах</translation>
 <translation id="84613761564611563">Надсилається запит на отримання інтерфейсу конфігурації мережі. Зачекайте…</translation>
 <translation id="8461914792118322307">Проксі-сервер</translation>

@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> გამოერთებულია.</translation>
 <translation id="1473110567575736769">3-წამიანი ტაიმერი</translation>
 <translation id="1545749641540134597">QR კოდის სკანირება</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">ნორმალური</translation>
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">ამიერიდან ხელმისაწვდომია დოკუმენტების სკანირების ფუნქცია</translation>
 <translation id="5268823927180092501">დოკუმენტის რეჟიმის ჩართვა ყველა კამერაზე</translation>
 <translation id="5444515100983837161">მოათავსეთ დოკუმენტის ყველა კიდე ჩარჩოში. საუკეთესო შედეგების მისაღებად დოკუმენტისა და ფონის ფერები განსხვავებული უნდა იყოს.</translation>
+<translation id="5588258280684580073">GIF ვიდეოების ჩაწერის ჩართვა</translation>
 <translation id="5671277269877808209">კვადრატი</translation>
 <translation id="5746169159649715125">შენახვა PDF-ის სახით</translation>
 <translation id="5753488212459587150">ექსპერტის რეჟიმის ჩართვა</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">ვიდეოს გარჩევადობა</translation>
 <translation id="7337660886763914220">ფაილების სისტემის შეცდომები.</translation>
 <translation id="7450541714075000668">ტექსტი დაკოპირდა</translation>
+<translation id="7488619942230388918">GIF ვიდეოს ჩაწერა</translation>
 <translation id="7557677699350329807">მომდევნო კამერაზე გადართვა</translation>
 <translation id="7607002721634913082">დაპაუზებული</translation>
 <translation id="7608223098072244877">ოთხი ოთხზე</translation>
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7670511624014457267">60 კადრი/წმ</translation>
+<translation id="7726641833034062494">ჩვეულებრივი ვიდეოს ჩაწერა</translation>
 <translation id="7983668134180549431">აღმოჩენილია ტექსტი.</translation>
 <translation id="8067883171444229417">ვიდეოს დაკვრა</translation>
 <translation id="8120146556401698679">პანირება/გადახრა/მასშტაბირება</translation>

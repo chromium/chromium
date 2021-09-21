@@ -371,13 +371,6 @@
 
       注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
 <translation id="1488724823347505879">Android アプリからウェブアプリへの共有を有効にする</translation>
-<translation id="1495817006535797003">このポリシーを設定した場合、カンマ区切りのリストで指定した発行元が各自のプロセスで実行され、サブドメインによって指定された発行元が分離されます。たとえば、https://example.com/ と指定すると、https://foo.example.com/ が https://example.com/ サイトの一部として分離されます。Android では <ph name="PRODUCT_NAME" /> バージョン 77 以降、特定のデリケートなコンテンツを含むウェブサイトがデフォルトで分離されており、このポリシーによってデフォルトのサイト分離モードが特定の発行元にも適用されます。
-
-      このポリシーを無効に設定した場合は、すべてのサイト分離が無効になります。これには、デリケートなコンテンツを含むサイトの分離、IsolateOriginsAndroid と SitePerProcessAndroid のフィールド テスト、その他のサイト分離モードが含まれます。ただしユーザーはコマンドライン フラグを使用して手動で IsolateOrigins を有効にできます。
-
-      このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。
-
-      注: Android で大量のサイトを分離する場合、特にメモリ容量の少ないデバイスでパフォーマンスに影響が生じる可能性があります。このポリシーは、厳密に 1 GB より大きい RAM を搭載した Android デバイスの Chrome のみに適用されます。Android 以外のプラットフォームにこのポリシーを適用するには、<ph name="ISOLATE_ORIGINS_POLICY_NAME" /> を使用してください。</translation>
 <translation id="1502843533062797703">第三者ソフトウェアからのコードの挿入をブロックする</translation>
 <translation id="1503969899251962413">このポリシーでは、このデバイスの <ph name="PLUGIN_VM_NAME" /> のライセンスキーを指定します。
 
@@ -1981,11 +1974,6 @@
 
           警告メッセージは、アイドル時の操作がログアウトかシャットダウンの場合にのみ表示されます。</translation>
 <translation id="3363360928811201045">管理対象アカウントに制限を追加する</translation>
-<translation id="3367868895271989224">このポリシーを有効に設定した場合、すべてのサイトが分離されます（各サイトが独自のプロセスで実行されます）。このポリシーを無効に設定するか未設定のままにした場合、サイト分離は無効になりませんが、ユーザーは chrome://flags などで無効に設定できます。
-
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> を使用して、発行元を詳細に管理することもできます。<ph name="PRODUCT_OS_NAME" /> バージョン 76 以前では、<ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> デバイス ポリシーを同じ値に設定してください（値が異なる場合、ユーザー セッションの開始時に遅延が生じる可能性があります）。
-
-      注: Android では代わりに <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> ポリシーを使用してください。</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> を有効にする</translation>
 <translation id="3374587000313305002"><ph name="PRODUCT_NAME" /> でユーザーデータの保存に使用するディレクトリを設定します。
 
@@ -5124,11 +5112,6 @@
 <translation id="7506745375479451616">このポリシーでは、<ph name="IE_PRODUCT_NAME" /> から <ph name="PRODUCT_NAME" /> に切り替えて URL を開くときに使用するコマンドを管理します。このポリシーは、実行ファイルのパスに設定するか <ph name="PRODUCT_NAME_PLACEHOLDER" /> に設定することで、<ph name="PRODUCT_NAME" /> の場所を自動検出できます。
 
       このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> が Internet Explorer から起動する際に <ph name="IE_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> の実行パスを自動検出します。注: <ph name="IE_PRODUCT_NAME" /> の従来のブラウザをサポートするアドインがインストールされていない場合、このポリシーは無視されます。</translation>
-<translation id="7507131973617884092">このポリシーを設定した場合、カンマ区切りのリストで指定した発行元が各自のプロセスで実行され、サブドメインによって指定された発行元が分離されます。たとえば、https://example.com/ と指定すると、https://foo.example.com/ が https://example.com/ サイトの一部として分離されます。
-
-      このポリシーを無効に設定するか未設定のままにした場合、ユーザーはこの設定を変更できます。
-
-      注: Android の場合は、代わりに <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> ポリシーを使用してください。</translation>
 <translation id="7507553960917214561">リモート アクセスホストのカーテンを無効にする</translation>
 <translation id="7508067364927180229">この設定は、<ph name="LACROS_NAME" /> ブラウザの使用に関する複数のオプションを提供します。
 
@@ -5269,13 +5252,6 @@
 
           このポリシーの値はミリ秒単位とし、画面オフ（設定されている場合）およびアイドル待ちの時間と同じかそれより短い時間を指定できます。</translation>
 <translation id="7680437377926096177">最後のウィンドウを閉じたときにログアウト ダイアログを表示しない</translation>
-<translation id="7681958144280390173">このポリシーを有効に設定した場合、すべてのサイトが分離されます（各サイトが独自のプロセスで実行されます）。Android では <ph name="PRODUCT_NAME" /> バージョン 77 以降、特定のデリケートなコンテンツを含むウェブサイトがデフォルトで分離されており、このポリシーによってデフォルトのサイト分離モードがすべてのサイトに適用されます。
-
-      このポリシーを無効に設定した場合は、すべてのサイト分離が無効になります。これには、デリケートなコンテンツを含むサイトの分離、IsolateOriginsAndroid と SitePerProcessAndroid のフィールド テスト、その他のサイト分離モードが含まれます。ただし、ユーザーはポリシーを手動で有効にできます。
-
-      このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。
-
-      注: 今後は改善される予定ですが、Android ですべてのサイトを分離する場合、現在は特にローエンドのデバイスでパフォーマンスに影響が生じる可能性があります。このポリシーは、厳密に 1 GB より大きい RAM を搭載した Android デバイスの Chrome のみに適用されます。ユーザーへのパフォーマンス上の影響を抑えつつ、特定のサイトを分離する場合は、<ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> で分離するサイトのリストを指定してください。Android 以外のプラットフォームにこのポリシーを適用するには、<ph name="SITE_PER_PROCESS_POLICY_NAME" /> を使用してください。</translation>
 <translation id="7683777542468165012">動的なポリシーの更新</translation>
 <translation id="7687943045976362719">このポリシーが設定されている場合、指定されたコンテンツ タイプは <ph name="PRODUCT_FRAME_NAME" /> で処理されます。
 

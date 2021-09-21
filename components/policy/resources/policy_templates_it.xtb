@@ -375,13 +375,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="1488724823347505879">Attiva la condivisione dalle app Android alle app web</translation>
-<translation id="1495817006535797003">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita nel proprio processo e le origini denominate da sottodomini vengono isolate. Ad esempio, se si specifica https://example.com/, l'origine https://foo.example.com/ viene isolata in quanto parte del sito https://example.com/.  Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> versione 77 e il criterio estende questa modalità per isolare origini aggiuntive specifiche.
-
-      Se il criterio viene impostato su Disattivato, vengono disattivati tutti i tipi di isolamento dei siti, inclusi quelli di siti sensibili, prove sul campo di IsolateOriginsAndroid, SitePerProcessAndroid e altre modalità di isolamento dei siti. Gli utenti possono comunque attivare IsolateOrigins manualmente usando il flag della riga di comando.
-
-      Se il criterio non viene configurato, gli utenti possono modificare questa impostazione.
-
-      Nota: se vengono isolati troppi siti su Android, potrebbero verificarsi problemi di prestazioni, in particolare sui dispositivi con poca memoria. Questo criterio viene applicato solo a Chrome su dispositivi Android con più di 1 GB di RAM. Per applicare il criterio a piattaforme non Androd, utilizza <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
 <translation id="1503969899251962413">La configurazione del criterio consente di specificare il codice licenza <ph name="PLUGIN_VM_NAME" /> per il dispositivo.
 
@@ -1470,6 +1463,7 @@ Tuttavia, se questo criterio è Disattivato, questo requisito non viene applicat
 <translation id="2725855586003209701">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'elenco di utenti.</translation>
+<translation id="2730419309754848345">Stampa PDF come immagine predefinita</translation>
 <translation id="2731627323327011390">Disattiva l'utilizzo dei certificati <ph name="PRODUCT_OS_NAME" /> per le app ARC</translation>
 <translation id="2742843273354638707">Consente di nascondere l'app Chrome Web Store e il link nel piè di pagina nella pagina Nuova scheda e in Avvio applicazioni di <ph name="PRODUCT_OS_NAME" />.
 
@@ -2018,11 +2012,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
           L'avviso viene mostrato solo se l'azione stabilita in caso di inattività è la disconnessione o lo spegnimento.</translation>
 <translation id="3363360928811201045">Aggiungi limitazioni agli account gestiti</translation>
-<translation id="3367868895271989224">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati. Ogni sito viene eseguito nel proprio processo. Se il criterio viene impostato su Disattivato o se non viene configurato, l'isolamento dei siti non viene disattivato, ma possono farlo gli utenti (ad esempio, utilizzando la voce "Disattiva isolamento dei siti" in chrome://flags).
-
-      Il criterio <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> potrebbe essere utile anche per la correzione delle origini. In <ph name="PRODUCT_OS_NAME" /> 76 o versioni precedenti, imposta il criterio relativo ai dispositivi <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> sullo stesso valore, perché, se i valori non corrispondono, potrebbe verificarsi un ritardo quando si accede a una sessione utente.
-
-      Nota: per Android, utilizza invece il criterio <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="3373381043600809954">Attiva <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Consente di configurare la directory che <ph name="PRODUCT_NAME" /> utilizza per memorizzare i dati utente.
 
@@ -3224,6 +3213,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4988291787868618635">Azione da compiere a raggiungimento ritardo inattività</translation>
 <translation id="4996068111491152684">Non verranno usate le credenziali di accesso di <ph name="PRODUCT_OS_NAME" /> per l'autenticazione della rete.</translation>
 <translation id="4996086761250834365">Consenti analisi del prodotto di <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="4997074784107449343">L'opzione Stampa come immagine non viene impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando disponibile.</translation>
 <translation id="500149597848135831">Attiva tutte le varianti</translation>
 <translation id="5017369989680827157">Se il criterio è impostato su True o se non viene configurato, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
 
@@ -3972,6 +3962,13 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Se viene impostato su Disattivato, non è consentito utilizzare il protocollo QUIC.</translation>
 <translation id="5921713479449475707">Permetti download di aggiornamento automatico tramite HTTP</translation>
+<translation id="5928633129285224981">Controlla se <ph name="PRODUCT_NAME" /> rende l'opzione Stampa come immagine da impostare per impostazione predefinita per la stampa di un PDF.
+
+      Se questo criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> imposterà per impostazione predefinita l'opzione Stampa come immagine nella finestra Anteprima di stampa per la stampa di un PDF.
+
+      Se questo criterio è impostato su Disattivato o non viene impostato, in <ph name="PRODUCT_NAME" /> la selezione dell'utente per l'opzione Stampa come immagine sarà inizialmente non impostata.  L'utente potrà selezionarla per ogni singolo processo di stampa PDF, se l'opzione è disponibile.
+
+      Per <ph name="MS_WIN_NAME" /> o <ph name="MAC_OS_NAME" /> questo criterio ha un solo effetto se è selezionato anche <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" />.</translation>
 <translation id="5929855945144989709">Consente ai dispositivi di eseguire macchine virtuali su Chrome OS</translation>
 <translation id="5932767795525445337">Questa policy può essere utilizzata anche per bloccare app per Android.</translation>
 <translation id="5934763632608026594">La configurazione del criterio consente di stabilire le impostazioni di gestione delle app web relative a <ph name="PRODUCT_NAME" />.
@@ -5252,11 +5249,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio non viene impostato, <ph name="IE_PRODUCT_NAME" /> rileva automaticamente il percorso eseguibile di <ph name="PRODUCT_NAME" /> all'avvio di <ph name="PRODUCT_NAME" /> da Internet Explorer.
 
       Nota: se il componente aggiuntivo Supporto dei browser precedenti per <ph name="IE_PRODUCT_NAME" /> non è installato, questo criterio non ha effetto.</translation>
-<translation id="7507131973617884092">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita nel proprio processo e le origini denominate da sottodomini vengono isolate. Ad esempio, se si specifica https://example.com/, l'origine https://foo.example.com/ viene isolata in quanto parte del sito https://example.com/.
-
-      La disattivazione o la mancata configurazione del criterio consente agli utenti di modificare questa impostazione.
-
-      Nota: per Android, utilizza invece il criterio <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="7507553960917214561">Disattiva la separazione degli host di accesso remoto</translation>
 <translation id="7508067364927180229">Questa impostazione offre diverse opzioni relative alla disponibilità del browser <ph name="LACROS_NAME" />.
 
@@ -5411,13 +5403,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7680437377926096177">Impedisci la visualizzazione della finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
-<translation id="7681958144280390173">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati (ogni sito viene eseguito nel proprio processo). Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> versione 77 e il criterio estende questa modalità di isolamento dei siti predefinita affinché venga applicata a tutti i siti.
-
-      Se il criterio viene impostato su Disattivato, vengono disattivati tutti i tipi di isolamento dei siti, inclusi quelli di siti sensibili, prove sul campo di IsolateOriginsAndroid, SitePerProcessAndroid e altre modalità di isolamento dei siti. Gli utenti possono comunque attivare il criterio manualmente.
-
-      Se il criterio non viene configurato, gli utenti possono modificare questa impostazione.
-
-      Nota: il supporto dell'isolamento verrà migliorato per tutti i siti su Android, ma al momento potrebbe causare problemi di prestazioni, specialmente sui dispositivi di fascia bassa. Questo criterio viene applicato solo a Chrome su dispositivi Android con più di 1 GB di RAM. Per isolare siti specifici limitando l'impatto sulle prestazioni per gli utenti, utilizza <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> con un elenco di siti che vuoi isolare.  Per applicare il criterio a piattaforme non Androd, utilizza <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="7683777542468165012">Aggiornamento dinamico delle norme</translation>
 <translation id="7687943045976362719">Se questa norma viene impostata, i tipi di contenuto specificati vengono gestiti da <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -5779,6 +5764,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy viene inizial
       Se il criterio viene impostato su Disattivato o se non viene configurato, i pacchetti non vengono inviati.</translation>
 <translation id="816783746144552109">Configura la versione minima di Chrome OS consentita per il dispositivo</translation>
 <translation id="8171924760436219650">Imposta il pulsante destro come pulsante principale del mouse nella schermata di accesso</translation>
+<translation id="8173864651667424191">L'opzione Stampa come immagine è impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando è disponibile.</translation>
 <translation id="8176035528522326671">Consenti all'utente aziendale di essere solo l'utente multiprofilo principale (comportamento predefinito per gli utenti gestiti dall'azienda)</translation>
 <translation id="8179161412673077784">Impedisci ai siti con esperienze intrusive di aprirsi in nuove schede o finestre</translation>
 <translation id="8183108371184777472">Impedisci l'avvio della finestra del browser</translation>

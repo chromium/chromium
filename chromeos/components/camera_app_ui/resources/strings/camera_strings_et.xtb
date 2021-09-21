@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> on eemaldatud.</translation>
 <translation id="1473110567575736769">3-sekundiline taimer</translation>
 <translation id="1545749641540134597">QR-koodi skannimine</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Tavaline</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="520537883758714667">Dokumendiskannimine on nüüd saadaval</translation>
 <translation id="5268823927180092501">Luba dokumendirežiim kõigis kaamerates</translation>
 <translation id="5444515100983837161">Paigutage kõik dokumendi servad raami sisse. Skannimine toimib kõige paremini, kui dokument ja taust on eri värvi.</translation>
+<translation id="5588258280684580073">Luba GIF-vormingus salvestamine</translation>
 <translation id="5671277269877808209">Ruut</translation>
 <translation id="5746169159649715125">Salvesta PDF-ina</translation>
 <translation id="5753488212459587150">Luba ekspertrežiim</translation>
@@ -98,12 +100,14 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="7243947652761655814">Video eraldusvõime</translation>
 <translation id="7337660886763914220">Failisüsteemi vead.</translation>
 <translation id="7450541714075000668">Tekst on kopeeritud</translation>
+<translation id="7488619942230388918">GIF-video salvestamine</translation>
 <translation id="7557677699350329807">Vaheta järgmisele kaamerale</translation>
 <translation id="7607002721634913082">Peatatud</translation>
 <translation id="7608223098072244877">4 korda 4</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Tavalise video salvestamine</translation>
 <translation id="7983668134180549431">Tuvastati tekst.</translation>
 <translation id="8067883171444229417">Esita video</translation>
 <translation id="8120146556401698679">Panoraamimine, kallutamine, suumimine</translation>

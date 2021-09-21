@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Login välja ja keelan sünkroonimise?</translation>
 <translation id="1373696734384179344">Valitud sisu allalaadimiseks pole piisavalt mäluruumi.</translation>
 <translation id="1376578503827013741">Arvutamine …</translation>
+<translation id="1382912999714108023">Teie teave on aegunud? Võtke selle värskendamiseks ühendust pangaga.</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1384704387250346179">Tõlgi pilt Google Lensiga <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiivne <ph name="LAST_UPDATED" /> päeva tagasi</translation>
@@ -351,6 +352,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3214996641768123781">Kui olete sisse logitud, võidakse teie <ph name="BEGIN_LINK1" />otsinguajalugu<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />muud tegevused<ph name="END_LINK2" /> teie Google'i kontole salvestada. Saate need alati kustutada.</translation>
 <translation id="321773570071367578">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Paroolide sünkroonimiseks kinnitage oma isik</translation>
+<translation id="3223522355830797639">Pank soovib teie isikut kinnitada.</translation>
 <translation id="3227557059438308877">Google Chrome turvavõtmena</translation>
 <translation id="3232754137068452469">Veebirakendus</translation>
 <translation id="3234978181857588512">Salvesta seadmesse</translation>
@@ -817,6 +819,7 @@ Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval va
 <translation id="605721222689873409">aa</translation>
 <translation id="6059830886158432458">Hallake oma lugusid ja tegevusi siin</translation>
 <translation id="6069177176307973611">Vaadake üle privaatsuse ja turvalisuse seaded</translation>
+<translation id="6070730414166672373">Pangaga ühenduse võtmine \u2026</translation>
 <translation id="6085886413119427067">Määrab, kuidas veebisaitidega turvaline ühendus luua</translation>
 <translation id="60923314841986378">Jäänud on <ph name="HOURS" /> tundi</translation>
 <translation id="6108923351542677676">Seadistamine on pooleli ...</translation>

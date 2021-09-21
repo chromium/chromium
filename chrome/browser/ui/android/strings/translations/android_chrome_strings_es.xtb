@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
 <translation id="1373696734384179344">No hay memoria suficiente para descargar el contenido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando…</translation>
+<translation id="1382912999714108023">¿No está actualizada tu información? Ponte en contacto con tu banco para actualizarla.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Activo hace <ph name="LAST_UPDATED" /> días</translation>
@@ -351,6 +352,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3214996641768123781">Es posible que el <ph name="BEGIN_LINK1" />historial de búsqueda<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />otras formas de actividad<ph name="END_LINK2" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlos cuando quieras.</translation>
 <translation id="321773570071367578">Si has olvidado tu frase de contraseña o quieres cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Para sincronizar tus contraseñas, verifica tu identidad</translation>
+<translation id="3223522355830797639">Tu banco quiere confirmar tu identidad.</translation>
 <translation id="3227557059438308877">Google Chrome como llave de seguridad</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3234978181857588512">Guardar en el dispositivo</translation>
@@ -817,6 +819,7 @@ Las pruebas de Privacy Sandbox aún se encuentran en desarrollo y solo están di
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
 <translation id="6069177176307973611">Revisa la configuración de privacidad y seguridad</translation>
+<translation id="6070730414166672373">Contactando con tu banco\u2026</translation>
 <translation id="6085886413119427067">Determina cómo conectarse a sitios web mediante una conexión segura</translation>
 <translation id="60923314841986378">Quedan <ph name="HOURS" /> horas</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>

@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1181037720776840403">Отстрани</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1204296502688602597">DNS-латентност</translation>
 <translation id="123124571410524056">Можеби е откриен портал</translation>
@@ -139,7 +140,6 @@
 <translation id="360565022852130722">Wi-Fi мрежата е обезбедена со слаб протокол WEP 802.1x</translation>
 <translation id="3689839747745352263">Тест за <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Претходно поврзани</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Повторно скенирај ја страницата}=1{Повторно скенирај ја страницата {PAGE_NUMBER}}one{Повторно скенирај ја страницата {PAGE_NUMBER}}other{Повторно скенирај ја страницата {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> рецензии)</translation>
 <translation id="3748026146096797577">Не е поврзана</translation>
 <translation id="3749289110408117711">Име на датотека</translation>
@@ -177,7 +177,6 @@
 <translation id="4425149324548788773">Мојот Drive</translation>
 <translation id="4429881212383817840">Билетот на Kerberos истекува наскоро</translation>
 <translation id="4431821876790500265">Прикажи го извештајот</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Отстрани ја страницата}=1{Отстрани ја страницата {PAGE_NUMBER}}one{Отстрани ја страницата {PAGE_NUMBER}}other{Отстрани ја страницата {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4453205916657964690">Подмрежна маска</translation>
 <translation id="4454245904991689773">Скенирај во</translation>
@@ -359,7 +358,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
-<translation id="7257889006063274246">Дали сигурно сакате да ја отстраните страницата <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Скенерот се користи во моментов. Обидете се повторно подоцна.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Збирки тапети</translation>

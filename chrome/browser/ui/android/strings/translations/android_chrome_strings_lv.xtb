@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Izrakstīties un izslēgt sinhronizēšanu?</translation>
 <translation id="1373696734384179344">Nepietiek vietas, lai lejupielādētu atlasīto saturu.</translation>
 <translation id="1376578503827013741">Notiek aprēķināšana...</translation>
+<translation id="1382912999714108023">Vai netiek rādīta jūsu pašreizējā informācija? Sazinieties ar banku, lai to atjauninātu.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1384704387250346179">Tulkot attēlu ar Google Lens <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktīvs pirms <ph name="LAST_UPDATED" /> dienām</translation>
@@ -351,6 +352,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3214996641768123781">Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK1" />meklēšanas vēsturi<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />citu veidu darbības<ph name="END_LINK2" />. Jebkurā laikā varat tās izdzēst.</translation>
 <translation id="321773570071367578">Ja esat aizmirsis ieejas frāzi vai vēlaties mainīt šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" />.</translation>
 <translation id="3220943972464248773">Lai sinhronizētu paroles, apstipriniet savu identitāti</translation>
+<translation id="3223522355830797639">Banka vēlas apstiprināt jūsu identitāti.</translation>
 <translation id="3227557059438308877">Pārlūka Google Chrome izmantošana drošības atslēgas vietā</translation>
 <translation id="3232754137068452469">Tīmekļa lietotne</translation>
 <translation id="3234978181857588512">Saglabāt ierīcē</translation>
@@ -817,6 +819,7 @@ Konfidencialitātes smilškastes izmēģinājuma versijas joprojām tiek izstrā
 <translation id="605721222689873409">GG</translation>
 <translation id="6059830886158432458">Šeit varat kontrolēt jums rādītos rakstus un darbības.</translation>
 <translation id="6069177176307973611">Pārskatiet konfidencialitātes un drošības iestatījumus</translation>
+<translation id="6070730414166672373">Notiek saziņa ar jūsu banku\u2026</translation>
 <translation id="6085886413119427067">Nosaka, kā izveidot drošu savienojumu ar vietnēm.</translation>
 <translation id="60923314841986378">Atlikušas <ph name="HOURS" /> h</translation>
 <translation id="6108923351542677676">Notiek iestatīšana...</translation>

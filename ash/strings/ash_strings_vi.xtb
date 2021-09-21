@@ -494,7 +494,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4665114317261903604">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
 <translation id="4702647871202761252">Màn hình bảo vệ quyền riêng tư đang tắt</translation>
-<translation id="4705716602320768426">Gửi ý kiến phản hồi</translation>
 <translation id="4706121060329443414">Thử tải xuống sau. Dữ liệu giọng nói sẽ được gửi tới Google để xử lý ngay bây giờ.</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4734965478015604180">Ngang</translation>
@@ -771,6 +770,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
 <translation id="6921188888306725546">Các phím tắt đã được cải thiện</translation>
 <translation id="6929655271276551705">Cài đặt ngày</translation>
+<translation id="6931576957638141829">Lưu vào</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6961121602502368900">Bạn không dùng được tính năng Tắt tiếng điện thoại trên hồ sơ công việc</translation>
 <translation id="6961840794482373852">Phím tắt Alt + Mũi tên lên đã thay đổi. Để sử dụng phím Page Up, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên lên.</translation>
@@ -907,6 +907,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="79341161159229895">Tài khoản được quản lý bởi <ph name="FIRST_PARENT_EMAIL" /> và <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem bảng nhớ tạm. 5 mục gần đây nhất mà bạn đã sao chép sẽ được lưu vào bảng nhớ tạm.</translation>
 <translation id="7955885781510802139">Chế độ tương phản cao</translation>
+<translation id="7968693143708939792">Chọn thư mục...</translation>
 <translation id="7977927628060636163">Đang tìm kiếm mạng di động...</translation>
 <translation id="7980780401175799550">Thử những cách mới để thao tác trong Chrome OS</translation>
 <translation id="7982789257301363584">Mạng</translation>

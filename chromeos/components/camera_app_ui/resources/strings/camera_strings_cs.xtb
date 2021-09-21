@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojena.</translation>
 <translation id="1473110567575736769">3sekundový časovač</translation>
 <translation id="1545749641540134597">Naskenovat QR kód</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normální</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Nově je k dispozici skenování dokumentů</translation>
 <translation id="5268823927180092501">Aktivovat režim dokumentu na všech fotoaparátech</translation>
 <translation id="5444515100983837161">Umístěte všechny okraje dokumentu do rámečku. Skenování funguje nejlépe, když se barva dokumentu liší od barvy pozadí.</translation>
+<translation id="5588258280684580073">Povolit nahrávání GIF</translation>
 <translation id="5671277269877808209">Čtverec</translation>
 <translation id="5746169159649715125">Uložit jako PDF</translation>
 <translation id="5753488212459587150">Aktivovat režim pro experty</translation>
@@ -98,12 +100,14 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="7243947652761655814">Rozlišení videa</translation>
 <translation id="7337660886763914220">Chyby systému souborů.</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
+<translation id="7488619942230388918">Nahrát video GIF</translation>
 <translation id="7557677699350329807">Přepnout na další fotoaparát</translation>
 <translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7608223098072244877">4 krát 4</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7670511624014457267">60 snímků/s</translation>
+<translation id="7726641833034062494">Nahrát běžné video</translation>
 <translation id="7983668134180549431">Byl zjištěn text.</translation>
 <translation id="8067883171444229417">Přehrát video</translation>
 <translation id="8120146556401698679">Posunutí, náklon, přiblížení</translation>

@@ -100,6 +100,7 @@
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Oprește</translation>
 <translation id="1110155001042129815">Așteaptă</translation>
+<translation id="1110965959145884739">Alege limbile pe care dorești să le instalezi pe dispozitiv. Fișierele de limbă sunt trimise utilizatorilor pentru a economisi spațiu pe disc. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">O filă din fundal folosește Bluetooth</translation>
 <translation id="1113892970288677790">Selectează imagini recomandate</translation>
@@ -546,6 +547,7 @@
 <translation id="1580772913177567930">Contactează administratorul</translation>
 <translation id="1581962803218266616">Afișează în Finder</translation>
 <translation id="1582955169539260415">șterge [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276">Limba <ph name="LANGUAGE" /> este procesată local și funcționează offline</translation>
 <translation id="1584990664401018068">Este posibil ca rețeaua Wi-Fi pe care o folosești (<ph name="NETWORK_ID" />) să solicite autentificare.</translation>
 <translation id="1585717515139318619">Un alt program de pe computer a adăugat o temă care poate schimba modul în care funcționează Chrome.
 
@@ -756,6 +758,7 @@
 <translation id="177989070088644880">Aplicație (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Închide grupul</translation>
 <translation id="1780273119488802839">Se transferă marcajele...</translation>
+<translation id="178092663238929451">Configurează Trimiterea în apropiere pentru a primi fișiere de la persoane din jur și pentru a le trimite fișiere</translation>
 <translation id="1781291988450150470">Codul PIN actual</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare.</translation>
 <translation id="1781502536226964113">Deschideți pagina Filă nouă</translation>
@@ -1588,6 +1591,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="265390580714150011">Valoarea câmpului</translation>
 <translation id="2654166010170466751">Permite site-urilor să instaleze handlere pentru plăți</translation>
 <translation id="2654553774144920065">Solicitare de printare</translation>
+<translation id="2658941648214598230">Afișezi conținutul original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funcțiile variază în funcție de dispozitiv</translation>
 <translation id="2659971421398561408">Redimensionarea discului în Crostini</translation>
 <translation id="2660779039299703961">Eveniment</translation>
@@ -2454,6 +2458,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3564848315152754834">Cheie de securitate USB</translation>
 <translation id="3566325075220776093">De pe acest dispozitiv</translation>
 <translation id="3566721612727112615">Nu s-au adăugat site-uri</translation>
+<translation id="3567284462585300767">Pentru a primi și a accepta fișiere de la persoane din jur, setează dispozitivul ca vizibil</translation>
 <translation id="3569382839528428029">Doriți ca aplicația <ph name="APP_NAME" /> să aibă acces la ecran?</translation>
 <translation id="3569407787324516067">Screensaver</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> poate să vadă următoarele fișiere și dosare</translation>
@@ -3544,6 +3549,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="475088594373173692">Primul utilizator</translation>
 <translation id="4756378406049221019">Oprește/Reîncarcă</translation>
 <translation id="4756388243121344051">&amp;Istoric</translation>
+<translation id="4759126501639448579">Nu afișa niciodată amintiri</translation>
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4761104368405085019">Utilizează microfonul</translation>
 <translation id="4762718786438001384">Spațiul de pe hard diskul dispozitivului este foarte redus</translation>
@@ -3630,6 +3636,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="485088796993065002">Site-urile pot reda sunet pentru muzică, videoclipuri și alte tipuri de conținut media</translation>
 <translation id="4853020600495124913">Deschideți într-o &amp;fereastră nouă</translation>
 <translation id="4854317507773910281">Alege contul de părinte pentru aprobare</translation>
+<translation id="485480310608090163">Mai multe setări și permisiuni</translation>
 <translation id="4856478137399998590">Serviciul de date mobile este activat și gata de utilizare</translation>
 <translation id="4858792381671956233">Ți-ai întrebat părinții dacă poți accesa acest site</translation>
 <translation id="4858913220355269194">Jucător</translation>
@@ -3867,6 +3874,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="51143538739122961">Introdu cheia de securitate și atinge-o</translation>
 <translation id="5115309401544567011">Conectează dispozitivul <ph name="DEVICE_TYPE" /> la o sursă de alimentare.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">Toate amintirile au fost ascunse</translation>
 <translation id="5116628073786783676">Sal&amp;vează conținutul audio ca...</translation>
 <translation id="5117139026559873716">Deconectează telefonul de la <ph name="DEVICE_TYPE" />. Nu se va mai conecta automat.</translation>
 <translation id="5117930984404104619">Monitorizarea comportamentului altor extensii, inclusiv al adreselor URL accesate</translation>
@@ -5010,6 +5018,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6374469231428023295">Încearcă din nou</translation>
 <translation id="6377268785556383139">Un rezultat pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6380143666419481200">Acceptați și continuați</translation>
+<translation id="6382958439467370461">Nu există comenzi rapide inactive</translation>
 <translation id="638418309848716977">Linkuri acceptate</translation>
 <translation id="6384275966486438344">Schimbați setările de căutare la: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grup nedenumit – o filă}few{Grup nedenumit – # file}other{Grup nedenumit – # de file}}</translation>
@@ -5887,6 +5896,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7354341762311560488">Senzorul de amprentă este tasta din stânga jos de pe tastatură. Atinge-l ușor cu orice deget.</translation>
 <translation id="7356908624372060336">Jurnale de rețea</translation>
 <translation id="735745346212279324">Rețea VPN deconectată</translation>
+<translation id="7358324924540718595">Amintirile sunt ascunse astăzi</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> pagini cu <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Dă clic dreapta pentru a rula <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Site-urile pot solicita permisiunea de a se conecta la dispozitive Bluetooth</translation>
@@ -6287,6 +6297,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7757787379047923882">Text trimis de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ajustează delimitările afișajului</translation>
+<translation id="7759276754544429366">Ascunde amintirile astăzi</translation>
 <translation id="7760004034676677601">Aceasta este pagina de pornire la care vă așteptați?</translation>
 <translation id="7764225426217299476">Adaugă o adresă</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de la <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6641,7 +6652,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> folosește setările proxy dintr-o extensie</translation>
 <translation id="8097959162767603171">Mai întâi, administratorul trebuie să accepte Termenii și condițiile din lista de dispozitive Chrome din Consola de administrare.</translation>
 <translation id="8098616321286360457">Este necesară o conexiune la rețea</translation>
-<translation id="8099495042588009598">Mai multe permisiuni</translation>
 <translation id="810068641062493918">S-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + bara de spațiu pentru a deselecta.</translation>
 <translation id="810185532889603849">Culoare personalizată</translation>
 <translation id="8101987792947961127">Este necesară lansarea Powerwash la următoarea repornire</translation>
@@ -6958,6 +6968,7 @@ Apasă un comutator atribuit pentru a elimina atribuirea</translation>
 <translation id="8457451314607652708">Importă marcajele</translation>
 <translation id="8458341576712814616">Comanda rapidă</translation>
 <translation id="8458627787104127436">Deschide-le pe toate (<ph name="URL_COUNT" />) într-o fereastră nouă</translation>
+<translation id="8460490661223303637">Pentru a economisi memorie, Chrome a eliminat o parte din conținut</translation>
 <translation id="8460932807646981183">Gestionează motoarele de căutare și căutarea pe site</translation>
 <translation id="84613761564611563">S-a solicitat interfața de utilizare pentru configurarea rețelei, așteaptă...</translation>
 <translation id="8461914792118322307">Proxy</translation>

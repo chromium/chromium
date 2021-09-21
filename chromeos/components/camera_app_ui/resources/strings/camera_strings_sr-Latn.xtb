@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je isključena.</translation>
 <translation id="1473110567575736769">Tajmer za 3 sekunde</translation>
 <translation id="1545749641540134597">Skenirajte QR kôd</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normalan</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4×4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Sada je dostupno skeniranje dokumenata</translation>
 <translation id="5268823927180092501">Omogući režim dokumenta na svim kamerama</translation>
 <translation id="5444515100983837161">Postavite sve ivice dokumenta u okvir. Skeniranje je najuspešnije ako su dokument i pozadina različite boje.</translation>
+<translation id="5588258280684580073">Omogući GIF snimanje</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5746169159649715125">Sačuvaj kao PDF</translation>
 <translation id="5753488212459587150">Omogući režim za stručnjake</translation>
@@ -98,12 +100,14 @@ Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzo
 <translation id="7243947652761655814">Rezolucija video snimka</translation>
 <translation id="7337660886763914220">Greške sistema datoteka.</translation>
 <translation id="7450541714075000668">Tekst je kopiran</translation>
+<translation id="7488619942230388918">Snimite GIF video</translation>
 <translation id="7557677699350329807">Pređi na sledeću kameru</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7608223098072244877">4 sa 4</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7670511624014457267">60 kadr/s</translation>
+<translation id="7726641833034062494">Snimite normalan video</translation>
 <translation id="7983668134180549431">Tekst je otkriven.</translation>
 <translation id="8067883171444229417">Pusti video</translation>
 <translation id="8120146556401698679">Pomeranje, naginjanje, zumiranje</translation>

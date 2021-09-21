@@ -526,6 +526,7 @@
 <translation id="6189413832092199491">নপঢ়া</translation>
 <translation id="6196207969502475924">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} টা টেব বন্ধ কৰক}one{{COUNT} টা টেব বন্ধ কৰক}other{{COUNT} টা টেব বন্ধ কৰক}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />আপুনি কি কি ছিংক কৰিব পাৰে, সেয়া চাওক<ph name="END_LINK" />।</translation>
 <translation id="6219688215832490856">কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="6223816392543092032">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক, ব্ৰাউজিঙৰ ইতিহাস, পাছৱৰ্ড আৰু আন ছেটিংসমূহ পাওক।</translation>
 <translation id="6232329973559504466">ইনক’গনিট’ টেবত সন্ধান কৰা</translation>
@@ -724,6 +725,7 @@
 
 আপুনি বিভিন্ন ছাইটসমূহত কৰা ব্ৰাউজিঙৰ কার্যকলাপ চাবলৈ ছাইটসমূহে কুকিসমূহ ব্যৱহাৰ কৰিব পাৰে, যেনে, বিজ্ঞাপন ব্যক্তিগতকৃত কৰিবলৈ।</translation>
 <translation id="7971521879845308059">পপ-আপ অৱৰোধ কৰক</translation>
+<translation id="797413074872316787">সকলো ডিভাইচতে ছিংক আৰু ব্যক্তিগতকৰণ কৰিবলৈ ছিংক কৰা সুবিধাটো অন কৰক।</translation>
 <translation id="7982789257301363584">নেটৱৰ্ক</translation>
 <translation id="7993619969781047893">কিছুমান ছাইটত সুবিধাসমূহ ব্যাহত হ’ব পাৰে</translation>
 <translation id="800361585186029508">ইনপুট কৰা URLসমূহ Google Chromeত খোলে।</translation>
@@ -740,6 +742,7 @@
 <translation id="8076014560081431679">ছেভ কৰি ৰখা ছাইটৰ ছেটিংসমূহ মচা নহয় আৰু ই আপোনাৰ ব্ৰাউজিঙৰ আচৰণ প্ৰতিফলন কৰিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">এই ছেটিংটো পৰিচালনা কৰা হয়, অধিক তথ্যৰ বাবে দুবাৰ টিপক</translation>
 <translation id="8080028325999236607">আটাইবোৰ টেব বন্ধ কৰক</translation>
+<translation id="8103864314410529527">আপুনি কি ছিংক কৰিব পাৰে, সেয়া আপোনাৰ প্ৰতিষ্ঠানে সীমিত কৰিছে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">অফ কৰক</translation>
 <translation id="8114753159095730575">ফাইল ডাউনল’ড উপলব্ধ। স্ক্ৰীণৰ তলৰ অংশৰ কাষত থকা বিকল্পসমূহ।</translation>
 <translation id="8156478151976189188">পাছৱৰ্ড ছিংক কৰাৰ সুবিধাটোৱে কাম কৰা নাই</translation>

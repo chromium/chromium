@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Videocamera <ph name="CAMERA" /> scollegata.</translation>
 <translation id="1473110567575736769">Timer di 3 secondi</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normale</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="520537883758714667">Ora è disponibile la scansione di documenti</translation>
 <translation id="5268823927180092501">Abilita la modalità documento per tutte le fotocamere</translation>
 <translation id="5444515100983837161">Posiziona i bordi del documento all'interno dell'inquadratura. La qualità della scansione è migliore se il documento e lo sfondo sono di colori diversi.</translation>
+<translation id="5588258280684580073">Attiva registrazione GIF</translation>
 <translation id="5671277269877808209">Quadrato</translation>
 <translation id="5746169159649715125">Salva come PDF</translation>
 <translation id="5753488212459587150">Attiva modalità Esperto</translation>
@@ -98,12 +100,14 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="7243947652761655814">Risoluzione video</translation>
 <translation id="7337660886763914220">Errori del file system.</translation>
 <translation id="7450541714075000668">Testo copiato</translation>
+<translation id="7488619942230388918">Registra video GIF</translation>
 <translation id="7557677699350329807">Passa alla fotocamera successiva</translation>
 <translation id="7607002721634913082">In pausa</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Registra video normale</translation>
 <translation id="7983668134180549431">Testo rilevato.</translation>
 <translation id="8067883171444229417">Guarda il video</translation>
 <translation id="8120146556401698679">Panoramica Inclinazione Zoom</translation>

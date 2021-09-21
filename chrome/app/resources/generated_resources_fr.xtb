@@ -100,6 +100,7 @@
 <translation id="1103523840287552314">Toujours traduire les pages en <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Arrêter</translation>
 <translation id="1110155001042129815">Attendre</translation>
+<translation id="1110965959145884739">Sélectionnez les langues à installer sur cet appareil. Les fichiers de langue sont partagés entre les utilisateurs pour libérer de l'espace disque. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projecteur</translation>
 <translation id="1112420131909513020">Le Bluetooth est utilisé par un onglet d'arrière-plan</translation>
 <translation id="1113892970288677790">Faites votre choix parmi une sélection d'images et d'œuvres</translation>
@@ -546,6 +547,7 @@
 <translation id="1580772913177567930">Contactez votre administrateur</translation>
 <translation id="1581962803218266616">Afficher dans le Finder</translation>
 <translation id="1582955169539260415">supprimer [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276">La langue "<ph name="LANGUAGE" />" est traitée localement et fonctionne hors connexion</translation>
 <translation id="1584990664401018068">Pour utiliser ce réseau Wi-Fi (<ph name="NETWORK_ID" />), vous devrez peut-être vous identifier.</translation>
 <translation id="1585717515139318619">Un thème qui risque de modifier le fonctionnement de Chrome a été ajouté via un autre programme sur votre ordinateur.
 
@@ -756,6 +758,7 @@
 <translation id="177989070088644880">Application (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Fermer le groupe</translation>
 <translation id="1780273119488802839">Importation des favoris...</translation>
+<translation id="178092663238929451">Configurez "Partage à proximité" pour échanger des fichiers avec des personnes à proximité</translation>
 <translation id="1781291988450150470">Code actuel</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> vous demande de vous connecter au Wi-Fi maintenant et de télécharger une mise à jour.</translation>
 <translation id="1781502536226964113">Ouvrir la page "Nouvel onglet"</translation>
@@ -1588,6 +1591,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="265390580714150011">Valeur du champ</translation>
 <translation id="2654166010170466751">Autoriser les sites à installer des gestionnaires de paiement</translation>
 <translation id="2654553774144920065">Requête d'impression</translation>
+<translation id="2658941648214598230">Afficher le contenu original ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> Les fonctionnalités varient d'un appareil à l'autre</translation>
 <translation id="2659971421398561408">Redimensionnement du disque Crostini</translation>
 <translation id="2660779039299703961">Événement</translation>
@@ -2454,6 +2458,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3564848315152754834">Clé de sécurité USB</translation>
 <translation id="3566325075220776093">Celui sur cet appareil</translation>
 <translation id="3566721612727112615">Aucun site ajouté</translation>
+<translation id="3567284462585300767">Vous devez être visible pour recevoir et accepter des fichiers de personnes à proximité</translation>
 <translation id="3569382839528428029">Voulez-vous que l'application <ph name="APP_NAME" /> partage votre écran ?</translation>
 <translation id="3569407787324516067">Économiseur d'écran</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> peut accéder aux fichiers et dossiers suivants :</translation>
@@ -3544,6 +3549,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="475088594373173692">Premier utilisateur</translation>
 <translation id="4756378406049221019">Arrêter/Actualiser</translation>
 <translation id="4756388243121344051">&amp;Historique</translation>
+<translation id="4759126501639448579">Ne jamais afficher les souvenirs</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4761104368405085019">Utiliser votre micro</translation>
 <translation id="4762718786438001384">Très peu d'espace disque disponible sur l'appareil</translation>
@@ -3630,6 +3636,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="485088796993065002">Le son des sites est activé pour qu'ils puissent diffuser le son de la musique, des vidéos et d'autres contenus multimédias</translation>
 <translation id="4853020600495124913">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="4854317507773910281">Sélectionnez un compte parental pour la demande d'autorisation</translation>
+<translation id="485480310608090163">Plus de paramètres et d'autorisations</translation>
 <translation id="4856478137399998590">Votre service Internet mobile est activé et prêt à l'emploi.</translation>
 <translation id="4858792381671956233">Une demande d'autorisation a été envoyée à tes parents pour la consultation de ce site</translation>
 <translation id="4858913220355269194">Foot</translation>
@@ -3867,6 +3874,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="51143538739122961">Insérez votre clé de sécurité et appuyez dessus</translation>
 <translation id="5115309401544567011">Veuillez brancher votre appareil <ph name="DEVICE_TYPE" /> à une source d'alimentation.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">Tous les souvenirs ont été masqués</translation>
 <translation id="5116628073786783676">En&amp;registrer le fichier audio sous...</translation>
 <translation id="5117139026559873716">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" />. Ils ne se connecteront plus automatiquement.</translation>
 <translation id="5117930984404104619">Surveiller le comportement des autres extensions, y compris des URL consultées</translation>
@@ -5011,6 +5019,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6377268785556383139">1 résultat pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Accepter et continuer</translation>
+<translation id="6382958439467370461">Aucun raccourci inactif</translation>
 <translation id="638418309848716977">Liens compatibles</translation>
 <translation id="6384275966486438344">Modifier les paramètres de la recherche pour utiliser l'adresse <ph name="SEARCH_HOST" />.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Groupe sans nom - 1 onglet}one{Groupe sans nom - # onglet}other{Groupe sans nom - # onglets}}</translation>
@@ -5888,6 +5897,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7354341762311560488">Le lecteur d'empreinte digitale est situé en bas à gauche sur le clavier. Appuyez dessus légèrement avec n'importe quel doigt.</translation>
 <translation id="7356908624372060336">Journaux réseau</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
+<translation id="7358324924540718595">Souvenirs masqués pour aujourd'hui</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> pages sur <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">Faites un clic droit pour exécuter <ph name="PLUGIN_NAME" />.</translation>
 <translation id="7362387053578559123">Les sites peuvent demander à se connecter à des appareils Bluetooth</translation>
@@ -6288,6 +6298,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7757787379047923882">Texte partagé par <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Adaptez les dimensions de l'écran</translation>
+<translation id="7759276754544429366">Masquer les souvenirs pour aujourd'hui</translation>
 <translation id="7760004034676677601">Est-ce la page de démarrage que vous attendiez ?</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> du domaine <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6643,7 +6654,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> utilise les paramètres de proxy provenant d'une extension</translation>
 <translation id="8097959162767603171">Votre administrateur doit d'abord accepter les conditions d'utilisation dans la liste des appareils Chrome via la Console d'administration.</translation>
 <translation id="8098616321286360457">Connexion réseau nécessaire</translation>
-<translation id="8099495042588009598">Autres autorisations</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> sélectionné. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour désélectionner cette langue.</translation>
 <translation id="810185532889603849">Couleur personnalisée</translation>
 <translation id="8101987792947961127">Powerwash requis au prochain redémarrage</translation>
@@ -6960,6 +6970,7 @@ Appuyez sur un contacteur attribué pour supprimer l'association</translation>
 <translation id="8457451314607652708">Importer les favoris</translation>
 <translation id="8458341576712814616">Raccourci</translation>
 <translation id="8458627787104127436">Tout ouvrir (<ph name="URL_COUNT" />) dans une nouvelle fenêtre</translation>
+<translation id="8460490661223303637">Chrome a supprimé certains contenus afin de libérer de la mémoire</translation>
 <translation id="8460932807646981183">Gérer les moteurs de recherche et la recherche sur les sites</translation>
 <translation id="84613761564611563">Demande d'interface utilisateur en cours pour la configuration réseau. Merci de patienter…</translation>
 <translation id="8461914792118322307">Proxy</translation>

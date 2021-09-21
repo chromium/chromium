@@ -494,7 +494,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4665114317261903604">Niet storen aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
 <translation id="4702647871202761252">Privacyscherm staat uit</translation>
-<translation id="4705716602320768426">Feedback geven</translation>
 <translation id="4706121060329443414">Download wordt later geprobeerd. Voorlopig wordt spraak naar Google gestuurd voor verwerking.</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4734965478015604180">Horizontaal</translation>
@@ -771,6 +770,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="6921188888306725546">Sneltoetsen zijn verbeterd</translation>
 <translation id="6929655271276551705">Datuminstellingen</translation>
+<translation id="6931576957638141829">Opslaan in</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>
 <translation id="6961840794482373852">De sneltoets Alt + pijl-omhoog is veranderd. Als je de toets Page Up wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omhoog.</translation>
@@ -907,6 +907,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="79341161159229895">Account wordt beheerd door <ph name="FIRST_PARENT_EMAIL" /> en <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Druk op <ph name="SHORTCUT_KEY_NAME" /> + V om het klembord te bekijken. De laatste 5 items die je hebt gekopieerd, worden opgeslagen op het klembord.</translation>
 <translation id="7955885781510802139">Modus voor hoog contrast</translation>
+<translation id="7968693143708939792">Map selecteren...</translation>
 <translation id="7977927628060636163">Mobiele netwerken zoeken…</translation>
 <translation id="7980780401175799550">Probeer nieuwe manieren om te navigeren in Chrome OS</translation>
 <translation id="7982789257301363584">Netwerk</translation>

@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
 <translation id="1204296502688602597">Latenza DNS</translation>
 <translation id="123124571410524056">Portale sospetto</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Errori delle richieste UDP</translation>
 <translation id="1930797645656624981">Servizio metodo di immissione di Chrome OS</translation>
 <translation id="1947737735496445907">Stampato</translation>
+<translation id="197386857804679933">Apri le Impostazioni per ricollegarti</translation>
 <translation id="1979103255016296513">Modifica della password scaduta</translation>
 <translation id="1999615961760456652">Captive portal</translation>
 <translation id="2006864819935886708">Connettività</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">SUPERATO</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">App</translation>
+<translation id="2860473693272905224">Posiziona un'altra pagina sullo scanner</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3156846309055100599">Scansione pagina <ph name="PAGE_NUMBER" /> in corso…</translation>
 <translation id="315738237743207937">Captive portal rilevato</translation>
+<translation id="3170673040743561620">Posiziona il documento sullo scanner</translation>
 <translation id="3188257591659621405">I miei file</translation>
 <translation id="3199982728237701504">Alimentatore di documenti (fronte e retro)</translation>
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Connessi in precedenza</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Scansiona di nuovo la pagina}=1{Scansiona di nuovo pagina {PAGE_NUMBER}}other{Scansiona di nuovo pagina {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">I miei file</translation>
 <translation id="4429881212383817840">La richiesta di Kerberos scade a breve</translation>
 <translation id="4431821876790500265">Visualizza rapporto</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Rimuovi pagina}=1{Rimuovi pagina {PAGE_NUMBER}}other{Rimuovi pagina {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Vecchia password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Salva scansioni in</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Connessione</translation>
 <translation id="4832079907277790330">Seleziona cartella nell'app File…</translation>
 <translation id="4835901797422965222">Nessuna rete attiva</translation>
+<translation id="484790837831576105">(Android) risoluzione DNS</translation>
 <translation id="4848429997038228357">IN ESECUZIONE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativo rimanente}other{<ph name="ERROR_MESSAGE" /> {0} tentativi rimanenti}}</translation>
 <translation id="4880328057631981605">Nome punto di accesso</translation>
@@ -291,6 +294,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6050189528197190982">Scala di grigi</translation>
 <translation id="6058625436358447366">Per terminare, inserisci la password vecchia e quella nuova</translation>
 <translation id="6061772781719867950">Richieste HTTPS non riuscite</translation>
+<translation id="6075872808778243331">(Android) Latenza HTTP</translation>
 <translation id="6104112872696127344">La scansione è stata annullata</translation>
 <translation id="6106186594183574873">Per terminare, inserisci la vecchia password</translation>
 <translation id="6108689792487843350">gateway non raggiungibile</translation>
@@ -333,6 +337,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6704062477274546131">Risoluzione DNS</translation>
+<translation id="6714650824879092633">La rete <ph name="NETWORK_NAME" /> è stata disattivata</translation>
 <translation id="6747215703636344499">Operazione interrotta - Vassoio di uscita pieno</translation>
 <translation id="6756731097889387912">Impossibile annullare la scansione</translation>
 <translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
@@ -342,11 +347,13 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6910312834584889076">Il coperchio dello scanner è aperto. Chiudilo e riprova.</translation>
 <translation id="6911383237894364323">Impossibile connettersi ai server multimediali</translation>
 <translation id="6957231940976260713">Nome servizio</translation>
+<translation id="6961170852793647506">Per iniziare, posiziona il documento sullo scanner</translation>
 <translation id="6977381486153291903">Revisione firmware</translation>
 <translation id="6982876849933694860">Per configurare una nuova connessione, vai alle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="7039041976777695848">Tastiera <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operatore</translation>
+<translation id="7058278511608979688">Termina e salva</translation>
 <translation id="7059230779847288458">In carica, <ph name="TIME_VALUE" /> al completamento della ricarica</translation>
 <translation id="708426984172631313">INTERROTTO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7177485034254901881">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />. Gli amministratori possono configurarlo da remoto.</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
-<translation id="7257889006063274246">Vuoi rimuovere la pagina <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Lo scanner è attualmente in uso. Riprova più tardi.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Raccolte di sfondi</translation>
@@ -411,6 +417,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="808894953321890993">Cambia password</translation>
+<translation id="811820734797650957">(Android) È possibile inviare un ping al gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Richiedi contatori di traffico</translation>
 <translation id="8206859287963243715">Cellulare</translation>
@@ -482,6 +489,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Sblocca</translation>
+<translation id="9126720536733509015">Salva più pagine in un unico PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Esegui test memoria</translation>
 <translation id="9173638680043580060">Manca meno di un minuto</translation>

@@ -494,7 +494,6 @@
 <translation id="4665114317261903604">切換零打擾模式。<ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">使用家長存取碼將裝置解鎖</translation>
 <translation id="4702647871202761252">已停用隱私保護畫面</translation>
-<translation id="4705716602320768426">提供意見回饋</translation>
 <translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時把語音傳送給 Google 處理。</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
@@ -771,6 +770,7 @@
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
 <translation id="6921188888306725546">我們已改善鍵盤快速鍵功能</translation>
 <translation id="6929655271276551705">日期設定</translation>
+<translation id="6931576957638141829">儲存至</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上鍵。</translation>
@@ -907,6 +907,7 @@
 <translation id="79341161159229895">這個帳戶是由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>
 <translation id="793716872548410480">按下<ph name="SHORTCUT_KEY_NAME" /> + V 鍵即可查看剪貼簿。你最後複製的 5 個項目會儲存到剪貼簿中。</translation>
 <translation id="7955885781510802139">高對比模式</translation>
+<translation id="7968693143708939792">選取資料夾…</translation>
 <translation id="7977927628060636163">正在搜尋行動網路...</translation>
 <translation id="7980780401175799550">試用瀏覽 Chrome 作業系統的新方式</translation>
 <translation id="7982789257301363584">網路</translation>

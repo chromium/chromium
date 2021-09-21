@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
 <translation id="1373696734384179344">Недостатъчно памет за изтегляне на избраното съдържание.</translation>
 <translation id="1376578503827013741">Изчислява се…</translation>
+<translation id="1382912999714108023">Не виждате текущите си данни? Свържете се с банката си, за да ги актуализирате.</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384704387250346179">Превод с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Активно преди <ph name="LAST_UPDATED" /> дни</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">Възможно е <ph name="BEGIN_LINK1" />историята на търсенията<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други видове активност<ph name="END_LINK2" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="321773570071367578">Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">За да се синхронизират паролите ви, потвърдете, че сте вие</translation>
+<translation id="3223522355830797639">Банката иска да потвърди самоличността ви.</translation>
 <translation id="3227557059438308877">Google Chrome като ключ за сигурност</translation>
 <translation id="3232754137068452469">Уеб приложение</translation>
 <translation id="3234978181857588512">Запазване в устройството</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
 <translation id="6069177176307973611">Преглед на настройките за поверителност и сигурност</translation>
+<translation id="6070730414166672373">Осъществява се връзка с банката ви\u2026</translation>
 <translation id="6085886413119427067">Определя начин за свързване с уебсайтовете през сигурна връзка</translation>
 <translation id="60923314841986378">Остават <ph name="HOURS" /> часа</translation>
 <translation id="6108923351542677676">Извършва се настройване…</translation>

@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">ผู้ใช้</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดย <ph name="MANAGER" /></translation>
+<translation id="1181037720776840403">นำออก</translation>
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="1204296502688602597">เวลาในการตอบสนองของ DNS</translation>
 <translation id="123124571410524056">สงสัยว่าเป็นพอร์ทัล</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">ขอ UDP ไม่สำเร็จ</translation>
 <translation id="1930797645656624981">บริการวิธีการป้อนข้อมูลของ Chrome OS</translation>
 <translation id="1947737735496445907">พิมพ์แล้ว</translation>
+<translation id="197386857804679933">ไปที่การตั้งค่าเพื่อเชื่อมต่ออีกครั้ง</translation>
 <translation id="1979103255016296513">เลยเวลาเปลี่ยนรหัสผ่านแล้ว</translation>
 <translation id="1999615961760456652">แคพทีฟพอร์ทัล</translation>
 <translation id="2006864819935886708">การเชื่อมต่อ</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">ผ่าน</translation>
 <translation id="2789486458103222910">ตกลง</translation>
 <translation id="2805756323405976993">แอป</translation>
+<translation id="2860473693272905224">วางอีกหน้าบนเครื่องสแกน</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">เน็ตมือถือ</translation>
 <translation id="3156846309055100599">กำลังสแกนหน้า <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ตรวจพบแคพทีฟพอร์ทัล</translation>
+<translation id="3170673040743561620">วางเอกสารบนเครื่องสแกน</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
 <translation id="3226405216343213872">กำลังค้นหาเครื่องสแกน</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{สแกนหน้าอีกครั้ง}=1{สแกนหน้า {PAGE_NUMBER} อีกครั้ง}other{สแกนหน้า {PAGE_NUMBER} อีกครั้ง}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> รีวิว)</translation>
 <translation id="3748026146096797577">ไม่ได้เชื่อมต่อ</translation>
 <translation id="3749289110408117711">ชื่อไฟล์</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
 <translation id="4429881212383817840">ตั๋ว Kerberos กำลังจะหมดอายุ</translation>
 <translation id="4431821876790500265">ดูรายงาน</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{นำหน้าออก}=1{นำหน้า {PAGE_NUMBER} ออก}other{นำหน้า {PAGE_NUMBER} ออก}}</translation>
 <translation id="445059817448385655">รหัสผ่านเดิม</translation>
 <translation id="4453205916657964690">ซับเน็ตมาสก์</translation>
 <translation id="4454245904991689773">สแกนแล้วบันทึกไว้ใน</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">การเชื่อมต่อ</translation>
 <translation id="4832079907277790330">เลือกโฟลเดอร์ในแอป Files...</translation>
 <translation id="4835901797422965222">ไม่มีเครือข่ายที่ใช้งานอยู่</translation>
+<translation id="484790837831576105">(Android) การแปลง DNS</translation>
 <translation id="4848429997038228357">กำลังดำเนินการ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}other{<ph name="ERROR_MESSAGE" /> ลองได้อีก {0} ครั้ง}}</translation>
 <translation id="4880328057631981605">ชื่อจุดเข้าใช้งาน</translation>
@@ -291,6 +294,7 @@
 <translation id="6050189528197190982">ระดับสีเทา</translation>
 <translation id="6058625436358447366">ป้อนรหัสผ่านเดิมและรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6061772781719867950">คำขอ HTTPS ที่ไม่สำเร็จ</translation>
+<translation id="6075872808778243331">(Android) เวลาในการตอบสนองของ HTTP</translation>
 <translation id="6104112872696127344">ยกเลิกการสแกนแล้ว</translation>
 <translation id="6106186594183574873">ป้อนรหัสผ่านเดิมเพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6108689792487843350">เข้าถึงเกตเวย์ไม่ได้</translation>
@@ -333,6 +337,7 @@
 <translation id="6643016212128521049">ล้าง</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6704062477274546131">การแปลง DNS</translation>
+<translation id="6714650824879092633">ปิดใช้ <ph name="NETWORK_NAME" /> แล้ว</translation>
 <translation id="6747215703636344499">หยุดพิมพ์ - ถาดกระดาษออกเต็ม</translation>
 <translation id="6756731097889387912">ยกเลิกการสแกนไม่ได้</translation>
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
@@ -342,11 +347,13 @@
 <translation id="6910312834584889076">ฝาเครื่องสแกนเปิดอยู่ ปิดฝาแล้วลองอีกครั้ง</translation>
 <translation id="6911383237894364323">เชื่อมต่อเซิร์ฟเวอร์สื่อไม่ได้</translation>
 <translation id="6957231940976260713">ชื่อบริการ</translation>
+<translation id="6961170852793647506">วางเอกสารบนเครื่องสแกนเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="6977381486153291903">การแก้ไขเฟิร์มแวร์</translation>
 <translation id="6982876849933694860">หากต้องการตั้งค่าการเชื่อมต่อใหม่ ให้ไปที่<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
 <translation id="7039041976777695848">แป้นพิมพ์<ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">โอเปอเรเตอร์</translation>
+<translation id="7058278511608979688">สิ้นสุดและบันทึก</translation>
 <translation id="7059230779847288458">กำลังชาร์จ อีก <ph name="TIME_VALUE" />จะเต็ม</translation>
 <translation id="708426984172631313">หยุดแล้ว</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
-<translation id="7257889006063274246">คุณแน่ใจไหมว่าต้องการนำหน้า <ph name="CURRENT_PAGE" /> ออก</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">คอลเล็กชันภาพวอลเปเปอร์</translation>
@@ -411,6 +417,7 @@
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
+<translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
@@ -482,6 +489,7 @@
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
+<translation id="9126720536733509015">บันทึกหลายหน้าเป็น PDF ไฟล์เดียว</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">ทดสอบหน่วยความจำ</translation>
 <translation id="9173638680043580060">เหลืออีกไม่ถึง 1 นาที</translation>

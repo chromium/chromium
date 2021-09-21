@@ -100,6 +100,7 @@
 <translation id="1103523840287552314">Vždy překládat jazyk <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Zastavit</translation>
 <translation id="1110155001042129815">Počkat</translation>
+<translation id="1110965959145884739">Vyberte jazyky, které do tohoto zařízení chcete nainstalovat. Jazykové soubory jsou sdíleny mezi uživateli za účelem úspory místa na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
 <translation id="1112420131909513020">Karta na pozadí používá Bluetooth</translation>
 <translation id="1113892970288677790">Vyberte umělecká díla a obrázky</translation>
@@ -547,6 +548,7 @@
 <translation id="1580772913177567930">Kontaktujte administrátora</translation>
 <translation id="1581962803218266616">Zobrazit ve službě Finder</translation>
 <translation id="1582955169539260415">smazat [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" /> se zpracovává místně a funguje offline</translation>
 <translation id="1584990664401018068">Síť Wi-Fi, kterou používáte (<ph name="NETWORK_ID" />), může vyžadovat ověření.</translation>
 <translation id="1585717515139318619">Jiný program ve vašem počítači nainstaloval motiv, který může měnit funkce Chromu.
 
@@ -757,6 +759,7 @@
 <translation id="177989070088644880">Aplikace (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Zavřít skupinu</translation>
 <translation id="1780273119488802839">Probíhá import záložek...</translation>
+<translation id="178092663238929451">Nastavte sdílení nablízko, abyste mohli přijímat a odesílat soubory s lidmi v okolí</translation>
 <translation id="1781291988450150470">Aktuální PIN</translation>
 <translation id="1781398670452016618">Doména <ph name="DOMAIN" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci.</translation>
 <translation id="1781502536226964113">Otevřít stránku Nová karta</translation>
@@ -1589,6 +1592,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="265390580714150011">Hodnota pole</translation>
 <translation id="2654166010170466751">Povolit webům instalovat obslužné nástroje pro platby</translation>
 <translation id="2654553774144920065">Požadavek na tisk</translation>
+<translation id="2658941648214598230">Zobrazit původní obsah?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funkce se v různých zařízeních liší</translation>
 <translation id="2659971421398561408">Změnit velikost disku pro Crostini</translation>
 <translation id="2660779039299703961">Událost</translation>
@@ -2454,6 +2458,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3564848315152754834">Bezpečnostní klíč USB</translation>
 <translation id="3566325075220776093">Z tohoto zařízení</translation>
 <translation id="3566721612727112615">Nebyly přidány žádné weby</translation>
+<translation id="3567284462585300767">Pokud chcete přijímat a odesílat soubory s lidmi v okolí, zviditelněte se</translation>
 <translation id="3569382839528428029">Chcete, aby aplikace <ph name="APP_NAME" /> sdílela vaši obrazovku?</translation>
 <translation id="3569407787324516067">Spořič obrazovky</translation>
 <translation id="3569682580018832495">Web <ph name="ORIGIN" /> může číst následující soubory a složky</translation>
@@ -3543,6 +3548,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="475088594373173692">První uživatel</translation>
 <translation id="4756378406049221019">Zastavit / načíst znovu</translation>
 <translation id="4756388243121344051">Historie</translation>
+<translation id="4759126501639448579">Vzpomínky nikdy nezobrazovat</translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
 <translation id="4761104368405085019">Používat mikrofon</translation>
 <translation id="4762718786438001384">Na disku zařízení je kriticky málo místa</translation>
@@ -3629,6 +3635,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="485088796993065002">Weby mohou přehrávat zvuky při přehrávání hudby, videí a dalších médií</translation>
 <translation id="4853020600495124913">Otevřít v &amp;novém okně</translation>
 <translation id="4854317507773910281">Vyber účet rodiče, který to schválí</translation>
+<translation id="485480310608090163">Další nastavení a oprávnění</translation>
 <translation id="4856478137399998590">Datové služby jsou aktivovány a můžete je začít používat</translation>
 <translation id="4858792381671956233">Požádal(a) jsi rodiče o povolení návštěvy tohoto webu.</translation>
 <translation id="4858913220355269194">Fotbal</translation>
@@ -3866,6 +3873,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="51143538739122961">Vložte bezpečnostní klíč a dotkněte se jej</translation>
 <translation id="5115309401544567011">Zapojte <ph name="DEVICE_TYPE" /> do zdroje napájení.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">Všechny vzpomínky jsou skryty</translation>
 <translation id="5116628073786783676">Uložit &amp;zvuk jako...</translation>
 <translation id="5117139026559873716">Odpojit telefon od zařízení <ph name="DEVICE_TYPE" />. Již se nebudou propojovat automaticky.</translation>
 <translation id="5117930984404104619">Sledovat chování ostatních rozšíření (včetně navštívených adres URL)</translation>
@@ -5009,6 +5017,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6374469231428023295">Zkusit znovu</translation>
 <translation id="6377268785556383139">1 výsledek pro dotaz <ph name="SEARCH_TEXT" /></translation>
 <translation id="6380143666419481200">Přijmout a pokračovat</translation>
+<translation id="6382958439467370461">Žádné neaktivní zkratky</translation>
 <translation id="638418309848716977">Podporované odkazy</translation>
 <translation id="6384275966486438344">Změňte nastavení vyhledávání na: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Skupina bez názvu – 1 karta}few{Skupina bez názvu – # karty}many{Skupina bez názvu – # karty}other{Skupina bez názvu – # karet}}</translation>
@@ -5886,6 +5895,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7354341762311560488">Snímač otisků prstů je klávesa v levém dolním rohu klávesnice. Zlehka se ho dotkněte jakýmkoli prstem.</translation>
 <translation id="7356908624372060336">Síťové protokoly</translation>
 <translation id="735745346212279324">Síť VPN je odpojena</translation>
+<translation id="7358324924540718595">Vzpomínky jsou dnes skryté</translation>
 <translation id="7360233684753165754">Počet stránek pro tiskárnu <ph name="PRINTER_NAME" />: <ph name="PAGE_NUMBER" /></translation>
 <translation id="7361297102842600584">Plugin <ph name="PLUGIN_NAME" /> spustíte kliknutím pravým tlačítkem</translation>
 <translation id="7362387053578559123">Weby mohou žádat o připojení k zařízením Bluetooth</translation>
@@ -6286,6 +6296,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7757787379047923882">Text sdílený ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Úprava ohraničení zobrazení</translation>
+<translation id="7759276754544429366">Dnes skrýt vzpomínky</translation>
 <translation id="7760004034676677601">Je toto počáteční stránka, kterou jste očekávali?</translation>
 <translation id="7764225426217299476">Přidat adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> z <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6640,7 +6651,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> používá nastavení proxy serveru z rozšíření</translation>
 <translation id="8097959162767603171">Administrátor nejdřív musí přijmout smluvní podmínky v seznamu zařízení Chrome v administrátorské konzoli.</translation>
 <translation id="8098616321286360457">Je vyžadováno připojení k síti</translation>
-<translation id="8099495042588009598">Další oprávnění</translation>
 <translation id="810068641062493918">Jazyk <ph name="LANGUAGE" /> je vybrán. Jeho výběr zrušíte stisknutím tlačítka Hledat a mezerníku.</translation>
 <translation id="810185532889603849">Vlastní barva</translation>
 <translation id="8101987792947961127">Je vyžadováno použití funkce Powerwash při dalším restartu</translation>
@@ -6957,6 +6967,7 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8457451314607652708">Import záložek</translation>
 <translation id="8458341576712814616">Zkratka</translation>
 <translation id="8458627787104127436">Otevřít vše (<ph name="URL_COUNT" />) v novém okně</translation>
+<translation id="8460490661223303637">Chrome odstranil část obsahu, aby mohl uložit vzpomínky</translation>
 <translation id="8460932807646981183">Spravovat vyhledávače a vyhledávání na webu</translation>
 <translation id="84613761564611563">Požadavek uživatelského rozhraní na konfiguraci sítě byl odeslán. Čekejte prosím...</translation>
 <translation id="8461914792118322307">Proxy server</translation>

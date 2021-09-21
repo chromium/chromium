@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">ዘግተው ወጥተው ስምረት ይጥፋ?</translation>
 <translation id="1373696734384179344">የተመረጠውን ይዘት ለማውረድ በቂ ያልሆነ ማህደረ ትውስታ።</translation>
 <translation id="1376578503827013741">በማስላት ላይ…</translation>
+<translation id="1382912999714108023">የአሁን መረጃዎን እየተመለከተ አይደለም? እባክዎ ለማዘመን ባንክዎን ያነጋግሩ።</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1384704387250346179">ምስልን በGoogle ሌንስ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ያስተርጉሙ</translation>
 <translation id="1386674309198842382">ገባሪ ከ<ph name="LAST_UPDATED" /> ቀናት በፊት</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">በመለያ ሲገቡ <ph name="BEGIN_LINK1" />የፍለጋ ታሪክ<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK2" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።</translation>
 <translation id="321773570071367578">የእርስዎን የይለፍሐረግ ከረሱት ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />ስምረትን ዳግም ያስጀምሩ<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">የይለፍ ቃላትዎን ለማስምር፣ እርስዎ መሆንዎን ያረጋግጡ</translation>
+<translation id="3223522355830797639">ባንክዎ እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል።</translation>
 <translation id="3227557059438308877">Google Chrome እንደ የደህንነት ቁልፍ</translation>
 <translation id="3232754137068452469">የድር መተግበሪያ</translation>
 <translation id="3234978181857588512">ወደ መሣሪያ አስቀምጥ</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">ዓዓ</translation>
 <translation id="6059830886158432458">የእርስዎን ታሪክ እና እንቅስቃሴ እዚህ ይቆጣጠሩ</translation>
 <translation id="6069177176307973611">የግላዊነት እና የደህንነት ቅንብሮችን ይገምግሙ</translation>
+<translation id="6070730414166672373">ባንክዎን በማነጋገር ላይ\u2026</translation>
 <translation id="6085886413119427067">እንዴት ደህንነቱ በተጠበቀ ግንኙነት ላይ ከድር ጣቢያዎች ጋር እንደሚገናኙ ይወስናል</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ሰዓቶች ይቀራሉ</translation>
 <translation id="6108923351542677676">ማዋቀር በሂደት ላይ…</translation>

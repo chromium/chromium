@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojená.</translation>
 <translation id="1473110567575736769">Trojsekundový časovač</translation>
 <translation id="1545749641540134597">Naskenovať kód QR</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normálny</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Skenovanie dokumentov je teraz k dispozícii</translation>
 <translation id="5268823927180092501">Zapnúť režim dokumentov vo všetkých fotoaparátoch</translation>
 <translation id="5444515100983837161">Umiestnite všetky rohy dokumentu do rámu. Skenovanie funguje najlepšie vtedy, keď má dokument inú farbu ako pozadie.</translation>
+<translation id="5588258280684580073">Povoliť nahrávanie gifov</translation>
 <translation id="5671277269877808209">Štvorec</translation>
 <translation id="5746169159649715125">Uložiť ako PDF</translation>
 <translation id="5753488212459587150">Povoliť expertný režim</translation>
@@ -98,12 +100,14 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="7243947652761655814">Rozlíšenie videa</translation>
 <translation id="7337660886763914220">Chyby systému súborov.</translation>
 <translation id="7450541714075000668">Text bol skopírovaný</translation>
+<translation id="7488619942230388918">Nahrať video typu gif</translation>
 <translation id="7557677699350329807">Prepnúť na ďalší fotoaparát</translation>
 <translation id="7607002721634913082">Pozastavené</translation>
 <translation id="7608223098072244877">4 na 4</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7670511624014457267">60 sním./s</translation>
+<translation id="7726641833034062494">Nahrať normálne video</translation>
 <translation id="7983668134180549431">Bol rozpoznaný text.</translation>
 <translation id="8067883171444229417">Prehrať video</translation>
 <translation id="8120146556401698679">Posunúť nakloniť priblížiť</translation>

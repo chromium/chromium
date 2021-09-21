@@ -62,9 +62,11 @@
 <translation id="1332501820983677155">Google Chrome లక్షణ షార్ట్‌కట్‌లు</translation>
 <translation id="1344653310988386453">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్‌ను చేర్చండి</translation>
 <translation id="1347468774581902829">యాక్టివిటీని మేనేజ్ చేయండి</translation>
+<translation id="1353372385686746892">యాప్‌ను మెరుగుపరచడంలో సహాయపడటానికి Chrome, సమస్య విశ్లేషణకు సంబంధించిన డేటాను Googleకు పంపుతుంది. <ph name="BEGIN_LINK" />మార్చండి<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">సైన్ అవుట్ చేసి, సింక్‌ను ఆఫ్ చేయలా?</translation>
 <translation id="1373696734384179344">ఎంచుకున్న కంటెంట్‌ను డౌన్‌లోడ్ చేయడానికి తగినంత మెమరీ లేదు.</translation>
 <translation id="1376578503827013741">గణిస్తోంది...</translation>
+<translation id="1382912999714108023">మీ ప్రస్తుత సమాచారం కనిపించలేదా? దీన్ని అప్‌డేట్ చేయడం కోసం మీ బ్యాంక్‌ను సంప్రదించండి.</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /> Google Lensతో ఇమేజ్‌ను అనువదించండి</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
@@ -350,6 +352,7 @@
 <translation id="3214996641768123781">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK1" />సెర్చ్ హిస్టరీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK2" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.</translation>
 <translation id="321773570071367578">మీరు మీ రహస్య పదబంధాన్ని మర్చిపోతే లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకుంటే, <ph name="BEGIN_LINK" />సింక్‌ను రీసెట్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">మీ పాస్‌వర్డ్‌లను సింక్ చేయడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
+<translation id="3223522355830797639">ఇది మీరేనని మీ బ్యాంక్ నిర్ధారించుకోవాలనుకుంటోంది.</translation>
 <translation id="3227557059438308877">'సెక్యూరిటీ కీ'గా Google Chrome</translation>
 <translation id="3232754137068452469">వెబ్ యాప్‌</translation>
 <translation id="3234978181857588512">పరికరానికి సేవ్ చేయండి</translation>
@@ -816,6 +819,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ఇక్కడ మీ కథనాలు, యాక్టివిటీని కంట్రోల్ చేయండి</translation>
 <translation id="6069177176307973611">గోప్యత, సెక్యూరిటీ సెట్టింగ్‌లను రివ్యూ చేయండి</translation>
+<translation id="6070730414166672373">మీ బ్యాంక్‌ను సంప్రదిస్తోందిu2026</translation>
 <translation id="6085886413119427067">సెక్యూర్ కనెక్షన్ ద్వారా వెబ్‌సైట్‌లకు ఎలా కనెక్ట్ కావాలో నిశ్చయిస్తుంది</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> గంటలు మిగిలి ఉంది</translation>
 <translation id="6108923351542677676">సెటప్ ప్రోగ్రెస్‌లో ఉంది...</translation>

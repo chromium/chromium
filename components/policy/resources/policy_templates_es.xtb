@@ -375,13 +375,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Nota: Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="1488724823347505879">Habilitar la opción de compartir de aplicaciones Android a aplicaciones web</translation>
-<translation id="1495817006535797003">Si se define esta política, cada uno de los orígenes especificados en una lista de elementos separados por comas se ejecutará en un proceso propio. Además, se aislarán los orígenes definidos por subdominios. Por ejemplo, especificar https://example.com/ aísla https://foo.example.com/ como parte del sitio https://example.com/.  Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" />. Además, esta política amplía el modo para aislar orígenes adicionales específicos.
-
-      Si se inhabilita esta política, se desactivará cualquier tipo de aislamiento de sitio web, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento. Los usuarios podrán activar IsolateOrigins de forma manual a través de la marca de línea de comandos.
-
-      Si no se asigna ningún valor a la política, los usuarios podrán cambiar esta opción.
-
-      Nota: Aislar demasiados sitios en Android puede causar problemas de rendimiento, sobre todo en dispositivos con poca memoria. Esta política solo se aplica a Chrome si se utiliza en dispositivos Android con más de 1 GB de RAM. Para aplicar esta política en plataformas distintas de Android, usa <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="1503969899251962413">Si se le asigna un valor a esta política, se especificará la clave de licencia de <ph name="PLUGIN_VM_NAME" /> de este dispositivo.
 
@@ -1486,6 +1479,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2725855586003209701">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre la lista de usuarios de dispositivos que hayan iniciado sesión recientemente.
 
       Si se inhabilita la política, los dispositivos registrados no informarán sobre la lista de usuarios.</translation>
+<translation id="2730419309754848345">Imprimir PDF como imagen de forma predeterminada</translation>
 <translation id="2731627323327011390">Inhabilitar el uso de certificados de <ph name="PRODUCT_OS_NAME" /> a las aplicaciones ARC</translation>
 <translation id="2742843273354638707">Permite ocultar la aplicación Chrome Web Store y el enlace de la parte inferior de la página en la página Nueva pestaña y en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" />.
 
@@ -2037,11 +2031,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
           El mensaje de advertencia solo se muestra si el modo de inactividad cierra la sesión o apaga el equipo.</translation>
 <translation id="3363360928811201045">Añadir restricciones a las cuentas gestionadas</translation>
-<translation id="3367868895271989224">Si la política se habilita, todos los sitios web se aislarán. (Cada sitio web se ejecuta en su propio proceso). Si se inhabilita o no se le asigna ningún valor, no se desactivará el aislamiento de sitio web, pero permitirá a los usuarios inhabilitarlo (por ejemplo, a través de la opción Disabel site isolation (Inhabilitar el aislamiento de sitio web) en chrome://flags).
-
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> también puede resultar útil para ajustar los orígenes. Define la política de dispositivos <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> con el mismo valor en la versión 76 de <ph name="PRODUCT_OS_NAME" /> y versiones posteriores. (Si los valores de las dos políticas no coinciden, es posible que se produzca un retraso al acceder a una sesión de usuario).
-
-      Nota: Usa la política <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> en Android.</translation>
 <translation id="3373381043600809954">Habilitar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Configura el directorio que <ph name="PRODUCT_NAME" /> utilizará para almacenar los datos de usuario.
 
@@ -3247,6 +3236,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4988291787868618635">Acción que se realiza al alcanzar el retraso de inactividad</translation>
 <translation id="4996068111491152684">Las credenciales de inicio de sesión de <ph name="PRODUCT_OS_NAME" /> no se usarán para la autenticación de red.</translation>
 <translation id="4996086761250834365">Permitir análisis de producto de <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="4997074784107449343">Cuando la opción Imprimir como imagen está disponible, no se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="500149597848135831">Habilitar todas las variaciones</translation>
 <translation id="5017369989680827157">Si se asigna el valor "Verdadero" a esta política o no se le asigna ninguno, se dará a los usuarios el control de la función de autocompletar direcciones en la UI.
 
@@ -4005,6 +3995,13 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se inhabilita la política, no se permitirá el uso del protocolo QUIC.</translation>
 <translation id="5921713479449475707">Permitir descargas de actualizaciones automáticas a través de HTTP</translation>
+<translation id="5928633129285224981">Controla si <ph name="PRODUCT_NAME" /> hace que la opción Imprimir como imagen esté definida de forma predeterminada al imprimir PDFs.
+
+      Si se habilita esta política, <ph name="PRODUCT_NAME" /> definirá la opción Imprimir como imagen de forma predeterminada en la vista previa de impresión al imprimir un PDF.
+
+      Si se inhabilita esta política o no se le asigna ningún valor, la selección del usuario para la opción Imprimir como imagen no estará definida inicialmente en <ph name="PRODUCT_NAME" />.  Si la opción está disponible, el usuario podrá seleccionarla para cada trabajo de impresión de PDF individual.
+
+      En <ph name="MS_WIN_NAME" /> o <ph name="MAC_OS_NAME" />, esta política solo tiene efecto si también se ha habilitado <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" />.</translation>
 <translation id="5929855945144989709">Permitir que los dispositivos utilicen máquinas virtuales en Chrome OS</translation>
 <translation id="5932767795525445337">Esta política también se puede utilizar para fijar aplicaciones de Android.</translation>
 <translation id="5934763632608026594">Si se define esta política, se controlará la configuración de gestión de aplicaciones web de <ph name="PRODUCT_NAME" />.
@@ -5301,11 +5298,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si no se asigna ningún valor a esta política, <ph name="IE_PRODUCT_NAME" /> detectará automáticamente la ruta ejecutable de <ph name="PRODUCT_NAME" /> al iniciar <ph name="PRODUCT_NAME" /> desde Internet Explorer.
 
       Nota: Si no está instalado el complemento de compatibilidad con navegadores antiguos en <ph name="IE_PRODUCT_NAME" />, esta política no tendrá efecto.</translation>
-<translation id="7507131973617884092">Si se define esta política, cada uno de los orígenes especificados en una lista de elementos separados por comas se ejecutará en un proceso propio y se aislarán los orígenes de los subdominios correspondientes. Por ejemplo, especificar https://example.com/ aísla https://foo.example.com/ como parte del sitio web https://example.com/.
-
-      Si se desactiva o no se le asigna ningún valor, los usuarios podrán cambiar esta opción.
-
-      Nota: Usa la política <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> en Android.</translation>
 <translation id="7507553960917214561">Inhabilitar el modo de cortina en hosts de acceso remoto</translation>
 <translation id="7508067364927180229">Este ajuste proporciona varias opciones de disponibilidad que se aplican al navegador <ph name="LACROS_NAME" />.
 
@@ -5460,13 +5452,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de desconexión de la pantalla (si se ha configurado) y al retraso de inactividad.</translation>
 <translation id="7680437377926096177">Impide que se muestre el cuadro de diálogo de cierre de sesión cuando se cierra la última ventana.</translation>
-<translation id="7681958144280390173">Si se le asigna el valor Enabled a la política, se aislarán todos los sitios (cada sitio se ejecutará en su propio proceso). Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" />. Además, esta política amplía el modo de aislamiento de sitio web para que se aplique a todos los sitios.
-
-      Si se inhabilita esta política, se desactivará cualquier tipo de aislamiento de sitio web, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento. Los usuarios podrán activar la política de forma manual.
-
-      Si no se establece la política, los usuarios podrán cambiar esta opción.
-
-      Nota: La opción de aislar todos los sitios en Android mejorará, pero, por ahora, puede causar problemas de rendimiento (sobre todo en dispositivos de gama baja). Esta política solo se aplica a Chrome si se utiliza en dispositivos Android con más de 1 GB de RAM. Para aislar sitios concretos y limitar el efecto en el rendimiento que se ofrece a los usuarios, usa <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> con la lista de los sitios que quieras aislar.  Para aplicar esta política en plataformas distintas de Android, usa <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="7683777542468165012">Actualización dinámica de política</translation>
 <translation id="7687943045976362719">Si se asigna un valor a esta política, <ph name="PRODUCT_FRAME_NAME" /> gestiona los tipos de contenido especificados.
 
@@ -5833,6 +5818,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se inhabilita la política o no se establece, no se enviarán paquetes.</translation>
 <translation id="816783746144552109">Configurar la versión mínima permitida de Chrome OS en el dispositivo.</translation>
 <translation id="8171924760436219650">Cambiar el botón principal del ratón al botón derecho en la pantalla de inicio de sesión</translation>
+<translation id="8173864651667424191">Cuando la opción Imprimir como imagen está disponible, se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="8176035528522326671">Permitir que el usuario de empresa sea solo un usuario principal de varios perfiles (comportamiento predeterminado para usuarios administrados por empresas)</translation>
 <translation id="8179161412673077784">Evitar que los sitios con experiencias engañosas abran nuevas ventanas o pestañas</translation>
 <translation id="8183108371184777472">Impide que se abra la ventana del navegador</translation>

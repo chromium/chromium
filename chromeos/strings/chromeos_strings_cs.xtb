@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Uživatel</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">Odebrat</translation>
 <translation id="1195447618553298278">Neznámá chyba.</translation>
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="123124571410524056">Podezření na portál</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Selhání požadavků UDP</translation>
 <translation id="1930797645656624981">Služba metod zadávání systému Chrome OS</translation>
 <translation id="1947737735496445907">Vytištěno</translation>
+<translation id="197386857804679933">Znovu se připojíte v Nastavení</translation>
 <translation id="1979103255016296513">Uběhl termín pro změnu hesla</translation>
 <translation id="1999615961760456652">Captive portál</translation>
 <translation id="2006864819935886708">Připojení</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">V POŘÁDKU</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikace</translation>
+<translation id="2860473693272905224">Položte na skener další stránku</translation>
 <translation id="2872961005593481000">Vypnout</translation>
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
 <translation id="3156846309055100599">Skenování stránky <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Byl nalezen captive portál</translation>
+<translation id="3170673040743561620">Položte dokument na skener</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Dříve připojeno</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku}=1{Znovu naskenovat stránku {PAGE_NUMBER}}few{Znovu naskenovat stránku {PAGE_NUMBER}}many{Znovu naskenovat stránku {PAGE_NUMBER}}other{Znovu naskenovat stránku {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepřipojeno</translation>
 <translation id="3749289110408117711">Název souboru</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Můj disk</translation>
 <translation id="4429881212383817840">Platnost lístku Kerberos brzy vyprší</translation>
 <translation id="4431821876790500265">Zobrazit přehled</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Odstranit stránku}=1{Odstranit stránku {PAGE_NUMBER}}few{Odstranit stránku {PAGE_NUMBER}}many{Odstranit stránku {PAGE_NUMBER}}other{Odstranit stránku {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Staré heslo</translation>
 <translation id="4453205916657964690">Maska podsítě</translation>
 <translation id="4454245904991689773">Uložit do</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Spojení</translation>
 <translation id="4832079907277790330">Vyberte složku v aplikaci Soubory…</translation>
 <translation id="4835901797422965222">Žádné aktivní sítě</translation>
+<translation id="484790837831576105">(Android) Překlad záznamu DNS</translation>
 <translation id="4848429997038228357">PROBÍHÁ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zbývají {0} pokusy}many{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusu}other{<ph name="ERROR_MESSAGE" /> Zbývá {0} pokusů}}</translation>
 <translation id="4880328057631981605">Název přístupového bodu</translation>
@@ -291,6 +294,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6050189528197190982">Stupně šedé</translation>
 <translation id="6058625436358447366">Chcete-li akci dokončit, zadejte své staré a nové heslo</translation>
 <translation id="6061772781719867950">Neúspěšné požadavky HTTP</translation>
+<translation id="6075872808778243331">(Android) Latence požadavků HTTP</translation>
 <translation id="6104112872696127344">Skenování bylo zrušeno</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
 <translation id="6108689792487843350">Brána není dostupná</translation>
@@ -333,6 +337,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6704062477274546131">Překlad DNS</translation>
+<translation id="6714650824879092633">Síť <ph name="NETWORK_NAME" /> byla deaktivována</translation>
 <translation id="6747215703636344499">Zastaveno – výstupní zásobník je plný</translation>
 <translation id="6756731097889387912">Skenování se nepodařilo zrušit</translation>
 <translation id="6766275201586212568">Neúspěšné překlady DNS</translation>
@@ -342,11 +347,13 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6910312834584889076">Kryt skeneru je otevřený. Zavřete kryt a zkuste to znovu.</translation>
 <translation id="6911383237894364323">Nelze se připojit k mediálním serverům</translation>
 <translation id="6957231940976260713">Název služby</translation>
+<translation id="6961170852793647506">Začněte položením dokumentu na skener</translation>
 <translation id="6977381486153291903">Revize firmwaru</translation>
 <translation id="6982876849933694860">Nové připojení můžete nakonfigurovat v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
 <translation id="7039041976777695848">Klávesnice <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operátor</translation>
+<translation id="7058278511608979688">Ukončit a uložit</translation>
 <translation id="7059230779847288458">Nabíjení, <ph name="TIME_VALUE" /> do úplného nabití</translation>
 <translation id="708426984172631313">ZASTAVENO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
-<translation id="7257889006063274246">Opravdu chcete stránku <ph name="CURRENT_PAGE" /> odstranit?</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Sbírky tapet</translation>
@@ -411,6 +417,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
+<translation id="811820734797650957">(Android) Pingnutí brány</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Požadovat počítadla návštěvnosti</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -482,6 +489,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>
+<translation id="9126720536733509015">Uložit více stránek do jednoho PDF</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9149391708638971077">Spustit test paměti</translation>
 <translation id="9173638680043580060">Zbývá méně než minuta</translation>

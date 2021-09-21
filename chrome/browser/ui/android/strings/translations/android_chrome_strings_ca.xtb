@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
 <translation id="1373696734384179344">No hi ha prou memòria per baixar el contingut seleccionat.</translation>
 <translation id="1376578503827013741">S'està calculant…</translation>
+<translation id="1382912999714108023">No es mostren les teves dades actuals? Contacta amb el teu banc per actualitzar-les.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384704387250346179">Tradueix la imatge amb Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Actiu fa <ph name="LAST_UPDATED" /> dies</translation>
@@ -351,6 +352,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3214996641768123781">És possible que l'<ph name="BEGIN_LINK1" />historial de cerques<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />altres tipus d'activitats<ph name="END_LINK2" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="321773570071367578">Si oblideu la frase de contrasenya o voleu canviar aquesta configuració, <ph name="BEGIN_LINK" />restabliu la sincronització<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Per sincronitzar les contrasenyes, verifica la teva identitat</translation>
+<translation id="3223522355830797639">El banc vol confirmar la teva identitat.</translation>
 <translation id="3227557059438308877">Google Chrome com a clau de seguretat</translation>
 <translation id="3232754137068452469">Aplicació web</translation>
 <translation id="3234978181857588512">Desa al dispositiu</translation>
@@ -817,6 +819,7 @@ Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan dispon
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla les teves històries i la teva activitat aquí</translation>
 <translation id="6069177176307973611">Revisa la configuració de privadesa i seguretat</translation>
+<translation id="6070730414166672373">S'està contactant amb el banc\u2026</translation>
 <translation id="6085886413119427067">Determina com es connecta a llocs web amb una connexió segura</translation>
 <translation id="60923314841986378">Queden <ph name="HOURS" /> hores</translation>
 <translation id="6108923351542677676">Configuració en curs...</translation>

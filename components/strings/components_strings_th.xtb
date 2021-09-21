@@ -32,6 +32,7 @@
 <translation id="1074497978438210769">ไม่ปลอดภัย</translation>
 <translation id="1076113272840682464">จัดการการดาวน์โหลดใน Chrome</translation>
 <translation id="1080116354587839789">พอดีกับความกว้าง</translation>
+<translation id="1081061862829655580">ถาด 19</translation>
 <translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">เพิ่มชื่อบนบัตร</translation>
 <translation id="1089439967362294234">เปลี่ยนรหัสผ่าน</translation>
@@ -70,6 +71,7 @@
 <translation id="1209221128712833642">ปุ่มสร้างแบบฟอร์ม กด Enter เพื่อสร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
 <translation id="121201262018556460">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่มีคีย์ที่ไม่รัดกุม ผู้โจมตีอาจทำให้คีย์ส่วนตัวเสียหายไปแล้วและเซิร์ฟเวอร์นี้อาจไม่ใช่เซิร์ฟเวอร์ที่คุณคิด (คุณอาจกำลังติดต่อกับผู้โจมตี)</translation>
 <translation id="1219129156119358924">การรักษาความปลอดภัยของระบบ</translation>
+<translation id="1222060260947439312">ถาดขวา</translation>
 <translation id="1227224963052638717">นโยบายที่ไม่รู้จัก</translation>
 <translation id="1228893227497259893">ตัวระบุเอนทิตีไม่ถูกต้อง</translation>
 <translation id="1232569758102978740">ไม่ระบุชื่อ</translation>
@@ -91,11 +93,13 @@
 <translation id="1257553931232494454">ระดับการซูม</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการการตั้งค่า Chrome</translation>
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
+<translation id="1264309058268477500">อื่นๆ</translation>
 <translation id="1269096320618100013">ปุ่มจัดการการตั้งค่าการช่วยเหลือพิเศษ กด Enter เพื่อปรับเปลี่ยนเครื่องมือการช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
 <translation id="1269516672602708785">สร้างเว็บไซต์แบบใหม่ใน Google Sites อย่างรวดเร็ว</translation>
 <translation id="1270502636509132238">วิธีการรับสินค้า</translation>
 <translation id="1281476433249504884">สแต็กเกอร์ 1</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
+<translation id="1292571435393770077">ถาด 16</translation>
 <translation id="1292701964462482250">"ซอฟต์แวร์ในคอมพิวเตอร์ของคุณทำให้ Chrome เชื่อมต่อกับเว็บอย่างปลอดภัยไม่ได้" (คอมพิวเตอร์ที่ใช้ระบบปฏิบัติการ Windows เท่านั้น)</translation>
 <translation id="1294154142200295408">บรรทัดคำสั่งรูปแบบต่างๆ</translation>
 <translation id="129553762522093515">เพิ่งปิด</translation>
@@ -203,6 +207,7 @@
 <translation id="1592005682883173041">การเข้าถึงข้อมูลในเครื่อง</translation>
 <translation id="1594030484168838125">เลือก</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
+<translation id="1611101756749861742">ม้วนกระดาษ 2</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1623104350909869708">ป้องกันหน้าเว็บนี้จากการสร้างการโต้ตอบเพิ่มเติม</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -275,14 +280,17 @@
 <translation id="182139138257690338">การดาวน์โหลดอัตโนมัติ</translation>
 <translation id="1821930232296380041">คำขอหรือพารามิเตอร์คำขอไม่ถูกต้อง</translation>
 <translation id="1822540298136254167">เว็บไซต์ที่คุณเข้าชมและเวลาที่ใช้ไป</translation>
+<translation id="1824402189105105503">ม้วนกระดาษ 8</translation>
 <translation id="1826516787628120939">กำลังตรวจสอบ</translation>
 <translation id="1834321415901700177">เว็บไซต์นี้มีโปรแกรมอันตราย</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="1839551713262164453">การตรวจสอบความถูกต้องของค่านโยบายมีข้อผิดพลาดและล้มเหลว</translation>
 <translation id="1842969606798536927">จ่าย</translation>
 <translation id="1856713167556118146">สิ่งที่โหมดไม่ระบุตัวตนไม่ทำ</translation>
+<translation id="1863257867908022953">ถาด 12</translation>
 <translation id="1871208020102129563">พร็อกซีถูกตั้งค่าให้ใช้พร็อกซีเซิร์ฟเวอร์แบบคงที่ ไม่ใช่ URL สคริปต์ .pac</translation>
 <translation id="1871284979644508959">ช่องที่ต้องกรอก</translation>
+<translation id="1875025161375567525">ถาดรูปภาพ</translation>
 <translation id="1875512691959384712">Google ฟอร์ม</translation>
 <translation id="187918866476621466">เปิดหน้าเริ่มต้นใช้งาน</translation>
 <translation id="1883255238294161206">ยุบรายการ</translation>
@@ -308,6 +316,7 @@
 <translation id="1962204205936693436">บุ๊กมาร์กของ <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">ข้อผิดพลาดในการจัดเรียง</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
+<translation id="1975457531113383421">ถาดกระดาษเข้า</translation>
 <translation id="1975584088563498795">กล่องจดหมาย 10</translation>
 <translation id="1978555033938440688">เวอร์ชันของเฟิร์มแวร์</translation>
 <translation id="1988881251331415125">หากการสะกดถูกต้อง ให้<ph name="BEGIN_LINK" />ลองเรียกใช้การวินิจฉัยการเชื่อมต่อ<ph name="END_LINK" /></translation>
@@ -321,6 +330,7 @@
 <translation id="2025186561304664664">พร็อกซีถูกตั้งค่าให้ทำการกำหนดค่าโดยอัตโนมัติ</translation>
 <translation id="2025891858974379949">เนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ตรวจสอบพร็อกซีและไฟร์วอลล์<ph name="END_LINK" /></translation>
+<translation id="2036983605131262583">ม้วนกระดาษอื่น</translation>
 <translation id="2042213636306070719">ถาด 7</translation>
 <translation id="204357726431741734">ลงชื่อเข้าใช้เพื่อใช้รหัสผ่านที่บันทึกไว้ในบัญชี Google</translation>
 <translation id="2053111141626950936">ระบบจะไม่แปลหน้าเว็บภาษา<ph name="LANGUAGE" /></translation>
@@ -476,6 +486,7 @@
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="254947805923345898">ค่านโยบายไม่ถูกต้อง</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> ส่งการตอบกลับที่ไม่ถูกต้อง</translation>
+<translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">จากนี้ไปให้ใช้ฟีเจอร์ล็อกหน้าจอเพื่อยืนยันบัตร</translation>
 <translation id="2553853292994445426">ตรวจสอบการตั้งค่า DNS ที่ปลอดภัย คุณอาจกำหนดค่าเซิร์ฟเวอร์ DNS ที่ปลอดภัยไว้ซึ่งทำการเชื่อมต่อไม่สำเร็จ</translation>
 <translation id="2556876185419854533">&amp;เลิกทำการแก้ไข</translation>
@@ -526,6 +537,7 @@
 <translation id="2713444072780614174">สีขาว</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการการชำระเงินและข้อมูลบัตรเครดิตในการตั้งค่า Chrome</translation>
 <translation id="2721148159707890343">คำขอสำเร็จ</translation>
+<translation id="2726001110728089263">ถาดข้าง</translation>
 <translation id="2728127805433021124">ใบรับรองของเซิร์ฟเวอร์ถูกเซ็นชื่อด้วยอัลกอริทึมลายเซ็นที่ไม่รัดกุม</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />เรียกใช้การวินิจฉัยการเชื่อมต่อ<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">เลือกที่อยู่สำหรับรับสินค้า</translation>
@@ -557,6 +569,7 @@
 <translation id="2880660355386638022">ตำแหน่งหน้าต่าง</translation>
 <translation id="2881276955470682203">บันทึกบัตรไหม</translation>
 <translation id="2882949212241984732">พับทบ 4 ตอน</translation>
+<translation id="2893773853358652045">ม้วนกระดาษ 4</translation>
 <translation id="2900528713135656174">สร้างกิจกรรม</translation>
 <translation id="2903493209154104877">ที่อยู่</translation>
 <translation id="290376772003165898">หน้านี้ไม่ใช่ภาษา<ph name="LANGUAGE" />ใช่ไหม</translation>
@@ -615,6 +628,7 @@
 <translation id="3096100844101284527">เพิ่มที่อยู่สำหรับรับสินค้า</translation>
 <translation id="3105172416063519923">รหัสสินทรัพย์:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ตรวจสอบการกำหนดค่า DNS ที่ปลอดภัย<ph name="END_LINK" /></translation>
+<translation id="3108943290502734357">ถาดกลาง</translation>
 <translation id="3109728660330352905">คุณไม่มีสิทธิ์ดูหน้านี้</translation>
 <translation id="3113284927548439113">กะที่ 3</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้</translation>
@@ -628,6 +642,7 @@
 <translation id="3154506275960390542">หน้านี้มีฟอร์มที่อาจส่งอย่างไม่ปลอดภัย บุคคลอื่นสามารถดูข้อมูลที่คุณส่งได้ระหว่างทางหรือข้อมูลอาจถูกแก้ไขโดยผู้โจมตีเพื่อเปลี่ยนแปลงสิ่งที่เซิร์ฟเวอร์จะได้รับ</translation>
 <translation id="315504272643575312">บัญชีของคุณจัดการโดย <ph name="MANAGER" /></translation>
 <translation id="3157931365184549694">คืนค่า</translation>
+<translation id="3158539265159265653">ดิสก์</translation>
 <translation id="3162559335345991374">Wi-Fi ที่คุณใช้อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">เกาะ</translation>
@@ -790,6 +805,7 @@
 <translation id="3658742229777143148">การแก้ไข</translation>
 <translation id="3664782872746246217">คีย์เวิร์ด:</translation>
 <translation id="3671540257457995106">อนุญาตให้ปรับขนาดไหม</translation>
+<translation id="3675563144891642599">ม้วนกระดาษ 3</translation>
 <translation id="3676592649209844519">รหัสอุปกรณ์:</translation>
 <translation id="3677008721441257057">คุณหมายถึง &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ใช่ไหม</translation>
 <translation id="3678029195006412963">ไม่สามารถลงนามคำขอ</translation>
@@ -904,6 +920,7 @@
 <translation id="4084120443451129199">โหมดการค้นหา กด Enter เพื่อค้นหา <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4087296516249690906">ปุ่มสร้างกิจกรรม กด Enter เพื่อสร้างกิจกรรมใหม่ใน Google ปฏิทินอย่างรวดเร็ว</translation>
 <translation id="4088981014127559358">เปลี่ยนตำแหน่งรูปภาพด้าน 1 ตามแกน Y</translation>
+<translation id="4089152113577680600">ถาด 14</translation>
 <translation id="4098354747657067197">เว็บไซต์ที่กำลังจะเข้าชมไม่ปลอดภัย</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
 <translation id="4101413244023615925">ข้อความและกราฟิก</translation>
@@ -938,6 +955,7 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">บันทึกบัตรไม่ได้ในตอนนี้</translation>
 <translation id="4196861286325780578">&amp;ทำซ้ำการย้าย</translation>
+<translation id="4202554117186904723">ม้วนกระดาษ 5</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ตรวจสอบไฟร์วอลล์และการกำหนดค่าการป้องกันไวรัส<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">ขนาดใหญ่</translation>
 <translation id="4209166701302774460">เซิร์ฟเวอร์ที่คุณกำลังจะเข้าถึง <ph name="ORIGIN" /> ขอให้บังคับใช้นโยบายดั้งเดิมกับคำขอทั้งหมดที่ส่งถึงเซิร์ฟเวอร์ แต่ขณะนี้เซิร์ฟเวอร์แสดงนโยบายไม่ได้ ซึ่งทำให้เบราว์เซอร์ดำเนินการตามคำขอของคุณสำหรับ <ph name="SITE" /> ไม่ได้ ผู้ให้บริการเว็บไซต์อาจใช้นโยบายดั้งเดิมในการกำหนดค่าความปลอดภัยและพร็อพเพอร์ตี้อื่นๆ ของเว็บไซต์</translation>
@@ -995,6 +1013,7 @@
 <translation id="4314815835985389558">จัดการการซิงค์</translation>
 <translation id="4318312030194671742">บริการจัดวางตัวอย่างภาพวาด</translation>
 <translation id="4318566738941496689">ชื่ออุปกรณ์และที่อยู่เครือข่ายของคุณ</translation>
+<translation id="4325600325087822253">ถาด 17</translation>
 <translation id="4325863107915753736">การค้นหาบทความล้มเหลว</translation>
 <translation id="4326324639298822553">ตรวจสอบวันหมดอายุแล้วลองอีกครั้ง</translation>
 <translation id="4329871760342656885">ข้อผิดพลาดในการแยกวิเคราะห์นโยบาย <ph name="ERROR" /></translation>
@@ -1006,6 +1025,7 @@
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">การเชื่อมต่อกับ <ph name="SITE" /> ไม่ปลอดภัย</translation>
 <translation id="4349531505348777662">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome แนะนำให้ไปที่ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> และเว็บไซต์อื่นๆ ที่คุณใช้รหัสผ่านนี้ และเปลี่ยนรหัสผ่านทันที</translation>
+<translation id="4350629523305688469">ถาดหลายฟังก์ชัน</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ต้องการสแกนหาอุปกรณ์บลูทูธที่อยู่ใกล้เคียงและได้พบอุปกรณ์ต่อไปนี้</translation>
 <translation id="4356973930735388585">ผู้โจมตีในเว็บไซต์นี้อาจพยายามติดตั้งโปรแกรมอันตรายซึ่งจะขโมยหรือลบข้อมูล (ตัวอย่างเช่น รูปภาพ รหัสผ่าน ข้อความ และบัตรเครดิต) ลงในคอมพิวเตอร์ของคุณ</translation>
 <translation id="4358059973562876591">เทมเพลตที่คุณระบุอาจใช้ไม่ได้เนื่องจากมีข้อผิดพลาดกับนโยบาย DnsOverHttpsMode</translation>
@@ -1060,6 +1080,7 @@
 <translation id="4515275063822566619">ข้อมูลบัตรและที่อยู่มาจาก Chrome และบัญชี Google (<ph name="ACCOUNT_EMAIL" />) คุณสามารถจัดการข้อมูลเหล่านี้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="4517607026994743406">Comm-10 (ซองจดหมาย)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> มม. (<ph name="ORIENTATION" />)</translation>
+<translation id="4521916730539354575">ถาดซ้าย</translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
 <translation id="4524138615196389145">ยืนยันบัตรได้เร็วขึ้นโดยใช้ WebAuthn จากนี้ไป</translation>
 <translation id="4524805452350978254">จัดการการ์ด</translation>
@@ -1174,6 +1195,7 @@
 <translation id="4889420713887366944">ปุ่มเปิดหน้าต่างที่ไม่ระบุตัวตน กด Enter เพื่อเปิดหน้าต่างใหม่ที่ไม่ระบุตัวตนเพื่อท่องเว็บแบบส่วนตัว</translation>
 <translation id="4892518386797173871">หลัง</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> และ <ph name="TYPE_3" /></translation>
+<translation id="4900217275619098670">ม้วนกระดาษ 9</translation>
 <translation id="4901778704868714008">บันทึก...</translation>
 <translation id="4913987521957242411">เจาะรูด้านซ้ายบน</translation>
 <translation id="4918221908152712722">ติดตั้ง <ph name="APP_NAME" /> (ไม่จำเป็นต้องดาวน์โหลด)</translation>
@@ -1222,6 +1244,7 @@
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(ใช้งานอยู่ 1 รายการ)}other{(ใช้งานอยู่ # รายการ)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />ตรวจสอบที่อยู่พร็อกซี<ph name="END_LINK" /></translation>
+<translation id="5070838744279127212">ม้วนกระดาษ 10</translation>
 <translation id="507130231501693183">กล่องจดหมาย 4</translation>
 <translation id="5087286274860437796">ใบรับรองของเซิร์ฟเวอร์ไม่สามารถใช้ได้ในขณะนี้</translation>
 <translation id="5087580092889165836">เพิ่มบัตร</translation>
@@ -1234,6 +1257,7 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">เว็บไซต์ไม่ปลอดภัย</translation>
 <translation id="5112422516732747637">A5</translation>
+<translation id="5114288597538800140">ถาด 18</translation>
 <translation id="5114987907971894280">Virtual Reality</translation>
 <translation id="5115216390227830982">Edp แบบยุโรป</translation>
 <translation id="5115232566827194440">ลบล้างเซสชันผู้เยี่ยมชมที่มีการจัดการและถูกจำกัด</translation>
@@ -1267,8 +1291,10 @@
 <translation id="5201306358585911203">หน้าที่ฝังไว้ในหน้าเว็บนี้บอกว่า</translation>
 <translation id="5205222826937269299">ต้องระบุชื่อ</translation>
 <translation id="5209518306177824490">ลายนิ้วมือ SHA-1</translation>
+<translation id="5209670883520018268">ถาด 20</translation>
 <translation id="5215116848420601511">วิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
+<translation id="521659676233207110">ถาด 13</translation>
 <translation id="5222812217790122047">ต้องระบุอีเมล</translation>
 <translation id="5230733896359313003">ที่อยู่ในการจัดส่ง</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -1472,6 +1498,7 @@
 <translation id="5967592137238574583">แก้ไขข้อมูลติดต่อ</translation>
 <translation id="5967867314010545767">ลบจากประวัติการเข้าชม</translation>
 <translation id="5968793460449681917">ทุกครั้งที่เข้าชม</translation>
+<translation id="5974052231147553524">ม้วนกระดาษ 6</translation>
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1626,11 +1653,13 @@
 <translation id="6499038740797743453">รีเซ็ตรหัสผ่านไหม</translation>
 <translation id="6502991525169604759">แบบไม่มีการเปลี่ยนแปลงที่ทำ</translation>
 <translation id="6505563257409036437">ปิดหน้าต่างที่ไม่ระบุตัวตน</translation>
+<translation id="6506959208958864820">ซองจดหมาย</translation>
 <translation id="6508722015517270189">รีสตาร์ท Chrome</translation>
 <translation id="6513005815064132016">สามารถขอติดตามตำแหน่งของกล้องได้</translation>
 <translation id="6517596291481585650">คำเตือน: ระบบไม่ได้รวมนโยบายนี้เป็นรายการตามที่นโยบายระบุเพราะไม่ใช่รายการ</translation>
 <translation id="6518133107902771759">ยืนยัน</translation>
 <translation id="6521745193039995384">ไม่ได้ใช้งานอยู่</translation>
+<translation id="6529173248185917884">ม้วนกระดาษ 7</translation>
 <translation id="6529602333819889595">&amp;ทำซ้ำการนำออก</translation>
 <translation id="6545864417968258051">การสแกนหาบลูทูธ</translation>
 <translation id="6547208576736763147">เจาะรูด้านซ้าย 2 รู</translation>
@@ -1665,6 +1694,7 @@
 <translation id="6652101503459149953">ใช้ Windows Hello</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6660413144148052430">ตำแหน่ง</translation>
+<translation id="6662457027866368246">ม้วนกระดาษ 1</translation>
 <translation id="666259744093848177">(x86_64 แปลแล้ว)</translation>
 <translation id="6665553082534466207">เจาะรูด้านขวา 3 รู</translation>
 <translation id="6671697161687535275">ต้องการนำคำแนะนำสำหรับแบบฟอร์มออกจาก Chromium ใช่ไหม</translation>
@@ -1711,6 +1741,7 @@
 <translation id="6846340164947227603">ใช้หมายเลขบัตรเสมือน...</translation>
 <translation id="6852204201400771460">โหลดแอปซ้ำไหม</translation>
 <translation id="6865412394715372076">ยืนยันบัตรนี้ไม่ได้ในขณะนี้</translation>
+<translation id="6873456682041376666">ถาดบน</translation>
 <translation id="6874604403660855544">&amp;ทำซ้ำการเพิ่ม</translation>
 <translation id="6881240511396774766">สร้างเอกสารใหม่ใน Google เอกสารอย่างรวดเร็ว</translation>
 <translation id="6883221904761970440">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัยปิดลง</translation>
@@ -1791,6 +1822,7 @@
 <translation id="7135130955892390533">แสดงสถานะ</translation>
 <translation id="7138472120740807366">วิธีการนำส่งสินค้า</translation>
 <translation id="7139724024395191329">เอมิเรต</translation>
+<translation id="7139892792842608322">ถาดหลัก</translation>
 <translation id="714064300541049402">เปลี่ยนตำแหน่งรูปภาพด้าน 2 ตามแกน X</translation>
 <translation id="7152423860607593928">Number-14 (ซองจดหมาย)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> รายการ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> รายการ}}</translation>
@@ -1829,6 +1861,7 @@
 <translation id="7251437084390964440">การกำหนดค่าเครือข่ายไม่เป็นไปตามมาตรฐาน ONC ระบบอาจไม่นำเข้าการกำหนดค่าบางส่วน
 รายละเอียดเพิ่มเติม:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7256634549594854023">ถาดหลัง</translation>
 <translation id="725866823122871198">ไม่สามารถเริ่มการเชื่อมต่อส่วนตัวกับ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ได้เนื่องจากวันที่และเวลาของคอมพิวเตอร์ (<ph name="DATE_AND_TIME" />) ไม่ถูกต้อง</translation>
 <translation id="7260504762447901703">เพิกถอนสิทธิ์การเข้าถึง</translation>
 <translation id="7275334191706090484">บุ๊กมาร์กที่มีการจัดการ</translation>
@@ -1984,9 +2017,11 @@
 <translation id="7734285854693414638">สร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
 <translation id="773466115871691567">แปลหน้าเว็บภาษา<ph name="SOURCE_LANGUAGE" />ทุกครั้ง</translation>
 <translation id="7740996059027112821">มาตรฐาน</translation>
+<translation id="77424286611022110">เว็บไซต์นี้แสดงโฆษณาที่รบกวนหรือทำให้เข้าใจผิด <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">บล็อกเนื้อหาอันตรายแล้ว</translation>
 <translation id="7751971323486164747">ปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
 <translation id="7752995774971033316">ไม่ได้จัดการ</translation>
+<translation id="7755624218968747854">ม้วนกระดาษหลัก</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">ไฟร์วอลล์หรือซอฟต์แวร์ป้องกันไวรัสอาจบล็อกการเชื่อมต่อนี้</translation>
 <translation id="776110834126722255">เลิกใช้งาน</translation>
@@ -2064,6 +2099,7 @@
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ระบบจะบันทึกบัตรนี้และที่อยู่สำหรับการเรียกเก็บเงินของบัตร คุณจะใช้บัตรนี้ได้เมื่อลงชื่อเข้าใช้ <ph name="USER_EMAIL" />}other{ระบบจะบันทึกบัตรเหล่านี้และที่อยู่สำหรับการเรียกเก็บเงินของบัตร คุณจะใช้บัตรเหล่านี้ได้เมื่อลงชื่อเข้าใช้ <ph name="USER_EMAIL" />}}</translation>
 <translation id="8025119109950072390">ผู้โจมตีในเว็บไซต์นี้อาจหลอกล่อให้คุณทำบางสิ่งที่อันตราย เช่น การติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูลส่วนบุคคล (ตัวอย่างเช่น รหัสผ่าน หมายเลขโทรศัพท์ หรือบัตรเครดิต)</translation>
 <translation id="8026334261755873520">ล้างข้อมูลการท่องเว็บ</translation>
+<translation id="8027077570865220386">ถาด 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
 <translation id="8028960012888758725">ตัดออกหลังเสร็จงาน</translation>
 <translation id="8034522405403831421">หน้าเว็บนี้อยู่ในภาษา<ph name="SOURCE_LANGUAGE" /> ต้องการแปลเป็นภาษา<ph name="TARGET_LANGUAGE" />ไหม</translation>
@@ -2123,6 +2159,7 @@
 <translation id="8228419419708659934">ดูแบบ 2 หน้า</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">อุณหภูมิของแพลตฟอร์ม</translation>
+<translation id="8233773197406738106">กำลังเตรียมไฟล์</translation>
 <translation id="8238581221633243064">เปิดหน้าเว็บในแท็บไม่ระบุตัวตนใหม่</translation>
 <translation id="8241707690549784388">หน้าที่คุณกำลังมองหาใช้ข้อมูลที่คุณได้ป้อนไว้แล้ว การกลับไปสู่หน้านั้นอาจทำให้คุณต้องทำซ้ำการดำเนินการใดๆ ที่คุณทำแล้ว คุณต้องการดำเนินการต่อหรือไม่</translation>
 <translation id="8241712895048303527">บล็อกในไซต์นี้</translation>
@@ -2140,6 +2177,7 @@
 <translation id="8270242299912238708">เอกสาร PDF</translation>
 <translation id="8275952078857499577">ไม่ต้องเสนอการแปลเว็บไซต์นี้</translation>
 <translation id="8277900682056760511">แผ่นงานของเครื่องจัดการการชำระเงินเปิดอยู่</translation>
+<translation id="8280630997017109758">ถาด 11</translation>
 <translation id="8281084378435768645">รูปภาพขนาดใหญ่</translation>
 <translation id="8282947398454257691">ทราบตัวระบุอุปกรณ์ที่ไม่ซ้ำกัน</translation>
 <translation id="8284769179630993263">จัดการ Google Safe Browsing และอื่นๆ ในการตั้งค่า Chrome</translation>
@@ -2289,6 +2327,7 @@
 <translation id="8807160976559152894">ตัดออกหลังหน้าแต่ละหน้า</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
+<translation id="882338992931677877">ช่องแบบเลือกด้วยตนเอง</translation>
 <translation id="883848425547221593">บุ๊กมาร์กอื่นๆ</translation>
 <translation id="884264119367021077">ที่อยู่สำหรับจัดส่ง</translation>
 <translation id="884923133447025588">ไม่พบกระบวนการเพิกถอน</translation>
@@ -2347,6 +2386,7 @@
 <translation id="9036306139374661733">อนุญาตให้เข้าถึงไมโครโฟนไหม</translation>
 <translation id="9038649477754266430">ใช้บริการการคาดคะเนเพื่อโหลดหน้าได้เร็วขึ้น</translation>
 <translation id="9039213469156557790">นอกจากนี้ หน้านี้ประกอบด้วยทรัพยากรอื่นๆ ซึ่งไม่ปลอดภัย ผู้อื่นสามารถดูทรัพยากรเหล่านี้ขณะถ่ายโอน และผู้บุกรุกสามารถแก้ไขเพื่อเปลี่ยนการทำงานของหน้าได้</translation>
+<translation id="9042617223719777575">ความจุมาก</translation>
 <translation id="9044359186343685026">ใช้ Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ถูกต้อง</translation>

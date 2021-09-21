@@ -102,6 +102,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
 <translation id="1108600514891325577">&amp;توقف</translation>
 <translation id="1110155001042129815">انتظار</translation>
+<translation id="1110965959145884739">زبان‌هایی را که می‌خواهید در این دستگاه نصب شود انتخاب کنید. به‌منظور صرفه‌جویی در فضای دیسک، فایل‌های زبان میان کاربران به‌اشتراک گذاشته می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">پروژکتور</translation>
 <translation id="1112420131909513020">برگه پس‌زمینه درحال استفاده از بلوتوث است</translation>
 <translation id="1113892970288677790">انتخاب کارهای هنری و تصاویر برگزیده</translation>
@@ -546,6 +547,7 @@
 <translation id="1580772913177567930">با سرپرستتان تماس بگیرید</translation>
 <translation id="1581962803218266616">‏نمایش در Finder</translation>
 <translation id="1582955169539260415">حذف [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" /> در دستگاه پردازش می‌شود و آفلاین کار می‌کند</translation>
 <translation id="1584990664401018068">‏شبکه Wi-Fi مورد استفاده شما (<ph name="NETWORK_ID" />) احتمالاً نیاز به اصالت‌سنجی دارد.</translation>
 <translation id="1585717515139318619">‏برنامه دیگری در رایانه شما یک طرح زمینه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
 
@@ -764,6 +766,7 @@
 <translation id="177989070088644880">برنامه (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">بستن گروه</translation>
 <translation id="1780273119488802839">وارد کردن نشانک‌ها…</translation>
+<translation id="178092663238929451">برای تبادل فایل با افرادی که در اطرافتان هستند، «هم‌رسانی با اطراف» را راه‌اندازی کنید</translation>
 <translation id="1781291988450150470">پین کنونی</translation>
 <translation id="1781398670452016618">‏<ph name="DOMAIN" /> از شما می‌خواهد اکنون به Wi-Fi متصل شوید و به‌روزرسانی را بارگیری کنید.</translation>
 <translation id="1781502536226964113">باز کردن صفحه «برگه جدید»</translation>
@@ -1599,6 +1602,7 @@
 <translation id="265390580714150011">مقدار قسمت</translation>
 <translation id="2654166010170466751">اجازه به سایت‌ها برای نصب کنتر‌ل‌کننده‌های پرداخت</translation>
 <translation id="2654553774144920065">درخواست چاپ</translation>
+<translation id="2658941648214598230">محتوای اصلی نشان داده شود؟</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ویژگی‌ها براساس دستگاه متفاوت است</translation>
 <translation id="2659971421398561408">‏تغییر اندازه دیسک Crostini</translation>
 <translation id="2660779039299703961">رویداد</translation>
@@ -2465,6 +2469,7 @@
 <translation id="3564848315152754834">‏کلید امنیتی USB</translation>
 <translation id="3566325075220776093">از این دستگاه</translation>
 <translation id="3566721612727112615">سایتی اضافه نشد</translation>
+<translation id="3567284462585300767">برای دریافت و پذیرفتن فایل‌های افرادی که در اطرافتان هستند، نمایان شوید</translation>
 <translation id="3569382839528428029">آیا می‌خواهید <ph name="APP_NAME" /> صفحه شما را به اشتراک بگذارد؟</translation>
 <translation id="3569407787324516067">محافظ صفحه</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> می‌تواند فایل‌ها و پوشه‌های زیر را مشاهده کند</translation>
@@ -3556,6 +3561,7 @@
 <translation id="475088594373173692">کاربر اول</translation>
 <translation id="4756378406049221019">توقف/تازه‌سازی</translation>
 <translation id="4756388243121344051">&amp;سابقه</translation>
+<translation id="4759126501639448579">خاطرات هرگز نشان داده نشوند</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
 <translation id="4761104368405085019">استفاده از میکروفون شما</translation>
 <translation id="4762718786438001384">فضای دیسک دستگاه بسیار کم است</translation>
@@ -3642,6 +3648,7 @@
 <translation id="485088796993065002">سایت‌ها شاید برای ارائه صدای موسیقی، ویدیوها، و دیگر رسانه‌ها صدا پخش کنند</translation>
 <translation id="4853020600495124913">باز کردن در پنجره &amp;جدید</translation>
 <translation id="4854317507773910281">حساب ولی را برای تأیید انتخاب کنید</translation>
+<translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
 <translation id="4856478137399998590">سرویس داده تلفن همراه شما فعال شده و آمادهٔ استفاده است.</translation>
 <translation id="4858792381671956233">از والدینتان پرسیدید آیا اجازه بازدید از این سایت را دارید</translation>
 <translation id="4858913220355269194">فوتبالی</translation>
@@ -3879,6 +3886,7 @@
 <translation id="51143538739122961">کلید امنیتی را وارد و لمس کنید</translation>
 <translation id="5115309401544567011">لطفاً <ph name="DEVICE_TYPE" /> خود را به منبع نیرو وصل کنید.</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">همه خاطرات پنهان شدند</translation>
 <translation id="5116628073786783676">ذ&amp;خیره فایل صوتی به‌عنوان...</translation>
 <translation id="5117139026559873716">اتصال تلفن و <ph name="DEVICE_TYPE" /> قطع می‌شود و دیگر به‌طور خودکار به هم وصل نمی‌شوند.</translation>
 <translation id="5117930984404104619">کنترل رفتار افزودنی‌های دیگر از جمله نشانی‌های وب بازدید شده</translation>
@@ -5022,6 +5030,7 @@
 <translation id="6374469231428023295">دوباره امتحان کنید</translation>
 <translation id="6377268785556383139">۱ نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6380143666419481200">پذیرش و ادامه</translation>
+<translation id="6382958439467370461">میان‌بر فعالی وجود ندارد</translation>
 <translation id="638418309848716977">پیوندهای پشتیبانی‌شده</translation>
 <translation id="6384275966486438344">تغییر تنظیمات جستجویتان به: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{گروه بدون نام - ۱ برگه}one{گروه بدون نام - # برگه}other{گروه بدون نام - # برگه}}</translation>
@@ -5899,6 +5908,7 @@
 <translation id="7354341762311560488">حسگر اثر انگشت، پایین‌ترین کلید سمت راست در صفحه‌کلید است. با یکی از انگشت‌هایتان آن را به‌آرامی لمس کنید.</translation>
 <translation id="7356908624372060336">گزارش‌های شبکه</translation>
 <translation id="735745346212279324">‏VPN قطع است</translation>
+<translation id="7358324924540718595">خاطرات امروز پنهان شد</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> صفحه در <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">برای اجرای <ph name="PLUGIN_NAME" /> کلیک راست کنید</translation>
 <translation id="7362387053578559123">سایت‌ها می‌توانند برای اتصال به دستگاه‌های بلوتوث درخواست دهند</translation>
@@ -6299,6 +6309,7 @@
 <translation id="7757787379047923882">نوشتار هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">تنظیم مرزهای نمایشگرتان</translation>
+<translation id="7759276754544429366">پنهان کردن خاطرات امروز</translation>
 <translation id="7760004034676677601">آیا این صفحه راه‌اندازی مورد انتظار شماست؟</translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> از <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6654,7 +6665,6 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> درحال استفاده از تنظیمات پراکسی از افزونه است</translation>
 <translation id="8097959162767603171">‏سرپرستتان ابتدا باید شرایط خدمات را در فهرست دستگاه Chrome در «کنسول سرپرست» قبول کند.</translation>
 <translation id="8098616321286360457">اتصال به شبکه لازم است</translation>
-<translation id="8099495042588009598">سایر مجوزها</translation>
 <translation id="810068641062493918">‏<ph name="LANGUAGE" /> انتخاب شد. برای لغو انتخاب، Search (جستجو) را به‌همراه Space فشار دهید.</translation>
 <translation id="810185532889603849">رنگ سفارشی</translation>
 <translation id="8101987792947961127">در راه‌اندازی مجدد بعدی پاکسازی لازم است</translation>
@@ -6971,6 +6981,7 @@
 <translation id="8457451314607652708">وارد کردن نشانک‌ها</translation>
 <translation id="8458341576712814616">میان‌بر</translation>
 <translation id="8458627787104127436">باز کردن همه (<ph name="URL_COUNT" /> مورد) در پنجره جدید</translation>
+<translation id="8460490661223303637">‏برای صرفه‌جویی در حافظه، Chrome برخی محتوا را پاک کرد</translation>
 <translation id="8460932807646981183">مدیریت موتورهای جستجو و جستجوی سایت</translation>
 <translation id="84613761564611563">میانای کاربر پیکربندی شبکه درخواست شد، لطفاً صبر کنید…</translation>
 <translation id="8461914792118322307">پراکسی</translation>

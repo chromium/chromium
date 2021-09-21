@@ -32,6 +32,7 @@
 <translation id="1074497978438210769">Niet beveiligd</translation>
 <translation id="1076113272840682464">Downloads in Chrome beheren</translation>
 <translation id="1080116354587839789">Aanpassen aan breedte</translation>
+<translation id="1081061862829655580">Lade 19</translation>
 <translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Naam op pas toevoegen</translation>
 <translation id="1089439967362294234">Wachtwoord wijzigen</translation>
@@ -70,6 +71,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1209221128712833642">Knop Formulier maken, druk op Enter om snel een nieuw formulier in Google Formulieren te maken</translation>
 <translation id="121201262018556460">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een certificaat geretourneerd met een zwakke sleutel. Een hacker kan de persoonlijke sleutel hebben aangepast en het is mogelijk dat de server zelf een imitatie is (wellicht een server die je schade probeert te berokkenen).</translation>
 <translation id="1219129156119358924">Systeembeveiliging</translation>
+<translation id="1222060260947439312">Rechterlade</translation>
 <translation id="1227224963052638717">Onbekend beleid.</translation>
 <translation id="1228893227497259893">Onjuiste entiteits-ID</translation>
 <translation id="1232569758102978740">Naamloos</translation>
@@ -91,11 +93,13 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1257553931232494454">zoomniveaus</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je Chrome-instellingen te beheren</translation>
 <translation id="1263231323834454256">Leeslijst</translation>
+<translation id="1264309058268477500">Alternatief</translation>
 <translation id="1269096320618100013">Knop 'Toegankelijkheidsinstellingen beheren', druk op Enter om je toegankelijkheidstools te personaliseren in de Chrome OS-instellingen.</translation>
 <translation id="1269516672602708785">Snel een nieuwe site in Google Sites maken</translation>
 <translation id="1270502636509132238">Ophaalmethode</translation>
 <translation id="1281476433249504884">Stapeleenheid 1</translation>
 <translation id="1285320974508926690">Deze site nooit vertalen</translation>
+<translation id="1292571435393770077">Lade 16</translation>
 <translation id="1292701964462482250">'Software op je computer voorkomt dat Chrome veilig verbinding kan maken met internet' (alleen Windows-computers)</translation>
 <translation id="1294154142200295408">Opdrachtregelvarianten</translation>
 <translation id="129553762522093515">Recent gesloten</translation>
@@ -203,6 +207,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1592005682883173041">Lokale gegevenstoegang</translation>
 <translation id="1594030484168838125">Kiezen</translation>
 <translation id="161042844686301425">Cyaan</translation>
+<translation id="1611101756749861742">Tweede rol</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623104350909869708">Voorkomen dat deze pagina extra dialoogvensters toont</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -276,14 +281,17 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="182139138257690338">automatische downloads</translation>
 <translation id="1821930232296380041">Ongeldige aanvraag of aanvraagparameters</translation>
 <translation id="1822540298136254167">Websites die je bezoekt en waarop je tijd doorbrengt</translation>
+<translation id="1824402189105105503">Achtste rol</translation>
 <translation id="1826516787628120939">Controleren</translation>
 <translation id="1834321415901700177">Deze site bevat schadelijke programma's</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
 <translation id="1839551713262164453">De validatie van de beleidswaarden is mislukt doordat er fouten zijn opgetreden</translation>
 <translation id="1842969606798536927">Betalen</translation>
 <translation id="1856713167556118146">Wat incognito niet doet</translation>
+<translation id="1863257867908022953">Lade 12</translation>
 <translation id="1871208020102129563">Proxy is ingesteld op het gebruik van vaste proxyservers, niet op een script-URL van het PAC-type.</translation>
 <translation id="1871284979644508959">Verplicht veld</translation>
+<translation id="1875025161375567525">Fotolade</translation>
 <translation id="1875512691959384712">Google Formulieren</translation>
 <translation id="187918866476621466">Startpagina's openen</translation>
 <translation id="1883255238294161206">Lijst samenvouwen</translation>
@@ -309,6 +317,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1962204205936693436">Bookmarks voor <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Serialisatiefout</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
+<translation id="1975457531113383421">Invoerlade</translation>
 <translation id="1975584088563498795">Mailbox 10</translation>
 <translation id="1978555033938440688">Firmwareversie</translation>
 <translation id="1988881251331415125">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een verbindingsdiagnose uit<ph name="END_LINK" />.</translation>
@@ -322,6 +331,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2025186561304664664">Proxy is ingesteld op automatische configuratie.</translation>
 <translation id="2025891858974379949">Onveilige content</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Controleer de proxy en firewall<ph name="END_LINK" /></translation>
+<translation id="2036983605131262583">Alternatieve rol</translation>
 <translation id="2042213636306070719">Lade 7</translation>
 <translation id="204357726431741734">Inloggen om wachtwoorden te gebruiken die zijn opgeslagen in je Google-account</translation>
 <translation id="2053111141626950936">Pagina's in het <ph name="LANGUAGE" /> worden niet vertaald.</translation>
@@ -477,6 +487,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
 <translation id="254947805923345898">Beleidswaarde is ongeldig.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> heeft een ongeldige reactie verzonden.</translation>
+<translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Schermvergrendeling gebruiken om kaarten vanaf nu te bevestigen</translation>
 <translation id="2553853292994445426">Controleer je instellingen voor beveiligde DNS. Mogelijk heb je een beveiligde DNS-server geconfigureerd waarmee geen verbinding kan worden gemaakt.</translation>
 <translation id="2556876185419854533">&amp;Bewerken ongedaan maken</translation>
@@ -527,6 +538,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om je betalingen en creditcardgegevens te beheren in de Chrome-instellingen.</translation>
 <translation id="2721148159707890343">Verzoek geslaagd</translation>
+<translation id="2726001110728089263">Zijlade</translation>
 <translation id="2728127805433021124">Het certificaat van de server is ondertekend met een zwak ondertekeningsalgoritme.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Verbindingsdiagnose uitvoeren<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Ophaaladres kiezen</translation>
@@ -558,6 +570,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2880660355386638022">Vensterplaatsing</translation>
 <translation id="2881276955470682203">Pas opslaan?</translation>
 <translation id="2882949212241984732">4-luik gesloten luikvouw</translation>
+<translation id="2893773853358652045">Vierde rol</translation>
 <translation id="2900528713135656174">Afspraak maken</translation>
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="290376772003165898">Is deze pagina niet in het <ph name="LANGUAGE" />?</translation>
@@ -616,6 +629,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3096100844101284527">Ophaaladres toevoegen</translation>
 <translation id="3105172416063519923">Item-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Controleer de configuratie voor beveiligde DNS<ph name="END_LINK" /></translation>
+<translation id="3108943290502734357">Middelste lade</translation>
 <translation id="3109728660330352905">Je hebt geen toestemming om deze pagina te bekijken.</translation>
 <translation id="3113284927548439113">Derde dienst</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt.</translation>
@@ -629,6 +643,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3154506275960390542">Deze pagina bevat een formulier dat mogelijk niet beveiligd wordt verzonden. Gegevens die je verzendt, kunnen tijdens de overdracht worden bekeken door anderen of kunnen worden aangepast door een aanvaller om te wijzigen wat de server ontvangt.</translation>
 <translation id="315504272643575312">Je account wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Herstellen</translation>
+<translation id="3158539265159265653">Schijf</translation>
 <translation id="3162559335345991374">Het is mogelijk dat je de inlogpagina moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Eiland</translation>
@@ -787,6 +802,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3658742229777143148">Revisie</translation>
 <translation id="3664782872746246217">Zoekwoorden:</translation>
 <translation id="3671540257457995106">Formaat aanpassen toestaan?</translation>
+<translation id="3675563144891642599">Derde rol</translation>
 <translation id="3676592649209844519">Apparaat-ID:</translation>
 <translation id="3677008721441257057">Bedoelde je &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Verzoek kan niet worden ondertekend</translation>
@@ -902,6 +918,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4084120443451129199">Zoekmodus, druk op Enter om naar <ph name="KEYWORD_SUFFIX" /> te zoeken</translation>
 <translation id="4087296516249690906">Knop Afspraak maken, druk op Enter om snel een nieuwe afspraak in Google Agenda te maken</translation>
 <translation id="4088981014127559358">Beeldverschuiving Y van zijde 1</translation>
+<translation id="4089152113577680600">Lade 14</translation>
 <translation id="4098354747657067197">Misleidende site gedetecteerd</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je lettertypen en lettergrootten aan te passen in Chrome</translation>
 <translation id="4101413244023615925">Tekst en graphics</translation>
@@ -936,6 +953,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Je kaart kan op dit moment niet worden opgeslagen</translation>
 <translation id="4196861286325780578">&amp;Opnieuw verplaatsen</translation>
+<translation id="4202554117186904723">Vijfde rol</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controleer firewall- en antivirusconfiguraties<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4209166701302774460">De server waar je naartoe gaat (<ph name="ORIGIN" />), heeft gevraagd om
@@ -997,6 +1015,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
 <translation id="4318312030194671742">Samenstellerservice voor Paint-voorbeelden</translation>
 <translation id="4318566738941496689">De naam en het netwerkadres van je apparaat</translation>
+<translation id="4325600325087822253">Lade 17</translation>
 <translation id="4325863107915753736">Kan artikel niet vinden</translation>
 <translation id="4326324639298822553">Controleer de vervaldatum en probeer het opnieuw</translation>
 <translation id="4329871760342656885">Fout bij parseren van het beleid: <ph name="ERROR" /></translation>
@@ -1008,6 +1027,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">De verbinding met <ph name="SITE" /> is niet beveiligd</translation>
 <translation id="4349531505348777662">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan naar <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en andere sites te gaan waarop je dit wachtwoord hebt gebruikt en je wachtwoord nu te wijzigen.</translation>
+<translation id="4350629523305688469">Multifunctionele lade</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wil scannen naar Bluetooth-apparaten in de buurt. De volgende apparaten zijn gevonden:</translation>
 <translation id="4356973930735388585">Cybercriminelen op deze site proberen mogelijk gevaarlijke programma's op je computer te installeren waarmee je gegevens worden gestolen of verwijderd (bijvoorbeeld foto's, wachtwoorden, berichten en creditcards).</translation>
 <translation id="4358059973562876591">De gespecificeerde templates worden misschien niet toegepast door een fout met het beleid DnsOverHttpsMode.</translation>
@@ -1062,6 +1082,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4515275063822566619">Passen en adressen zijn afkomstig uit Chrome en je Google-account (<ph name="ACCOUNT_EMAIL" />). Je kunt ze beheren in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (envelop)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
+<translation id="4521916730539354575">Linkerlade</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4524138615196389145">Bevestig je kaarten sneller door vanaf nu WebAuthn te gebruiken</translation>
 <translation id="4524805452350978254">Passen beheren</translation>
@@ -1176,6 +1197,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4889420713887366944">Knop 'Incognitovenster openen'. Druk op 'Enter' om een nieuw incognitovenster in Chrome te openen om privé te browsen.</translation>
 <translation id="4892518386797173871">Achterzijde</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
+<translation id="4900217275619098670">Negende rol</translation>
 <translation id="4901778704868714008">Opslaan…</translation>
 <translation id="4913987521957242411">Perforatie linksboven</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> installeren (geen download vereist)</translation>
@@ -1224,6 +1246,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 in gebruik)}other{(# in gebruik)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Het proxy-adres controleren<ph name="END_LINK" /></translation>
+<translation id="5070838744279127212">Tiende rol</translation>
 <translation id="507130231501693183">Mailbox 4</translation>
 <translation id="5087286274860437796">Het servercertificaat is momenteel niet geldig.</translation>
 <translation id="5087580092889165836">Pas toevoegen</translation>
@@ -1236,6 +1259,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Site is niet beveiligd</translation>
 <translation id="5112422516732747637">A5</translation>
+<translation id="5114288597538800140">Lade 18</translation>
 <translation id="5114987907971894280">virtual reality</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Beperkte beheerde gastsessie overschrijven</translation>
@@ -1269,8 +1293,10 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5201306358585911203">Een ingesloten pagina op deze pagina meldt het volgende</translation>
 <translation id="5205222826937269299">Naam vereist</translation>
 <translation id="5209518306177824490">SHA-1-vingerafdruk</translation>
+<translation id="5209670883520018268">Lade 20</translation>
 <translation id="5215116848420601511">Betaalmethoden en adressen die Google Pay gebruiken</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
+<translation id="521659676233207110">Lade 13</translation>
 <translation id="5222812217790122047">E-mailadres vereist</translation>
 <translation id="5230733896359313003">Verzendadres</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -1474,6 +1500,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5967592137238574583">Contactgegevens bewerken</translation>
 <translation id="5967867314010545767">Verwijderen uit geschiedenis</translation>
 <translation id="5968793460449681917">Bij elk bezoek</translation>
+<translation id="5974052231147553524">Zesde rol</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1627,11 +1654,13 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6499038740797743453">Wachtwoord opnieuw instellen?</translation>
 <translation id="6502991525169604759">Zonder jouw wijzigingen</translation>
 <translation id="6505563257409036437">Incognitovensters sluiten</translation>
+<translation id="6506959208958864820">Envelop</translation>
 <translation id="6508722015517270189">Chrome opnieuw starten</translation>
 <translation id="6513005815064132016">Kan vragen of deze site je camerapositie mag bijhouden</translation>
 <translation id="6517596291481585650">Waarschuwing: Dit beleid is niet samengevoegd als lijst zoals gespecificeerd door het beleid, omdat het geen lijst is.</translation>
 <translation id="6518133107902771759">Controleren</translation>
 <translation id="6521745193039995384">Niet actief</translation>
+<translation id="6529173248185917884">Zevende rol</translation>
 <translation id="6529602333819889595">&amp;Opnieuw verwijderen</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
 <translation id="6547208576736763147">Twee perforaties links</translation>
@@ -1666,6 +1695,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6652101503459149953">Windows Hello gebruiken</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6660413144148052430">locatie</translation>
+<translation id="6662457027866368246">Eerste rol</translation>
 <translation id="666259744093848177">(x86_64 vertaald)</translation>
 <translation id="6665553082534466207">Drie perforaties rechts</translation>
 <translation id="6671697161687535275">Formuliersuggestie verwijderen uit Chromium?</translation>
@@ -1712,6 +1742,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6846340164947227603">Een virtueel kaartnummer gebruiken…</translation>
 <translation id="6852204201400771460">App opnieuw laden?</translation>
 <translation id="6865412394715372076">Deze pas kan momenteel niet worden geverifieerd</translation>
+<translation id="6873456682041376666">Bovenste lade</translation>
 <translation id="6874604403660855544">&amp;Opnieuw toevoegen</translation>
 <translation id="6881240511396774766">Snel een nieuw Google-document maken</translation>
 <translation id="6883221904761970440">Blad voor beveiligde verificatie van betalingsgegevens is gesloten</translation>
@@ -1792,6 +1823,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="7135130955892390533">Status tonen</translation>
 <translation id="7138472120740807366">Bezorgingsmethode</translation>
 <translation id="7139724024395191329">Emiraat</translation>
+<translation id="7139892792842608322">Primaire lade</translation>
 <translation id="714064300541049402">Beeldverschuiving X van zijde 2</translation>
 <translation id="7152423860607593928">Number-14 (envelop)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1830,6 +1862,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="7251437084390964440">De netwerkconfiguratie voldoet niet aan de ONC-standaard. Delen van de configuratie worden mogelijk niet geïmporteerd.
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7256634549594854023">Achterste lade</translation>
 <translation id="725866823122871198">Er kan geen privéverbinding met <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> tot stand worden gebracht, omdat de datum en tijd van de computer (<ph name="DATE_AND_TIME" />) onjuist zijn.</translation>
 <translation id="7260504762447901703">Toegang intrekken</translation>
 <translation id="7275334191706090484">Beheerde bookmarks</translation>
@@ -1985,9 +2018,11 @@ Aanvullende informatie:
 <translation id="7734285854693414638">Snel een nieuw formulier in Google Formulieren maken</translation>
 <translation id="773466115871691567">Pagina's in het <ph name="SOURCE_LANGUAGE" /> altijd vertalen</translation>
 <translation id="7740996059027112821">Standaard</translation>
+<translation id="77424286611022110">Deze site toont opdringerige of misleidende advertenties. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Gevaarlijke content geblokkeerd.</translation>
 <translation id="7751971323486164747">Lettertypen en lettergrootten aanpassen in Chrome</translation>
 <translation id="7752995774971033316">Niet-beheerd</translation>
+<translation id="7755624218968747854">Primaire rol</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">De verbinding is mogelijk geblokkeerd door de firewall of antivirussoftware.</translation>
 <translation id="776110834126722255">Beëindigd</translation>
@@ -2065,6 +2100,7 @@ Aanvullende informatie:
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Deze pas en het bijbehorende factuuradres worden opgeslagen. Je kunt deze gegevens gebruiken wanneer je bent ingelogd op <ph name="USER_EMAIL" />.}other{Deze passen en de bijbehorende factuuradressen worden opgeslagen. Je kunt deze gegevens gebruiken wanneer je bent ingelogd op <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Cybercriminelen op deze site proberen je mogelijk te misleiden om iets gevaarlijks te doen, zoals software installeren of je persoonlijke informatie bekendmaken (bijvoorbeeld wachtwoorden, telefoonnummers of creditcards).</translation>
 <translation id="8026334261755873520">Browsegegevens wissen</translation>
+<translation id="8027077570865220386">Lade 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuw formulier in Google Formulieren te maken</translation>
 <translation id="8028960012888758725">Bijsnijden na taak</translation>
 <translation id="8034522405403831421">Deze pagina is in het <ph name="SOURCE_LANGUAGE" />. Vertalen naar het <ph name="TARGET_LANGUAGE" />?</translation>
@@ -2124,6 +2160,7 @@ Aanvullende informatie:
 <translation id="8228419419708659934">Weergave met twee pagina's</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Temperatuur van plateau</translation>
+<translation id="8233773197406738106">Bestand voorbereiden</translation>
 <translation id="8238581221633243064">Pagina openen op een nieuw incognitotabblad</translation>
 <translation id="8241707690549784388">De pagina die je zoekt, heeft informatie gebruikt die je hebt opgegeven Als je terugkeert naar deze pagina, worden acties die je hebt uitgevoerd, mogelijk herhaald. Wil je doorgaan?</translation>
 <translation id="8241712895048303527">Blokkeren op deze site</translation>
@@ -2141,6 +2178,7 @@ Aanvullende informatie:
 <translation id="8270242299912238708">Pdf-documenten</translation>
 <translation id="8275952078857499577">Niet aanbieden om deze site te vertalen</translation>
 <translation id="8277900682056760511">Blad voor betalingshandler is geopend</translation>
+<translation id="8280630997017109758">Lade 11</translation>
 <translation id="8281084378435768645">Grote foto</translation>
 <translation id="8282947398454257691">Je unieke apparaat-ID weten</translation>
 <translation id="8284769179630993263">Safe Browsing en meer beheren in de Chrome-instellingen</translation>
@@ -2289,6 +2327,7 @@ Aanvullende informatie:
 <translation id="8807160976559152894">Bijsnijden na elke pagina</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om Chrome te updaten via je Chrome-instellingen</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="882338992931677877">Handmatige sleuf</translation>
 <translation id="883848425547221593">Andere bookmarks</translation>
 <translation id="884264119367021077">Verzendadres</translation>
 <translation id="884923133447025588">Geen intrekkingsmechanisme gevonden.</translation>
@@ -2347,6 +2386,7 @@ Aanvullende informatie:
 <translation id="9036306139374661733">Microfoon toestaan?</translation>
 <translation id="9038649477754266430">Een voorspellingsservice gebruiken om pagina's sneller te laden</translation>
 <translation id="9039213469156557790">Bovendien bevat deze pagina bronnen die niet beveiligd zijn. Deze bronnen kunnen tijdens verzending door anderen worden bekeken en kunnen door een aanvaller worden gewijzigd om het gedrag van de pagina aan te passen.</translation>
+<translation id="9042617223719777575">Hoge capaciteit</translation>
 <translation id="9044359186343685026">Touch ID gebruiken</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een ongeldig certificaat geretourneerd.</translation>

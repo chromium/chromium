@@ -11,6 +11,7 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
+<translation id="1181037720776840403">Уклони</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1204296502688602597">Кашњење DNS-а</translation>
 <translation id="123124571410524056">Сумња се на портал</translation>
@@ -56,6 +57,7 @@
 <translation id="1908234395526491708">Неуспели UDP захтеви</translation>
 <translation id="1930797645656624981">Услуга метода уноса за Chrome ОС</translation>
 <translation id="1947737735496445907">Одштампано</translation>
+<translation id="197386857804679933">Посетите Подешавања да бисте се поново повезали</translation>
 <translation id="1979103255016296513">Рок за промену лозинке је истекао</translation>
 <translation id="1999615961760456652">Улазни портал</translation>
 <translation id="2006864819935886708">Успостављање везе</translation>
@@ -95,6 +97,7 @@
 <translation id="2783010256799387990">ПРОШЛО</translation>
 <translation id="2789486458103222910">Потврди</translation>
 <translation id="2805756323405976993">Апликације</translation>
+<translation id="2860473693272905224">Поставите још једну страницу на скенер</translation>
 <translation id="2872961005593481000">Искључи</translation>
 <translation id="2878387241690264070">Испражњено <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
@@ -109,6 +112,7 @@
 <translation id="315116470104423982">Мобилни подаци</translation>
 <translation id="3156846309055100599">Скенира се <ph name="PAGE_NUMBER" />. страница...</translation>
 <translation id="315738237743207937">Откривен је улазни портал</translation>
+<translation id="3170673040743561620">Поставите документ на скенер</translation>
 <translation id="3188257591659621405">Моје датотеке</translation>
 <translation id="3199982728237701504">Увлачење документа (двострано)</translation>
 <translation id="3226405216343213872">Траже се скенери</translation>
@@ -139,7 +143,6 @@
 <translation id="360565022852130722">WiFi мрежа је обезбеђена слабим протоколом WEP 802.1x</translation>
 <translation id="3689839747745352263">Тест <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">Претходно повезани</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Поново скенирај страницу}=1{Поново скенирај {PAGE_NUMBER}. страницу}one{Поново скенирај {PAGE_NUMBER}. страницу}few{Поново скенирај {PAGE_NUMBER}. страницу}other{Поново скенирај {PAGE_NUMBER}. страницу}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (рецензије: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Није повезано</translation>
 <translation id="3749289110408117711">Назив датотеке</translation>
@@ -177,7 +180,6 @@
 <translation id="4425149324548788773">Мој диск</translation>
 <translation id="4429881212383817840">Kerberos тикет ускоро истиче</translation>
 <translation id="4431821876790500265">Прикажи извештај</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Уклони страницу}=1{Уклони {PAGE_NUMBER}. страницу}one{Уклони {PAGE_NUMBER}. страницу}few{Уклони {PAGE_NUMBER}. страницу}other{Уклони {PAGE_NUMBER}. страницу}}</translation>
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4453205916657964690">Маска подмреже</translation>
 <translation id="4454245904991689773">Скенирај у:</translation>
@@ -211,6 +213,7 @@
 <translation id="4813345808229079766">Веза</translation>
 <translation id="4832079907277790330">Изаберите фолдер у апликацији Фајлови...</translation>
 <translation id="4835901797422965222">Нема активних мрежа</translation>
+<translation id="484790837831576105">(Android) DNS разрешавање</translation>
 <translation id="4848429997038228357">У ТОКУ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}one{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}few{<ph name="ERROR_MESSAGE" /> Преостају {0} покушаја}other{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушаја}}</translation>
 <translation id="4880328057631981605">Назив приступне тачке</translation>
@@ -291,6 +294,7 @@
 <translation id="6050189528197190982">Сиви тонови</translation>
 <translation id="6058625436358447366">Да бисте завршили, унесите стару и нову лозинку</translation>
 <translation id="6061772781719867950">Неуспешни HTTPS захтеви</translation>
+<translation id="6075872808778243331">(Android) HTTP кашњење</translation>
 <translation id="6104112872696127344">Скенирање је отказано</translation>
 <translation id="6106186594183574873">Да бисте завршили, унесите стару лозинку</translation>
 <translation id="6108689792487843350">Мрежни пролаз је недоступан</translation>
@@ -333,6 +337,7 @@
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> мрежа је онемогућена</translation>
 <translation id="6747215703636344499">Заустављено – посуда за одштампани материјал је пуна</translation>
 <translation id="6756731097889387912">Отказивање скенирања није успело</translation>
 <translation id="6766275201586212568">Неуспешна DNS разрешавања</translation>
@@ -342,11 +347,13 @@
 <translation id="6910312834584889076">Поклопац скенера је отворен. Затворите га и пробајте поново.</translation>
 <translation id="6911383237894364323">Повезивање са медијским серверима није успело</translation>
 <translation id="6957231940976260713">Назив услуге</translation>
+<translation id="6961170852793647506">Да бисте започели, поставите документ на скенер</translation>
 <translation id="6977381486153291903">Ревизија фирмвера</translation>
 <translation id="6982876849933694860">Да бисте подесили нову везу, идите у <ph name="BEGIN_LINK" />Подешавања.<ph name="END_LINK" /></translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
 <translation id="7039041976777695848">Тастатура <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Мобилни оператер</translation>
+<translation id="7058278511608979688">Заврши и сачувај</translation>
 <translation id="7059230779847288458">Пуни се. <ph name="TIME_VALUE" /> до краја пуњења</translation>
 <translation id="708426984172631313">ЗАУСТАВЉЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -359,7 +366,6 @@
 <translation id="7177485034254901881"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилни оператер</translation>
-<translation id="7257889006063274246">Желите ли стварно да уклоните страницу <ph name="CURRENT_PAGE" />?</translation>
 <translation id="7271040990581020067">Скенер се тренутно користи. Пробајте поново касније.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Колекције позадина</translation>
@@ -411,6 +417,7 @@
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
+<translation id="811820734797650957">(Android) Мрежни пролаз може да се пингује</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Затражи бројаче саобраћаја</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
@@ -482,6 +489,7 @@
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Скенира се <ph name="PAGE_NUMBER" />. страница</translation>
 <translation id="9111102763498581341">Откључај</translation>
+<translation id="9126720536733509015">Сачувајте више страница у један PDF документ</translation>
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9149391708638971077">Покрени тест меморије</translation>
 <translation id="9173638680043580060">Преостало је мање од минута</translation>
