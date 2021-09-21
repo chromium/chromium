@@ -36,7 +36,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -151,13 +150,6 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   void HandleStartProfiling(const base::ListValue* args);
 
  private:
-  // Hops to the IO thread to enumerate child processes, and back to the UI
-  // thread to fill in the renderer processes.
-  static void GetChildProcessesOnIOThread(
-      base::WeakPtr<MemoryInternalsDOMHandler> dom_handler,
-      const std::string& callback_id);
-  void GetProfiledPids(const std::string& callback_id,
-                       std::vector<base::Value> children);
   void ReturnProcessListOnUIThread(const std::string& callback_id,
                                    std::vector<base::Value> children,
                                    std::vector<base::ProcessId> profiled_pids);
@@ -210,15 +202,34 @@ void MemoryInternalsDOMHandler::HandleRequestProcessList(
   AllowJavascript();
   std::string callback_id = args->GetList()[0].GetString();
 
-  // This is called on the UI thread, the child process iterator must run on
-  // the IO thread, while the render process iterator must run on the UI thread.
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? content::GetUIThreadTaskRunner({})
-                         : content::GetIOThreadTaskRunner({});
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MemoryInternalsDOMHandler::GetChildProcessesOnIOThread,
-                     weak_factory_.GetWeakPtr(), std::move(callback_id)));
+  std::vector<base::Value> result;
+
+  // The only non-renderer child processes that currently support out-of-process
+  // heap profiling are GPU and UTILITY.
+  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+    // Note that ChildProcessData.id is a child ID and not an OS PID.
+    const content::ChildProcessData& data = iter.GetData();
+
+    if (data.process_type == content::PROCESS_TYPE_GPU ||
+        data.process_type == content::PROCESS_TYPE_UTILITY) {
+      result.push_back(
+          MakeProcessInfo(data.GetProcess().Pid(), GetChildDescription(data)));
+    }
+  }
+
+  heap_profiling::Supervisor* supervisor =
+      heap_profiling::Supervisor::GetInstance();
+
+  // The supervisor hasn't started, so return an empty list.
+  if (!supervisor->HasStarted()) {
+    ReturnProcessListOnUIThread(callback_id, std::move(result),
+                                std::vector<base::ProcessId>());
+    return;
+  }
+
+  supervisor->GetProfiledPids(base::BindOnce(
+      &MemoryInternalsDOMHandler::ReturnProcessListOnUIThread,
+      weak_factory_.GetWeakPtr(), callback_id, std::move(result)));
 }
 
 void MemoryInternalsDOMHandler::HandleSaveDump(const base::ListValue* args) {
@@ -279,51 +290,6 @@ void MemoryInternalsDOMHandler::HandleStartProfiling(
         base::BindOnce(&heap_profiling::Supervisor::StartManualProfiling,
                        base::Unretained(supervisor), pid));
   }
-}
-
-void MemoryInternalsDOMHandler::GetChildProcessesOnIOThread(
-    base::WeakPtr<MemoryInternalsDOMHandler> dom_handler,
-    const std::string& callback_id) {
-  std::vector<base::Value> result;
-
-  // The only non-renderer child processes that currently support out-of-process
-  // heap profiling are GPU and UTILITY.
-  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-    // Note that ChildProcessData.id is a child ID and not an OS PID.
-    const content::ChildProcessData& data = iter.GetData();
-
-    if (data.process_type == content::PROCESS_TYPE_GPU ||
-        data.process_type == content::PROCESS_TYPE_UTILITY) {
-      result.push_back(
-          MakeProcessInfo(data.GetProcess().Pid(), GetChildDescription(data)));
-    }
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&MemoryInternalsDOMHandler::GetProfiledPids,
-                                dom_handler, callback_id, std::move(result)));
-}
-
-void MemoryInternalsDOMHandler::GetProfiledPids(
-    const std::string& callback_id,
-    std::vector<base::Value> children) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  heap_profiling::Supervisor* supervisor =
-      heap_profiling::Supervisor::GetInstance();
-
-  // The supervisor hasn't started, so return an empty list.
-  if (!supervisor->HasStarted()) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MemoryInternalsDOMHandler::ReturnProcessListOnUIThread,
-                       weak_factory_.GetWeakPtr(), callback_id,
-                       std::move(children), std::vector<base::ProcessId>()));
-    return;
-  }
-
-  supervisor->GetProfiledPids(base::BindOnce(
-      &MemoryInternalsDOMHandler::ReturnProcessListOnUIThread,
-      weak_factory_.GetWeakPtr(), callback_id, std::move(children)));
 }
 
 void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
