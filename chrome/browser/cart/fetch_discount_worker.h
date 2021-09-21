@@ -21,6 +21,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace Variations {
+class VariationsClient;
+}  // namespace Variations
+
 class CartLoader {
  public:
   explicit CartLoader(Profile* profile);
@@ -79,7 +83,8 @@ class FetchDiscountWorker {
           browserProcessURLLoaderFactory,
       std::unique_ptr<CartDiscountFetcherFactory> fetcher_factory,
       std::unique_ptr<CartLoaderAndUpdaterFactory> cartLoaderAndUpdaterFactory,
-      signin::IdentityManager* const identity_manager);
+      signin::IdentityManager* const identity_manager,
+      variations::VariationsClient* const chrome_variations_client);
   ~FetchDiscountWorker();
   // Starts the worker to work.
   void Start(base::TimeDelta delay);
@@ -104,6 +109,8 @@ class FetchDiscountWorker {
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
+  variations::VariationsClient* const chrome_variations_client_;
+
   // This is run in the UI thread, it creates a `CartLoader` and loads all
   // active carts.
   void PrepareToFetch();
@@ -126,6 +133,8 @@ class FetchDiscountWorker {
                     bool success,
                     std::vector<CartDB::KeyAndValue> proto_pairs);
 
+  std::string GetVariationsHeaders();
+
   // TODO(crbug.com/1207197): Change these two static method to anonymous
   // namespace in the cc file. This is run in a background thread, it fetches
   // for discounts for all active carts.
@@ -136,7 +145,8 @@ class FetchDiscountWorker {
       std::vector<CartDB::KeyAndValue> proto_pairs,
       const bool is_oauth_fetch,
       const std::string access_token_str,
-      const std::string fetch_for_locale);
+      const std::string fetch_for_locale,
+      const std::string variation_headers);
 
   // This is run in a background thread, it posts AfterDiscountFetched() back to
   // UI thread to process the fetched result.

@@ -52,7 +52,8 @@ class CartDiscountFetcher {
       std::vector<CartDB::KeyAndValue> proto_pairs,
       bool is_oauth_fetch,
       const std::string access_token,
-      const std::string fetch_for_locale);
+      const std::string fetch_for_locale,
+      const std::string variation_headers);
 
  private:
   friend class CartDiscountFetcherTest;
@@ -62,7 +63,8 @@ class CartDiscountFetcher {
       std::vector<CartDB::KeyAndValue> proto_pairs,
       bool is_oauth_fetch,
       const std::string access_token,
-      const std::string fetch_for_locale);
+      const std::string fetch_for_locale,
+      const std::string variation_headers);
   static void OnDiscountsAvailable(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       CartDiscountFetcherCallback callback,
@@ -71,7 +73,8 @@ class CartDiscountFetcher {
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       std::vector<CartDB::KeyAndValue> proto_pairs,
       bool is_oauth_fetch,
-      const std::string fetch_for_locale);
+      const std::string fetch_for_locale,
+      const std::string variation_headers);
   static std::string generatePostData(
       std::vector<CartDB::KeyAndValue> proto_pairs,
       base::Time current_timestamp);

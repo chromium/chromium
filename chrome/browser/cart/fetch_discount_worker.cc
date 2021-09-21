@@ -11,6 +11,10 @@
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/variations/variations.mojom.h"
+#include "components/variations/variations_client.h"
+#include "components/variations/variations_features.h"
+#include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -71,12 +75,14 @@ FetchDiscountWorker::FetchDiscountWorker(
     std::unique_ptr<CartDiscountFetcherFactory> fetcher_factory,
     std::unique_ptr<CartLoaderAndUpdaterFactory>
         cart_loader_and_updater_factory,
-    signin::IdentityManager* const identity_manager)
+    signin::IdentityManager* const identity_manager,
+    variations::VariationsClient* const chrome_variations_client)
     : browserProcessURLLoaderFactory_(browserProcessURLLoaderFactory),
       fetcher_factory_(std::move(fetcher_factory)),
       cart_loader_and_updater_factory_(
           std::move(cart_loader_and_updater_factory)),
-      identity_manager_(identity_manager) {
+      identity_manager_(identity_manager),
+      chrome_variations_client_(chrome_variations_client) {
   backend_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT});
 }
@@ -158,11 +164,27 @@ void FetchDiscountWorker::ReadyToFetch(
 
   backend_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&FetchInBackground, std::move(pending_factory),
-                     std::move(fetcher), std::move(done_fetching_callback),
-                     std::move(proto_pairs), is_oauth_fetch,
-                     std::move(access_token_str),
-                     g_browser_process->GetApplicationLocale()));
+      base::BindOnce(
+          &FetchInBackground, std::move(pending_factory), std::move(fetcher),
+          std::move(done_fetching_callback), std::move(proto_pairs),
+          is_oauth_fetch, std::move(access_token_str),
+          g_browser_process->GetApplicationLocale(), GetVariationsHeaders()));
+}
+
+std::string FetchDiscountWorker::GetVariationsHeaders() {
+  if (!chrome_variations_client_) {
+    return "";
+  }
+
+  variations::mojom::VariationsHeadersPtr variations_headers =
+      chrome_variations_client_->GetVariationsHeaders();
+
+  if (variations_headers.is_null()) {
+    return "";
+  }
+
+  return variations_headers->headers_map.at(
+      variations::mojom::GoogleWebVisibility::FIRST_PARTY);
 }
 
 void FetchDiscountWorker::FetchInBackground(
@@ -172,14 +194,16 @@ void FetchDiscountWorker::FetchInBackground(
     std::vector<CartDB::KeyAndValue> proto_pairs,
     const bool is_oauth_fetch,
     const std::string access_token_str,
-    const std::string fetch_for_locale) {
+    const std::string fetch_for_locale,
+    const std::string variation_headers) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   auto done_fetching_callback = base::BindOnce(
       &DoneFetchingInBackground, std::move(after_fetching_callback));
   fetcher->Fetch(std::move(pending_factory), std::move(done_fetching_callback),
                  std::move(proto_pairs), is_oauth_fetch,
-                 std::move(access_token_str), std::move(fetch_for_locale));
+                 std::move(access_token_str), std::move(fetch_for_locale),
+                 std::move(variation_headers));
 }
 
 // TODO(meiliang): Follow up to use BindPostTask.
