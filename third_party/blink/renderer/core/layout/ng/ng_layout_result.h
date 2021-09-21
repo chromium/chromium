@@ -183,7 +183,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   // In the above example the |BfcBlockOffset()| will be at 0px, where-as the
   // |LineBoxBfcBlockOffset()| will be at 20px.
   absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
-    if (!PhysicalFragment().IsLineBox())
+    if (Status() != kSuccess || !PhysicalFragment().IsLineBox())
       return absl::nullopt;
 
     if (HasRareData() && rare_data_->line_box_bfc_block_offset)

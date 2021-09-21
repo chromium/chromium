@@ -175,8 +175,11 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
                                          const NGLayoutResult& layout_result,
                                          const NGBoxFragmentBuilder& builder,
                                          bool has_container_separation) {
+  DCHECK(layout_result.Status() == NGLayoutResult::kSuccess ||
+         layout_result.Status() == NGLayoutResult::kOutOfFragmentainerSpace);
   NGBreakAppeal break_appeal = kBreakAppealPerfect;
-  if (!has_container_separation) {
+  if (!has_container_separation &&
+      layout_result.Status() == NGLayoutResult::kSuccess) {
     if (!IsBreakableAtStartOfResumedContainer(space, layout_result, builder)) {
       // This is not a valid break point. If there's no container separation, it
       // means that we're breaking before the first piece of in-flow content

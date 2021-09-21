@@ -1765,7 +1765,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     // has to mean that the child is self-collapsing.
     DCHECK(is_self_collapsing);
 
-    if (container_builder_.BfcBlockOffset()) {
+    if (container_builder_.BfcBlockOffset() &&
+        layout_result->Status() == NGLayoutResult::kSuccess) {
       // Since we know our own BFC block-offset, though, we can calculate that
       // of the child as well.
       child_bfc_block_offset = PositionSelfCollapsingChildWithParentBfc(
@@ -1852,6 +1853,41 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
   }
 
+  const absl::optional<LayoutUnit> line_box_bfc_block_offset =
+      layout_result->LineBoxBfcBlockOffset();
+
+  if (ConstraintSpace().HasBlockFragmentation()) {
+    if (container_builder_.BfcBlockOffset() && child_bfc_block_offset) {
+      bool is_line_box_pushed_by_floats =
+          line_box_bfc_block_offset &&
+          *line_box_bfc_block_offset > *child_bfc_block_offset;
+
+      // Floats only cause container separation for the outermost block child
+      // that gets pushed down (the container and the child may have adjoining
+      // block-start margins).
+      bool has_container_separation =
+          has_processed_first_child_ ||
+          (!container_builder_.IsPushedByFloats() &&
+           (layout_result->IsPushedByFloats() || is_line_box_pushed_by_floats));
+      NGBreakStatus break_status = BreakBeforeChildIfNeeded(
+          child, *layout_result, previous_inflow_position,
+          line_box_bfc_block_offset.value_or(*child_bfc_block_offset),
+          has_container_separation);
+      if (break_status == NGBreakStatus::kBrokeBefore)
+        return NGLayoutResult::kSuccess;
+      if (break_status == NGBreakStatus::kNeedsEarlierBreak)
+        return NGLayoutResult::kNeedsEarlierBreak;
+    }
+
+    if (inline_child_layout_context) {
+      for (auto token : inline_child_layout_context->PropagatedBreakTokens()) {
+        container_builder_.AddBreakToken(std::move(token),
+                                         /* is_in_parallel_flow */ true);
+      }
+      inline_child_layout_context->ClearPropagatedBreakTokens();
+    }
+  }
+
   // It is now safe to update our version of the exclusion space, and any
   // propagated adjoining floats.
   exclusion_space_ = layout_result->ExclusionSpace();
@@ -1887,41 +1923,6 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   const auto& physical_fragment = layout_result->PhysicalFragment();
   NGFragment fragment(ConstraintSpace().GetWritingDirection(),
                       physical_fragment);
-
-  const absl::optional<LayoutUnit> line_box_bfc_block_offset =
-      layout_result->LineBoxBfcBlockOffset();
-
-  if (ConstraintSpace().HasBlockFragmentation()) {
-    if (container_builder_.BfcBlockOffset() && child_bfc_block_offset) {
-      bool is_line_box_pushed_by_floats =
-          line_box_bfc_block_offset &&
-          *line_box_bfc_block_offset > *child_bfc_block_offset;
-
-      // Floats only cause container separation for the outermost block child
-      // that gets pushed down (the container and the child may have adjoining
-      // block-start margins).
-      bool has_container_separation =
-          has_processed_first_child_ ||
-          (!container_builder_.IsPushedByFloats() &&
-           (layout_result->IsPushedByFloats() || is_line_box_pushed_by_floats));
-      NGBreakStatus break_status = BreakBeforeChildIfNeeded(
-          child, *layout_result, previous_inflow_position,
-          line_box_bfc_block_offset.value_or(*child_bfc_block_offset),
-          has_container_separation);
-      if (break_status == NGBreakStatus::kBrokeBefore)
-        return NGLayoutResult::kSuccess;
-      if (break_status == NGBreakStatus::kNeedsEarlierBreak)
-        return NGLayoutResult::kNeedsEarlierBreak;
-    }
-
-    if (inline_child_layout_context) {
-      for (auto token : inline_child_layout_context->PropagatedBreakTokens()) {
-        container_builder_.AddBreakToken(std::move(token),
-                                         /* is_in_parallel_flow */ true);
-      }
-      inline_child_layout_context->ClearPropagatedBreakTokens();
-    }
-  }
 
   if (line_box_bfc_block_offset)
     child_bfc_block_offset = line_box_bfc_block_offset;
@@ -2381,7 +2382,24 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   // block-size.
   DCHECK(ConstraintSpace().HasKnownFragmentainerBlockSize());
 
-  if (child.IsInline()) {
+  // Handle line boxes - propagate space shortage and attempt to honor orphans
+  // and widows (or detect violations). Skip this part if we didn't produce a
+  // fragment (status != kSuccess). The latter happens with BR clear=all if we
+  // need to push it to a later fragmentainer to get past floats. BR clear="all"
+  // adds clearance *after* the contents (the line), unlike regular CSS
+  // clearance, which adds clearance *before* the contents). To handle this
+  // corner-case as simply as possible, we'll break (line-wise AND block-wise)
+  // before a BR clear=all element, and add it in the fragmentainer where the
+  // relevant floats end. This means that we might get an additional line box
+  // (to simply hold the BR clear=all), that should be ignored as far as orphans
+  // and widows are concerned. Just give up instead, and break before it.
+  //
+  // Orphans and widows affect column balancing, and if we get imperfect breaks
+  // (such as widows / orphans violations), we'll attempt to stretch the
+  // columns, and without this exception for BR clear=all, we'd end up
+  // stretching to fit the entire float(s) (that could otherwise be broken
+  // nicely into fragments) in a single column.
+  if (child.IsInline() && layout_result.Status() == NGLayoutResult::kSuccess) {
     if (!first_overflowing_line_) {
       // We're at the first overflowing line. This is the space shortage that
       // we are going to report. We do this in spite of not yet knowing

@@ -1040,11 +1040,11 @@ LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(
   return block_offset_shift;
 }
 
-void NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
+bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
     const NGLineInfo& line_info) {
   const NGInlineItemResults& line_items = line_info.Results();
   if (line_items.IsEmpty())
-    return;
+    return true;
 
   // If the last item was a <br> we need to adjust the content_size to clear
   // floats if specified. The <br> element must be at the back of the item
@@ -1074,7 +1074,11 @@ void NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
       container_builder_.SetClearanceAfterLine(
           bfc_offset.block_offset - block_end_offset_without_clearence);
     }
+
+    if (exclusion_space_.NeedsClearancePastFragmentainer(clear_type))
+      return false;
   }
+  return true;
 }
 
 scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
@@ -1310,7 +1314,10 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
         container_builder_.SetLineBoxBfcBlockOffset(*forced_bfc_block_offset);
       }
     } else {
-      AddAnyClearanceAfterLine(line_info);
+      if (!AddAnyClearanceAfterLine(line_info)) {
+        return container_builder_.Abort(
+            NGLayoutResult::kOutOfFragmentainerSpace);
+      }
       container_builder_.SetBlockSize(container_builder_.LineHeight());
 
       // Margins should only collapse across "certain zero-height line boxes".

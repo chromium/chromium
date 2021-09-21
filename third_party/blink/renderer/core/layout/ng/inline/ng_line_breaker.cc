@@ -1738,6 +1738,44 @@ void NGLineBreaker::HandleForcedLineBreak(const NGInlineItem* item,
     DCHECK_EQ(item->TextType(), NGTextType::kForcedLineBreak);
     DCHECK_EQ(Text()[item->StartOffset()], kNewlineCharacter);
 
+    // Special-code for BR clear elements. If we have floats that extend into
+    // subsequent fragmentainers, we cannot get past the floats in the current
+    // fragmentainer. If this is the case, and if there's anything on the line
+    // before the BR element, add a line break before it, so that we at least
+    // attempt to place that part of the line right away. The remaining BR clear
+    // element will be placed on a separate line, which we'll push past as many
+    // fragmentainers as we need to. Example:
+    //
+    // <div style="columns:4; column-fill:auto; height:100px;">
+    //   <div style="float:left; width:10px; height:350px;"></div>
+    //   first column<br clear="all">
+    //   fourth column
+    // </div>
+    //
+    // Here we'll create one line box for the first float fragment and the text
+    // "first column". We'll later on attempt to create another line box for the
+    // BR element, but it will fail in the inline layout algorithm, because it's
+    // impossible to clear past the float. We'll retry in the second and third
+    // columns, but the float is still in the way. Finally, in the fourth
+    // column, we'll add the BR, add clearance, and then create a line for the
+    // text "fourth column" past the float.
+    //
+    // This solution isn't perfect, because of this additional line box for the
+    // BR element. We'll push the line box containing the BR to a fragmentainer
+    // where it doesn't really belong, and it will take up block space there
+    // (this can be observed if the float clearance is less than the height of
+    // the line, so that there will be a gap between the bottom of the float and
+    // the content that follows). No browser engines currently get BR clearance
+    // across fragmentainers right.
+    if (item->GetLayoutObject() && item->GetLayoutObject()->IsBR() &&
+        exclusion_space_->NeedsClearancePastFragmentainer(
+            item->Style()->Clear(*current_style_))) {
+      if (!line_info->Results().IsEmpty()) {
+        state_ = LineBreakState::kDone;
+        return;
+      }
+    }
+
     NGInlineItemResult* item_result = AddItem(*item, line_info);
     item_result->should_create_line_box = true;
     item_result->has_only_trailing_spaces = true;

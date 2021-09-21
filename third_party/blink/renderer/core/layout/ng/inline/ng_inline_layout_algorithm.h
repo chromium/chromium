@@ -122,7 +122,10 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   absl::optional<LayoutUnit> ApplyJustify(LayoutUnit space, NGLineInfo*);
 
   // Add any trailing clearance requested by a BR 'clear' attribute on the line.
-  void AddAnyClearanceAfterLine(const NGLineInfo&);
+  // Return true if this was successful (this also includes cases where there is
+  // no clearance needed). Return false if the floats that we need to clear past
+  // will be resumed in a subsequent fragmentainer.
+  bool AddAnyClearanceAfterLine(const NGLineInfo&);
 
   LayoutUnit SetAnnotationOverflow(const NGLineInfo& line_info,
                                    const NGLogicalLineItems& line_box,
