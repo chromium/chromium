@@ -188,7 +188,7 @@ AbstractTts = class {
    * @protected
    */
   preprocess(text, properties) {
-    if (text.length === 1 && text >= 'A' && text <= 'Z') {
+    if (text.length === 1 && text.toLowerCase() !== text) {
       // Describe capital letters according to user's setting.
       if (localStorage['capitalStrategy'] === 'increasePitch') {
         for (const prop in AbstractTts.PERSONALITY_CAPITAL) {

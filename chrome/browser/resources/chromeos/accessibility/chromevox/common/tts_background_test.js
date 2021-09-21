@@ -40,6 +40,8 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Preprocess', function() {
   assertEquals('A', preprocess('A'));
   assertEquals('a.', preprocess('a.'));
   assertEquals('.a', preprocess('.a'));
+  assertEquals('Ａ', preprocess('ａ'));
+  assertEquals('Б', preprocess('б'));
 
   // Only summarize punctuation if there are three or more occurrences without
   // a space in between.
@@ -176,6 +178,8 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'AnnounceCapitalLetters', function() {
   localStorage['capitalStrategy'] = 'announceCapitals';
   assertEquals('Cap A', preprocess('A'));
   assertEquals('Cap Z', preprocess('Z'));
+  assertEquals('Cap Ａ', preprocess('Ａ'));
+  assertEquals('Cap Б', preprocess('Б'));
 
   // Do not announce capital for the following inputs.
   assertEquals('BB', preprocess('BB'));
@@ -345,6 +349,10 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Phonetics', function() {
   tts.speak('a', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('A'));
   assertTrue(spokenStrings.includes('ハンカク a'));
+
+  tts.speak('A', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
+  assertTrue(spokenStrings.includes('A'));
+  assertTrue(spokenStrings.includes('オオモジ A'));
 
   tts.speak('人', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('人'));
