@@ -76,8 +76,7 @@ class MODULES_EXPORT UserMediaRequest final
    public:
     virtual ~Callbacks() = default;
 
-    virtual void OnSuccess(ScriptWrappable* callback_this_value,
-                           MediaStream*) = 0;
+    virtual void OnSuccess(MediaStream*) = 0;
     virtual void OnError(ScriptWrappable* callback_this_value,
                          const V8MediaStreamError* error) = 0;
 

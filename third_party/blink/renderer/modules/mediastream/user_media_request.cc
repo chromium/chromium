@@ -318,9 +318,8 @@ class UserMediaRequest::V8Callbacks final : public UserMediaRequest::Callbacks {
     UserMediaRequest::Callbacks::Trace(visitor);
   }
 
-  void OnSuccess(ScriptWrappable* callback_this_value,
-                 MediaStream* stream) override {
-    success_callback_->InvokeAndReportException(callback_this_value, stream);
+  void OnSuccess(MediaStream* stream) override {
+    success_callback_->InvokeAndReportException(nullptr, stream);
   }
   void OnError(ScriptWrappable* callback_this_value,
                const V8MediaStreamError* error) override {
@@ -567,7 +566,7 @@ void UserMediaRequest::OnMediaStreamInitialized(MediaStream* stream) {
   RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
                               IdentifiabilityBenignStringToken(g_empty_string));
   // After this call, the execution context may be invalid.
-  callbacks_->OnSuccess(nullptr, stream);
+  callbacks_->OnSuccess(stream);
   is_resolved_ = true;
 }
 
