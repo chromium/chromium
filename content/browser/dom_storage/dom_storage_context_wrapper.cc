@@ -15,7 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
@@ -238,7 +240,14 @@ void DOMStorageContextWrapper::Flush() {
 
 void DOMStorageContextWrapper::OpenLocalStorage(
     const blink::StorageKey& storage_key,
-    mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
+    mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
+    ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+    mojo::ReportBadMessageCallback bad_message_callback) {
+  if (!IsRequestValid(StorageType::kLocalStorage, storage_key,
+                      std::move(security_policy_handle),
+                      std::move(bad_message_callback))) {
+    return;
+  }
   DCHECK(local_storage_control_);
   local_storage_control_->BindStorageArea(storage_key, std::move(receiver));
   if (storage_policy_observer_) {
@@ -258,22 +267,37 @@ void DOMStorageContextWrapper::BindNamespace(
 }
 
 void DOMStorageContextWrapper::BindStorageArea(
-    ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     const blink::StorageKey& storage_key,
     const std::string& namespace_id,
-    mojo::ReportBadMessageCallback bad_message_callback,
-    mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
-  // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-  // ChildProcessSecurityPolicyImpl is converted.
-  if (!security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
-    std::move(bad_message_callback)
-        .Run("Access denied for sessionStorage request");
+    mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
+    ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+    mojo::ReportBadMessageCallback bad_message_callback) {
+  if (!IsRequestValid(StorageType::kSessionStorage, storage_key,
+                      std::move(security_policy_handle),
+                      std::move(bad_message_callback))) {
     return;
   }
-
   DCHECK(session_storage_control_);
   session_storage_control_->BindStorageArea(
       storage_key, namespace_id, std::move(receiver), base::DoNothing());
+}
+
+bool DOMStorageContextWrapper::IsRequestValid(
+    const StorageType type,
+    const blink::StorageKey& storage_key,
+    ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+    mojo::ReportBadMessageCallback bad_message_callback) {
+  const std::string type_string =
+      type == StorageType::kLocalStorage ? "localStorage" : "sessionStorage";
+  // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+  // ChildProcessSecurityPolicyImpl is converted.
+  if (!security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
+    SYSLOG(WARNING) << "Denying illegal " << type_string << " request.";
+    std::move(bad_message_callback)
+        .Run(base::StrCat({"Access denied for ", type_string, " request"}));
+    return false;
+  }
+  return true;
 }
 
 void DOMStorageContextWrapper::RecoverFromStorageServiceCrash() {

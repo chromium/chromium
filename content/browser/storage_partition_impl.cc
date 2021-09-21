@@ -25,7 +25,6 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
-#include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/default_clock.h"
@@ -1688,17 +1687,14 @@ void StoragePartitionImpl::OpenLocalStorage(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(initialized_);
-  const auto& security_policy_handle = dom_storage_receivers_.current_context();
-  if (!security_policy_handle->CanAccessDataForOrigin(origin)) {
-    SYSLOG(WARNING) << "Killing renderer: illegal localStorage request.";
-    dom_storage_receivers_.ReportBadMessage(
-        "Access denied for localStorage request");
-    return;
-  }
+  ChildProcessSecurityPolicyImpl::Handle security_policy_handle =
+      dom_storage_receivers_.current_context()->Duplicate();
   dom_storage_context_->OpenLocalStorage(
       // TODO(https://crbug.com/1199077): Pass the real StorageKey
       // when StoragePartitionImpl is converted.
-      blink::StorageKey(origin), std::move(receiver));
+      blink::StorageKey(origin), std::move(receiver),
+      std::move(security_policy_handle),
+      dom_storage_receivers_.GetBadMessageCallback());
 }
 
 void StoragePartitionImpl::BindSessionStorageNamespace(
@@ -1718,11 +1714,11 @@ void StoragePartitionImpl::BindSessionStorageArea(
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle =
       dom_storage_receivers_.current_context()->Duplicate();
   dom_storage_context_->BindStorageArea(
-      std::move(security_policy_handle),
       // TODO(https://crbug.com/1199077): Pass the real StorageKey
       // when StoragePartitionImpl is converted.
-      blink::StorageKey(origin), namespace_id,
-      dom_storage_receivers_.GetBadMessageCallback(), std::move(receiver));
+      blink::StorageKey(origin), namespace_id, std::move(receiver),
+      std::move(security_policy_handle),
+      dom_storage_receivers_.GetBadMessageCallback());
 }
 
 void StoragePartitionImpl::OnAuthRequired(
@@ -2829,10 +2825,10 @@ void StoragePartitionImpl::OpenLocalStorageForProcess(
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(initialized_);
-  DCHECK(ChildProcessSecurityPolicyImpl::GetInstance()
-             ->CreateHandle(process_id)
-             .CanAccessDataForOrigin(storage_key.origin()));
-  dom_storage_context_->OpenLocalStorage(storage_key, std::move(receiver));
+  auto handle =
+      ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(process_id);
+  dom_storage_context_->OpenLocalStorage(storage_key, std::move(receiver),
+                                         std::move(handle), base::DoNothing());
 }
 
 void StoragePartitionImpl::BindSessionStorageAreaForProcess(
@@ -2843,10 +2839,9 @@ void StoragePartitionImpl::BindSessionStorageAreaForProcess(
   DCHECK(initialized_);
   auto handle =
       ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(process_id);
-  DCHECK(handle.CanAccessDataForOrigin(storage_key.origin()));
-  dom_storage_context_->BindStorageArea(std::move(handle), storage_key,
-                                        namespace_id, base::DoNothing(),
-                                        std::move(receiver));
+  dom_storage_context_->BindStorageArea(storage_key, namespace_id,
+                                        std::move(receiver), std::move(handle),
+                                        base::DoNothing());
 }
 
 void StoragePartitionImpl::
