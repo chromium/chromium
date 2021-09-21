@@ -161,50 +161,6 @@ bool InputMethodManagerImpl::StateImpl::IsActive() const {
   return manager_->state_.get() == this;
 }
 
-std::string InputMethodManagerImpl::StateImpl::Dump() const {
-  std::ostringstream os;
-
-  os << "################# "
-     << (profile ? profile->GetProfileUserName() : std::string("NULL"))
-     << " #################\n";
-
-  os << "last_used_input_method: '" << last_used_input_method.keyboard_layout()
-     << "'\n";
-  os << "current_input_method: '" << current_input_method.keyboard_layout()
-     << "'\n";
-  os << "active_input_method_ids (size=" << active_input_method_ids.size()
-     << "):";
-  for (const auto& active_input_method_id : active_input_method_ids) {
-    os << " '" << active_input_method_id << "',";
-  }
-  os << "\n";
-  os << "allowed_keyboard_layout_input_method_ids (size="
-     << allowed_keyboard_layout_input_method_ids.size() << "):";
-  for (const auto& allowed_keyboard_layout_input_method_id :
-       allowed_keyboard_layout_input_method_ids) {
-    os << " '" << allowed_keyboard_layout_input_method_id << "',";
-  }
-  os << "\n";
-  os << "pending_input_method_id: '" << pending_input_method_id << "'\n";
-  os << "enabled_extension_imes (size=" << enabled_extension_imes.size()
-     << "):";
-  for (const auto& enabled_extension_ime : enabled_extension_imes) {
-    os << " '" << enabled_extension_ime << "'\n";
-  }
-  os << "\n";
-  os << "available_input_methods (size=" << available_input_methods.size()
-     << "):";
-  for (const auto& entry : available_input_methods) {
-    os << " '" << entry.first << "' => '" << entry.second.id() << "',\n";
-  }
-  os << "menu_activated: '" << menu_activated << "'\n";
-  os << "input_view_url: '" << input_view_url << "'\n";
-  os << "input_view_url_overridden: '" << input_view_url_overridden << "'\n";
-  os << "ui_style_: '" << static_cast<int>(ui_style_) << "'\n";
-
-  return os.str();
-}
-
 scoped_refptr<InputMethodManager::State>
 InputMethodManagerImpl::StateImpl::Clone() const {
   scoped_refptr<StateImpl> new_state(new StateImpl(this->manager_, profile));

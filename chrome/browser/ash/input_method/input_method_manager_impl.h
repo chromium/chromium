@@ -56,9 +56,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     // Returns true if (manager_->state_ == this).
     bool IsActive() const;
 
-    // Returns human-readable dump (for debug).
-    std::string Dump() const;
-
     // Adds new input method to given list if possible
     bool EnableInputMethodImpl(
         const std::string& input_method_id,
@@ -179,8 +176,8 @@ class InputMethodManagerImpl : public InputMethodManager,
     InputMethodManager::UIStyle ui_style_ =
         InputMethodManager::UIStyle::kNormal;
 
-    // Do not forget to update StateImpl::InitFrom(const StateImpl& other) and
-    // StateImpl::Dump() when adding new data members!!!
+    // Do not forget to update StateImpl::InitFrom(const StateImpl& other).
+    // when adding new data members!!!
   };
 
   // Constructs an InputMethodManager instance. The client is responsible for
