@@ -27,6 +27,9 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
         OtpAuthenticationResponse().with_did_succeed(false));
   }
   // Currently only virtual cards are supported for OTP authentication.
+  // If non-virtual cards are allowed for OTP unmasking in the future,
+  // |OnDidSelectChallengeOption()| and |OnDidGetRealPan()| should allow for a
+  // generic error dialog.
   DCHECK_EQ(card->record_type(), CreditCard::VIRTUAL_CARD);
   DCHECK_EQ(selected_challenge_option.type,
             CardUnmaskChallengeOptionType::kSmsOtp);
@@ -76,9 +79,18 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
     context_token_ = context_token;
     // Display the OTP dialog.
     ShowOtpDialog();
+    return;
   }
-  // TODO(crbug.com/1243475): Add error handling for SelectChallengeOption
-  // response.
+  // Show the virtual card permanent error dialog if server explicitly returned
+  // vcn permanent error, show temporary error dialog for the rest failure cases
+  // since currently only virtual card is supported.
+  autofill_client_->ShowVirtualCardErrorDialog(
+      /*is_permanent_error=*/result ==
+      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
+  // End Session.
+  Reset();
+  requester_->OnOtpAuthenticationComplete(
+      OtpAuthenticationResponse().with_did_succeed(false));
 }
 
 void CreditCardOtpAuthenticator::ShowOtpDialog() {
@@ -163,8 +175,21 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
           OtpAuthenticationResponse().with_did_succeed(false));
       return;
     }
-    // TODO(crbug.com/1243475): Add error handling for otp mismatch/expired
-    // errors. We allow user retry.
+    // If |flow_status| is present, this intermediate status allows the user to
+    // stay in the current session to finish the unmasking with certain user
+    // actions rather than ending the flow.
+    if (!response_details.flow_status.empty()) {
+      DCHECK(!response_details.context_token.empty());
+      // Update the |context_token_| with the new one.
+      context_token_ = response_details.context_token;
+      // TODO(crbug.com/1243475): Invoke autofill_client to update the OTP
+      // dialog with the flow status, e.g. OTP mismatch or expired.
+      // Once user retries with a new OTP input, we wil invoke
+      // |OnUnmaskPromptAccepted(new_otp)|.
+      // If user asks for a new OTP code, we will invoke
+      // |SendSelectChallengeOptionRequest()| again.
+      return;
+    }
 
     // The following prerequisites should be ensured in the PaymentsClient.
     DCHECK(!response_details.real_pan.empty());
@@ -187,7 +212,13 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     requester_->OnOtpAuthenticationComplete(response);
     return;
   }
-  // TODO(crbug.com/1243475): Add error handling for VCN error.
+  // Show the virtual card permanent error dialog if server explicitly returned
+  // vcn permanent error, show temporary error dialog for the rest failure cases
+  // since currently only virtual card is supported.
+  autofill_client_->ShowVirtualCardErrorDialog(
+      /*is_permanent_error=*/result ==
+      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
+  Reset();
   requester_->OnOtpAuthenticationComplete(
       OtpAuthenticationResponse().with_did_succeed(false));
 }

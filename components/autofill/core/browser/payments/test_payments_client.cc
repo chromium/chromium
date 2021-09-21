@@ -98,6 +98,14 @@ void TestPaymentsClient::SelectChallengeOption(
     const SelectChallengeOptionRequestDetails& details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::string&)> callback) {
+  select_challenge_option_request_ = details;
+  // If select_challenge_option_result_ is set, use the provided result.
+  // Otherwise, always return success with fake context token.
+  if (select_challenge_option_result_) {
+    std::move(callback).Run(select_challenge_option_result_.value(),
+                            /*context_token=*/"");
+    return;
+  }
   std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
                           "context_token from SelectChallengeOption");
 }
