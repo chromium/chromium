@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 
+#include <base/strings/stringprintf.h>
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,6 +42,11 @@ void AddLogEntry(std::string* log,
                  const std::string& key,
                  const std::string& value) {
   base::StrAppend(log, {key, kKeyValueDelimiter, value, "\n"});
+}
+
+// Format the combination of vendor_id and product_id (or device_id)
+std::string FormatDeviceIDs(uint16_t vendor_id, uint16_t product_id) {
+  return base::StringPrintf("%04x:%04x", vendor_id, product_id);
 }
 
 void PopulateBluetoothInfo(std::string* log, const TelemetryInfoPtr& info) {
@@ -119,6 +125,84 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
   base::StrAppend(log, {"\n"});
 }
 
+// Log bus devices info with the following format:
+// {label}_info:
+//   {label}_name: ...
+//   {label}_id: ...
+//   {label}_bus: ...
+//   {label}_driver: ...
+//
+// where label is one of the following:
+//   ethernet_adapter
+//   wireless_adapter
+void PopulateBusDevicesInfo(std::string* log,
+                            const std::string& prefix,
+                            const std::vector<healthd::BusDevicePtr>& devices) {
+  if (devices.empty())
+    return;
+  base::StrAppend(log, {prefix, "_info:"});
+
+  for (auto& device : devices) {
+    AddIndentedLogEntry(
+        log, base::StrCat({prefix, "_name"}),
+        base::StrCat({device->vendor_name, " ", device->product_name}));
+
+    if (device->bus_info->is_pci_bus_info()) {
+      healthd::PciBusInfoPtr& pci_info = device->bus_info->get_pci_bus_info();
+
+      AddIndentedLogEntry(
+          log, base::StrCat({prefix, "_id"}),
+          FormatDeviceIDs(pci_info->vendor_id, pci_info->device_id));
+      AddIndentedLogEntry(log, base::StrCat({prefix, "_bus"}), "pci");
+      AddIndentedLogEntry(log, base::StrCat({prefix, "_driver"}),
+                          pci_info->driver.value_or(""));
+    }
+
+    if (device->bus_info->is_usb_bus_info()) {
+      healthd::UsbBusInfoPtr& usb_info = device->bus_info->get_usb_bus_info();
+
+      AddIndentedLogEntry(
+          log, base::StrCat({prefix, "_id"}),
+          FormatDeviceIDs(usb_info->vendor_id, usb_info->product_id));
+      AddIndentedLogEntry(log, base::StrCat({prefix, "_bus"}), "usb");
+      std::vector<healthd::UsbBusInterfaceInfoPtr>& usb_interfaces =
+          usb_info->interfaces;
+      for (const auto& interface : usb_interfaces) {
+        AddIndentedLogEntry(log, base::StrCat({prefix, "_driver"}),
+                            interface->driver.value_or(""));
+      }
+    }
+
+    base::StrAppend(log, {"\n"});
+  }
+}
+
+void PopulateBusDevicesInfo(std::string* log, const TelemetryInfoPtr& info) {
+  if (info->bus_result.is_null() || info->bus_result->is_error()) {
+    DVLOG(1) << "BusResult not found in croshealthd response";
+    return;
+  }
+  std::vector<healthd::BusDevicePtr>& bus_devices =
+      info->bus_result->get_bus_devices();
+
+  std::vector<healthd::BusDevicePtr> ethernet_devices;
+  std::vector<healthd::BusDevicePtr> wireless_devices;
+  for (auto& device : bus_devices) {
+    switch (device->device_class) {
+      case healthd::BusDeviceClass::kEthernetController:
+        ethernet_devices.push_back(std::move(device));
+        break;
+      case healthd::BusDeviceClass::kWirelessController:
+        wireless_devices.push_back(std::move(device));
+        break;
+      default:
+        break;
+    }
+  }
+  PopulateBusDevicesInfo(log, "ethernet_adapter", ethernet_devices);
+  PopulateBusDevicesInfo(log, "wireless_adapter", wireless_devices);
+}
+
 }  // namespace
 
 RevenLogSource::RevenLogSource() : SystemLogsSource("Reven") {
@@ -130,8 +214,9 @@ RevenLogSource::~RevenLogSource() = default;
 
 void RevenLogSource::Fetch(SysLogsSourceCallback callback) {
   probe_service_->ProbeTelemetryInfo(
-      {ProbeCategories::kBluetooth, ProbeCategories::kCpu,
-       ProbeCategories::kMemory, ProbeCategories::kSystem2},
+      {ProbeCategories::kBluetooth, ProbeCategories::kBus,
+       ProbeCategories::kCpu, ProbeCategories::kMemory,
+       ProbeCategories::kSystem2},
       base::BindOnce(&RevenLogSource::OnTelemetryInfoProbeResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -151,6 +236,7 @@ void RevenLogSource::OnTelemetryInfoProbeResponse(
     PopulateCpuInfo(&log_val, info_ptr);
     PopulateMemoryInfo(&log_val, info_ptr);
     PopulateSystemInfo(&log_val, info_ptr);
+    PopulateBusDevicesInfo(&log_val, info_ptr);
   }
 
   response->emplace(kRevenLogKey, log_val);

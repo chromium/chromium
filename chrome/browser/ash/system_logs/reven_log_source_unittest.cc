@@ -129,6 +129,102 @@ healthd::DmiInfoPtr CreateDmiInfo() {
   return dmi_info;
 }
 
+healthd::BusDevicePtr CreatePciDevice(healthd::BusDeviceClass device_class,
+                                      const std::string& vendor_name,
+                                      const std::string& product_name,
+                                      const std::string& driver,
+                                      uint16_t vendor_id,
+                                      uint16_t device_id) {
+  auto device = healthd::BusDevice::New();
+  device->device_class = device_class;
+  device->vendor_name = vendor_name;
+  device->product_name = product_name;
+
+  auto pci_info = healthd::PciBusInfo::New();
+  pci_info->vendor_id = vendor_id;
+  pci_info->device_id = device_id;
+  if (driver != "")
+    pci_info->driver = absl::optional<std::string>(driver);
+
+  device->bus_info = healthd::BusInfo::NewPciBusInfo(std::move(pci_info));
+  return device;
+}
+
+void SetPciEthernetDevices(healthd::TelemetryInfoPtr& telemetry_info) {
+  std::vector<healthd::BusDevicePtr> bus_devices;
+  bus_devices.push_back(
+      CreatePciDevice(healthd::BusDeviceClass::kEthernetController, "intel",
+                      "product1", "driver1", 0x12ab, 0x34cd));
+  bus_devices.push_back(
+      CreatePciDevice(healthd::BusDeviceClass::kEthernetController, "broadcom",
+                      "product2", "", 0x56ab, 0x78cd));
+
+  telemetry_info->bus_result =
+      healthd::BusResult::NewBusDevices(std::move(bus_devices));
+}
+
+void SetPciWirelessDevices(healthd::TelemetryInfoPtr& telemetry_info) {
+  std::vector<healthd::BusDevicePtr> bus_devices;
+  bus_devices.push_back(
+      CreatePciDevice(healthd::BusDeviceClass::kWirelessController, "intel",
+                      "wireless_product1", "wireless_driver1", 0x12ab, 0x34cd));
+  bus_devices.push_back(
+      CreatePciDevice(healthd::BusDeviceClass::kWirelessController, "broadcom",
+                      "wireless_product2", "", 0x56ab, 0x78cd));
+
+  telemetry_info->bus_result =
+      healthd::BusResult::NewBusDevices(std::move(bus_devices));
+}
+
+healthd::BusDevicePtr CreateUsbDevice(healthd::BusDeviceClass device_class,
+                                      const std::string& vendor_name,
+                                      const std::string& product_name,
+                                      const std::string& driver,
+                                      uint16_t vendor_id,
+                                      uint16_t product_id) {
+  auto device = healthd::BusDevice::New();
+  device->device_class = device_class;
+  device->vendor_name = vendor_name;
+  device->product_name = product_name;
+
+  auto usb_info = healthd::UsbBusInfo::New();
+  usb_info->vendor_id = vendor_id;
+  usb_info->product_id = product_id;
+  auto usb_if_info = healthd::UsbBusInterfaceInfo::New();
+  if (driver != "")
+    usb_if_info->driver = absl::optional<std::string>(driver);
+  usb_info->interfaces.push_back(std::move(usb_if_info));
+
+  device->bus_info = healthd::BusInfo::NewUsbBusInfo(std::move(usb_info));
+  return device;
+}
+
+void SetUsbEthernetDevices(healthd::TelemetryInfoPtr& telemetry_info) {
+  std::vector<healthd::BusDevicePtr> bus_devices;
+  bus_devices.push_back(
+      CreateUsbDevice(healthd::BusDeviceClass::kEthernetController, "intel",
+                      "product1", "driver1", 0x12ab, 0x34cd));
+  bus_devices.push_back(
+      CreateUsbDevice(healthd::BusDeviceClass::kEthernetController, "broadcom",
+                      "product2", "", 0x56ab, 0x78cd));
+
+  telemetry_info->bus_result =
+      healthd::BusResult::NewBusDevices(std::move(bus_devices));
+}
+
+void SetUsbWirelessDevices(healthd::TelemetryInfoPtr& telemetry_info) {
+  std::vector<healthd::BusDevicePtr> bus_devices;
+  bus_devices.push_back(
+      CreateUsbDevice(healthd::BusDeviceClass::kWirelessController, "intel",
+                      "wireless_product1", "wireless_driver1", 0x12ab, 0x34cd));
+  bus_devices.push_back(
+      CreateUsbDevice(healthd::BusDeviceClass::kWirelessController, "broadcom",
+                      "wireless_product2", "", 0x56ab, 0x78cd));
+
+  telemetry_info->bus_result =
+      healthd::BusResult::NewBusDevices(std::move(bus_devices));
+}
+
 }  // namespace
 
 class RevenLogSourceTest : public ::testing::Test {
@@ -356,6 +452,132 @@ TEST_F(RevenLogSourceTest, BiosBootMode_kCrosSecure) {
 
 TEST_F(RevenLogSourceTest, BiosBootMode_kCrosLegacy) {
   VerifyBiosBootMode(healthd::BootMode::kCrosLegacy, "\n  uefi: false");
+}
+
+TEST_F(RevenLogSourceTest, PciEthernetDevices) {
+  auto info = healthd::TelemetryInfo::New();
+  SetPciEthernetDevices(info);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("ethernet_adapter_info:"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_name: intel product1"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_id: 12ab:34cd"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_bus: pci"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_driver: driver1"));
+
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_name: broadcom product2"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_id: 56ab:78cd"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_bus: pci"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_driver: \n"));
+}
+
+TEST_F(RevenLogSourceTest, PciWirelessDevices) {
+  auto info = healthd::TelemetryInfo::New();
+  SetPciWirelessDevices(info);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("wireless_adapter_info:"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_name: intel wireless_product1"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_id: 56ab:78cd"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_bus: pci"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_driver: wireless_driver1"));
+
+  EXPECT_THAT(
+      revenlog_iter->second,
+      HasSubstr("\n  wireless_adapter_name: broadcom wireless_product2"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_id: 56ab:78cd"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_bus: pci"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_driver: \n"));
+}
+
+TEST_F(RevenLogSourceTest, UsbEthernetDevices) {
+  auto info = healthd::TelemetryInfo::New();
+  SetUsbEthernetDevices(info);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("ethernet_adapter_info:"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_name: intel product1"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_id: 12ab:34cd"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_bus: usb"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_driver: driver1"));
+
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_name: broadcom product2"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_id: 56ab:78cd"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_bus: usb"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  ethernet_adapter_driver: \n"));
+}
+
+TEST_F(RevenLogSourceTest, UsbWirelessDevices) {
+  auto info = healthd::TelemetryInfo::New();
+  SetUsbWirelessDevices(info);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("wireless_adapter_info:"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_name: intel wireless_product1"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_id: 12ab:34cd"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_bus: usb"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_driver: wireless_driver1"));
+
+  EXPECT_THAT(
+      revenlog_iter->second,
+      HasSubstr("\n  wireless_adapter_name: broadcom wireless_product2"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_id: 56ab:78cd"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_bus: usb"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  wireless_adapter_driver: \n"));
 }
 
 }  // namespace system_logs
