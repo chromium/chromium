@@ -122,6 +122,10 @@ struct TestDatabaseConnection {
         connection_callbacks->CreateInterfacePtrAndBind(), db_name, version,
         version_change_transaction.BindNewEndpointAndPassReceiver(task_runner),
         upgrade_txn_id);
+    // ForcedClose is called on shutdown and depending on ordering and timing
+    // may or may not happen, which is fine.
+    EXPECT_CALL(*connection_callbacks, ForcedClose())
+        .Times(testing::AnyNumber());
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner;
