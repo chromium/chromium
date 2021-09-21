@@ -8,6 +8,7 @@
 
 #include "chrome/browser/enterprise/reporting/browser_report_generator_android.h"
 #include "chrome/browser/enterprise/reporting/profile_report_generator_android.h"
+#include "chrome/browser/enterprise/reporting/report_scheduler_android.h"
 
 namespace enterprise_reporting {
 
@@ -28,8 +29,7 @@ ReportingDelegateFactoryAndroid::GetReportGeneratorDelegate() {
 
 std::unique_ptr<ReportScheduler::Delegate>
 ReportingDelegateFactoryAndroid::GetReportSchedulerDelegate() {
-  // TODO(crbug.com/1228844) Implement ReportScheduler::Delegate for Android
-  return nullptr;
+  return std::make_unique<ReportSchedulerAndroid>();
 }
 
 std::unique_ptr<RealTimeReportGenerator::Delegate>

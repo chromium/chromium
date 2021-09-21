@@ -27,6 +27,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/first_run/first_run.h"
@@ -232,7 +233,6 @@
 #else  // defined(OS_ANDROID)
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/device_api/device_service_impl.h"
-#include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
@@ -886,6 +886,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chrome::enterprise_util::RegisterLocalStatePrefs(registry);
   component_updater::RegisterPrefs(registry);
   embedder_support::OriginTrialPrefs::RegisterPrefs(registry);
+  enterprise_reporting::RegisterLocalStatePrefs(registry);
   ExternalProtocolHandler::RegisterPrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   GpuModeManager::RegisterPrefs(registry);
@@ -948,7 +949,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(first_run::kTosDialogBehavior, 0);
   registry->RegisterBooleanPref(lens::kLensCameraAssistedSearchEnabled, true);
 #else  // defined(OS_ANDROID)
-  enterprise_reporting::RegisterLocalStatePrefs(registry);
   gcm::RegisterPrefs(registry);
   IntranetRedirectDetector::RegisterPrefs(registry);
   media_router::RegisterLocalStatePrefs(registry);

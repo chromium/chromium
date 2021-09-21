@@ -30,9 +30,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+#if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kCloudExtensionRequestEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);
   registry->RegisterDictionaryPref(kCloudExtensionRequestUploadedIds);
+#endif  // !defined(OS_ANDROID)
 }
 
 }  // namespace enterprise_reporting

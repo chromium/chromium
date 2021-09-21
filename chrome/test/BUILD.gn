@@ -4472,6 +4472,7 @@ test("unit_tests") {
     "../browser/endpoint_fetcher/endpoint_fetcher_unittest.cc",
     "../browser/engagement/important_sites_util_unittest.cc",
     "../browser/engagement/site_engagement_service_unittest.cc",
+    "../browser/enterprise/reporting/report_scheduler_unittest.cc",
     "../browser/enterprise/util/managed_browser_utils_unittest.cc",
     "../browser/external_protocol/external_protocol_handler_unittest.cc",
     "../browser/federated_learning/floc_eligibility_unittest.cc",
@@ -5716,7 +5717,6 @@ test("unit_tests") {
       "../browser/enterprise/reporting/real_time_report_generator_unittest.cc",
       "../browser/enterprise/reporting/report_generator_unittest.cc",
       "../browser/enterprise/reporting/report_request_queue_generator_unittest.cc",
-      "../browser/enterprise/reporting/report_scheduler_desktop_unittest.cc",
       "../browser/first_run/first_run_unittest.cc",
       "../browser/font_family_cache_unittest.cc",
 

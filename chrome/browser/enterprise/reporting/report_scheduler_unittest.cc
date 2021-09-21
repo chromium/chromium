@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 #include <utility>
 
@@ -16,8 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
-#include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
-#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_constants.h"
@@ -39,6 +37,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_ANDROID)
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
+#else
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
+#endif  // defined(OS_ANDROID)
+
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ByMove;
@@ -58,8 +62,10 @@ constexpr char kClientId[] = "client_id";
 constexpr base::TimeDelta kDefaultUploadInterval =
     base::TimeDelta::FromHours(24);
 
+#if !defined(OS_ANDROID)
 constexpr char kUploadTriggerMetricName[] =
     "Enterprise.CloudReportingUploadTrigger";
+#endif
 
 }  // namespace
 
@@ -73,9 +79,15 @@ ACTION_P(ScheduleGeneratorCallback, request_number) {
 
 class MockReportGenerator : public ReportGenerator {
  public:
+#if defined(OS_ANDROID)
+  explicit MockReportGenerator(
+      ReportingDelegateFactoryAndroid* delegate_factory)
+      : ReportGenerator(delegate_factory) {}
+#else
   explicit MockReportGenerator(
       ReportingDelegateFactoryDesktop* delegate_factory)
       : ReportGenerator(delegate_factory) {}
+#endif  // defined(OS_ANDROID)
   void Generate(ReportType report_type, ReportCallback callback) override {
     OnGenerate(report_type, callback);
   }
@@ -97,9 +109,15 @@ class MockReportUploader : public ReportUploader {
 
 class MockRealTimeReportGenerator : public RealTimeReportGenerator {
  public:
+#if defined(OS_ANDROID)
+  explicit MockRealTimeReportGenerator(
+      ReportingDelegateFactoryAndroid* delegate_factory)
+      : RealTimeReportGenerator(delegate_factory) {}
+#else
   explicit MockRealTimeReportGenerator(
       ReportingDelegateFactoryDesktop* delegate_factory)
       : RealTimeReportGenerator(delegate_factory) {}
+#endif  // defined(OS_ANDROID)
 
   MOCK_METHOD1(Generate,
                std::vector<std::unique_ptr<google::protobuf::MessageLite>>(
@@ -133,8 +151,10 @@ class ReportSchedulerTest : public ::testing::Test {
   ~ReportSchedulerTest() override = default;
 
   void SetUp() override {
+#if !defined(OS_ANDROID)
     scoped_feature_list_.InitAndEnableFeature(
         features::kEnterpriseRealtimeExtensionRequest);
+#endif  // !defined(OS_ANDROID)
     ASSERT_TRUE(profile_manager_.SetUp());
     client_ptr_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_ = client_ptr_.get();
@@ -242,12 +262,18 @@ class ReportSchedulerTest : public ::testing::Test {
         profile_manager_.CreateTestingProfile("profile")->GetPath());
   }
 
+#if !defined(OS_ANDROID)
   base::test::ScopedFeatureList scoped_feature_list_;
+#endif
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   TestingProfileManager profile_manager_;
 
+#if defined(OS_ANDROID)
+  ReportingDelegateFactoryAndroid report_delegate_factory_;
+#else
   ReportingDelegateFactoryDesktop report_delegate_factory_;
+#endif  // defined(OS_ANDROID)
   std::unique_ptr<ReportScheduler> scheduler_;
   policy::MockCloudPolicyClient* client_;
   MockReportGenerator* generator_;
@@ -272,10 +298,12 @@ class ReportSchedulerFeatureTest : public ::testing::WithParamInterface<bool>,
                                    public ReportSchedulerTest {
   void SetUp() override {
     ReportSchedulerTest::SetUp();
+#if !defined(OS_ANDROID)
     if (is_realtime_feature_enabled()) {
       scoped_feature_list_.Reset();
       scoped_feature_list_.Init();
     }
+#endif
   }
 
   bool is_realtime_feature_enabled() { return GetParam(); }
@@ -485,6 +513,9 @@ TEST_P(ReportSchedulerFeatureTest, ReportingIsDisabledWhileNewReportIsPosted) {
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
+
+// Android does not support version updates nor extensions
+#if !defined(OS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -799,5 +830,7 @@ TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
 
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 5, 1);
 }
+
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace enterprise_reporting
