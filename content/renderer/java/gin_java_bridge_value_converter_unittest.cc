@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-isolate.h"
 #include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-persistent-handle.h"
 #include "v8/include/v8-primitive.h"

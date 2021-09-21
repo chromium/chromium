@@ -42,7 +42,7 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_fetch_context.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class SequencedTaskRunner;

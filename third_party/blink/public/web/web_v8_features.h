@@ -8,7 +8,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 

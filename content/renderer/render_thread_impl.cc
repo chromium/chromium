@@ -157,6 +157,7 @@
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/rendering_pipeline.h"
+#include "v8/include/v8-extension.h"
 
 #if defined(OS_ANDROID)
 #include <cpu-features.h>

@@ -13,6 +13,8 @@
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-microtask-queue.h"
 
 gin::WrapperInfo SupervisedUserErrorPageController::kWrapperInfo = {
     gin::kEmbedderNativeGin};

@@ -50,7 +50,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/gfx/range/range.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace gfx {
 class Point;

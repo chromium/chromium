@@ -14,7 +14,6 @@
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "ui/events/types/scroll_types.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
