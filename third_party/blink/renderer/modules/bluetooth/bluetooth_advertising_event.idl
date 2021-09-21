@@ -11,8 +11,7 @@
 ] interface BluetoothAdvertisingEvent : Event {
 
   readonly attribute BluetoothDevice device;
-  // TODO(crbug.com/1187331): Make the type of |uuids| match the spec.
-  readonly attribute FrozenArray<(UUID or unsigned long)> uuids;
+  readonly attribute FrozenArray<UUID> uuids;
   [HighEntropy=Direct, MeasureAs=BluetoothAdvertisingEventName] readonly attribute DOMString? name;
   [HighEntropy=Direct, MeasureAs=BluetoothAdvertisingEventAppearance] readonly attribute unsigned short? appearance;
   [HighEntropy=Direct, MeasureAs=BluetoothAdvertisingEventTxPower] readonly attribute byte? txPower;
