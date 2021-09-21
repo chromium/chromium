@@ -101,11 +101,6 @@ class SubprocessMetricsProvider
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
-  // Gets a histogram allocator from a subprocess. This must be called on
-  // the IO thread.
-  static std::unique_ptr<base::PersistentHistogramAllocator>
-  GetSubprocessHistogramAllocatorOnProcessThread(int id);
-
   THREAD_CHECKER(thread_checker_);
 
   // All of the shared-persistent-allocators for known sub-processes.
