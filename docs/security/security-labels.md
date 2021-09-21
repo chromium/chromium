@@ -32,7 +32,9 @@ that.)
   * **Low**: **Pri-2**.
 * **FoundIn-#**: Designates which milestones of Chrome are
 impacted by the bug. Multiple labels may be set, but the most important one
-is the earliest affected milestone.
+is the earliest affected milestone. See
+[ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows) for
+current releases.
 * **Security_Impact-**{**Head**, **Beta**, **Stable**, **Extended**, **None**}:
 Derived from **FoundIn**, this label specifies the earliest affected release
 channel. Should not normally be set by humans, except in the case of **None**
