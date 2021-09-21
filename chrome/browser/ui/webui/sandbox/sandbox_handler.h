@@ -35,7 +35,6 @@ class SandboxHandler : public content::WebUIMessageHandler {
 
   void OnSandboxDataFetched(base::Value results);
 
-  void FetchBrowserChildProcessesCompleted(base::Value browser_processes);
   void FetchSandboxDiagnosticsCompleted(base::Value sandbox_policies);
   void GetRendererProcessesAndFinish();
 
