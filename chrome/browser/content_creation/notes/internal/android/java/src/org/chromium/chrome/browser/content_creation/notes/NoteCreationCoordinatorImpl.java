@@ -231,7 +231,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
 
         long shareStartTime = System.currentTimeMillis();
         ChromeShareExtras extras = new ChromeShareExtras.Builder()
-                                           .setSkipPageSharingActions(true)
+                                           .setSkipPageSharingActions(false)
                                            .setContentUrl(new GURL(noteUrl))
                                            .setDetailedContentType(DetailedContentType.WEB_NOTES)
                                            .build();
