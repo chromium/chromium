@@ -712,7 +712,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   if ([self shouldIgnoreMouseEvent:theEvent]) {
     // If this is the first such event, send a mouse exit to the host view.
-    if (!_mouseEventWasIgnored) {
+    if (!_mouseEventWasIgnored && !self.hidden) {
       WebMouseEvent exitEvent =
           WebMouseEventBuilder::Build(theEvent, self, _pointerType);
       exitEvent.SetType(WebInputEvent::Type::kMouseLeave);
