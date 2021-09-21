@@ -1696,14 +1696,19 @@ public class AutofillAssistantGenericUiTest {
 
         GenericUserInterfaceProto genericUserInterface =
                 GenericUserInterfaceProto.newBuilder()
-                        .setRootView(ViewProto.newBuilder()
-                                             .setIdentifier("text_view")
-                                             .setTextInputView(
-                                                     TextInputViewProto.newBuilder()
-                                                             .setHint("Type here")
-                                                             .setType(TextInputViewProto
-                                                                              .InputTypeHint.NONE)
-                                                             .setModelIdentifier("text_value")))
+                        .setRootView(
+                                ViewProto.newBuilder()
+                                        .setIdentifier("text_view")
+                                        .setLayoutParams(
+                                                ViewLayoutParamsProto.newBuilder().setLayoutWidth(
+                                                        ViewLayoutParamsProto.Size
+                                                                .MATCH_PARENT_VALUE))
+                                        .setTextInputView(
+                                                TextInputViewProto.newBuilder()
+                                                        .setHint("Type here")
+                                                        .setType(TextInputViewProto.InputTypeHint
+                                                                         .NONE)
+                                                        .setModelIdentifier("text_value")))
                         .setInteractions(
                                 InteractionsProto.newBuilder().addAllInteractions(interactions))
                         .setModel(ModelProto.newBuilder().addAllValues(modelValues))
