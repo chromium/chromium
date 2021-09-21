@@ -5,10 +5,8 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/debug/dump_without_crashing.h"
-#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_map.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -16,84 +14,19 @@
 #include "chrome/common/chrome_features.h"
 #include "components/exo/shell_surface_util.h"
 #include "extensions/common/constants.h"
-#include "ui/aura/env.h"
-#include "ui/aura/env_observer.h"
 
 namespace apps {
 
-// Helper class to track all Aura windows belonging to Lacros. This is necessary
-// to synchronise crosapi events and Aura windows matching these events being
-// available.
-class BrowserAppInstanceRegistry::LacrosWindowObserver
-    : public aura::EnvObserver,
-      public aura::WindowObserver {
- public:
-  LacrosWindowObserver() {
-    aura_env_observation_.Observe(aura::Env::GetInstance());
-  }
-
-  // Run the action immediately if the window matching |window_id| is
-  // available, otherwise buffer the event until it is.
-  void RunOrEnqueueEventForWindow(
-      const std::string& window_id,
-      base::OnceCallback<void(aura::Window*)> event) {
-    auto& event_list = window_id_to_event_list_[window_id];
-    if (event_list.window) {
-      std::move(event).Run(event_list.window);
-    } else {
-      event_list.events.push_back(std::move(event));
-    }
-  }
-
-  // aura::EnvObserver overrides:
-  void OnWindowInitialized(aura::Window* window) override {
-    if (!crosapi::browser_util::IsLacrosWindow(window)) {
-      return;
-    }
-    lacros_window_observations_.AddObservation(window);
-    const std::string* id = exo::GetShellApplicationId(window);
-    DCHECK(id);
-    auto& event_list = window_id_to_event_list_[*id];
-    event_list.window = window;
-    // Flush any pending events for the new window.
-    for (auto& callback : event_list.events) {
-      std::move(callback).Run(window);
-    }
-    event_list.events.clear();
-  }
-
-  // aura::WindowObserver overrides:
-  void OnWindowDestroying(aura::Window* window) override {
-    if (!crosapi::browser_util::IsLacrosWindow(window)) {
-      return;
-    }
-    lacros_window_observations_.RemoveObservation(window);
-    const std::string* id = exo::GetShellApplicationId(window);
-    DCHECK(id);
-    DCHECK(base::Contains(window_id_to_event_list_, *id));
-    window_id_to_event_list_.erase(*id);
-  }
-
- private:
-  // Buffered Lacros instance events for windows that weren't available yet
-  // when events arrived.
-  struct WindowEventList {
-    aura::Window* window{nullptr};
-    std::vector<base::OnceCallback<void(aura::Window*)>> events;
-  };
-  std::map<std::string, WindowEventList> window_id_to_event_list_;
-
-  base::ScopedObservation<aura::Env, aura::EnvObserver> aura_env_observation_{
-      this};
-  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      lacros_window_observations_{this};
+struct BrowserAppInstanceRegistry::WindowEventList {
+  aura::Window* window{nullptr};
+  std::vector<base::OnceCallback<void(aura::Window*)>> events;
 };
 
 BrowserAppInstanceRegistry::BrowserAppInstanceRegistry(
     BrowserAppInstanceTracker& ash_instance_tracker)
-    : ash_instance_tracker_(ash_instance_tracker),
-      lacros_window_observer_(std::make_unique<LacrosWindowObserver>()) {
+    : ash_instance_tracker_(ash_instance_tracker) {
   tracker_observation_.Observe(&ash_instance_tracker_);
+  aura_env_observation_.Observe(aura::Env::GetInstance());
 }
 
 BrowserAppInstanceRegistry::~BrowserAppInstanceRegistry() = default;
@@ -193,7 +126,7 @@ void BrowserAppInstanceRegistry::OnBrowserAppRemoved(
 void BrowserAppInstanceRegistry::OnBrowserWindowAdded(
     apps::BrowserWindowInstanceUpdate update) {
   auto window_id = update.window_id;
-  lacros_window_observer_->RunOrEnqueueEventForWindow(
+  RunOrEnqueueEventForWindow(
       window_id,
       base::BindOnce(&BrowserAppInstanceRegistry::LacrosWindowInstanceAdded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(update)));
@@ -202,7 +135,7 @@ void BrowserAppInstanceRegistry::OnBrowserWindowAdded(
 void BrowserAppInstanceRegistry::OnBrowserWindowUpdated(
     apps::BrowserWindowInstanceUpdate update) {
   auto window_id = update.window_id;
-  lacros_window_observer_->RunOrEnqueueEventForWindow(
+  RunOrEnqueueEventForWindow(
       window_id,
       base::BindOnce(&BrowserAppInstanceRegistry::LacrosWindowInstanceUpdated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(update)));
@@ -211,7 +144,7 @@ void BrowserAppInstanceRegistry::OnBrowserWindowUpdated(
 void BrowserAppInstanceRegistry::OnBrowserWindowRemoved(
     apps::BrowserWindowInstanceUpdate update) {
   auto window_id = update.window_id;
-  lacros_window_observer_->RunOrEnqueueEventForWindow(
+  RunOrEnqueueEventForWindow(
       window_id,
       base::BindOnce(&BrowserAppInstanceRegistry::LacrosWindowInstanceRemoved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(update)));
@@ -220,7 +153,7 @@ void BrowserAppInstanceRegistry::OnBrowserWindowRemoved(
 void BrowserAppInstanceRegistry::OnBrowserAppAdded(
     apps::BrowserAppInstanceUpdate update) {
   auto window_id = update.window_id;
-  lacros_window_observer_->RunOrEnqueueEventForWindow(
+  RunOrEnqueueEventForWindow(
       window_id,
       base::BindOnce(&BrowserAppInstanceRegistry::LacrosAppInstanceAdded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(update)));
@@ -229,7 +162,7 @@ void BrowserAppInstanceRegistry::OnBrowserAppAdded(
 void BrowserAppInstanceRegistry::OnBrowserAppUpdated(
     apps::BrowserAppInstanceUpdate update) {
   auto window_id = update.window_id;
-  lacros_window_observer_->RunOrEnqueueEventForWindow(
+  RunOrEnqueueEventForWindow(
       window_id,
       base::BindOnce(&BrowserAppInstanceRegistry::LacrosAppInstanceUpdated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(update)));
@@ -238,10 +171,72 @@ void BrowserAppInstanceRegistry::OnBrowserAppUpdated(
 void BrowserAppInstanceRegistry::OnBrowserAppRemoved(
     apps::BrowserAppInstanceUpdate update) {
   auto window_id = update.window_id;
-  lacros_window_observer_->RunOrEnqueueEventForWindow(
+  RunOrEnqueueEventForWindow(
       window_id,
       base::BindOnce(&BrowserAppInstanceRegistry::LacrosAppInstanceRemoved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(update)));
+}
+
+void BrowserAppInstanceRegistry::OnWindowInitialized(aura::Window* window) {
+  if (!crosapi::browser_util::IsLacrosWindow(window)) {
+    return;
+  }
+  lacros_window_observations_.AddObservation(window);
+  const std::string* id = exo::GetShellApplicationId(window);
+  DCHECK(id);
+  auto& event_list = window_id_to_event_list_[*id];
+  event_list.window = window;
+  // Flush any pending events for the new window.
+  for (auto& callback : event_list.events) {
+    std::move(callback).Run(window);
+  }
+  event_list.events.clear();
+}
+
+void BrowserAppInstanceRegistry::OnWindowDestroying(aura::Window* window) {
+  lacros_window_observations_.RemoveObservation(window);
+  const std::string* id = exo::GetShellApplicationId(window);
+  DCHECK(id);
+  DCHECK(base::Contains(window_id_to_event_list_, *id));
+  window_id_to_event_list_.erase(*id);
+
+  for (auto it = std::begin(lacros_app_instances_);
+       it != std::end(lacros_app_instances_);) {
+    if (it->second->window == window) {
+      auto instance = std::move(it->second);
+      it = lacros_app_instances_.erase(it);
+      for (auto& observer : observers_) {
+        observer.OnBrowserAppRemoved(*instance);
+      }
+    } else {
+      it++;
+    }
+  }
+  for (auto it = std::begin(lacros_window_instances_);
+       it != std::end(lacros_window_instances_);) {
+    if (it->second->window == window) {
+      auto instance = std::move(it->second);
+      it = lacros_window_instances_.erase(it);
+      for (auto& observer : observers_) {
+        observer.OnBrowserWindowRemoved(*instance);
+      }
+    } else {
+      it++;
+    }
+  }
+}
+
+// Run the action immediately if the window matching |window_id| is
+// available, otherwise buffer the event until it is.
+void BrowserAppInstanceRegistry::RunOrEnqueueEventForWindow(
+    const std::string& window_id,
+    base::OnceCallback<void(aura::Window*)> event) {
+  auto& event_list = window_id_to_event_list_[window_id];
+  if (event_list.window) {
+    std::move(event).Run(event_list.window);
+  } else {
+    event_list.events.push_back(std::move(event));
+  }
 }
 
 void BrowserAppInstanceRegistry::LacrosWindowInstanceAdded(

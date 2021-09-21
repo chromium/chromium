@@ -9,11 +9,13 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_map.h"
@@ -23,6 +25,8 @@
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -37,7 +41,9 @@ namespace apps {
 // lacros-chrome for PWAs (via |BrowserAppInstanceForwarder|).
 class BrowserAppInstanceRegistry
     : public BrowserAppInstanceObserver,
-      public crosapi::mojom::BrowserAppInstanceRegistry {
+      public crosapi::mojom::BrowserAppInstanceRegistry,
+      public aura::EnvObserver,
+      public aura::WindowObserver {
  public:
   explicit BrowserAppInstanceRegistry(
       BrowserAppInstanceTracker& ash_instance_tracker);
@@ -104,8 +110,22 @@ class BrowserAppInstanceRegistry
   void OnBrowserAppUpdated(apps::BrowserAppInstanceUpdate update) override;
   void OnBrowserAppRemoved(apps::BrowserAppInstanceUpdate update) override;
 
+  // aura::EnvObserver overrides:
+  void OnWindowInitialized(aura::Window* window) override;
+
+  // aura::WindowObserver overrides:
+  void OnWindowDestroying(aura::Window* window) override;
+
  private:
-  class LacrosWindowObserver;
+  // Buffered Lacros instance events for windows that weren't available yet
+  // when events arrived.
+  struct WindowEventList;
+
+  // Run the action immediately if the window matching |window_id| is
+  // available, otherwise buffer the event until it is.
+  void RunOrEnqueueEventForWindow(
+      const std::string& window_id,
+      base::OnceCallback<void(aura::Window*)> event);
 
   // Helpers processing of buffered lacros instance events.
   void LacrosWindowInstanceAdded(apps::BrowserWindowInstanceUpdate update,
@@ -131,7 +151,10 @@ class BrowserAppInstanceRegistry
   BrowserAppInstanceMap<base::UnguessableToken, BrowserWindowInstance>
       lacros_window_instances_;
 
-  std::unique_ptr<LacrosWindowObserver> lacros_window_observer_;
+  // Track all Aura windows belonging to Lacros. This is necessary to
+  // synchronise crosapi events and Aura windows matching these events being
+  // available.
+  std::map<std::string, WindowEventList> window_id_to_event_list_;
 
   mojo::ReceiverSet<crosapi::mojom::BrowserAppInstanceRegistry,
                     crosapi::CrosapiId>
@@ -141,6 +164,10 @@ class BrowserAppInstanceRegistry
 
   base::ScopedObservation<BrowserAppInstanceTracker, BrowserAppInstanceObserver>
       tracker_observation_{this};
+  base::ScopedObservation<aura::Env, aura::EnvObserver> aura_env_observation_{
+      this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      lacros_window_observations_{this};
 
   base::WeakPtrFactory<BrowserAppInstanceRegistry> weak_ptr_factory_{this};
 };

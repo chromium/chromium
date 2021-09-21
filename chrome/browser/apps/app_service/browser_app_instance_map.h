@@ -49,10 +49,10 @@ ValueT* GetInstance(const BrowserAppInstanceMap<KeyT, ValueT>& instances,
   return (it == instances.end()) ? nullptr : it->second.get();
 }
 
-template <typename KeyT, typename ValueT, typename PredicateT = base::identity>
+template <typename KeyT, typename ValueT, typename PredicateT>
 std::set<const ValueT*> SelectInstances(
     const BrowserAppInstanceMap<KeyT, ValueT>& instances,
-    PredicateT predicate = {}) {
+    PredicateT predicate) {
   std::set<const ValueT*> result;
   for (const auto& pair : instances) {
     const ValueT& instance = *pair.second;
