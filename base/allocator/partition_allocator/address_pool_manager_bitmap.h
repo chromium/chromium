@@ -14,7 +14,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/synchronization/lock.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "build/build_config.h"
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
@@ -159,7 +159,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
  private:
   friend class AddressPoolManager;
 
-  static Lock& GetLock();
+  static PartitionLock& GetLock();
 
   static std::bitset<kNonBRPPoolBits> non_brp_pool_bits_ GUARDED_BY(GetLock());
   static std::bitset<kBRPPoolBits> brp_pool_bits_ GUARDED_BY(GetLock());

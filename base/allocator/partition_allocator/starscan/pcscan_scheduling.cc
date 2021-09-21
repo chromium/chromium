@@ -9,10 +9,10 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 
@@ -91,7 +91,7 @@ bool MUAwareTaskBasedBackend::LimitReached() {
   bool should_reschedule = false;
   base::TimeDelta reschedule_delay;
   {
-    base::AutoLock guard(scheduler_lock_);
+    PartitionAutoLock guard(scheduler_lock_);
     // At this point we reached a limit where the schedule generally wants to
     // trigger a scan.
     if (hard_limit_) {
@@ -141,7 +141,7 @@ bool MUAwareTaskBasedBackend::LimitReached() {
 }
 
 size_t MUAwareTaskBasedBackend::ScanStarted() {
-  base::AutoLock guard(scheduler_lock_);
+  PartitionAutoLock guard(scheduler_lock_);
 
   return PCScanSchedulingBackend::ScanStarted();
 }
@@ -152,7 +152,7 @@ void MUAwareTaskBasedBackend::UpdateScheduleAfterScan(
     size_t heap_size) {
   scheduler_.AccountFreed(survived_bytes);
 
-  base::AutoLock guard(scheduler_lock_);
+  PartitionAutoLock guard(scheduler_lock_);
 
   // |heap_size| includes the current quarantine size, we intentionally leave
   // some slack till hitting the limit.
@@ -179,7 +179,7 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
   bool should_reschedule = false;
   base::TimeDelta reschedule_delay;
   {
-    base::AutoLock guard(scheduler_lock_);
+    PartitionAutoLock guard(scheduler_lock_);
     // If |hard_limit_| was set to zero, the soft limit was reached. Bail out if
     // it's not.
     if (hard_limit_)
@@ -205,7 +205,7 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
 }
 
 TimeDelta MUAwareTaskBasedBackend::UpdateDelayedSchedule() {
-  base::AutoLock guard(scheduler_lock_);
+  PartitionAutoLock guard(scheduler_lock_);
   // TODO(1197479): Adjust schedule to current heap sizing.
   const auto delay = earliest_next_scan_time_ - base::TimeTicks::Now();
   VLOG(3) << "Schedule is off by " << delay.InMillisecondsF() << "ms";

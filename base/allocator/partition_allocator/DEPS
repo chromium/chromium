@@ -40,7 +40,6 @@ include_rules = [
     "+base/rand_util.h",
     "+base/sequenced_task_runner.h",
     "+base/strings/stringprintf.h",
-    "+base/synchronization/lock.h",
     "+base/sys_byteorder.h",
     "+base/system/sys_info.h",
     "+base/test/bind.h",

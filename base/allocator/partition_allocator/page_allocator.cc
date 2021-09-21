@@ -11,10 +11,8 @@
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/bits.h"
-#include "base/lazy_instance.h"
-#include "base/no_destructor.h"
-#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -35,11 +33,11 @@ namespace base {
 
 namespace {
 
-LazyInstance<Lock>::Leaky g_reserve_lock = LAZY_INSTANCE_INITIALIZER;
+internal::PartitionLock g_reserve_lock;
 
 // We may reserve/release address space on different threads.
-Lock& GetReserveLock() {
-  return g_reserve_lock.Get();
+internal::PartitionLock& GetReserveLock() {
+  return g_reserve_lock;
 }
 
 std::atomic<size_t> g_total_mapped_address_space;
@@ -305,7 +303,7 @@ void DiscardSystemPages(void* address, size_t length) {
 
 bool ReserveAddressSpace(size_t size) {
   // To avoid deadlock, call only SystemAllocPages.
-  AutoLock guard(GetReserveLock());
+  internal::PartitionAutoLock guard(GetReserveLock());
   if (s_reservation_address == nullptr) {
     void* mem =
         SystemAllocPages(nullptr, size, PageInaccessible, PageTag::kChromium);
@@ -323,7 +321,7 @@ bool ReserveAddressSpace(size_t size) {
 
 bool ReleaseReservation() {
   // To avoid deadlock, call only FreePages.
-  AutoLock guard(GetReserveLock());
+  internal::PartitionAutoLock guard(GetReserveLock());
   if (!s_reservation_address)
     return false;
 
@@ -334,7 +332,7 @@ bool ReleaseReservation() {
 }
 
 bool HasReservationForTesting() {
-  AutoLock guard(GetReserveLock());
+  internal::PartitionAutoLock guard(GetReserveLock());
   return s_reservation_address != nullptr;
 }
 

@@ -14,7 +14,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/synchronization/lock.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -101,7 +101,7 @@ class BASE_EXPORT AddressPoolManager {
     uintptr_t GetBaseAddress();
 
    private:
-    base::Lock lock_;
+    PartitionLock lock_;
 
     // The bitset stores the allocation state of the address pool. 1 bit per
     // super-page: 1 = allocated, 0 = free.

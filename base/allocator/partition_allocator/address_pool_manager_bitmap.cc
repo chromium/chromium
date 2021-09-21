@@ -6,7 +6,6 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/lazy_instance.h"
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
 
@@ -15,12 +14,12 @@ namespace internal {
 
 namespace {
 
-LazyInstance<Lock>::Leaky g_lock = LAZY_INSTANCE_INITIALIZER;
+PartitionLock g_lock;
 
 }  // namespace
 
-Lock& AddressPoolManagerBitmap::GetLock() {
-  return g_lock.Get();
+PartitionLock& AddressPoolManagerBitmap::GetLock() {
+  return g_lock;
 }
 
 std::bitset<AddressPoolManagerBitmap::kNonBRPPoolBits>

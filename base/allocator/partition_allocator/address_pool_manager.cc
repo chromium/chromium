@@ -130,7 +130,7 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
   total_bits_ = length / kSuperPageSize;
   PA_CHECK(total_bits_ <= kMaxSuperPages);
 
-  base::AutoLock scoped_lock(lock_);
+  PartitionAutoLock scoped_lock(lock_);
   alloc_bitset_.reset();
   bit_hint_ = 0;
 }
@@ -145,7 +145,7 @@ void AddressPoolManager::Pool::Reset() {
 
 void AddressPoolManager::Pool::GetUsedSuperPages(
     std::bitset<kMaxSuperPages>& used) {
-  base::AutoLock scoped_lock(lock_);
+  PartitionAutoLock scoped_lock(lock_);
 
   PA_DCHECK(IsInitialized());
   used = alloc_bitset_;
@@ -157,7 +157,7 @@ uintptr_t AddressPoolManager::Pool::GetBaseAddress() {
 }
 
 uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
-  base::AutoLock scoped_lock(lock_);
+  PartitionAutoLock scoped_lock(lock_);
 
   PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
   const size_t need_bits = requested_size >> kSuperPageShift;
@@ -212,7 +212,7 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
 
 bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
                                                size_t requested_size) {
-  base::AutoLock scoped_lock(lock_);
+  PartitionAutoLock scoped_lock(lock_);
   PA_DCHECK(!(address & kSuperPageOffsetMask));
   PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
   const size_t begin_bit = (address - address_begin_) / kSuperPageSize;
@@ -234,7 +234,7 @@ bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
 }
 
 void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
-  base::AutoLock scoped_lock(lock_);
+  PartitionAutoLock scoped_lock(lock_);
 
   PA_DCHECK(!(address & kSuperPageOffsetMask));
   PA_DCHECK(!(free_size & kSuperPageOffsetMask));
@@ -323,7 +323,7 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
                                   const void* address,
                                   size_t length) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
-  AutoLock guard(AddressPoolManagerBitmap::GetLock());
+  PartitionAutoLock scoped_lock(AddressPoolManagerBitmap::GetLock());
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (handle == kBRPPoolHandle) {
@@ -379,7 +379,7 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   // small allocations.
 
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
-  AutoLock guard(AddressPoolManagerBitmap::GetLock());
+  PartitionAutoLock scoped_lock(AddressPoolManagerBitmap::GetLock());
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (handle == kBRPPoolHandle) {
@@ -409,7 +409,7 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
 }
 
 void AddressPoolManager::ResetForTesting() {
-  AutoLock guard(AddressPoolManagerBitmap::GetLock());
+  PartitionAutoLock guard(AddressPoolManagerBitmap::GetLock());
   AddressPoolManagerBitmap::non_brp_pool_bits_.reset();
   AddressPoolManagerBitmap::brp_pool_bits_.reset();
 }
