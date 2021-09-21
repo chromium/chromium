@@ -374,6 +374,13 @@ class COMPONENT_EXPORT(SQL) Database {
   // be scoped transactions on the stack.
   void RollbackAllTransactions();
 
+  bool HasActiveTransactions() const {
+    DCHECK_GE(transaction_nesting_, 0);
+    return transaction_nesting_ > 0;
+  }
+
+  // Deprecated in favor of HasActiveTransactions().
+  //
   // Returns the current transaction nesting, which will be 0 if there are
   // no open transactions.
   int transaction_nesting() const { return transaction_nesting_; }
