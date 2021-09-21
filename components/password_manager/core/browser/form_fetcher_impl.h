@@ -40,13 +40,6 @@ class FormFetcherImpl : public FormFetcher,
 
   ~FormFetcherImpl() override;
 
-  // TODO(crbug.com/1108738): Remove this factory method. Callers should use the
-  // constructor instead.
-  static std::unique_ptr<FormFetcherImpl> CreateFormFetcherImpl(
-      PasswordFormDigest form_digest,
-      const PasswordManagerClient* client,
-      bool should_migrate_http_passwords);
-
   // FormFetcher:
   void AddConsumer(FormFetcher::Consumer* consumer) override;
   void RemoveConsumer(FormFetcher::Consumer* consumer) override;

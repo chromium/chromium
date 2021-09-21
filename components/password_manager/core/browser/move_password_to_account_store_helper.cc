@@ -22,7 +22,7 @@ MovePasswordToAccountStoreHelper::MovePasswordToAccountStoreHelper(
       client_(client),
       trigger_(trigger),
       done_callback_(std::move(done_callback)),
-      form_fetcher_(FormFetcherImpl::CreateFormFetcherImpl(
+      form_fetcher_(std::make_unique<FormFetcherImpl>(
           PasswordFormDigest(form),
           client,
           /*should_migrate_http_passwords=*/true)) {

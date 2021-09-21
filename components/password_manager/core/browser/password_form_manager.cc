@@ -890,7 +890,7 @@ PasswordFormManager::PasswordFormManager(
       metrics_recorder_(metrics_recorder),
       owned_form_fetcher_(form_fetcher
                               ? nullptr
-                              : FormFetcherImpl::CreateFormFetcherImpl(
+                              : std::make_unique<FormFetcherImpl>(
                                     observed_digest()
                                         ? *observed_digest()
                                         : PasswordFormDigest(*observed_form()),

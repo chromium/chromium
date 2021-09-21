@@ -56,15 +56,6 @@ std::vector<std::unique_ptr<PasswordForm>> MakeCopies(
 
 }  // namespace
 
-// static
-std::unique_ptr<FormFetcherImpl> FormFetcherImpl::CreateFormFetcherImpl(
-    PasswordFormDigest form_digest,
-    const PasswordManagerClient* client,
-    bool should_migrate_http_passwords) {
-  return std::make_unique<FormFetcherImpl>(std::move(form_digest), client,
-                                           should_migrate_http_passwords);
-}
-
 FormFetcherImpl::FormFetcherImpl(PasswordFormDigest form_digest,
                                  const PasswordManagerClient* client,
                                  bool should_migrate_http_passwords)
@@ -216,7 +207,7 @@ const PasswordForm* FormFetcherImpl::GetPreferredMatch() const {
 std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   // Create the copy without the "HTTPS migration" activated. If it was needed,
   // then it was done by |this| already.
-  auto result = CreateFormFetcherImpl(form_digest_, client_, false);
+  auto result = std::make_unique<FormFetcherImpl>(form_digest_, client_, false);
 
   if (state_ != State::NOT_WAITING) {
     // There are no store results to copy, trigger a Fetch on the clone instead.
