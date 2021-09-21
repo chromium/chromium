@@ -518,6 +518,16 @@
       valid_type: "bool",
     },
 
+    // - is_highlight_colors
+    // The property participates in paired cascade, such that when encountered
+    // in highlight styles, we make all other highlight color properties default
+    // to initial, rather than the UA default.
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
+    is_highlight_colors: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - is_animation_property
     // The property is a longhand of the 'animation' or 'transition' shorthands.
     is_animation_property: {
@@ -758,6 +768,7 @@
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_highlight: true,
+      is_highlight_colors: true,
     },
     {
       name: "direction",
@@ -1335,6 +1346,7 @@
       valid_for_cue: true,
       valid_for_highlight: true,
       is_background: true,
+      is_highlight_colors: true,
     },
     {
       name: "background-image",

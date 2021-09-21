@@ -1106,6 +1106,8 @@ crbug.com/667785 external/wpt/css/css-grid/table-grid-item-005.html [ Failure ]
 
 ### external/wpt/css/css-pseudo/
 crbug.com/591099 external/wpt/css/css-pseudo/active-selection-011.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-pseudo/active-selection-012.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-pseudo/highlight-paired-cascade-004.tentative.html [ Failure ]
 
 ### external/wpt/css/css-writing-modes/
 crbug.com/591099 external/wpt/css/css-writing-modes/table-column-order-002.xht [ Failure ]

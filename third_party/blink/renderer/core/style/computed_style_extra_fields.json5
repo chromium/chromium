@@ -494,6 +494,17 @@
       computed_style_custom_functions: ["getter", "setter"],
     },
     {
+      name: "HighlightData",
+      inherited: true,
+      field_template: "external",
+      type_name: "StyleHighlightData",
+      include_paths: ["third_party/blink/renderer/core/style/style_highlight_data.h"],
+      default_value: "nullptr",
+      wrapper_pointer_name: "scoped_refptr",
+      field_group: "*",
+      computed_style_custom_functions: ["getter", "setter"],
+    },
+    {
       name: "InitialData",
       inherited: true,
       field_template: "external",
@@ -732,6 +743,15 @@
     },
     {
       name: "HasAuthorBorderRadius",
+      field_template: "monotonic_flag",
+      default_value: "false",
+    },
+    // Paired cascade: in highlight pseudo styles, the presence of any highlight
+    // colors affects whether all other highlight color properties default to
+    // initial or the UA default.
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
+    {
+      name: "HasAuthorHighlightColors",
       field_template: "monotonic_flag",
       default_value: "false",
     },

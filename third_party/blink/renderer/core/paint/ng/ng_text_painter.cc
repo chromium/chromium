@@ -91,7 +91,7 @@ const ComputedStyle& GetSvgStyleToPaint(
   out_has_visible_stroke = style_to_paint->HasVisibleStroke();
   if (state.IsPaintingSelection()) {
     if (const ComputedStyle* pseudo_selection_style =
-            layout_parent.GetCachedPseudoElementStyle(kPseudoIdSelection)) {
+            layout_parent.GetSelectionStyle()) {
       style_to_paint = pseudo_selection_style;
       if (!out_has_fill)
         out_has_fill = style_to_paint->HasFill();

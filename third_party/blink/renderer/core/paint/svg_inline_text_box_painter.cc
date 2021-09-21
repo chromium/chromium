@@ -164,8 +164,7 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
   const ComputedStyle* selection_style = &style;
   bool should_paint_selection = ShouldPaintSelection(paint_info);
   if (should_paint_selection) {
-    selection_style =
-        parent_layout_object.GetCachedPseudoElementStyle(kPseudoIdSelection);
+    selection_style = parent_layout_object.GetSelectionStyle();
     if (selection_style) {
       if (!has_fill)
         has_fill = selection_style->HasFill();

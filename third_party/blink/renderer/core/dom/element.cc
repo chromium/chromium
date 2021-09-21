@@ -3179,6 +3179,49 @@ StyleRecalcChange Element::RecalcOwnStyle(
     rare_data->ClearPseudoElements();
   }
 
+  if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() && new_style) {
+    if (new_style->HasPseudoElementStyle(kPseudoIdSelection)) {
+      scoped_refptr<StyleHighlightData> highlights =
+          new_style->MutableHighlightData();
+      StyleRequest style_request{
+          kPseudoIdSelection,
+          ParentComputedStyle()->HighlightData()->Selection().get()};
+      highlights->SetSelection(
+          StyleForPseudoElement(style_recalc_context, style_request));
+    }
+
+    if (new_style->HasPseudoElementStyle(kPseudoIdTargetText)) {
+      scoped_refptr<StyleHighlightData> highlights =
+          new_style->MutableHighlightData();
+      StyleRequest style_request{
+          kPseudoIdTargetText,
+          ParentComputedStyle()->HighlightData()->TargetText().get()};
+      highlights->SetTargetText(
+          StyleForPseudoElement(style_recalc_context, style_request));
+    }
+
+    if (new_style->HasPseudoElementStyle(kPseudoIdSpellingError)) {
+      scoped_refptr<StyleHighlightData> highlights =
+          new_style->MutableHighlightData();
+      StyleRequest style_request{
+          kPseudoIdSpellingError,
+          ParentComputedStyle()->HighlightData()->SpellingError().get()};
+      highlights->SetSpellingError(
+          StyleForPseudoElement(style_recalc_context, style_request));
+    }
+
+    if (new_style->HasPseudoElementStyle(kPseudoIdGrammarError)) {
+      scoped_refptr<StyleHighlightData> highlights =
+          new_style->MutableHighlightData();
+      StyleRequest style_request{
+          kPseudoIdGrammarError,
+          ParentComputedStyle()->HighlightData()->GrammarError().get()};
+      highlights->SetGrammarError(
+          StyleForPseudoElement(style_recalc_context, style_request));
+    }
+
+    // TODO(crbug.com/1024156): implement ::highlight() case
+  }
   SetComputedStyle(new_style);
 
   if (!child_change.ReattachLayoutTree() &&
@@ -5463,6 +5506,13 @@ bool Element::PseudoElementStylesDependOnFontMetrics() const {
 const ComputedStyle* Element::CachedStyleForPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) {
+  // Highlight pseudos are resolved into StyleHighlightData during originating
+  // style recalc, and should never be stored in StyleCachedData.
+  // TODO(crbug.com/1024156): remove middle case after impl for ::highlight
+  DCHECK(!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
+         pseudo_id == kPseudoIdHighlight ||
+         !IsHighlightPseudoElement(pseudo_id));
+
   const ComputedStyle* style = GetComputedStyle();
 
   if (!style || (pseudo_id < kFirstInternalPseudoId &&
@@ -5483,6 +5533,13 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(
 
 scoped_refptr<ComputedStyle> Element::UncachedStyleForPseudoElement(
     const StyleRequest& request) {
+  // Highlight pseudos are resolved into StyleHighlightData during originating
+  // style recalc, where we have the actual StyleRecalcContext.
+  // TODO(crbug.com/1024156): remove middle case after impl for ::highlight
+  DCHECK(!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
+         request.pseudo_id == kPseudoIdHighlight ||
+         !IsHighlightPseudoElement(request.pseudo_id));
+
   // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
   StyleRecalcContext style_recalc_context;
   return StyleForPseudoElement(style_recalc_context, request);

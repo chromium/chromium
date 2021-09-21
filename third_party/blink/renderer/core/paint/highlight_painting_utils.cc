@@ -134,7 +134,10 @@ Color HighlightThemeBackgroundColor(const Document& document,
   }
 }
 
-scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
+// Returns highlight styles for the given node, inheriting from the originating
+// element only, like most impls did before highlights were added to css-pseudo.
+scoped_refptr<const ComputedStyle>
+HighlightPseudoStyleWithOriginatingInheritance(
     Node* node,
     PseudoId pseudo,
     const AtomicString& pseudo_argument) {
@@ -177,6 +180,52 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
   return element->CachedStyleForPseudoElement(pseudo, pseudo_argument);
 }
 
+// Returns highlight styles for the given node, inheriting through the “tree” of
+// highlight pseudo styles mirroring the originating element tree. None of the
+// returned styles are influenced by originating elements or pseudo-elements.
+// TODO(crbug.com/1024156): return const ComputedStyle& when dropping old impl?
+scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
+    Node* node,
+    const ComputedStyle& style,
+    PseudoId pseudo,
+    const AtomicString& pseudo_argument) {
+  if (!RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
+    return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
+                                                          pseudo_argument);
+  }
+
+  switch (pseudo) {
+    case kPseudoIdSelection:
+      return style.HighlightData()->Selection();
+    case kPseudoIdTargetText:
+      return style.HighlightData()->TargetText();
+    case kPseudoIdSpellingError:
+      return style.HighlightData()->SpellingError();
+    case kPseudoIdGrammarError:
+      return style.HighlightData()->GrammarError();
+    case kPseudoIdHighlight:
+      // TODO(crbug.com/1024156): implement ::highlight() case
+      return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
+                                                            pseudo_argument);
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+}
+
+// Paired cascade: when we encounter any highlight colors, we make all other
+// highlight color properties default to initial, rather than the UA default.
+// https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
+bool UseUaHighlightColors(PseudoId pseudo, const ComputedStyle& pseudo_style) {
+  // TODO(crbug.com/1024156): spec issue: should we limit this to ::selection?
+  // TODO(crbug.com/1024156): https://github.com/w3c/csswg-drafts/issues/6386
+  // NOTE: to limit this to ::selection without breaking our default highlight
+  // colors for ::target-text, we would need to split HasAuthorHighlightColors
+  // into bits for foreground and background, or impl ::target-text defaults
+  // as a UA stylesheet rule of MarkText on Mark (as recommended by the spec).
+  return !pseudo_style.HasAuthorHighlightColors();
+}
+
 Color HighlightColor(const Document& document,
                      const ComputedStyle& style,
                      Node* node,
@@ -194,10 +243,11 @@ Color HighlightColor(const Document& document,
   }
 
   scoped_refptr<const ComputedStyle> pseudo_style =
-      HighlightPseudoStyle(node, pseudo, pseudo_argument);
+      HighlightPseudoStyle(node, style, pseudo, pseudo_argument);
 
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  if (pseudo_style) {
+  if (pseudo_style && (!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
+                       !UseUaHighlightColors(pseudo, *pseudo_style))) {
     if (!document.InForcedColorsMode() ||
         pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
       return pseudo_style->VisitedDependentColor(color_property);
@@ -223,9 +273,12 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
       return Color::kTransparent;
   }
 
+  scoped_refptr<const ComputedStyle> pseudo_style =
+      HighlightPseudoStyle(node, style, pseudo, pseudo_argument);
+
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-  if (scoped_refptr<const ComputedStyle> pseudo_style =
-          HighlightPseudoStyle(node, pseudo, pseudo_argument)) {
+  if (pseudo_style && (!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
+                       !UseUaHighlightColors(pseudo, *pseudo_style))) {
     if (!document.InForcedColorsMode() ||
         pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
       Color highlight_color =
@@ -319,7 +372,7 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
   }
 
   if (scoped_refptr<const ComputedStyle> pseudo_style =
-          HighlightPseudoStyle(node, pseudo, pseudo_argument)) {
+          HighlightPseudoStyle(node, style, pseudo, pseudo_argument)) {
     highlight_style.stroke_color =
         uses_text_as_clip ? Color::kBlack
                           : pseudo_style->VisitedDependentColor(

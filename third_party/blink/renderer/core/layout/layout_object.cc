@@ -4261,6 +4261,13 @@ scoped_refptr<ComputedStyle> LayoutObject::GetUncachedPseudoElementStyle(
   return element->UncachedStyleForPseudoElement(request);
 }
 
+const ComputedStyle* LayoutObject::GetSelectionStyle() const {
+  if (RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
+    return StyleRef().HighlightData()->Selection().get();
+  }
+  return GetCachedPseudoElementStyle(kPseudoIdSelection);
+}
+
 void LayoutObject::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {
   NOT_DESTROYED();
   // Convert the style regions to absolute coordinates.

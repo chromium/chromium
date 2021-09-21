@@ -152,7 +152,11 @@ PseudoElementStyleCache& ComputedStyle::EnsurePseudoElementStyleCache() const {
 }
 
 scoped_refptr<ComputedStyle> ComputedStyle::CreateInitialStyleSingleton() {
-  return base::MakeRefCounted<ComputedStyle>(PassKey());
+  auto result = base::MakeRefCounted<ComputedStyle>(PassKey());
+
+  result->SetHighlightDataInternal(StyleHighlightData::Create(PassKey()));
+
+  return result;
 }
 
 Vector<AtomicString>* ComputedStyle::GetVariableNamesCache() const {
@@ -188,6 +192,13 @@ ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key) : ComputedStyle() {}
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key, const ComputedStyle& o)
     : ComputedStyle(o) {}
+
+scoped_refptr<ComputedStyle> ComputedStyle::Create(PkStyleHighlightData) {
+  return base::AdoptRef(new ComputedStyle);
+}
+scoped_refptr<ComputedStyle> ComputedStyle::Copy(PkStyleHighlightData) const {
+  return base::AdoptRef(new ComputedStyle(PassKey(), *this));
+}
 
 static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
                                      const ComputedStyle& new_style) {
@@ -606,6 +617,17 @@ const CSSBitset* ComputedStyle::GetBaseImportantSet() const {
   if (auto* base_data = BaseData().get())
     return base_data->GetBaseImportantSet();
   return nullptr;
+}
+
+const scoped_refptr<StyleHighlightData>& ComputedStyle::HighlightData() const {
+  return HighlightDataInternal();
+}
+
+scoped_refptr<StyleHighlightData> ComputedStyle::MutableHighlightData() {
+  // TODO(crbug.com/1024156): why does this never end up cloning when done
+  // under a !HasOneRef condition (à la DataRef::Access)?
+  SetHighlightDataInternal(HighlightData()->Copy(PassKey()));
+  return HighlightData();
 }
 
 bool ComputedStyle::InheritedEqual(const ComputedStyle& other) const {

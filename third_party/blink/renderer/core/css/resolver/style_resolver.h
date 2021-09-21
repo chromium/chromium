@@ -196,6 +196,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   void InitStyleAndApplyInheritance(Element& element,
                                     const StyleRequest&,
                                     StyleResolverState& state);
+  void ApplyInheritance(Element& element,
+                        const StyleRequest& style_request,
+                        StyleResolverState& state);
 
   void ApplyBaseStyle(Element* element,
                       const StyleRecalcContext&,

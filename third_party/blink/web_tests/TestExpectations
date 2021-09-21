@@ -2731,6 +2731,11 @@ crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-capture-video.https.html
 crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
 
 crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-004.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/highlight-cascade-001.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/highlight-cascade-002.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-003.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-006.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/highlight-styling-002.html [ Failure ]
 crbug.com/1113004 external/wpt/css/css-pseudo/active-selection-043.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-051.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-052.html [ Failure ]
@@ -2738,6 +2743,15 @@ crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-053.html 
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-054.html [ Failure ]
 crbug.com/1018465 external/wpt/css/css-pseudo/active-selection-056.html [ Failure ]
 crbug.com/932343 external/wpt/css/css-pseudo/active-selection-014.html [ Failure ]
+
+# virtual/css-highlight-inheritance/
+crbug.com/1217745 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/active-selection-018.html [ Failure ]
+crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/cascade-highlight-004.html [ Pass ]
+crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-cascade-001.html [ Pass ]
+crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-cascade-002.html [ Pass ]
+crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-paired-cascade-003.html [ Pass ]
+crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-paired-cascade-006.html [ Pass ]
+crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-styling-002.html [ Pass ]
 
 crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ Skip Timeout ]
 

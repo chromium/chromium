@@ -1114,5 +1114,10 @@
     "args": [
       "--enable-features=AutomaticLazyFrameLoadingToEmbeds:allowed_websites/http%3A%2F%2Fbad3p.test%3A3001%7C%2Fembed"
     ]
+  },
+  {
+    "prefix": "css-highlight-inheritance",
+    "bases": ["external/wpt/css/css-pseudo"],
+    "args": ["--enable-blink-features=HighlightInheritance"]
   }
 ]

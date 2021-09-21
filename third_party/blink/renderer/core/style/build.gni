@@ -76,6 +76,8 @@ blink_core_sources_style = [
   "style_filter_data.h",
   "style_generated_image.cc",
   "style_generated_image.h",
+  "style_highlight_data.cc",
+  "style_highlight_data.h",
   "style_image.cc",
   "style_image.h",
   "style_inherited_variables.cc",

@@ -64,6 +64,7 @@ class CORE_EXPORT StyleResolverState {
   bool IsForPseudoElement() const {
     return element_type_ == ElementType::kPseudoElement;
   }
+  bool IsInheritedForUnset(const CSSProperty& property) const;
 
   // In FontFaceSet and CanvasRenderingContext2D, we don't have an element to
   // grab the document from.  This is why we have to store the document
@@ -202,6 +203,9 @@ class CORE_EXPORT StyleResolverState {
   ElementStyleResources element_style_resources_;
   ElementType element_type_;
   Element* nearest_container_;
+
+  // True if we are resolving styles for a highlight pseudo-element.
+  const bool is_for_highlight_;
 
   // True if the base style can be cached to optimize style recalculations for
   // animation updates or transition retargeting.
