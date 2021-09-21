@@ -2976,7 +2976,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
 
   // Srcdoc documents are always in the same SiteInstance as their parent. They
   // load their content from the "srcdoc" iframe attribute which lives in the
-  // parent's process.
+  // parent's process. Using `GetParent()` is correct here because we never
+  // share BrowsingInstance / SiteInstance across inner and outer frame tree.
   RenderFrameHostImpl* parent = render_frame_host_->GetParent();
   if (parent && request->common_params().url.IsAboutSrcdoc()) {
     AppendReason(reason,
