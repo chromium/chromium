@@ -109,7 +109,7 @@ export let UpdateStatusChangedEvent;
  */
 export function browserChannelToI18nId(channel, isLts) {
   if (isLts) {
-    return 'aboutChannelLongTermStable';
+    return 'aboutChannelLongTermSupport';
   }
 
   switch (channel) {

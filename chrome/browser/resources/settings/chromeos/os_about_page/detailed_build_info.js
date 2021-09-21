@@ -304,8 +304,7 @@ Polymer({
     const buildInfo = {
       'application_label': loadTimeData.getString('aboutBrowserVersion'),
       'platform': this.versionInfo_.osVersion,
-      'aboutChannelLabel': this.channelInfo_.targetChannel +
-          (this.channelInfo_.isLts ? ' (trusted tester)' : ''),
+      'aboutChannelLabel': this.channelInfo_.targetChannel,
       'firmware_version': this.versionInfo_.osFirmware,
       'aboutIsArcStatusTitle': loadTimeData.getBoolean('aboutIsArcEnabled'),
       'arc_label': this.versionInfo_.arcVersion,
