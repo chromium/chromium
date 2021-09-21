@@ -3,18 +3,39 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * 'os-settings-main' displays the selected settings page.
+ */
+import '//resources/cr_components/managed_footnote/managed_footnote.js';
+import '//resources/cr_elements/hidden_style_css.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/js/search_highlight_utils.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../os_about_page/os_about_page.js';
+import '../os_settings_page/os_settings_page.js';
+import '../../prefs/prefs.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
+import {routes} from '../os_route.m.js';
+
+/**
  * @typedef {{about: boolean, settings: boolean}}
  */
 let MainPageVisibility;
 
-/**
- * @fileoverview
- * 'os-settings-main' displays the selected settings page.
- */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-main',
 
-  behaviors: [settings.RouteObserverBehavior],
+  behaviors: [RouteObserverBehavior],
 
   properties: {
     /**
@@ -117,11 +138,11 @@ Polymer({
   /**
    * Updates the hidden state of the about and settings pages based on the
    * current route.
-   * @param {!settings.Route} newRoute
+   * @param {!Route} newRoute
    */
   currentRouteChanged(newRoute) {
-    const inAbout = settings.routes.ABOUT.contains(
-        settings.Router.getInstance().getCurrentRoute());
+    const inAbout =
+        routes.ABOUT.contains(Router.getInstance().getCurrentRoute());
     this.showPages_ = {about: inAbout, settings: !inAbout};
 
     if (!newRoute.isSubpage()) {
