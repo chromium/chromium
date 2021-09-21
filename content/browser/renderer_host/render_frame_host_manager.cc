@@ -633,8 +633,16 @@ void RenderFrameHostManager::UnloadOldFrame(
   // Now close any modal dialogs that would prevent us from unloading the frame.
   // This must be done separately from Unload(), so that the
   // ScopedPageLoadDeferrer is no longer on the stack when we send the
-  // mojo::FrameNavigationControl::Unload message.
-  delegate_->CancelModalDialogsForRenderManager();
+  // mojo::FrameNavigationControl::Unload message. Prerendering pages cannot
+  // create modal dialogs and unloading a prerendering RFH should not cause
+  // existing dialogs to close.
+  // TODO(crbug.com/1249466): Update CancelModalDialogsForRenderManager
+  // to take a RFH/RPH and only clear relevant dialogs instead of all dialogs in
+  // the WebContents.
+  if (current_frame_host()->GetLifecycleState() !=
+      RenderFrameHost::LifecycleState::kPrerendering) {
+    delegate_->CancelModalDialogsForRenderManager();
+  }
 
   // If the old RFH is not live, just return as there is no further work to do.
   // It will be deleted and there will be no proxy created.

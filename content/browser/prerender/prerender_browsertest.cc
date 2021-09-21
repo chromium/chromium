@@ -65,6 +65,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
+#include "content/test/render_document_feature.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -350,6 +351,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
 
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
+}  // namespace
 
 // Tests that the speculationrules trigger works.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
@@ -4920,5 +4922,97 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EnterFullscreen) {
   EXPECT_FALSE(web_contents_impl()->IsFullscreen());
 }
 
+namespace {
+class TestJavaScriptDialogManager : public JavaScriptDialogManager,
+                                    public WebContentsDelegate {
+ public:
+  TestJavaScriptDialogManager() = default;
+  ~TestJavaScriptDialogManager() override = default;
+
+  // WebContentsDelegate overrides
+  JavaScriptDialogManager* GetJavaScriptDialogManager(
+      WebContents* source) override {
+    return this;
+  }
+
+  // JavaScriptDialogManager overrides
+  void RunJavaScriptDialog(WebContents* web_contents,
+                           RenderFrameHost* render_frame_host,
+                           JavaScriptDialogType dialog_type,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
+                           DialogClosedCallback callback,
+                           bool* did_suppress_message) override {}
+  void RunBeforeUnloadDialog(WebContents* web_contents,
+                             RenderFrameHost* render_frame_host,
+                             bool is_reload,
+                             DialogClosedCallback callback) override {}
+  void CancelDialogs(WebContents* web_contents, bool reset_state) override {
+    cancel_dialogs_called_ = true;
+  }
+
+  bool cancel_dialogs_called() { return cancel_dialogs_called_; }
+
+ private:
+  bool cancel_dialogs_called_ = false;
+};
+
+class PrerenderWithRenderDocumentBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderWithRenderDocumentBrowserTest() {
+    InitAndEnableRenderDocumentFeature(
+        &feature_list_,
+        GetRenderDocumentLevelName(RenderDocumentLevel::kSubframe));
+  }
+  ~PrerenderWithRenderDocumentBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderWithRenderDocumentBrowserTest,
+    ModalDialogShouldNotBeDismissedAfterPrerenderSubframeNavigation) {
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+  const GURL kSubframeUrl1 = GetUrl("/empty.html");
+  const GURL kSubframeUrl2 = GetUrl("/title2.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  // Start prerendering.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  DCHECK(prerender_rfh);
+  AddTestUtilJS(prerender_rfh);
+
+  // Add subframe in prerendering page.
+  ASSERT_TRUE(
+      ExecJs(prerender_rfh, JsReplace("add_iframe($1)", kSubframeUrl1)));
+
+  // Setup test dialog manager and create dialog.
+  TestJavaScriptDialogManager dialog_manager;
+  web_contents_impl()->SetDelegate(&dialog_manager);
+  web_contents_impl()->RunJavaScriptDialog(
+      web_contents_impl()->GetMainFrame(), u"", u"",
+      JAVASCRIPT_DIALOG_TYPE_ALERT, false, base::NullCallback());
+
+  // Navigate subframe (with render document enabled, this should cause a RFH
+  // swap).
+  TestNavigationManager subframe_nav_manager(web_contents(), kSubframeUrl2);
+  ASSERT_TRUE(ExecJs(
+      prerender_rfh,
+      JsReplace("document.querySelector('iframe').src = $1", kSubframeUrl2)));
+  subframe_nav_manager.WaitForNavigationFinished();
+
+  // We should not dismiss dialogs when the prerender's subframe navigates and
+  // swaps its RFH.
+  EXPECT_FALSE(dialog_manager.cancel_dialogs_called());
+
+  // Clean up test dialog manager.
+  web_contents_impl()->SetDelegate(nullptr);
+  web_contents_impl()->SetJavaScriptDialogManagerForTesting(nullptr);
+}
+
 }  // namespace content
