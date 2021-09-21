@@ -166,9 +166,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.AutoDisabled.DisabledTime" units="ms"
-    expires_after="2021-09-30">
-  <owner>dmazzoni@chromium.org</owner>
+    expires_after="2022-02-06">
   <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The total amount of time accessibility was disabled due to being
     auto-disabled, before being enabled again.
@@ -177,8 +177,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.AutoDisabled.EnabledTime" units="ms"
     expires_after="2022-02-06">
-  <owner>dmazzoni@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The total amount of time accessibility was enabled before being
     auto-disabled.
@@ -187,8 +187,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.AutoDisabled.EventCount" units="count"
     expires_after="2022-02-06">
-  <owner>dmazzoni@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The number of user input events that were received within one time window,
     without any accompanying accessibility API usage, that triggered
