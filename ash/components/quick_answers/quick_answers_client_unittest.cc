@@ -232,32 +232,6 @@ TEST_F(QuickAnswersClientTest, PreprocessDefinitionIntent) {
       IntentInfo("unfathomable", IntentType::kDictionary));
 }
 
-TEST_F(QuickAnswersClientTest, PreprocessTranslationIntent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kQuickAnswersTranslationCloudAPI);
-  std::unique_ptr<QuickAnswersRequest> quick_answers_request =
-      std::make_unique<QuickAnswersRequest>();
-  quick_answers_request->selected_text = "sel";
-
-  // Verify that |OnRequestPreprocessFinished| is called.
-  std::unique_ptr<QuickAnswersRequest> processed_request =
-      std::make_unique<QuickAnswersRequest>();
-  processed_request->selected_text = "sel";
-  PreprocessedOutput expected_processed_output;
-  expected_processed_output.intent_info.intent_text = "intent text";
-  expected_processed_output.query = "Translate:intent text";
-  expected_processed_output.intent_info.intent_type = IntentType::kTranslation;
-  processed_request->preprocessed_output = expected_processed_output;
-  EXPECT_CALL(*mock_delegate_,
-              OnRequestPreprocessFinished(
-                  QuickAnswersRequestWithOutputEqual(*processed_request)));
-
-  client_->IntentGeneratorCallback(
-      *quick_answers_request, /*skip_fetch=*/false,
-      IntentInfo("intent text", IntentType::kTranslation));
-}
-
 TEST_F(QuickAnswersClientTest, PreprocessUnitConversionIntent) {
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();

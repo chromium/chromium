@@ -5446,12 +5446,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableQuickAnswersTextAnnotatorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersTextAnnotator)},
 
-    {"enable-quick-answers-translation-cloud-api",
-     flag_descriptions::kEnableQuickAnswersTranslationCloudAPIName,
-     flag_descriptions::kEnableQuickAnswersTranslationCloudAPIDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersTranslationCloudAPI)},
-
     {"enable-quick-answers-v2", flag_descriptions::kEnableQuickAnswersV2Name,
      flag_descriptions::kEnableQuickAnswersV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersV2)},

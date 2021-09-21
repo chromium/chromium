@@ -7,7 +7,6 @@
 #include "ash/components/quick_answers/search_result_loader.h"
 #include "ash/components/quick_answers/translation_result_loader.h"
 #include "ash/components/quick_answers/utils/quick_answers_metrics.h"
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -53,8 +52,7 @@ std::unique_ptr<ResultLoader> ResultLoader::Create(
     IntentType intent_type,
     URLLoaderFactory* url_loader_factory,
     ResultLoader::ResultLoaderDelegate* delegate) {
-  if (features::IsQuickAnswersTranslationCloudAPIEnabled() &&
-      intent_type == IntentType::kTranslation)
+  if (intent_type == IntentType::kTranslation)
     return std::make_unique<TranslationResultLoader>(url_loader_factory,
                                                      delegate);
   return std::make_unique<SearchResultLoader>(url_loader_factory, delegate);

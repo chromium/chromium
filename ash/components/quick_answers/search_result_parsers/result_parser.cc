@@ -6,7 +6,6 @@
 
 #include "ash/components/quick_answers/search_result_parsers/definition_result_parser.h"
 #include "ash/components/quick_answers/search_result_parsers/kp_entity_result_parser.h"
-#include "ash/components/quick_answers/search_result_parsers/translation_result_parser.h"
 #include "ash/components/quick_answers/search_result_parsers/unit_conversion_result_parser.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -42,12 +41,13 @@ std::unique_ptr<ResultParser> ResultParserFactory::Create(
       return std::make_unique<KpEntityResultParser>();
     case ResultType::kDefinitionResult:
       return std::make_unique<DefinitionResultParser>();
-    case ResultType::kTranslationResult:
-      return std::make_unique<TranslationResultParser>();
     case ResultType::kUnitConversionResult:
       return std::make_unique<UnitConversionResultParser>();
       // TODO(llin): Add other result parsers.
 
+    // Translation responses are from the Clound server and parsed
+    // separately.
+    case ResultType::kTranslationResult:
     case ResultType::kNoResult:
       NOTREACHED();
       break;

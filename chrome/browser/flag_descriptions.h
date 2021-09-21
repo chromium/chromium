@@ -2580,9 +2580,6 @@ extern const char kEnableQuickAnswersOnEditableTextDescription[];
 extern const char kEnableQuickAnswersTextAnnotatorName[];
 extern const char kEnableQuickAnswersTextAnnotatorDescription[];
 
-extern const char kEnableQuickAnswersTranslationCloudAPIName[];
-extern const char kEnableQuickAnswersTranslationCloudAPIDescription[];
-
 extern const char kEnableQuickAnswersV2Name[];
 extern const char kEnableQuickAnswersV2Description[];
 
