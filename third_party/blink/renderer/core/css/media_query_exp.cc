@@ -333,7 +333,6 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
                                     const ExecutionContext* execution_context) {
   DCHECK(!media_feature.IsNull());
 
-  MediaQueryExpValue exp_value;
   String lower_media_feature =
       AttemptStaticStringCreation(media_feature.LowerASCII());
 
@@ -358,13 +357,11 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
       CSSValueID ident_id = ident->GetValueID();
       if (!FeatureWithValidIdent(lower_media_feature, ident_id))
         return Invalid();
-      exp_value.id = ident_id;
-      exp_value.is_id = true;
-      return MediaQueryExp(lower_media_feature, exp_value);
+      return MediaQueryExp(lower_media_feature, MediaQueryExpValue(ident_id));
     }
     if (FeatureWithoutValue(lower_media_feature, execution_context)) {
       // Valid, creates a MediaQueryExp with an 'invalid' MediaQueryExpValue
-      return MediaQueryExp(lower_media_feature, exp_value);
+      return MediaQueryExp(lower_media_feature, MediaQueryExpValue());
     }
     return Invalid();
   }
@@ -381,46 +378,44 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
     if (!denominator)
       return Invalid();
 
-    exp_value.numerator = clampTo<unsigned>(value->GetDoubleValue());
-    exp_value.denominator = clampTo<unsigned>(denominator->GetDoubleValue());
-    exp_value.is_ratio = true;
-    return MediaQueryExp(lower_media_feature, exp_value);
+    return MediaQueryExp(
+        lower_media_feature,
+        MediaQueryExpValue(clampTo<unsigned>(value->GetDoubleValue()),
+                           clampTo<unsigned>(denominator->GetDoubleValue())));
   }
 
   if (FeatureWithValidDensity(lower_media_feature, value)) {
     // TODO(crbug.com/983613): Support resolution in math functions.
     DCHECK(value->IsNumericLiteralValue());
     const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
-    exp_value.value = numeric_literal->DoubleValue();
-    exp_value.unit = numeric_literal->GetType();
-    exp_value.is_value = true;
-    return MediaQueryExp(lower_media_feature, exp_value);
+    return MediaQueryExp(lower_media_feature,
+                         MediaQueryExpValue(numeric_literal->DoubleValue(),
+                                            numeric_literal->GetType()));
   }
 
   if (FeatureWithPositiveInteger(lower_media_feature, value) ||
       FeatureWithPositiveNumber(lower_media_feature, value) ||
       FeatureWithZeroOrOne(lower_media_feature, value)) {
-    exp_value.value = value->GetDoubleValue();
-    exp_value.unit = CSSPrimitiveValue::UnitType::kNumber;
-    exp_value.is_value = true;
-    return MediaQueryExp(lower_media_feature, exp_value);
+    return MediaQueryExp(
+        lower_media_feature,
+        MediaQueryExpValue(value->GetDoubleValue(),
+                           CSSPrimitiveValue::UnitType::kNumber));
   }
 
   if (FeatureWithValidPositiveLength(lower_media_feature, value)) {
     if (value->IsNumber()) {
-      exp_value.value = value->GetDoubleValue();
-      exp_value.unit = CSSPrimitiveValue::UnitType::kNumber;
-      exp_value.is_value = true;
-      return MediaQueryExp(lower_media_feature, exp_value);
+      return MediaQueryExp(
+          lower_media_feature,
+          MediaQueryExpValue(value->GetDoubleValue(),
+                             CSSPrimitiveValue::UnitType::kNumber));
     }
 
     DCHECK(value->IsLength());
     if (const auto* numeric_literal =
             DynamicTo<CSSNumericLiteralValue>(value)) {
-      exp_value.value = numeric_literal->GetDoubleValue();
-      exp_value.unit = numeric_literal->GetType();
-      exp_value.is_value = true;
-      return MediaQueryExp(lower_media_feature, exp_value);
+      return MediaQueryExp(lower_media_feature,
+                           MediaQueryExpValue(numeric_literal->GetDoubleValue(),
+                                              numeric_literal->GetType()));
     }
 
     const auto* math_value = To<CSSMathFunctionValue>(value);
@@ -431,10 +426,9 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
       // conversions properly. For example, calc(10px + 1em).
       return Invalid();
     }
-    exp_value.value = math_value->DoubleValue();
-    exp_value.unit = expression_unit;
-    exp_value.is_value = true;
-    return MediaQueryExp(lower_media_feature, exp_value);
+    return MediaQueryExp(
+        lower_media_feature,
+        MediaQueryExpValue(math_value->DoubleValue(), expression_unit));
   }
 
   return Invalid();
@@ -444,9 +438,7 @@ MediaQueryExp::~MediaQueryExp() = default;
 
 bool MediaQueryExp::operator==(const MediaQueryExp& other) const {
   return (other.media_feature_ == media_feature_) &&
-         ((!other.exp_value_.IsValid() && !exp_value_.IsValid()) ||
-          (other.exp_value_.IsValid() && exp_value_.IsValid() &&
-           other.exp_value_.Equals(exp_value_)));
+         (exp_value_ == other.exp_value_);
 }
 
 String MediaQueryExp::Serialize() const {
@@ -468,15 +460,21 @@ static inline String PrintNumber(double number) {
 
 String MediaQueryExpValue::CssText() const {
   StringBuilder output;
-  if (is_value) {
-    output.Append(PrintNumber(value));
-    output.Append(CSSPrimitiveValue::UnitTypeToString(unit));
-  } else if (is_ratio) {
-    output.Append(PrintNumber(numerator));
-    output.Append(" / ");
-    output.Append(PrintNumber(denominator));
-  } else if (is_id) {
-    output.Append(getValueName(id));
+  switch (type_) {
+    case Type::kInvalid:
+      break;
+    case Type::kNumeric:
+      output.Append(PrintNumber(Value()));
+      output.Append(CSSPrimitiveValue::UnitTypeToString(Unit()));
+      break;
+    case Type::kRatio:
+      output.Append(PrintNumber(Numerator()));
+      output.Append(" / ");
+      output.Append(PrintNumber(Denominator()));
+      break;
+    case Type::kId:
+      output.Append(getValueName(Id()));
+      break;
   }
 
   return output.ToString();

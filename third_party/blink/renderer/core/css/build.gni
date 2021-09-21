@@ -684,6 +684,7 @@ blink_core_tests_css = [
   "invalidation/style_invalidator_test.cc",
   "media_feature_overrides_test.cc",
   "media_query_evaluator_test.cc",
+  "media_query_exp_test.cc",
   "media_query_list_test.cc",
   "media_query_matcher_test.cc",
   "media_query_set_test.cc",

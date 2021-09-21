@@ -2437,7 +2437,7 @@ void StyleEngine::UpdateColorScheme() {
           GetDocument().GetPage()->GetMediaFeatureOverrides()) {
     MediaQueryExpValue value = overrides->GetOverride("prefers-color-scheme");
     if (value.IsValid())
-      preferred_color_scheme_ = CSSValueIDToPreferredColorScheme(value.id);
+      preferred_color_scheme_ = CSSValueIDToPreferredColorScheme(value.Id());
   }
   if (!SupportsDarkColorScheme() && settings->GetForceDarkModeEnabled()) {
     // Make sure we don't match (prefers-color-scheme: dark) when forced

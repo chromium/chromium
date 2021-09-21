@@ -42,40 +42,86 @@ class CSSParserContext;
 class CSSParserTokenRange;
 class ExecutionContext;
 
-struct MediaQueryExpValue {
+class CORE_EXPORT MediaQueryExpValue {
   DISALLOW_NEW();
-  CSSValueID id;
-  double value;
-  CSSPrimitiveValue::UnitType unit;
-  unsigned numerator;
-  unsigned denominator;
 
-  bool is_id;
-  bool is_value;
-  bool is_ratio;
+ public:
+  // Type::kInvalid
+  MediaQueryExpValue() = default;
 
-  MediaQueryExpValue()
-      : id(CSSValueID::kInvalid),
-        value(0),
-        unit(CSSPrimitiveValue::UnitType::kUnknown),
-        numerator(0),
-        denominator(1),
-        is_id(false),
-        is_value(false),
-        is_ratio(false) {}
+  explicit MediaQueryExpValue(CSSValueID id) : type_(Type::kId), id_(id) {}
+  MediaQueryExpValue(double value, CSSPrimitiveValue::UnitType unit)
+      : type_(Type::kNumeric), numeric_({value, unit}) {}
+  MediaQueryExpValue(unsigned numerator, unsigned denominator)
+      : type_(Type::kRatio), ratio_({numerator, denominator}) {}
 
-  bool IsValid() const { return (is_id || is_value || is_ratio); }
-  String CssText() const;
-  bool Equals(const MediaQueryExpValue& exp_value) const {
-    if (is_id)
-      return (id == exp_value.id);
-    if (is_value)
-      return (value == exp_value.value);
-    if (is_ratio)
-      return (numerator == exp_value.numerator &&
-              denominator == exp_value.denominator);
-    return !exp_value.IsValid();
+  bool IsValid() const { return type_ != Type::kInvalid; }
+  bool IsId() const { return type_ == Type::kId; }
+  bool IsNumeric() const { return type_ == Type::kNumeric; }
+  bool IsRatio() const { return type_ == Type::kRatio; }
+
+  CSSValueID Id() const {
+    DCHECK(IsId());
+    return id_;
   }
+
+  double Value() const {
+    DCHECK(IsNumeric());
+    return numeric_.value;
+  }
+
+  CSSPrimitiveValue::UnitType Unit() const {
+    DCHECK(IsNumeric());
+    return numeric_.unit;
+  }
+
+  unsigned Numerator() const {
+    DCHECK(IsRatio());
+    return ratio_.numerator;
+  }
+
+  unsigned Denominator() const {
+    DCHECK(IsRatio());
+    return ratio_.denominator;
+  }
+
+  String CssText() const;
+  bool operator==(const MediaQueryExpValue& other) const {
+    if (type_ != other.type_)
+      return false;
+    switch (type_) {
+      case Type::kInvalid:
+        return true;
+      case Type::kId:
+        return id_ == other.id_;
+      case Type::kNumeric:
+        return (numeric_.value == other.numeric_.value) &&
+               (numeric_.unit == other.numeric_.unit);
+      case Type::kRatio:
+        return (ratio_.numerator == other.ratio_.numerator) &&
+               (ratio_.denominator == other.ratio_.denominator);
+    }
+  }
+  bool operator!=(const MediaQueryExpValue& other) const {
+    return !(*this == other);
+  }
+
+ private:
+  enum class Type { kInvalid, kId, kNumeric, kRatio };
+
+  Type type_ = Type::kInvalid;
+
+  union {
+    CSSValueID id_;
+    struct {
+      double value;
+      CSSPrimitiveValue::UnitType unit;
+    } numeric_;
+    struct {
+      unsigned numerator;
+      unsigned denominator;
+    } ratio_;
+  };
 };
 
 class CORE_EXPORT MediaQueryExp {

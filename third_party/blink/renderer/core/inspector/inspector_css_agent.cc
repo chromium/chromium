@@ -1715,14 +1715,14 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
     for (wtf_size_t j = 0; j < expressions.size(); ++j) {
       const MediaQueryExp& media_query_exp = expressions.at(j);
       MediaQueryExpValue exp_value = media_query_exp.ExpValue();
-      if (!exp_value.is_value)
+      if (!exp_value.IsNumeric())
         continue;
       const char* value_name =
-          CSSPrimitiveValue::UnitTypeToString(exp_value.unit);
+          CSSPrimitiveValue::UnitTypeToString(exp_value.Unit());
       std::unique_ptr<protocol::CSS::MediaQueryExpression>
           media_query_expression =
               protocol::CSS::MediaQueryExpression::create()
-                  .setValue(exp_value.value)
+                  .setValue(exp_value.Value())
                   .setUnit(String(value_name))
                   .setFeature(media_query_exp.MediaFeature())
                   .build();
@@ -1734,7 +1734,7 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
       }
 
       int computed_length;
-      if (media_values->ComputeLength(exp_value.value, exp_value.unit,
+      if (media_values->ComputeLength(exp_value.Value(), exp_value.Unit(),
                                       computed_length))
         media_query_expression->setComputedLength(computed_length);
 
