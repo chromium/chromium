@@ -152,9 +152,18 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   void OnBrowserAdded(Browser* browser) override;
 #endif
 
-  bool IsAllowedToBeginBackgroundScenarioInternal(
-      const content::BackgroundTracingConfig& config,
-      bool requires_anonymized_data) const;
+  // The types of action that are guarded by IsActionAllowed.
+  enum class BackgroundScenarioAction {
+    kStartTracing,
+    kUploadTrace,
+  };
+
+  // Returns true if the delegate should be allowed to perform `action` for the
+  // scenario described in `config`.
+  bool IsActionAllowed(BackgroundScenarioAction action,
+                       const content::BackgroundTracingConfig& config,
+                       bool requires_anonymized_data,
+                       bool ignore_trace_limit) const;
 
   bool incognito_launched_ = false;
 };

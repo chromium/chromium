@@ -341,15 +341,18 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
 }
 #endif  // defined(OS_ANDROID)
 
-bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenarioInternal(
+bool ChromeTracingDelegate::IsActionAllowed(
+    BackgroundScenarioAction action,
     const content::BackgroundTracingConfig& config,
-    bool requires_anonymized_data) const {
+    bool requires_anonymized_data,
+    bool ignore_trace_limit) const {
   // If the background tracing is specified on the command-line, we allow
-  // any scenario to be traced.
-  if (IsBackgroundTracingCommandLine()) {
+  // any scenario to be traced and uploaded.
+  if (IsBackgroundTracingCommandLine())
     return true;
-  }
-  if (requires_anonymized_data && chrome::IsOffTheRecordSessionActive()) {
+
+  if (requires_anonymized_data &&
+      (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {
     RecordDisallowedMetric(
         TracingFinalizationDisallowedReason::kIncognitoLaunched);
     return false;
@@ -357,21 +360,23 @@ bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenarioInternal(
 
   BackgroundTracingStateManager& state =
       BackgroundTracingStateManager::GetInstance();
-  if (state.DidLastSessionEndUnexpectedly()) {
+
+  // Don't start a new trace if the previous trace did not end.
+  if (action == BackgroundScenarioAction::kStartTracing &&
+      state.DidLastSessionEndUnexpectedly()) {
     RecordDisallowedMetric(
         TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd);
     return false;
   }
 
-  // If it is a crash scenario then ignore the trace upload limit and continue
-  // uploading. We again check if the trigger was due to crash later before
-  // uploading.
-  if (!config.has_crash_scenario() &&
-      state.DidRecentlyUploadForScenario(config)) {
+  // Check the trace limit for both kStartTracing and kUploadTrace actions
+  // because there is no point starting a trace that can't be uploaded.
+  if (!ignore_trace_limit && state.DidRecentlyUploadForScenario(config)) {
     RecordDisallowedMetric(
         TracingFinalizationDisallowedReason::kTraceUploadedRecently);
     return false;
   }
+
   return true;
 }
 
@@ -384,16 +389,21 @@ bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenario(
   // will thus not save state. This means that when we save the background
   // tracing session state for one session, and then later read the state in a
   // future session, there might have been sessions between these two where
-  // tracing was disabled. Therefore, when we record
-  // TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd, it might
-  // not be the directly preceding session, but instead it is the previous
-  // session where tracing was enabled.
+  // tracing was disabled. Therefore, when IsActionAllowed records
+  // TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd, it
+  // might not be the directly preceding session, but instead it is the
+  // previous session where tracing was enabled.
   BackgroundTracingStateManager& state =
       BackgroundTracingStateManager::GetInstance();
   state.Initialize();
 
-  if (!IsAllowedToBeginBackgroundScenarioInternal(config,
-                                                  requires_anonymized_data)) {
+  // If the config includes a crash scenario, ignore the trace limit so that a
+  // trace can be taken on crash. We check if the trigger is actually due to a
+  // crash later before uploading.
+  const bool ignore_trace_limit = config.has_crash_scenario();
+
+  if (!IsActionAllowed(BackgroundScenarioAction::kStartTracing, config,
+                       requires_anonymized_data, ignore_trace_limit)) {
     return false;
   }
 
@@ -414,18 +424,13 @@ bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
   BackgroundTracingStateManager& state =
       BackgroundTracingStateManager::GetInstance();
   state.SetState(BackgroundTracingState::FINALIZATION_STARTED);
-  // If it is a crash scenario then ignore the trace upload limit and continue
-  // uploading.
-  if (!is_crash_scenario && state.DidRecentlyUploadForScenario(config)) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kTraceUploadedRecently);
-    return false;
-  }
 
-  if (requires_anonymized_data &&
-      (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kIncognitoLaunched);
+  // If a crash scenario triggered, ignore the trace upload limit and continue
+  // uploading.
+  const bool ignore_trace_limit = is_crash_scenario;
+
+  if (!IsActionAllowed(BackgroundScenarioAction::kUploadTrace, config,
+                       requires_anonymized_data, ignore_trace_limit)) {
     return false;
   }
 
