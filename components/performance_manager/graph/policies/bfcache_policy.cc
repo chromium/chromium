@@ -70,6 +70,19 @@ void BFCachePolicy::MaybeFlushBFCache(const PageNode* page_node) {
                                 page_node->GetContentsProxy()));
 }
 
+void BFCachePolicy::MaybeFlushBFCacheLater(const PageNode* page_node) {
+  // If |MaybeFlushBFCacheLater| is called while waiting for the timer,
+  // |MaybeFlushBFCacheLater| will reset the timer.
+  if (base::Contains(page_to_flush_timer_, page_node)) {
+    page_to_flush_timer_[page_node].Reset();
+  } else {
+    page_to_flush_timer_[page_node].Start(
+        FROM_HERE, delay_to_flush_background_tab_,
+        base::BindOnce(&BFCachePolicy::MaybeFlushBFCache,
+                       base::Unretained(this), page_node));
+  }
+}
+
 void BFCachePolicy::OnPassedToGraph(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
   graph_ = graph;
@@ -91,11 +104,7 @@ void BFCachePolicy::OnIsVisibleChanged(const PageNode* page_node) {
   // fail if the page still has a pending navigation.
   if (page_node->GetPageState() == PageState::kActive &&
       !page_node->IsVisible() && PageMightHaveFramesInBFCache(page_node)) {
-    DCHECK(!base::Contains(page_to_flush_timer_, page_node));
-    page_to_flush_timer_[page_node].Start(
-        FROM_HERE, delay_to_flush_background_tab_,
-        base::BindOnce(&BFCachePolicy::MaybeFlushBFCache,
-                       base::Unretained(this), page_node));
+    MaybeFlushBFCacheLater(page_node);
   } else if (page_node->IsVisible()) {
     // Remove the timer associated with |page_node| if one exists.
     page_to_flush_timer_.erase(page_node);
@@ -103,17 +112,18 @@ void BFCachePolicy::OnIsVisibleChanged(const PageNode* page_node) {
 }
 
 void BFCachePolicy::OnLoadingStateChanged(const PageNode* page_node) {
+  if (delay_to_flush_background_tab_.InSeconds() < 0)
+    return;
+
   // Flush the BFCache of pages that finish a navigation while in background.
   // TODO(sebmarchand): Check if this is really needed.
   if (!page_node->IsVisible() &&
       page_node->GetLoadingState() >= PageNode::LoadingState::kLoadedBusy &&
       PageMightHaveFramesInBFCache(page_node)) {
-    if (!base::Contains(page_to_flush_timer_, page_node)) {
-      page_to_flush_timer_[page_node].Start(
-          FROM_HERE, delay_to_flush_background_tab_,
-          base::BindOnce(&BFCachePolicy::MaybeFlushBFCache,
-                         base::Unretained(this), page_node));
-    }
+    MaybeFlushBFCacheLater(page_node);
+  } else if (page_node->IsVisible()) {
+    // Remove the timer associated with |page_node| if one exists.
+    page_to_flush_timer_.erase(page_node);
   }
 }
 
@@ -136,11 +146,10 @@ void BFCachePolicy::OnMemoryPressure(
     return;
   }
 
-  // Flush the cache of all visible pages, the bfcache of background pages
-  // should already be empty.
+  // Flush the cache of all pages.
   for (auto* page_node : graph_->GetAllPageNodes()) {
     if (page_node->GetPageState() == PageState::kActive &&
-        page_node->IsVisible() && PageMightHaveFramesInBFCache(page_node)) {
+        PageMightHaveFramesInBFCache(page_node)) {
       MaybeFlushBFCache(page_node);
     }
   }

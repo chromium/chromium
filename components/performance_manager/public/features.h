@@ -121,7 +121,7 @@ class BFCachePerformanceManagerPolicyParams {
       false};
 
   // The back forward cache should be flushed after the tab goes to background
-  // and elapses this delay. If the value is minus (such as -1), the back
+  // and elapses this delay. If the value is negative (such as -1), the back
   // forward cache in the background tabs will not be flushed.
   static constexpr base::FeatureParam<int> kDelayToFlushBackgroundTabInSeconds{
       &features::kBFCachePerformanceManagerPolicy,

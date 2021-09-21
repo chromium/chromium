@@ -52,6 +52,8 @@ class BFCachePolicy : public GraphOwned,
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) override;
 
+  void MaybeFlushBFCacheLater(const PageNode* page_node);
+
   // PageNodes that become non visible will have their BFcache after a small
   // amount of time spent in that state, this map stores the timers for that
   // logic.
