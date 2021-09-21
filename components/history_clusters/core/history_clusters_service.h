@@ -27,6 +27,10 @@
 
 class TemplateURLService;
 
+namespace optimization_guide {
+class EntityMetadataProvider;
+}  // namespace optimization_guide
+
 namespace history_clusters {
 
 // This Service is the API for UIs to fetch Chrome Memories.
@@ -47,6 +51,7 @@ class HistoryClustersService : public KeyedService {
   HistoryClustersService(
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
+      optimization_guide::EntityMetadataProvider* entity_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   HistoryClustersService(const HistoryClustersService&) = delete;
   HistoryClustersService& operator=(const HistoryClustersService&) = delete;

@@ -31,6 +31,7 @@
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
+#include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -377,14 +378,15 @@ constexpr int kMaxCountForKeywordCacheBatch = 10;
 HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
+    optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : history_service_(history_service) {
   DCHECK(history_service_);
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
   if (kUseOnDeviceClusteringBackend.Get()) {
-    backend_ =
-        std::make_unique<OnDeviceClusteringBackend>(template_url_service);
+    backend_ = std::make_unique<OnDeviceClusteringBackend>(
+        template_url_service, entity_metadata_provider);
   }
 #endif
 

@@ -38,6 +38,7 @@ static_library("core") {
     "//components/history/core/browser",
     "//components/history_clusters/core/proto",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core:entities",
     "//components/query_parser",
     "//components/search_engines",
     "//components/url_formatter",

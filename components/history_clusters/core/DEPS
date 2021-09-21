@@ -1,6 +1,7 @@
 include_rules = [
   "+components/history/core",
   "+components/keyed_service/core",
+  "+components/optimization_guide/core",
   "+components/query_parser",
   "+components/search_engines",
   "+components/url_formatter",
