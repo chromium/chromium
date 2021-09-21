@@ -645,6 +645,7 @@ def check_licenses(options, args):
   errors = []
 
   for line in stdout.splitlines():
+    line = line.decode('utf-8')
     filename, license = line.split(':', 1)
     filename = os.path.relpath(filename.strip(), options.base_directory)
 
