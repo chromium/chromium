@@ -34,15 +34,19 @@
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/entry_info.h"
+#include "extensions/browser/extension_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
 namespace file_manager {
 namespace file_tasks {
+
+using extensions::api::file_manager_private::Verb;
 
 namespace {
 // TODO(crbug/1092784): Only going to support ARC app and web app
@@ -54,10 +58,12 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
       return TASK_TYPE_WEB_APP;
+    case apps::mojom::AppType::kExtension:
+      // TODO(petermarshall): Distinguish Chrome apps from Extensions.
+      return TASK_TYPE_FILE_HANDLER;
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kCrostini:
     case apps::mojom::AppType::kBuiltIn:
-    case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kPluginVm:
     case apps::mojom::AppType::kStandaloneBrowser:
@@ -101,26 +107,34 @@ void FindAppServiceTasks(Profile* profile,
   // App Service doesn't exist in Incognito mode but we still want to find
   // handlers to open a download from its notification from Incognito mode. Use
   // the base profile in these cases (see crbug.com/1111695).
+  Profile* maybe_original_profile = profile;
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
-    profile = profile->GetOriginalProfile();
+    maybe_original_profile = profile->GetOriginalProfile();
 
   apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+      apps::AppServiceProxyFactory::GetForProfile(maybe_original_profile);
 
-  std::vector<std::string> mime_types;
-  for (auto& entry : entries)
-    mime_types.push_back(entry.mime_type);
+  std::vector<apps::mojom::IntentFilePtr> intent_files;
+  intent_files.reserve(entries.size());
+  for (size_t i = 0; i < entries.size(); i++) {
+    auto file = apps::mojom::IntentFile::New();
+    file->url = file_urls.at(i);
+    file->mime_type = entries[i].mime_type;
+    file->is_directory = entries[i].is_directory
+                             ? apps::mojom::OptionalBool::kTrue
+                             : apps::mojom::OptionalBool::kFalse;
+    intent_files.push_back(std::move(file));
+  }
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
-      proxy->GetAppsForFiles(file_urls, mime_types);
+      proxy->GetAppsForFiles(std::move(intent_files));
 
-  using extensions::api::file_manager_private::Verb;
   for (auto& launch_entry : intent_launch_info) {
     apps::mojom::AppType app_type =
         proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
-    // TODO(crbug/1092784): Only going to support ARC app and web apps.
     if (!(app_type == apps::mojom::AppType::kArc ||
           app_type == apps::mojom::AppType::kWeb ||
-          app_type == apps::mojom::AppType::kSystemWeb))
+          app_type == apps::mojom::AppType::kSystemWeb ||
+          app_type == apps::mojom::AppType::kExtension))
       continue;
 
     if (app_type == apps::mojom::AppType::kWeb ||
@@ -142,11 +156,17 @@ void FindAppServiceTasks(Profile* profile,
       // TODO(1240018): Remove when this feature is fully launched. This check
       // will not work for lacros web apps.
       web_app::WebAppProvider* provider =
-          web_app::WebAppProvider::GetDeprecated(profile);
+          web_app::WebAppProvider::GetDeprecated(maybe_original_profile);
       web_app::OsIntegrationManager& os_integration_manager =
           provider->os_integration_manager();
       if (!os_integration_manager.IsFileHandlingAPIAvailable(
               launch_entry.app_id))
+        continue;
+    }
+
+    if (app_type == apps::mojom::AppType::kExtension) {
+      if (profile->IsOffTheRecord() &&
+          !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile))
         continue;
     }
 
@@ -159,9 +179,8 @@ void FindAppServiceTasks(Profile* profile,
         launch_entry.activity_label, Verb::VERB_OPEN_WITH, icon_url,
         /* is_default=*/false,
         // TODO(petermarshall): Handle the rest of the logic from FindWebTasks()
-        // e.g. IsGoodMatchAppsFileHandler().
-        /* is_generic=*/
-        !web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id),
+        // e.g. prioritise non-generic handlers.
+        /* is_generic=*/launch_entry.is_generic_file_handler,
         /* is_file_extension_match=*/launch_entry.is_file_extension_match));
   }
 }

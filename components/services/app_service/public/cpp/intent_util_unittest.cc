@@ -485,6 +485,13 @@ GURL test_url(const std::string& file_name) {
   return url;
 }
 
+std::vector<apps::mojom::IntentFilePtr> vectorise(
+    const apps::mojom::IntentFilePtr& file) {
+  std::vector<apps::mojom::IntentFilePtr> vector;
+  vector.push_back(file.Clone());
+  return vector;
+}
+
 TEST_F(IntentUtilTest, FileExtensionMatch) {
   std::string mime_type_mp3 = "audio/mp3";
   std::string file_ext_mp3 = "mp3";
@@ -493,36 +500,30 @@ TEST_F(IntentUtilTest, FileExtensionMatch) {
   auto file_filter =
       apps_util::CreateFileFilterForView(mime_type_mp3, file_ext_mp3, "label");
 
-  std::vector<GURL> urls;
-  std::vector<std::string> mime_types;
-
-  urls.push_back(test_url("abc.mp3"));
+  auto file = apps::mojom::IntentFile::New();
+  file->url = test_url("abc.mp3");
+  file->is_directory = apps::mojom::OptionalBool::kFalse;
 
   // Test match with the same mime type and the same file extension.
-  mime_types.push_back(mime_type_mp3);
-  auto intent = apps_util::CreateViewIntentFromFiles(urls, mime_types);
+  file->mime_type = mime_type_mp3;
+  auto intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter));
 
   // Test match with different mime types and the same file extension.
-  mime_types.clear();
-  mime_types.push_back(mime_type_mpeg);
-  intent = apps_util::CreateViewIntentFromFiles(urls, mime_types);
+  file->mime_type = mime_type_mpeg;
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter));
 
   // Test match with the same mime type and a different file extension.
-  urls.clear();
-  urls.push_back(test_url("abc.png"));
-  mime_types.clear();
-  mime_types.push_back(mime_type_mp3);
-  intent = apps_util::CreateViewIntentFromFiles(urls, mime_types);
+  file->url = test_url("abc.png");
+  file->mime_type = mime_type_mp3;
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter));
 
   // Test match with different mime types and a different file extension.
-  urls.clear();
-  urls.push_back(test_url("abc.png"));
-  mime_types.clear();
-  mime_types.push_back(mime_type_mpeg);
-  intent = apps_util::CreateViewIntentFromFiles(urls, mime_types);
+  file->url = test_url("abc.png");
+  file->mime_type = mime_type_mpeg;
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, file_filter));
 }
 

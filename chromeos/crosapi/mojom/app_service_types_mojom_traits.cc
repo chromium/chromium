@@ -474,6 +474,8 @@ EnumTraits<crosapi::mojom::PatternMatchType, apps::mojom::PatternMatchType>::
       return crosapi::mojom::PatternMatchType::kMimeType;
     case apps::mojom::PatternMatchType::kFileExtension:
       return crosapi::mojom::PatternMatchType::kFileExtension;
+    case apps::mojom::PatternMatchType::kIsDirectory:
+      return crosapi::mojom::PatternMatchType::kIsDirectory;
   }
 
   NOTREACHED();
@@ -501,6 +503,9 @@ bool EnumTraits<crosapi::mojom::PatternMatchType,
       return true;
     case crosapi::mojom::PatternMatchType::kFileExtension:
       *output = apps::mojom::PatternMatchType::kFileExtension;
+      return true;
+    case crosapi::mojom::PatternMatchType::kIsDirectory:
+      *output = apps::mojom::PatternMatchType::kIsDirectory;
       return true;
   }
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -19,6 +20,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
+#include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -29,6 +31,8 @@ namespace {
 const char kAppIdText[] = "abcdefg";
 const char kAppIdImage[] = "gfedcba";
 const char kAppIdAny[] = "hijklmn";
+const char kChromeAppId[] = "chromeappid";
+const char kChromeAppWithVerbsId[] = "chromeappwithverbsid";
 const char kAppIdTextWild[] = "zxcvbn";
 const char kMimeTypeText[] = "text/plain";
 const char kMimeTypeImage[] = "image/jpeg";
@@ -70,6 +74,7 @@ class AppServiceFileTasksTest : public testing::Test {
   struct FakeFile {
     std::string file_name;
     std::string mime_type;
+    bool is_directory = false;
   };
 
   std::vector<FullTaskDescriptor> FindAppServiceTasks(
@@ -80,7 +85,7 @@ class AppServiceFileTasksTest : public testing::Test {
       entries.emplace_back(
           util::GetMyFilesFolderForProfile(profile()).AppendASCII(
               fake_file.file_name),
-          fake_file.mime_type, false);
+          fake_file.mime_type, fake_file.is_directory);
       file_urls.push_back(test_url(fake_file.file_name));
     }
 
@@ -142,6 +147,118 @@ class AppServiceFileTasksTest : public testing::Test {
                   kActivityLabelAny);
   }
 
+  // Provides file handlers for all extensions and images.
+  void AddChromeApp() {
+    extensions::ExtensionBuilder baz_app;
+    baz_app.SetManifest(
+        extensions::DictionaryBuilder()
+            .Set("name", "Baz")
+            .Set("version", "1.0.0")
+            .Set("manifest_version", 2)
+            .Set("app",
+                 extensions::DictionaryBuilder()
+                     .Set("background",
+                          extensions::DictionaryBuilder()
+                              .Set("scripts", extensions::ListBuilder()
+                                                  .Append("background.js")
+                                                  .Build())
+                              .Build())
+                     .Build())
+            .Set(
+                "file_handlers",
+                extensions::DictionaryBuilder()
+                    .Set("any", extensions::DictionaryBuilder()
+                                    .Set("extensions", extensions::ListBuilder()
+                                                           .Append("*")
+                                                           .Append("bar")
+                                                           .Build())
+                                    .Build())
+                    .Set("image", extensions::DictionaryBuilder()
+                                      .Set("types", extensions::ListBuilder()
+                                                        .Append("image/*")
+                                                        .Build())
+                                      .Build())
+                    .Build())
+            .Build());
+    baz_app.SetID(kChromeAppId);
+    auto filters =
+        apps_util::CreateChromeAppIntentFilters(baz_app.Build().get());
+    AddFakeAppWithIntentFilters(kChromeAppId, std::move(filters),
+                                apps::mojom::AppType::kExtension);
+  }
+
+  void AddChromeAppWithVerbs() {
+    extensions::ExtensionBuilder foo_app;
+    foo_app.SetManifest(
+        extensions::DictionaryBuilder()
+            .Set("name", "Foo")
+            .Set("version", "1.0.0")
+            .Set("manifest_version", 2)
+            .Set("app",
+                 extensions::DictionaryBuilder()
+                     .Set("background",
+                          extensions::DictionaryBuilder()
+                              .Set("scripts", extensions::ListBuilder()
+                                                  .Append("background.js")
+                                                  .Build())
+                              .Build())
+                     .Build())
+            .Set(
+                "file_handlers",
+                extensions::DictionaryBuilder()
+                    .Set("any_with_directories",
+                         extensions::DictionaryBuilder()
+                             .Set("include_directories", true)
+                             .Set("types",
+                                  extensions::ListBuilder().Append("*").Build())
+                             .Set("verb", "open_with")
+                             .Build())
+                    .Set("html_handler",
+                         extensions::DictionaryBuilder()
+                             .Set("title", "Html")
+                             .Set("types", extensions::ListBuilder()
+                                               .Append("text/html")
+                                               .Build())
+                             .Set("verb", "open_with")
+                             .Build())
+                    .Set("plain_text",
+                         extensions::DictionaryBuilder()
+                             .Set("title", "Plain")
+                             .Set("types", extensions::ListBuilder()
+                                               .Append("text/plain")
+                                               .Build())
+                             .Build())
+                    .Set("share_plain_text",
+                         extensions::DictionaryBuilder()
+                             .Set("title", "Share Plain")
+                             .Set("types", extensions::ListBuilder()
+                                               .Append("text/plain")
+                                               .Build())
+                             .Set("verb", "share_with")
+                             .Build())
+                    .Set("any_pack", extensions::DictionaryBuilder()
+                                         .Set("types", extensions::ListBuilder()
+                                                           .Append("*")
+                                                           .Build())
+                                         .Set("verb", "pack_with")
+                                         .Build())
+                    .Set("plain_text_add_to",
+                         extensions::DictionaryBuilder()
+                             .Set("title", "Plain")
+                             .Set("types", extensions::ListBuilder()
+                                               .Append("text/plain")
+                                               .Build())
+                             .Set("verb", "add_to")
+                             .Build())
+                    .Build())
+            .Build());
+    foo_app.SetID(kChromeAppWithVerbsId);
+    auto filters =
+        apps_util::CreateChromeAppIntentFilters(foo_app.Build().get());
+    AddFakeAppWithIntentFilters(kChromeAppWithVerbsId, std::move(filters),
+                                apps::mojom::AppType::kExtension);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -184,6 +301,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceFileTasksText) {
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(kAppIdText, tasks[0].task_descriptor.app_id);
   EXPECT_EQ(kActivityLabelText, tasks[0].task_title);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
 }
 
 // Test that between an image app and text app, the image app can be
@@ -197,6 +315,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceFileTasksImage) {
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(kAppIdImage, tasks[0].task_descriptor.app_id);
   EXPECT_EQ(kActivityLabelImage, tasks[0].task_title);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
 }
 
 // Test that between an image app, text app and an app that can handle every
@@ -211,6 +330,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceFileTasksMultiple) {
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(kAppIdAny, tasks[0].task_descriptor.app_id);
   EXPECT_EQ(kActivityLabelAny, tasks[0].task_title);
+  EXPECT_TRUE(tasks[0].is_generic_file_handler);
 }
 
 // Don't register any apps and check that we get no matches.
@@ -240,6 +360,7 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceWebFileTasksText) {
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(kAppIdText, tasks[0].task_descriptor.app_id);
   EXPECT_EQ(kActivityLabelText, tasks[0].task_title);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
 }
 
 // Check that a web app that only handles text does not match when we have both
@@ -300,6 +421,116 @@ TEST_F(AppServiceFileTasksTestEnabled,
   ASSERT_EQ(1U, tasksBoth.size());
   EXPECT_EQ(kAppIdText, tasksBoth[0].task_descriptor.app_id);
   EXPECT_EQ(kActivityLabelText, tasksBoth[0].task_title);
+}
+
+// Check that Baz's ".*" handler, which is generic, is matched.
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppText) {
+  AddChromeApp();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kChromeAppId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("any", tasks[0].task_descriptor.action_id);
+  EXPECT_EQ(TASK_TYPE_FILE_HANDLER, tasks[0].task_descriptor.task_type);
+  EXPECT_EQ("Baz", tasks[0].task_title);
+  EXPECT_TRUE(tasks[0].is_generic_file_handler);
+  EXPECT_TRUE(tasks[0].is_file_extension_match);
+  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+}
+
+// File extension matches with bar, but there is a generic * type as well,
+// so the overall match should still be generic.
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppBar) {
+  AddChromeApp();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.bar", kMimeTypeText}});
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kChromeAppId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("any", tasks[0].task_descriptor.action_id);
+  EXPECT_EQ(TASK_TYPE_FILE_HANDLER, tasks[0].task_descriptor.task_type);
+  EXPECT_EQ("Baz", tasks[0].task_title);
+  EXPECT_TRUE(tasks[0].is_generic_file_handler);
+  EXPECT_TRUE(tasks[0].is_file_extension_match);
+  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+}
+
+// Check that we can get web apps and Chrome apps in the same call.
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceMultiAppType) {
+  AddTextApp();
+  AddChromeApp();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
+  ASSERT_EQ(2U, tasks.size());
+  EXPECT_EQ(kAppIdText, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelText, tasks[0].task_title);
+  EXPECT_EQ(TASK_TYPE_WEB_APP, tasks[0].task_descriptor.task_type);
+  EXPECT_EQ(kChromeAppId, tasks[1].task_descriptor.app_id);
+  EXPECT_EQ("Baz", tasks[1].task_title);
+  EXPECT_EQ(TASK_TYPE_FILE_HANDLER, tasks[1].task_descriptor.task_type);
+}
+
+// Check that Baz's "image/*" handler is picked because it is not generic,
+// because it matches the mime type directly, even though there is an earlier
+// generic handler.
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppImage) {
+  AddChromeApp();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"bar.jpeg", kMimeTypeImage}});
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kChromeAppId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("image", tasks[0].task_descriptor.action_id);
+  EXPECT_EQ(TASK_TYPE_FILE_HANDLER, tasks[0].task_descriptor.task_type);
+  EXPECT_EQ("Baz", tasks[0].task_title);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_FALSE(tasks[0].is_file_extension_match);
+  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+}
+
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppWithVerbs) {
+  AddChromeAppWithVerbs();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
+
+  // We expect that all non-"open_with" handlers are ignored, and that we
+  // only get one open_with handler.
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kChromeAppWithVerbsId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[0].task_title);
+  EXPECT_EQ("plain_text", tasks[0].task_descriptor.action_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_FALSE(tasks[0].is_file_extension_match);
+  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+}
+
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeAppWithVerbs_Html) {
+  AddChromeAppWithVerbs();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.html", kMimeTypeHtml}});
+
+  // Check that we get the non-generic handler which appears later in the
+  // manifest.
+  EXPECT_EQ(kChromeAppWithVerbsId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[0].task_title);
+  EXPECT_EQ("html_handler", tasks[0].task_descriptor.action_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_FALSE(tasks[0].is_file_extension_match);
+  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
+}
+
+TEST_F(AppServiceFileTasksTestEnabled,
+       FindAppServiceChromeAppWithVerbs_Directory) {
+  AddChromeAppWithVerbs();
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"dir", "", true}});
+
+  // Only one handler handles directories.
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kChromeAppWithVerbsId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("Foo", tasks[0].task_title);
+  EXPECT_EQ("any_with_directories", tasks[0].task_descriptor.action_id);
+  EXPECT_TRUE(tasks[0].is_generic_file_handler);
+  EXPECT_FALSE(tasks[0].is_file_extension_match);
+  EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
 }
 
 }  // namespace file_tasks

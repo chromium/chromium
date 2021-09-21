@@ -11,6 +11,9 @@ specific_include_rules = {
   "icon_cache\.h": [
     "+ui/gfx/image/image_skia.h",
   ],
+  "intent_util\.cc" : [
+    "+third_party/blink/public/common/mime_util/mime_util.h",
+  ],
   "instance\.h": [
     "+ui/aura/window.h",
     "+ui/gfx/image/image_skia_rep.h",
