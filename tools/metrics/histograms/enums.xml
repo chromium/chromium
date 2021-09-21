@@ -63549,6 +63549,63 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="After Commit"/>
 </enum>
 
+<enum name="PaintOpDeserializationError">
+  <int value="0" label="DrawLooper forbidden"/>
+  <int value="1" label="Enum value out of range"/>
+  <int value="2" label="Forbidden SerializedImageType"/>
+  <int value="3" label="Insufficient remaining bytes in AlignMemory"/>
+  <int value="4" label="Insufficient remaining bytes in ExtractReadableMemory"/>
+  <int value="5" label="Insufficient remaining bytes in Read(PaintRecord)"/>
+  <int value="6"
+      label="Insufficient remaining bytes in Read(PaintShader) for
+             color_bytes"/>
+  <int value="7"
+      label="Insufficient remaining bytes in Read(PaintShader) for color_size"/>
+  <int value="8"
+      label="Insufficient remaining bytes in Read(PaintShader) for positions"/>
+  <int value="9" label="Insufficient remaining bytes in Read(SkData)"/>
+  <int value="10" label="Insufficient remaining bytes in Read(SkPath)"/>
+  <int value="11" label="Insufficient remaining bytes in Read(SkRegion)"/>
+  <int value="12" label="Insufficient remaining bytes in Read(SkTextBlob)"/>
+  <int value="13" label="Insufficient remaining bytes in ReadData"/>
+  <int value="14" label="Insufficient remaining bytes in ReadFlattenable"/>
+  <int value="15"
+      label="Insufficient remaining bytes in ReadMatrixConvolutionPaintFilter"/>
+  <int value="16" label="Insufficient remaining bytes in ReadSimple"/>
+  <int value="17" label="Invalid PaintShader"/>
+  <int value="18" label="Invalid PaintShader PositionsSize"/>
+  <int value="19" label="Invalid PaintShader ScalingBehavior"/>
+  <int value="20" label="Invalid PaintShader type"/>
+  <int value="21" label="Invalid PlaneConfig"/>
+  <int value="22" label="Invalid RasterScale"/>
+  <int value="23" label="Invalid RecordShaderId"/>
+  <int value="24" label="Invalid SerializedImageType"/>
+  <int value="25" label="Invalid SkYUVColorSpace"/>
+  <int value="26" label="Invalid Subsampling"/>
+  <int value="27" label="Invalid Typeface"/>
+  <int value="28" label="Missing PaintCache path entry"/>
+  <int value="29" label="Missing PaintCache text blob entry"/>
+  <int value="30" label="Missing SharedImageProvider"/>
+  <int value="31" label="PaintFilter has too many inputs"/>
+  <int value="32" label="PaintOpBuffer MakeFromMemory failure"/>
+  <int value="33" label="PaintRecord forbidden"/>
+  <int value="34" label="ReadImage failure"/>
+  <int value="35" label="SharedImage open failure"/>
+  <int value="36" label="SkColorFilter unflatten failure"/>
+  <int value="37" label="SkColorSpace deserialize failure"/>
+  <int value="38" label="SkDrawLooper unflatten failure"/>
+  <int value="39" label="SkMaskFilter unflatten failure"/>
+  <int value="40" label="SkPathEffect unflatten failure"/>
+  <int value="41" label="SkPath ReadFromMemory failure"/>
+  <int value="42" label="SkRegion ReadFromMemory failure"/>
+  <int value="43" label="SkTextBlob deserialize failure"/>
+  <int value="44" label="Unexpected PaintShaderType"/>
+  <int value="45" label="Unexpected SerializedImageType"/>
+  <int value="46" label="Zero mailbox"/>
+  <int value="47" label="Zero region bytes"/>
+  <int value="48" label="Zero SkPath bytes"/>
+</enum>
+
 <enum name="PaletteModeCancelType">
   <int value="0" label="Palette laser pointer mode is cancelled."/>
   <int value="1" label="Palette laser pointer mode is switched out of"/>

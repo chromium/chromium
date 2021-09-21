@@ -14,6 +14,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -112,7 +113,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   size_t size = base::bits::AlignUp(sizeof(T), kAlign);
 
   if (remaining_bytes_ < size)
-    SetInvalid();
+    SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadSimple);
   if (!valid_)
     return;
 
@@ -139,11 +140,15 @@ uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
 template <typename T>
 NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
     void
-    PaintOpReader::ReadFlattenable(sk_sp<T>* val, Factory<T> factory) {
+    PaintOpReader::ReadFlattenable(
+        sk_sp<T>* val,
+        Factory<T> factory,
+        DeserializationError error_on_factory_failure) {
   size_t bytes = 0;
   ReadSize(&bytes);
   if (remaining_bytes_ < bytes)
-    SetInvalid();
+    SetInvalid(
+        DeserializationError::kInsufficientRemainingBytes_ReadFlattenable);
   if (!valid_)
     return;
   if (bytes == 0)
@@ -152,7 +157,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   auto* scratch = CopyScratchSpace(bytes);
   val->reset(factory(scratch, bytes, nullptr).release());
   if (!val)
-    SetInvalid();
+    SetInvalid(error_on_factory_failure);
 
   memory_ += bytes;
   remaining_bytes_ -= bytes;
@@ -162,7 +167,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
     void
     PaintOpReader::ReadData(size_t bytes, void* data) {
   if (remaining_bytes_ < bytes)
-    SetInvalid();
+    SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
   if (!valid_)
     return;
   if (bytes == 0)
@@ -251,23 +256,24 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
       return;
     case PaintCacheEntryState::kCached:
       if (!options_.paint_cache->GetPath(path_id, path))
-        SetInvalid();
+        SetInvalid(DeserializationError::kMissingPaintCachePathEntry);
       return;
     case PaintCacheEntryState::kInlined:
     case PaintCacheEntryState::kInlinedDoNotCache: {
       size_t path_bytes = 0u;
       ReadSize(&path_bytes);
       if (path_bytes > remaining_bytes_)
-        SetInvalid();
+        SetInvalid(
+            DeserializationError::kInsufficientRemainingBytes_Read_SkPath);
       if (path_bytes == 0u)
-        SetInvalid();
+        SetInvalid(DeserializationError::kZeroSkPathBytes);
       if (!valid_)
         return;
 
       auto* scratch = CopyScratchSpace(path_bytes);
       size_t bytes_read = path->readFromMemory(scratch, path_bytes);
       if (bytes_read == 0u) {
-        SetInvalid();
+        SetInvalid(DeserializationError::kSkPathReadFromMemoryFailure);
         return;
       }
       if (entry_state == PaintCacheEntryState::kInlined) {
@@ -296,19 +302,23 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
 
   ReadSimple(&flags->bitfields_uint_);
 
-  ReadFlattenable(&flags->path_effect_, SkPathEffect::Deserialize);
-  ReadFlattenable(&flags->mask_filter_, SkMaskFilter::Deserialize);
-  ReadFlattenable(&flags->color_filter_, SkColorFilter::Deserialize);
+  ReadFlattenable(&flags->path_effect_, SkPathEffect::Deserialize,
+                  DeserializationError::kSkPathEffectUnflattenFailure);
+  ReadFlattenable(&flags->mask_filter_, SkMaskFilter::Deserialize,
+                  DeserializationError::kSkMaskFilterUnflattenFailure);
+  ReadFlattenable(&flags->color_filter_, SkColorFilter::Deserialize,
+                  DeserializationError::kSkColorFilterUnflattenFailure);
 
   if (enable_security_constraints_) {
     size_t bytes = 0;
     ReadSize(&bytes);
     if (bytes != 0u) {
-      SetInvalid();
+      SetInvalid(DeserializationError::kDrawLooperForbidden);
       return;
     }
   } else {
-    ReadFlattenable(&flags->draw_looper_, SkDrawLooper::Deserialize);
+    ReadFlattenable(&flags->draw_looper_, SkDrawLooper::Deserialize,
+                    DeserializationError::kSkDrawLooperUnflattenFailure);
   }
 
   Read(&flags->image_filter_);
@@ -322,7 +332,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   Read(&serialized_type_int);
   if (serialized_type_int >
       static_cast<uint8_t>(PaintOp::SerializedImageType::kLastType)) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidSerializedImageType);
     return;
   }
 
@@ -366,7 +376,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
         return;
       case PaintOp::SerializedImageType::kTransferCacheEntry:
       case PaintOp::SerializedImageType::kMailbox:
-        SetInvalid();
+        SetInvalid(DeserializationError::kForbiddenSerializedImageType);
         return;
     }
 
@@ -376,21 +386,21 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
 
   if (serialized_type == PaintOp::SerializedImageType::kMailbox) {
     if (!options_.shared_image_provider) {
-      SetInvalid();
+      SetInvalid(DeserializationError::kMissingSharedImageProvider);
       return;
     }
 
     gpu::Mailbox mailbox;
     Read(&mailbox);
     if (mailbox.IsZero()) {
-      SetInvalid();
+      SetInvalid(DeserializationError::kZeroMailbox);
       return;
     }
 
     sk_sp<SkImage> sk_image =
         options_.shared_image_provider->OpenSharedImageForRead(mailbox);
     if (!sk_image) {
-      SetInvalid();
+      SetInvalid(DeserializationError::kSharedImageOpenFailure);
       return;
     }
 
@@ -403,7 +413,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   }
 
   if (serialized_type != PaintOp::SerializedImageType::kTransferCacheEntry) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kUnexpectedSerializedImageType);
     return;
   }
 
@@ -440,7 +450,7 @@ void PaintOpReader::Read(sk_sp<SkData>* data) {
   size_t bytes = 0;
   ReadSize(&bytes);
   if (remaining_bytes_ < bytes)
-    SetInvalid();
+    SetInvalid(DeserializationError::kInsufficientRemainingBytes_Read_SkData);
   if (!valid_)
     return;
 
@@ -474,7 +484,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   *color_space = SkColorSpace::Deserialize(scratch, size);
   // If this had non-zero bytes, it should be a valid color space.
   if (!color_space)
-    SetInvalid();
+    SetInvalid(DeserializationError::kSkColorSpaceDeserializeFailure);
 
   memory_ += size;
   remaining_bytes_ -= size;
@@ -492,15 +502,15 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   size_t data_bytes = 0u;
   ReadSize(&data_bytes);
   if (remaining_bytes_ < data_bytes)
-    SetInvalid();
+    SetInvalid(
+        DeserializationError::kInsufficientRemainingBytes_Read_SkTextBlob);
   if (!valid_)
     return;
 
   if (data_bytes == 0u) {
     auto cached_blob = options_.paint_cache->GetTextBlob(blob_id);
     if (!cached_blob) {
-      // TODO(khushalsagar): Temporary for debugging crbug.com/1019634.
-      SetInvalid(true /* skip_crash_dump*/);
+      SetInvalid(DeserializationError::kMissingPaintCacheTextBlobEntry);
       return;
     }
 
@@ -517,11 +527,11 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   sk_sp<SkTextBlob> deserialized_blob =
       SkTextBlob::Deserialize(scratch, data_bytes, procs);
   if (!deserialized_blob) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kSkTextBlobDeserializeFailure);
     return;
   }
   if (typeface_ctx.invalid_typeface) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidTypeface);
     return;
   }
   options_.paint_cache->PutTextBlob(blob_id, deserialized_blob);
@@ -544,7 +554,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   ReadSimple(&shader_type);
   // Avoid creating a shader if something is invalid.
   if (!valid_ || !IsValidPaintShaderType(shader_type)) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidPaintShaderType);
     return;
   }
 
@@ -558,7 +568,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   ReadSimple(&ref.fallback_color_);
   ReadSimple(&ref.scaling_behavior_);
   if (!IsValidPaintShaderScalingBehavior(ref.scaling_behavior_))
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidPaintShaderScalingBehavior);
   bool has_local_matrix = false;
   ReadSimple(&has_local_matrix);
   if (has_local_matrix) {
@@ -578,12 +588,12 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   size_t shader_size = 0;
   if (has_record) {
     if (shader_type != PaintShader::Type::kPaintRecord) {
-      SetInvalid();
+      SetInvalid(DeserializationError::kUnexpectedPaintShaderType);
       return;
     }
     Read(&shader_id);
     if (shader_id == PaintShader::kInvalidRecordShaderId) {
-      SetInvalid();
+      SetInvalid(DeserializationError::kInvalidRecordShaderId);
       return;
     }
 
@@ -601,12 +611,14 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
 
   // If there are too many colors, abort.
   if (colors_size > remaining_bytes_) {
-    SetInvalid();
+    SetInvalid(DeserializationError::
+                   kInsufficientRemainingBytes_Read_PaintShader_ColorSize);
     return;
   }
   size_t colors_bytes = colors_size * sizeof(SkColor);
   if (colors_bytes > remaining_bytes_) {
-    SetInvalid();
+    SetInvalid(DeserializationError::
+                   kInsufficientRemainingBytes_Read_PaintShader_ColorBytes);
     return;
   }
   ref.colors_.resize(colors_size);
@@ -616,12 +628,13 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   ReadSize(&positions_size);
   // Positions are optional. If they exist, they have the same count as colors.
   if (positions_size > 0 && positions_size != colors_size) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidPaintShaderPositionsSize);
     return;
   }
   size_t positions_bytes = positions_size * sizeof(SkScalar);
   if (positions_bytes > remaining_bytes_) {
-    SetInvalid();
+    SetInvalid(DeserializationError::
+                   kInsufficientRemainingBytes_Read_PaintShader_Positions);
     return;
   }
   ref.positions_.resize(positions_size);
@@ -630,7 +643,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   // We don't write the cached shader, so don't attempt to read it either.
 
   if (!(*shader)->IsValid()) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidPaintShader);
     return;
   }
 
@@ -703,7 +716,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   ReadSimple(&raw_yuv_color_space);
 
   if (raw_yuv_color_space > kLastEnum_SkYUVColorSpace) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidSkYUVColorSpace);
     return;
   }
 
@@ -719,7 +732,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
 
   if (raw_plane_config >
       static_cast<uint32_t>(SkYUVAInfo::PlaneConfig::kLast)) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidPlaneConfig);
     return;
   }
 
@@ -734,7 +747,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   ReadSimple(&raw_subsampling);
 
   if (raw_subsampling > static_cast<uint32_t>(SkYUVAInfo::Subsampling::kLast)) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidSubsampling);
     return;
   }
 
@@ -787,16 +800,17 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
 void PaintOpReader::AlignMemory(size_t alignment) {
   size_t padding = base::bits::AlignUp(memory_, alignment) - memory_;
   if (padding > remaining_bytes_)
-    SetInvalid();
+    SetInvalid(DeserializationError::kInsufficientRemainingBytes_AlignMemory);
 
   memory_ += padding;
   remaining_bytes_ -= padding;
 }
 
 // Don't inline this function so that crash reports can show the caller.
-NOINLINE void PaintOpReader::SetInvalid(bool skip_crash_dump) {
-  if (!skip_crash_dump && valid_ && options_.crash_dump_on_failure &&
-      base::RandInt(1, 10) == 1) {
+NOINLINE void PaintOpReader::SetInvalid(DeserializationError error) {
+  base::UmaHistogramEnumeration("GPU.PaintOpReader.DeserializationError",
+                                error);
+  if (valid_ && options_.crash_dump_on_failure && base::RandInt(1, 10) == 1) {
     base::debug::DumpWithoutCrashing();
   }
   valid_ = false;
@@ -804,7 +818,8 @@ NOINLINE void PaintOpReader::SetInvalid(bool skip_crash_dump) {
 
 const volatile void* PaintOpReader::ExtractReadableMemory(size_t bytes) {
   if (remaining_bytes_ < bytes)
-    SetInvalid();
+    SetInvalid(DeserializationError::
+                   kInsufficientRemainingBytes_ExtractReadableMemory);
   if (!valid_)
     return nullptr;
   if (bytes == 0)
@@ -923,10 +938,11 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   sk_sp<SkColorFilter> color_filter;
   sk_sp<PaintFilter> input;
 
-  ReadFlattenable(&color_filter, SkColorFilter::Deserialize);
+  ReadFlattenable(&color_filter, SkColorFilter::Deserialize,
+                  DeserializationError::kSkColorFilterUnflattenFailure);
   Read(&input);
   if (!color_filter)
-    SetInvalid();
+    DCHECK(!valid_);
   if (!valid_)
     return;
   filter->reset(new ColorFilterPaintFilter(std::move(color_filter),
@@ -1102,7 +1118,9 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   auto size =
       static_cast<size_t>(sk_64_mul(kernel_size.width(), kernel_size.height()));
   if (size > remaining_bytes_) {
-    SetInvalid();
+    SetInvalid(
+        DeserializationError::
+            kInsufficientRemainingBytes_ReadMatrixConvolutionPaintFilter);
     return;
   }
   std::vector<SkScalar> kernel(size);
@@ -1153,7 +1171,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   PaintImage image;
   Read(&image);
   if (!image) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kReadImageFailure);
     return;
   }
 
@@ -1191,13 +1209,13 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   ReadSimple(&record_bounds);
   ReadSimple(&raster_scale);
   if (raster_scale.width() <= 0.f || raster_scale.height() <= 0.f) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidRasterScale);
     return;
   }
 
   ReadSimple(&scaling_behavior);
   if (!IsValidPaintShaderScalingBehavior(scaling_behavior)) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kInvalidPaintShaderScalingBehavior);
     return;
   }
 
@@ -1221,7 +1239,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   // maximum number of filters possible for the remaining data.
   const size_t max_filters = remaining_bytes_ / 4u;
   if (input_count > max_filters)
-    SetInvalid();
+    SetInvalid(DeserializationError::kPaintFilterHasTooManyInputs);
   if (!valid_)
     return;
   std::vector<sk_sp<PaintFilter>> inputs(input_count);
@@ -1479,7 +1497,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
     // Validate that the record was not serialized if security constraints are
     // enabled.
     if (size_bytes != 0) {
-      SetInvalid();
+      SetInvalid(DeserializationError::kPaintRecordForbidden);
       return 0;
     }
     *record = sk_make_sp<PaintOpBuffer>();
@@ -1487,13 +1505,14 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
   }
 
   if (size_bytes > remaining_bytes_)
-    SetInvalid();
+    SetInvalid(
+        DeserializationError::kInsufficientRemainingBytes_Read_PaintRecord);
   if (!valid_)
     return 0;
 
   *record = PaintOpBuffer::MakeFromMemory(memory_, size_bytes, options_);
   if (!*record) {
-    SetInvalid();
+    SetInvalid(DeserializationError::kPaintOpBufferMakeFromMemoryFailure);
     return 0;
   }
   memory_ += size_bytes;
@@ -1506,8 +1525,10 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
     PaintOpReader::Read(SkRegion* region) {
   size_t region_bytes = 0;
   ReadSize(&region_bytes);
-  if (region_bytes == 0 || region_bytes > remaining_bytes_)
-    SetInvalid();
+  if (region_bytes == 0)
+    SetInvalid(DeserializationError::kZeroRegionBytes);
+  if (region_bytes > remaining_bytes_)
+    SetInvalid(DeserializationError::kInsufficientRemainingBytes_Read_SkRegion);
   if (!valid_)
     return;
   std::unique_ptr<char[]> data(new char[region_bytes]);
@@ -1516,7 +1537,7 @@ NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
     return;
   size_t result = region->readFromMemory(data.get(), region_bytes);
   if (!result)
-    SetInvalid();
+    SetInvalid(DeserializationError::kSkRegionReadFromMemoryFailure);
 }
 
 }  // namespace cc
