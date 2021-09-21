@@ -236,10 +236,12 @@ bool ValidateResponse(const absl::optional<base::Value>& response) {
 MerchantIdAndDiscounts::MerchantIdAndDiscounts(
     std::string merchant_id,
     std::vector<cart_db::RuleDiscountInfoProto> rule_discount_list,
-    std::string discount_string)
+    std::string discount_string,
+    bool has_coupons)
     : merchant_id(std::move(merchant_id)),
       rule_discount_list(std::move(rule_discount_list)),
-      highest_discount_string(std::move(discount_string)) {}
+      highest_discount_string(std::move(discount_string)),
+      has_coupons(has_coupons) {}
 
 MerchantIdAndDiscounts::MerchantIdAndDiscounts(
     const MerchantIdAndDiscounts& other) = default;
@@ -478,11 +480,13 @@ void CartDiscountFetcher::OnDiscountsAvailable(
 
     // TODO(crbug.com/1240341): Parse couponDiscounts, which is an optional
     // field.
+    const base::Value* coupon_discounts =
+        merchant_discount.FindKey("couponDiscounts");
 
     MerchantIdAndDiscounts merchant_id_and_discounts(
         std::move(merchant_id),
         std::move(cart_rule_based_discounts_info.discount_list),
-        std::move(discount_string));
+        std::move(discount_string), coupon_discounts != nullptr);
     cart_discount_map.emplace(merchant_url,
                               std::move(merchant_id_and_discounts));
   }

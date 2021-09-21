@@ -107,7 +107,8 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
         cart->product_image_urls.emplace_back(std::move(image_url));
       }
       if (show_discount &&
-          proto_pair.second.discount_info().rule_discount_info_size() > 0) {
+          (proto_pair.second.discount_info().rule_discount_info_size() > 0 ||
+           proto_pair.second.discount_info().has_coupons())) {
         cart->discount_text =
             std::move(proto_pair.second.discount_info().discount_text());
       }
