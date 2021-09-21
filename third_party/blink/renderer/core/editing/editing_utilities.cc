@@ -1374,7 +1374,7 @@ PositionWithAffinity PositionRespectingEditingBoundary(
     return hit_test_result.GetPosition();
 
   const LayoutObject* editable_object = editable_element->GetLayoutObject();
-  if (!editable_object)
+  if (!editable_object || !editable_object->VisibleToHitTesting())
     return PositionWithAffinity();
 
   // TODO(yosin): Is this kIgnoreTransforms correct here?
