@@ -109,8 +109,11 @@ public class AutomaticEmbargoTest {
     @Test
     @LargeTest
     @Feature({"MediaPermissions"})
+    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
+            sdk_is_greater_than = VERSION_CODES.Q)
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    public void testCameraEmbargo() throws Exception {
+    public void
+    testCameraEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getMicrophone()", "deny", 0);
     }
 
@@ -118,15 +121,21 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"MediaPermissions"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    public void testMicrophoneEmbargo() throws Exception {
+    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
+            sdk_is_greater_than = VERSION_CODES.Q)
+    public void
+    testMicrophoneEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getCamera()", "deny", 0);
     }
 
     @Test
     @LargeTest
     @Feature({"MediaPermissions"})
+    @DisableIf.Build(message = "Failing on Android P, see crbug.com/1251332.",
+            sdk_is_greater_than = VERSION_CODES.Q)
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    public void testMicrophoneAndCameraEmbargo() throws Exception {
+    public void
+    testMicrophoneAndCameraEmbargo() throws Exception {
         runTest(MEDIA_TEST_FILE, "initiate_getCombined()", "deny", 0);
     }
 }
