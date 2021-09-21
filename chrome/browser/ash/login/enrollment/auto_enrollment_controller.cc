@@ -330,27 +330,35 @@ void AutoEnrollmentController::Start() {
 }
 
 void AutoEnrollmentController::StartWithSystemClockSyncState() {
-  DetermineAutoEnrollmentCheckType();
+  auto_enrollment_check_type_ =
+      DetermineAutoEnrollmentCheckType(system_clock_sync_state_);
   if (auto_enrollment_check_type_ == AutoEnrollmentCheckType::kNone) {
-    if (system_clock_sync_state_ == SystemClockSyncState::kCanWaitForSync &&
-        system_clock_sync_wait_requested_) {
-      system_clock_sync_state_ = SystemClockSyncState::kWaitingForSync;
-
-      // Set state before waiting for the system clock sync, because
-      // `Start` may invoke its callback synchronously if the
-      // system clock sync status is already known.
-      UpdateState(policy::AUTO_ENROLLMENT_STATE_PENDING);
-
-      // Use `client_start_weak_factory_` so the callback is not invoked if
-      // `Timeout` has been called in the meantime (after `kSafeguardTimeout`).
-      system_clock_sync_observation_ =
-          SystemClockSyncObservation::WaitForSystemClockSync(
-              SystemClockClient::Get(), kSystemClockSyncWaitTimeout,
-              base::BindOnce(&AutoEnrollmentController::OnSystemClockSyncResult,
-                             client_start_weak_factory_.GetWeakPtr()));
-      return;
-    }
     UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+    return;
+  }
+  // If waiting for system clock synchronization has been triggered, wait until
+  // it finishes (this function will be called again when a result is
+  // available).
+  if (system_clock_sync_state_ == SystemClockSyncState::kWaitingForSync)
+    return;
+
+  if (auto_enrollment_check_type_ ==
+      AutoEnrollmentCheckType::kUnknownDueToMissingSystemClockSync) {
+    DCHECK_EQ(system_clock_sync_state_, SystemClockSyncState::kCanWaitForSync);
+    system_clock_sync_state_ = SystemClockSyncState::kWaitingForSync;
+
+    // Set state before waiting for the system clock sync, because
+    // `WaitForSystemClockSync` may invoke its callback synchronously if the
+    // system clock sync status is already known.
+    UpdateState(policy::AUTO_ENROLLMENT_STATE_PENDING);
+
+    // Use `client_start_weak_factory_` so the callback is not invoked if
+    // `Timeout` has been called in the meantime (after `kSafeguardTimeout`).
+    system_clock_sync_observation_ =
+        SystemClockSyncObservation::WaitForSystemClockSync(
+            SystemClockClient::Get(), kSystemClockSyncWaitTimeout,
+            base::BindOnce(&AutoEnrollmentController::OnSystemClockSyncResult,
+                           client_start_weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -379,8 +387,17 @@ void AutoEnrollmentController::SetAutoEnrollmentClientFactoryForTesting(
   testing_auto_enrollment_client_factory_ = auto_enrollment_client_factory;
 }
 
+// static
 AutoEnrollmentController::InitialStateDeterminationRequirement
-AutoEnrollmentController::GetInitialStateDeterminationRequirement() {
+AutoEnrollmentController::GetInitialStateDeterminationRequirement(
+    SystemClockSyncState system_clock_sync_state) {
+  // Skip Initial State Determination if it is not enabled according to
+  // command-line flags.
+  if (!IsInitialEnrollmentEnabled()) {
+    LOG(WARNING) << "Initial Enrollment is disabled.";
+    return InitialStateDeterminationRequirement::kNotRequired;
+  }
+
   system::StatisticsProvider* provider =
       system::StatisticsProvider::GetInstance();
   system::FactoryPingEmbargoState embargo_state =
@@ -400,18 +417,18 @@ AutoEnrollmentController::GetInitialStateDeterminationRequirement() {
     return InitialStateDeterminationRequirement::kNotRequired;
   }
 
-  if (system_clock_sync_state_ == SystemClockSyncState::kCanWaitForSync &&
+  if (system_clock_sync_state == SystemClockSyncState::kCanWaitForSync &&
       (embargo_state == system::FactoryPingEmbargoState::kInvalid ||
        embargo_state == system::FactoryPingEmbargoState::kNotPassed)) {
     // Wait for the system clock to become synchronized and check again.
     LOG(WARNING)
         << "Skip Initial State Determination due to out of sync clock.";
-    system_clock_sync_wait_requested_ = true;
-    return InitialStateDeterminationRequirement::kNotRequired;
+    return InitialStateDeterminationRequirement::
+        kUnknownDueToMissingSystemClockSync;
   }
 
   const char* system_clock_log_info =
-      system_clock_sync_state_ == SystemClockSyncState::kSynchronized
+      system_clock_sync_state == SystemClockSyncState::kSynchronized
           ? "system clock in sync"
           : "system clock sync failed";
   if (embargo_state == system::FactoryPingEmbargoState::kInvalid) {
@@ -427,48 +444,55 @@ AutoEnrollmentController::GetInitialStateDeterminationRequirement() {
     return InitialStateDeterminationRequirement::kNotRequired;
   }
 
+  LOG_DETERMINATION() << "Initial State Determination required.";
   return InitialStateDeterminationRequirement::kRequired;
 }
 
-void AutoEnrollmentController::DetermineAutoEnrollmentCheckType() {
+// static
+AutoEnrollmentController::AutoEnrollmentCheckType
+AutoEnrollmentController::DetermineAutoEnrollmentCheckType(
+    SystemClockSyncState system_clock_sync_state) {
   // Skip everything if neither FRE nor Initial Enrollment are enabled.
   if (!IsEnabled()) {
     LOG(WARNING) << "Auto-enrollment disabled.";
-    auto_enrollment_check_type_ = AutoEnrollmentCheckType::kNone;
-    return;
+    return AutoEnrollmentCheckType::kNone;
   }
 
   // Skip everything if GAIA is disabled.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableGaiaServices)) {
     LOG(WARNING) << "Auto-enrollment disabled: command line (gaia).";
-    auto_enrollment_check_type_ = AutoEnrollmentCheckType::kNone;
-    return;
+    return AutoEnrollmentCheckType::kNone;
   }
 
   // Determine whether to do an FRE check or an initial state determination.
   // FRE has precedence since managed devices must go through an FRE check.
-  fre_requirement_ = GetFRERequirement();
-  LOG_DETERMINATION() << FRERequirementToString(fre_requirement_);
+  FRERequirement fre_requirement = GetFRERequirement();
+  LOG_DETERMINATION() << FRERequirementToString(fre_requirement);
 
-  if (ShouldDoFRECheck(command_line, fre_requirement_)) {
+  if (ShouldDoFRECheck(command_line, fre_requirement)) {
     // FRE has precedence over Initial Enrollment.
     LOG(WARNING) << "Proceeding with FRE check.";
-    auto_enrollment_check_type_ = AutoEnrollmentCheckType::kForcedReEnrollment;
-    return;
+    return fre_requirement == FRERequirement::kExplicitlyRequired
+               ? AutoEnrollmentCheckType::kForcedReEnrollmentExplicitlyRequired
+               : AutoEnrollmentCheckType::kForcedReEnrollmentImplicitlyRequired;
   }
 
-  // The device is in consumer mode, check whether an initial state
-  // determination is in order.
-  if (ShouldDoInitialEnrollmentCheck()) {
-    LOG(WARNING) << "Proceeding with Initial State Determination.";
-    auto_enrollment_check_type_ =
-        AutoEnrollmentCheckType::kInitialStateDetermination;
-    return;
+  // FRE is not required. Check whether an initial state determination should be
+  // done.
+  switch (GetInitialStateDeterminationRequirement(system_clock_sync_state)) {
+    case InitialStateDeterminationRequirement::kRequired:
+      LOG(WARNING) << "Proceeding with Initial State Determination.";
+      return AutoEnrollmentCheckType::kInitialStateDetermination;
+    case InitialStateDeterminationRequirement::
+        kUnknownDueToMissingSystemClockSync:
+      return AutoEnrollmentCheckType::kUnknownDueToMissingSystemClockSync;
+    case InitialStateDeterminationRequirement::kNotRequired:
+      break;
   }
 
   // Neither FRE nor initial state determination checks are needed.
-  auto_enrollment_check_type_ = AutoEnrollmentCheckType::kNone;
+  return AutoEnrollmentCheckType::kNone;
 }
 
 // static
@@ -501,35 +525,14 @@ bool AutoEnrollmentController::ShouldDoFRECheck(
   return true;
 }
 
-// static
-bool AutoEnrollmentController::ShouldDoInitialEnrollmentCheck() {
-  // Skip Initial State Determination if it is not enabled according to
-  // command-line flags.
-  if (!IsInitialEnrollmentEnabled()) {
-    LOG(WARNING) << "Initial Enrollment is disabled.";
-    return false;
-  }
-
-  // Skip Initial State Determination if it is not required according to the
-  // device state.
-  if (GetInitialStateDeterminationRequirement() ==
-      InitialStateDeterminationRequirement::kNotRequired) {
-    // Warnings have been logged for all the reasons not to do the check.
-    LOG_DETERMINATION() << "Initial State Determination is not required.";
-    return false;
-  }
-
-  // Nothing has been logged, but the caller will log so this can stay as VLOG.
-  LOG_DETERMINATION() << "Initial State Determination required.";
-  return true;
-}
-
 void AutoEnrollmentController::OnOwnershipStatusCheckDone(
     DeviceSettingsService::OwnershipStatus status) {
   switch (status) {
     case DeviceSettingsService::OWNERSHIP_NONE:
       switch (auto_enrollment_check_type_) {
-        case AutoEnrollmentCheckType::kForcedReEnrollment:
+        case AutoEnrollmentCheckType::kForcedReEnrollmentExplicitlyRequired:
+          // [[fallthrough]];
+        case AutoEnrollmentCheckType::kForcedReEnrollmentImplicitlyRequired:
           ++request_state_keys_tries_;
           // For FRE, request state keys first.
           g_browser_process->platform_part()
@@ -542,6 +545,8 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
         case AutoEnrollmentCheckType::kInitialStateDetermination:
           StartClientForInitialEnrollment();
           break;
+        case AutoEnrollmentCheckType::kUnknownDueToMissingSystemClockSync:
+          // [[fallthrough]];
         case AutoEnrollmentCheckType::kNone:
           // The ownership check is only triggered if
           // `auto_enrollment_check_type_` indicates that an auto-enrollment
@@ -565,7 +570,8 @@ void AutoEnrollmentController::StartClientForFRE(
     const std::vector<std::string>& state_keys) {
   if (state_keys.empty()) {
     LOG(ERROR) << "No state keys available.";
-    if (fre_requirement_ == FRERequirement::kExplicitlyRequired) {
+    if (auto_enrollment_check_type_ ==
+        AutoEnrollmentCheckType::kForcedReEnrollmentExplicitlyRequired) {
       if (request_state_keys_tries_ >= kMaxRequestStateKeysTries) {
         if (safeguard_timer_.IsRunning())
           safeguard_timer_.Stop();
@@ -768,7 +774,7 @@ void AutoEnrollmentController::Timeout() {
   // REQUIRED case as well.
   // TODO(mnissler): Add UMA to track results of auto-enrollment checks.
   if (client_start_weak_factory_.HasWeakPtrs() &&
-      fre_requirement_ != FRERequirement::kExplicitlyRequired) {
+      GetFRERequirement() != FRERequirement::kExplicitlyRequired) {
     // If the callbacks to check ownership status or state keys are still
     // pending, there's a bug in the code running on the device. No use in
     // retrying anything, need to fix that bug.

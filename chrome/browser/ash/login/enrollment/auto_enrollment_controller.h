@@ -64,16 +64,26 @@ class AutoEnrollmentController {
     // Initial state determination is not required.
     kNotRequired,
     // Initial state determination is required.
-    kRequired
+    kRequired,
+    // It is not known whether initial state determination would be required
+    // because the system clock is not synchronized.
+    kUnknownDueToMissingSystemClockSync,
   };
 
   // Type of auto enrollment or state determination check.
   enum class AutoEnrollmentCheckType {
     kNone,
-    // Forced Re-Enrollment check.
-    kForcedReEnrollment,
+    // Forced Re-Enrollment check implicitly required because the device is new
+    // or lost VPD state.
+    kForcedReEnrollmentImplicitlyRequired,
+    // Forced Re-Enrollment check explicitly required because the device was
+    // previously enterprise-enrolled.
+    kForcedReEnrollmentExplicitlyRequired,
     // Initial state determination.
-    kInitialStateDetermination
+    kInitialStateDetermination,
+    // It is not known whether initial state determination would be required
+    // because the system clock is not synchronized.
+    kUnknownDueToMissingSystemClockSync,
   };
 
   // State of the system clock.
@@ -158,18 +168,18 @@ class AutoEnrollmentController {
   void StartWithSystemClockSyncState();
 
   // Returns whether the initial state determination is required.
-  // May set `system_clock_sync_wait_requested_` to true if initial state
-  // determination is skipped due to the embargo period and the system clock
-  // has not been synchronized yet.
-  InitialStateDeterminationRequirement
-  GetInitialStateDeterminationRequirement();
+  static InitialStateDeterminationRequirement
+  GetInitialStateDeterminationRequirement(
+      SystemClockSyncState system_clock_sync_state);
 
-  // Determines the type of auto-enrollment check that should be done. Sets
-  // `auto_enrollment_check_type_` and `fre_requirement_`.
-  // May set `system_clock_sync_wait_requested_` to true if Initial Enrollment
-  // is skipped due to the embargo period and the system clock has not been
-  // synchronized yet.
-  void DetermineAutoEnrollmentCheckType();
+  // Determines the type of auto-enrollment check that should be done.
+  // Returning AutoEnrollmentCheckType::kUnknownDueToMissingSystemClockSync
+  // indicates that it is not known yet whether Initial Enrollment should be
+  // done because the system clock has not been synchronized yet.
+  // In this case, the caller is supposed to call this again after the system
+  // clock has been synchronized.
+  static AutoEnrollmentCheckType DetermineAutoEnrollmentCheckType(
+      SystemClockSyncState system_clock_sync_state);
 
   // Returns true if the FRE check should be done according to command-line
   // switches and device state.
@@ -269,9 +279,6 @@ class AutoEnrollmentController {
   // http://crbug.com/433634 for background.
   base::OneShotTimer safeguard_timer_;
 
-  // Whether the forced re-enrollment check has to be applied.
-  FRERequirement fre_requirement_ = FRERequirement::kRequired;
-
   // Which type of auto-enrollment check is being performed by this
   // `AutoEnrollmentClient`.
   AutoEnrollmentCheckType auto_enrollment_check_type_ =
@@ -285,12 +292,6 @@ class AutoEnrollmentController {
   // been set to true.
   SystemClockSyncState system_clock_sync_state_ =
       SystemClockSyncState::kCanWaitForSync;
-
-  // If this is set to true, `StartWithSystemClockSyncState` should be re-run
-  // when the system clock sync state is known.
-  // This is only triggered once in the lifetime of `AutoEnrollmentController`,
-  // it's never set back to `false`.
-  bool system_clock_sync_wait_requested_ = false;
 
   // Keeps track of number of tries to request state keys.
   int request_state_keys_tries_ = 0;

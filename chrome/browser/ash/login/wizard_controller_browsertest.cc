@@ -1713,7 +1713,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   mock_auto_enrollment_check_screen_->RealShow();
-  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::kNone,
+  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::
+                kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
 
   system_clock_client()->SetNetworkSynchronized(true);
@@ -1764,7 +1765,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   mock_auto_enrollment_check_screen_->RealShow();
-  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::kNone,
+  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::
+                kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
 
   // The timeout is 45 seconds, see `auto_enrollment_controller.cc`.
@@ -1815,7 +1817,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   mock_auto_enrollment_check_screen_->RealShow();
-  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::kNone,
+  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::
+                kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
 
   // Simulate that the clock moved forward, passing the embargo period, by

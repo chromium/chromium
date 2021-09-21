@@ -291,7 +291,11 @@ void AutoEnrollmentCheckScreen::OnConnectRequested() {
 
 bool AutoEnrollmentCheckScreen::ShouldBlockOnServerError() const {
   switch (auto_enrollment_controller_->auto_enrollment_check_type()) {
-    case AutoEnrollmentController::AutoEnrollmentCheckType::kForcedReEnrollment:
+    case AutoEnrollmentController::AutoEnrollmentCheckType::
+        kForcedReEnrollmentImplicitlyRequired:
+      // [[fallthrough]];
+    case AutoEnrollmentController::AutoEnrollmentCheckType::
+        kForcedReEnrollmentExplicitlyRequired:
       // Only block on errors in FRE if FRE is expliclty required (i.e. the
       // device was enrolled before).
       return auto_enrollment_controller_->GetFRERequirement() ==
@@ -299,6 +303,9 @@ bool AutoEnrollmentCheckScreen::ShouldBlockOnServerError() const {
     case AutoEnrollmentController::AutoEnrollmentCheckType::
         kInitialStateDetermination:
       return true;
+    case AutoEnrollmentController::AutoEnrollmentCheckType::
+        kUnknownDueToMissingSystemClockSync:
+      // [[fallthrough]];
     case AutoEnrollmentController::AutoEnrollmentCheckType::kNone:
       NOTREACHED();
       return false;
