@@ -498,6 +498,11 @@
     "expiry_milestone":98
   },
   {
+    "name": "autofill-type-specific-popup-width",
+    "owners": [ "koerber", "mamir" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "autofill-use-improved-label-disambiguation",
     "owners": [ "autofill-squad-muc@google.com" ],
     "expiry_milestone": 98

@@ -67,6 +67,11 @@ constexpr int kAutofillPopupWidthMultiple = 12;
 constexpr int kAutofillPopupMinWidth = kAutofillPopupWidthMultiple * 16;
 // TODO(crbug.com/831603): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
+// TODO(crbug.com/1250729): Rename and cleanup once launched.
+constexpr int kAutofillExperimentalAddressesPopupMaxWidth =
+    kAutofillPopupWidthMultiple * 20;
+constexpr int kAutofillExperimentalCreditCardPopupMaxWidth =
+    kAutofillPopupWidthMultiple * 27;
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -1353,19 +1358,47 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   }
 }
 
+AutofillPopupViewNativeViews::PopupWidthLimits
+AutofillPopupViewNativeViews::GetMinimumAndMaximumPopupWidth() const {
+  // TODO(crbug.com/1250729): Remove once launched.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillTypeSpecificPopupWidth)) {
+    return {kAutofillPopupMinWidth, kAutofillPopupMaxWidth};
+  }
+
+  switch (controller_->GetPopupType()) {
+    case PopupType::kAddresses:
+    case PopupType::kPasswords:
+      return {0, kAutofillExperimentalAddressesPopupMaxWidth};
+
+    case PopupType::kCreditCards:
+      return {0, kAutofillExperimentalCreditCardPopupMaxWidth};
+
+    case PopupType::kPersonalInformation:
+    case PopupType::kUnspecified:
+      return {kAutofillPopupMinWidth, kAutofillPopupMaxWidth};
+  }
+}
+
 int AutofillPopupViewNativeViews::AdjustWidth(int width) const {
-  if (width >= kAutofillPopupMaxWidth)
-    return kAutofillPopupMaxWidth;
+  PopupWidthLimits width_limits = GetMinimumAndMaximumPopupWidth();
+
+  if (width >= width_limits.maximum_width)
+    return width_limits.maximum_width;
 
   int elem_width = gfx::ToEnclosingRect(controller_->element_bounds()).width();
 
   // If the element width is within the range of legal sizes for the popup, use
   // it as the min width, so that the popup will align with its edges when
-  // possible.
-  int min_width = (kAutofillPopupMinWidth <= elem_width &&
-                   elem_width < kAutofillPopupMaxWidth)
+  // possible. Do not use this mechanisms if horizontally-centered popups are
+  // enabled and always return the minimum widths.
+  // TODO(crbug.com/1250729): Remove this mechanisms once launched.
+  int min_width = (width_limits.minimum_width <= elem_width &&
+                   elem_width < width_limits.maximum_width &&
+                   !base::FeatureList::IsEnabled(
+                       features::kAutofillCenterAlignedSuggestions))
                       ? elem_width
-                      : kAutofillPopupMinWidth;
+                      : width_limits.minimum_width;
 
   if (width <= min_width)
     return min_width;

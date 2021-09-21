@@ -48646,6 +48646,7 @@ from previous Chrome versions.
   <int value="-1084055006" label="disable-web-notification-custom-layouts"/>
   <int value="-1083736482" label="OmniboxCompactSuggestions:enabled"/>
   <int value="-1083547717" label="NotificationExpansionAnimation:disabled"/>
+  <int value="-1083146397" label="AutofillTypeSpecificPopupWidth:enabled"/>
   <int value="-1082302549" label="scan-cards-in-web-payments"/>
   <int value="-1082053427"
       label="OmniboxUIExperimentElideToRegistrableDomain:disabled"/>
@@ -51424,6 +51425,7 @@ from previous Chrome versions.
       label="AbusiveOriginNotificationPermissionRevocation:disabled"/>
   <int value="1114270092" label="PortalsCrossOrigin:disabled"/>
   <int value="1114629582" label="enable-floating-virtual-keyboard"/>
+  <int value="1114794286" label="AutofillTypeSpecificPopupWidth:disabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
   <int value="1117270978" label="ArcDocumentsProviderUnknownSize:disabled"/>

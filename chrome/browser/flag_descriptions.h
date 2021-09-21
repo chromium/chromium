@@ -169,6 +169,9 @@ extern const char kAutofillAutoTriggerManualFallbackForCardsDescription[];
 extern const char kAutofillCenterAligngedSuggestionsName[];
 extern const char kAutofillCenterAligngedSuggestionsDescription[];
 
+extern const char kAutofillTypeSpecificPopupWidthName[];
+extern const char kAutofillTypeSpecificPopupWidthDescription[];
+
 extern const char kAutofillEnableGoogleIssuedCardName[];
 extern const char kAutofillEnableGoogleIssuedCardDescription[];
 

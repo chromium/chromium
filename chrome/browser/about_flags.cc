@@ -2923,6 +2923,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillCenterAligngedSuggestionsDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCenterAlignedSuggestions)},
+    {"autofill-type-specific-popup-width",
+     flag_descriptions::kAutofillTypeSpecificPopupWidthName,
+     flag_descriptions::kAutofillTypeSpecificPopupWidthDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillTypeSpecificPopupWidth)},
     {"smooth-scrolling", flag_descriptions::kSmoothScrollingName,
      flag_descriptions::kSmoothScrollingDescription,
      // Mac has a separate implementation with its own setting to disable.

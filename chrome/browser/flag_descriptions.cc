@@ -275,6 +275,12 @@ const char kAutofillCenterAligngedSuggestionsDescription[] =
     "When enabled, the Autofill suggestion popup will be aligned to the center "
     "of the initiating field and not to its border.";
 
+const char kAutofillTypeSpecificPopupWidthName[] =
+    "Type-specific width limits for the Autofill popup";
+const char kAutofillTypeSpecificPopupWidthDescription[] =
+    "Controls if different width limits are used for the popup that provides "
+    "Autofill suggestions, depending on the type of data that is filled.";
+
 const char kAutofillEnableGoogleIssuedCardName[] =
     "Enable Autofill Google-issued card";
 const char kAutofillEnableGoogleIssuedCardDescription[] =

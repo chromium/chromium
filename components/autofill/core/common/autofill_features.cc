@@ -221,6 +221,11 @@ const base::Feature kAutofillEnableSupportForHonorificPrefixes{
 const base::Feature kAutofillExtractAllDatalists{
     "AutofillExtractAllDatalists", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls if type-specific popup widths are used.
+// TODO(crbug.com/1250729): Remove once launched.
+const base::Feature kAutofillTypeSpecificPopupWidth{
+    "AutofillTypeSpecificPopupWidth", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Autofill uses the local heuristic such that address forms are only filled if
 // at least 3 fields are fillable according to local heuristics. Unfortunately,
 // the criterion for fillability is only that the field type is unknown. So many
