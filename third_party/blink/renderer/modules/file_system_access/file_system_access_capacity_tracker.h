@@ -77,6 +77,11 @@ class FileSystemAccessCapacityTracker final
                                 base::OnceCallback<void(bool)> callback,
                                 int64_t granted_capacity);
 
+  // Computes the size of the next capacity request.
+  // The minimum capacity request is 1MB. Requests then double in size up to
+  // 128MB. Beyond 128MB, requests are the multiples of 128MB.
+  static int64_t GetNextCapacityRequestSize(int64_t required_capacity);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to route capacity allocation requests to the browser.

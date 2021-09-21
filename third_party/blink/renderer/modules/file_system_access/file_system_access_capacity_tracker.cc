@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_capacity_tracker.h"
 
+#include "base/bits.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -12,6 +13,14 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+
+namespace {
+// Minimum size of an allocation requested from the browser.
+constexpr int64_t kMinAllocationSize = 1024 * 1024;
+// Maximum size until which the allocation strategy doubles the requested
+// allocation.
+constexpr int64_t kMaxAllocationDoublingSize = 128 * kMinAllocationSize;
+}  // namespace
 
 namespace blink {
 
@@ -38,20 +47,21 @@ void FileSystemAccessCapacityTracker::RequestFileCapacityChange(
   DCHECK_GE(file_capacity_, 0);
   DCHECK_GE(required_capacity, 0);
 
+  int64_t requested_capacity = GetNextCapacityRequestSize(required_capacity);
+  DCHECK_GE(requested_capacity, required_capacity);
+
   // This static assertion checks that subtracting a non-negative int64_t value
   // from another one will not overflow.
   static_assert(0 - std::numeric_limits<int64_t>::max() >=
                     std::numeric_limits<int64_t>::min(),
                 "The `capacity_delta` computation below may overflow");
-  // Since `required_capacity` and `file_capacity_` are nonnegative, the
+  // Since `requested_capacity` and `file_capacity_` are nonnegative, the
   // arithmetic will not overflow.
-  int64_t capacity_delta = required_capacity - file_capacity_;
+  int64_t capacity_delta = requested_capacity - file_capacity_;
   if (capacity_delta <= 0) {
     std::move(callback).Run(true);
     return;
   }
-  // TODO(https://crbug.com/1240056): Implement a more sophisticated strategy
-  // for determining allocation size.
   capacity_allocation_host_->RequestCapacityChange(
       capacity_delta,
       WTF::Bind(&FileSystemAccessCapacityTracker::DidRequestCapacityChange,
@@ -64,19 +74,20 @@ bool FileSystemAccessCapacityTracker::RequestFileCapacityChangeSync(
   DCHECK_GE(file_capacity_, 0);
   DCHECK_GE(required_capacity, 0);
 
+  int64_t requested_capacity = GetNextCapacityRequestSize(required_capacity);
+  DCHECK_GE(requested_capacity, required_capacity);
+
   // This static assertion checks that subtracting a non-negative int64_t value
   // from another one will not overflow.
   static_assert(0 - std::numeric_limits<int64_t>::max() >=
                     std::numeric_limits<int64_t>::min(),
-                "The `needed_capacity` computation below may overflow");
-  // Since `required_capacity` and `file_capacity_` are nonnegative, the
+                "The `capacity_delta` computation below may overflow");
+  // Since `requested_capacity` and `file_capacity_` are nonnegative, the
   // arithmetic will not overflow.
-  int64_t capacity_delta = required_capacity - file_capacity_;
+  int64_t capacity_delta = requested_capacity - file_capacity_;
   if (capacity_delta <= 0)
     return true;
 
-  // TODO(https://crbug.com/1240056): Implement a more sophisticated strategy
-  // for determining allocation size.
   int64_t granted_capacity;
   // Request the necessary capacity from the browser process.
   bool call_succeeded = capacity_allocation_host_->RequestCapacityChange(
@@ -114,6 +125,45 @@ void FileSystemAccessCapacityTracker::DidRequestCapacityChange(
       << "Mojo call returned out-of-bounds capacity";
   bool sufficient_capacity_granted = required_capacity <= file_capacity_;
   std::move(callback).Run(sufficient_capacity_granted);
+}
+
+// static
+int64_t FileSystemAccessCapacityTracker::GetNextCapacityRequestSize(
+    int64_t required_capacity) {
+  DCHECK_GE(required_capacity, 0);
+  if (required_capacity <= kMinAllocationSize)
+    return kMinAllocationSize;
+  if (required_capacity <= kMaxAllocationDoublingSize) {
+    // The assertion makes sure that casting `required_capacity` succeeds.
+    static_assert(
+        kMaxAllocationDoublingSize <= std::numeric_limits<uint32_t>::max(),
+        "The allocation strategy will overflow.");
+    // Since the previous statements ensured that `required_capacity` <=
+    // `kMaxAllocationDoublingSize`
+    // <= std::numeric_limits<uint32_t>::max() , the cast always succeeds.
+    // This computes (in LaTeX notation) 2^{\ceil{\log_2(r)}}, where r is
+    // `required_capacity`. The bit shift performs the exponentiation.
+    return 1 << base::bits::Log2Ceiling(
+               static_cast<uint32_t>(required_capacity));
+  }
+  // The next statements compute (in LaTeX notation) m \cdot \ceil{\frac{r}{m}},
+  // where m is `kMaxAllocationDoublingSize` and r is `required_capacity`.
+  int64_t numerator_plus_one;
+  int64_t multiplier;
+  int64_t requested_capacity;
+  if (!base::CheckAdd(required_capacity, kMaxAllocationDoublingSize)
+           .AssignIfValid(&numerator_plus_one)) {
+    return required_capacity;
+  }
+  if (!base::CheckDiv(numerator_plus_one - 1, kMaxAllocationDoublingSize)
+           .AssignIfValid(&multiplier)) {
+    return required_capacity;
+  }
+  if (!base::CheckMul(kMaxAllocationDoublingSize, multiplier)
+           .AssignIfValid(&requested_capacity)) {
+    return required_capacity;
+  }
+  return requested_capacity;
 }
 
 }  // namespace blink
