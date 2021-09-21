@@ -392,9 +392,8 @@ ReportingClient::CreateNewSpeculativeQueue() {
 void ReportingClient::AsyncStartUploader(
     UploaderInterface::UploadReason reason,
     UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
-  ReportingClient* const instance =
-      static_cast<ReportingClient*>(GetInstance());
-  instance->DeliverAsyncStartUploader(reason, std::move(start_uploader_cb));
+  ReportingClient::GetInstance()->DeliverAsyncStartUploader(
+      reason, std::move(start_uploader_cb));
 }
 
 void ReportingClient::DeliverAsyncStartUploader(
@@ -452,14 +451,12 @@ ReportingClient::TestEnvironment::TestEnvironment(
     const base::FilePath& reporting_path,
     base::StringPiece verification_key,
     policy::CloudPolicyClient* client)
-    : saved_build_cloud_policy_client_cb_(
-          std::move(static_cast<ReportingClient*>(GetInstance())
-                        ->build_cloud_policy_client_cb_)) {
-  static_cast<ReportingClient*>(GetInstance())->reporting_path_ =
-      reporting_path;
-  static_cast<ReportingClient*>(GetInstance())->verification_key_ =
-      std::string(verification_key);
-  static_cast<ReportingClient*>(GetInstance())->build_cloud_policy_client_cb_ =
+    : saved_build_cloud_policy_client_cb_(std::move(
+          ReportingClient::GetInstance()->build_cloud_policy_client_cb_)) {
+  ReportingClient::GetInstance()->reporting_path_ = reporting_path;
+  ReportingClient::GetInstance()->verification_key_.assign(
+      verification_key.data(), verification_key.size());
+  ReportingClient::GetInstance()->build_cloud_policy_client_cb_ =
       base::BindRepeating(
           [](policy::CloudPolicyClient* client,
              base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>
@@ -468,8 +465,7 @@ ReportingClient::TestEnvironment::TestEnvironment(
 }
 
 ReportingClient::TestEnvironment::~TestEnvironment() {
-  static_cast<ReportingClient*>(ReportingClient::GetInstance())
-      ->build_cloud_policy_client_cb_ =
+  ReportingClient::GetInstance()->build_cloud_policy_client_cb_ =
       std::move(saved_build_cloud_policy_client_cb_);
   base::Singleton<ReportingClient>::OnExit(nullptr);
 }

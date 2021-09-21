@@ -305,11 +305,12 @@ void ReportQueueProvider::InitializationStateTracker::OnLeaderPromotionRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StatusOr<ReleaseLeaderCallback> result;
   if (is_initialized_) {
-    result =
-        Status(error::ALREADY_EXISTS, "ReportClient is already configured");
+    result = Status(error::ALREADY_EXISTS,
+                    "ReportQueueProvider is already configured");
   } else if (has_promoted_initializing_context_) {
-    result = Status(error::RESOURCE_EXHAUSTED,
-                    "ReportClient already has a lead initializing context.");
+    result =
+        Status(error::RESOURCE_EXHAUSTED,
+               "ReportQueueProvider already has a lead initializing context.");
   } else {
     has_promoted_initializing_context_ = true;
     result = base::BindOnce(
