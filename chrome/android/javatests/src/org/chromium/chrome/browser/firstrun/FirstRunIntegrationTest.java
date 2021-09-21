@@ -399,6 +399,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_NoCctPolicy_DataSaverPromo_SearchPromo_SigninPromo()
             throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase()
@@ -409,6 +410,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_NoCctPolicy_DataSaverPromo_SigninPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withDataSaverPromo().withSigninPromo());
     }
@@ -421,18 +423,21 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_NoCctPolicy_SearchPromo_SigninPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo().withSigninPromo());
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_NoCctPolicy_SigninPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSigninPromo());
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(new FirstRunPagesTestCase()
                                       .withDataSaverPromo()
@@ -486,6 +491,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_WithCctPolicy_DataSaverPromo_SigninPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase()
                                      .withCctTosDisabled()
@@ -495,6 +501,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_WithCctPolicy_DataSaverPromo_SearchPromo_SigninPromo()
             throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase()
@@ -512,6 +519,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_WithCctPolicy_SearchPromo_SigninPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase()
                                      .withCctTosDisabled()
@@ -521,12 +529,14 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSigninPromo());
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(new FirstRunPagesTestCase()
                                       .withCctTosDisabled()
@@ -598,6 +608,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
         initializePreferences(new FirstRunPagesTestCase()
                                       .withDataSaverPromo()
@@ -832,6 +843,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testMultipleFresCustomIntoView() throws Exception {
         launchCustomTabs(TEST_URL);
         FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
@@ -845,6 +857,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testMultipleFresViewIntoCustom() throws Exception {
         launchViewIntent(TEST_URL);
         FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
@@ -858,6 +871,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testMultipleFresBothView() throws Exception {
         launchViewIntent(TEST_URL);
         FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
@@ -953,6 +967,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1251578")
     public void testCloudManagementDoesNotBlockFirstRun() throws Exception {
         // Ensures FRE is not blocked if cloud management is enabled.
         enableCloudManagementViaPolicy();
