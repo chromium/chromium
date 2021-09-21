@@ -100,7 +100,7 @@ void MediaStreamVideoCapturerSource::OnHasConsumers(bool has_consumers) {
 
 void MediaStreamVideoCapturerSource::OnCapturingLinkSecured(bool is_secure) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!frame_)
+  if (!frame_ || !frame_->Client())
     return;
   GetMediaStreamDispatcherHost()->SetCapturingLinkSecured(
       device().serializable_session_id(),
