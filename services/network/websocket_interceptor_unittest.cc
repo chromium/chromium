@@ -27,12 +27,6 @@ class MockCallback {
 class WebSocketInterceptorTest : public ::testing::Test {
  protected:
   WebSocketInterceptorTest() {
-    // Currently having _some_ emulated conditions is required at the
-    // socket creation time.
-    // TODO(dsv@chromium.org): Fix this in the throttler implementation.
-    ThrottlingController::SetConditions(
-        *kThrottlingProfileId,
-        std::make_unique<NetworkConditions>(/*offline=*/true));
     interceptor_ = std::make_unique<WebSocketInterceptor>(
         kNetLogSourceId, kThrottlingProfileId, WebSocketInterceptor::kOutgoing);
   }

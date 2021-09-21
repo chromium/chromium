@@ -11,65 +11,53 @@
 
 namespace network {
 
-ThrottlingController* ThrottlingController::instance_ = nullptr;
-
 ThrottlingController::ThrottlingController() = default;
 ThrottlingController::~ThrottlingController() = default;
+
+// static
+ThrottlingController& ThrottlingController::instance() {
+  static base::NoDestructor<ThrottlingController> instance;
+  return *instance;
+}
 
 // static
 void ThrottlingController::SetConditions(
     const base::UnguessableToken& throttling_profile_id,
     std::unique_ptr<NetworkConditions> conditions) {
-  if (!instance_) {
-    if (!conditions)
-      return;
-    instance_ = new ThrottlingController();
-  }
-  instance_->SetNetworkConditions(throttling_profile_id, std::move(conditions));
+  instance().SetNetworkConditions(throttling_profile_id, std::move(conditions));
 }
 
 // static
 ThrottlingNetworkInterceptor* ThrottlingController::GetInterceptor(
     uint32_t net_log_source_id) {
-  if (!instance_)
-    return nullptr;
-  return instance_->FindInterceptor(net_log_source_id);
+  return instance().FindInterceptor(net_log_source_id);
 }
 
 // static
 void ThrottlingController::RegisterProfileIDForNetLogSource(
     uint32_t net_log_source_id,
     const base::UnguessableToken& throttling_profile_id) {
-  if (!instance_)
-    return;
-  instance_->Register(net_log_source_id, throttling_profile_id);
+  instance().Register(net_log_source_id, throttling_profile_id);
 }
 
 // static
 void ThrottlingController::UnregisterNetLogSource(uint32_t net_log_source_id) {
-  if (instance_)
-    instance_->Unregister(net_log_source_id);
+  instance().Unregister(net_log_source_id);
 }
 
 // static
 bool ThrottlingController::HasInterceptor(
     const base::UnguessableToken& throttling_profile_id) {
-  // Null |instance_| means there is no network condition registered.
-  if (!instance_)
-    return false;
+  DCHECK_CALLED_ON_VALID_THREAD(instance().thread_checker_);
 
-  DCHECK_CALLED_ON_VALID_THREAD(instance_->thread_checker_);
-
-  return instance_->interceptors_.find(throttling_profile_id) !=
-         instance_->interceptors_.end();
+  return instance().interceptors_.find(throttling_profile_id) !=
+         instance().interceptors_.end();
 }
 
 void ThrottlingController::Register(
     uint32_t net_log_source_id,
     const base::UnguessableToken& throttling_profile_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (interceptors_.find(throttling_profile_id) == interceptors_.end())
-    return;
   net_log_source_profile_map_[net_log_source_id] = throttling_profile_id;
 }
 
@@ -106,10 +94,6 @@ void ThrottlingController::SetNetworkConditions(
           new NetworkConditions());
       it->second->UpdateConditions(std::move(online_conditions));
       interceptors_.erase(throttling_profile_id);
-      if (interceptors_.empty()) {
-        delete this;
-        instance_ = nullptr;
-      }
     } else {
       it->second->UpdateConditions(std::move(conditions));
     }

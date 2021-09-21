@@ -8,16 +8,6 @@
 
   await dp.Network.enable();
 
-  // Currently having _some_ emulated conditions is required at the socket
-  // creation time.
-  // TODO(dsv@chromium.org): Fix this in the throttler implementation.
-  await dp.Network.emulateNetworkConditions({
-    offline: false,
-    downloadThroughput: 1000000,
-    uploadThroughput: 1000000,
-    latency: 0,
-  });
-
   await session.evaluateAsync(`
         log = '';
         new Promise((resolve) => {

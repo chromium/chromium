@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,9 +35,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
 
  private:
   friend class ScopedThrottlingToken;
+  friend class base::NoDestructor<ThrottlingController>;
 
   ThrottlingController();
   ~ThrottlingController();
+
+  static ThrottlingController& instance();
 
   // Registers the profile ID for the NetLog source. This is called from
   // ScopedThrottlingToken.
@@ -63,8 +67,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
                             std::unique_ptr<NetworkConditions> conditions);
 
   ThrottlingNetworkInterceptor* FindInterceptor(uint32_t net_log_source_id);
-
-  static ThrottlingController* instance_;
 
   using InterceptorMap =
       std::map<base::UnguessableToken,
