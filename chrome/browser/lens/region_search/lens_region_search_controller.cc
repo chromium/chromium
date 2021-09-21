@@ -4,6 +4,8 @@
 
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -32,7 +34,7 @@ LensRegionSearchController::LensRegionSearchController(
 }
 
 LensRegionSearchController::~LensRegionSearchController() {
-  Close();
+  CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 
 void LensRegionSearchController::Start() {
@@ -143,7 +145,7 @@ void LensRegionSearchController::RecordRegionSizeRelatedMetrics(
 void LensRegionSearchController::OnCaptureCompleted(
     const image_editor::ScreenshotCaptureResult& result) {
   // Close all open UI overlays and bubbles.
-  Close();
+  CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 
   const gfx::Image& captured_image = result.image;
   // If image is empty, then record UMA and close.
@@ -172,18 +174,24 @@ void LensRegionSearchController::OnCaptureCompleted(
 }
 
 void LensRegionSearchController::WebContentsDestroyed() {
-  Close();
+  CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 
 void LensRegionSearchController::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN)
-    Close();
+    CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 
 void LensRegionSearchController::Close() {
-  if (bubble_widget_)
-    bubble_widget_->Close();
+  CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
+void LensRegionSearchController::CloseWithReason(
+    views::Widget::ClosedReason reason) {
+  if (bubble_widget_) {
+    std::exchange(bubble_widget_, nullptr)->CloseWithReason(reason);
+  }
   if (screenshot_flow_)
     screenshot_flow_->CancelCapture();
 }

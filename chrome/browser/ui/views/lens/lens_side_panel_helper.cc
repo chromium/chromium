@@ -24,7 +24,8 @@ views::Widget* OpenLensRegionSearchInstructions(
   views::View* anchor =
       BrowserView::GetBrowserViewForBrowser(browser)->top_container();
   return views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<LensRegionSearchInstructionsView>(anchor, callback));
+      std::make_unique<LensRegionSearchInstructionsView>(anchor,
+                                                         std::move(callback)));
 }
 
 }  // namespace lens
