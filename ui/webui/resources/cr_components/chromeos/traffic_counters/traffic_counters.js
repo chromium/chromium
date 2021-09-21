@@ -68,6 +68,28 @@ function replacer(key, value) {
 }
 
 /**
+ * Converts a mojo time to JS. TODO(b/200327630)
+ * @param {!mojoBase.mojom.Time} mojoTime
+ * @return {!Date}
+ */
+function convertMojoTimeToJS(mojoTime) {
+  // The JS Date() is based off of the number of milliseconds since the
+  // UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue| of the
+  // base::Time (represented in mojom.Time) represents the number of
+  // microseconds since the Windows FILETIME epoch (1601-01-01 00:00:00 UTC).
+  // This computes the final JS time by computing the epoch delta and the
+  // conversion from microseconds to milliseconds.
+  const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
+  const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
+  // |epochDeltaInMs| equals to base::Time::kTimeToMicrosecondsOffset.
+  const epochDeltaInMs = unixEpoch - windowsEpoch;
+  const timeInMs = Number(mojoTime.internalValue) / 1000;
+
+  return new Date(timeInMs - epochDeltaInMs);
+}
+
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
@@ -309,10 +331,10 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
    * @private
    */
   lastResetTimeString_(network) {
-    if (network.lastResetTime === null) {
+    if (network.lastResetTime === null || network.lastResetTime === undefined) {
       return '';
     }
-    return JSON.stringify(network.lastResetTime.internalValue, replacer, '\t');
+    return convertMojoTimeToJS(network.lastResetTime).toLocaleString();
   }
 }
 customElements.define(TrafficCountersElement.is, TrafficCountersElement);
