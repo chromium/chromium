@@ -4418,7 +4418,7 @@
   {
     "name": "page-info-history",
     "owners": [ "eokoyomon", "dullweber" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "page-info-performance-hints",
