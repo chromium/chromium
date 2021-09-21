@@ -70,43 +70,58 @@ public class SecurityButtonAnimationDelegate {
     }
 
     /**
-     * Based on |securityIconResource|, animates the security status icon in or out.
+     * Based on |securityIconResource|, updates the security status icon.
      * @param securityIconResource The updated resource to be assigned to the security status icon.
-     * When this is null, the icon is animated to the left and faded out.
+     * @param animate When this is true, the update is performed via an animation: If
+     * |securityIconResource| is null, the icon is animated to the left and faded out; otherwise,
+     * the icon is animated to the right and faded in. If false, the updates are performed
+     * immediately without animation.
      */
-    public void updateSecurityButton(int securityIconResource) {
+    public void updateSecurityButton(int securityIconResource, boolean animate) {
         if (securityIconResource == 0) {
             // No icon to display.
             mSecurityButton.setImageDrawable(null);
-            hideSecurityButton();
+            hideSecurityButton(animate);
         } else {
             // ImageView#setImageResource is no-op if given resource is the current one.
             mSecurityButton.setImageResource(securityIconResource);
-            showSecurityButton();
+            showSecurityButton(animate);
         }
     }
 
     /**
-     * Starts the animation to show the security button.
+     * Shows the security button, either immediately or via an animation.
      */
-    private void showSecurityButton() {
+    private void showSecurityButton(boolean animate) {
         if (mSecurityButtonHideAnimator.isStarted()) mSecurityButtonHideAnimator.cancel();
         if (mSecurityButtonShowAnimator.isStarted()
                 || mSecurityButton.getVisibility() == View.VISIBLE) {
             return;
         }
+
         mSecurityButtonShowAnimator.start();
+
+        if (!animate) {
+            // Directly update to end state without animation.
+            mSecurityButtonShowAnimator.end();
+        }
     }
 
     /**
-     * Starts the animation to hide the security button.
+     * Hides the security button, either immediately or via an animation.
      */
-    private void hideSecurityButton() {
+    private void hideSecurityButton(boolean animate) {
         if (mSecurityButtonShowAnimator.isStarted()) mSecurityButtonShowAnimator.cancel();
         if (mSecurityButtonHideAnimator.isStarted()
                 || mTitleUrlContainer.getTranslationX() == -mSecurityButtonWidth) {
             return;
         }
+
         mSecurityButtonHideAnimator.start();
+
+        if (!animate) {
+            // Directly update to end state without animation.
+            mSecurityButtonHideAnimator.end();
+        }
     }
 }
