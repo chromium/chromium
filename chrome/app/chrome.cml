@@ -26,7 +26,6 @@
         },
         {
             protocol: [
-                "fuchsia.deprecatedtimezone.Timezone",
                 "fuchsia.device.NameProvider",
                 "fuchsia.fonts.Provider",
                 "fuchsia.input.virtualkeyboard.ControllerCreator",
