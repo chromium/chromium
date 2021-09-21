@@ -75,6 +75,9 @@ enum Milestone {
   kM95 = 95,
   kM96 = 96,
   kM97 = 97,
+  kM98 = 98,
+  kM99 = 99,
+  kM100 = 100,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
@@ -147,6 +150,12 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
       return {2022, 11, 0, 16, 4};
     case kM97:
       return {2022, 1, 0, 4, 4};
+    case kM98:
+      return {2022, 2, 0, 1, 4};
+    case kM99:
+      return {2022, 3, 0, 1, 4};
+    case kM100:
+      return {2022, 3, 0, 29, 4};
   }
 
   NOTREACHED();
@@ -621,6 +630,11 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
       return {"CrossOriginWindowConfirm", kUnknown,
               "Triggering window.confirm from cross origin iframes has been "
               "deprecated and will be removed in the future."};
+
+    case WebFeature::kPaymentRequestBasicCard:
+      return {"PaymentRequestBasicCard", kM100,
+              WillBeRemoved("The 'basic-card' payment method", kM100,
+                            "5730051011117056")};
 
     // Features that aren't deprecated don't have a deprecation message.
     default:

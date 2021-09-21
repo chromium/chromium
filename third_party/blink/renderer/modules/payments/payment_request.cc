@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -441,6 +442,8 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
   if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
           &execution_context) &&
       supported_method == "basic-card") {
+    Deprecation::CountDeprecation(&execution_context,
+                                  WebFeature::kPaymentRequestBasicCard);
     BasicCardHelper::ParseBasiccardData(input, output->supported_networks,
                                         exception_state);
   } else if (supported_method == kSecurePaymentConfirmationMethod &&
