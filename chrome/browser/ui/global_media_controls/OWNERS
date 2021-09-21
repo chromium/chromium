@@ -1,4 +1,4 @@
-steimel@chromium.org
+file://components/global_media_controls/OWNERS
 
 per-file cast_*=muyaoxu@google.com
 per-file cast_*=takumif@chromium.org

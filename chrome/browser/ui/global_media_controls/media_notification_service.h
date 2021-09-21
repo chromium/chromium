@@ -13,18 +13,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/media_items_manager.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "media/audio/audio_device_description.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/media_session/public/mojom/media_controller.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -32,51 +25,35 @@ class StartPresentationContext;
 class WebContents;
 }  // namespace content
 
+namespace global_media_controls {
+class MediaDialogDelegate;
+class MediaItemManager;
+}  // namespace global_media_controls
+
 namespace media_router {
 class CastDialogController;
-}
+}  // namespace media_router
 
-class MediaDialogDelegate;
-class MediaNotificationServiceObserver;
 class MediaSessionNotificationProducer;
 
-class MediaNotificationService : public MediaItemsManager, public KeyedService {
+class MediaNotificationService : public KeyedService {
  public:
   MediaNotificationService(Profile* profile, bool show_from_all_profiles);
   MediaNotificationService(const MediaNotificationService&) = delete;
   MediaNotificationService& operator=(const MediaNotificationService&) = delete;
   ~MediaNotificationService() override;
 
-  void AddObserver(MediaNotificationServiceObserver* observer);
-  void RemoveObserver(MediaNotificationServiceObserver* observer);
-
   // KeyedService implementation.
   void Shutdown() override;
 
-  // MediaItemsManager:
-  void ShowItem(const std::string& id) override;
-  void HideItem(const std::string& id) override;
+  global_media_controls::MediaItemManager* media_item_manager() {
+    return item_manager_.get();
+  }
 
-  // Called after changing anything about a notification to notify any observers
-  // and update the visibility of supplemental notifications.
-  void OnNotificationChanged();
+  void SetDialogDelegateForWebContents(
+      global_media_controls::MediaDialogDelegate* delegate,
+      content::WebContents* contents);
 
-  // Called if the dialog is opened from the toolbar button. It shows all active
-  // and controllable media notifications.
-  void SetDialogDelegate(MediaDialogDelegate* delegate);
-  // Called if the dialog is opened for a presentation request from |contents|.
-  // It only shows media session notifications from |contents|.
-  void SetDialogDelegateForWebContents(MediaDialogDelegate* delegate,
-                                       content::WebContents* contents);
-
-  // Returns active controllable notifications gathered from all the
-  // notification producers. If empty, then there's nothing to show in the
-  // dialog and we can hide the toolbar icon.
-  std::set<std::string> GetActiveControllableNotificationIds() const;
-
-  // True if there are active non-frozen media session notifications or active
-  // cast notifications.
-  bool HasActiveNotifications() const;
   // True if there are active non-frozen media session notifications or active
   // cast notifications associated with |web_contents|.
   bool HasActiveNotificationsForWebContents(
@@ -84,14 +61,6 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
 
   // True if there are local cast notifications.
   bool HasLocalCastNotifications() const;
-
-  // True if there are active frozen media session notifications.
-  bool HasFrozenNotifications() const;
-
-  // True if there is an open MediaDialogView associated with this service.
-  bool HasOpenDialog() const;
-
-  void HideMediaDialog();
 
   // Used by a |MediaNotificationDeviceSelectorView| to query the system
   // for connected audio output devices.
@@ -113,14 +82,12 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
   // the given |session_id|.
   std::unique_ptr<media_router::CastDialogController>
   CreateCastDialogControllerForSession(const std::string& session_id);
+
   // Instantiates a MediaRouterViewsUI object associated with the
   // PresentationRequest that |presentation_request_notification_producer_|
   // manages.
   std::unique_ptr<media_router::CastDialogController>
   CreateCastDialogControllerForPresentationRequest();
-
-  void ShowAndObserveContainer(const std::string& id);
-  void FocusOnDialog();
 
  private:
   friend class MediaNotificationProviderImplTest;
@@ -141,41 +108,17 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
                            ShowSupplementalNotifications);
 
-  // Looks up a notification from any source.  Returns null if not found.
-  base::WeakPtr<media_message_center::MediaNotificationItem>
-  GetNotificationItem(const std::string& id);
-
-  MediaNotificationProducer* GetNotificationProducer(
-      const std::string& notification_id);
-
-  // Updates |dialog_delegate_| and notifies |observers_|. Called from
-  // SetDialogDelegate() and SetDialogDelegateForPresentationRequest().
-  void SetDialogDelegateCommon(MediaDialogDelegate* delegate);
-
-  // True if there is an open MediaDialogView and the dialog is opened for a
-  // PresentationRequest.
-  bool HasOpenDialogForPresentationRequest() const;
-
   // True if there are cast notifications associated with |web_contents|.
   bool HasCastNotificationsForWebContents(
       content::WebContents* web_contents) const;
 
-  MediaDialogDelegate* dialog_delegate_ = nullptr;
-
-  // True if the dialog was opened by |SetDialogDelegateForWebContents()|. The
-  // value does not indicate whether the MediaDialogView is opened or not.
-  bool dialog_opened_from_presentation_ = false;
+  std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   std::unique_ptr<MediaSessionNotificationProducer>
       media_session_notification_producer_;
   std::unique_ptr<CastMediaNotificationProducer> cast_notification_producer_;
   std::unique_ptr<PresentationRequestNotificationProducer>
       presentation_request_notification_producer_;
-
-  // Pointers to all notification producers owned by |this|.
-  std::set<MediaNotificationProducer*> notification_producers_;
-
-  base::ObserverList<MediaNotificationServiceObserver> observers_;
 
   base::WeakPtrFactory<MediaNotificationService> weak_ptr_factory_{this};
 };

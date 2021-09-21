@@ -148,6 +148,7 @@ include_rules = [
   "+components/flags_ui",
   "+components/app_restore",
   "+components/gcm_driver",
+  "+components/global_media_controls",
   "+components/google/core/browser",
   "+components/google/core/common",
   "+components/grit",

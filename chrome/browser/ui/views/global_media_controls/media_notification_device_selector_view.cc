@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_observer.h"

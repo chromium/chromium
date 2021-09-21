@@ -10,9 +10,9 @@
 #include <string>
 
 #include "base/observer_list.h"
-#include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
+#include "components/global_media_controls/public/media_dialog_delegate.h"
+#include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -36,8 +36,8 @@ class WebContents;
 
 // Dialog that shows media controls that control the active media session.
 class MediaDialogView : public views::BubbleDialogDelegateView,
-                        public MediaDialogDelegate,
-                        public MediaNotificationContainerObserver,
+                        public global_media_controls::MediaDialogDelegate,
+                        public global_media_controls::MediaItemUIObserver,
                         public speech::SodaInstaller::Observer {
  public:
   METADATA_HEADER(MediaDialogView);
@@ -60,11 +60,11 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   static MediaDialogView* GetDialogViewForTesting() { return instance_; }
 
-  // MediaDialogDelegate implementation.
-  MediaNotificationContainerImpl* ShowMediaSession(
+  // global_media_controls::MediaDialogDelegate:
+  global_media_controls::MediaItemUI* ShowMediaItem(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item) override;
-  void HideMediaSession(const std::string& id) override;
+  void HideMediaItem(const std::string& id) override;
   void HideMediaDialog() override;
   void Focus() override;
 
@@ -72,13 +72,13 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void AddedToWidget() override;
   gfx::Size CalculatePreferredSize() const override;
 
-  // MediaNotificationContainerObserver implementation.
-  void OnContainerSizeChanged() override;
-  void OnContainerMetadataChanged() override;
-  void OnContainerActionsChanged() override;
-  void OnContainerClicked(const std::string& id) override {}
-  void OnContainerDismissed(const std::string& id) override {}
-  void OnContainerDestroyed(const std::string& id) override;
+  // global_media_controls::MediaItemUIObserver implementation.
+  void OnMediaItemUISizeChanged() override;
+  void OnMediaItemUIMetadataChanged() override;
+  void OnMediaItemUIActionsChanged() override;
+  void OnMediaItemUIClicked(const std::string& id) override {}
+  void OnMediaItemUIDismissed(const std::string& id) override {}
+  void OnMediaItemUIDestroyed(const std::string& id) override;
   void OnAudioSinkChosen(const std::string& id,
                          const std::string& sink_id) override {}
 

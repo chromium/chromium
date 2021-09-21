@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
+#include "components/global_media_controls/public/media_item_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "ui/views/view.h"
 
@@ -22,11 +23,11 @@ MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {
   if (session_manager::SessionManager::Get())
     session_manager::SessionManager::Get()->RemoveObserver(this);
 
-  if (service_)
-    service_->RemoveObserver(this);
+  if (item_manager_)
+    item_manager_->RemoveObserver(this);
 
-  for (auto containers_pair : observed_containers_)
-    containers_pair.second->RemoveObserver(this);
+  for (auto item_ui_pair : observed_item_uis_)
+    item_ui_pair.second->RemoveObserver(this);
 }
 
 void MediaNotificationProviderImpl::AddObserver(
@@ -40,27 +41,27 @@ void MediaNotificationProviderImpl::RemoveObserver(
 }
 
 bool MediaNotificationProviderImpl::HasActiveNotifications() {
-  if (!service_)
+  if (!item_manager_)
     return false;
-  return service_->HasActiveNotifications();
+  return item_manager_->HasActiveItems();
 }
 
 bool MediaNotificationProviderImpl::HasFrozenNotifications() {
-  if (!service_)
+  if (!item_manager_)
     return false;
-  return service_->HasFrozenNotifications();
+  return item_manager_->HasFrozenItems();
 }
 
 std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetMediaNotificationListView(
     int separator_thickness) {
-  DCHECK(service_);
+  DCHECK(item_manager_);
   DCHECK(color_theme_);
   auto notification_list_view = std::make_unique<MediaNotificationListView>(
       MediaNotificationListView::SeparatorStyle(color_theme_->separator_color,
                                                 separator_thickness));
   active_session_view_ = notification_list_view.get();
-  service_->SetDialogDelegate(this);
+  item_manager_->SetDialogDelegate(this);
   base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
                                 GlobalMediaControlsEntryPoint::kSystemTray);
   return std::move(notification_list_view);
@@ -72,7 +73,7 @@ MediaNotificationProviderImpl::GetActiveMediaNotificationView() {
 }
 
 void MediaNotificationProviderImpl::OnBubbleClosing() {
-  service_->SetDialogDelegate(nullptr);
+  item_manager_->SetDialogDelegate(nullptr);
 }
 
 void MediaNotificationProviderImpl::SetColorTheme(
@@ -80,7 +81,8 @@ void MediaNotificationProviderImpl::SetColorTheme(
   color_theme_ = color_theme;
 }
 
-MediaNotificationContainerImpl* MediaNotificationProviderImpl::ShowMediaSession(
+global_media_controls::MediaItemUI*
+MediaNotificationProviderImpl::ShowMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   if (!active_session_view_)
@@ -89,18 +91,18 @@ MediaNotificationContainerImpl* MediaNotificationProviderImpl::ShowMediaSession(
   auto container = std::make_unique<MediaNotificationContainerImplView>(
       id, item, service_, GlobalMediaControlsEntryPoint::kSystemTray, profile_,
       color_theme_);
-  MediaNotificationContainerImplView* container_ptr = container.get();
-  container_ptr->AddObserver(this);
-  observed_containers_[id] = container_ptr;
+  auto* item_ui_ptr = container.get();
+  item_ui_ptr->AddObserver(this);
+  observed_item_uis_[id] = item_ui_ptr;
 
   active_session_view_->ShowNotification(id, std::move(container));
   for (auto& observer : observers_)
     observer.OnNotificationListViewSizeChanged();
 
-  return container_ptr;
+  return item_ui_ptr;
 }
 
-void MediaNotificationProviderImpl::HideMediaSession(const std::string& id) {
+void MediaNotificationProviderImpl::HideMediaItem(const std::string& id) {
   if (!active_session_view_)
     return;
 
@@ -109,23 +111,23 @@ void MediaNotificationProviderImpl::HideMediaSession(const std::string& id) {
     observer.OnNotificationListViewSizeChanged();
 }
 
-void MediaNotificationProviderImpl::OnNotificationListChanged() {
+void MediaNotificationProviderImpl::OnItemListChanged() {
   for (auto& observer : observers_)
     observer.OnNotificationListChanged();
 }
 
-void MediaNotificationProviderImpl::OnContainerSizeChanged() {
+void MediaNotificationProviderImpl::OnMediaItemUISizeChanged() {
   for (auto& observer : observers_)
     observer.OnNotificationListViewSizeChanged();
 }
 
-void MediaNotificationProviderImpl::OnContainerDestroyed(
+void MediaNotificationProviderImpl::OnMediaItemUIDestroyed(
     const std::string& id) {
-  auto iter = observed_containers_.find(id);
-  DCHECK(iter != observed_containers_.end());
+  auto iter = observed_item_uis_.find(id);
+  DCHECK(iter != observed_item_uis_.end());
 
   iter->second->RemoveObserver(this);
-  observed_containers_.erase(iter);
+  observed_item_uis_.erase(iter);
 }
 
 void MediaNotificationProviderImpl::OnUserProfileLoaded(
@@ -136,6 +138,7 @@ void MediaNotificationProviderImpl::OnUserProfileLoaded(
 
   if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
     service_ = MediaNotificationServiceFactory::GetForProfile(profile_);
-    service_->AddObserver(this);
+    item_manager_ = service_->media_item_manager();
+    item_manager_->AddObserver(this);
   }
 }

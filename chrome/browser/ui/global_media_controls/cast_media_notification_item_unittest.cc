@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
-#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "components/media_message_center/mock_media_notification_view.h"
 #include "components/media_router/common/media_route.h"
 #include "components/vector_icons/vector_icons.h"
@@ -80,7 +80,7 @@ class CastMediaNotificationItemTest : public testing::Test {
             mojo::Remote<media_router::mojom::MediaController>());
     session_controller_ = session_controller.get();
     item_ = std::make_unique<CastMediaNotificationItem>(
-        CreateMediaRoute(), &items_manager_, std::move(session_controller),
+        CreateMediaRoute(), &item_manager_, std::move(session_controller),
         &profile_);
     item_->set_bitmap_fetcher_factory_for_testing_(
         base::BindRepeating(&CastMediaNotificationItemTest::CreateBitmapFetcher,
@@ -124,7 +124,8 @@ class CastMediaNotificationItemTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  testing::NiceMock<MockMediaItemsManager> items_manager_;
+  testing::NiceMock<global_media_controls::test::MockMediaItemManager>
+      item_manager_;
   MockSessionController* session_controller_ = nullptr;
   // This needs to be a NiceMock, because the uninteresting mock function calls
   // slow down the tests enough to make
@@ -214,12 +215,12 @@ TEST_F(CastMediaNotificationItemTest, SetViewToNull) {
 }
 
 TEST_F(CastMediaNotificationItemTest, HideNotificationOnDismiss) {
-  EXPECT_CALL(items_manager_, HideItem(kRouteId)).Times(AtLeast(1));
+  EXPECT_CALL(item_manager_, HideItem(kRouteId)).Times(AtLeast(1));
   item_->Dismiss();
 }
 
 TEST_F(CastMediaNotificationItemTest, HideNotificationOnDelete) {
-  EXPECT_CALL(items_manager_, HideItem(kRouteId));
+  EXPECT_CALL(item_manager_, HideItem(kRouteId));
   item_.reset();
 }
 

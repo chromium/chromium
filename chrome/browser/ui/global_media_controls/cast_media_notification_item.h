@@ -13,12 +13,15 @@
 #include "components/media_router/common/mojom/media_status.mojom.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 
-class MediaItemsManager;
-class Profile;
+namespace global_media_controls {
+class MediaItemManager;
+}  // namespace global_media_controls
 
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+class Profile;
 
 // Represents the media notification shown in the Global Media Controls dialog
 // for a Cast session. It is responsible for showing/hiding a
@@ -35,7 +38,7 @@ class CastMediaNotificationItem
 
   CastMediaNotificationItem(
       const media_router::MediaRoute& route,
-      MediaItemsManager* items_manager,
+      global_media_controls::MediaItemManager* item_manager,
       std::unique_ptr<CastMediaSessionController> session_controller,
       Profile* profile);
   CastMediaNotificationItem(const CastMediaNotificationItem&) = delete;
@@ -124,7 +127,7 @@ class CastMediaNotificationItem
   // The notification is shown when active.
   bool is_active_ = true;
 
-  MediaItemsManager* const items_manager_;
+  global_media_controls::MediaItemManager* const item_manager_;
   media_message_center::MediaNotificationView* view_ = nullptr;
   Profile* const profile_;
 

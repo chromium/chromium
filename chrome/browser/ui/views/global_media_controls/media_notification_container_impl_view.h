@@ -9,9 +9,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
+#include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "media/audio/audio_device_description.h"
@@ -20,6 +20,10 @@
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+namespace global_media_controls {
+class MediaItemUIObserver;
+}  // namespace global_media_controls
 
 namespace media_message_center {
 class MediaNotificationItem;
@@ -33,7 +37,6 @@ class SlideOutController;
 
 class CastMediaNotificationItem;
 class MediaNotificationDeviceSelectorView;
-class MediaNotificationContainerObserver;
 class MediaNotificationFooterView;
 class MediaNotificationService;
 class Profile;
@@ -44,7 +47,7 @@ class Profile;
 class MediaNotificationContainerImplView
     : public views::Button,
       public media_message_center::MediaNotificationContainer,
-      public MediaNotificationContainerImpl,
+      public global_media_controls::MediaItemUI,
       public MediaNotificationDeviceSelectorViewDelegate,
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
@@ -96,9 +99,11 @@ class MediaNotificationContainerImplView
   void OnSlideChanged(bool in_progress) override {}
   void OnSlideOut() override;
 
-  // MediaNotificationContainerImpl:
-  void AddObserver(MediaNotificationContainerObserver* observer) override;
-  void RemoveObserver(MediaNotificationContainerObserver* observer) override;
+  // global_media_controls::MediaItemUI:
+  void AddObserver(
+      global_media_controls::MediaItemUIObserver* observer) override;
+  void RemoveObserver(
+      global_media_controls::MediaItemUIObserver* observer) override;
 
   // MediaNotificationDeviceSelectorViewDelegate
   // Called when an audio device has been selected for output.
@@ -181,7 +186,7 @@ class MediaNotificationContainerImplView
 
   std::string audio_sink_id_ = media::AudioDeviceDescription::kDefaultDeviceId;
 
-  base::ObserverList<MediaNotificationContainerObserver> observers_;
+  base::ObserverList<global_media_controls::MediaItemUIObserver> observers_;
 
   // Handles gesture events for swiping to dismiss notifications.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;

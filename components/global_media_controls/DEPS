@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/media_message_center",
+  "+services/media_session/public",
+]

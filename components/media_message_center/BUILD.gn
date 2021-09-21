@@ -29,13 +29,14 @@ component("media_message_center") {
 
   defines = [ "IS_MEDIA_MESSAGE_CENTER_IMPL" ]
 
+  public_deps = [ "//services/media_session/public/mojom" ]
+
   deps = [
     "//base",
     "//components/media_message_center/vector_icons",
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
     "//services/media_session/public/cpp",
-    "//services/media_session/public/mojom",
     "//skia",
     "//ui/accessibility",
     "//ui/message_center",

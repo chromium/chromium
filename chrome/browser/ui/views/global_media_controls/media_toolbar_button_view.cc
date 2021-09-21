@@ -57,7 +57,8 @@ MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
 
   // Wait until we're done with everything else before creating |controller_|
   // since it can call |Show()| synchronously.
-  controller_ = std::make_unique<MediaToolbarButtonController>(this, service_);
+  controller_ = std::make_unique<MediaToolbarButtonController>(
+      this, service_->media_item_manager());
 }
 
 MediaToolbarButtonView::~MediaToolbarButtonView() {

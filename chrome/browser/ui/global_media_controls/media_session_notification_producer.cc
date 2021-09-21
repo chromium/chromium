@@ -11,10 +11,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
+#include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/audio_service.h"
@@ -292,10 +292,10 @@ void MediaSessionNotificationProducer::Session::MarkActiveIfNecessary() {
 }
 
 MediaSessionNotificationProducer::MediaSessionNotificationProducer(
-    MediaNotificationService* service,
+    global_media_controls::MediaItemManager* item_manager,
     Profile* profile,
     bool show_from_all_profiles)
-    : service_(service), container_observer_set_(this) {
+    : item_manager_(item_manager), item_ui_observer_set_(this) {
   // Connect to the controller manager so we can create media controllers for
   // media sessions.
   content::GetMediaSessionService().BindMediaControllerManager(
@@ -330,14 +330,18 @@ MediaSessionNotificationProducer::MediaSessionNotificationProducer(
 MediaSessionNotificationProducer::~MediaSessionNotificationProducer() = default;
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
-MediaSessionNotificationProducer::GetNotificationItem(const std::string& id) {
+MediaSessionNotificationProducer::GetMediaItem(const std::string& id) {
   auto it = sessions_.find(id);
   return it == sessions_.end() ? nullptr : it->second.item()->GetWeakPtr();
 }
 
 std::set<std::string>
-MediaSessionNotificationProducer::GetActiveControllableNotificationIds() const {
+MediaSessionNotificationProducer::GetActiveControllableItemIds() {
   return active_controllable_session_ids_;
+}
+
+bool MediaSessionNotificationProducer::HasFrozenItems() {
+  return !frozen_session_ids_.empty();
 }
 
 void MediaSessionNotificationProducer::OnFocusGained(
@@ -399,7 +403,7 @@ void MediaSessionNotificationProducer::OnFocusLost(
                      base::Unretained(this), id));
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.insert(id);
-  service_->OnNotificationChanged();
+  item_manager_->OnItemsChanged();
 }
 
 void MediaSessionNotificationProducer::OnRequestIdReleased(
@@ -414,7 +418,7 @@ void MediaSessionNotificationProducer::OnRequestIdReleased(
   RemoveItem(id);
 }
 
-void MediaSessionNotificationProducer::OnContainerClicked(
+void MediaSessionNotificationProducer::OnMediaItemUIClicked(
     const std::string& id) {
   auto it = sessions_.find(id);
   if (it == sessions_.end())
@@ -428,7 +432,7 @@ void MediaSessionNotificationProducer::OnContainerClicked(
   it->second.item()->Raise();
 }
 
-void MediaSessionNotificationProducer::OnContainerDismissed(
+void MediaSessionNotificationProducer::OnMediaItemUIDismissed(
     const std::string& id) {
   Session* session = GetSession(id);
   if (!session) {
@@ -450,16 +454,22 @@ void MediaSessionNotificationProducer::OnAudioSinkChosen(
 
 void MediaSessionNotificationProducer::OnItemShown(
     const std::string& id,
-    MediaNotificationContainerImpl* container) {
-  if (container)
-    container_observer_set_.Observe(id, container);
+    global_media_controls::MediaItemUI* item_ui) {
+  if (item_ui)
+    item_ui_observer_set_.Observe(id, item_ui);
+}
+
+bool MediaSessionNotificationProducer::IsItemActivelyPlaying(
+    const std::string& id) {
+  const auto it = sessions_.find(id);
+  return it == sessions_.end() ? false : it->second.IsPlaying();
 }
 
 void MediaSessionNotificationProducer::HideItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
 
-  service_->HideItem(id);
+  item_manager_->HideItem(id);
 }
 
 void MediaSessionNotificationProducer::RemoveItem(const std::string& id) {
@@ -467,7 +477,7 @@ void MediaSessionNotificationProducer::RemoveItem(const std::string& id) {
   frozen_session_ids_.erase(id);
   inactive_session_ids_.erase(id);
 
-  service_->HideItem(id);
+  item_manager_->HideItem(id);
   sessions_.erase(id);
 }
 
@@ -477,20 +487,11 @@ void MediaSessionNotificationProducer::ActivateItem(const std::string& id) {
     return;
 
   active_controllable_session_ids_.insert(id);
-  service_->ShowItem(id);
+  item_manager_->ShowItem(id);
 }
 
 bool MediaSessionNotificationProducer::HasSession(const std::string& id) const {
   return base::Contains(sessions_, id);
-}
-bool MediaSessionNotificationProducer::IsSessionPlaying(
-    const std::string& id) const {
-  const auto it = sessions_.find(id);
-  return it == sessions_.end() ? false : it->second.IsPlaying();
-}
-
-bool MediaSessionNotificationProducer::HasFrozenNotifications() const {
-  return !frozen_session_ids_.empty();
 }
 
 std::unique_ptr<media_router::CastDialogController>
@@ -606,7 +607,7 @@ void MediaSessionNotificationProducer::OnSessionBecameActive(
   } else {
     active_controllable_session_ids_.insert(id);
   }
-  service_->ShowAndObserveContainer(id);
+  item_manager_->ShowItem(id);
 }
 
 void MediaSessionNotificationProducer::OnSessionBecameInactive(
@@ -621,11 +622,11 @@ void MediaSessionNotificationProducer::OnSessionBecameInactive(
   HideItem(id);
 
   // Let the service know that the item is hidden.
-  service_->HideItem(id);
+  item_manager_->HideItem(id);
 }
 
 void MediaSessionNotificationProducer::HideMediaDialog() {
-  service_->HideMediaDialog();
+  item_manager_->HideDialog();
 }
 
 void MediaSessionNotificationProducer::OnReceivedAudioFocusRequests(
@@ -639,5 +640,5 @@ void MediaSessionNotificationProducer::OnItemUnfrozen(const std::string& id) {
 
   active_controllable_session_ids_.insert(id);
 
-  service_->OnNotificationChanged();
+  item_manager_->OnItemsChanged();
 }

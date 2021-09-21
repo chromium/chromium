@@ -13,8 +13,6 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
@@ -22,6 +20,8 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_view_modern_impl.h"
 #include "components/media_router/browser/media_router.h"
@@ -221,7 +221,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
 
 MediaNotificationContainerImplView::~MediaNotificationContainerImplView() {
   for (auto& observer : observers_)
-    observer.OnContainerDestroyed(id_);
+    observer.OnMediaItemUIDestroyed(id_);
 }
 
 void MediaNotificationContainerImplView::AddedToWidget() {
@@ -276,7 +276,7 @@ void MediaNotificationContainerImplView::OnMediaSessionMetadataChanged(
   title_ = metadata.title;
 
   for (auto& observer : observers_)
-    observer.OnContainerMetadataChanged();
+    observer.OnMediaItemUIMetadataChanged();
 }
 
 void MediaNotificationContainerImplView::OnVisibleActionsChanged(
@@ -292,7 +292,7 @@ void MediaNotificationContainerImplView::OnVisibleActionsChanged(
   ForceExpandedState();
 
   for (auto& observer : observers_)
-    observer.OnContainerActionsChanged();
+    observer.OnMediaItemUIActionsChanged();
 }
 
 void MediaNotificationContainerImplView::OnMediaArtworkChanged(
@@ -365,12 +365,12 @@ void MediaNotificationContainerImplView::OnSlideOut() {
 }
 
 void MediaNotificationContainerImplView::AddObserver(
-    MediaNotificationContainerObserver* observer) {
+    global_media_controls::MediaItemUIObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void MediaNotificationContainerImplView::RemoveObserver(
-    MediaNotificationContainerObserver* observer) {
+    global_media_controls::MediaItemUIObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -454,7 +454,7 @@ void MediaNotificationContainerImplView::StopCasting(
 
   // |service_| is nullptr in MediaNotificationContainerImplViewTest.
   if (service_)
-    service_->FocusOnDialog();
+    service_->media_item_manager()->FocusDialog();
 
   feature_engagement::TrackerFactory::GetForBrowserContext(profile_)
       ->NotifyEvent("media_route_stopped_from_gmc");
@@ -528,7 +528,7 @@ void MediaNotificationContainerImplView::UpdateDismissButtonVisibility() {
 
 void MediaNotificationContainerImplView::DismissNotification() {
   for (auto& observer : observers_)
-    observer.OnContainerDismissed(id_);
+    observer.OnMediaItemUIDismissed(id_);
 }
 
 void MediaNotificationContainerImplView::ForceExpandedState() {
@@ -540,7 +540,7 @@ void MediaNotificationContainerImplView::ForceExpandedState() {
 
 void MediaNotificationContainerImplView::ContainerClicked() {
   for (auto& observer : observers_)
-    observer.OnContainerClicked(id_);
+    observer.OnMediaItemUIClicked(id_);
 }
 
 void MediaNotificationContainerImplView::OnSizeChanged() {
@@ -566,7 +566,7 @@ void MediaNotificationContainerImplView::OnSizeChanged() {
   PreferredSizeChanged();
 
   for (auto& observer : observers_)
-    observer.OnContainerSizeChanged();
+    observer.OnMediaItemUISizeChanged();
 }
 
 BEGIN_METADATA(MediaNotificationContainerImplView, views::Button)

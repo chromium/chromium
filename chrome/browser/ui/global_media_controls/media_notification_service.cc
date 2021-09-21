@@ -14,16 +14,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/global_media_controls/public/media_dialog_delegate.h"
+#include "components/global_media_controls/public/media_item_manager.h"
+#include "components/global_media_controls/public/media_item_producer.h"
+#include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_message_center/media_notification_item.h"
-#include "components/media_message_center/media_notification_util.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
@@ -44,121 +44,65 @@ void CancelRequest(
 MediaNotificationService::MediaNotificationService(
     Profile* profile,
     bool show_from_all_profiles) {
+  item_manager_ = global_media_controls::MediaItemManager::Create();
+
   media_session_notification_producer_ =
       std::make_unique<MediaSessionNotificationProducer>(
-          this, profile, show_from_all_profiles);
-  notification_producers_.insert(media_session_notification_producer_.get());
+          item_manager_.get(), profile, show_from_all_profiles);
+  item_manager_->AddItemProducer(media_session_notification_producer_.get());
 
   if (media_router::MediaRouterEnabled(profile)) {
     if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast)) {
+      // base::Unretained() is safe here because cast_notification_producer_ is
+      // deleted before item_manager_.
       cast_notification_producer_ =
           std::make_unique<CastMediaNotificationProducer>(
-              profile, this,
+              profile, item_manager_.get(),
               base::BindRepeating(
-                  &MediaNotificationService::OnNotificationChanged,
-                  base::Unretained(this)));
-      notification_producers_.insert(cast_notification_producer_.get());
+                  &global_media_controls::MediaItemManager::OnItemsChanged,
+                  base::Unretained(item_manager_.get())));
+      item_manager_->AddItemProducer(cast_notification_producer_.get());
     }
     if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
       presentation_request_notification_producer_ =
           std::make_unique<PresentationRequestNotificationProducer>(this);
-      notification_producers_.insert(
+      item_manager_->AddItemProducer(
           presentation_request_notification_producer_.get());
     }
   }
 }
 
-MediaNotificationService::~MediaNotificationService() = default;
-
-void MediaNotificationService::AddObserver(
-    MediaNotificationServiceObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void MediaNotificationService::RemoveObserver(
-    MediaNotificationServiceObserver* observer) {
-  observers_.RemoveObserver(observer);
+MediaNotificationService::~MediaNotificationService() {
+  item_manager_->RemoveItemProducer(media_session_notification_producer_.get());
 }
 
 void MediaNotificationService::Shutdown() {
   // |cast_notification_producer_| and
   // |presentation_request_notification_producer_| depend on MediaRouter,
   // which is another keyed service.
+  if (cast_notification_producer_)
+    item_manager_->RemoveItemProducer(cast_notification_producer_.get());
+
+  if (presentation_request_notification_producer_) {
+    item_manager_->RemoveItemProducer(
+        presentation_request_notification_producer_.get());
+  }
+
   cast_notification_producer_.reset();
   presentation_request_notification_producer_.reset();
 }
 
-void MediaNotificationService::ShowItem(const std::string& id) {
-  // If new notifications come up while the dialog is open for a
-  // PresentationRequest, do not show the new notifications.
-  if (!HasOpenDialogForPresentationRequest()) {
-    ShowAndObserveContainer(id);
-  }
-}
-
-void MediaNotificationService::HideItem(const std::string& id) {
-  OnNotificationChanged();
-  if (!dialog_delegate_) {
-    return;
-  }
-  dialog_delegate_->HideMediaSession(id);
-}
-
-void MediaNotificationService::OnNotificationChanged() {
-  for (auto& observer : observers_)
-    observer.OnNotificationListChanged();
-}
-
-void MediaNotificationService::SetDialogDelegate(
-    MediaDialogDelegate* delegate) {
-  dialog_opened_from_presentation_ = false;
-  SetDialogDelegateCommon(delegate);
-  if (!dialog_delegate_)
-    return;
-
-  auto notification_ids = GetActiveControllableNotificationIds();
-  std::list<std::string> sorted_notification_ids;
-  for (const std::string& id : notification_ids) {
-    if (media_session_notification_producer_->IsSessionPlaying(id)) {
-      sorted_notification_ids.push_front(id);
-    } else {
-      sorted_notification_ids.push_back(id);
-    }
-  }
-
-  for (const std::string& id : sorted_notification_ids) {
-    base::WeakPtr<media_message_center::MediaNotificationItem> item =
-        GetNotificationItem(id);
-    MediaNotificationContainerImpl* container =
-        dialog_delegate_->ShowMediaSession(id, item);
-    auto* notification_producer = GetNotificationProducer(id);
-    if (notification_producer)
-      notification_producer->OnItemShown(id, container);
-  }
-
-  media_message_center::RecordConcurrentNotificationCount(
-      notification_ids.size());
-
-  if (cast_notification_producer_) {
-    media_message_center::RecordConcurrentCastNotificationCount(
-        cast_notification_producer_->GetActiveItemCount());
-  }
-}
-
 void MediaNotificationService::SetDialogDelegateForWebContents(
-    MediaDialogDelegate* delegate,
+    global_media_controls::MediaDialogDelegate* delegate,
     content::WebContents* contents) {
-  dialog_opened_from_presentation_ = true;
-  SetDialogDelegateCommon(delegate);
-  if (!dialog_delegate_)
-    return;
+  DCHECK(delegate);
+  DCHECK(contents);
 
   // When the dialog is opened by a PresentationRequest, there should be only
   // one notification, in the following priority order:
   // 1. A cast session associated with |contents|.
   // 2. A local media session associated with |contents|.
   // 3. A supplemental notification populated using the PresentationRequest.
-  base::WeakPtr<media_message_center::MediaNotificationItem> item;
   std::string item_id;
 
   // Find the cast notification item associated with |contents|.
@@ -168,42 +112,19 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
     // It is possible for a sender page to connect to two routes. For the
     // sake of the Zenith dialog, only one notification is needed.
     item_id = routes.begin()->media_route_id();
-    item = cast_notification_producer_->GetNotificationItem(item_id);
   } else if (media_session_notification_producer_
                  ->HasActiveControllableSessionForWebContents(contents)) {
     item_id = media_session_notification_producer_
                   ->GetActiveControllableSessionForWebContents(contents);
-    item = GetNotificationItem(item_id);
   } else {
     auto presentation_item =
         presentation_request_notification_producer_->GetNotificationItem();
     item_id = presentation_item->id();
-    item = presentation_item;
     DCHECK(presentation_request_notification_producer_->GetWebContents() ==
            contents);
   }
 
-  DCHECK(item);
-  MediaNotificationContainerImpl* container =
-      dialog_delegate_->ShowMediaSession(item_id, item);
-  auto* notification_producer = GetNotificationProducer(item_id);
-  if (notification_producer)
-    notification_producer->OnItemShown(item_id, container);
-}
-
-std::set<std::string>
-MediaNotificationService::GetActiveControllableNotificationIds() const {
-  std::set<std::string> ids;
-  for (auto* notification_provider : notification_producers_) {
-    const std::set<std::string>& provider_ids =
-        notification_provider->GetActiveControllableNotificationIds();
-    ids.insert(provider_ids.begin(), provider_ids.end());
-  }
-  return ids;
-}
-
-bool MediaNotificationService::HasActiveNotifications() const {
-  return !GetActiveControllableNotificationIds().empty();
+  item_manager_->SetDialogDelegateForId(delegate, item_id);
 }
 
 bool MediaNotificationService::HasActiveNotificationsForWebContents(
@@ -219,24 +140,6 @@ bool MediaNotificationService::HasLocalCastNotifications() const {
   return cast_notification_producer_
              ? cast_notification_producer_->HasLocalMediaRoute()
              : false;
-}
-
-bool MediaNotificationService::HasFrozenNotifications() const {
-  return media_session_notification_producer_->HasFrozenNotifications();
-}
-
-bool MediaNotificationService::HasOpenDialog() const {
-  return !!dialog_delegate_;
-}
-
-bool MediaNotificationService::HasOpenDialogForPresentationRequest() const {
-  return HasOpenDialog() && dialog_opened_from_presentation_;
-}
-
-void MediaNotificationService::HideMediaDialog() {
-  if (dialog_delegate_) {
-    dialog_delegate_->HideMediaDialog();
-  }
 }
 
 base::CallbackListSubscription
@@ -311,59 +214,6 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
     ui->InitWithDefaultMediaSource();
   }
   return ui;
-}
-
-void MediaNotificationService::ShowAndObserveContainer(const std::string& id) {
-  OnNotificationChanged();
-  if (!dialog_delegate_) {
-    return;
-  }
-  base::WeakPtr<media_message_center::MediaNotificationItem> item =
-      GetNotificationItem(id);
-  MediaNotificationContainerImpl* container =
-      dialog_delegate_->ShowMediaSession(id, item);
-  auto* notification_producer = GetNotificationProducer(id);
-  if (notification_producer)
-    notification_producer->OnItemShown(id, container);
-}
-
-void MediaNotificationService::FocusOnDialog() {
-  dialog_delegate_->Focus();
-}
-
-base::WeakPtr<media_message_center::MediaNotificationItem>
-MediaNotificationService::GetNotificationItem(const std::string& id) {
-  for (auto* notification_provider : notification_producers_) {
-    auto item = notification_provider->GetNotificationItem(id);
-    if (item) {
-      return item;
-    }
-  }
-  return nullptr;
-}
-
-void MediaNotificationService::SetDialogDelegateCommon(
-    MediaDialogDelegate* delegate) {
-  DCHECK(!delegate || !dialog_delegate_);
-  dialog_delegate_ = delegate;
-
-  if (dialog_delegate_) {
-    for (auto& observer : observers_)
-      observer.OnMediaDialogOpened();
-  } else {
-    for (auto& observer : observers_)
-      observer.OnMediaDialogClosed();
-  }
-}
-
-MediaNotificationProducer* MediaNotificationService::GetNotificationProducer(
-    const std::string& notification_id) {
-  for (auto* notification_producer : notification_producers_) {
-    if (notification_producer->GetNotificationItem(notification_id)) {
-      return notification_producer;
-    }
-  }
-  return nullptr;
 }
 
 bool MediaNotificationService::HasCastNotificationsForWebContents(

@@ -18,41 +18,6 @@ MockMediaNotificationItem::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-MockMediaDialogDelegate::MockMediaDialogDelegate() = default;
-MockMediaDialogDelegate::~MockMediaDialogDelegate() {
-  Close();
-}
-
-void MockMediaDialogDelegate::Open(MediaNotificationService* service) {
-  ASSERT_TRUE(service);
-  service_ = service;
-  service_->SetDialogDelegate(this);
-}
-
-void MockMediaDialogDelegate::OpenForWebContents(
-    MediaNotificationService* service,
-    content::WebContents* content) {
-  ASSERT_TRUE(service);
-  service_ = service;
-  service_->SetDialogDelegateForWebContents(this, content);
-}
-
-void MockMediaDialogDelegate::Close() {
-  if (!service_)
-    return;
-
-  service_->SetDialogDelegate(nullptr);
-  service_ = nullptr;
-}
-
-void MockMediaDialogDelegate::HideMediaDialog() {
-  Close();
-}
-
-MockMediaItemsManager::MockMediaItemsManager() = default;
-
-MockMediaItemsManager::~MockMediaItemsManager() = default;
-
 MockWebContentsPresentationManager::MockWebContentsPresentationManager() =
     default;
 MockWebContentsPresentationManager::~MockWebContentsPresentationManager() =

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/global_media_controls/public/media_item_manager.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -93,7 +94,7 @@ views::Widget* MediaDialogView::ShowDialogForPresentationRequest(
 // static
 void MediaDialogView::HideDialog() {
   if (IsShowing()) {
-    instance_->service_->SetDialogDelegate(nullptr);
+    instance_->service_->media_item_manager()->SetDialogDelegate(nullptr);
     speech::SodaInstaller::GetInstance()->RemoveObserver(instance_);
     instance_->GetWidget()->Close();
   }
@@ -109,7 +110,7 @@ bool MediaDialogView::IsShowing() {
   return instance_ != nullptr;
 }
 
-MediaNotificationContainerImpl* MediaDialogView::ShowMediaSession(
+global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   auto container = std::make_unique<MediaNotificationContainerImplView>(
@@ -127,7 +128,7 @@ MediaNotificationContainerImpl* MediaDialogView::ShowMediaSession(
   return container_ptr;
 }
 
-void MediaDialogView::HideMediaSession(const std::string& id) {
+void MediaDialogView::HideMediaItem(const std::string& id) {
   active_sessions_view_->HideNotification(id);
 
   if (active_sessions_view_->empty())
@@ -158,7 +159,7 @@ void MediaDialogView::AddedToWidget() {
     service_->SetDialogDelegateForWebContents(
         this, web_contents_for_presentation_request_);
   } else {
-    service_->SetDialogDelegate(this);
+    service_->media_item_manager()->SetDialogDelegate(this);
   }
   speech::SodaInstaller::GetInstance()->AddObserver(this);
 }
@@ -184,21 +185,21 @@ void MediaDialogView::UpdateBubbleSize() {
   live_caption_container_->SetPreferredSize(gfx::Size(width, height));
 }
 
-void MediaDialogView::OnContainerSizeChanged() {
+void MediaDialogView::OnMediaItemUISizeChanged() {
   UpdateBubbleSize();
 }
 
-void MediaDialogView::OnContainerMetadataChanged() {
+void MediaDialogView::OnMediaItemUIMetadataChanged() {
   for (auto& observer : observers_)
     observer.OnMediaSessionMetadataUpdated();
 }
 
-void MediaDialogView::OnContainerActionsChanged() {
+void MediaDialogView::OnMediaItemUIActionsChanged() {
   for (auto& observer : observers_)
     observer.OnMediaSessionActionsChanged();
 }
 
-void MediaDialogView::OnContainerDestroyed(const std::string& id) {
+void MediaDialogView::OnMediaItemUIDestroyed(const std::string& id) {
   auto iter = observed_containers_.find(id);
   DCHECK(iter != observed_containers_.end());
 
@@ -324,7 +325,7 @@ void MediaDialogView::Init() {
 void MediaDialogView::WindowClosing() {
   if (instance_ == this) {
     instance_ = nullptr;
-    service_->SetDialogDelegate(nullptr);
+    service_->media_item_manager()->SetDialogDelegate(nullptr);
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
 }

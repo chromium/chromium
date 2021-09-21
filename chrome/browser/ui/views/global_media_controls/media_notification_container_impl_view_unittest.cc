@@ -14,10 +14,11 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/global_media_controls/public/test/mock_media_item_manager.h"
+#include "components/global_media_controls/public/test/mock_media_item_ui_observer.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "media/base/media_switches.h"
@@ -41,29 +42,6 @@ namespace {
 const char kTestNotificationId[] = "testid";
 const char kOtherTestNotificationId[] = "othertestid";
 const char kRouteId[] = "route_id";
-
-class MockMediaNotificationContainerObserver
-    : public MediaNotificationContainerObserver {
- public:
-  MockMediaNotificationContainerObserver() = default;
-  MockMediaNotificationContainerObserver(
-      const MockMediaNotificationContainerObserver&) = delete;
-  MockMediaNotificationContainerObserver& operator=(
-      const MockMediaNotificationContainerObserver&) = delete;
-  ~MockMediaNotificationContainerObserver() override = default;
-
-  // MediaNotificationContainerObserver implementation.
-  MOCK_METHOD0(OnContainerSizeChanged, void());
-  MOCK_METHOD0(OnContainerMetadataChanged, void());
-  MOCK_METHOD0(OnContainerActionsChanged, void());
-  MOCK_METHOD1(OnContainerClicked, void(const std::string& id));
-  MOCK_METHOD1(OnContainerDismissed, void(const std::string& id));
-  MOCK_METHOD1(OnContainerDestroyed, void(const std::string& id));
-  MOCK_METHOD2(OnContainerDraggedOut,
-               void(const std::string& id, gfx::Rect bounds));
-  MOCK_METHOD2(OnAudioSinkChosen,
-               void(const std::string& id, const std::string& sink_id));
-};
 
 media_router::MediaRoute CreateMediaRoute() {
   media_router::MediaRoute route(kRouteId,
@@ -111,8 +89,8 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
     notification_container_ =
         widget_->SetContentsView(std::move(notification_container));
 
-    observer_ =
-        std::make_unique<NiceMock<MockMediaNotificationContainerObserver>>();
+    observer_ = std::make_unique<
+        NiceMock<global_media_controls::test::MockMediaItemUIObserver>>();
     notification_container_->AddObserver(observer_.get());
 
     SimulateMediaSessionData();
@@ -235,7 +213,9 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
     return notification_container_->GetFocusManager();
   }
 
-  MockMediaNotificationContainerObserver& observer() { return *observer_; }
+  global_media_controls::test::MockMediaItemUIObserver& observer() {
+    return *observer_;
+  }
 
   MediaNotificationContainerImplView* notification_container() {
     return notification_container_;
@@ -280,7 +260,8 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   MediaNotificationContainerImplView* notification_container_ = nullptr;
-  std::unique_ptr<MockMediaNotificationContainerObserver> observer_;
+  std::unique_ptr<global_media_controls::test::MockMediaItemUIObserver>
+      observer_;
   std::unique_ptr<MockMediaNotificationItem> item_;
 
   // Set of actions currently enabled.
@@ -309,7 +290,7 @@ class MediaNotificationContainerImplViewCastTest
         mojo::Remote<media_router::mojom::MediaController>());
     session_controller_ = session_controller.get();
     item_ = std::make_unique<CastMediaNotificationItem>(
-        CreateMediaRoute(), &items_manager_, std::move(session_controller),
+        CreateMediaRoute(), &item_manager_, std::move(session_controller),
         &profile_);
 
     SetUpCommon(std::make_unique<MediaNotificationContainerImplView>(
@@ -318,7 +299,7 @@ class MediaNotificationContainerImplViewCastTest
   }
 
   void TearDown() override {
-    // Delete |item_| before |items_manager_|.
+    // Delete |item_| before |item_manager_|.
     item_.reset();
     MediaNotificationContainerImplViewTest::TearDown();
   }
@@ -333,13 +314,15 @@ class MediaNotificationContainerImplViewCastTest
 
   CastMediaNotificationItem* item() { return item_.get(); }
   Profile* profile() { return &profile_; }
-  MockMediaItemsManager* items_manager() { return &items_manager_; }
+  global_media_controls::test::MockMediaItemManager* item_manager() {
+    return &item_manager_;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
   std::unique_ptr<CastMediaNotificationItem> item_;
-  NiceMock<MockMediaItemsManager> items_manager_;
+  NiceMock<global_media_controls::test::MockMediaItemManager> item_manager_;
   MockSessionController* session_controller_ = nullptr;
 };
 
@@ -352,7 +335,7 @@ TEST_F(MediaNotificationContainerImplViewCastTest, StopCasting) {
 }
 
 TEST_F(MediaNotificationContainerImplViewTest, SwipeToDismiss) {
-  EXPECT_CALL(observer(), OnContainerDismissed(kTestNotificationId));
+  EXPECT_CALL(observer(), OnMediaItemUIDismissed(kTestNotificationId));
   SimulateNotificationSwipedToDismiss();
 }
 
@@ -377,7 +360,7 @@ TEST_F(MediaNotificationContainerImplViewTest, ClickToDismiss) {
   EXPECT_TRUE(IsDismissButtonVisible());
 
   // Clicking it should inform observers that we've been dismissed.
-  EXPECT_CALL(observer(), OnContainerDismissed(kTestNotificationId));
+  EXPECT_CALL(observer(), OnMediaItemUIDismissed(kTestNotificationId));
   SimulateDismissButtonClicked();
   testing::Mock::VerifyAndClearExpectations(&observer());
 }
@@ -405,7 +388,7 @@ TEST_F(MediaNotificationContainerImplViewTest, KeyboardToDismiss) {
   EXPECT_TRUE(IsDismissButtonVisible());
 
   // Clicking it should inform observers that we've been dismissed.
-  EXPECT_CALL(observer(), OnContainerDismissed(kTestNotificationId));
+  EXPECT_CALL(observer(), OnMediaItemUIDismissed(kTestNotificationId));
   SimulatePressingDismissButtonWithKeyboard();
   testing::Mock::VerifyAndClearExpectations(&observer());
 }
@@ -432,7 +415,7 @@ TEST_F(MediaNotificationContainerImplViewTest, ForceExpandedState) {
 }
 
 TEST_F(MediaNotificationContainerImplViewTest, SendsMetadataUpdates) {
-  EXPECT_CALL(observer(), OnContainerMetadataChanged());
+  EXPECT_CALL(observer(), OnMediaItemUIMetadataChanged());
   SimulateMetadataChanged();
 }
 
@@ -440,23 +423,23 @@ TEST_F(MediaNotificationContainerImplViewTest, SendsDestroyedUpdates) {
   auto container = std::make_unique<MediaNotificationContainerImplView>(
       kOtherTestNotificationId, notification_item(), nullptr,
       GlobalMediaControlsEntryPoint::kToolbarIcon, nullptr);
-  MockMediaNotificationContainerObserver observer;
+  global_media_controls::test::MockMediaItemUIObserver observer;
   container->AddObserver(&observer);
 
   // When the container is destroyed, it should notify the observer.
-  EXPECT_CALL(observer, OnContainerDestroyed(kOtherTestNotificationId));
+  EXPECT_CALL(observer, OnMediaItemUIDestroyed(kOtherTestNotificationId));
   container.reset();
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 TEST_F(MediaNotificationContainerImplViewTest, SendsClicks) {
   // When the container is clicked directly, it should notify its observers.
-  EXPECT_CALL(observer(), OnContainerClicked(kTestNotificationId));
+  EXPECT_CALL(observer(), OnMediaItemUIClicked(kTestNotificationId));
   SimulateContainerClicked();
   testing::Mock::VerifyAndClearExpectations(&observer());
 
   // It should also notify its observers when the header is clicked.
-  EXPECT_CALL(observer(), OnContainerClicked(kTestNotificationId));
+  EXPECT_CALL(observer(), OnMediaItemUIClicked(kTestNotificationId));
   SimulateHeaderClicked();
 }
 
@@ -473,4 +456,3 @@ TEST_F(MediaNotificationContainerImplViewTest, MetadataTest) {
       GlobalMediaControlsEntryPoint::kToolbarIcon, nullptr);
   views::test::TestViewMetadata(container_view.get());
 }
-

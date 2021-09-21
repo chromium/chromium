@@ -1,0 +1,73 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("global_media_controls") {
+  public = [
+    "public/media_dialog_delegate.h",
+    "public/media_item_manager.h",
+    "public/media_item_manager_observer.h",
+    "public/media_item_producer.h",
+    "public/media_item_ui.h",
+    "public/media_item_ui_observer.h",
+    "public/media_item_ui_observer_set.h",
+  ]
+
+  defines = [ "IS_GLOBAL_MEDIA_CONTROLS_IMPL" ]
+
+  deps = [
+    "//base",
+    "//skia",
+  ]
+
+  public_deps = [
+    "//components/media_message_center",
+    "//services/media_session/public/cpp",
+  ]
+
+  sources = [
+    "media_item_manager_impl.cc",
+    "media_item_manager_impl.h",
+    "public/media_item_ui_observer_set.cc",
+  ]
+
+  friend = [ ":*" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "media_item_manager_impl_unittest.cc" ]
+
+  deps = [
+    ":global_media_controls",
+    ":test_support",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "public/test/mock_media_dialog_delegate.cc",
+    "public/test/mock_media_dialog_delegate.h",
+    "public/test/mock_media_item_manager.cc",
+    "public/test/mock_media_item_manager.h",
+    "public/test/mock_media_item_manager_observer.cc",
+    "public/test/mock_media_item_manager_observer.h",
+    "public/test/mock_media_item_producer.cc",
+    "public/test/mock_media_item_producer.h",
+    "public/test/mock_media_item_ui_observer.cc",
+    "public/test/mock_media_item_ui_observer.h",
+  ]
+
+  deps = [
+    ":global_media_controls",
+    "//skia",
+    "//testing/gmock",
+  ]
+}

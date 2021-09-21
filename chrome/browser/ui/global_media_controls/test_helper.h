@@ -5,17 +5,10 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 
-#include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
-#include "chrome/browser/ui/global_media_controls/media_items_manager.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "content/public/browser/presentation_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-namespace content {
-class WebContents;
-}
-class MediaNotificationService;
 
 using media_message_center::MediaNotificationView;
 using media_router::WebContentsPresentationManager;
@@ -40,44 +33,6 @@ class MockMediaNotificationItem
 
  private:
   base::WeakPtrFactory<MockMediaNotificationItem> weak_ptr_factory_{this};
-};
-
-class MockMediaDialogDelegate : public MediaDialogDelegate {
- public:
-  MockMediaDialogDelegate();
-
-  MockMediaDialogDelegate(const MockMediaDialogDelegate&) = delete;
-  MockMediaDialogDelegate& operator=(const MockMediaDialogDelegate&) = delete;
-
-  ~MockMediaDialogDelegate() override;
-
-  void Open(MediaNotificationService* service);
-  void OpenForWebContents(MediaNotificationService* service,
-                          content::WebContents* content);
-  void Close();
-
-  // MediaDialogDelegate implementation.
-  MOCK_METHOD(
-      MediaNotificationContainerImpl*,
-      ShowMediaSession,
-      (const std::string& id,
-       base::WeakPtr<media_message_center::MediaNotificationItem> item));
-  MOCK_METHOD(void, HideMediaSession, (const std::string& id));
-  MOCK_METHOD(void, Focus, ());
-
-  void HideMediaDialog() override;
-
- private:
-  MediaNotificationService* service_;
-};
-
-class MockMediaItemsManager : public MediaItemsManager {
- public:
-  MockMediaItemsManager();
-  ~MockMediaItemsManager() override;
-
-  MOCK_METHOD(void, ShowItem, (const std::string&));
-  MOCK_METHOD(void, HideItem, (const std::string&));
 };
 
 class MockWebContentsPresentationManager

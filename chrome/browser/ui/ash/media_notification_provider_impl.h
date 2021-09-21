@@ -5,30 +5,36 @@
 #ifndef CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_
 
+#include <map>
+
 #include "ash/public/cpp/media_notification_provider.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
+#include "components/global_media_controls/public/media_dialog_delegate.h"
+#include "components/global_media_controls/public/media_item_manager_observer.h"
+#include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace global_media_controls {
+class MediaItemManager;
+}  // namespace global_media_controls
 
 class MediaNotificationService;
 class MediaNotificationListView;
-class MediaNotificationContainerImplView;
 class Profile;
 
 class MediaNotificationProviderImpl
     : public ash::MediaNotificationProvider,
-      public MediaDialogDelegate,
-      public MediaNotificationServiceObserver,
-      public MediaNotificationContainerObserver,
+      public global_media_controls::MediaDialogDelegate,
+      public global_media_controls::MediaItemManagerObserver,
+      public global_media_controls::MediaItemUIObserver,
       public session_manager::SessionManagerObserver {
  public:
   MediaNotificationProviderImpl();
   ~MediaNotificationProviderImpl() override;
 
-  // MediaNotificationProvider implementations.
+  // ash::MediaNotificationProvider:
   void AddObserver(ash::MediaNotificationProviderObserver* observer) override;
   void RemoveObserver(
       ash::MediaNotificationProviderObserver* observer) override;
@@ -41,30 +47,24 @@ class MediaNotificationProviderImpl
   void SetColorTheme(
       const media_message_center::NotificationTheme& color_theme) override;
 
-  // MediaDialogDelegate implementations.
-  MediaNotificationContainerImpl* ShowMediaSession(
+  // global_media_controls::MediaDialogDelegate:
+  global_media_controls::MediaItemUI* ShowMediaItem(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item) override;
-  void HideMediaSession(const std::string& id) override;
+  void HideMediaItem(const std::string& id) override;
   void HideMediaDialog() override {}
   void Focus() override {}
 
-  // MediaNotificationServiceObserver implementations.
-  void OnNotificationListChanged() override;
+  // global_media_controls::MediaItemManagerObserver:
+  void OnItemListChanged() override;
   void OnMediaDialogOpened() override {}
   void OnMediaDialogClosed() override {}
 
-  // MediaNotificationContainerObserver implementations.
-  void OnContainerSizeChanged() override;
-  void OnContainerMetadataChanged() override {}
-  void OnContainerActionsChanged() override {}
-  void OnContainerClicked(const std::string& id) override {}
-  void OnContainerDismissed(const std::string& id) override {}
-  void OnContainerDestroyed(const std::string& id) override;
-  void OnAudioSinkChosen(const std::string& id,
-                         const std::string& sink_id) override {}
+  // global_media_controls::MediaItemUIObserver:
+  void OnMediaItemUISizeChanged() override;
+  void OnMediaItemUIDestroyed(const std::string& id) override;
 
-  // SessionManagerobserver implementation.
+  // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
 
   MediaNotificationService* service_for_testing() { return service_; }
@@ -78,8 +78,10 @@ class MediaNotificationProviderImpl
 
   MediaNotificationService* service_ = nullptr;
 
-  std::map<const std::string, MediaNotificationContainerImplView*>
-      observed_containers_;
+  global_media_controls::MediaItemManager* item_manager_ = nullptr;
+
+  std::map<const std::string, global_media_controls::MediaItemUI*>
+      observed_item_uis_;
 
   absl::optional<media_message_center::NotificationTheme> color_theme_;
 };

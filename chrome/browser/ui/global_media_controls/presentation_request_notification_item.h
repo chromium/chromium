@@ -9,18 +9,19 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "content/public/browser/presentation_request.h"
 
-class MediaItemsManager;
+namespace global_media_controls {
+class MediaItemManager;
+}  // namespace global_media_controls
 
 class PresentationRequestNotificationItem final
     : public media_message_center::MediaNotificationItem {
  public:
   PresentationRequestNotificationItem(
-      MediaItemsManager* items_manager,
+      global_media_controls::MediaItemManager* item_manager,
       const content::PresentationRequest& request,
       std::unique_ptr<media_router::StartPresentationContext> context);
   PresentationRequestNotificationItem(
@@ -60,7 +61,7 @@ class PresentationRequestNotificationItem final
   void SetMute(bool mute) override {}
 
   const std::string id_;
-  MediaItemsManager* const items_manager_;
+  global_media_controls::MediaItemManager* const item_manager_;
 
   // True if the item is created from a default PresentationRequest, which means
   // |context_| is set to nullptr in the constructor.
