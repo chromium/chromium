@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -154,6 +155,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   builder->Add("oobeOKButtonText", IDS_OOBE_OK_BUTTON_TEXT);
   builder->Add("languageButtonLabel", IDS_LANGUAGE_BUTTON_LABEL);
   builder->Add("languageSectionTitle", IDS_LANGUAGE_SECTION_TITLE);
+  builder->Add("languageSectionHint", IDS_LANGUAGE_SECTION_HINT);
   builder->Add("accessibilitySectionTitle", IDS_ACCESSIBILITY_SECTION_TITLE);
   builder->Add("accessibilitySectionHint", IDS_ACCESSIBILITY_SECTION_HINT);
   builder->Add("timezoneSectionTitle", IDS_TIMEZONE_SECTION_TITLE);
@@ -295,6 +297,9 @@ void WelcomeScreenHandler::GetAdditionalParameters(
   // This switch is set by the session manager if the OS install
   // service is enabled and the OS is running from a USB installer.
   dict->SetKey("osInstallEnabled", base::Value(switches::IsOsInstallAllowed()));
+  dict->SetKey("languagePacksEnabled",
+               base::Value(base::FeatureList::IsEnabled(
+                   ash::features::kLanguagePacksHandwriting)));
 }
 
 void WelcomeScreenHandler::Initialize() {

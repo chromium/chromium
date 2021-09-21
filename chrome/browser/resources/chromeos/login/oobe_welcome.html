@@ -98,6 +98,15 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'languageSectionTitle')]]
       </h1>
+      <p slot="subtitle">
+        <template is="dom-if" if="[[shouldShowLanguageSectionSubtitle_]]">
+          [[i18nDynamic(locale, 'languageSectionHint')]]
+          <a id="languagesLearnMore" class="oobe-local-link" is="action-link"
+              on-click="onLanguageLearnMoreLinkClicked_">
+            [[i18nDynamic(locale, 'learnMore')]]
+          </a>
+        </template>
+      </p>
       <div id="setup-container" slot="content" class="landscape-header-aligned">
         <div id="languageDropdownContainer"
             class="flex layout center horizontal justified

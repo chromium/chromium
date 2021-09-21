@@ -134,7 +134,18 @@ Polymer({
      * Tracks if we've given the ChromeVox hint yet.
      * @private
      */
-    chromeVoxHintGiven_: {type: Boolean, value: false}
+    chromeVoxHintGiven_: {type: Boolean, value: false},
+
+    /**
+     * Whether the subtitle for the language section should be shown.
+     */
+    shouldShowLanguageSectionSubtitle_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('languagePacksEnabled') &&
+            loadTimeData.getBoolean('languagePacksEnabled');
+      },
+    },
   },
 
   /** Overridden from LoginScreenBehavior. */
@@ -494,6 +505,8 @@ Polymer({
     this.currentKeyboard = getSelectedTitle(this.keyboards);
   },
 
+  /** ******************** Language section ******************* */
+
   /**
    * Handle "OK" button for "LanguageSelection" screen.
    *
@@ -501,6 +514,20 @@ Polymer({
    */
   closeLanguageSection_() {
     this.setUIStep(UIState.GREETING);
+  },
+
+  /**
+   * On-tap event handler for "learn more" link about language packs.
+   *
+   * @private
+   */
+  onLanguageLearnMoreLinkClicked_(e) {
+    // TODO(b/200128583): Open the OOBE help app with the help centre article
+    // for language packs, or pop up a <oobe-modal-dialog> with similar content.
+
+    // Can't use this.$.languagesLearnMore here as the element is in a <dom-if>.
+    this.$$('#languagesLearnMore').focus();
+    e.stopPropagation();
   },
 
   /** ******************** Accessibility section ******************* */

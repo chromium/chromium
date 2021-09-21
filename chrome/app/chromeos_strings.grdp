@@ -672,6 +672,9 @@
   <message name="IDS_LANGUAGE_SECTION_TITLE" desc="Title of language selection screen" meaning="A title of the dialog where user should select Chrome OS UI language and default keyboard layout during initial device setup.">
     Choose your language &amp; keyboard
   </message>
+  <message name="IDS_LANGUAGE_SECTION_HINT" desc="Under-title line on the language selection screen" meaning="A hint to the user that language files are shared among users.">
+    Language files are shared among users to save disk space.
+  </message>
   <message name="IDS_ACCESSIBILITY_SECTION_TITLE" desc="Title of accessibility options screen" meaning="A title of the dialog where user can control Chrome OS UI accessibility (like large cursor or screen reader) options during initial device setup.">
     Accessibility settings
   </message>
