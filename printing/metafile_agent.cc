@@ -6,22 +6,25 @@
 
 #include <string>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 
 namespace printing {
 
 namespace {
 
-base::LazyInstance<std::string>::Leaky g_user_agent;
+std::string& GetAgentImpl() {
+  static base::NoDestructor<std::string> instance;
+  return *instance;
+}
 
 }  // namespace
 
 void SetAgent(const std::string& user_agent) {
-  g_user_agent.Get() = user_agent;
+  GetAgentImpl() = user_agent;
 }
 
 const std::string& GetAgent() {
-  return g_user_agent.Get();
+  return GetAgentImpl();
 }
 
 }  // namespace printing
