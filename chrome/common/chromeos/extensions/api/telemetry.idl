@@ -22,7 +22,7 @@ namespace os.telemetry {
   callback VpdInfoCallback = void (VpdInfo vpdInfo);
 
   dictionary OemData {
-    // OEM data.
+    // OEM data. This field used to store battery serial number by some OEMs.
     DOMString? oemData;
   };
 
