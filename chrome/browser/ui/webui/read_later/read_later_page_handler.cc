@@ -235,6 +235,7 @@ void ReadLaterPageHandler::AddCurrentTab() {
     return;
 
   chrome::MoveCurrentTabToReadLater(browser);
+  reading_list_model_->MarkAllSeen();
 
   base::RecordAction(
       base::UserMetricsAction(base::FeatureList::IsEnabled(features::kSidePanel)
@@ -281,6 +282,7 @@ void ReadLaterPageHandler::ReadingListModelCompletedBatchUpdates(
     return;
   page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
   UpdateCurrentPageActionButton();
+  reading_list_model_->MarkAllSeen();
 }
 
 void ReadLaterPageHandler::ReadingListModelBeingDeleted(
@@ -300,6 +302,7 @@ void ReadLaterPageHandler::ReadingListDidApplyChanges(ReadingListModel* model) {
   }
   page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
   UpdateCurrentPageActionButton();
+  reading_list_model_->MarkAllSeen();
 }
 
 const absl::optional<GURL> ReadLaterPageHandler::GetActiveTabURL() {
