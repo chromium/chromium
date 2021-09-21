@@ -5,16 +5,21 @@
 #include "extensions/browser/extension_message_filter.h"
 
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
@@ -22,6 +27,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/process_map.h"
@@ -33,6 +39,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/trace_util.h"
+#include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 
 using content::BrowserThread;
@@ -80,7 +87,8 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
 // the caller to not take any action based on the rejected, untrustworthy
 // `source_endpoint`).
 bool IsValidMessagingSource(RenderProcessHost& process,
-                            const MessagingEndpoint& source_endpoint) {
+                            const MessagingEndpoint& source_endpoint,
+                            int frame_routing_id_for_debugging) {
   switch (source_endpoint.type) {
     case MessagingEndpoint::Type::kNativeApp:
       // Requests for channels initiated by native applications don't originate
@@ -124,6 +132,30 @@ bool IsValidMessagingSource(RenderProcessHost& process,
           base::UmaHistogramSparse(
               "Stability.BadMessageTerminated.Extensions",
               bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
+
+          // Extra logging for verifying the hypothesis that in some cases
+          // `extension_web_contents_observer` is missing.
+          // TODO(https://crbug.com/1212918): Remove the debugging code after
+          // diagnosing and fixing the bug.
+          content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
+              process.GetID(), frame_routing_id_for_debugging);
+          content::WebContents* web_contents =
+              content::WebContents::FromRenderFrameHost(frame);
+          ExtensionWebContentsObserver* extension_web_contents_observer =
+              web_contents ? ExtensionWebContentsObserver::GetForWebContents(
+                                 web_contents)
+                           : nullptr;
+          SCOPED_CRASH_KEY_STRING32(
+              "extensions/IPC", "ExtensionWCO",
+              base::StringPrintf("!!frame=%d !!wc=%d !!ewco=%d", !!frame,
+                                 !!web_contents,
+                                 !!extension_web_contents_observer));
+          SCOPED_CRASH_KEY_STRING256(
+              "extensions/IPC", "web_contents_creator",
+              web_contents ? web_contents->GetCreatorLocation().ToString()
+                           : std::string("<no web_contents>"));
+
+          base::debug::DumpWithoutCrashing();
         } else {
           TRACE_EVENT_INSTANT("extensions", "IsValidMessagingSource: kTab: ok",
                               ChromeTrackEvent::kRenderProcessHost, process,
@@ -341,7 +373,13 @@ void ExtensionMessageFilter::OnOpenChannelToExtension(
               ChromeTrackEvent::kRenderProcessHost, *process);
 
   ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
-  if (!IsValidMessagingSource(*process, info.source_endpoint) ||
+  int frame_routing_id_for_debugging = MSG_ROUTING_NONE;
+  if (source_context.is_for_render_frame()) {
+    DCHECK(source_context.frame.has_value());
+    frame_routing_id_for_debugging = source_context.frame->routing_id;
+  }
+  if (!IsValidMessagingSource(*process, info.source_endpoint,
+                              frame_routing_id_for_debugging) ||
       !IsValidSourceContext(*process, source_context)) {
     return;
   }
