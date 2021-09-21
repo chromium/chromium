@@ -38,7 +38,6 @@ class ReportingClient : public ReportQueueProvider {
       : public ReportQueueProvider::InitializingContext {
    public:
     ClientInitializingContext(
-        GetCloudPolicyClientCallback get_client_cb,
         UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
         InitCompleteCallback init_complete_cb,
         ReportingClient* client,
@@ -58,24 +57,13 @@ class ReportingClient : public ReportQueueProvider {
     // ReportingClient, if the configuration process succeeded.
     void OnCompleted() override;
 
-    // Called back after CloudPolicyClient configuration succeeded.
-    void OnCloudPolicyClientConfigured(
-        StatusOr<policy::CloudPolicyClient*> client_result);
-
-    // Instantiates a StorageModuleInterface for ReportingClient to refer to.
-    void ConfigureStorageModule();
+    // Handles StorageModuleInterface instantiation for ReportingClient to refer
+    // to.
     void OnStorageModuleConfigured(
         StatusOr<scoped_refptr<StorageModuleInterface>> storage_result);
 
-    // Calls back upon creation of upload client.
-    void OnUploadClientCreated(
-        StatusOr<std::unique_ptr<UploadClient>> upload_client_result);
-
-    GetCloudPolicyClientCallback get_client_cb_;
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
-    policy::CloudPolicyClient* cloud_policy_client_ = nullptr;
-    std::unique_ptr<UploadClient> upload_client_;
     scoped_refptr<StorageModuleInterface> storage_;
     ReportingClient* const client_;
   };
@@ -158,6 +146,16 @@ class ReportingClient : public ReportQueueProvider {
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
   void FlushAsyncStartUploaderQueue();
+
+  void StartConfigureUpload();
+
+  // Called back after CloudPolicyClient configuration succeeded.
+  void OnCloudPolicyClientConfigured(
+      StatusOr<policy::CloudPolicyClient*> client_result);
+
+  // Calls back upon creation of upload client.
+  void OnUploadClientCreated(
+      StatusOr<std::unique_ptr<UploadClient>> upload_client_result);
 
   void SetUploadClient(std::unique_ptr<UploadClient> upload_client);
 

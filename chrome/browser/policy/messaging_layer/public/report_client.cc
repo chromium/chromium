@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -197,13 +198,11 @@ ReportingClient::InstantiateInitializingContext(
     InitCompleteCallback init_complete_cb,
     scoped_refptr<InitializationStateTracker> init_state_tracker) {
   return new ClientInitializingContext(
-      build_cloud_policy_client_cb_,
       base::BindRepeating(&ReportingClient::AsyncStartUploader),
       std::move(init_complete_cb), this, init_state_tracker);
 }
 
 ReportingClient::ClientInitializingContext::ClientInitializingContext(
-    GetCloudPolicyClientCallback get_client_cb,
     UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
     InitCompleteCallback init_complete_cb,
     ReportingClient* client,
@@ -211,68 +210,13 @@ ReportingClient::ClientInitializingContext::ClientInitializingContext(
         init_state_tracker)
     : ReportQueueProvider::InitializingContext(std::move(init_complete_cb),
                                                std::move(init_state_tracker)),
-      get_client_cb_(std::move(get_client_cb)),
       async_start_upload_cb_(std::move(async_start_upload_cb)),
-      client_(client) {
-  DCHECK(get_client_cb_);
-}
+      client_(client) {}
 
 ReportingClient::ClientInitializingContext::~ClientInitializingContext() =
     default;
 
 void ReportingClient::ClientInitializingContext::OnStart() {
-  if (!StorageSelector::is_uploader_required() ||
-      StorageSelector::is_use_missive()) {
-    // If uploading is disabled or missived is used, proceed with no
-    // CloudPolicyClient. In the latter case, uploader will be provided by
-    // EncryptedReportingServiceProvider so it does not need to be enabled here.
-    ConfigureStorageModule();
-    return;
-  }
-
-  // Uploading is enabled, it will need CloudPolicyClient, which requires
-  // posting to the main UI thread for getting access to it.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](GetCloudPolicyClientCallback get_client_cb,
-             base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>
-                 on_client_configured) {
-            if (!StorageSelector::is_uploader_required()) {
-              // Uploading is disabled, proceed with no CloudPolicyClient.
-              std::move(on_client_configured)
-                  .Run(Status(error::FAILED_PRECONDITION,
-                              "Uploading is disabled"));
-              return;
-            }
-            std::move(get_client_cb).Run(std::move(on_client_configured));
-          },
-          std::move(get_client_cb_),
-          base::BindOnce(
-              &ClientInitializingContext::OnCloudPolicyClientConfigured,
-              base::Unretained(this))));
-}
-
-void ReportingClient::ClientInitializingContext::OnCloudPolicyClientConfigured(
-    StatusOr<policy::CloudPolicyClient*> client_result) {
-  if (!client_result.ok()) {
-    client_->uploaders_queue_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ClientInitializingContext::Complete, base::Unretained(this),
-            Status(error::FAILED_PRECONDITION,
-                   base::StrCat({"Unable to build CloudPolicyClient: ",
-                                 client_result.status().message()}))));
-    return;
-  }
-  cloud_policy_client_ = client_result.ValueOrDie();
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce(&ClientInitializingContext::ConfigureStorageModule,
-                     base::Unretained(this)));
-}
-
-void ReportingClient::ClientInitializingContext::ConfigureStorageModule() {
   StorageSelector::CreateStorageModule(
       client_->reporting_path_, client_->verification_key_,
       CompressionInformation::COMPRESSION_SNAPPY,
@@ -295,37 +239,6 @@ void ReportingClient::ClientInitializingContext::OnStorageModuleConfigured(
   }
 
   storage_ = storage_result.ValueOrDie();
-  if (!cloud_policy_client_) {
-    // No policy client - no uploader needed (uploads will not be forwarded).
-    client_->uploaders_queue_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ClientInitializingContext::Complete,
-                                  base::Unretained(this), Status::StatusOK()));
-    return;
-  }
-
-  UploadClient::Create(
-      cloud_policy_client_,
-      base::BindRepeating(&StorageModuleInterface::ReportSuccess, storage_),
-      base::BindRepeating(&StorageModuleInterface::UpdateEncryptionKey,
-                          storage_),
-      base::BindOnce(&ClientInitializingContext::OnUploadClientCreated,
-                     base::Unretained(this)));
-}
-
-void ReportingClient::ClientInitializingContext::OnUploadClientCreated(
-    StatusOr<std::unique_ptr<UploadClient>> upload_client_result) {
-  if (!upload_client_result.ok()) {
-    client_->uploaders_queue_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ClientInitializingContext::Complete, base::Unretained(this),
-            Status(error::FAILED_PRECONDITION,
-                   base::StrCat({"Unable to create UploadClient: ",
-                                 upload_client_result.status().message()}))));
-    return;
-  }
-  upload_client_ = std::move(upload_client_result.ValueOrDie());
-  // All done, return success.
   client_->uploaders_queue_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ClientInitializingContext::Complete,
                                 base::Unretained(this), Status::StatusOK()));
@@ -333,17 +246,66 @@ void ReportingClient::ClientInitializingContext::OnUploadClientCreated(
 
 void ReportingClient::ClientInitializingContext::OnCompleted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_->uploaders_queue_sequence_checker_);
-  if (cloud_policy_client_) {
-    DCHECK(client_->cloud_policy_client_ == nullptr)
-        << "Cloud policy client already recorded";
-    client_->cloud_policy_client_ = cloud_policy_client_;
-  }
-  if (upload_client_) {
-    DCHECK(!client_->upload_client_) << "Upload client already recorded";
-    client_->SetUploadClient(std::move(upload_client_));
-  }
   DCHECK(!client_->storage_) << "Storage module already recorded";
   client_->storage_ = std::move(storage_);
+
+  // If non-missived uploading is enabled, it will need CloudPolicyClient,
+  // which requires posting to the main UI thread for getting access to it.
+  // In case of missived Uploader will be provided by
+  // EncryptedReportingServiceProvider so it does not need to be enabled here.
+  if (StorageSelector::is_uploader_required() &&
+      !StorageSelector::is_use_missive()) {
+    // Start configuring upload clients. Note that we will not wait for it!
+    client_->StartConfigureUpload();
+  }
+}
+
+void ReportingClient::StartConfigureUpload() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](ReportingClient* client) {
+            std::move(client->build_cloud_policy_client_cb_)
+                .Run(base::BindPostTask(
+                    client->uploaders_queue_task_runner_,
+                    base::BindOnce(
+                        &ReportingClient::OnCloudPolicyClientConfigured,
+                        base::Unretained(client))));
+          },
+          base::Unretained(this)));
+}
+
+void ReportingClient::OnCloudPolicyClientConfigured(
+    StatusOr<policy::CloudPolicyClient*> client_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
+  if (!client_result.ok()) {
+    LOG(ERROR) << "Unable to build CloudPolicyClient, status="
+               << client_result.status();
+    return;
+  }
+  DCHECK(cloud_policy_client_ == nullptr)
+      << "Cloud policy client already recorded";
+  cloud_policy_client_ = client_result.ValueOrDie();
+
+  UploadClient::Create(
+      cloud_policy_client_,
+      base::BindRepeating(&StorageModuleInterface::ReportSuccess, storage_),
+      base::BindRepeating(&StorageModuleInterface::UpdateEncryptionKey,
+                          storage_),
+      base::BindOnce(&ReportingClient::OnUploadClientCreated,
+                     base::Unretained(this)));
+}
+
+void ReportingClient::OnUploadClientCreated(
+    StatusOr<std::unique_ptr<UploadClient>> upload_client_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
+  if (!upload_client_result.ok()) {
+    LOG(ERROR) << "Unable to create UploadClient, status="
+               << upload_client_result.status();
+    return;
+  }
+  SetUploadClient(std::move(upload_client_result.ValueOrDie()));
 }
 
 ReportingClient::ReportingClient()
@@ -440,7 +402,7 @@ void ReportingClient::SetUploadClient(
     std::unique_ptr<UploadClient> upload_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
   // This can only happen once.
-  DCHECK(!upload_client_);
+  DCHECK(upload_client_ == nullptr) << "Upload client already recorded";
   upload_client_ = std::move(upload_client);
   uploaders_queue_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ReportingClient::FlushAsyncStartUploaderQueue,
