@@ -65,6 +65,7 @@
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
+#include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -171,6 +172,15 @@ enum class TabSwitcherDismissalMode { NONE, NORMAL, INCOGNITO };
 const char kMultiWindowOpenInNewWindowHistogram[] =
     "IOS.MultiWindow.OpenInNewWindow";
 
+// TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
+// instead of this when available.
+bool IsSigninForcedByPolicy() {
+  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
+      GetApplicationContext()->GetLocalState()->GetInteger(
+          prefs::kBrowserSigninPolicy));
+  return policy_mode == BrowserSigninMode::kForced;
+}
+
 }  // namespace
 
 @interface SceneController () <AppStateObserver,
@@ -237,7 +247,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // BrowserViewInformation protocol.
 @property(nonatomic, strong) BrowserViewWrangler* browserViewWrangler;
 // The coordinator used to control sign-in UI flows. Lazily created the first
-// time it is accessed.
+// time it is accessed. Use -[startSigninCoordinatorWithCompletion:] to start
+// the coordinator.
 @property(nonatomic, strong) SigninCoordinator* signinCoordinator;
 
 @property(nonatomic, strong)
@@ -356,8 +367,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)handleExternalIntents {
-  if (self.sceneState.appState.initStage <= InitStageFirstRun ||
-      self.sceneState.presentingModalOverlay) {
+  if (![self canHandleIntents]) {
     return;
   }
   // Handle URL opening from
@@ -597,13 +607,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return;
   }
 
-  BOOL sceneIsActive =
-      self.sceneState.activationLevel >= SceneActivationLevelForegroundActive;
-  // TODO(crbug.com/1210542): Review this stage threshold; works for now.
-  if (self.sceneState.appState.initStage <= InitStageFirstRun ||
-      self.sceneState.presentingModalOverlay) {
-    sceneIsActive = NO;
-  }
+  BOOL sceneIsActive = [self canHandleIntents];
   self.sceneState.startupHadExternalIntent = YES;
 
   PrefService* prefs = self.currentInterface.browserState->GetPrefs();
@@ -635,9 +639,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
-  if (self.sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
-    [self handleExternalIntents];
-  }
+  [self handleExternalIntents];
 }
 
 #pragma mark - AppStateObserver
@@ -1022,13 +1024,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // that showed the Remind Me Later button and tapped on it, then show the
     // promo again if now is the right time.
 
-    AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(
-            self.sceneState.appState.mainBrowserState);
-    DCHECK(authenticationService);
-    DCHECK(authenticationService->initialized());
-    BOOL isSignedIn = authenticationService->HasPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    BOOL isSignedIn = [self isSignedIn];
 
     // Tailored promos take priority over general promo.
     BOOL isMadeForIOSPromoEligible =
@@ -1266,6 +1262,48 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                                               .viewController
                                                   browser:browser];
   [self startSigninCoordinatorWithCompletion:nil];
+}
+
+- (BOOL)canHandleIntents {
+  if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive) {
+    return NO;
+  }
+
+  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+    return NO;
+  }
+
+  if (self.sceneState.presentingModalOverlay) {
+    return NO;
+  }
+
+  if (IsSigninForcedByPolicy()) {
+    if (self.signinCoordinator) {
+      // Return NO because intents cannot be handled when using
+      // |self.signinCoordinator| for the forced sign-in prompt.
+      return NO;
+    }
+    if (![self isSignedIn]) {
+      // Return NO if the forced sign-in policy is enabled while the browser is
+      // signed out because intent can only be processed when the browser is
+      // signed-in in that case. This condition may be reached at startup before
+      // |self.signinCoordinator| is set to show the forced sign-in prompt.
+      return NO;
+    }
+  }
+
+  return YES;
+}
+
+- (BOOL)isSignedIn {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.sceneState.appState.mainBrowserState);
+  DCHECK(authenticationService);
+  DCHECK(authenticationService->initialized());
+
+  return authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
 }
 
 #pragma mark - ApplicationCommands
@@ -2710,7 +2748,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         PolicyChangeCommands);
     [handler showPolicySignoutPrompt];
     self.signinCoordinator = nil;
+    return;
   }
+
+  DCHECK(self.signinCoordinator);
 
   __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
       std::make_unique<ScopedUIBlocker>(self.sceneState);
@@ -2744,6 +2785,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
             [dispatcher closeSettingsUIAndOpenURL:command];
             break;
         }
+
+        if (IsSigninForcedByPolicy()) {
+          // Handle intents after sign-in is done when the forced sign-in policy
+          // is enabled.
+          [strongSelf handleExternalIntents];
+        }
+
       };
 
   [self.signinCoordinator start];
@@ -2886,13 +2934,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // When opening with URLs for GetChromeIdentityService, it is expected that a
   // single URL is passed.
   DCHECK(URLsToOpen.count == URLContexts.count || URLContexts.count == 1);
-  BOOL active =
-      _sceneState.activationLevel >= SceneActivationLevelForegroundActive;
-  // TODO(crbug.com/1210542): Review this stage threshold; works for now.
-  if (self.sceneState.appState.initStage <= InitStageFirstRun ||
-      self.sceneState.presentingModalOverlay) {
-    active = NO;
-  }
+  BOOL active = [self canHandleIntents];
 
   for (URLOpenerParams* options : URLsToOpen) {
     [URLOpener openURL:options
