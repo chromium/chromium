@@ -58,9 +58,7 @@ class PlayerCompositorDelegate {
   // Returns whether initialization has happened.
   bool IsInitialized() const { return paint_preview_service_; }
 
-  void SetProto(std::unique_ptr<PaintPreviewProto> proto) {
-    proto_ = std::move(proto);
-  }
+  void SetCaptureResult(std::unique_ptr<CaptureResult> capture_result);
 
   // Overrides whether to compress the directory when the player is closed. By
   // default compression will happen.
@@ -138,6 +136,8 @@ class PlayerCompositorDelegate {
                           base::TimeDelta timeout_duration,
                           size_t max_requests);
 
+  void ValidateProtoAndLoadAXTree(const GURL& expected_url);
+
   void OnAXTreeUpdateAvailable(std::unique_ptr<ui::AXTreeUpdate> update);
 
   void OnCompositorReadyStatusAdapter(
@@ -188,7 +188,8 @@ class PlayerCompositorDelegate {
   std::unique_ptr<
       base::flat_map<base::UnguessableToken, std::unique_ptr<HitTester>>>
       hit_testers_;
-  std::unique_ptr<PaintPreviewProto> proto_;
+  std::unique_ptr<PaintPreviewProto> proto_copy_;
+  std::unique_ptr<CaptureResult> capture_result_;
   std::unique_ptr<ui::AXTreeUpdate> ax_tree_update_;
 
   int active_requests_{0};

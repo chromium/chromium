@@ -68,7 +68,7 @@ jlong JNI_PlayerCompositorDelegateImpl_Initialize(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_object,
     jlong paint_preview_service,
-    const JavaParamRef<jbyteArray>& j_proto,
+    jlong j_capture_result_ptr,
     const JavaParamRef<jstring>& j_url_spec,
     const JavaParamRef<jstring>& j_directory_key,
     jboolean j_main_frame_mode,
@@ -79,7 +79,7 @@ jlong JNI_PlayerCompositorDelegateImpl_Initialize(
       new PlayerCompositorDelegateAndroid(
           env, j_object,
           reinterpret_cast<PaintPreviewBaseService*>(paint_preview_service),
-          j_proto, j_url_spec, j_directory_key, j_main_frame_mode,
+          j_capture_result_ptr, j_url_spec, j_directory_key, j_main_frame_mode,
           j_compositor_error_callback, j_is_low_mem);
   return reinterpret_cast<intptr_t>(delegate);
 }
@@ -88,7 +88,7 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_object,
     PaintPreviewBaseService* paint_preview_service,
-    const JavaParamRef<jbyteArray>& j_proto,
+    jlong j_capture_result_ptr,
     const JavaParamRef<jstring>& j_url_spec,
     const JavaParamRef<jstring>& j_directory_key,
     jboolean j_main_frame_mode,
@@ -97,23 +97,19 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
     : PlayerCompositorDelegate(),
       request_id_(0),
       startup_timestamp_(base::TimeTicks::Now()) {
-  if (j_proto) {
+  std::string url_string;
+  if (j_capture_result_ptr) {
     // Show@Startup doesn't use this.
-    std::string serialized_proto;
-    base::android::JavaByteArrayToString(env, j_proto, &serialized_proto);
-    auto proto = std::make_unique<PaintPreviewProto>();
-    if (!proto->ParseFromString(serialized_proto)) {
-      base::android::RunIntCallbackAndroid(
-          j_compositor_error_callback,
-          static_cast<int>(CompositorStatus::PROTOBUF_DESERIALIZATION_ERROR));
-      return;
-    }
-    PlayerCompositorDelegate::SetProto(std::move(proto));
+    std::unique_ptr<CaptureResult> capture_result(
+        reinterpret_cast<CaptureResult*>(j_capture_result_ptr));
+    url_string = capture_result->proto.metadata().url();
+    PlayerCompositorDelegate::SetCaptureResult(std::move(capture_result));
+  } else {
+    url_string = base::android::ConvertJavaStringToUTF8(env, j_url_spec);
   }
 
   PlayerCompositorDelegate::Initialize(
-      paint_preview_service,
-      GURL(base::android::ConvertJavaStringToUTF8(env, j_url_spec)),
+      paint_preview_service, GURL(url_string),
       DirectoryKey{
           base::android::ConvertJavaStringToUTF8(env, j_directory_key)},
       static_cast<bool>(j_main_frame_mode),

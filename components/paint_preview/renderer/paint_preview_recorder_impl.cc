@@ -140,7 +140,9 @@ void SerializeMemoryBufferRecording(
       RecordToBuffer(skp, tracker.get(), max_capture_size, &serialized_size);
   out.status = buffer.has_value() ? mojom::PaintPreviewStatus::kOk
                                   : mojom::PaintPreviewStatus::kCaptureFailed;
-  out.response->skp.emplace(std::move(buffer.value()));
+  if (buffer.has_value()) {
+    out.response->skp.emplace(std::move(buffer.value()));
+  }
   out.response->serialized_size = serialized_size;
 
   BuildAndSendResponse(std::move(tracker), std::move(out), std::move(callback));

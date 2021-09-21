@@ -451,8 +451,10 @@ TEST_F(PlayerCompositorDelegateTest, InMemoryProto) {
   SerializeProtoAndCreateRootSkp(&proto, key, true);
   {
     PlayerCompositorDelegateImpl player_compositor_delegate;
-    player_compositor_delegate.SetProto(
-        std::make_unique<PaintPreviewProto>(proto));
+    auto capture_result =
+        std::make_unique<CaptureResult>(RecordingPersistence::kFileSystem);
+    capture_result->proto = std::move(proto);
+    player_compositor_delegate.SetCaptureResult(std::move(capture_result));
     player_compositor_delegate.SetExpectedStatus(CompositorStatus::OK);
     player_compositor_delegate.InitializeWithFakeServiceForTest(
         service, url, key, /*main_frame_mode=*/false, base::DoNothing(),

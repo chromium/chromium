@@ -53,15 +53,16 @@ public class EntryManager {
     /**
      * @param context An instance of current Android {@link Context}.
      * @param tab Tab to generate the bitmap for.
+     * @param inMemory Use memory buffers to store the capture rather than temporary files.
      */
-    public EntryManager(Context context, Tab tab) {
+    public EntryManager(Context context, Tab tab, boolean inMemory) {
         mEntries = new ArrayList<LongScreenshotsEntry>();
         mQueuedEntries = new ArrayList<LongScreenshotsEntry>();
         mGeneratorObservers = new ObserverList<>();
         mBoundsManager = new ScreenshotBoundsManager(context, tab);
 
         mGenerator = new BitmapGenerator(tab, mBoundsManager, createBitmapGeneratorCallback());
-        mGenerator.captureTab();
+        mGenerator.captureTab(inMemory);
         updateGeneratorStatus(EntryStatus.CAPTURE_IN_PROGRESS);
         // TODO(cb/1153969): Remove, or make this a finch param. Consider increasing default.
         mMaxMemoryUsageInKb = 16 * 1024;

@@ -87,7 +87,6 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//components/paint_preview/browser/android:java",
-    "//components/paint_preview/common/proto:proto_java",
     "//content/public/android:content_java",
     "//third_party/android_swipe_refresh:android_swipe_refresh_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -132,7 +131,6 @@ android_library("javatests") {
     ":player_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//components/paint_preview/common/proto:proto_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:rules_java",

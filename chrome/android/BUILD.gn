@@ -1465,7 +1465,6 @@ android_library("chrome_test_java") {
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/page_info/android:java",
     "//components/page_info/android:page_info_action_enum_java",
-    "//components/paint_preview/common/proto:proto_java",
     "//components/paint_preview/player/android:java",
     "//components/paint_preview/player/android:javatests",
     "//components/password_manager/core/browser:password_manager_java_enums",

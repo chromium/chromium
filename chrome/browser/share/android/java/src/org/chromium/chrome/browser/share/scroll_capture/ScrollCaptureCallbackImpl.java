@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager.BitmapGeneratorObserver;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
@@ -32,12 +33,16 @@ import java.util.function.Consumer;
  */
 @RequiresApi(api = VERSION_CODES.S)
 public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
+    private static final String IN_MEMORY_CAPTURE = "in_memory_capture";
+
     /**
      * Wrapper class for {@link EntryManager}.
      */
     public static class EntryManagerWrapper {
         EntryManager create(Tab tab) {
-            return new EntryManager(tab.getContext(), tab);
+            return new EntryManager(tab.getContext(), tab,
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.SCROLL_CAPTURE, IN_MEMORY_CAPTURE, false));
         }
     }
 
