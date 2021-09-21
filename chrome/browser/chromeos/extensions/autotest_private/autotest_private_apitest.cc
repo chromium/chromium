@@ -53,9 +53,9 @@ namespace extensions {
 class AutotestPrivateApiTest : public ExtensionApiTest {
  public:
   AutotestPrivateApiTest() {
-    // SplitSettingsSync makes an untitled Play Store icon appear in the shelf
-    // due to app pin syncing code. Sync isn't relevant to this test, so skip
-    // pinned app sync. https://crbug.com/1085597
+    // SyncSettingsCategorization makes an untitled Play Store icon appear in
+    // the shelf due to app pin syncing code. Sync isn't relevant to this test,
+    // so skip pinned app sync. https://crbug.com/1085597
     SkipPinnedAppsFromSyncForTest();
   }
 

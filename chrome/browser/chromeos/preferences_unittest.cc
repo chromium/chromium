@@ -383,7 +383,7 @@ class InputMethodPreferencesTest : public PreferencesTest,
   // Simulates the initial sync of preferences.
   syncer::SyncableService* SyncPreferences(
       const syncer::SyncDataList& sync_data_list) {
-    // SplitSettingsSync moves IME prefs to be OS prefs.
+    // SyncSettingsCategorization moves IME prefs to be OS prefs.
     syncer::ModelType model_type =
         features::IsSyncSettingsCategorizationEnabled() ? syncer::OS_PREFERENCES
                                                         : syncer::PREFERENCES;
