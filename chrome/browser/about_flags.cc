@@ -55,6 +55,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
+#include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
@@ -7630,9 +7631,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kShareUsageRankingFixedMore)},
 #endif
 
+#if !defined(OS_ANDROID)
     {"share-context-menu", flag_descriptions::kShareContextMenuName,
      flag_descriptions::kShareContextMenuDescription, kOsAll,
-     FEATURE_VALUE_TYPE(sharing::kShareMenu)},
+     FEATURE_VALUE_TYPE(share::kShareMenu)},
+#endif
 
     {"enable-safe-browsing-per-profile-network-contexts",
      flag_descriptions::kSafeBrowsingPerProfileNetworkContextsName,

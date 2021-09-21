@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SHARING_SHARE_SUBMENU_MODEL_H_
-#define CHROME_BROWSER_SHARING_SHARE_SUBMENU_MODEL_H_
+#ifndef CHROME_BROWSER_SHARE_SHARE_SUBMENU_MODEL_H_
+#define CHROME_BROWSER_SHARE_SHARE_SUBMENU_MODEL_H_
 
+#include "base/feature_list.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -14,7 +15,9 @@ namespace send_tab_to_self {
 class SendTabToSelfSubMenuModel;
 }
 
-namespace sharing {
+namespace share {
+
+extern const base::Feature kShareMenu;
 
 // ShareSubmenuModel is a MenuModel intended to be slotted into another menu,
 // usually a context menu, to offer a set of sharing options. Currently, it
@@ -65,6 +68,6 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
       stts_submenu_model_;
 };
 
-}  // namespace sharing
+}  // namespace share
 
-#endif  // CHROME_BROWSER_SHARING_SHARE_SUBMENU_MODEL_H_
+#endif  // CHROME_BROWSER_SHARE_SHARE_SUBMENU_MODEL_H_

@@ -34,10 +34,4 @@ extern const base::Feature kSharingSendViaSync;
 // Feature flag for prefer sending sharing message using VAPID.
 extern const base::Feature kSharingPreferVapid;
 
-namespace sharing {
-
-extern const base::Feature kShareMenu;
-
-}  // namespace sharing
-
 #endif  // CHROME_BROWSER_SHARING_FEATURES_H_

@@ -32,12 +32,3 @@ const base::Feature kSharingPreferVapid {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // defined(OS_ANDROID)
 };
-
-namespace sharing {
-
-const base::Feature kShareMenu{
-    "ShareMenu",
-    base::FEATURE_DISABLED_BY_DEFAULT,
-};
-
-}  // namespace sharing

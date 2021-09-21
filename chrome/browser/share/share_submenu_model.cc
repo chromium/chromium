@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sharing/share_submenu_model.h"
+#include "chrome/browser/share/share_submenu_model.h"
 
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -22,7 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 
-namespace sharing {
+namespace share {
 
 namespace {
 
@@ -35,6 +35,11 @@ bool ShouldUseSendTabToSelfIcons() {
 }
 
 }  // namespace
+
+const base::Feature kShareMenu{
+    "ShareMenu",
+    base::FEATURE_DISABLED_BY_DEFAULT,
+};
 
 ShareSubmenuModel::ShareSubmenuModel(Browser* browser,
                                      Context context,
@@ -158,4 +163,4 @@ void ShareSubmenuModel::SendTabToSelfSingleTarget() {
   }
 }
 
-}  // namespace sharing
+}  // namespace share

@@ -61,11 +61,11 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_context_menu_observer.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/sharing/features.h"
-#include "chrome/browser/sharing/share_submenu_model.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_context_menu_observer.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_utils.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -613,7 +613,7 @@ absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
 }
 
 bool ShouldUseShareMenu() {
-  return base::FeatureList::IsEnabled(sharing::kShareMenu);
+  return base::FeatureList::IsEnabled(share::kShareMenu);
 }
 
 }  // namespace
@@ -1352,11 +1352,10 @@ void RenderViewContextMenu::AppendLinkItems() {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
     if (ShouldUseShareMenu()) {
-      sharing::ShareSubmenuModel::Context context =
-          params_.has_image_contents
-              ? sharing::ShareSubmenuModel::Context::IMAGE
-              : sharing::ShareSubmenuModel::Context::LINK;
-      share_submenu_model_ = std::make_unique<sharing::ShareSubmenuModel>(
+      share::ShareSubmenuModel::Context context =
+          params_.has_image_contents ? share::ShareSubmenuModel::Context::IMAGE
+                                     : share::ShareSubmenuModel::Context::LINK;
+      share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
           GetBrowser(), context, params_.page_url);
       if (share_submenu_model_->GetItemCount() > 0) {
         menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
@@ -1523,8 +1522,8 @@ void RenderViewContextMenu::AppendImageItems() {
                                   IDS_CONTENT_CONTEXT_COPYIMAGELOCATION);
 
   if (ShouldUseShareMenu() && !share_submenu_model_) {
-    share_submenu_model_ = std::make_unique<sharing::ShareSubmenuModel>(
-        GetBrowser(), sharing::ShareSubmenuModel::Context::IMAGE,
+    share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
+        GetBrowser(), share::ShareSubmenuModel::Context::IMAGE,
         params_.src_url);
     if (share_submenu_model_->GetItemCount() > 0) {
       menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
@@ -1655,8 +1654,8 @@ void RenderViewContextMenu::AppendPageItems() {
 
   if (ShouldUseShareMenu()) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    share_submenu_model_ = std::make_unique<sharing::ShareSubmenuModel>(
-        GetBrowser(), sharing::ShareSubmenuModel::Context::PAGE,
+    share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
+        GetBrowser(), share::ShareSubmenuModel::Context::PAGE,
         params_.page_url);
     if (share_submenu_model_->GetItemCount() > 0) {
       menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
