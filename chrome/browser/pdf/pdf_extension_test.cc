@@ -2520,13 +2520,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PostMessageForZeroSizedEmbed) {
 void EnsureCustomPinchZoomInvoked(WebContents* guest_contents,
                                   WebContents* contents,
                                   base::OnceClosure send_events) {
-  ASSERT_TRUE(content::ExecuteScript(
-      guest_contents,
-      "var gestureDetector = new GestureDetector(viewer.plugin_); "
-      "var updatePromise = new Promise(function(resolve) { "
-      "  gestureDetector.getEventTarget().addEventListener('pinchupdate', "
-      "resolve); "
-      "});"));
+  constexpr char kListenPinchUpdate[] = R"(
+      const gestureDetector = viewer.viewport.getGestureDetectorForTesting();
+      const updatePromise = new Promise((resolve) => {
+        gestureDetector.getEventTarget().addEventListener('pinchupdate',
+                                                          resolve);
+      });
+  )";
+  ASSERT_TRUE(content::ExecuteScript(guest_contents, kListenPinchUpdate));
 
   zoom::ZoomChangedWatcher zoom_watcher(
       contents,

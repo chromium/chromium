@@ -260,7 +260,3 @@ function center(event) {
     y: (touch1.clientY + touch2.clientY) / 2
   };
 }
-
-// Export on |window| such that scripts injected from pdf_extension_test.cc can
-// access it.
-window.GestureDetector = GestureDetector;
