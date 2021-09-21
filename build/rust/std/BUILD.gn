@@ -139,7 +139,7 @@ if (toolchain_has_rust) {
   source_set("remap_alloc") {
     sources = [
       "immediate_crash.h",
-      "remap_alloc.c",
+      "remap_alloc.cc",
     ]
   }
 

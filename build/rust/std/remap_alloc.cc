@@ -44,6 +44,8 @@
 // is that it would work equally well for those cases where rustc is doing
 // the final linking.
 
+extern "C" {
+
 void* __rdl_alloc(size_t, size_t);
 void __rdl_dealloc(void*);
 void* __rdl_realloc(void*, size_t, size_t, size_t);
@@ -68,3 +70,5 @@ void* __rust_alloc_zeroed(size_t a, size_t b) {
 void __rust_alloc_error_handler(size_t a, size_t b) {
   IMMEDIATE_CRASH();
 }
+
+}  // extern "C"
