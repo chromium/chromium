@@ -34,7 +34,7 @@ void FakeWebAppRegistryController::SetUp(Profile* profile) {
   mutable_registrar_->SetSubsystems(os_integration_manager_.get());
 
   sync_bridge_ = std::make_unique<WebAppSyncBridge>(
-      profile, database_factory_.get(), mutable_registrar_.get(), this,
+      database_factory_.get(), mutable_registrar_.get(), this,
       mock_processor_.CreateForwardingProcessor());
 
   ON_CALL(processor(), IsTrackingMetadata())

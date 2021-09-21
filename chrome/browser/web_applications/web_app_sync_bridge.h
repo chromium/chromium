@@ -16,10 +16,10 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class Profile;
 namespace base {
 class Time;
 }
+
 namespace syncer {
 class MetadataBatch;
 class MetadataChangeList;
@@ -56,13 +56,11 @@ struct RegistryUpdateData;
 // ModelTypeChangeProcessor and WebAppDatabase (the storage).
 class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
-  WebAppSyncBridge(Profile* profile,
-                   AbstractWebAppDatabaseFactory* database_factory,
+  WebAppSyncBridge(AbstractWebAppDatabaseFactory* database_factory,
                    WebAppRegistrarMutable* registrar,
                    SyncInstallDelegate* install_delegate);
   // Tests may inject mocks using this ctor.
   WebAppSyncBridge(
-      Profile* profile,
       AbstractWebAppDatabaseFactory* database_factory,
       WebAppRegistrarMutable* registrar,
       SyncInstallDelegate* install_delegate,
@@ -185,8 +183,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<RegistryUpdateData> update_local_data);
 
   void MaybeInstallAppsFromSyncAndPendingInstallation();
-
-  Profile* const profile_;
 
   std::unique_ptr<WebAppDatabase> database_;
   WebAppRegistrarMutable* const registrar_;

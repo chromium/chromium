@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/types/pass_key.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database.h"
@@ -38,6 +39,11 @@
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/feature_list.h"
+#include "chrome/common/chrome_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 
@@ -107,12 +113,10 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
 }
 
 WebAppSyncBridge::WebAppSyncBridge(
-    Profile* profile,
     AbstractWebAppDatabaseFactory* database_factory,
     WebAppRegistrarMutable* registrar,
     SyncInstallDelegate* install_delegate)
     : WebAppSyncBridge(
-          profile,
           database_factory,
           registrar,
           install_delegate,
@@ -122,13 +126,11 @@ WebAppSyncBridge::WebAppSyncBridge(
                                   chrome::GetChannel()))) {}
 
 WebAppSyncBridge::WebAppSyncBridge(
-    Profile* profile,
     AbstractWebAppDatabaseFactory* database_factory,
     WebAppRegistrarMutable* registrar,
     SyncInstallDelegate* install_delegate,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
-      profile_(profile),
       registrar_(registrar),
       install_delegate_(install_delegate) {
   DCHECK(database_factory);
@@ -427,7 +429,12 @@ std::vector<std::unique_ptr<WebApp>> WebAppSyncBridge::UpdateRegistrar(
   for (std::unique_ptr<WebApp>& web_app : update_data->apps_to_create) {
     AppId app_id = web_app->app_id();
     DCHECK(!registrar_->GetAppById(app_id));
-    DCHECK(web_app->IsSystemApp() || AreWebAppsUserInstallable(profile_));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // We do not install non-system web apps in Ash when Lacros web apps are
+    // enabled.
+    DCHECK(web_app->IsSystemApp() ||
+           !base::FeatureList::IsEnabled(features::kWebAppsCrosapi));
+#endif
     registrar_->registry().emplace(std::move(app_id), std::move(web_app));
   }
 

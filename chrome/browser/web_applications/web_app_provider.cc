@@ -234,9 +234,9 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   {
     auto mutable_registrar = std::make_unique<WebAppRegistrarMutable>(profile);
 
-    sync_bridge = std::make_unique<WebAppSyncBridge>(
-        profile, database_factory_.get(), mutable_registrar.get(),
-        install_manager_.get());
+    sync_bridge = std::make_unique<WebAppSyncBridge>(database_factory_.get(),
+                                                     mutable_registrar.get(),
+                                                     install_manager_.get());
 
     // Upcast to read-only WebAppRegistrar.
     registrar = std::move(mutable_registrar);
