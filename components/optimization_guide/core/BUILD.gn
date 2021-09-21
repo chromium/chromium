@@ -22,6 +22,7 @@ static_library("entities") {
   sources = [
     "batch_entity_metadata_task.cc",
     "batch_entity_metadata_task.h",
+    "entity_metadata.cc",
     "entity_metadata.h",
     "entity_metadata_provider.h",
   ]

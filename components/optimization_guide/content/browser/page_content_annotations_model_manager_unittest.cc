@@ -522,8 +522,13 @@ TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
 
 TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
        GetMetadataForEntityIdEntitiesAnnotatorInitialized) {
+  EntityMetadata entity_metadata;
+  entity_metadata.human_readable_name = "entity1";
+  entity_metadata.human_readable_categories = {
+      {"category1", 0.5},
+  };
   SetPageEntitiesModelExecutor(/*entries=*/{}, {
-                                                   {"entity1", {"entity1"}},
+                                                   {"entity1", entity_metadata},
                                                });
   EXPECT_TRUE(GetMetadataForEntityId("entity1").has_value());
 }
