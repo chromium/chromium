@@ -66,7 +66,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -268,11 +267,9 @@
   }
 
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
-              initWithStyle:CollectionViewControllerStyleDefault
-                     offset:offset
-                feedVisible:[self isFeedVisible]
-      refactoredFeedVisible:[self.ntpFeedDelegate
-                                    isNTPRefactoredAndFeedVisible]];
+      initWithStyle:CollectionViewControllerStyleDefault
+             offset:offset
+        feedVisible:[self isFeedVisible]];
   [self.suggestionsViewController
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
@@ -324,24 +321,8 @@
   // synchronizer instead.
   self.suggestionsViewController.headerProvider = self.headerController;
 
-  if ([self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
-    self.suggestionsViewController.collectionView.accessibilityIdentifier =
-        kContentSuggestionsCollectionIdentifier;
-  } else {
-    self.suggestionsViewController.collectionView.accessibilityIdentifier =
-        kNTPCollectionViewIdentifier;
-  }
-
-  if (![self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
-    self.headerCollectionInteractionHandler =
-        [[ContentSuggestionsHeaderSynchronizer alloc]
-            initWithCollectionController:self.suggestionsViewController
-                        headerController:self.headerController];
-    self.ntpMediator.headerCollectionInteractionHandler =
-        self.headerCollectionInteractionHandler;
-    DCHECK(!self.ntpMediator.primaryViewController);
-    self.ntpMediator.primaryViewController = self.suggestionsViewController;
-  }
+  self.suggestionsViewController.collectionView.accessibilityIdentifier =
+      kContentSuggestionsCollectionIdentifier;
 
   self.dragDropHandler = [[URLDragDropHandler alloc] init];
   self.dragDropHandler.dropDelegate = self;
@@ -518,10 +499,7 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:NO];
-                    if ([weakSelf.ntpFeedDelegate
-                                isNTPRefactoredAndFeedVisible]) {
-                      [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
-                    }
+                    [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
                   }
                    style:UIAlertActionStyleDestructive];
   } else {
@@ -530,10 +508,7 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:YES];
-                    if ([weakSelf.ntpFeedDelegate
-                                isNTPRefactoredAndFeedVisible]) {
-                      [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
-                    }
+                    [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
                   }
                    style:UIAlertActionStyleDefault];
   }
@@ -597,11 +572,7 @@
 
 - (void)returnToRecentTabWasAdded {
   [self.ntpCommandHandler updateDiscoverFeedLayout];
-  if ([self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
-    [self.ntpCommandHandler setContentOffsetToTop];
-  } else {
-    [self.suggestionsViewController setContentOffset:0];
-  }
+  [self.ntpCommandHandler setContentOffsetToTop];
 }
 
 #pragma mark - ContentSuggestionsHeaderCommands
@@ -841,15 +812,6 @@
   [self.discoverFeedMetricsRecorder
       recordDiscoverFeedVisibilityChanged:visible];
   self.suggestionsViewController.feedVisible = [self isFeedVisible];
-}
-
-// YES if the NTP feed is currently visible.
-// TODO(crbug.com/1173610): Move this to the NTPCoordinator so all of the
-// visibility logic lives in there.
-- (BOOL)isFeedVisible {
-  return self.contentSuggestionsEnabled &&
-         [self.contentSuggestionsExpanded value] &&
-         !tests_hook::DisableDiscoverFeed();
 }
 
 #pragma mark - AppStateObserver

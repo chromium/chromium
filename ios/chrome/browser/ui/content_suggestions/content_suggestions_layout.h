@@ -35,10 +35,10 @@
 // Creates layout with |offset| as additional height. Allows the view's height
 // to be increased enough to maintain the scroll position. Only needed if
 // Discover feed is visible.
-// TODO(crbug.com/1200303): Change |refactoredFeedVisible| to only represent
-// feed visibility after launch.
-- (instancetype)initWithOffset:(CGFloat)offset
-         refactoredFeedVisible:(BOOL)visible;
+- (instancetype)initWithOffset:(CGFloat)offset;
+
+// Minimum height of the NTP scroll view to allow for scrolling to omnibox.
+- (CGFloat)minimumNTPHeight;
 
 @end
 

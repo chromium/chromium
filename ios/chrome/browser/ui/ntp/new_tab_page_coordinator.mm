@@ -44,7 +44,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
@@ -67,7 +66,6 @@
                                      DiscoverFeedPreviewDelegate,
                                      NewTabPageCommands,
                                      NewTabPageContentDelegate,
-                                     NewTabPageFeedDelegate,
                                      OverscrollActionsControllerDelegate,
                                      PrefObserverDelegate,
                                      SceneStateObserver> {
@@ -214,7 +212,6 @@
                                   self.browser, self.webState)
       voiceSearchAvailability:&_voiceSearchAvailability];
   self.ntpMediator.browser = self.browser;
-  self.ntpMediator.ntpFeedDelegate = self;
 
   self.contentSuggestionsCoordinator = [[ContentSuggestionsCoordinator alloc]
       initWithBaseViewController:nil
@@ -224,7 +221,6 @@
   self.contentSuggestionsCoordinator.panGestureHandler = self.panGestureHandler;
   self.contentSuggestionsCoordinator.ntpMediator = self.ntpMediator;
   self.contentSuggestionsCoordinator.ntpCommandHandler = self;
-  self.contentSuggestionsCoordinator.ntpFeedDelegate = self;
   self.contentSuggestionsCoordinator.bubblePresenter = self.bubblePresenter;
 
   DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
@@ -240,9 +236,10 @@
         discoverFeedMetricsRecorder;
   }
 
+  self.ntpViewController = [[NewTabPageViewController alloc] init];
+
   // Requests a Discover feed here if the correct flags and prefs are enabled.
-  if ([self shouldUseRefactoredNTP]) {
-    self.ntpViewController = [[NewTabPageViewController alloc] init];
+  if ([self shouldFeedBeVisible]) {
     DiscoverFeedViewControllerConfiguration* viewControllerConfig =
         [[DiscoverFeedViewControllerConfiguration alloc] init];
     viewControllerConfig.browser = self.browser;
@@ -254,17 +251,11 @@
             ->NewFeedViewControllerWithConfiguration(viewControllerConfig);
   }
 
-  if (self.discoverFeedViewController) {
-    [self.contentSuggestionsCoordinator start];
-    [self configureNTPAsMainViewController];
-    self.ntpViewController.discoverFeedMetricsRecorder =
-        discoverFeedMetricsRecorder;
-  } else {
-    self.ntpViewController = nil;
-    [self.contentSuggestionsCoordinator start];
-    [self configureMainViewControllerUsing:self.contentSuggestionsCoordinator
-                                               .viewController];
-  }
+  self.contentSuggestionsCoordinator.feedVisible = [self isFeedVisible];
+  [self.contentSuggestionsCoordinator start];
+  [self configureNTPAsMainViewController];
+  self.ntpViewController.discoverFeedMetricsRecorder =
+      discoverFeedMetricsRecorder;
 
   base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
   SceneState* sceneState =
@@ -293,11 +284,9 @@
   self.contentSuggestionsCoordinator = nil;
   self.incognitoViewController = nil;
   self.ntpViewController = nil;
-  if (IsRefactoredNTP()) {
-    ios::GetChromeBrowserProvider()
-        .GetDiscoverFeedProvider()
-        ->RemoveFeedViewController(self.discoverFeedViewController);
-  }
+  ios::GetChromeBrowserProvider()
+      .GetDiscoverFeedProvider()
+      ->RemoveFeedViewController(self.discoverFeedViewController);
   self.discoverFeedWrapperViewController = nil;
   self.discoverFeedViewController = nil;
 
@@ -408,9 +397,7 @@
 }
 
 - (id<ThumbStripSupporting>)thumbStripSupporting {
-  return self.discoverFeedViewController
-             ? self.ntpViewController
-             : self.contentSuggestionsCoordinator.thumbStripSupporting;
+  return self.ntpViewController;
 }
 
 #pragma mark - Public Methods
@@ -423,11 +410,7 @@
   if (!self.contentSuggestionsCoordinator) {
     return;
   }
-  if (self.discoverFeedViewController) {
-    [self.ntpViewController stopScrolling];
-  } else {
-    [self.contentSuggestionsCoordinator stopScrolling];
-  }
+  [self.ntpViewController stopScrolling];
 }
 
 - (UIEdgeInsets)contentInset {
@@ -439,11 +422,8 @@
 }
 
 - (void)willUpdateSnapshot {
-  if (self.contentSuggestionsCoordinator.started &&
-      self.discoverFeedViewController) {
+  if (self.contentSuggestionsCoordinator.started) {
     [self.ntpViewController willUpdateSnapshot];
-  } else {
-    [self.contentSuggestionsCoordinator willUpdateSnapshot];
   }
 }
 
@@ -456,9 +436,7 @@
 }
 
 - (void)reload {
-  if (self.discoverFeedViewController) {
-    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
-  }
+  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
   [self reloadContentSuggestions];
 }
 
@@ -497,7 +475,7 @@
 - (void)updateDiscoverFeedLayout {
   // If this coordinator has not finished [self start], the below will start
   // viewDidLoad before the UI is ready, failing DCHECKS.
-  if (self.started && self.discoverFeedViewController) {
+  if (self.started) {
     [self.containedViewController.view setNeedsLayout];
     [self.containedViewController.view layoutIfNeeded];
     [self.ntpViewController updateContentSuggestionForCurrentLayout];
@@ -526,7 +504,6 @@
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  DCHECK(IsRefactoredNTP());
   [self updateDiscoverFeedVisibility];
 }
 
@@ -622,39 +599,32 @@
   [self.contentSuggestionsCoordinator reload];
 }
 
+- (BOOL)isFeedVisible {
+  return [self shouldFeedBeVisible] && self.discoverFeedViewController;
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (IsRefactoredNTP() &&
-      (preferenceName == prefs::kArticlesForYouEnabled ||
-       preferenceName == prefs::kNTPContentSuggestionsEnabled)) {
+  if (preferenceName == prefs::kArticlesForYouEnabled ||
+      preferenceName == prefs::kNTPContentSuggestionsEnabled) {
     [self updateDiscoverFeedVisibility];
   }
-  if (self.discoverFeedViewController &&
-      preferenceName ==
-          DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
+  if (preferenceName ==
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
     [self updateDiscoverFeedLayout];
   }
 }
 
-#pragma mark - NewTabPageFeedDelegate
-
-- (BOOL)isNTPRefactoredAndFeedVisible {
-  return [self shouldUseRefactoredNTP] && self.discoverFeedViewController;
-}
-
 #pragma mark - Private
 
-// Whether or not the refactored NTP should be used based on user prefs.
-// Does not check if feed is valid, which would would then not use the
-// refactored NTP.
-- (BOOL)shouldUseRefactoredNTP {
+// Determines whether the feed should be fetched based on the user prefs.
+- (BOOL)shouldFeedBeVisible {
   BOOL isFeedEnabled =
       self.prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
       self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
 
-  return IsRefactoredNTP() && [self.discoverFeedExpanded value] &&
-         isFeedEnabled && !tests_hook::DisableDiscoverFeed();
+  return isFeedEnabled && [self.discoverFeedExpanded value];
 }
 
 @end

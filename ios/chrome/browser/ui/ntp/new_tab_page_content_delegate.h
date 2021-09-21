@@ -11,6 +11,9 @@
 // Reloads content suggestions collection view.
 - (void)reloadContentSuggestions;
 
+// Whether or not the Discover feed is visible.
+- (BOOL)isFeedVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONTENT_DELEGATE_H_

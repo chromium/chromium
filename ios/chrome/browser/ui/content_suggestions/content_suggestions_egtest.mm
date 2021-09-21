@@ -44,16 +44,6 @@ const char kPageLoadedString[] = "Page loaded!";
 const char kPageURL[] = "/test-page.html";
 const char kPageTitle[] = "Page title!";
 
-//  Scrolls the collection view in order to have the toolbar menu icon visible.
-void ScrollUp() {
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Provides responses for redirect and changed window location URLs.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     const net::test_server::HttpRequest& request) {
@@ -67,21 +57,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                              "</title></head><body>" +
                              std::string(kPageLoadedString) + "</body></html>");
   return std::move(http_response);
-}
-
-// Select the cell with the |matcher| by scrolling the collection.
-// 200 is a reasonable scroll displacement that works for all UI elements, while
-// not being too slow.
-GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
-  // Start the scroll from the middle of the screen in case the bottom of the
-  // screen is obscured by the bottom toolbar.
-  id<GREYAction> action =
-      grey_scrollInDirectionWithStartPoint(kGREYDirectionDown, 230, 0.5, 0.5);
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(matcher, grey_sufficientlyVisible(),
-                                          nil)]
-         usingSearchAction:action
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()];
 }
 
 }  // namespace
@@ -134,144 +109,6 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 }
 
 #pragma mark - Tests
-
-// Tests that the additional items (when more is pressed) are kept when
-// switching tabs.
-- (void)testAdditionalItemsKept {
-  if (IsDiscoverFeedEnabled()) {
-    EARL_GREY_TEST_DISABLED(@"Legacy Feed Test.");
-  }
-  // Set server up.
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&StandardResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-
-  // Add 3 suggestions, persisted accross page loads.
-  [NewTabPageAppInterface addNumberOfSuggestions:3
-                        additionalSuggestionsURL:net::NSURLWithGURL(pageURL)];
-
-  // Tap on more, which adds 10 elements.
-  [CellWithMatcher(chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE)) performAction:grey_tap()];
-
-  // Make sure some items are loaded.
-  [CellWithMatcher(grey_accessibilityID(@"AdditionalSuggestion2"))
-      assertWithMatcher:grey_notNil()];
-
-  // Open a new Tab.
-  ScrollUp();
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey waitForMainTabCount:2];
-
-  // Go back to the previous tab.
-  [ChromeEarlGrey selectTabAtIndex:0];
-
-  // Make sure the additional items are still displayed.
-  [CellWithMatcher(grey_accessibilityID(@"AdditionalSuggestion2"))
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests that when the page is reloaded using the tools menu, the suggestions
-// are updated.
-- (void)testReloadPage {
-  if (IsDiscoverFeedEnabled()) {
-    EARL_GREY_TEST_DISABLED(@"Legacy Feed Test.");
-  }
-  // Add 2 suggestions, persisted accross page loads.
-  [NewTabPageAppInterface addNumberOfSuggestions:2
-                        additionalSuggestionsURL:nil];
-
-  // Change the suggestions to have one the second one.
-  [NewTabPageAppInterface addSuggestionNumber:2];
-
-  // Check that the first suggestion is still displayed.
-  [CellWithMatcher(grey_accessibilityID(@"http://chromium.org/1"))
-      assertWithMatcher:grey_notNil()];
-
-  // Reload the page using the tools menu.
-  [ChromeEarlGreyUI reload];
-
-  // Check that the first suggestion is no longer displayed.
-  [CellWithMatcher(grey_accessibilityID(@"http://chromium.org/1"))
-      assertWithMatcher:grey_nil()];
-  [CellWithMatcher(grey_accessibilityID(@"http://chromium.org/2"))
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests that when tapping a suggestion, it is opened. When going back, the
-// disposition of the collection takes into account the previous scroll, even
-// when more is tapped.
-- (void)testOpenPageAndGoBackWithMoreContent {
-  if (IsDiscoverFeedEnabled()) {
-    EARL_GREY_TEST_DISABLED(@"Legacy Feed Test.");
-  }
-  // Set server up.
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&StandardResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL pageURL = self.testServer->GetURL(kPageURL);
-
-  // Add 3 suggestions, persisted accross page loads.
-  [NewTabPageAppInterface addNumberOfSuggestions:3
-                        additionalSuggestionsURL:net::NSURLWithGURL(pageURL)];
-
-  // Tap on more, which adds 10 elements.
-  [CellWithMatcher(chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE)) performAction:grey_tap()];
-
-  // Make sure to scroll to the bottom.
-  [CellWithMatcher(grey_accessibilityID(kContentSuggestionsLearnMoreIdentifier))
-      assertWithMatcher:grey_notNil()];
-
-  // Open the last item. After the extra space of the last suggestion is
-  // removed, this test case fails on iPhoneX. Double-Tap on the last suggestion
-  // is a workaround.
-  // TODO(crbug.com/979143): Find out the reason and fix it. Also consider
-  // converting the test case to EG2 or deprecating MDCCollectionView.
-  [CellWithMatcher(grey_accessibilityID(@"AdditionalSuggestion9"))
-      performAction:grey_doubleTap()];
-
-  // Check that the page has been opened.
-  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          pageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey waitForMainTabCount:1];
-  [ChromeEarlGrey waitForIncognitoTabCount:0];
-
-  // Go back.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
-
-  // Check that the first items are visible as the collection should be
-  // scrolled.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"http://chromium.org/3")]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the "Learn More" cell is present only if there is a suggestion in
-// the section.
-- (void)testLearnMore {
-  if (IsDiscoverFeedEnabled()) {
-    EARL_GREY_TEST_DISABLED(@"Legacy Feed Test.");
-  }
-  id<GREYAction> action =
-      grey_scrollInDirectionWithStartPoint(kGREYDirectionDown, 200, 0.5, 0.5);
-  [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kContentSuggestionsLearnMoreIdentifier)]
-         usingSearchAction:action
-      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      assertWithMatcher:grey_nil()];
-
-  [NewTabPageAppInterface addNumberOfSuggestions:1
-                        additionalSuggestionsURL:nil];
-
-  [CellWithMatcher(grey_accessibilityID(kContentSuggestionsLearnMoreIdentifier))
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
 
 // Tests the "Open in New Tab" action of the Most Visited context menu.
 - (void)testMostVisitedNewTab {

@@ -38,6 +38,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 }
 
 @interface NewTabPageViewController () <NewTabPageOmniboxPositioning,
+                                        UICollectionViewDelegate,
                                         UIGestureRecognizerDelegate>
 
 // The overscroll actions controller managing accelerators over the toolbar.
@@ -114,17 +115,20 @@ const CGFloat kOffsetToPinOmnibox = 100;
   discoverFeedView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(discoverFeedView, self.view);
 
+  UIViewController* parentViewController =
+      [self.ntpContentDelegate isFeedVisible]
+          ? self.discoverFeedWrapperViewController.discoverFeed
+          : self.discoverFeedWrapperViewController;
+
   [self.contentSuggestionsViewController
-      willMoveToParentViewController:self.discoverFeedWrapperViewController
-                                         .discoverFeed];
-  [self.discoverFeedWrapperViewController.discoverFeed
+      willMoveToParentViewController:parentViewController];
+  [parentViewController
       addChildViewController:self.contentSuggestionsViewController];
   [self.collectionView addSubview:self.contentSuggestionsViewController.view];
   [self.contentSuggestionsViewController
-      didMoveToParentViewController:self.discoverFeedWrapperViewController
-                                        .discoverFeed];
+      didMoveToParentViewController:parentViewController];
 
-  // TODO(crbug.com/1170995): The feedCollectionView width might be narrower
+  // TODO(crbug.com/1170995): The contentCollectionView width might be narrower
   // than the ContentSuggestions view. This causes elements to be hidden. As a
   // temporary workaround set clipsToBounds to NO to display these elements, and
   // add a gesture recognizer to interact with them.
@@ -151,6 +155,14 @@ const CGFloat kOffsetToPinOmnibox = 100;
           .collectionViewLayout);
   _contentSuggestionsLayout.isScrolledIntoFeed = self.isScrolledIntoFeed;
   _contentSuggestionsLayout.omniboxPositioner = self;
+  _contentSuggestionsLayout.parentCollectionView = self.collectionView;
+
+  // If the feed is not visible, we control the delegate ourself (since it is
+  // otherwise controlled by the DiscoverProvider).
+  if (![self.ntpContentDelegate isFeedVisible]) {
+    self.discoverFeedWrapperViewController.contentCollectionView.delegate =
+        self;
+  }
 
   [self registerNotifications];
 }
@@ -174,25 +186,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // ContentSuggestions View will look broken for a second before its properly
   // laid out.
   if (!self.contentSuggestionsHeightConstraint) {
-    UIView* containerView =
-        self.discoverFeedWrapperViewController.discoverFeed.view;
-    UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
-    contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    self.contentSuggestionsHeightConstraint =
-        [contentSuggestionsView.heightAnchor
-            constraintEqualToConstant:self.contentSuggestionsViewController
-                                          .collectionView.contentSize.height];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [self.collectionView.topAnchor
-          constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
-      [containerView.safeAreaLayoutGuide.leadingAnchor
-          constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
-      [containerView.safeAreaLayoutGuide.trailingAnchor
-          constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
-      self.contentSuggestionsHeightConstraint,
-    ]];
+    [self applyCollectionViewConstraints];
   }
 
   [self updateContentSuggestionForCurrentLayout];
@@ -208,6 +202,10 @@ const CGFloat kOffsetToPinOmnibox = 100;
   if (self.shouldFocusFakebox && [self collectionViewHasLoaded]) {
     [self.headerController focusFakebox];
     self.shouldFocusFakebox = NO;
+  }
+
+  if (![self.ntpContentDelegate isFeedVisible]) {
+    [self setMinimumHeight];
   }
 
   self.viewDidAppear = YES;
@@ -276,6 +274,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
     if ([weakSelf.headerSynchronizer isOmniboxFocused] &&
         weakSelf.collectionView.contentOffset.y < pinnedOffsetY) {
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
+    }
+    if (![self.ntpContentDelegate isFeedVisible]) {
+      [self setMinimumHeight];
     }
   };
   [coordinator
@@ -445,7 +446,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 #pragma mark - ContentSuggestionsCollectionControlling
 
 - (UICollectionView*)collectionView {
-  return self.discoverFeedWrapperViewController.feedCollectionView;
+  return self.discoverFeedWrapperViewController.contentCollectionView;
 }
 
 #pragma mark - NewTabPageOmniboxPositioning
@@ -642,6 +643,40 @@ const CGFloat kOffsetToPinOmnibox = 100;
     [self.discoverFeedMetricsRecorder
         recordDeviceOrientationChanged:[[UIDevice currentDevice] orientation]];
   }
+}
+
+// Applies constraints to the NTP collection view, along with the constraints
+// for the content suggestions within it.
+- (void)applyCollectionViewConstraints {
+  UIView* containerView =
+      [self.ntpContentDelegate isFeedVisible]
+          ? self.discoverFeedWrapperViewController.discoverFeed.view
+          : self.view;
+  UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
+  contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  self.contentSuggestionsHeightConstraint = [contentSuggestionsView.heightAnchor
+      constraintEqualToConstant:self.contentSuggestionsViewController
+                                    .collectionView.contentSize.height];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.collectionView.topAnchor
+        constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
+    [containerView.safeAreaLayoutGuide.leadingAnchor
+        constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
+    [containerView.safeAreaLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
+    self.contentSuggestionsHeightConstraint,
+  ]];
+}
+
+// Sets minimum height for the NTP collection view, allowing it to scroll enough
+// to focus the omnibox.
+- (void)setMinimumHeight {
+  self.collectionView.contentSize =
+      CGSizeMake(self.view.frame.size.width,
+                 [self.contentSuggestionsLayout minimumNTPHeight] -
+                     [self adjustedContentSuggestionsHeight]);
 }
 
 #pragma mark - Helpers

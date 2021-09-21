@@ -112,13 +112,10 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
                        offset:(CGFloat)offset
-                  feedVisible:(BOOL)visible
-        refactoredFeedVisible:(BOOL)refactoredFeedVisible {
+                  feedVisible:(BOOL)visible {
   _offset = offset;
   _feedVisible = visible;
-  _layout =
-      [[ContentSuggestionsLayout alloc] initWithOffset:offset
-                                 refactoredFeedVisible:refactoredFeedVisible];
+  _layout = [[ContentSuggestionsLayout alloc] initWithOffset:offset];
   self = [super initWithLayout:_layout style:style];
   if (self) {
     _collectionUpdater = [[ContentSuggestionsCollectionUpdater alloc] init];
@@ -288,9 +285,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
   [self.collectionView.collectionViewLayout invalidateLayout];
   // Ensure initial fake omnibox layout.
   [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
-  // TODO(crbug.com/1114792): Plumb the collection view.
-  self.layout.parentCollectionView =
-      static_cast<UICollectionView*>(self.view.superview);
 }
 
 - (void)viewDidAppear:(BOOL)animated {

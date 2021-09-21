@@ -16,7 +16,6 @@ class WebState;
 @class DiscoverFeedMetricsRecorder;
 @protocol NewTabPageCommands;
 @protocol NewTabPageControllerDelegate;
-@protocol NewTabPageFeedDelegate;
 @class NTPHomeMediator;
 @protocol ThumbStripSupporting;
 @class ViewRevealingVerticalPanHandler;
@@ -55,11 +54,11 @@ class WebState;
 // Command handler for NTP related commands.
 @property(nonatomic, weak) id<NewTabPageCommands> ntpCommandHandler;
 
-// Delegate for providing information relating to the feed.
-@property(nonatomic, weak) id<NewTabPageFeedDelegate> ntpFeedDelegate;
-
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
+
+// Whether the feed is enabled and visible.
+@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
 
 // Metrics recorder for the Discover feed events related to ContentSuggestions.
 @property(nonatomic, strong)

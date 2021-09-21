@@ -29,7 +29,6 @@ class ChromeAccountManagerService;
 @class ContentSuggestionsMediator;
 @class ContentSuggestionsViewController;
 @protocol LogoVendor;
-@protocol NewTabPageFeedDelegate;
 @class NewTabPageViewController;
 @protocol NTPHomeConsumer;
 @class NTPHomeMetrics;
@@ -95,9 +94,6 @@ class VoiceSearchAvailability;
 @property(nonatomic, weak) id<NTPHomeConsumer> consumer;
 // The browser.
 @property(nonatomic, assign) Browser* browser;
-
-// Delegate for providing information relating to the feed.
-@property(nonatomic, weak) id<NewTabPageFeedDelegate> ntpFeedDelegate;
 
 // Inits the mediator.
 - (void)setUp;

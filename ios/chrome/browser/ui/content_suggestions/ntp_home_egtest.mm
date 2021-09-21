@@ -547,14 +547,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   // Get the collection and its layout.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
-  id<UICollectionViewDelegateFlowLayout> delegate =
-      (id<UICollectionViewDelegateFlowLayout>)(collectionView.delegate);
-  CGFloat headerHeight =
-      [delegate collectionView:collectionView
-                                   layout:collectionView.collectionViewLayout
-          referenceSizeForHeaderInSection:0]
-          .height;
-
   // Offset before the tap.
   CGPoint origin = collectionView.contentOffset;
 
@@ -567,9 +559,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   // Make sure the fake omnibox has been hidden and the collection has moved.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-
-  CGFloat top = [NewTabPageAppInterface collectionView].safeAreaInsets.top;
-  GREYAssertTrue(offsetAfterTap.y >= origin.y + headerHeight - (60 + top),
+  GREYAssertTrue(offsetAfterTap.y >= origin.y,
                  @"The collection has not moved.");
 
   // Unfocus the omnibox.

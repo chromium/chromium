@@ -39,13 +39,9 @@
 // Inits view controller with |offset| to maintain scroll position if needed.
 // Offset is only required if Discover feed is visible.
 // |feedVisible| is YES if feed is enabled and visible.
-// |refactoredFeedVisible| is YES if the feed is visible using the refactored
-// NTP.
-// TODO(crbug.com/1200303): Remove |refactoredFeedVisible| after launch.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
                        offset:(CGFloat)offset
                   feedVisible:(BOOL)visible
-        refactoredFeedVisible:(BOOL)refactoredFeedVisible
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout

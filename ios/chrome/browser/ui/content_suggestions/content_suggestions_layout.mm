@@ -15,32 +15,17 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ContentSuggestionsLayout ()
-
-// YES if the Discover Feed is currently visible.
-@property(nonatomic, assign, getter=isRefactoredFeedVisible)
-    BOOL refactoredFeedVisible;
-
-@end
-
 @implementation ContentSuggestionsLayout
 
-- (instancetype)initWithOffset:(CGFloat)offset
-         refactoredFeedVisible:(BOOL)visible {
+- (instancetype)initWithOffset:(CGFloat)offset {
   if (self = [super init]) {
-    _refactoredFeedVisible = visible;
     _offset = offset;
   }
   return self;
 }
 
-- (CGSize)collectionViewContentSize {
-  if ([self isRefactoredFeedVisible]) {
-    // In the refactored NTP and when the Feed is visible, we don't want to
-    // extend the view height beyond its content.
-    return [super collectionViewContentSize];
-  }
-  CGFloat collectionViewHeight = self.collectionView.bounds.size.height;
+- (CGFloat)minimumNTPHeight {
+  CGFloat collectionViewHeight = self.parentCollectionView.bounds.size.height;
   CGFloat headerHeight = [self firstHeaderHeight];
 
   // The minimum height for the collection view content should be the height of
@@ -64,16 +49,7 @@
     self.ntpHeight += additionalHeight;
   }
 
-  CGSize contentSize = [super collectionViewContentSize];
-  if (contentSize.height < minimumHeight) {
-    contentSize.height = minimumHeight;
-    // Increases the minimum height to allow the page to scroll to the cached
-    // position.
-    if (self.offset > 0) {
-      contentSize.height += self.offset;
-    }
-  }
-  return contentSize;
+  return minimumHeight;
 }
 
 - (NSArray*)layoutAttributesForElementsInRect:(CGRect)rect {
@@ -124,13 +100,8 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
 
   if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&
       indexPath.section == 0) {
-    CGFloat contentOffset;
-    if ([self isRefactoredFeedVisible]) {
-      contentOffset = self.parentCollectionView.contentOffset.y +
-                      self.collectionView.contentSize.height;
-    } else {
-      contentOffset = self.collectionView.contentOffset.y;
-    }
+    CGFloat contentOffset = self.parentCollectionView.contentOffset.y +
+                            self.collectionView.contentSize.height;
 
     CGFloat headerHeight = CGRectGetHeight(attributes.frame);
     CGPoint origin = attributes.frame.origin;
@@ -146,13 +117,10 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
             [UIApplication sharedApplication].preferredContentSizeCategory) -
         self.collectionView.safeAreaInsets.top;
 
-    if ([self isRefactoredFeedVisible]) {
-      minY = [self.omniboxPositioner stickyOmniboxHeight];
-    }
+    minY = [self.omniboxPositioner stickyOmniboxHeight];
     // TODO(crbug.com/1114792): Remove mentioned of "refactored" from the
     // variable name once this launches.
-    BOOL hasScrolledIntoRefactoredDiscoverFeed =
-        [self isRefactoredFeedVisible] && self.isScrolledIntoFeed;
+    BOOL hasScrolledIntoRefactoredDiscoverFeed = self.isScrolledIntoFeed;
     if (contentOffset > minY && !hasScrolledIntoRefactoredDiscoverFeed) {
       origin.y = contentOffset - minY;
     }

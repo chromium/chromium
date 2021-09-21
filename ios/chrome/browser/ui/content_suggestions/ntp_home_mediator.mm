@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
@@ -563,10 +562,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   // TODO(crbug.com/1114792): Create a protocol to stop having references to
   // both of these ViewControllers directly.
   UICollectionView* collectionView =
-      [self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]
-          ? self.ntpViewController.discoverFeedWrapperViewController
-                .feedCollectionView
-          : self.suggestionsViewController.collectionView;
+      self.ntpViewController.discoverFeedWrapperViewController
+          .contentCollectionView;
   UIEdgeInsets contentInset = collectionView.contentInset;
   CGPoint contentOffset = collectionView.contentOffset;
   if ([self.suggestionsMediator mostRecentTabStartSurfaceTileIsShowing]) {
@@ -599,17 +596,11 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   CGFloat offset =
       item ? item->GetPageDisplayState().scroll_state().content_offset().y : 0;
   CGFloat minimumOffset =
-      [self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]
-          ? -self.ntpViewController.contentSuggestionsContentHeight
-          : 0;
+      -self.ntpViewController.contentSuggestionsContentHeight;
   // TODO(crbug.com/1114792): Create a protocol to stop having references to
   // both of these ViewControllers directly.
   if (offset > minimumOffset) {
-    if ([self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
-      [self.ntpViewController setSavedContentOffset:offset];
-    } else {
-      [self.suggestionsViewController setContentOffset:offset];
-    }
+    [self.ntpViewController setSavedContentOffset:offset];
   }
 }
 
