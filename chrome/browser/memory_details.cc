@@ -33,7 +33,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_constants.h"
-#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
@@ -131,32 +130,38 @@ ProcessData& ProcessData::operator=(const ProcessData& rhs) {
   return *this;
 }
 
-// About threading:
-//
-// This operation will hit no fewer than 3 threads.
-//
-// The BrowserChildProcessHostIterator can only be accessed from the IO thread.
-//
-// The RenderProcessHostIterator can only be accessed from the UI thread.
-//
 // This operation can take 30-100ms to complete.  We never want to have
 // one task run for that long on the UI or IO threads.  So, we run the
 // expensive parts of this operation over on the blocking pool.
-//
 void MemoryDetails::StartFetch() {
   // This might get called from the UI or FILE threads, but should not be
   // getting called from the IO thread.
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::IO));
 
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    CollectChildInfoOnProcessThread();
-  } else {
-    // In order to process this request, we need to use the plugin information.
-    // However, plugin process information is only available from the IO thread.
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MemoryDetails::CollectChildInfoOnProcessThread, this));
+  std::vector<ProcessMemoryInformation> child_info;
+
+  // Collect the list of child processes. A 0 |handle| means that
+  // the process is being launched, so we skip it.
+  for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+    ProcessMemoryInformation info;
+    if (!iter.GetData().GetProcess().IsValid())
+      continue;
+    info.pid = iter.GetData().GetProcess().Pid();
+    if (!info.pid)
+      continue;
+
+    info.process_type = iter.GetData().process_type;
+    info.renderer_type = ProcessMemoryInformation::RENDERER_UNKNOWN;
+    info.titles.push_back(iter.GetData().name);
+    child_info.push_back(info);
   }
+
+  // Now go do expensive memory lookups in a thread pool.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&MemoryDetails::CollectProcessData, this, child_info));
 }
 
 MemoryDetails::~MemoryDetails() {}
@@ -194,37 +199,6 @@ std::string MemoryDetails::ToLogString(bool include_tab_title) {
     log += "\n";
   }
   return log;
-}
-
-void MemoryDetails::CollectChildInfoOnProcessThread() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
-
-  std::vector<ProcessMemoryInformation> child_info;
-
-  // Collect the list of child processes. A 0 |handle| means that
-  // the process is being launched, so we skip it.
-  for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-    ProcessMemoryInformation info;
-    if (!iter.GetData().GetProcess().IsValid())
-      continue;
-    info.pid = iter.GetData().GetProcess().Pid();
-    if (!info.pid)
-      continue;
-
-    info.process_type = iter.GetData().process_type;
-    info.renderer_type = ProcessMemoryInformation::RENDERER_UNKNOWN;
-    info.titles.push_back(iter.GetData().name);
-    child_info.push_back(info);
-  }
-
-  // Now go do expensive memory lookups in a thread pool.
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&MemoryDetails::CollectProcessData, this, child_info));
 }
 
 void MemoryDetails::CollectChildInfoOnUIThread() {
