@@ -740,28 +740,40 @@ TEST_P(NativeIOManagerTest, DeleteOriginData_OriginWithNoData) {
 }
 
 TEST_P(NativeIOManagerTest, DeleteOriginData_ConcurrentDeletion) {
-  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
-  base::File example_file =
-      example_host_
-          ->OpenFile("test_file",
-                     example_host_remote.BindNewPipeAndPassReceiver())
-          .file;
-  EXPECT_TRUE(example_file.IsValid());
-  example_file.Close();
-  NativeIOFileHostSync example_file_host(example_host_remote.get());
-  example_file_host.Close();
+  {
+    mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+    base::File example_file =
+        example_host_
+            ->OpenFile("test_file",
+                       example_host_remote.BindNewPipeAndPassReceiver())
+            .file;
+    EXPECT_TRUE(example_file.IsValid());
+    example_file.Close();
+    NativeIOFileHostSync example_file_host(example_host_remote.get());
+    example_file_host.Close();
+  }
+
+  // Reset the last mojo connection to the example host, so the host remains
+  // without connections during deletion.
+  example_host_ = nullptr;
+  example_host_remote_.reset();
 
   url::Origin example_origin = url::Origin::Create(GURL(kExampleOrigin));
 
+  base::RunLoop delete_run_loop;
+  blink::mojom::QuotaStatusCode delete_status;
   manager_->DeleteOriginData(
-      example_origin, base::BindLambdaForTesting(
-                          [&](blink::mojom::QuotaStatusCode returned_status) {
-                            EXPECT_EQ(returned_status,
-                                      blink::mojom::QuotaStatusCode::kOk);
-                          }));
+      example_origin,
+      base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode status) {
+        delete_run_loop.Quit();
+        delete_status = status;
+      }));
 
   EXPECT_EQ(sync_manager_->DeleteOriginData(example_origin),
             blink::mojom::QuotaStatusCode::kOk);
+
+  delete_run_loop.Run();
+  EXPECT_EQ(delete_status, blink::mojom::QuotaStatusCode::kOk);
 
   EXPECT_TRUE(!base::PathExists(manager_->RootPathForOrigin(example_origin)));
 }
