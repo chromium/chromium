@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -173,8 +174,8 @@ class BorderedScrollView : public views::ScrollView {
   };
 
   BorderedScrollView() {
-    SetBackground(views::CreateThemedSolidBackground(
-        this, ui::NativeTheme::kColorId_DialogBackground));
+    SetBackground(
+        views::CreateThemedSolidBackground(this, ui::kColorDialogBackground));
   }
 
   bool GetTopBorder() const { return GetVisibleRect().y() > 0; }
@@ -231,7 +232,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
     view->SetID(static_cast<int>(sheet_id));
 
   view->SetBackground(views::CreateThemedSolidBackground(
-      view.get(), ui::NativeTheme::kColorId_DialogBackground));
+      view.get(), ui::kColorDialogBackground));
 
   // Paint the sheets to layers, otherwise the MD buttons (which do paint to a
   // layer) won't do proper clipping.
@@ -282,7 +283,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
   content_view_->SetPaintToLayer();
   content_view_->layer()->SetFillsBoundsOpaquely(true);
   content_view_->SetBackground(views::CreateThemedSolidBackground(
-      content_view_, ui::NativeTheme::kColorId_DialogBackground));
+      content_view_, ui::kColorDialogBackground));
   content_view_->SetID(static_cast<int>(DialogViewID::CONTENT_VIEW));
   pane_->SizeToPreferredSize();
 
@@ -418,8 +419,8 @@ PaymentRequestSheetController::CreateHeaderContentView(
 
 std::unique_ptr<views::Background>
 PaymentRequestSheetController::GetHeaderBackground(views::View* header_view) {
-  return views::CreateThemedSolidBackground(
-      header_view, ui::NativeTheme::kColorId_DialogBackground);
+  return views::CreateThemedSolidBackground(header_view,
+                                            ui::kColorDialogBackground);
 }
 
 std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {

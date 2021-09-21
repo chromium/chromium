@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/views_export.h"
 
@@ -77,10 +77,10 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
     float radius);
 
 // Creates a background that fills the canvas in the color specified by the
-// view's NativeTheme and the given color identifier.
+// view's ColorProvider and the given color identifier.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedSolidBackground(
     View* view,
-    ui::NativeTheme::ColorId color_id);
+    ui::ColorId color_id);
 
 // Creates a background from the specified Painter.
 VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(

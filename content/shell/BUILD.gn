@@ -343,6 +343,7 @@ static_library("content_shell_lib") {
         "browser/shell_web_contents_view_delegate_views.cc",
       ]
       deps += [
+        "//ui/color:color_headers",
         "//ui/native_theme",
         "//ui/resources",
         "//ui/views:test_support",

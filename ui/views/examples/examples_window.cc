@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/ui_base_paths.h"
+#include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
@@ -149,8 +150,8 @@ class ExamplesWindowContents : public WidgetDelegateView {
     combobox->SetCallback(base::BindRepeating(
         &ExamplesWindowContents::ComboboxChanged, base::Unretained(this)));
 
-    SetBackground(CreateThemedSolidBackground(
-        this, ui::NativeTheme::kColorId_DialogBackground));
+    SetBackground(
+        CreateThemedSolidBackground(this, ui::kColorDialogBackground));
     GridLayout* layout =
         SetLayoutManager(std::make_unique<views::GridLayout>());
     ColumnSet* column_set = layout->AddColumnSet(0);

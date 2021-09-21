@@ -21,8 +21,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -121,8 +121,8 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
  private:
   // Initialize the UI control contained in shell window
   void InitShellWindow() {
-    SetBackground(CreateThemedSolidBackground(
-        this, ui::NativeTheme::kColorId_WindowBackground));
+    SetBackground(
+        CreateThemedSolidBackground(this, ui::kColorWindowBackground));
 
     auto contents_view = std::make_unique<views::View>();
     auto toolbar_view = std::make_unique<views::View>();

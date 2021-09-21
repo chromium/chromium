@@ -11,6 +11,8 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/painter.h"
@@ -95,9 +97,8 @@ class ThemedVectorIconBackground : public Background, public ViewObserver {
 // native theme.
 class ThemedSolidBackground : public SolidBackground, public ViewObserver {
  public:
-  explicit ThemedSolidBackground(View* view, ui::NativeTheme::ColorId color_id)
-      : SolidBackground(gfx::kPlaceholderColor),
-        color_id_(color_id) {
+  explicit ThemedSolidBackground(View* view, ui::ColorId color_id)
+      : SolidBackground(gfx::kPlaceholderColor), color_id_(color_id) {
     observation_.Observe(view);
     if (view->GetWidget())
       OnViewThemeChanged(view);
@@ -110,7 +111,7 @@ class ThemedSolidBackground : public SolidBackground, public ViewObserver {
 
   // ViewObserver:
   void OnViewThemeChanged(View* view) override {
-    SetNativeControlColor(view->GetNativeTheme()->GetSystemColor(color_id_));
+    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
     view->SchedulePaint();
   }
   void OnViewIsDeleting(View* view) override {
@@ -120,7 +121,7 @@ class ThemedSolidBackground : public SolidBackground, public ViewObserver {
 
  private:
   base::ScopedObservation<View, ViewObserver> observation_{this};
-  ui::NativeTheme::ColorId color_id_;
+  ui::ColorId color_id_;
 };
 
 class BackgroundPainter : public Background {
@@ -166,9 +167,8 @@ std::unique_ptr<Background> CreateThemedVectorIconBackground(
   return std::make_unique<ThemedVectorIconBackground>(view, icon);
 }
 
-std::unique_ptr<Background> CreateThemedSolidBackground(
-    View* view,
-    ui::NativeTheme::ColorId color_id) {
+std::unique_ptr<Background> CreateThemedSolidBackground(View* view,
+                                                        ui::ColorId color_id) {
   return std::make_unique<ThemedSolidBackground>(view, color_id);
 }
 

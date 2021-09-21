@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -128,7 +129,7 @@ class ChromeLabsFooter : public views::View {
                      .SetProminent(true)
                      .Build());
     SetBackground(views::CreateThemedSolidBackground(
-        this, ui::NativeTheme::kColorId_BubbleFooterBackground));
+        this, ui::kColorBubbleFooterBackground));
     SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
     SetProperty(

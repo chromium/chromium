@@ -38,6 +38,7 @@
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -561,7 +562,7 @@ void PaymentRequestDialogView::SetupSpinnerOverlay() {
   // The throbber overlay has to have a solid white background to hide whatever
   // would be under it.
   throbber_overlay->SetBackground(views::CreateThemedSolidBackground(
-      throbber_overlay.get(), ui::NativeTheme::kColorId_DialogBackground));
+      throbber_overlay.get(), ui::kColorDialogBackground));
 
   views::GridLayout* layout =
       throbber_overlay->SetLayoutManager(std::make_unique<views::GridLayout>());

@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -54,8 +55,8 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
   auto button = views::CreateVectorImageButtonWithNativeTheme(pressed_callback,
                                                               icon, dip_size);
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  button->SetBackground(views::CreateThemedSolidBackground(
-      host, ui::NativeTheme::kColorId_WindowBackground));
+  button->SetBackground(
+      views::CreateThemedSolidBackground(host, ui::kColorWindowBackground));
   button->SetProperty(views::kMarginsKey, margin_insets);
   return button;
 }
@@ -124,8 +125,8 @@ void LensSidePanelView::CreateAndInstallHeader(
 
   // The minimum cross axis size should the expected height of the header.
   header->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
-  header->SetBackground(views::CreateThemedSolidBackground(
-      this, ui::NativeTheme::kColorId_WindowBackground));
+  header->SetBackground(
+      views::CreateThemedSolidBackground(this, ui::kColorWindowBackground));
 
   // Create Google Lens Logo branding.
   branding_ = header->AddChildView(std::make_unique<views::ImageView>());
