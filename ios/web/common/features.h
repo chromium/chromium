@@ -58,9 +58,6 @@ extern const base::Feature kWebViewNativeContextMenu;
 // When enabled, display non-live preview for context menus in web content.
 extern const base::Feature kWebViewNativeContextMenuPhase2;
 
-// When enabled, display previews for native context menu in web content.
-extern const base::Feature kWebViewNativeContextMenuPhase3;
-
 // When enabled, the default context menu from WKWebView is used.
 extern const base::Feature kDefaultWebViewContextMenu;
 

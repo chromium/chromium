@@ -530,12 +530,6 @@ const char kWebViewNativeContextMenuPhase2Description[] =
     "When enabled, the context menu displayed when long pressing on a link or "
     "an image has a non-live preview.";
 
-const char kWebViewNativeContextMenuPhase3Name[] =
-    "Context Menu with live preview";
-const char kWebViewNativeContextMenuPhase3Description[] =
-    "When enabled, the context menu displayed when long pressing on a link or "
-    "an image has a live preview.";
-
 const char kRecordSnapshotSizeName[] =
     "Record the size of image and PDF snapshots in UMA histograms";
 const char kRecordSnapshotSizeDescription[] =

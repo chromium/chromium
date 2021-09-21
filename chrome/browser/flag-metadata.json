@@ -814,10 +814,6 @@
       "owners":["gambard", "bling-flags@google.com"],
       "expiry_milestone":100
   },
-  { "name":"context-menu-phase3",
-      "owners":["gambard", "bling-flags@google.com"],
-      "expiry_milestone":100
-  },
   {
     "name": "context-menu-search-and-shop-with-google-lens",
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],

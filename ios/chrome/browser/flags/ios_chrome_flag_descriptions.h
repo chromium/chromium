@@ -460,11 +460,6 @@ extern const char kWebViewNativeContextMenuDescription[];
 extern const char kWebViewNativeContextMenuPhase2Name[];
 extern const char kWebViewNativeContextMenuPhase2Description[];
 
-// Title and description for the flag to enable the phase 3 of context menus in
-// the WebView.
-extern const char kWebViewNativeContextMenuPhase3Name[];
-extern const char kWebViewNativeContextMenuPhase3Description[];
-
 // Title and description for the flag to restore Gaia cookies when the user
 // explicitly requests to be signed in to a Google service.
 extern const char kRestoreGaiaCookiesOnUserActionName[];

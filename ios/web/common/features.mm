@@ -49,9 +49,6 @@ const base::Feature kWebViewNativeContextMenu{"WebViewNativeContextMenu",
 const base::Feature kWebViewNativeContextMenuPhase2{
     "WebViewNativeContextMenuPhase2", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kWebViewNativeContextMenuPhase3{
-    "WebViewNativeContextMenuPhase3", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDefaultWebViewContextMenu{
     "DefaultWebViewContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -71,8 +68,7 @@ bool UseWebViewNativeContextMenuWeb() {
 
 bool UseWebViewNativeContextMenuSystem() {
   return base::FeatureList::IsEnabled(kWebViewNativeContextMenu) ||
-         base::FeatureList::IsEnabled(kWebViewNativeContextMenuPhase2) ||
-         base::FeatureList::IsEnabled(kWebViewNativeContextMenuPhase3);
+         base::FeatureList::IsEnabled(kWebViewNativeContextMenuPhase2);
 }
 
 bool ShouldTakeScreenshotOnNonHTMLContent() {
