@@ -55,9 +55,6 @@ crbug.com/809609 [ Linux ] editing/inserting/insert_div_with_style.html [ Pass F
 # -----------------------------------------------------------------
 crbug.com/836278 [ Linux ] external/wpt/html/canvas/offscreen/manual/convert-to-blob/offscreencanvas.convert.to.blob.html [ Pass Failure ]
 
-# Moved from TestExpectations (Sheriff 2018-05-31)
-crbug.com/848354 [ Linux ] plugins/fullscreen-plugins-dont-reload.html [ Pass Failure ]
-
 # Sheriff 2018-08-17
 crbug.com/847114 [ Linux ] http/tests/devtools/tracing/decode-resize.js [ Pass Failure ]
 

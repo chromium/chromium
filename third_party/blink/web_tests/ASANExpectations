@@ -23,7 +23,6 @@ crbug.com/145940 [ Linux ] plugins/iframe-shims.html [ Skip ]
 #    #0 0x7f48eb06f7c5 in DocumentOpenInDestroyStream::NPP_DestroyStream
 crbug.com/166932 [ Linux ] plugins/embed-attributes-setting.html [ Skip ]
 crbug.com/166932 [ Linux ] plugins/embed-attributes-style.html [ Skip ]
-crbug.com/166932 [ Linux ] plugins/fullscreen-plugins-dont-reload.html [ Skip ]
 
 # These have been failing since at least chrome r203901, blink r151723 (no memory errors, just text failure):
 crbug.com/231357 [ Linux ] editing/execCommand/switch-list-type-with-orphaned-li.html [ Failure ]
