@@ -10,6 +10,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_source.h"
+#include "ui/accessibility/ax_tree_source_observer.h"
 
 namespace ui {
 
@@ -18,7 +19,8 @@ namespace ui {
 // generated alt text for unlabeled images. A specific annotator may be able to
 // work on multiple `AXNodeSource`s, e.g. `AXNode*` and `WebAXObject`.
 template <typename AXNodeSource>
-class AX_EXPORT AXTreeSourceAnnotator {
+class AX_EXPORT AXTreeSourceAnnotator
+    : public AXTreeSourceObserver<AXNodeSource> {
  public:
   virtual ~AXTreeSourceAnnotator() = default;
 
@@ -49,16 +51,6 @@ class AX_EXPORT AXTreeSourceAnnotator {
   // encountered an error.
   virtual bool HasNodeInCache(const AXTreeSource<AXNodeSource>& tree_source,
                               const AXNodeSource& node_source) const = 0;
-
-  // Methods for observing an `AXTreeSource` in order to find out whether a node
-  // that needs automatically generated annotations has been added, removed or
-  // updated.
-  virtual void OnNodeAdded(const AXTreeSource<AXNodeSource>& tree_source,
-                           const AXNodeSource& node_source) = 0;
-  virtual void OnNodeUpdated(const AXTreeSource<AXNodeSource>& tree_source,
-                             const AXNodeSource& node_source) = 0;
-  virtual void OnNodeRemoved(const AXTreeSource<AXNodeSource>& tree_source,
-                             const AXNodeSource& node_source) = 0;
 
   // Returns true if the existing accessible name for a node consists of mostly
   // stopwords, such as "the" and "of". This would be a strong indication that
