@@ -7312,8 +7312,11 @@ const CSSValue* Translate::ParseSingleValue(
   CSSPrimitiveValue* translate_y =
       css_parsing_utils::ConsumeLengthOrPercent(range, context, kValueRangeAll);
   if (translate_y) {
-    CSSValue* translate_z =
+    CSSPrimitiveValue* translate_z =
         css_parsing_utils::ConsumeLength(range, context, kValueRangeAll);
+
+    if (translate_z && translate_z->IsZero())
+      translate_z = nullptr;
     if (translate_y->IsZero() && !translate_z)
       return list;
 
