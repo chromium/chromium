@@ -10,7 +10,9 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "crypto/random.h"
 #include "crypto/secure_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,16 +64,28 @@ TEST_F(CupEcdsaTest, SignRequest) {
   std::string query2;
   CUP().SignRequest(kRequest, &query2);
 
-  EXPECT_FALSE(query.empty());
-  EXPECT_FALSE(query2.empty());
-  EXPECT_EQ(0UL, query.find(kKeyId));
-  EXPECT_EQ(0UL, query2.find(kKeyId));
-  EXPECT_NE(std::string::npos, query.find(kRequestHash));
-  EXPECT_NE(std::string::npos, query2.find(kRequestHash));
+  EXPECT_TRUE(base::StartsWith(query, kKeyId));
+  EXPECT_TRUE(base::StartsWith(query2, kKeyId));
+  EXPECT_TRUE(base::EndsWith(query, kRequestHash));
+  EXPECT_TRUE(base::EndsWith(query2, kRequestHash));
 
-  // In theory, this is a flaky test, as there's nothing preventing the RNG
-  // from returning the same nonce twice in a row. In practice, this should
-  // be fine.
+  // The nonce should be a base64url-encoded, 32-byte (256-bit) string.
+  base::StringPiece nonce_b64 = query;
+  nonce_b64.remove_prefix(strlen(kKeyId));
+  nonce_b64.remove_suffix(strlen(kRequestHash));
+  std::string nonce;
+  EXPECT_TRUE(base::Base64UrlDecode(
+      nonce_b64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &nonce));
+  EXPECT_EQ(32u, nonce.size());
+
+  nonce_b64 = query2;
+  nonce_b64.remove_prefix(strlen(kKeyId));
+  nonce_b64.remove_suffix(strlen(kRequestHash));
+  EXPECT_TRUE(base::Base64UrlDecode(
+      nonce_b64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &nonce));
+  EXPECT_EQ(32u, nonce.size());
+
+  // With a 256-bit nonce, the probability of collision is negligible.
   EXPECT_NE(query, query2);
 }
 

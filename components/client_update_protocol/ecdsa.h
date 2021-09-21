@@ -60,7 +60,8 @@ class Ecdsa {
                         const base::StringPiece& signature);
 
   // Sets the key and nonce that were used to generate a signature that is baked
-  // into a unit test.
+  // into a unit test. Note this function encodes |nonce| in decimal, while
+  // non-test paths use a base64url-encoded, 256-bit string.
   void OverrideNonceForTesting(int key_version, uint32_t nonce);
 
  private:

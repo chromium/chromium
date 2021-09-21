@@ -4,11 +4,15 @@
 
 #include "components/client_update_protocol/ecdsa.h"
 
+#include <stdint.h>
+
+#include "base/base64url.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "crypto/random.h"
@@ -111,9 +115,18 @@ void Ecdsa::SignRequest(const base::StringPiece& request_body,
   // Generate a random nonce to use for freshness, build the cup2key query
   // string, and compute the SHA-256 hash of the request body. Set these
   // two pieces of data aside to use during ValidateResponse().
-  uint32_t nonce = 0;
-  crypto::RandBytes(&nonce, sizeof(nonce));
-  request_query_cup2key_ = base::StringPrintf("%d:%u", pub_key_version_, nonce);
+  uint8_t nonce[32] = {0};
+  crypto::RandBytes(nonce);
+
+  // The nonce is an opaque string to the server, so the exact encoding does not
+  // matter. Use base64url as it is slightly more compact than hex.
+  std::string nonce_b64;
+  base::Base64UrlEncode(
+      base::StringPiece(reinterpret_cast<const char*>(nonce), sizeof(nonce)),
+      base::Base64UrlEncodePolicy::OMIT_PADDING, &nonce_b64);
+
+  request_query_cup2key_ =
+      base::StringPrintf("%d:%s", pub_key_version_, nonce_b64.c_str());
   request_hash_ = SHA256HashStr(request_body);
 
   // Return the query string for the user to send with the request.
