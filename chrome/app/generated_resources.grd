@@ -4277,7 +4277,7 @@ are declared in tools/grit/grit_rule.gni.
           Manage your apps, extensions, and themes
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_MDNS" desc="Permisson string for access to list of mDNS services on a network.">
-          Discover devices on your local network
+          Discover devices on your local network, like printers
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_NETWORK_STATE" desc="Permission string for network list access.">
           Access list of network connections
