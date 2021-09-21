@@ -30,7 +30,6 @@ enum PermissionName {
   WINDOW_PLACEMENT,
   FONT_ACCESS,
   DISPLAY_CAPTURE,
-  FILE_HANDLING,
 };
 
 struct MidiPermissionDescriptor {

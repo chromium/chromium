@@ -100,8 +100,6 @@ absl::optional<PermissionType> PermissionDescriptorToPermissionType(
       return PermissionType::FONT_ACCESS;
     case PermissionName::DISPLAY_CAPTURE:
       return PermissionType::DISPLAY_CAPTURE;
-    case PermissionName::FILE_HANDLING:
-      return PermissionType::FILE_HANDLING;
   }
 
   NOTREACHED();
