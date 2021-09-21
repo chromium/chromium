@@ -99,9 +99,10 @@
       light: "$google_red_600",
       dark: "$google_red_300",
     },
+    light_icon_color_warning: "$google_yellow_300",
     icon_color_warning: {
       light: "$google_yellow_600",
-      dark: "$google_yellow_300",
+      dark: "$light_icon_color_warning",
     },
     icon_color_positive: {
       light: "$google_green_600",
