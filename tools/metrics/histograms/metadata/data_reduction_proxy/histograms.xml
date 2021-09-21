@@ -385,7 +385,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DataReductionProxy.StartupState"
-    enum="DataReductionProxyStartupState" expires_after="2022-01-16">
+    enum="DataReductionProxyStartupState" expires_after="2022-03-20">
   <owner>rajendrant@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

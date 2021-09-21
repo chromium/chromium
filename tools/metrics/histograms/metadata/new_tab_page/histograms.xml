@@ -1237,7 +1237,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilAction"
-    units="units" expires_after="2022-01-16">
+    units="units" expires_after="2022-03-20">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>
