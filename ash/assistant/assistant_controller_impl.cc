@@ -79,7 +79,7 @@ void AssistantControllerImpl::SetAssistant(
 
   OnAccessibilityStatusChanged();
 
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
   OnColorModeChanged(AshColorProvider::Get()->IsDarkModeEnabled());
 
   if (assistant) {

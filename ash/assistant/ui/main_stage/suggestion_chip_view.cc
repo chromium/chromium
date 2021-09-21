@@ -42,22 +42,15 @@ constexpr int kIconSizeDip = 16;
 constexpr int kChipPaddingDip = 16;
 constexpr int kPreferredHeightDip = 32;
 
-SkColor GetStrokeColor() {
-  if (features::IsDarkLightModeEnabled()) {
-    return ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor);
-  }
-
-  return SkColorSetA(gfx::kGoogleGrey900, 0x24);
-}
-
 }  // namespace
 
 // SuggestionChipView ----------------------------------------------------------
 
 SuggestionChipView::SuggestionChipView(AssistantViewDelegate* delegate,
                                        const AssistantSuggestion& suggestion)
-    : delegate_(delegate), suggestion_id_(suggestion.id) {
+    : delegate_(delegate),
+      use_dark_light_mode_colors_(assistant::UseDarkLightModeColors()),
+      suggestion_id_(suggestion.id) {
   InitLayout(suggestion);
 }
 
@@ -178,7 +171,7 @@ bool SuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
 void SuggestionChipView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
 
   text_view_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kTextColorSecondary));
@@ -203,6 +196,14 @@ void SuggestionChipView::SetText(const std::u16string& text) {
 
 const std::u16string& SuggestionChipView::GetText() const {
   return text_view_->GetText();
+}
+
+SkColor SuggestionChipView::GetStrokeColor() const {
+  if (use_dark_light_mode_colors_) {
+    return ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor);
+  }
+  return SkColorSetA(gfx::kGoogleGrey900, 0x24);
 }
 
 BEGIN_METADATA(SuggestionChipView, views::Button)

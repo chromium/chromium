@@ -55,7 +55,12 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public views::Button {
  private:
   void InitLayout(const AssistantSuggestion& suggestion);
 
+  SkColor GetStrokeColor() const;
+
   AssistantViewDelegate* const delegate_;
+
+  // Whether to use dark/light mode colors, which default to dark.
+  const bool use_dark_light_mode_colors_;
 
   const base::UnguessableToken suggestion_id_;
 

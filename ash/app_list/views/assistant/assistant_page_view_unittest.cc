@@ -222,6 +222,16 @@ class AssistantPageNonBubbleTest : public AssistantPageViewTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Tests that only apply to the clamshell bubble launcher.
+class AssistantPageBubbleTest : public AssistantPageViewTest {
+ public:
+  AssistantPageBubbleTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Counts the number of Assistant interactions that are started.
 class AssistantInteractionCounter
     : private chromeos::assistant::AssistantInteractionSubscriber {
@@ -903,7 +913,7 @@ TEST_P(AssistantPageClamshellTest, ShouldHavePopulatedSuggestionChips) {
   EXPECT_EQ(kAnyChip, base::UTF16ToUTF8(chip->GetText()));
 }
 
-TEST_P(AssistantPageClamshellTest, Theme) {
+TEST_F(AssistantPageNonBubbleTest, Theme) {
   ASSERT_FALSE(features::IsDarkLightModeEnabled());
 
   ShowAssistantUi();
@@ -911,7 +921,7 @@ TEST_P(AssistantPageClamshellTest, Theme) {
   EXPECT_EQ(page_view()->background()->get_color(), SK_ColorWHITE);
 }
 
-TEST_P(AssistantPageClamshellTest, ThemeDarkLightMode) {
+TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
   base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -930,6 +940,14 @@ TEST_P(AssistantPageClamshellTest, ThemeDarkLightMode) {
             assistant_colors::ResolveColor(
                 assistant_colors::ColorName::kBgAssistantPlate,
                 /*is_dark_mode=*/true, /*use_debug_colors=*/false));
+}
+
+TEST_F(AssistantPageBubbleTest, AppListBubbleDoesNotHaveAssistantBackground) {
+  ASSERT_TRUE(features::IsAppListBubbleEnabled());
+
+  ShowAssistantUi();
+
+  EXPECT_FALSE(page_view()->background());
 }
 
 //------------------------------------------------------------------------------

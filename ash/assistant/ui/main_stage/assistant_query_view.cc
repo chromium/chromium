@@ -21,7 +21,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace ash {
@@ -72,34 +71,17 @@ int AssistantQueryView::GetHeightForWidth(int width) const {
 void AssistantQueryView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
-      assistant_colors::ColorName::kBgAssistantPlate));
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
 
-  // Changing color of a background object doesn't trigger a paint.
-  SchedulePaint();
-
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-
-  high_confidence_label_->SetBackgroundColor(
-      ash::assistant::ResolveAssistantColor(
-          assistant_colors::ColorName::kBgAssistantPlate));
   high_confidence_label_->SetEnabledColor(
       ColorProvider::Get()->GetContentLayerColor(
           ColorProvider::ContentLayerType::kTextColorPrimary));
-
-  low_confidence_label_->SetBackgroundColor(
-      ash::assistant::ResolveAssistantColor(
-          assistant_colors::ColorName::kBgAssistantPlate));
   low_confidence_label_->SetEnabledColor(
       ColorProvider::Get()->GetContentLayerColor(
           ColorProvider::ContentLayerType::kTextColorSecondary));
 }
 
 void AssistantQueryView::InitLayout() {
-  SetBackground(
-      views::CreateSolidBackground(ash::assistant::ResolveAssistantColor(
-          assistant_colors::ColorName::kBgAssistantPlate)));
-
   views::FlexLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
 

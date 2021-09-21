@@ -73,7 +73,7 @@ void AssistantZeroStateView::OnThemeChanged() {
   greeting_label_->SetBackgroundColor(ash::assistant::ResolveAssistantColor(
       assistant_colors::ColorName::kBgAssistantPlate));
 
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
   greeting_label_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kTextColorPrimary));
 }

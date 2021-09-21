@@ -243,6 +243,15 @@ TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
   EXPECT_TRUE(GetAssistantPage()->GetVisible());
 }
 
+TEST_F(AppListBubbleViewTest, AssistantPageDoesNotHaveBackground) {
+  SimulateAssistantEnabled();
+  ShowAppList();
+  LeftClickOn(GetSearchBoxView()->assistant_button());
+
+  // Assistant not have a background so the blurred launcher is visible.
+  EXPECT_FALSE(GetAssistantPage()->GetBackground());
+}
+
 TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
   ShowAppList();
   PressAndReleaseKey(ui::VKEY_A);

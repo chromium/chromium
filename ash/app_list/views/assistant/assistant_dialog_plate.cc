@@ -299,7 +299,7 @@ void AssistantDialogPlate::RequestFocus() {
 void AssistantDialogPlate::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
 
   textfield_->SetTextColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kTextColorPrimary));

@@ -144,7 +144,7 @@ void AssistantOnboardingView::ChildPreferredSizeChanged(views::View* child) {
 void AssistantOnboardingView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
 
   greeting_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kTextColorPrimary));

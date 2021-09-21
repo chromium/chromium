@@ -12,6 +12,7 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view_factory.h"
@@ -39,15 +40,6 @@ namespace {
 // Appearance.
 constexpr int kPaddingBottomDip = 8;
 constexpr int kScrollIndicatorHeightDip = 1;
-
-SkColor GetOverflowIndicatorBackgroundColor() {
-  if (features::IsDarkLightModeEnabled()) {
-    return ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor);
-  }
-
-  return gfx::kGoogleGrey300;
-}
 
 // ObservableOverflowIndicator allows a caller to observe visibility change of
 // an overflow indicator. Note that we are using this view with setting
@@ -95,7 +87,8 @@ END_METADATA
 
 UiElementContainerView::UiElementContainerView(AssistantViewDelegate* delegate)
     : AnimatedContainerView(delegate),
-      view_factory_(std::make_unique<AssistantUiElementViewFactory>(delegate)) {
+      view_factory_(std::make_unique<AssistantUiElementViewFactory>(delegate)),
+      use_dark_light_mode_colors_(assistant::UseDarkLightModeColors()) {
   SetID(AssistantViewID::kUiElementContainer);
   InitLayout();
 }
@@ -249,6 +242,15 @@ void UiElementContainerView::OnOverflowIndicatorVisibilityChanged(
   ui::Layer* layer = scroll_indicator_->layer();
   if (!cc::MathUtil::IsWithinEpsilon(layer->GetTargetOpacity(), target_opacity))
     layer->SetOpacity(target_opacity);
+}
+
+SkColor UiElementContainerView::GetOverflowIndicatorBackgroundColor() const {
+  if (use_dark_light_mode_colors_) {
+    return ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor);
+  }
+
+  return gfx::kGoogleGrey300;
 }
 
 }  // namespace ash

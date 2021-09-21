@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
@@ -40,22 +41,13 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
   const views::Label* low_confidence_label = static_cast<views::Label*>(
       main_view()->GetViewByID(AssistantViewID::kLowConfidenceLabel));
 
-  EXPECT_EQ(query_view->background()->get_color(),
-            assistant_colors::ResolveColor(
-                assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/false, /*use_debug_colors=*/false));
-  EXPECT_EQ(high_confidence_label->GetBackgroundColor(),
-            assistant_colors::ResolveColor(
-                assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/false, /*use_debug_colors=*/false));
+  EXPECT_FALSE(query_view->background());
+  ASSERT_TRUE(query_view->layer());
+  EXPECT_FALSE(query_view->layer()->fills_bounds_opaquely());
   EXPECT_EQ(high_confidence_label->GetEnabledColor(),
             cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
                                       /*is_dark_mode=*/false,
                                       /*use_debug_colors=*/false));
-  EXPECT_EQ(low_confidence_label->GetBackgroundColor(),
-            assistant_colors::ResolveColor(
-                assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/false, /*use_debug_colors=*/false));
   EXPECT_EQ(
       low_confidence_label->GetEnabledColor(),
       cros_styles::ResolveColor(cros_styles::ColorName::kTextColorSecondary,
@@ -65,22 +57,10 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kDarkModeEnabled, true);
 
-  EXPECT_EQ(query_view->background()->get_color(),
-            assistant_colors::ResolveColor(
-                assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/true, /*use_debug_colors=*/false));
-  EXPECT_EQ(high_confidence_label->GetBackgroundColor(),
-            assistant_colors::ResolveColor(
-                assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/true, /*use_debug_colors=*/false));
   EXPECT_EQ(high_confidence_label->GetEnabledColor(),
             cros_styles::ResolveColor(cros_styles::ColorName::kTextColorPrimary,
                                       /*is_dark_mode=*/true,
                                       /*use_debug_colors=*/false));
-  EXPECT_EQ(low_confidence_label->GetBackgroundColor(),
-            assistant_colors::ResolveColor(
-                assistant_colors::ColorName::kBgAssistantPlate,
-                /*is_dark_mode=*/true, /*use_debug_colors=*/false));
   EXPECT_EQ(
       low_confidence_label->GetEnabledColor(),
       cros_styles::ResolveColor(cros_styles::ColorName::kTextColorSecondary,
@@ -100,10 +80,10 @@ TEST_F(AssistantQueryViewUnittest, Theme) {
   const views::Label* low_confidence_label = static_cast<views::Label*>(
       main_view()->GetViewByID(AssistantViewID::kLowConfidenceLabel));
 
-  EXPECT_EQ(query_view->background()->get_color(), SK_ColorWHITE);
-  EXPECT_EQ(high_confidence_label->GetBackgroundColor(), SK_ColorWHITE);
+  EXPECT_FALSE(query_view->background());
+  ASSERT_TRUE(query_view->layer());
+  EXPECT_FALSE(query_view->layer()->fills_bounds_opaquely());
   EXPECT_EQ(high_confidence_label->GetEnabledColor(), kTextColorPrimary);
-  EXPECT_EQ(low_confidence_label->GetBackgroundColor(), SK_ColorWHITE);
   EXPECT_EQ(low_confidence_label->GetEnabledColor(), kTextColorSecondary);
 }
 

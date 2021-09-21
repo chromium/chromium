@@ -75,7 +75,7 @@ std::unique_ptr<ElementAnimator> AssistantTextElementView::CreateAnimator() {
 void AssistantTextElementView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  ScopedAssistantLightModeAsDefault scoped_light_mode_as_default;
 
   label_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kTextColorPrimary));

@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 
 namespace ash {
@@ -15,6 +16,18 @@ ScopedLightModeAsDefault::ScopedLightModeAsDefault()
 }
 
 ScopedLightModeAsDefault::~ScopedLightModeAsDefault() {
+  AshColorProvider::Get()->override_light_mode_as_default_ =
+      previous_override_light_mode_as_default_;
+}
+
+ScopedAssistantLightModeAsDefault::ScopedAssistantLightModeAsDefault()
+    : previous_override_light_mode_as_default_(
+          AshColorProvider::Get()->override_light_mode_as_default_) {
+  if (!features::IsAppListBubbleEnabled())
+    AshColorProvider::Get()->override_light_mode_as_default_ = true;
+}
+
+ScopedAssistantLightModeAsDefault::~ScopedAssistantLightModeAsDefault() {
   AshColorProvider::Get()->override_light_mode_as_default_ =
       previous_override_light_mode_as_default_;
 }

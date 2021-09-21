@@ -126,6 +126,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
 
  private:
   friend class ScopedLightModeAsDefault;
+  friend class ScopedAssistantLightModeAsDefault;
 
   // Gets the color of |type| of the corresponding layer. Returns color based on
   // the current inverted color mode if |inverted| is true.
