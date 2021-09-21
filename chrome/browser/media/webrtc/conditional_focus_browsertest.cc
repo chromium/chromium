@@ -226,16 +226,31 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
-                       ExceptionRaisedIFCallingFocusMultipleTimes) {
+                       ExceptionRaisedIfFocusCalledMultipleTimes) {
   // Setup.
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kFocusCapturedSurface);
-  ASSERT_TRUE(WaitForFocusSwitchToCapturedTab());  // Verifeid by earlier test.
+  ASSERT_TRUE(WaitForFocusSwitchToCapturedTab());  // Verified by earlier test.
 
   // Test.
   CallFocusAndExpectError(
       "InvalidStateError: Failed to execute 'focus' on "
       "'FocusableMediaStreamTrack': Method may only be called once.");
+}
+
+IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
+                       ExceptionRaisedIfFocusCalledOnClone) {
+  SetUpTestTabs();
+
+  // TODO(crbug.com/1243764): Use EvalJs() instead.
+  std::string script_result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      capturing_tab_->GetMainFrame(), "captureCloneAndFocusClone();",
+      &script_result));
+  EXPECT_EQ(
+      script_result,
+      "InvalidStateError: Failed to execute 'focus' on "
+      "'FocusableMediaStreamTrack': Method may not be invoked on clones.");
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

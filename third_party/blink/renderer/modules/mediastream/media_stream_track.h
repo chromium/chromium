@@ -127,6 +127,13 @@ class MODULES_EXPORT MediaStreamTrack
 
   void Trace(Visitor*) const override;
 
+ protected:
+  static void DidCloneMediaStreamTrack(MediaStreamComponent* original,
+                                       MediaStreamComponent* clone);
+
+  // Clones |image_capture_| from |original| into |this|.
+  void CloneImageCaptureFrom(const MediaStreamTrack& original);
+
  private:
   friend class CanvasCaptureMediaStreamTrack;
 

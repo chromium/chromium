@@ -51,12 +51,28 @@
       }
 
       function callFocusAndExpectError() {
-        let [track] = mediaStreamKeepAlive.getVideoTracks();
+        const [track] = mediaStreamKeepAlive.getVideoTracks();
         try {
           track.focus("focus-captured-surface");
           window.domAutomationController.send("no-error");
         } catch (error) {
           window.domAutomationController.send(`${error}`);
+        }
+      }
+
+      async function captureCloneAndFocusClone() {
+        try {
+          mediaStreamKeepAlive = await navigator.mediaDevices.getDisplayMedia();
+          const [track] = mediaStreamKeepAlive.getVideoTracks();
+          const clone = track.clone();
+          try {
+            clone.focus("focus-captured-surface");
+            window.domAutomationController.send("no-error");
+          } catch (error) {
+            window.domAutomationController.send(`${error}`);
+          }
+        } catch (error) {
+          window.domAutomationController.send("capture-failure");
         }
       }
     </script>
@@ -65,4 +81,3 @@
     <h1>Conditional Focus Test - Capturing Page</h1>
   </body>
 </html>
-[trac]

@@ -18,24 +18,35 @@ class FocusableMediaStreamTrack final : public MediaStreamTrack {
   FocusableMediaStreamTrack(ExecutionContext* execution_context,
                             MediaStreamComponent* component,
                             base::OnceClosure callback,
-                            const String& descriptor_id);
+                            const String& descriptor_id,
+                            bool is_clone = false);
 
-  // Clones do not expose focus().
-  MediaStreamTrack* clone(ScriptState*) override;
+  FocusableMediaStreamTrack(ExecutionContext* execution_context,
+                            MediaStreamComponent* component,
+                            MediaStreamSource::ReadyState ready_state,
+                            base::OnceClosure callback,
+                            const String& descriptor_id,
+                            bool is_clone = false);
+
+  // Clones raise an error if focus() is called.
+  FocusableMediaStreamTrack* clone(ScriptState*) override;
 
   void focus(ExecutionContext* execution_context,
              V8CaptureStartFocusBehavior focus_behavior,
              ExceptionState& exception_state);
 
  private:
-  // On the browser-side, this track is associated with this ID.
-  // It is known as the "label" in the dispatcher and in MediaStreamManager.
-  const String descriptor_id_;
-
 #if !defined(OS_ANDROID)
+  // Clones may not be focus()-ed.
+  const bool is_clone_;
+
   // First call to focus() is allowed. Subsequent calls produce an error.
   bool focus_called_ = false;
 #endif
+
+  // On the browser-side, this track is associated with this ID.
+  // It is known as the "label" in the dispatcher and in MediaStreamManager.
+  const String descriptor_id_;
 };
 
 }  // namespace blink
