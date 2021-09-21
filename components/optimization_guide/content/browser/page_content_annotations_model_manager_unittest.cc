@@ -19,7 +19,8 @@
 
 namespace optimization_guide {
 
-using testing::UnorderedElementsAre;
+using ::testing::FloatEq;
+using ::testing::UnorderedElementsAre;
 
 class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  public:
@@ -268,13 +269,13 @@ TEST_F(PageContentAnnotationsModelManagerTest,
       ->set_category_name("SOMECATEGORY");
 
   std::vector<tflite::task::core::Category> model_output = {
-      {"SOMECATEGORY", 0.5},
+      {"SOMECATEGORY", 0.4},
       {"-2", 0.3},
   };
   history::VisitContentModelAnnotations annotations =
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
   EXPECT_TRUE(annotations.categories.empty());
-  EXPECT_EQ(annotations.visibility_score, 0.5);
+  EXPECT_THAT(annotations.visibility_score, FloatEq(0.6));
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
 
@@ -418,7 +419,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
       ->set_category_name("SOMECATEGORY");
 
   std::vector<tflite::task::core::Category> model_output = {
-      {"0", 0.3}, {"1", 0.25}, {"2", 0.4}, {"3", 0.05}, {"SOMECATEGORY", 0.5},
+      {"0", 0.3}, {"1", 0.25}, {"2", 0.4}, {"3", 0.05}, {"SOMECATEGORY", 0.4},
   };
   history::VisitContentModelAnnotations annotations =
       GetContentModelAnnotationsFromOutput(model_metadata, model_output);
@@ -427,7 +428,7 @@ TEST_F(PageContentAnnotationsModelManagerTest,
                   history::VisitContentModelAnnotations::Category("0", 30),
                   history::VisitContentModelAnnotations::Category("1", 25),
                   history::VisitContentModelAnnotations::Category("2", 40)));
-  EXPECT_EQ(annotations.visibility_score, 0.5);
+  EXPECT_THAT(annotations.visibility_score, FloatEq(0.6));
   EXPECT_EQ(annotations.page_topics_model_version, 123);
 }
 

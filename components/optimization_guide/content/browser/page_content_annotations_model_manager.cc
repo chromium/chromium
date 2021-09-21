@@ -331,7 +331,7 @@ void PageContentAnnotationsModelManager::
     if (visibility_category_name &&
         category.class_name == *visibility_category_name) {
       out_content_annotations->visibility_score =
-          static_cast<float>(category.score);
+          static_cast<float>(1 - category.score);
       if (!model_metadata.output_postprocessing_params()
                .has_category_params()) {
         break;
