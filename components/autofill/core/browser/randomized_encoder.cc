@@ -128,51 +128,15 @@ std::string GetPseudoRandomBits(base::StringPiece secret,
 // Returns the "random" encoding type to use for encoding.
 AutofillRandomizedValue_EncodingType GetEncodingType(const std::string& seed) {
   DCHECK(!seed.empty());
-  // How many bits should be encoded per byte? This value will determine which
-  // of the encodings are eligible for consideration.
-  const int kDefaultBitsPerByte = 4;
-  const int bits_per_byte =
-      base::FeatureParam<int>(&features::kAutofillMetadataUploads,
-                              switches::kAutofillMetadataUploadEncoding,
-                              kDefaultBitsPerByte)
-          .Get();
 
-  // Depending on the number of bytes to encode per byte, "randomly" select one
-  // of eligible encodings. This "random" selection is persistent in that it is
-  // based directly on the persistent seed.
+  // "Randomly" select one of eligible encodings. This "random" selection is
+  // persistent in that it is based directly on the persistent seed.
   const uint8_t rand_byte = static_cast<uint8_t>(seed.front());
-  int encoding_type_as_int = static_cast<int>(
-      AutofillRandomizedValue_EncodingType_UNSPECIFIED_ENCODING_TYPE);
-  bool config_is_valid = true;
-  switch (bits_per_byte) {
-    case 1:
-      // Sending one bit per byte means sending any encoding from BIT_0 through
-      // BIT_7, which are in numeric order.
-      encoding_type_as_int =
-          static_cast<int>(AutofillRandomizedValue_EncodingType_BIT_0) +
-          (rand_byte % 8);
-      break;
-    default:
-      NOTREACHED();
-      config_is_valid = false;
-      FALLTHROUGH;
-    case 4:
-      // Sending four bits per byte means sending either the EVEN_BITS or
-      // ODD_BITS encoding, which are in numeric order.
-      encoding_type_as_int =
-          static_cast<int>(AutofillRandomizedValue_EncodingType_EVEN_BITS) +
-          (rand_byte % 2);
-      break;
-    case 8:
-      encoding_type_as_int =
-          static_cast<int>(AutofillRandomizedValue_EncodingType_ALL_BITS);
-      break;
-  }
+  // Send either the EVEN_BITS or ODD_BITS.
+  const AutofillRandomizedValue_EncodingType encoding_type =
+      rand_byte % 2 ? AutofillRandomizedValue_EncodingType_ODD_BITS
+                    : AutofillRandomizedValue_EncodingType_EVEN_BITS;
 
-  // Cast back to a valid encoding type value.
-  DCHECK(AutofillRandomizedValue_EncodingType_IsValid(encoding_type_as_int));
-  const auto encoding_type =
-      static_cast<AutofillRandomizedValue_EncodingType>(encoding_type_as_int);
   DCHECK_NE(encoding_type,
             AutofillRandomizedValue_EncodingType_UNSPECIFIED_ENCODING_TYPE);
   return encoding_type;
@@ -222,8 +186,7 @@ const char RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled[] =
 std::unique_ptr<RandomizedEncoder> RandomizedEncoder::Create(
     PrefService* pref_service) {
   // Early abort if metadata uploads are not enabled.
-  if (!pref_service ||
-      !base::FeatureList::IsEnabled(features::kAutofillMetadataUploads)) {
+  if (!pref_service) {
     return nullptr;
   }
 
