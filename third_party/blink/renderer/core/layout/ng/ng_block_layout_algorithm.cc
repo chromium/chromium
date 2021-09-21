@@ -2348,9 +2348,21 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
       CalculateBreakAppealBefore(ConstraintSpace(), child, layout_result,
                                  container_builder_, has_container_separation);
 
-  // Attempt to move past the break point, and if we can do that, also assess
-  // the appeal of breaking there, even if we didn't.
-  if (MovePastBreakpoint(ConstraintSpace(), child, layout_result,
+  bool pushed_to_next_fragmentainer_by_float = false;
+  if (layout_result.Status() == NGLayoutResult::kSuccess && child.IsBlock() &&
+      exclusion_space_.NeedsClearancePastFragmentainer(
+          child.Style().Clear(Style()))) {
+    const auto* child_box_fragment =
+        DynamicTo<NGPhysicalBoxFragment>(&layout_result.PhysicalFragment());
+    if (child_box_fragment->IsFirstForNode())
+      pushed_to_next_fragmentainer_by_float = true;
+  }
+
+  // Unless clearance forces the child to the next fragmentainer, attempt to
+  // move past the break point, and if we can do that, also assess the appeal of
+  // breaking there, even if we didn't.
+  if (!pushed_to_next_fragmentainer_by_float &&
+      MovePastBreakpoint(ConstraintSpace(), child, layout_result,
                          fragmentainer_block_offset, appeal_before,
                          &container_builder_))
     return NGBreakStatus::kContinue;
