@@ -15,6 +15,8 @@
 #include "base/containers/id_map.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/child/blink_platform_impl.h"
@@ -265,8 +267,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
  private:
   bool CheckPreparsedJsCachingEnabled() const;
 
-  // Return the mojo interface for making CodeCache calls.
-  blink::mojom::CodeCacheHost& GetCodeCacheHost();
+  // Return the mojo interface for making CodeCache calls. Safe to call from
+  // other threads, as it returns the SharedRemote by copy.
+  mojo::SharedRemote<blink::mojom::CodeCacheHost> GetCodeCacheHost();
 
   void Collect3DContextInformation(blink::Platform::GraphicsInfo* gl_info,
                                    const gpu::GPUInfo& gpu_info) const;
@@ -289,8 +292,11 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
 
   TopLevelBlameContext top_level_blame_context_;
 
-  mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host_remote_;
-  mojo::SharedRemote<blink::mojom::CodeCacheHost> code_cache_host_;
+  base::Lock code_cache_host_lock_;
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host_remote_
+      GUARDED_BY(code_cache_host_lock_);
+  mojo::SharedRemote<blink::mojom::CodeCacheHost> code_cache_host_
+      GUARDED_BY(code_cache_host_lock_);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   sk_sp<font_service::FontLoader> font_loader_;
