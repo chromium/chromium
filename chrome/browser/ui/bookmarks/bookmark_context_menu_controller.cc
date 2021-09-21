@@ -198,7 +198,8 @@ void BookmarkContextMenuController::BuildMenu() {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
   }
-  if (reading_list::switches::IsReadingListEnabled()) {
+  if (reading_list::switches::IsReadingListEnabled() &&
+      !base::FeatureList::IsEnabled(features::kSidePanel)) {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_READING_LIST,
                     IDS_BOOKMARK_BAR_SHOW_READING_LIST);
   }
