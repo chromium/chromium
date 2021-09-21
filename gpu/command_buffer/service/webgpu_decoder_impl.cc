@@ -773,7 +773,8 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 #endif
 
   std::vector<dawn_native::Adapter> adapters = dawn_instance_->GetAdapters();
-  for (const dawn_native::Adapter& adapter : adapters) {
+  for (dawn_native::Adapter& adapter : adapters) {
+    adapter.SetUseTieredLimits(true);
     if (!adapter.SupportsExternalImages()) {
       continue;
     }
