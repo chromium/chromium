@@ -168,10 +168,8 @@ def _MeasureApkSignatureBlock(zip_file):
 
 
 def _RunReadelf(so_path, options, tool_prefix=''):
-  return cmd_helper.GetCmdOutput([
-      tool_prefix + 'readobj',
-      '--elf-output-style=GNU',
-  ] + options + [so_path])
+  return cmd_helper.GetCmdOutput(
+      [tool_prefix + 'readelf'] + options + [so_path])
 
 
 def _ExtractLibSectionSizesFromApk(apk_path, lib_path, tool_prefix):
