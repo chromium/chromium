@@ -1185,10 +1185,6 @@
       status: "experimental",
     },
     {
-      name: "IDBRelaxedDurability",
-      status: "stable",
-    },
-    {
       name: "IdleDetection",
       status: "stable",
     },

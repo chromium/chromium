@@ -332,14 +332,6 @@ void IDBDatabase::deleteObjectStore(const String& name,
 IDBTransaction* IDBDatabase::transaction(
     ScriptState* script_state,
     const V8UnionStringOrStringSequence* store_names,
-    const String& mode,
-    ExceptionState& exception_state) {
-  return transaction(script_state, store_names, mode, nullptr, exception_state);
-}
-
-IDBTransaction* IDBDatabase::transaction(
-    ScriptState* script_state,
-    const V8UnionStringOrStringSequence* store_names,
     const String& mode_string,
     const IDBTransactionOptions* options,
     ExceptionState& exception_state) {
@@ -410,15 +402,13 @@ IDBTransaction* IDBDatabase::transaction(
           ->GetTaskRunner(TaskType::kDatabaseAccess),
       transaction_id);
 
-  mojom::IDBTransactionDurability durability =
-      mojom::IDBTransactionDurability::Default;
-  if (options) {
-    DCHECK(RuntimeEnabledFeatures::IDBRelaxedDurabilityEnabled());
-    if (options->durability() == indexed_db_names::kRelaxed) {
-      durability = mojom::IDBTransactionDurability::Relaxed;
-    } else if (options->durability() == indexed_db_names::kStrict) {
-      durability = mojom::IDBTransactionDurability::Strict;
-    }
+  mojom::blink::IDBTransactionDurability durability =
+      mojom::blink::IDBTransactionDurability::Default;
+  DCHECK(options);
+  if (options->durability() == indexed_db_names::kRelaxed) {
+    durability = mojom::blink::IDBTransactionDurability::Relaxed;
+  } else if (options->durability() == indexed_db_names::kStrict) {
+    durability = mojom::blink::IDBTransactionDurability::Strict;
   }
 
   backend_->CreateTransaction(transaction_backend->CreateReceiver(),
