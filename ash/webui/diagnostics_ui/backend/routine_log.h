@@ -7,9 +7,12 @@
 
 #include <string>
 
+#include "ash/webui/diagnostics_ui/backend/async_log.h"
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
-#include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace ash {
 namespace diagnostics {
@@ -38,18 +41,7 @@ class RoutineLog {
   std::string GetContents() const;
 
  private:
-  // Performs the file operations to ensure the log file exists and appends
-  // provided content.
-  // Expectation is this will be called from a thread which allows blocking.
-  void LogContentToFile(const std::string& content);
-
-  void AppendToLog(const std::string& content);
-
-  void CreateFile();
-
-  const base::FilePath routine_log_file_path_;
-  // Blockable task runner to enable I/O operations.
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  AsyncLog log_;
 };
 
 }  // namespace diagnostics

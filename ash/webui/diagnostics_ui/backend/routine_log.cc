@@ -7,13 +7,11 @@
 #include <sstream>
 #include <string>
 
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -56,32 +54,16 @@ std::string getRoutineTypeString(mojom::RoutineType type) {
 }  // namespace
 
 RoutineLog::RoutineLog(const base::FilePath& routine_log_file_path)
-    : routine_log_file_path_(routine_log_file_path) {
-  sequenced_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-}
+    : log_(routine_log_file_path) {}
 
 RoutineLog::~RoutineLog() = default;
-
-void RoutineLog::LogContentToFile(const std::string& contents) {
-  // Ensure file exists.
-  if (!base::PathExists(routine_log_file_path_)) {
-    CreateFile();
-  }
-
-  // Write contents to file.
-  AppendToLog(contents);
-}
 
 void RoutineLog::LogRoutineStarted(mojom::RoutineType type) {
   std::stringstream log_line;
   log_line << GetCurrentDateTimeAsString() << kSeparator
            << getRoutineTypeString(type) << kSeparator << kStartedDescription
            << kNewline;
-  sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RoutineLog::LogContentToFile,
-                                base::Unretained(this), log_line.str()));
+  log_.Append(log_line.str());
 }
 
 void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
@@ -90,51 +72,18 @@ void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
   log_line << GetCurrentDateTimeAsString() << kSeparator
            << getRoutineTypeString(type) << kSeparator
            << getRoutineResultString(result) << kNewline;
-  sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RoutineLog::LogContentToFile,
-                                base::Unretained(this), log_line.str()));
+  log_.Append(log_line.str());
 }
 
 void RoutineLog::LogRoutineCancelled() {
   std::stringstream log_line;
   log_line << GetCurrentDateTimeAsString() << kSeparator
            << kCancelledDescription << kNewline;
-  sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RoutineLog::LogContentToFile,
-                                base::Unretained(this), log_line.str()));
+  log_.Append(log_line.str());
 }
 
 std::string RoutineLog::GetContents() const {
-  if (!base::PathExists(routine_log_file_path_)) {
-    return "";
-  }
-
-  std::string contents;
-  base::ReadFileToString(routine_log_file_path_, &contents);
-
-  return contents;
-}
-
-void RoutineLog::AppendToLog(const std::string& content) {
-  base::AppendToFile(routine_log_file_path_, content);
-}
-
-void RoutineLog::CreateFile() {
-  DCHECK(!base::PathExists(routine_log_file_path_));
-
-  if (!base::PathExists(routine_log_file_path_.DirName())) {
-    const bool create_dir_success =
-        base::CreateDirectory(routine_log_file_path_.DirName());
-    if (!create_dir_success) {
-      LOG(ERROR) << "Failed to create Diagnostics Routine Log directory.";
-      return;
-    }
-  }
-
-  const bool create_file_success = base::WriteFile(routine_log_file_path_, "");
-  if (!create_file_success) {
-    LOG(ERROR) << "Failed to create Diagnostics Routine Log file.";
-  }
+  return log_.GetContents();
 }
 
 }  // namespace diagnostics
