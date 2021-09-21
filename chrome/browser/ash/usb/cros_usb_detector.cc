@@ -337,6 +337,10 @@ std::string CrosUsbDetector::MakeNotificationId(const std::string& guid) {
   return "cros:" + guid;
 }
 
+CrosUsbDetector::DeviceClaim::DeviceClaim() = default;
+
+CrosUsbDetector::DeviceClaim::~DeviceClaim() = default;
+
 // static
 CrosUsbDetector* CrosUsbDetector::Get() {
   return g_cros_usb_detector;
@@ -819,10 +823,9 @@ void CrosUsbDetector::AttachAfterDetach(
 
   auto claim_it = devices_claimed_.find(guid);
   if (claim_it != devices_claimed_.end()) {
-    if (claim_it->second.device_file.IsValid()) {
+    if (claim_it->second.device_file.is_valid()) {
       // We take a dup here which will be closed if DoVmAttach fails.
-      base::ScopedFD device_fd(
-          claim_it->second.device_file.Duplicate().TakePlatformFile());
+      base::ScopedFD device_fd(dup(claim_it->second.device_file.get()));
       DoVmAttach(vm_name, device.info.Clone(), std::move(device_fd),
                  std::move(callback));
     } else {
@@ -843,7 +846,7 @@ void CrosUsbDetector::AttachAfterDetach(
   }
 
   VLOG(1) << "Saving lifeline_fd " << write_end.get();
-  devices_claimed_[guid].lifeline_file = base::File(std::move(write_end));
+  devices_claimed_[guid].lifeline_file = std::move(write_end);
 
   // Open a file descriptor to pass to CrostiniManager & Concierge.
   device_manager_->OpenFileDescriptor(
@@ -869,7 +872,8 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  devices_claimed_[device_info->guid].device_file = file.Duplicate();
+  devices_claimed_[device_info->guid].device_file =
+      base::ScopedFD(file.Duplicate().TakePlatformFile());
   if (!manager()) {
     LOG(ERROR) << "Attaching device without Crostini manager instance";
     std::move(callback).Run(/*success=*/false);
@@ -958,8 +962,7 @@ void CrosUsbDetector::OnUsbDeviceDetachFinished(
 void CrosUsbDetector::RelinquishDeviceClaim(const std::string& guid) {
   auto it = devices_claimed_.find(guid);
   if (it != devices_claimed_.end()) {
-    VLOG(1) << "Closing lifeline_fd "
-            << it->second.lifeline_file.GetPlatformFile();
+    VLOG(1) << "Closing lifeline_fd " << it->second.lifeline_file.get();
     devices_claimed_.erase(it);
   } else {
     LOG(ERROR) << "Relinquishing device with no prior claim: " << guid;

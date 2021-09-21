@@ -263,8 +263,10 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
   // is shared successfully with the VM. When an file is closed (here or by the
   // VM,  PermissionBroker will reattach the previous host drivers (if any).
   struct DeviceClaim {
-    base::File device_file;
-    base::File lifeline_file;
+    DeviceClaim();
+    ~DeviceClaim();
+    base::ScopedFD device_file;
+    base::ScopedFD lifeline_file;
   };
   std::map<std::string, DeviceClaim> devices_claimed_;
 
