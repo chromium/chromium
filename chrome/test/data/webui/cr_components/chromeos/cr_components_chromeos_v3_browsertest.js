@@ -46,7 +46,8 @@ GEN('#include "content/public/test/browser_test.h"');
  ['SimLockDialogs', 'network/sim_lock_dialogs_test.m.js'],
 ].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
 
-[['RoutineGroup', 'network_health/routine_group_test.js'],
+[['NetworkDiagnostics', 'network_health/network_diagnostics_test.js'],
+ ['RoutineGroup', 'network_health/routine_group_test.js'],
 ].forEach(test => registerTest('NetworkHealth', 'connectivity-diagnostics', ...test));
 
 [
