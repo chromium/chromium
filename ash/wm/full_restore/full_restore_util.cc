@@ -34,11 +34,6 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     window_info->activation_index = window_activation_index;
   window_info->window = window;
   window_info->desk_id = window->GetProperty(aura::client::kWindowWorkspaceKey);
-  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
-    // Only save |visible_on_all_workspaces| field if it's true to reduce file
-    // storage size.
-    window_info->visible_on_all_workspaces = true;
-  }
 
   // If override bounds and window state are available (in tablet mode), save
   // those bounds.

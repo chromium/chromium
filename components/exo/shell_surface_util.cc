@@ -153,7 +153,8 @@ ClientControlledShellSurface* GetShellClientControlledShellSurface(
 
 int GetWindowDeskStateChanged(const aura::Window* window) {
   constexpr int kToggleVisibleOnAllWorkspacesValue = -1;
-  return window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)
+  return window->GetProperty(aura::client::kWindowWorkspaceKey) ==
+                 aura::client::kWindowWorkspaceVisibleOnAllWorkspaces
              ? kToggleVisibleOnAllWorkspacesValue
              : window->GetProperty(aura::client::kWindowWorkspaceKey);
 }

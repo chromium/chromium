@@ -15,6 +15,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_util.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 
@@ -173,6 +174,11 @@ bool IsDraggingAnyDesk() {
   }
 
   return false;
+}
+
+bool IsWindowVisibleOnAllWorkspaces(aura::Window* window) {
+  return window->GetProperty(aura::client::kWindowWorkspaceKey) ==
+         aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
 }
 
 }  // namespace desks_util

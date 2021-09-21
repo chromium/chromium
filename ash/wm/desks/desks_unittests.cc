@@ -4615,7 +4615,7 @@ TEST_F(DesksTest, VisibleOnAllDesksGlobalBounds) {
 
   // Assign |window| to all desks. It shouldn't change bounds.
   widget->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
   EXPECT_EQ(window_initial_bounds, window->bounds());
   EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
 
@@ -4658,7 +4658,7 @@ TEST_F(DesksTest, VisibleOnAllDesksGlobalZOrder) {
 
   // Assign |win1| to all desks. It shouldn't change stacking order.
   widget1->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(win1->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win1.get()));
   EXPECT_TRUE(IsStackedBelow(win0.get(), win1.get()));
   EXPECT_TRUE(IsStackedBelow(win1.get(), win2.get()));
   EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
@@ -4681,8 +4681,8 @@ TEST_F(DesksTest, VisibleOnAllDesksGlobalZOrder) {
   // windows.
   widget0->SetVisibleOnAllWorkspaces(true);
   widget2->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(win0->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
-  ASSERT_TRUE(win1->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win1.get()));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win2.get()));
   wm::ActivateWindow(win2.get());
   wm::ActivateWindow(win1.get());
   wm::ActivateWindow(win0.get());
@@ -4716,8 +4716,8 @@ TEST_F(DesksTest, VisibleOnAllDesksActiveDeskRemoval) {
   // Assign |win0| and |win1| to all desks.
   widget0->SetVisibleOnAllWorkspaces(true);
   widget1->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(win0->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
-  ASSERT_TRUE(win1->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win0.get()));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win1.get()));
 
   // Remove the active desk. The visible on all desks windows should be on
   // |desk_2|.
@@ -4743,7 +4743,7 @@ TEST_F(DesksTest, VisibleOnAllDesksMinimizedWindow) {
   window_state->Minimize();
   ASSERT_TRUE(window_state->IsMinimized());
   widget->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
   EXPECT_TRUE(window_state->IsMinimized());
 
   // Switch desks. |window| should be on the newly active desk and should still
@@ -4769,7 +4769,7 @@ TEST_F(DesksTest, VisibleOnAllDesksMoveWindowToDeskViaDragAndDrop) {
 
   // Assign |window| to all desks.
   widget->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
 
   // Try to move |window| to |desk_2| via drag and drop. It should not be moved.
   EXPECT_FALSE(controller->MoveWindowFromActiveDeskTo(
@@ -4777,7 +4777,7 @@ TEST_F(DesksTest, VisibleOnAllDesksMoveWindowToDeskViaDragAndDrop) {
       DesksMoveWindowFromActiveDeskSource::kDragAndDrop));
   EXPECT_TRUE(desks_util::BelongsToActiveDesk(window.get()));
   EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
-  EXPECT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
   EXPECT_TRUE(base::Contains(desk_1->windows(), window.get()));
 }
 
@@ -4794,7 +4794,7 @@ TEST_F(DesksTest, VisibleOnAllDesksMoveWindowToDeskViaShortcuts) {
 
   // Assign |window| to all desks.
   widget->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
 
   // Move |window| to |desk_2| via keyboard shortcut. It should be on |desk_2|
   // and should no longer be visible on all desks.
@@ -4803,7 +4803,7 @@ TEST_F(DesksTest, VisibleOnAllDesksMoveWindowToDeskViaShortcuts) {
       DesksMoveWindowFromActiveDeskSource::kShortcut));
   EXPECT_FALSE(desks_util::BelongsToActiveDesk(window.get()));
   EXPECT_EQ(0u, controller->visible_on_all_desks_windows().size());
-  EXPECT_FALSE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_FALSE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
   EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
 }
 
@@ -4819,14 +4819,14 @@ TEST_F(DesksTest, VisibleOnAllDesksMoveWindowToDeskViaContextMenu) {
 
   // Assign |window| to all desks.
   widget->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
 
   // Move |window| to |desk_2| via keyboard shortcut. It should be on |desk_2|
   // and should no longer be visible on all desks.
   controller->SendToDeskAtIndex(window.get(), controller->GetDeskIndex(desk_2));
   EXPECT_FALSE(desks_util::BelongsToActiveDesk(window.get()));
   EXPECT_EQ(0u, controller->visible_on_all_desks_windows().size());
-  EXPECT_FALSE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  EXPECT_FALSE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
   EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
 }
 
@@ -4843,7 +4843,7 @@ TEST_F(DesksTest, VisibleOnAllDesksWindowDestruction) {
 
   // Assign |window| to all desks.
   widget->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
   EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
   EXPECT_EQ(1u, desk_1->GetDeskContainerForRoot(root)->children().size());
 

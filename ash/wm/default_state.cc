@@ -10,6 +10,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
@@ -162,7 +163,7 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       // bounds are global across workspaces so don't restore to pre-added
       // bounds.
       if (window_state->pre_added_to_workspace_window_bounds() &&
-          !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
+          !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
         bounds = *window_state->pre_added_to_workspace_window_bounds();
       }
 

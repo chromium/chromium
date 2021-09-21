@@ -85,7 +85,7 @@ bool GetVirtualDesksBarEnabled(OverviewItem* item) {
 bool DraggedItemIsVisibleOnAllDesks(OverviewItem* item) {
   aura::Window* const dragged_window = item->GetWindow();
   return dragged_window &&
-         dragged_window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey);
+         desks_util::IsWindowVisibleOnAllWorkspaces(dragged_window);
 }
 
 // Returns the scaled-down size of the dragged item that should be used when

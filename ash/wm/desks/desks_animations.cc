@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "base/time/time.h"
@@ -121,7 +122,7 @@ void PerformHitTheWallAnimation(aura::Window* root, bool going_left) {
 
 void PerformWindowMoveToDeskAnimation(aura::Window* window, bool going_left) {
   DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
-  DCHECK(!window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  DCHECK(!desks_util::IsWindowVisibleOnAllWorkspaces(window));
 
   // The entire transient window tree should appear to animate together towards
   // the target desk.

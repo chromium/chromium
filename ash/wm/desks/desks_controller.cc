@@ -491,8 +491,11 @@ void DesksController::ReorderDesk(int old_index, int new_index) {
   // 4. For restoring windows to the right desks, update workspaces of all
   // windows in the affected desks for all simultaneously logged-in users.
   for (int i = starting_affected_index; i <= ending_affected_index; i++) {
-    for (auto* window : desks_[i]->windows())
+    for (auto* window : desks_[i]->windows()) {
+      if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
+        continue;
       window->SetProperty(aura::client::kWindowWorkspaceKey, i);
+    }
   }
 }
 
@@ -630,13 +633,15 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   if (!base::Contains(active_desk_->windows(), window))
     return false;
 
-  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
     if (source == DesksMoveWindowFromActiveDeskSource::kDragAndDrop) {
       // Since a visible on all desks window is on all desks, prevent users from
       // moving them manually in overview.
       return false;
-    } else if (source == DesksMoveWindowFromActiveDeskSource::kShortcut) {
-      window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, false);
+    } else if (source !=
+               DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks) {
+      window->SetProperty(aura::client::kWindowWorkspaceKey,
+                          aura::client::kWindowWorkspaceUnassignedWorkspace);
     }
   }
 
@@ -826,8 +831,12 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
   if (desk_index < 0 || desk_index >= static_cast<int>(desks_.size()))
     return;
 
-  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey))
-    window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, false);
+  // If |window| is assigned to all desk, clear it since the user is manually
+  // moving it to a desk.
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+    window->SetProperty(aura::client::kWindowWorkspaceKey,
+                        aura::client::kWindowWorkspaceUnassignedWorkspace);
+  }
 
   const int active_desk_index = GetDeskIndex(active_desk_);
   if (desk_index == active_desk_index)
@@ -873,10 +882,6 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     // Clear WindowInfo's |desk_id| as a window in template will always launch
     // to a newly created desk.
     window_info->desk_id.reset();
-    // Clear WindowInfo's `visible_on_all_workspaces` as according to the PRD
-    // we don't want the window that is created from desk template is visible
-    // on other desks.
-    window_info->visible_on_all_workspaces.reset();
     restore_data->ModifyWindowInfo(app_id, window_id, *window_info);
   }
   desk_template->set_desk_restore_data(std::move(restore_data));
@@ -953,10 +958,8 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
   // No need to shift a window that is visible on all desks.
   // TODO(sammiequon): Remove this property if the window on the new desk should
   // not be visible on all desks.
-  if (existing_app_instance_window->GetProperty(
-          aura::client::kVisibleOnAllWorkspacesKey)) {
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(existing_app_instance_window))
     return false;
-  }
 
   DCHECK(src_desk);
   DCHECK_NE(src_desk, active_desk_);
@@ -1133,8 +1136,11 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   // removed desk since indices of those desks shift by one.
   for (int i = removed_desk_index + 1; i < static_cast<int>(desks_.size());
        i++) {
-    for (auto* window : desks_[i]->windows())
+    for (auto* window : desks_[i]->windows()) {
+      if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
+        continue;
       window->SetProperty(aura::client::kWindowWorkspaceKey, i - 1);
+    }
   }
 
   // Record |desk|'s lifetime before it's removed from |desks_|.

@@ -46,9 +46,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
   // Virtual desk id.
   absl::optional<int32_t> desk_id;
 
-  // Whether the |window| is visible on all workspaces.
-  absl::optional<bool> visible_on_all_workspaces;
-
   // Current bounds in screen in coordinates. If the window has restore bounds,
   // then this contains the restore bounds.
   absl::optional<gfx::Rect> current_bounds;

@@ -344,7 +344,6 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     out_dst->window = src.window;
     out_dst->activation_index = src.activation_index;
     out_dst->desk_id = src.desk_id;
-    out_dst->visible_on_all_workspaces = src.visible_on_all_workspaces;
     out_dst->current_bounds = src.current_bounds;
     out_dst->window_state_type = src.window_state_type;
     out_dst->display_id = src.display_id;
@@ -448,11 +447,13 @@ TEST_F(FullRestoreControllerTest, AssignToAllDesks) {
   ResetSaveWindowsCount();
 
   // Assign |window| to all desks. This should trigger a save.
-  window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, true);
+  window->SetProperty(aura::client::kWindowWorkspaceKey,
+                      aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
 
   // Unassign |window| from all desks. This should trigger a save.
-  window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, false);
+  window->SetProperty(aura::client::kWindowWorkspaceKey,
+                      aura::client::kWindowWorkspaceUnassignedWorkspace);
   EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
 }
 

@@ -51,7 +51,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   //    "file_paths": { "aa.cc", "bb.h", ... },
   //    "index": 3,
   //    "desk_id": 1,
-  //    "visible": true,
   //    "restored_bounds": { 0, 100, 200, 300 },
   //    "current_bounds": { 100, 200, 200, 300 },
   //    "window_state_type": 256,
@@ -94,7 +93,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // Window's information.
   absl::optional<int32_t> activation_index;
   absl::optional<int32_t> desk_id;
-  absl::optional<bool> visible_on_all_workspaces;
   absl::optional<gfx::Rect> current_bounds;
   absl::optional<chromeos::WindowStateType> window_state_type;
   absl::optional<ui::WindowShowState> pre_minimized_show_state_type;

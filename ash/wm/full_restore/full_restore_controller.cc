@@ -336,10 +336,8 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
   if (window_info) {
     const int desk_id = window_info->desk_id
                             ? int{*window_info->desk_id}
-                            : aura::client::kUnassignedWorkspace;
+                            : aura::client::kWindowWorkspaceUnassignedWorkspace;
     window->SetProperty(aura::client::kWindowWorkspaceKey, desk_id);
-    window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey,
-                        window_info->visible_on_all_workspaces.has_value());
   }
 
   // Now that the hidden container key is cleared,

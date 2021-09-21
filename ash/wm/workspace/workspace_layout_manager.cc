@@ -316,16 +316,15 @@ void WorkspaceLayoutManager::OnWindowPropertyChanged(aura::Window* window,
   } else if (key == kWindowBackdropKey) {
     // kWindowBackdropKey is not supposed to be cleared.
     DCHECK(window->GetProperty(kWindowBackdropKey));
-  } else if (key == aura::client::kVisibleOnAllWorkspacesKey) {
-    auto* desks_controller = Shell::Get()->desks_controller();
-
+  } else if (key == aura::client::kWindowWorkspaceKey) {
     if (window->GetType() != aura::client::WindowType::WINDOW_TYPE_NORMAL ||
         window->GetProperty(aura::client::kZOrderingKey) !=
             ui::ZOrderLevel::kNormal) {
       return;
     }
 
-    if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey))
+    auto* desks_controller = Shell::Get()->desks_controller();
+    if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
       desks_controller->AddVisibleOnAllDesksWindow(window);
     else
       desks_controller->MaybeRemoveVisibleOnAllDesksWindow(window);

@@ -330,7 +330,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   aura::Window* window = browser()->window()->GetNativeWindow();
   window->SetBounds(browser_bounds);
   // Make window visible on all desks.
-  window->SetProperty(aura::client::kVisibleOnAllWorkspacesKey, true);
+  window->SetProperty(aura::client::kWindowWorkspaceKey,
+                      aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   const int32_t browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
 
@@ -368,8 +369,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   // Verify window info are correctly captured.
   EXPECT_EQ(browser_bounds, data->current_bounds.value());
   // `visible_on_all_workspaces` should have been reset even though
-  // the captured window has kVisibleOnAllWorkspacesKey key.
-  EXPECT_FALSE(data->visible_on_all_workspaces.has_value());
+  // the captured window is visible on all workspaces.
+  EXPECT_FALSE(data->desk_id.has_value());
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
@@ -392,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
             data2->disposition.value());
   // Verify window info are correctly captured.
   EXPECT_EQ(settings_app_bounds, data2->current_bounds.value());
-  EXPECT_FALSE(data2->visible_on_all_workspaces.has_value());
+  EXPECT_FALSE(data2->desk_id.has_value());
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
   EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),

@@ -1398,7 +1398,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniView(
   aura::Window* const dragged_window = drag_item->GetWindow();
   const bool dragged_window_is_visible_on_all_desks =
       dragged_window &&
-      dragged_window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey);
+      desks_util::IsWindowVisibleOnAllWorkspaces(dragged_window);
   // End the drag for the DesksBarView.
   if (!IntersectsWithDesksBar(screen_location,
                               /*update_desks_bar_drag_details=*/

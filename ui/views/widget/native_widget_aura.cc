@@ -182,7 +182,7 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   // the active desk.
   if (params.visible_on_all_workspaces) {
     window_->SetProperty(aura::client::kWindowWorkspaceKey,
-                         aura::client::kUnassignedWorkspace);
+                         aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   } else if (base::StringToInt(params.workspace, &desk_index)) {
     window_->SetProperty(aura::client::kWindowWorkspaceKey, desk_index);
   }
@@ -260,8 +260,6 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     SetRestoreBounds(window_, window_bounds);
   else
     SetBounds(window_bounds);
-  // For similar reasons, wait to set visible on all workspaces.
-  SetVisibleOnAllWorkspaces(params.visible_on_all_workspaces);
   window_->SetEventTargetingPolicy(
       params.accept_events ? aura::EventTargetingPolicy::kTargetAndDescendants
                            : aura::EventTargetingPolicy::kNone);
@@ -518,7 +516,7 @@ gfx::Rect NativeWidgetAura::GetRestoredBounds() const {
 
 std::string NativeWidgetAura::GetWorkspace() const {
   int desk_index = window_->GetProperty(aura::client::kWindowWorkspaceKey);
-  return desk_index == aura::client::kUnassignedWorkspace
+  return desk_index == aura::client::kWindowWorkspaceUnassignedWorkspace
              ? std::string()
              : base::NumberToString(desk_index);
 }
@@ -677,13 +675,15 @@ ui::ZOrderLevel NativeWidgetAura::GetZOrderLevel() const {
 }
 
 void NativeWidgetAura::SetVisibleOnAllWorkspaces(bool always_visible) {
-  window_->SetProperty(aura::client::kVisibleOnAllWorkspacesKey,
-                       always_visible);
+  window_->SetProperty(
+      aura::client::kWindowWorkspaceKey,
+      always_visible ? aura::client::kWindowWorkspaceVisibleOnAllWorkspaces
+                     : aura::client::kWindowWorkspaceUnassignedWorkspace);
 }
 
 bool NativeWidgetAura::IsVisibleOnAllWorkspaces() const {
-  return window_ &&
-         window_->GetProperty(aura::client::kVisibleOnAllWorkspacesKey);
+  return window_ && window_->GetProperty(aura::client::kWindowWorkspaceKey) ==
+                        aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
 }
 
 void NativeWidgetAura::Maximize() {
@@ -993,10 +993,8 @@ void NativeWidgetAura::OnWindowPropertyChanged(aura::Window* window,
   if (key == aura::client::kShowStateKey)
     delegate_->OnNativeWidgetWindowShowStateChanged();
 
-  if (key == aura::client::kWindowWorkspaceKey ||
-      key == aura::client::kVisibleOnAllWorkspacesKey) {
+  if (key == aura::client::kWindowWorkspaceKey)
     delegate_->OnNativeWidgetWorkspaceChanged();
-  }
 }
 
 void NativeWidgetAura::OnResizeLoopStarted(aura::Window* window) {

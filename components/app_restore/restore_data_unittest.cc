@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -55,11 +56,8 @@ constexpr int32_t kActivationIndex3 = 102;
 
 constexpr int32_t kDeskId1 = 1;
 constexpr int32_t kDeskId2 = 2;
-constexpr int32_t kDeskId3 = 3;
-
-constexpr bool kVisibleOnAllWorkspaces1 = false;
-constexpr bool kVisibleOnAllWorkspaces2 = false;
-constexpr bool kVisibleOnAllWorkspaces3 = true;
+constexpr int32_t kDeskId3 =
+    aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
 
 constexpr gfx::Rect kCurrentBounds1(11, 21, 111, 121);
 constexpr gfx::Rect kCurrentBounds2(31, 41, 131, 141);
@@ -176,7 +174,6 @@ class RestoreDataTest : public testing::Test {
     WindowInfo window_info3;
     window_info3.activation_index = kActivationIndex3;
     window_info3.desk_id = kDeskId3;
-    window_info3.visible_on_all_workspaces = kVisibleOnAllWorkspaces3;
     window_info3.current_bounds = kCurrentBounds3;
     window_info3.window_state_type = kWindowStateType3;
     window_info3.display_id = kDisplayId1;
@@ -202,7 +199,6 @@ class RestoreDataTest : public testing::Test {
                             bool app_type_browser,
                             int32_t activation_index,
                             int32_t desk_id,
-                            bool visible_on_all_workspaces,
                             const gfx::Rect& current_bounds,
                             chromeos::WindowStateType window_state_type,
                             ui::WindowShowState pre_minimized_show_state_type,
@@ -244,15 +240,6 @@ class RestoreDataTest : public testing::Test {
 
     EXPECT_TRUE(data->desk_id.has_value());
     EXPECT_EQ(desk_id, data->desk_id.value());
-
-    if (!visible_on_all_workspaces)
-      // This field should only be written if it is true.
-      EXPECT_FALSE(data->visible_on_all_workspaces.has_value());
-    else {
-      EXPECT_TRUE(data->visible_on_all_workspaces.has_value());
-      EXPECT_EQ(visible_on_all_workspaces,
-                data->visible_on_all_workspaces.value());
-    }
 
     EXPECT_TRUE(data->current_bounds.has_value());
     EXPECT_EQ(current_bounds, data->current_bounds.value());
@@ -330,10 +317,10 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionSend, kMimeType, kShareText1),
-        kAppTypeBrower1, kActivationIndex1, kDeskId1, kVisibleOnAllWorkspaces1,
-        kCurrentBounds1, kWindowStateType1, kPreMinimizedWindowStateType1,
-        kMaxSize1, kMinSize1, std::u16string(kTitle1), kBoundsInRoot1,
-        kPrimaryColor1, kStatusBarColor1);
+        kAppTypeBrower1, kActivationIndex1, kDeskId1, kCurrentBounds1,
+        kWindowStateType1, kPreMinimizedWindowStateType1, kMaxSize1, kMinSize1,
+        std::u16string(kTitle1), kBoundsInRoot1, kPrimaryColor1,
+        kStatusBarColor1);
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
@@ -343,10 +330,10 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         CreateIntent(kIntentActionView, kMimeType, kShareText2),
-        kAppTypeBrower2, kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2,
-        kCurrentBounds2, kWindowStateType2, kPreMinimizedWindowStateType2,
-        absl::nullopt, kMinSize2, std::u16string(kTitle2), kBoundsInRoot2,
-        kPrimaryColor2, kStatusBarColor2);
+        kAppTypeBrower2, kActivationIndex2, kDeskId2, kCurrentBounds2,
+        kWindowStateType2, kPreMinimizedWindowStateType2, absl::nullopt,
+        kMinSize2, std::u16string(kTitle2), kBoundsInRoot2, kPrimaryColor2,
+        kStatusBarColor2);
 
     // Verify for |kAppId2|.
     const auto launch_list_it2 =
@@ -361,9 +348,9 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_POPUP, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         CreateIntent(kIntentActionView, kMimeType, kShareText1),
-        kAppTypeBrower3, kActivationIndex3, kDeskId3, kVisibleOnAllWorkspaces3,
-        kCurrentBounds3, kWindowStateType3, kPreMinimizedWindowStateType3,
-        absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt, 0, 0);
+        kAppTypeBrower3, kActivationIndex3, kDeskId3, kCurrentBounds3,
+        kWindowStateType3, kPreMinimizedWindowStateType3, absl::nullopt,
+        absl::nullopt, absl::nullopt, absl::nullopt, 0, 0);
   }
 
   RestoreData& restore_data() { return restore_data_; }
@@ -424,9 +411,9 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
       CreateIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
-      kActivationIndex2, kDeskId2, kVisibleOnAllWorkspaces2, kCurrentBounds2,
-      kWindowStateType2, kPreMinimizedWindowStateType2, absl::nullopt,
-      kMinSize2, kTitle2, kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2);
+      kActivationIndex2, kDeskId2, kCurrentBounds2, kWindowStateType2,
+      kPreMinimizedWindowStateType2, absl::nullopt, kMinSize2, kTitle2,
+      kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2);
 
   // Verify the restore data for |kAppId2| still exists.
   const auto launch_list_it2 =
@@ -507,7 +494,6 @@ TEST_F(RestoreDataTest, RemoveWindowInfo) {
   EXPECT_TRUE(window_info);
   EXPECT_FALSE(window_info->activation_index.has_value());
   EXPECT_FALSE(window_info->desk_id.has_value());
-  EXPECT_FALSE(window_info->visible_on_all_workspaces.has_value());
   EXPECT_FALSE(window_info->current_bounds.has_value());
   EXPECT_FALSE(window_info->window_state_type.has_value());
   EXPECT_FALSE(window_info->arc_extra_info.has_value());

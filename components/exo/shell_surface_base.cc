@@ -1029,8 +1029,7 @@ void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
     } else if (key == chromeos::kFrameRestoreLookKey) {
       root_surface()->SetFrameLocked(
           window->GetProperty(chromeos::kFrameRestoreLookKey));
-    } else if (key == aura::client::kVisibleOnAllWorkspacesKey ||
-               key == aura::client::kWindowWorkspaceKey) {
+    } else if (key == aura::client::kWindowWorkspaceKey) {
       root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
     }
   }

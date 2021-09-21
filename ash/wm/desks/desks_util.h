@@ -63,6 +63,9 @@ ui::Compositor* GetSelectedCompositorForPerformanceMetrics();
 // Check if a desk is being dragged.
 ASH_EXPORT bool IsDraggingAnyDesk();
 
+// Returns whether a |window| is visible on all workspaces.
+ASH_EXPORT bool IsWindowVisibleOnAllWorkspaces(aura::Window* window);
+
 // Move an item at |old_index| to |new_index|.
 template <typename T>
 ASH_EXPORT void ReorderItem(std::vector<T>& items,

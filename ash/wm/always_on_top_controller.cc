@@ -60,9 +60,9 @@ aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
     // TODO(afakhry): Do we need to worry about the context of |window| here? Or
     // is it safe to assume that |window| should always be parented to the
     // active desks' container.
-    int window_workspace =
+    const int window_workspace =
         window->GetProperty(aura::client::kWindowWorkspaceKey);
-    if (window_workspace != aura::client::kUnassignedWorkspace) {
+    if (window_workspace != aura::client::kWindowWorkspaceUnassignedWorkspace) {
       auto* desk_container =
           DesksController::Get()->GetDeskContainer(root, window_workspace);
       if (desk_container)

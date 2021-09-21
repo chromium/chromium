@@ -231,7 +231,7 @@ void GetLayersData(aura::Window* window,
   // so mark them explicitly to clear overview transforms. Additionally, windows
   // in overview mode are transformed into their positions in the grid, but we
   // want to show a preview of the windows in their untransformed state.
-  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey) ||
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window) ||
       desks_util::IsDeskContainer(window->parent())) {
     layer_data.should_clear_transform = true;
   }

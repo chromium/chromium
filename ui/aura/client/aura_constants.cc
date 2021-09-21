@@ -79,10 +79,11 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipImeProcessing, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kTitleKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTopViewInset, 0)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kVisibleOnAllWorkspacesKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kWindowIconKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kWindowCornerRadiusKey, -1)
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kWindowWorkspaceKey, kUnassignedWorkspace)
+DEFINE_UI_CLASS_PROPERTY_KEY(int,
+                             kWindowWorkspaceKey,
+                             kWindowWorkspaceUnassignedWorkspace)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ZOrderLevel,
                              kZOrderingKey,
                              ui::ZOrderLevel::kNormal)

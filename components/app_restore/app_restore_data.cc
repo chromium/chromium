@@ -29,7 +29,6 @@ constexpr char kAppTypeBrowserKey[] = "is_app";
 constexpr char kAppNameKey[] = "app_name";
 constexpr char kActivationIndexKey[] = "index";
 constexpr char kDeskIdKey[] = "desk_id";
-constexpr char kVisibleOnAllWorkspacesKey[] = "all_desk";
 constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";
 constexpr char kPreMinimizedShowStateTypeKey[] = "pre_min_state";
@@ -258,8 +257,6 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   app_name = GetStringValueFromDict(*data_dict, kAppNameKey);
   activation_index = GetIntValueFromDict(*data_dict, kActivationIndexKey);
   desk_id = GetIntValueFromDict(*data_dict, kDeskIdKey);
-  visible_on_all_workspaces =
-      GetBoolValueFromDict(*data_dict, kVisibleOnAllWorkspacesKey);
   current_bounds = GetBoundsRectFromDict(*data_dict, kCurrentBoundsKey);
   window_state_type = GetWindowStateTypeFromDict(*data_dict);
   pre_minimized_show_state_type =
@@ -337,9 +334,6 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (desk_id.has_value())
     data->desk_id = desk_id.value();
-
-  if (visible_on_all_workspaces.has_value())
-    data->visible_on_all_workspaces = visible_on_all_workspaces.value();
 
   if (current_bounds.has_value())
     data->current_bounds = current_bounds.value();
@@ -425,11 +419,6 @@ base::Value AppRestoreData::ConvertToValue() const {
   if (desk_id.has_value())
     launch_info_dict.SetIntKey(kDeskIdKey, desk_id.value());
 
-  if (visible_on_all_workspaces.has_value()) {
-    launch_info_dict.SetBoolKey(kVisibleOnAllWorkspacesKey,
-                                visible_on_all_workspaces.value());
-  }
-
   if (current_bounds.has_value()) {
     launch_info_dict.SetKey(kCurrentBoundsKey,
                             ConvertRectToValue(current_bounds.value()));
@@ -484,9 +473,6 @@ void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
   if (window_info.desk_id.has_value())
     desk_id = window_info.desk_id.value();
 
-  if (window_info.visible_on_all_workspaces.has_value())
-    visible_on_all_workspaces = window_info.visible_on_all_workspaces.value();
-
   if (window_info.current_bounds.has_value())
     current_bounds = window_info.current_bounds.value();
 
@@ -518,7 +504,6 @@ void AppRestoreData::ModifyThemeColor(uint32_t window_primary_color,
 void AppRestoreData::ClearWindowInfo() {
   activation_index.reset();
   desk_id.reset();
-  visible_on_all_workspaces.reset();
   current_bounds.reset();
   window_state_type.reset();
   pre_minimized_show_state_type.reset();
@@ -557,9 +542,6 @@ std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
 
   if (desk_id.has_value())
     window_info->desk_id = desk_id.value();
-
-  if (visible_on_all_workspaces.has_value())
-    window_info->visible_on_all_workspaces = visible_on_all_workspaces.value();
 
   if (current_bounds.has_value())
     window_info->current_bounds = current_bounds.value();

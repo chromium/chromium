@@ -344,7 +344,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Stores the per-user last active desk index.
   base::flat_map<AccountId, int> user_to_active_desk_index_;
 
-  // Stores the visible on all desks windows.
+  // Stores visible on all desks windows, that is normal type windows with
+  // normal z-ordering and are visible on all workspaces. Store here to prevent
+  // repeatedly retrieving these windows on desk switches.
   base::flat_set<aura::Window*> visible_on_all_desks_windows_;
 
   // True when desks addition, removal, or activation change are in progress.
