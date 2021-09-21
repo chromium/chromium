@@ -418,6 +418,17 @@ bool CanonicalizePartialPathInternal(const char16_t* spec,
                                      int path_begin_in_output,
                                      CanonOutput* output);
 
+// Find the position of a bona fide Windows drive letter in the given path. If
+// no leading drive letter is found, -1 is returned. This function correctly
+// treats /c:/foo and /./c:/foo as having drive letters, and /def/c:/foo as not
+// having a drive letter.
+//
+// Exported for tests.
+COMPONENT_EXPORT(URL)
+int FindWindowsDriveLetter(const char* spec, int begin, int end);
+COMPONENT_EXPORT(URL)
+int FindWindowsDriveLetter(const char16_t* spec, int begin, int end);
+
 #ifndef WIN32
 
 // Implementations of Windows' int-to-string conversions

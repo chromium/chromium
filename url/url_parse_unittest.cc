@@ -374,8 +374,8 @@ static URLParseCase file_cases[] = {
 {"FiLe:c|",                  "FiLe", NULL, NULL, NULL,     -1, "c|",          NULL, NULL},
 {"FILE:/\\\\/server/file",   "FILE", NULL, NULL, "server", -1, "/file",       NULL, NULL},
 {"file://server/",           "file", NULL, NULL, "server", -1, "/",           NULL, NULL},
-{"file://localhost/c:/",     "file", NULL, NULL, NULL,     -1, "/c:/",        NULL, NULL},
-{"file://127.0.0.1/c|\\",    "file", NULL, NULL, NULL,     -1, "/c|\\",       NULL, NULL},
+{"file://localhost/c:/",     "file", NULL, NULL, "localhost", -1, "/c:/",     NULL, NULL},
+{"file://127.0.0.1/c|\\",    "file", NULL, NULL, "127.0.0.1", -1, "/c|\\",    NULL, NULL},
 {"file:/",                   "file", NULL, NULL, NULL,     -1, NULL,          NULL, NULL},
 {"file:",                    "file", NULL, NULL, NULL,     -1, NULL,          NULL, NULL},
   // If there is a Windows drive letter, treat any number of slashes as the

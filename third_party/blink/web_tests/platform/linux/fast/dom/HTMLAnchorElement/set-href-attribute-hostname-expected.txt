@@ -17,7 +17,9 @@ PASS a.href is 'really:bad:url'
 Set a hostname that contains space in it
 FAIL a.href should be http://www.my domain.com/path/. Was http://www.other%20domain.com/path/.
 Set hostname on a local file
-PASS a.href is 'c:/path/testurl.html'
+FAIL a.href should be file://a/C:/path/testurl.html. Was c:/path/testurl.html.
+Set hostname to 'localhost' on a local file
+FAIL a.href should be file:///C:/path/testurl.html. Was c:/path/testurl.html.
 Set hostname to undefined
 PASS a.href is 'https://undefined:8080/path/'
 PASS successfullyParsed is true

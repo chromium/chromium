@@ -63,7 +63,20 @@ try {
 debug("Set hostname on a local file");
 a.href = "c:/path/testurl.html";
 a.hostname= "a";
-shouldBe("a.href", "'c:/path/testurl.html'");
+// file: should be added only to the URL on Windows and not on other OSes,
+// but we can't easily detect platforms in a test.
+shouldBe("a.href", "'file://a/C:/path/testurl.html'");
+} catch(e) {
+debug("Exception: " + e.description);
+}
+
+try {
+debug("Set hostname to 'localhost' on a local file");
+a.href = "c:/path/testurl.html";
+a.hostname= "localhost";
+// file: should be added only to the URL on Windows and not on other OSes,
+// but we can't easily detect platforms in a test.
+shouldBe("a.href", "'file:///C:/path/testurl.html'");
 } catch(e) {
 debug("Exception: " + e.description);
 }

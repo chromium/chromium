@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 666 tests; 463 PASS, 203 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 666 tests; 467 PASS, 199 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -536,7 +536,7 @@ PASS Parsing: <pix/submit.gif> against <file:///C:/Users/Domenic/Dropbox/GitHub/
 PASS Parsing: <..> against <file:///C:/>
 PASS Parsing: <..> against <file:///>
 PASS Parsing: </> against <file:///C:/a/b>
-FAIL Parsing: </> against <file://h/C:/a/b> assert_equals: href expected "file://h/C:/" but got "file:///C:/"
+PASS Parsing: </> against <file://h/C:/a/b>
 PASS Parsing: </> against <file://h/a/b>
 FAIL Parsing: <//d:> against <file:///C:/a/b> assert_equals: href expected "file:///d:" but got "file:///D:"
 FAIL Parsing: <//d:/..> against <file:///C:/a/b> assert_equals: href expected "file:///d:/" but got "file:///D:/"
@@ -579,9 +579,9 @@ FAIL Parsing: </c:/foo/bar> against <file:///c:/baz/qux> assert_equals: href exp
 FAIL Parsing: </c|/foo/bar> against <file:///c:/baz/qux> assert_equals: href expected "file:///c:/foo/bar" but got "file:///C:/foo/bar"
 FAIL Parsing: <file:\c:\foo\bar> against <file:///c:/baz/qux> assert_equals: href expected "file:///c:/foo/bar" but got "file:///C:/foo/bar"
 FAIL Parsing: </c:/foo/bar> against <file://host/path> assert_equals: href expected "file://host/c:/foo/bar" but got "file:///C:/foo/bar"
-FAIL Parsing: <file://example.net/C:/> against <about:blank> assert_equals: href expected "file://example.net/C:/" but got "file:///C:/"
-FAIL Parsing: <file://1.2.3.4/C:/> against <about:blank> assert_equals: href expected "file://1.2.3.4/C:/" but got "file:///C:/"
-FAIL Parsing: <file://[1::8]/C:/> against <about:blank> assert_equals: href expected "file://[1::8]/C:/" but got "file:///C:/"
+PASS Parsing: <file://example.net/C:/> against <about:blank>
+PASS Parsing: <file://1.2.3.4/C:/> against <about:blank>
+PASS Parsing: <file://[1::8]/C:/> against <about:blank>
 FAIL Parsing: <C|/> against <file://host/> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
 FAIL Parsing: </C:/> against <file://host/> assert_equals: href expected "file://host/C:/" but got "file:///C:/"
 FAIL Parsing: <file:C:/> against <file://host/> assert_equals: href expected "file://host/C:/" but got "file:///C:/"

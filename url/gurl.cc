@@ -238,7 +238,7 @@ GURL GURL::ReplaceComponents(
 
   output.Complete();
 
-  ProcessFileOrFileSystemURLAfterReplaceComponents(result);
+  result.ProcessFileSystemURLAfterReplaceComponents();
   return result;
 }
 
@@ -258,31 +258,18 @@ GURL GURL::ReplaceComponents(
 
   output.Complete();
 
-  ProcessFileOrFileSystemURLAfterReplaceComponents(result);
+  result.ProcessFileSystemURLAfterReplaceComponents();
 
   return result;
 }
 
-void GURL::ProcessFileOrFileSystemURLAfterReplaceComponents(GURL& url) const {
-  if (!url.is_valid_)
+void GURL::ProcessFileSystemURLAfterReplaceComponents() {
+  if (!is_valid_)
     return;
-  if (url.SchemeIsFileSystem()) {
-    url.inner_url_ =
-        std::make_unique<GURL>(url.spec_.data(), url.parsed_.Length(),
-                               *url.parsed_.inner_parsed(), true);
+  if (SchemeIsFileSystem()) {
+    inner_url_ = std::make_unique<GURL>(spec_.data(), parsed_.Length(),
+                                        *parsed_.inner_parsed(), true);
   }
-#ifdef WIN32
-  if (url.SchemeIsFile()) {
-    // On Win32, some file URLs created through ReplaceComponents used to lose
-    // its hostname after getting reparsed (e.g. when it's sent through IPC) due
-    // to special handling of file URLs with Windows-drive paths in the URL
-    // parser. To make the behavior for URLs modified through ReplaceComponents
-    // (instead of getting fully reparsed) the same, immediately reparse the
-    // URL here to trigger the special handling.
-    // See https://crbug.com/1214098.
-    url = GURL(url.spec());
-  }
-#endif
 }
 
 GURL GURL::GetOrigin() const {
