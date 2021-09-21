@@ -2208,6 +2208,10 @@ void WebContentsImpl::DisallowActivationNavigationsForBug1234857() {
   }));
 }
 
+const base::Location& WebContentsImpl::GetCreatorLocation() {
+  return creator_location_;
+}
+
 #if defined(OS_ANDROID)
 void WebContentsImpl::SetPrimaryMainFrameImportance(
     ChildProcessImportance importance) {
@@ -2866,6 +2870,8 @@ WebContents* WebContentsImpl::DeprecatedGetWebContents() {
 
 void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   TRACE_EVENT0("content", "WebContentsImpl::Init");
+
+  creator_location_ = params.creator_location;
 
   // This is set before initializing the render manager since
   // RenderFrameHostManager::Init calls back into us via its delegate to ask if

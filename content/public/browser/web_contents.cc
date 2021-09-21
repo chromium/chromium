@@ -12,11 +12,13 @@
 
 namespace content {
 
-WebContents::CreateParams::CreateParams(BrowserContext* context)
-    : CreateParams(context, nullptr) {}
+WebContents::CreateParams::CreateParams(BrowserContext* context,
+                                        base::Location creator_location)
+    : CreateParams(context, nullptr, creator_location) {}
 
 WebContents::CreateParams::CreateParams(BrowserContext* context,
-                                        scoped_refptr<SiteInstance> site)
+                                        scoped_refptr<SiteInstance> site,
+                                        base::Location creator_location)
     : browser_context(context),
       site_instance(std::move(site)),
       opener_render_process_id(content::ChildProcessHost::kInvalidUniqueID),
@@ -29,7 +31,8 @@ WebContents::CreateParams::CreateParams(BrowserContext* context,
       renderer_initiated_creation(false),
       desired_renderer_state(kOkayToHaveRendererProcess),
       starting_sandbox_flags(network::mojom::WebSandboxFlags::kNone),
-      is_never_visible(false) {}
+      is_never_visible(false),
+      creator_location(creator_location) {}
 
 WebContents::CreateParams::CreateParams(const CreateParams& other) = default;
 
