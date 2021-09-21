@@ -347,33 +347,58 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
     }
   }
 
+  scoped_refptr<const NGLayoutResult> result;
+  bool is_past_end = BreakToken() && BreakToken()->IsAtBlockEnd();
+
+  LayoutUnit max_content_block_size = LayoutUnit::Max();
+  if (adjusted_padding_box_size.block_size == kIndefiniteSize) {
+    max_content_block_size =
+        ResolveMaxBlockLength(ConstraintSpace(), Style(), BorderPadding(),
+                              Style().LogicalMaxHeight());
+  }
+
+  // If we are past the block-end and had previously laid out the content with a
+  // block-size limitation, skip the normal layout call and apply the block-size
+  // limitation for all future fragments.
+  if (!is_past_end || max_content_block_size == LayoutUnit::Max()) {
+    auto child_space = CreateConstraintSpaceForFieldsetContent(
+        fieldset_content, adjusted_padding_box_size, intrinsic_block_size_);
+    result = fieldset_content.Layout(child_space, content_break_token,
+                                     early_break_in_child);
+  }
+
   // If the following conditions meet, the content should be laid out with
   // a block-size limitation:
   // - The FIELDSET block-size is indefinite.
   // - It has max-block-size.
   // - The intrinsic block-size of the content is larger than the
   //   max-block-size.
-  if (adjusted_padding_box_size.block_size == kIndefiniteSize) {
-    LayoutUnit max_content_block_size =
-        ResolveMaxBlockLength(ConstraintSpace(), Style(), BorderPadding(),
-                              Style().LogicalMaxHeight());
-    if (max_content_block_size != LayoutUnit::Max()) {
-      max_content_block_size -= BorderPadding().BlockSum();
+  if (max_content_block_size != LayoutUnit::Max() &&
+      (!result || result->Status() == NGLayoutResult::kSuccess)) {
+    DCHECK_EQ(adjusted_padding_box_size.block_size, kIndefiniteSize);
+    max_content_block_size -= BorderPadding().BlockSum();
 
-      auto child_measure_space = CreateConstraintSpaceForFieldsetContent(
-          fieldset_content, adjusted_padding_box_size, intrinsic_block_size_,
-          NGCacheSlot::kMeasure);
-      LayoutUnit intrinsic_content_block_size =
-          fieldset_content.Layout(child_measure_space)->IntrinsicBlockSize();
-      if (intrinsic_content_block_size > max_content_block_size)
-        adjusted_padding_box_size.block_size = max_content_block_size;
+    if (result) {
+      const auto& fragment = result->PhysicalFragment();
+      LayoutUnit total_block_size =
+          NGFragment(writing_direction_, fragment).BlockSize();
+      if (content_break_token)
+        total_block_size += content_break_token->ConsumedBlockSize();
+      if (total_block_size >= max_content_block_size)
+        result = nullptr;
+    } else {
+      DCHECK(is_past_end);
+    }
+
+    if (!result) {
+      adjusted_padding_box_size.block_size = max_content_block_size;
+      auto adjusted_child_space = CreateConstraintSpaceForFieldsetContent(
+          fieldset_content, adjusted_padding_box_size, intrinsic_block_size_);
+      result = fieldset_content.Layout(
+          adjusted_child_space, content_break_token, early_break_in_child);
     }
   }
-  auto child_space = CreateConstraintSpaceForFieldsetContent(
-      fieldset_content, adjusted_padding_box_size, intrinsic_block_size_,
-      NGCacheSlot::kLayout);
-  auto result = fieldset_content.Layout(child_space, content_break_token,
-                                        early_break_in_child);
+  DCHECK(result);
 
   NGBreakStatus break_status = NGBreakStatus::kContinue;
   if (ConstraintSpace().HasBlockFragmentation() && !early_break_) {
@@ -483,13 +508,11 @@ const NGConstraintSpace
 NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
     NGBlockNode fieldset_content,
     LogicalSize padding_box_size,
-    LayoutUnit block_offset,
-    NGCacheSlot slot) {
+    LayoutUnit block_offset) {
   DCHECK(fieldset_content.CreatesNewFormattingContext());
   NGConstraintSpaceBuilder builder(
       ConstraintSpace(), fieldset_content.Style().GetWritingDirection(),
       /* is_new_fc */ true);
-  builder.SetCacheSlot(slot);
   builder.SetAvailableSize(padding_box_size);
   builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
   // We pass the container's PercentageResolutionSize because percentage
@@ -503,8 +526,7 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
       ConstraintSpace().PercentageResolutionSize());
   builder.SetIsFixedBlockSize(padding_box_size.block_size != kIndefiniteSize);
 
-  if (ConstraintSpace().HasBlockFragmentation() &&
-      slot != NGCacheSlot::kMeasure) {
+  if (ConstraintSpace().HasBlockFragmentation()) {
     SetupSpaceBuilderForFragmentation(ConstraintSpace(), fieldset_content,
                                       block_offset, &builder,
                                       /* is_new_fc */ true);

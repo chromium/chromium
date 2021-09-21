@@ -52,8 +52,7 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
   const NGConstraintSpace CreateConstraintSpaceForFieldsetContent(
       NGBlockNode fieldset_content,
       LogicalSize padding_box_size,
-      LayoutUnit block_offset,
-      NGCacheSlot slot);
+      LayoutUnit block_offset);
 
   // Return the amount of block space available in the current fragmentainer
   // for the node being laid out by this algorithm.
