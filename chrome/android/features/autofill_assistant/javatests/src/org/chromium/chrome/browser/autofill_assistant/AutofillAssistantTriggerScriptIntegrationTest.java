@@ -46,6 +46,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -518,6 +519,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW,
             ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    @DisabledTest(message = "https://crbug.com/1232703")
     public void
     testScrollToHide() throws Exception {
         GetTriggerScriptsResponseProto triggerScripts =
