@@ -901,6 +901,141 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
 
 std::u16string kGoogleDrive = u"Google Drive";
 
+// Tests all the various error notifications.
+TEST_F(SystemNotificationManagerTest, Errors) {
+  // Build a Drive sync error object.
+  file_manager_private::DriveSyncErrorEvent sync_error;
+  sync_error.type =
+      file_manager_private::DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION;
+  sync_error.file_url = "drivefs://fake.txt";
+  std::unique_ptr<extensions::Event> event =
+      std::make_unique<extensions::Event>(
+          extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
+          file_manager_private::OnDriveSyncError::kEventName,
+          file_manager_private::OnDriveSyncError::Create(sync_error));
+
+  // Send the delete without permission sync error event.
+  SystemNotificationManager* notification_manager =
+      GetSystemNotificationManager();
+  notification_manager->HandleEvent(*event.get());
+  NotificationDisplayService* notification_display_service =
+      GetNotificationDisplayService();
+  // Get the number of notifications from the NotificationDisplayService.
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  const char* id = file_manager_private::ToString(sync_error.type);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(id);
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kGoogleDrive);
+  EXPECT_EQ(notification_strings.message,
+            u"\"fake.txt\" has been shared with you. You cannot delete it "
+            u"because you do not own it.");
+
+  // Setup for the service unavailable error.
+  sync_error.type =
+      file_manager_private::DRIVE_SYNC_ERROR_TYPE_SERVICE_UNAVAILABLE;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
+      file_manager_private::OnDriveSyncError::kEventName,
+      file_manager_private::OnDriveSyncError::Create(sync_error));
+
+  // Send the service unavailable sync error event.
+  notification_manager->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have two notifications.
+  ASSERT_EQ(2, notification_count);
+  id = file_manager_private::ToString(sync_error.type);
+  // Get the strings for the displayed notification.
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(id);
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kGoogleDrive);
+  EXPECT_EQ(notification_strings.message,
+            u"Google Drive is not available right now. Uploading will "
+            u"automatically restart once Google Drive is back.");
+
+  // Setup for the no server space error.
+  sync_error.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
+      file_manager_private::OnDriveSyncError::kEventName,
+      file_manager_private::OnDriveSyncError::Create(sync_error));
+
+  // Send the service unavailable sync error event.
+  notification_manager->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have three notifications.
+  ASSERT_EQ(3, notification_count);
+  id = file_manager_private::ToString(sync_error.type);
+  // Get the strings for the displayed notification.
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(id);
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kGoogleDrive);
+  EXPECT_EQ(notification_strings.message,
+            u"\"fake.txt\" was not uploaded. There is not enough free space in "
+            u"your Google Drive.");
+
+  // Setup for the no local space error.
+  sync_error.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
+      file_manager_private::OnDriveSyncError::kEventName,
+      file_manager_private::OnDriveSyncError::Create(sync_error));
+
+  // Send the service unavailable sync error event.
+  notification_manager->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have four notifications.
+  ASSERT_EQ(4, notification_count);
+  id = file_manager_private::ToString(sync_error.type);
+  // Get the strings for the displayed notification.
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(id);
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kGoogleDrive);
+  EXPECT_EQ(notification_strings.message, u"You have run out of space");
+
+  // Setup for the miscellaneous sync error.
+  sync_error.type = file_manager_private::DRIVE_SYNC_ERROR_TYPE_MISC;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
+      file_manager_private::OnDriveSyncError::kEventName,
+      file_manager_private::OnDriveSyncError::Create(sync_error));
+
+  // Send the service unavailable sync error event.
+  notification_manager->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have five notifications.
+  ASSERT_EQ(5, notification_count);
+  id = file_manager_private::ToString(sync_error.type);
+  // Get the strings for the displayed notification.
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(id);
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kGoogleDrive);
+  EXPECT_EQ(notification_strings.message,
+            u"Google Drive was unable to sync \"fake.txt\" right now. Google "
+            u"Drive will try again later.");
+}
+
 // Tests the generation of the DriveFS enable offline notification.
 // This is triggered when users make files available offline and the
 // Google Drive offline setting at https://drive.google.com isn't enabled.

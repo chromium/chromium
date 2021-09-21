@@ -263,12 +263,13 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
   if (file_manager_private::DriveSyncErrorEvent::Populate(event_arguments[0],
                                                           &sync_error)) {
     id = file_manager_private::ToString(sync_error.type);
+    GURL file_url(sync_error.file_url);
     switch (sync_error.type) {
       case file_manager_private::
           DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION:
         message = l10n_util::GetStringFUTF16(
             IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR,
-            base::UTF8ToUTF16(event.event_url.ExtractFileName()));
+            base::UTF8ToUTF16(file_url.ExtractFileName()));
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_SERVICE_UNAVAILABLE:
@@ -279,7 +280,7 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE:
         message = l10n_util::GetStringFUTF16(
             IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE,
-            base::UTF8ToUTF16(event.event_url.ExtractFileName()));
+            base::UTF8ToUTF16(file_url.ExtractFileName()));
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE:
@@ -290,7 +291,7 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_MISC:
         message = l10n_util::GetStringFUTF16(
             IDS_FILE_BROWSER_SYNC_MISC_ERROR,
-            base::UTF8ToUTF16(event.event_url.ExtractFileName()));
+            base::UTF8ToUTF16(file_url.ExtractFileName()));
         notification = CreateNotification(id, title, message);
         break;
       default:
