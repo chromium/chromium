@@ -44,10 +44,6 @@ class ArcOemCryptoBridge : public KeyedService,
       mojo::PendingReceiver<mojom::OemCryptoService> receiver) override;
 
  private:
-  void ConnectToDaemon(
-      mojo::PendingReceiver<mojom::OemCryptoService> receiver,
-      mojo::PendingRemote<mojom::ProtectedBufferManager> gpu_buffer_manager);
-
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // WeakPtrFactory to use for callbacks.
