@@ -123,9 +123,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="DiskCache.0.Error" enum="DiskCacheError" expires_after="M85">
-  <owner>rvargas@chromium.org</owner>
-  <summary>Critical error ids.</summary>
+<histogram name="DiskCache.0.Error" enum="DiskCacheError" expires_after="M97">
+  <owner>wfh@chromium.org</owner>
+  <owner>src/net/disk_cache/OWNERS</owner>
+  <summary>
+    Critical error ids. Reported each time the disk backed blockfile cache
+    encounters an error or a critical error. Warning: this histogram was expired
+    from Oct 2020 to Sep 2021; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="DiskCache.0.FillupAge" units="hours" expires_after="M85">
