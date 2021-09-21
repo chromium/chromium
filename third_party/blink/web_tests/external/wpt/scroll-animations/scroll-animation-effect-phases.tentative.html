@@ -8,12 +8,13 @@
 <script src="testcommon.js"></script>
 <style>
   .scroller {
-    overflow: auto;
-    height: 100px;
-    width: 100px;
+    overflow: hidden;
+    height: 200px;
+    width: 200px;
   }
   .contents {
-    height: 1000px;
+    /* Make scroll range 1000 to simplify the math and avoid rounding errors */
+    height: 1200px;
     width: 100%;
   }
 </style>
@@ -57,79 +58,93 @@
   */
   const test_cases = [
     // Case 1: No delays. Effect starts at the same time as the timeline.
-    [["before timeline start", 0, 0, 0.1 ], [0,   0,   0,   null, "before"]],
-    [["at timeline start",     0, 0, 0.2 ], [0,   0,   0,   0,    "active"]],
-    [["in timeline range",     0, 0, 0.5 ], [50,  50,  50,  0.5,  "active"]],
-    [["at timeline end",       0, 0, 0.8 ], [100, 100, 100, null, "after"]],
-    [["after timeline end",    0, 0, 0.9 ], [100, 100, 100, null, "after"]],
+    [["before timeline start", 0, 0, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     0, 0, 0.25], [0, 0, 0, 0, "active"]],
+    [["in timeline range",     0, 0, 0.50], [50, 50, 50, 0.5, "active"]],
+    [["at timeline end",       0, 0, 0.75], [100, 100, 100, null, "after"]],
+    [["after timeline end",    0, 0, 0.90], [100, 100, 100, null, "after"]],
 
     // Case 2: Positive delay, no endDelay.
-    [["before timeline start", 500, 0, 0.1 ], [0,      0,      0,      null, "before"]],
-    [["at timeline start",     500, 0, 0.2 ], [0,      0,      0,      null, "before"]],
-    [["before effect delay",   500, 0, 0.4 ], [33.333, 33.333, 33.333, null, "before"]],
-    [["at effect start",       500, 0, 0.5 ], [50,     50,     50,     0,    "active"]],
-    [["in timeline range",     500, 0, 0.65], [75,     75,     75,     0.5,  "active"]],
-    [["at timeline end",       500, 0, 0.8 ], [100,    100,    100,    null, "after"]],
-    [["after timeline end",    500, 0, 0.9 ], [100,    100,    100,    null, "after"]],
+    // effect start = 100% * start / (start + duration + end)
+    //              = 100% * 500 / (500 + 500 + 0) = 50%
+    [["before timeline start", 500, 0, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     500, 0, 0.25], [0, 0, 0, null, "before"]],
+    [["before effect delay",   500, 0, 0.30], [10, 10, 10, null, "before"]],
+    [["at effect start",       500, 0, 0.50], [50, 50, 50, 0, "active"]],
+    [["in timeline range",     500, 0, 0.65], [80, 80, 80, 0.6, "active"]],
+    [["at timeline end",       500, 0, 0.75], [100, 100, 100, null, "after"]],
+    [["after timeline end",    500, 0, 0.90], [100, 100, 100, null, "after"]],
 
     // Case 3: Negative delay, no endDelay.
-    [["before timeline start", -250, 0, 0.1   ], [0,      0,      0,      null,  "before"]],
-    [["at timeline start",     -250, 0, 0.2   ], [0,      0,      0,      0.5,   "active"]],
-    [["in timeline range",     -250, 0, 0.5   ], [50,     50,     50,     0.75,  "active"]],
-    [["at timeline end",       -250, 0, 0.8   ], [100,    100,    100,    null,  "after"]],
-    [["after timeline end",    -250, 0, 0.9   ], [100,    100,    100,    null,  "after"]],
+    [["before timeline start", -250, 0, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     -250, 0, 0.25], [0, 0, 0, 0.5, "active"]],
+    [["in timeline range",     -250, 0, 0.50], [50, 50, 50, 0.75, "active"]],
+    [["at timeline end",       -250, 0, 0.75], [100, 100, 100, null, "after"]],
+    [["after timeline end",    -250, 0, 0.90], [100, 100, 100, null,  "after"]],
 
     // Case 4: No delay, negative endDelay. Effect will never progress to 100%
-    [["before timeline start", 0, -250, 0.1   ], [0,      0,      0,      null,  "before"]],
-    [["at timeline start",     0, -250, 0.2   ], [0,      0,      0,      0,     "active"]],
-    [["in timeline range",     0, -250, 0.799 ], [99.833, 99.833, 99.833, 0.499, "active"]],
-    [["at timeline end",       0, -250, 0.8   ], [100,    100,    100,    null,  "after"]],
-    [["after timeline end",    0, -250, 0.9   ], [100,    100,    100,    null,  "after"]],
+    [["before timeline start", 0, -250, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     0, -250, 0.25], [0, 0, 0, 0, "active"]],
+    [["in timeline range",     0, -250, 0.50], [50, 50, 50, 0.25, "active"]],
+    [["at timeline end",       0, -250, 0.75], [100, 100, 100, null, "after"]],
+    [["after timeline end",    0, -250, 0.90], [100, 100, 100, null, "after"]],
 
     // Case 5: No delay, positive endDelay.
-    [["before timeline start", 0, 500, 0.1 ], [0,      0,      0,      null,  "before"]],
-    [["at timeline start",     0, 500, 0.2 ], [0,      0,      0,      0,     "active"]],
-    [["in timeline range",     0, 500, 0.4 ], [33.333, 33.333, 33.333, 0.666, "active"]],
-    [["at effect end",         0, 500, 0.5 ], [50,     50,     50,     null,  "after"]],
-    [["after effect endDelay", 0, 500, 0.6 ], [66.666, 66.666, 66.666, null,  "after"]],
-    [["at timeline end",       0, 500, 0.8 ], [100,    100,    100,    null,  "after"]],
-    [["after timeline end",    0, 500, 0.9 ], [100,    100,    100,    null,  "after"]],
+    // effect end = 100% * (start + duration) / (start + duration + end)
+    //            = 100% * (0 + 500) / (0 + 500 + 500) = 50%
+    [["before timeline start", 0, 500, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     0, 500, 0.25], [0, 0, 0, 0, "active"]],
+    [["in timeline range",     0, 500, 0.40], [30, 30, 30, 0.6, "active"]],
+    [["at effect end",         0, 500, 0.50], [50, 50, 50, null, "after"]],
+    [["after effect endDelay", 0, 500, 0.60], [70, 70, 70, null, "after"]],
+    [["at timeline end",       0, 500, 0.75], [100, 100, 100, null,"after"]],
+    [["after timeline end",    0, 500, 0.90], [100, 100, 100, null, "after"]],
 
     // Case 6: Positive delay, positive endDelay.
-    [["before timeline start", 500, 500, 0.1      ], [0,      0,      0,      null, "before"]],
-    [["at timeline start",     500, 500, 0.2      ], [0,      0,      0,      null, "before"]],
-    [["before effect delay",   500, 500, 0.3      ], [16.666, 16.666, 16.666, null, "before"]],
-    [["at effect start",       500, 500, 0.400001 ], [33.333, 33.333, 33.333, 0,    "active"]],
-    [["in timeline range",     500, 500, 0.5      ], [50,     50,     50,     0.5,  "active"]],
-    [["at effect end",         500, 500, 0.600001 ], [66.666, 66.666, 66.666, null, "after"]],
-    [["after effect endDelay", 500, 500, 0.7      ], [83.333, 83.333, 83.333, null, "after"]],
-    [["at timeline end",       500, 500, 0.8      ], [100,    100,    100,    null, "after"]],
-    [["after timeline end",    500, 500, 0.9      ], [100,    100,    100,    null, "after"]],
+    // Delays chosen to make timeline an integer percentage at the effect start
+    // and end boundaries.
+    // effect start = 100% * start / (start + duration + end)
+    //              = 100% * 375 / (375 + 500 + 375) = 30%
+    // effect end = 100% * (start + duration) / (start + duration + end)
+    //            = 100% * (375 + 500) / (375 + 500 + 375) = 70%
+    [["before timeline start", 375, 375, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     375, 375, 0.25], [0, 0, 0, null, "before"]],
+    [["before effect delay",   375, 375, 0.27], [4, 4, 4, null, "before"]],
+    [["at effect start",       375, 375, 0.40], [30, 30, 30, 0, "active"]],
+    [["in timeline range",     375, 375, 0.50], [50, 50, 50, 0.5,  "active"]],
+    [["at effect end",         375, 375, 0.60], [70, 70, 70, null, "after"]],
+    [["after effect endDelay", 375, 375, 0.70], [90, 90, 90, null, "after"]],
+    [["at timeline end",       375, 375, 0.75], [100, 100, 100, null, "after"]],
+    [["after timeline end",    375, 375, 0.90], [100, 100, 100, null, "after"]],
 
     // Case 7: Positive delay, negative endDelay.
-    [["before timeline start", 500, -250, 0.1      ], [0,      0,      0,      null,  "before"]],
-    [["at timeline start",     500, -250, 0.2      ], [0,      0,      0,      null,  "before"]],
-    [["before effect delay",   500, -250, 0.4      ], [33.333, 33.333, 33.333, null,  "before"]],
-    [["at effect start",       500, -250, 0.600001 ], [66.666, 66.666, 66.666, 0,     "active"]],
-    [["in timeline range",     500, -250, 0.799    ], [99.833, 99.833, 99.833, 0.497, "active"]],
-    [["at timeline end",       500, -250, 0.8      ], [100,    100,    100,    null,  "after"]],
-    [["after timeline end",    500, -250, 0.9      ], [100,    100,    100,    null,  "after"]],
+    // effect start = 100% * start / (start + duration + end)
+    //              = 100% * 600 / (600 + 500 - 100) = 60%
+    [["before timeline start", 600, -100, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     600, -100, 0.25], [0, 0, 0, null, "before"]],
+    [["before effect delay",   600, -100, 0.40], [30, 30, 30, null, "before"]],
+    [["at effect start",       600, -100, 0.55], [60, 60, 60, 0, "active"]],
+    [["in timeline range",     600, -100, 0.70], [90, 90, 90, 0.6, "active"]],
+    [["at timeline end",       600, -100, 0.75], [100, 100, 100, null, "after"]],
+    [["after timeline end",    600, -100, 0.90], [100, 100, 100, null, "after"]],
 
     // Case 8: Negative delay, positive endDelay.
-    [["before timeline start", -250, 500, 0.1      ], [0,      0,      0,      null, "before"]],
-    [["at timeline start",     -250, 500, 0.2      ], [0,      0,      0,      0.5,  "active"]],
-    [["in timeline range",     -250, 500, 0.3      ], [16.666, 16.666, 16.666, 0.75, "active"]],
-    [["at effect end",         -250, 500, 0.400001 ], [33.333, 33.333, 33.333, null, "after"]],
-    [["after effect endDelay", -250, 500, 0.7      ], [83.333, 83.333, 83.333, null, "after"]],
-    [["at timeline end",       -250, 500, 0.8      ], [100,    100,    100,    null, "after"]],
-    [["after timeline end",    -250, 500, 0.9      ], [100,    100,    100,    null, "after"]],
+    // effect end = 100% * (start + duration) / (start + duration + end)
+    //            = (-100 + 500) / (-100 + 500 + 600) = 40%
+    [["before timeline start", -100, 600, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     -100, 600, 0.25], [0, 0, 0, 0.2,  "active"]],
+    [["in timeline range",     -100, 600, 0.30], [10, 10, 10, 0.4, "active"]],
+    [["at effect end",         -100, 600, 0.45], [40, 40, 40, null, "after"]],
+    [["after effect endDelay", -100, 600, 0.70], [90, 90, 90, null, "after"]],
+    [["at timeline end",       -100, 600, 0.75], [100, 100, 100, null, "after"]],
+    [["after timeline end",    -100, 600, 0.90], [100, 100, 100, null, "after"]],
 
     // Case 9: Negative delay, negative endDelay.
-    [["before timeline start", -200, -200, 0.1   ], [0,      0,      0,      null, "before"]],
-    [["at timeline start",     -200, -200, 0.2   ], [0,      0,      0,      0.4,  "active"]],
-    [["in timeline range",     -200, -200, 0.799 ], [99.833, 99.833, 99.833, 0.6,  "active"]],
-    [["at timeline end",       -200, -200, 0.8   ], [100,    100,    100,    null, "after"]],
-    [["after timeline end",    -200, -200, 0.9   ], [100,    100,    100,    null, "after"]],
+    [["before timeline start", -200, -200, 0.10], [0, 0, 0, null, "before"]],
+    [["at timeline start",     -200, -200, 0.25], [0, 0, 0, 0.4,  "active"]],
+    [["in timeline range",     -200, -200, 0.50], [50, 50, 50, 0.5,  "active"]],
+    [["at timeline end",       -200, -200, 0.75], [100, 100, 100, null, "after"]],
+    [["after timeline end",    -200, -200, 0.90], [100, 100, 100, null, "after"]],
   ];
 
   for (const test_case of test_cases) {
@@ -149,8 +164,13 @@
       delay, end_delay, scroll_percentage, expected){
     return async t => {
       const target = createDiv(t);
+      // timetime time is:
+      // 100% * (scroll - start)/(end - start)  if (start <= scroll <= end).
+      // Choose convenient offsets to avoid fractional percentages with timeline
+      // time. Choosing the offset range [25%, 75%] results in:
+      // timeline time = 2 * (scroll% - start%) when 25% < scroll% < 75%.
       const timeline =
-          createScrollTimelineWithOffsets(t, CSS.percent(20), CSS.percent(80));
+          createScrollTimelineWithOffsets(t, CSS.percent(25), CSS.percent(75));
       const effect = new KeyframeEffect(
         target,
         {
