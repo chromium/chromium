@@ -285,19 +285,34 @@ constexpr MessageInfo kChromeWebAppBadNavigate = {
 constexpr int kChromeExtensionIdIndices[] = {2, -1};
 constexpr MessageInfo kChromeExtensionId = {kChromeExtensionIdIndices, nullptr};
 
+// Proto Message: SiteInstance
+constexpr int kSiteInstanceIndices[] = {1, 2, 3, 4, 5, 6, -1};
+constexpr MessageInfo kSiteInstance = {kSiteInstanceIndices, nullptr};
+
+// Proto Message: RenderViewHost
+constexpr int kRenderViewHostIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr MessageInfo kRenderViewHost = {kRenderViewHostIndices, nullptr};
+
+// Proto Message: RenderFrameProxyHost
+constexpr int kRenderFrameProxyHostIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr MessageInfo kRenderFrameProxyHost = {kRenderFrameProxyHostIndices,
+                                               nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,
-    17,   24,   25,   26,   27,   28,   29,   30,   31,   32,
-    33,   34,   35,   36,   38,   39,   40,   41,   42,   43,
-    1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010,
-    1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, -1};
+    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,
+    22,   23,   24,   25,   26,   27,   28,   29,   30,   31,   32,
+    33,   34,   35,   36,   38,   39,   40,   41,   42,   43,   1001,
+    1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012,
+    1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
     nullptr,
     &kTaskExecution,
     &kLegacyEvent,
+    nullptr,
+    nullptr,
     nullptr,
     nullptr,
     nullptr,
@@ -340,7 +355,10 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChildProcessLauncherPriority,
     &kResourceBundle,
     &kChromeWebAppBadNavigate,
-    &kChromeExtensionId};
+    &kChromeExtensionId,
+    &kSiteInstance,
+    &kRenderViewHost,
+    &kRenderFrameProxyHost};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
