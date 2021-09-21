@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
@@ -162,12 +161,35 @@ class PictureInPictureControllerPlayer final : public EmptyWebMediaPlayer {
   DISALLOW_COPY_AND_ASSIGN(PictureInPictureControllerPlayer);
 };
 
-class PictureInPictureControllerTest : public PageTestBase {
+class PictureInPictureTestWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  explicit PictureInPictureTestWebFrameClient(
+      std::unique_ptr<WebMediaPlayer> web_media_player)
+      : web_media_player_(std::move(web_media_player)) {}
+
+  WebMediaPlayer* CreateMediaPlayer(
+      const WebMediaPlayerSource&,
+      WebMediaPlayerClient*,
+      blink::MediaInspectorContext*,
+      WebMediaPlayerEncryptedMediaClient*,
+      WebContentDecryptionModule*,
+      const WebString& sink_id,
+      const cc::LayerTreeSettings& settings) override {
+    return web_media_player_.release();
+  }
+
+ private:
+  std::unique_ptr<WebMediaPlayer> web_media_player_;
+};
+
+class PictureInPictureControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    PageTestBase::SetupPageWithClients(
-        nullptr, PictureInPictureControllerFrameClient::Create(
-                     std::make_unique<PictureInPictureControllerPlayer>()));
+    client_ = std::make_unique<PictureInPictureTestWebFrameClient>(
+        std::make_unique<PictureInPictureControllerPlayer>());
+
+    helper_.Initialize(client_.get());
 
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::PictureInPictureService::Name_,
@@ -175,9 +197,10 @@ class PictureInPictureControllerTest : public PageTestBase {
                            WTF::Unretained(&mock_service_)));
 
     video_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
-    video_->SetReadyState(HTMLMediaElement::ReadyState::kHaveMetadata);
+    GetDocument().body()->AppendChild(video_);
+    Video()->SetReadyState(HTMLMediaElement::ReadyState::kHaveMetadata);
     layer_ = cc::Layer::Create();
-    video_->SetCcLayerForTesting(layer_.get());
+    Video()->SetCcLayerForTesting(layer_.get());
 
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
@@ -187,7 +210,7 @@ class PictureInPictureControllerTest : public PageTestBase {
           dummy_tracks, dummy_tracks);
       Video()->SetSrcObject(descriptor);
     } else {
-      video_->SetSrc("http://example.com/foo.mp4");
+      Video()->SetSrc("http://example.com/foo.mp4");
     }
 
     test::RunPendingTasks();
@@ -201,10 +224,21 @@ class PictureInPictureControllerTest : public PageTestBase {
   HTMLVideoElement* Video() const { return video_.Get(); }
   MockPictureInPictureService& Service() { return mock_service_; }
 
+  LocalFrame& GetFrame() const { return *helper_.LocalMainFrame()->GetFrame(); }
+
+  Document& GetDocument() const { return *GetFrame().GetDocument(); }
+
+  WebFrameWidgetImpl* GetWidget() const {
+    return static_cast<WebFrameWidgetImpl*>(
+        GetDocument().GetFrame()->GetWidgetForLocalRoot());
+  }
+
  private:
   Persistent<HTMLVideoElement> video_;
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient> client_;
   testing::NiceMock<MockPictureInPictureService> mock_service_;
   scoped_refptr<cc::Layer> layer_;
+  frame_test_helpers::WebViewHelper helper_;
 };
 
 TEST_F(PictureInPictureControllerTest, EnterPictureInPictureFiresEvent) {
@@ -225,6 +259,27 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureFiresEvent) {
 
   EXPECT_NE(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
+}
+
+TEST_F(PictureInPictureControllerTest,
+       FrameThrottlingIsSetProperlyWithoutSetup) {
+  // This test assumes that it throttling is allowed by default.
+  ASSERT_TRUE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
+
+  // Entering PictureInPicture should disallow throttling.
+  PictureInPictureControllerImpl::From(GetDocument())
+      .EnterPictureInPicture(Video(), nullptr /* options */,
+                             nullptr /* promise */);
+  MakeGarbageCollected<WaitForEvent>(Video(),
+                                     event_type_names::kEnterpictureinpicture);
+  EXPECT_FALSE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
+
+  // Exiting PictureInPicture should re-enable it.
+  PictureInPictureControllerImpl::From(GetDocument())
+      .ExitPictureInPicture(Video(), nullptr /* resolver */);
+  MakeGarbageCollected<WaitForEvent>(Video(),
+                                     event_type_names::kLeavepictureinpicture);
+  EXPECT_TRUE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
 }
 
 TEST_F(PictureInPictureControllerTest, ExitPictureInPictureFiresEvent) {

@@ -81,6 +81,8 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   bool may_contain_video = false;
 
+  bool may_throttle_if_undrawn_frames = true;
+
   // WebView makes quality decisions for rastering resourceless software frames
   // based on information that a scroll or animation is active.
   // TODO(aelias): Remove this and always enable filtering if there aren't apps

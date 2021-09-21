@@ -54,6 +54,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.may_contain_video;
   }
 
+  static bool may_throttle_if_undrawn_frames(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.may_throttle_if_undrawn_frames;
+  }
+
   static bool is_resourceless_software_draw_with_scroll_or_animation(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.is_resourceless_software_draw_with_scroll_or_animation;

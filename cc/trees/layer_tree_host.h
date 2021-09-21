@@ -446,6 +446,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void SetPrefersReducedMotion(bool prefers_reduced_motion);
 
+  void SetMayThrottleIfUndrawnFrames(bool may_throttle_if_undrawn_frames);
+  bool GetMayThrottleIfUndrawnFramesForTesting() const;
+
   void SetBrowserControlsParams(const BrowserControlsParams& params);
   void SetBrowserControlsShownRatio(float top_ratio, float bottom_ratio);
 
@@ -918,6 +921,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool is_viewport_mobile_optimized_ = false;
 
   bool prefers_reduced_motion_ = false;
+  bool may_throttle_if_undrawn_frames_ = true;
   bool have_scroll_event_handlers_ = false;
   EventListenerProperties event_listener_properties_
       [static_cast<size_t>(EventListenerClass::kLast) + 1];

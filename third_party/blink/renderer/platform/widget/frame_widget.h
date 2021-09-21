@@ -274,6 +274,17 @@ class PLATFORM_EXPORT FrameWidget {
   // underlaying LayerTreeHost.
   virtual const cc::LayerTreeDebugState& GetLayerTreeDebugState() = 0;
   virtual void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) = 0;
+
+  // Set whether or not this widget should be throttled if it sends
+  // CompositorFrames while widget is hidden.  By default, it should throttle,
+  // since we should be smart enough not to send them.  However,
+  // PictureInPicture requires that we are allowed to continue to produce
+  // CompositorFrames even if they're discarded by viz, since those frames are a
+  // by-product of producing the content that does make it to the picture-in-
+  // picture window.  Ideally, we would know not to send the extra
+  // CompositorFrames.  See https://crbug.com/1232173 for more details.
+  virtual void SetMayThrottleIfUndrawnFrames(
+      bool may_throttle_if_undrawn_frames) = 0;
 };
 
 }  // namespace blink

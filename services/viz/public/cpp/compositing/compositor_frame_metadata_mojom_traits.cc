@@ -41,6 +41,7 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   if (!data.ReadContentColorUsage(&out->content_color_usage))
     return false;
   out->may_contain_video = data.may_contain_video();
+  out->may_throttle_if_undrawn_frames = data.may_throttle_if_undrawn_frames();
   out->is_resourceless_software_draw_with_scroll_or_animation =
       data.is_resourceless_software_draw_with_scroll_or_animation();
   out->send_frame_token_to_embedder = data.send_frame_token_to_embedder();

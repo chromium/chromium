@@ -10665,6 +10665,25 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, MayContainVideo) {
   EXPECT_TRUE(MayContainVideoBitSetOnFrameData(host_impl_.get()));
 }
 
+TEST_P(ScrollUnifiedLayerTreeHostImplTest, MayThrottleIfUnusedFrames) {
+  // Make sure that the throttle bit gets set properly.
+  viz::CompositorFrameMetadata metadata;
+
+  // By default, throttling should be allowed.
+  metadata = host_impl_->MakeCompositorFrameMetadata();
+  EXPECT_TRUE(metadata.may_throttle_if_undrawn_frames);
+
+  // If requested, frames should request no throttling.
+  host_impl_->SetMayThrottleIfUndrawnFrames(false);
+  metadata = host_impl_->MakeCompositorFrameMetadata();
+  EXPECT_FALSE(metadata.may_throttle_if_undrawn_frames);
+
+  // Explicitly set it back to the default, for completeness.
+  host_impl_->SetMayThrottleIfUndrawnFrames(true);
+  metadata = host_impl_->MakeCompositorFrameMetadata();
+  EXPECT_TRUE(metadata.may_throttle_if_undrawn_frames);
+}
+
 class LayerTreeHostImplViewportCoveredTest : public LayerTreeHostImplTest {
  protected:
   LayerTreeHostImplViewportCoveredTest()
