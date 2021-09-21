@@ -1913,7 +1913,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithMixedFormsWarningsDisabled,
 class SignedExchangeSecurityStateTest
     : public CertVerifierBrowserTest,
       public testing::WithParamInterface<
-          bool /* sxg_prefetch_cache_for_navigations_enabled */> {
+          bool /* sxg_subresource_prefetch_enabled */> {
  public:
   SignedExchangeSecurityStateTest() = default;
   ~SignedExchangeSecurityStateTest() override = default;
@@ -1932,15 +1932,13 @@ class SignedExchangeSecurityStateTest
 
  private:
   void SetUp() override {
-    const bool sxg_prefetch_cache_for_navigations_enabled = GetParam();
+    const bool sxg_subresource_prefetch_enabled = GetParam();
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
-    if (sxg_prefetch_cache_for_navigations_enabled) {
-      enabled_features.push_back(
-          features::kSignedExchangePrefetchCacheForNavigations);
+    if (sxg_subresource_prefetch_enabled) {
+      enabled_features.push_back(features::kSignedExchangeSubresourcePrefetch);
     } else {
-      disabled_features.push_back(
-          features::kSignedExchangePrefetchCacheForNavigations);
+      disabled_features.push_back(features::kSignedExchangeSubresourcePrefetch);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 

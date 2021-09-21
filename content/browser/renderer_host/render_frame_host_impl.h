@@ -1569,9 +1569,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                  browser_reported_scheduler_tracked_features_);
   }
 
-  // Returns a PrefetchedSignedExchangeCache which is attached to |this| iff
-  // SignedExchangeSubresourcePrefetch feature or
-  // SignedExchangePrefetchCacheForNavigations feature is enabled.
+  // Returns a PrefetchedSignedExchangeCache which is attached to |this|.
   scoped_refptr<PrefetchedSignedExchangeCache>
   EnsurePrefetchedSignedExchangeCache();
 

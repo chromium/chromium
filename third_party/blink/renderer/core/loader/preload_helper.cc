@@ -576,8 +576,6 @@ Resource* PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
           params.cross_origin);
     }
     link_fetch_params.SetSignedExchangePrefetchCacheEnabled(
-        RuntimeEnabledFeatures::
-            SignedExchangePrefetchCacheForNavigationsEnabled() ||
         RuntimeEnabledFeatures::SignedExchangeSubresourcePrefetchEnabled(
             document.GetExecutionContext()));
     return LinkPrefetchResource::Fetch(link_fetch_params, document.Fetcher());

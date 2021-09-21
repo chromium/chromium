@@ -5316,13 +5316,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSignedExchangeSubresourcePrefetchDescription,
      kOsAll, FEATURE_VALUE_TYPE(features::kSignedExchangeSubresourcePrefetch)},
 
-    {"enable-sxg-prefetch-cache-for-navigations",
-     flag_descriptions::kEnableSignedExchangePrefetchCacheForNavigationsName,
-     flag_descriptions::
-         kEnableSignedExchangePrefetchCacheForNavigationsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kSignedExchangePrefetchCacheForNavigations)},
-
     {"enable-autofill-account-wallet-storage",
      flag_descriptions::kEnableAutofillAccountWalletStorageName,
      flag_descriptions::kEnableAutofillAccountWalletStorageDescription, kOsAll,
