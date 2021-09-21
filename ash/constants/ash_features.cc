@@ -509,7 +509,7 @@ const base::Feature kFilesArchivemount{"FilesArchivemount",
 // Enable the updated banner framework.
 // https://crbug.com/1228128
 const base::Feature kFilesBannerFramework{"FilesBannerFramework",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the System Web App (SWA) version of file manager.
 const base::Feature kFilesSWA{"FilesSWA", base::FEATURE_DISABLED_BY_DEFAULT};
