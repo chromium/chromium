@@ -5748,7 +5748,7 @@ const CSSValue* Scale::ParseSingleValue(CSSParserTokenRange& range,
   if (y_scale) {
     CSSPrimitiveValue* z_scale = css_parsing_utils::ConsumeNumberOrPercent(
         range, context, kValueRangeAll);
-    if (z_scale) {
+    if (z_scale && z_scale->GetDoubleValue() != 1.0) {
       list->Append(*y_scale);
       list->Append(*z_scale);
     } else if (x_scale->GetDoubleValue() != y_scale->GetDoubleValue()) {
