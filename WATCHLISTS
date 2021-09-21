@@ -1284,6 +1284,9 @@
                   '|chrome/test/media_router/' \
                   '|components/media_router/'
     },
+    'media_webrtc': {
+      'filepath': 'media/webrtc/'
+    },
     'message_loop': {
       'filepath': 'base/message_'
     },
@@ -2598,6 +2601,9 @@
                        'mfoltz+watch@chromium.org'],
     'media_router': ['mfoltz+watch@chromium.org',
                      'takumif+watch@chromium.org'],
+    'media_webrtc': ['alessiob@chromium.org',
+                     'peah@chromium.org',
+                     'saza@chromium.org'],
     'message_loop': ['sadrul@chromium.org'],
     'metrics': ['asvitkine+watch@chromium.org',
                 'chromiummetricswatch@microsoft.com'],
