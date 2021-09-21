@@ -24,7 +24,7 @@ struct SurroundingTextInfo {
 
 // All strings related to IME operations should be UTF-16 encoded and all
 // indices/ranges relative to those strings should be UTF-16 code units.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEInputContextHandlerInterface {
  public:
   // Called when the engine commit a text.
   virtual void CommitText(

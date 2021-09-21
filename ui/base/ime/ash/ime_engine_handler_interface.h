@@ -32,7 +32,7 @@ struct AssistiveWindowButton;
 }  // namespace ime
 
 // A interface to handle the engine handler method call.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
  public:
   using KeyEventDoneCallback = base::OnceCallback<void(bool)>;
 

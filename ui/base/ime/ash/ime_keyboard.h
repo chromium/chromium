@@ -20,7 +20,7 @@ struct AutoRepeatRate {
   unsigned int repeat_interval_in_ms;
 };
 
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ImeKeyboard {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
  public:
   class Observer {
    public:

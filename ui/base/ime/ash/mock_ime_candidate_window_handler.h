@@ -14,7 +14,7 @@
 
 namespace chromeos {
 
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMECandidateWindowHandler
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMECandidateWindowHandler
     : public IMECandidateWindowHandlerInterface {
  public:
   struct UpdateLookupTableArg {

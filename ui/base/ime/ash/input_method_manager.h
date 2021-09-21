@@ -35,7 +35,7 @@ class ImeKeyboard;
 // This class manages input methods handles. Classes can add themselves as
 // observers. Clients can get an instance of this library class by:
 // InputMethodManager::Get().
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodManager {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
  public:
   enum class UIStyle {
     kLogin,
@@ -264,17 +264,17 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodManager {
 
   // Gets the global instance of InputMethodManager. Initialize() must be called
   // first.
-  static COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodManager* Get();
+  static COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager* Get();
 
   // Sets the global instance. |instance| will be owned by the internal pointer
   // and deleted by Shutdown().
   // TODO(nona): Instanciate InputMethodManagerImpl inside of this function once
   //             crbug.com/164375 is fixed.
-  static COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) void Initialize(
+  static COMPONENT_EXPORT(UI_BASE_IME_ASH) void Initialize(
       InputMethodManager* instance);
 
   // Destroy the global instance.
-  static COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) void Shutdown();
+  static COMPONENT_EXPORT(UI_BASE_IME_ASH) void Shutdown();
 
   // Adds an observer to receive notifications of input method related
   // changes as desribed in the Observer class above.

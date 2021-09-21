@@ -16,7 +16,7 @@
 namespace chromeos {
 namespace input_method {
 
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) FakeInputMethodDelegate
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
     : public InputMethodDelegate {
  public:
   using LanguageNameLocalizationCallback =

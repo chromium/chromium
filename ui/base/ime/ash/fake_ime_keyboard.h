@@ -16,8 +16,7 @@
 namespace chromeos {
 namespace input_method {
 
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) FakeImeKeyboard
-    : public ImeKeyboard {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeImeKeyboard : public ImeKeyboard {
  public:
   FakeImeKeyboard();
   ~FakeImeKeyboard() override;

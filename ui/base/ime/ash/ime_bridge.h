@@ -21,7 +21,7 @@ namespace ui {
 
 // IMEBridge provides access of each IME related handler. This class
 // is used for IME implementation.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEBridge {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
  public:
   virtual ~IMEBridge();
 

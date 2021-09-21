@@ -15,7 +15,7 @@ namespace chromeos {
 namespace input_method {
 
 // A structure which represents an input method.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodDescriptor {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodDescriptor {
  public:
   InputMethodDescriptor();
   InputMethodDescriptor(const std::string& id,

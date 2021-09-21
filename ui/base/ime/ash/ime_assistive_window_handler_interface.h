@@ -38,8 +38,7 @@ struct Bounds {
 };
 
 // A interface to handle the assistive windows related method call.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
-    IMEAssistiveWindowHandlerInterface {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEAssistiveWindowHandlerInterface {
  public:
   virtual ~IMEAssistiveWindowHandlerInterface() = default;
 

@@ -12,11 +12,11 @@
 namespace ui {
 
 // Translates the DOM4 key code string to ui::KeyboardCode.
-COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
+COMPONENT_EXPORT(UI_BASE_IME_ASH)
 KeyboardCode DomKeycodeToKeyboardCode(const std::string& code);
 
 // Translates the ui::KeyboardCode to DOM4 key code string.
-COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
+COMPONENT_EXPORT(UI_BASE_IME_ASH)
 std::string KeyboardCodeToDomKeycode(KeyboardCode code);
 
 }  // namespace ui

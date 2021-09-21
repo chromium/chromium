@@ -17,7 +17,7 @@ namespace input_method {
 class ImeKeyboard;
 
 // The mock InputMethodManager for testing.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockInputMethodManager
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
     : public InputMethodManager,
       public ui::VirtualKeyboardController {
  public:

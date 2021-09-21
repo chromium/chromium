@@ -16,8 +16,7 @@ namespace chromeos {
 struct ComponentExtensionIME;
 
 // Provides an interface to list/load/unload for component extension IME.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
-    ComponentExtensionIMEManagerDelegate {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManagerDelegate {
  public:
   virtual ~ComponentExtensionIMEManagerDelegate() = default;
 

@@ -18,7 +18,7 @@
 namespace ui {
 class InputMethod;
 
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
     : public IMEInputContextHandlerInterface {
  public:
   struct UpdateCompositionTextArg {

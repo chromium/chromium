@@ -17,8 +17,7 @@ namespace chromeos {
 namespace input_method {
 
 // Version of ImeKeyboard used when chrome is run on device.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ImeKeyboardImpl
-    : public ImeKeyboard {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
  public:
   ImeKeyboardImpl(ui::InputController* input_controller);
   ~ImeKeyboardImpl() override;

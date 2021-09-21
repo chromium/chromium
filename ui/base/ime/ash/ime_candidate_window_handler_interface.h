@@ -22,8 +22,7 @@ class CandidateWindow;
 namespace chromeos {
 
 // A interface to handle the candidate window related method call.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
-    IMECandidateWindowHandlerInterface {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMECandidateWindowHandlerInterface {
  public:
   virtual ~IMECandidateWindowHandlerInterface() = default;
 

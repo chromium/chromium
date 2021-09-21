@@ -28,7 +28,7 @@ enum InputMethodType {
 };
 
 // A class which provides miscellaneous input method utility functions.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodUtil {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
  public:
   explicit InputMethodUtil(InputMethodDelegate* delegate);
   ~InputMethodUtil();

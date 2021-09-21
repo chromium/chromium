@@ -11,7 +11,7 @@
 namespace ui {
 
 // A interface to observe changes in the IMEBridge.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEBridgeObserver
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridgeObserver
     : public base::CheckedObserver {
  public:
   // Called when requesting to switch the engine handler from ui::InputMethod.
