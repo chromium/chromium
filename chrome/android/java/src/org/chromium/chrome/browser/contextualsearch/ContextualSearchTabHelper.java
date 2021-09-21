@@ -342,9 +342,7 @@ public class ContextualSearchTabHelper
 
         ContextualSearchManager manager = getContextualSearchManager(mTab);
         if (manager != null) {
-            boolean isEnabled = !ContextualSearchPolicy.isContextualSearchDisabled()
-                    && !ContextualSearchPolicy.isContextualSearchUninitialized();
-            manager.onContextualSearchPrefChanged(isEnabled);
+            manager.onContextualSearchPrefChanged();
         }
     }
 

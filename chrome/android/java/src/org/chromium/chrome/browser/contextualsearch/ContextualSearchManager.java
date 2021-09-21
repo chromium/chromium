@@ -1006,12 +1006,15 @@ public class ContextualSearchManager
 
     /**
      * Notifies that the preference state has changed.
-     * @param isEnabled Whether the feature is enabled.
      */
-    public void onContextualSearchPrefChanged(boolean isEnabled) {
+    public void onContextualSearchPrefChanged() {
         // The pref may be automatically changed during application startup due to enterprise
         // configuration settings, so we may not have a panel yet.
-        if (mSearchPanel != null) mSearchPanel.onContextualSearchPrefChanged(isEnabled);
+        if (mSearchPanel != null) {
+            // Nitifies panel that if the user opted in or not.
+            boolean userOptedIn = ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn();
+            mSearchPanel.onContextualSearchPrefChanged(userOptedIn);
+        }
     }
 
     @Override

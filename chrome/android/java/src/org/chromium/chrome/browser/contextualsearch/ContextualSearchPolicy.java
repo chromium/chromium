@@ -572,9 +572,14 @@ class ContextualSearchPolicy {
     }
 
     /**
-     * @return Whether the Contextual Search feature was opted in by the user explicitly.
+     * @return Whether the Contextual Search feature was fully opted in based on the preference
+     *         itself.
      */
-    static boolean isContextualSearchFullyOptedIn() {
+    static boolean isContextualSearchPrefFullyOptedIn() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+                && !isContextualSearchOptInUninitialized()) {
+            return isContextualSearchOptInEnabled();
+        }
         return isContextualSearchEnabled();
     }
 

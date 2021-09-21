@@ -111,13 +111,13 @@ public class ContextualSearchPreferenceFragmentTest {
         Assert.assertFalse("See Better Results Switch default value should be off.",
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertFalse("The Contextual Search default value should not be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
 
         mSeeBetterResultsSwitchPreference.performClick();
         Assert.assertTrue("See Better Results Switch should be on.",
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertTrue("The Contextual Search default value should be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
 
         mContextualSearchSwitchPreference.performClick();
         //"See Better Results" Switch is not visible when Contextual Search Switch is off.
@@ -139,13 +139,13 @@ public class ContextualSearchPreferenceFragmentTest {
         Assert.assertFalse("See Better Results Switch default value should be off.",
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertFalse("The Contextual Search default value should not be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
 
         mSeeBetterResultsSwitchPreference.performClick();
         Assert.assertTrue("See Better Results Switch should be on.",
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertTrue("The Contextual Search state should be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
 
         mContextualSearchSwitchPreference.performClick();
         //"See Better Results" Switch is not visible when Contextual Search Switch is off.
@@ -159,6 +159,6 @@ public class ContextualSearchPreferenceFragmentTest {
         Assert.assertTrue("See Better Results Switch should be on since previously is on.",
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertTrue("The Contextual Search state should be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
     }
 }
