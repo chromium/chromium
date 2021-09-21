@@ -97,6 +97,7 @@ vs-chromium-project.txt
 /chrome/app/theme/google_chrome
 /chrome/browser/chromeos/arc/voice_interaction/internal
 /chrome/browser/chromeos/assistant/internal
+/chrome/browser/enterprise/connectors/internal
 /chrome/browser/extensions/api/ledger/
 /chrome/browser/extensions/default_extensions/chromeos
 /chrome/browser/google/linkdoctor_internal
