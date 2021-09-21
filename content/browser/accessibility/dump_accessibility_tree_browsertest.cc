@@ -3099,6 +3099,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathNameFromContents) {
   RunHtmlTest(FILE_PATH_LITERAL("math-name-from-contents.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, SVGAndMathElements) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-and-math-elements.html"));
+}
+
 //
 // AccName tests where having the full tree is desired.
 //

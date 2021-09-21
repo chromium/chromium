@@ -1,0 +1,9 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++svgRoot
+++++++genericContainer
+++++++++math
+++++++staticText name='Done'
+++++++++inlineTextBox name='Done'

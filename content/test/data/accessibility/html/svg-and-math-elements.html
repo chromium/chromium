@@ -1,0 +1,24 @@
+<!--
+@WAIT-FOR:Done
+-->
+<!doctype>
+<html>
+<body>
+  <div id="svg">
+    <svg xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div id="math">
+    <math xmlns="http://www.w3.org/1998/Math/MathML"></math>
+  </div>
+  <script>
+    ["svg", "math"].forEach(tagName => {
+      let div = document.getElementById(tagName);
+      div.appendChild(document.createElement(tagName)); // HTML namespace.
+      div.appendChild(
+        document.createElementNS("https://example.com/namespace", tagName)
+      ); // Custom namespace.
+    });
+    document.body.appendChild(document.createTextNode("Done"));
+  </script>
+</body>
+</html>
