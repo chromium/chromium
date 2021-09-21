@@ -2671,8 +2671,8 @@
   },
   {
     "name": "enable-suggested-drive-files",
-    "owners": [ "edimitriadis", "tby", "wrong" ],
-    "expiry_milestone": 95
+    "owners": [ "tby", "wrong" ],
+    "expiry_milestone": 100
   },
   {
     "name": "enable-suggested-files",

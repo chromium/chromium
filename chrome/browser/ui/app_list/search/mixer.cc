@@ -125,7 +125,8 @@ void Mixer::InitializeRankers(Profile* profile) {
   search_result_ranker_ = std::make_unique<SearchResultRanker>(profile);
   search_result_ranker_->InitializeRankers(search_controller_);
 
-  if (app_list_features::IsSuggestedFilesEnabled()) {
+  if (app_list_features::IsSuggestedFilesEnabled() ||
+      app_list_features::IsSuggestedDriveFilesEnabled()) {
     chip_ranker_ = std::make_unique<ChipRanker>(profile);
   }
 }
