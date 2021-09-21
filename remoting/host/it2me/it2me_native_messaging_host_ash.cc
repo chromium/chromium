@@ -13,12 +13,62 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/policy_watcher.h"
 
 namespace remoting {
+
+namespace {
+
+bool ShouldSuppressNotifications(
+    const mojom::SupportSessionParams& params,
+    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+  if (enterprise_params)
+    return enterprise_params.value().suppress_notifications;
+
+    // On non-debug builds, do not allow setting this value through the Mojom
+    // API.
+#if !defined(NDEBUG)
+  return params.suppress_notifications;
+#else
+  return false;
+#endif
+}
+
+bool ShouldSuppressUserDialog(
+    const mojom::SupportSessionParams& params,
+    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+  if (enterprise_params)
+    return enterprise_params.value().suppress_user_dialogs;
+
+    // On non-debug builds, do not allow setting this value through the Mojom
+    // API.
+#if !defined(NDEBUG)
+  return params.suppress_user_dialogs;
+#else
+  return false;
+#endif
+}
+
+bool ShouldTerminateUponInput(
+    const mojom::SupportSessionParams& params,
+    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+  if (enterprise_params)
+    return enterprise_params.value().terminate_upon_input;
+
+    // On non-debug builds, do not allow setting this value through the Mojom
+    // API.
+#if !defined(NDEBUG)
+  return params.terminate_upon_input;
+#else
+  return false;
+#endif
+}
+
+}  // namespace
 
 It2MeNativeMessageHostAsh::It2MeNativeMessageHostAsh() = default;
 It2MeNativeMessageHostAsh::~It2MeNativeMessageHostAsh() = default;
@@ -49,6 +99,7 @@ It2MeNativeMessageHostAsh::Start(
 
 void It2MeNativeMessageHostAsh::Connect(
     mojom::SupportSessionParamsPtr params,
+    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
     base::OnceClosure connected_callback,
     base::OnceClosure disconnected_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -64,9 +115,13 @@ void It2MeNativeMessageHostAsh::Connect(
 
   message.SetStringKey(kUserName, params->user_name);
   message.SetStringKey(kAuthServiceWithToken, params->oauth_access_token);
-  message.SetBoolKey(kSuppressUserDialogs, params->suppress_user_dialogs);
-  message.SetBoolKey(kSuppressNotifications, params->suppress_notifications);
-  message.SetBoolKey(kTerminateUponInput, params->terminate_upon_input);
+  message.SetBoolKey(kSuppressUserDialogs,
+                     ShouldSuppressUserDialog(*params, enterprise_params));
+  message.SetBoolKey(kSuppressNotifications,
+                     ShouldSuppressNotifications(*params, enterprise_params));
+  message.SetBoolKey(kTerminateUponInput,
+                     ShouldTerminateUponInput(*params, enterprise_params));
+  message.SetBoolKey(kIsEnterpriseAdminUser, enterprise_params.has_value());
 
   std::string message_json;
   base::JSONWriter::Write(message, &message_json);

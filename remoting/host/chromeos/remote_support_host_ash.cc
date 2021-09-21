@@ -23,8 +23,10 @@ RemoteSupportHostAsh::RemoteSupportHostAsh(base::OnceClosure cleanup_callback)
 
 RemoteSupportHostAsh::~RemoteSupportHostAsh() = default;
 
-void RemoteSupportHostAsh::StartSession(mojom::SupportSessionParamsPtr params,
-                                        StartSessionCallback callback) {
+void RemoteSupportHostAsh::StartSession(
+    mojom::SupportSessionParamsPtr params,
+    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
+    StartSessionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ensure there is at most one active remote support connection.
@@ -47,7 +49,7 @@ void RemoteSupportHostAsh::StartSession(mojom::SupportSessionParamsPtr params,
   response->set_observer(std::move(pending_receiver));
 
   it2me_native_message_host_ash_->Connect(
-      std::move(params),
+      std::move(params), enterprise_params,
       base::BindOnce(std::move(callback), std::move(response)),
       base::BindOnce(&RemoteSupportHostAsh::OnSessionDisconnected,
                      base::Unretained(this)));

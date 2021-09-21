@@ -48,7 +48,7 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
       return std::make_unique<DeviceCommandSetVolumeJob>();
     case em::RemoteCommand_Type_DEVICE_START_CRD_SESSION:
       return std::make_unique<DeviceCommandStartCRDSessionJob>(
-          GetCRDHostDelegate());
+          GetCrdHostDelegate());
     case em::RemoteCommand_Type_DEVICE_FETCH_STATUS:
       return std::make_unique<DeviceCommandFetchStatusJob>();
     case em::RemoteCommand_Type_DEVICE_WIPE_USERS:
@@ -74,9 +74,11 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
   }
 }
 
-CRDHostDelegate* DeviceCommandsFactoryAsh::GetCRDHostDelegate() {
-  if (!crd_host_delegate_)
-    crd_host_delegate_ = std::make_unique<CRDHostDelegate>();
+DeviceCommandStartCRDSessionJob::Delegate*
+DeviceCommandsFactoryAsh::GetCrdHostDelegate() {
+  if (!crd_host_delegate_) {
+    crd_host_delegate_ = std::make_unique<CrdHostDelegate>();
+  }
   return crd_host_delegate_.get();
 }
 

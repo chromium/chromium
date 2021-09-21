@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -27,6 +28,7 @@ namespace remoting {
 
 class ChromotingHostContext;
 class PolicyWatcher;
+struct ChromeOsEnterpriseParams;
 
 // This class wraps the It2MeNativeMessageHost instance used on other platforms
 // and provides a way to interact with it using Mojo IPC.  This instance
@@ -55,9 +57,11 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
 
   // Begins the connection process using the wrapped native message host.
   // |connected_callback| is run after the connection process has completed.
-  void Connect(mojom::SupportSessionParamsPtr params,
-               base::OnceClosure connected_callback,
-               base::OnceClosure disconnected_callback);
+  void Connect(
+      mojom::SupportSessionParamsPtr params,
+      const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
+      base::OnceClosure connected_callback,
+      base::OnceClosure disconnected_callback);
   // Disconnects an active session if one exists.
   void Disconnect();
 

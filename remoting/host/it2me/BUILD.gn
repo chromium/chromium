@@ -156,6 +156,7 @@ if (is_chromeos_ash || is_chromeos_lacros) {
         "//extensions/browser/api/messaging:native_messaging",
         "//remoting/base:base",
         "//remoting/host:common",
+        "//remoting/host/chromeos:enterprise_support",
         "//remoting/host/mojom:mojom",
         "//remoting/host/native_messaging",
         "//skia",

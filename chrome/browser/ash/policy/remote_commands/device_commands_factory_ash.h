@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 
 namespace policy {
 
-class CRDHostDelegate;
 class DeviceCloudPolicyManagerAsh;
 
 class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
@@ -32,9 +32,9 @@ class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
 
  private:
   DeviceCloudPolicyManagerAsh* policy_manager_;
-  std::unique_ptr<CRDHostDelegate> crd_host_delegate_;
+  std::unique_ptr<DeviceCommandStartCRDSessionJob::Delegate> crd_host_delegate_;
 
-  CRDHostDelegate* GetCRDHostDelegate();
+  DeviceCommandStartCRDSessionJob::Delegate* GetCrdHostDelegate();
 };
 
 }  // namespace policy
