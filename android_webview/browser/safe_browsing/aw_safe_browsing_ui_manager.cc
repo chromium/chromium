@@ -65,7 +65,7 @@ AwSafeBrowsingUIManager::AwSafeBrowsingUIManager() {
 
   network_context_ =
       std::make_unique<safe_browsing::SafeBrowsingNetworkContext>(
-          user_data_dir,
+          user_data_dir, /*trigger_migration=*/false,
           base::BindRepeating(CreateDefaultNetworkContextParams));
 }
 

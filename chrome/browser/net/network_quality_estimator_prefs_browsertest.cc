@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/deferred_sequenced_task_runner.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
@@ -17,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -186,6 +188,7 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
 // Verify that prefs are read at startup.
 IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
                        ReadPrefsAtStartupCustomPrefFile) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
   // The check below ensures that "NQE.Prefs.ReadSize" contains at least one
   // sample. This implies that NQE was notified of the read prefs.
   RetryForHistogramUntilCountReached(&histogram_tester, "NQE.Prefs.ReadSize",
@@ -200,13 +203,19 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
-  base::FilePath full_path = browser()->profile()->GetPath().Append(
-      FILE_PATH_LITERAL("Temp Network Persistent State"));
-  context_params->file_paths->data_path = full_path.DirName();
+  context_params->file_paths->data_path =
+      browser()->profile()->GetPath().Append(
+          FILE_PATH_LITERAL("Network For Testing"));
+  context_params->file_paths->unsandboxed_data_path =
+      browser()->profile()->GetPath();
   context_params->file_paths->http_server_properties_file_name =
-      full_path.BaseName();
+      base::FilePath(FILE_PATH_LITERAL("Temp Network Persistent State"));
+  context_params->file_paths->trigger_migration = true;
 
-  auto state = base::MakeRefCounted<JsonPrefStore>(full_path);
+  base::CreateDirectory(context_params->file_paths->data_path);
+  auto state = base::MakeRefCounted<JsonPrefStore>(
+      context_params->file_paths->data_path.Append(
+          *context_params->file_paths->http_server_properties_file_name));
 
   base::DictionaryValue pref_value;
   base::Value value("2G");

@@ -29,8 +29,10 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
  public:
   SharedURLLoaderFactory(
       const base::FilePath& user_data_dir,
+      bool trigger_migration,
       NetworkContextParamsFactory network_context_params_factory)
       : user_data_dir_(user_data_dir),
+        trigger_migration_(trigger_migration),
         network_context_params_factory_(
             std::move(network_context_params_factory)) {}
 
@@ -119,7 +121,11 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
     network_context_params->file_paths =
         network::mojom::NetworkContextFilePaths::New();
-    network_context_params->file_paths->data_path = user_data_dir_;
+    network_context_params->file_paths->data_path = user_data_dir_.Append(
+        base::FilePath(base::FilePath::StringType(kSafeBrowsingBaseFilename) +
+                       FILE_PATH_LITERAL(" Network")));
+    network_context_params->file_paths->unsandboxed_data_path = user_data_dir_;
+    network_context_params->file_paths->trigger_migration = trigger_migration_;
     network_context_params->file_paths->cookie_database_name = base::FilePath(
         base::FilePath::StringType(kSafeBrowsingBaseFilename) + kCookiesFile);
     network_context_params->enable_encrypted_cookies = false;
@@ -128,6 +134,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
   }
 
   base::FilePath user_data_dir_;
+  bool trigger_migration_;
   NetworkContextParamsFactory network_context_params_factory_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
@@ -137,10 +144,12 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
 SafeBrowsingNetworkContext::SafeBrowsingNetworkContext(
     const base::FilePath& user_data_dir,
+    bool trigger_migration,
     NetworkContextParamsFactory network_context_params_factory) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   url_loader_factory_ = base::MakeRefCounted<SharedURLLoaderFactory>(
-      user_data_dir, std::move(network_context_params_factory));
+      user_data_dir, trigger_migration,
+      std::move(network_context_params_factory));
 }
 
 SafeBrowsingNetworkContext::~SafeBrowsingNetworkContext() {

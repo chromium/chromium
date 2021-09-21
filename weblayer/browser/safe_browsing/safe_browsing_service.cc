@@ -113,7 +113,7 @@ void SafeBrowsingService::Initialize() {
   // safebrowsing network context needs to be created on the UI thread.
   network_context_ =
       std::make_unique<safe_browsing::SafeBrowsingNetworkContext>(
-          user_data_dir,
+          user_data_dir, /*trigger_migration=*/false,
           base::BindRepeating(CreateDefaultNetworkContextParams, user_agent_));
 
   CreateSafeBrowsingUIManager();

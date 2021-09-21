@@ -21,6 +21,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -693,7 +694,11 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->file_paths =
         ::network::mojom::NetworkContextFilePaths::New();
 
-    network_context_params->file_paths->data_path = path;
+    network_context_params->file_paths->data_path =
+        path.Append(chrome::kNetworkDataDirname);
+    network_context_params->file_paths->unsandboxed_data_path = path;
+    network_context_params->file_paths->trigger_migration =
+        features::ShouldTriggerNetworkDataMigration();
     // Currently this just contains HttpServerProperties, but that will likely
     // change.
     network_context_params->file_paths->http_server_properties_file_name =

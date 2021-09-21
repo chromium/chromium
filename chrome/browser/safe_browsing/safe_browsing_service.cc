@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -124,7 +125,7 @@ void SafeBrowsingService::Initialize() {
 
   network_context_ =
       std::make_unique<safe_browsing::SafeBrowsingNetworkContext>(
-          user_data_dir,
+          user_data_dir, features::ShouldTriggerNetworkDataMigration(),
           base::BindRepeating(&SafeBrowsingService::CreateNetworkContextParams,
                               base::Unretained(this)));
 

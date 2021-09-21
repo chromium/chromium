@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/network_context_service.h"
 
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -11,7 +12,7 @@ namespace safe_browsing {
 
 NetworkContextService::NetworkContextService(Profile* profile) {
   network_context_ = std::make_unique<SafeBrowsingNetworkContext>(
-      profile->GetPath(),
+      profile->GetPath(), features::ShouldTriggerNetworkDataMigration(),
       base::BindRepeating(&NetworkContextService::CreateNetworkContextParams,
                           // This is safe because `this` owns
                           // `network_context_`.
