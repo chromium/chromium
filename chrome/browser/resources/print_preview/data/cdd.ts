@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+type OptionWithDefault = {
+  is_default?: boolean
+};
+
 export type VendorCapabilitySelectOption = {
   display_name: string,
   type?: string, value: number|string|boolean,
-  is_default?: boolean,
-};
+}&OptionWithDefault;
 
 /**
  * Same as cloud_devices::printer::TypedValueVendorCapability::ValueType.
@@ -43,17 +46,19 @@ export type VendorCapability = {
   range_cap?: RangeCapability,
 };
 
+export type CapabilityWithReset = {
+  reset_to_default?: boolean, option: OptionWithDefault[],
+};
+
 export type ColorOption = {
   type?: string,
   vendor_id?: string,
   custom_display_name?: string,
-  is_default?: boolean,
-};
+}&OptionWithDefault;
 
 export type ColorCapability = {
   option: ColorOption[],
-  reset_to_default?: boolean,
-};
+}&CapabilityWithReset;
 
 type CollateCapability = {
   default?: boolean
@@ -64,49 +69,41 @@ export type CopiesCapability = {
   max?: number
 };
 
-type DuplexOption = {
+export type DuplexOption = {
   type?: string,
-  is_default?: boolean
-};
+}&OptionWithDefault;
 
 type DuplexCapability = {
   option: DuplexOption[],
-  reset_to_default?: boolean,
-};
+}&CapabilityWithReset;
 
 type PageOrientationOption = {
   type?: string,
-  is_default?: boolean,
-};
+}&OptionWithDefault;
 
 type PageOrientationCapability = {
   option: PageOrientationOption[],
-  reset_to_default?: boolean,
-};
+}&CapabilityWithReset;
 
 export type MediaSizeOption = {
   type?: string,
   vendor_id?: string,
   custom_display_name?: string,
   custom_display_name_localized?: string,
-  is_default?: boolean,
-  name?: string,
-};
+  name?: string, height_microns: number, width_microns: number,
+}&OptionWithDefault;
 
 type MediaSizeCapability = {
   option: MediaSizeOption[],
-  reset_to_default?: boolean,
-};
+}&CapabilityWithReset;
 
-type DpiOption = {
+export type DpiOption = {
   vendor_id?: string, horizontal_dpi: number, vertical_dpi: number,
-  is_default?: boolean,
-};
+}&OptionWithDefault;
 
 type DpiCapability = {
   option: DpiOption[],
-  reset_to_default?: boolean,
-};
+}&CapabilityWithReset;
 
 type PinCapability = {
   supported?: boolean
