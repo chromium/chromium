@@ -399,6 +399,8 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     damage_rect_in_root_target_space.Intersect(root_clip_rect);
   }
 
+  // TODO(petermcneeley) : Check is temporary to isolate b/191414141.
+  CHECK(damage_rect_in_root_target_space.size().GetCheckedArea().IsValid());
   surface_damage_rect_list_->push_back(damage_rect_in_root_target_space);
 }
 
@@ -463,6 +465,8 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     surface_damage_rect_list_->push_back(gfx::Rect());
   }
 
+  // TODO(petermcneeley) : Check is temporary to isolate b/191414141.
+  CHECK(!surface_damage_rect_list_->empty());
   // The latest surface damage rect.
   *overlay_damage_index = surface_damage_rect_list_->size() - 1;
 
@@ -1192,6 +1196,8 @@ void SurfaceAggregator::CopyQuadsToPass(
           AddSurfaceDamageToDamageList(damage_rect_in_target_space.value(),
                                        target_transform, {}, dest_pass,
                                        /*resolved_frame=*/nullptr);
+          // TODO(petermcneeley) : Check is temporary to isolate b/191414141.
+          CHECK_GE(surface_damage_rect_list_->size(), 1u);
         } else if (quad == quad_with_overlay_damage_index) {
           dest_shared_quad_state->overlay_damage_index = overlay_damage_index;
         }
