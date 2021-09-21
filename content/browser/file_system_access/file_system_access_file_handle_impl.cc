@@ -275,7 +275,7 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
       access_handle_host_remote = manager()->CreateAccessHandleHost(
           url(), file_delegate_host_remote.InitWithNewPipeAndPassReceiver(),
-          mojo::NullReceiver(), std::move(lock));
+          mojo::NullReceiver(), 0, std::move(lock));
 
   std::move(callback).Run(
       file_system_access_error::Ok(),
@@ -360,7 +360,7 @@ void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
       access_handle_host_remote = manager()->CreateAccessHandleHost(
           url(), mojo::NullReceiver(),
           capacity_allocation_host_remote.InitWithNewPipeAndPassReceiver(),
-          std::move(lock));
+          length_or_error.value(), std::move(lock));
 
   std::move(callback).Run(
       file_system_access_error::Ok(),
