@@ -15143,6 +15143,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SafeBrowsing.RT.HasTokenInRequest"/>
   <affected-histogram name="SafeBrowsing.RT.HasValidCacheManager"/>
   <affected-histogram name="SafeBrowsing.RT.IsLookupSuccessful"/>
+  <affected-histogram name="SafeBrowsing.RT.IsPopulationMbbOrEsb"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Result"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Time"/>
   <affected-histogram name="SafeBrowsing.RT.Request.Size"/>
