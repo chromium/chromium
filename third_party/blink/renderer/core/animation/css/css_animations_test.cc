@@ -80,6 +80,15 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
         ->Amount();
   }
 
+  double GetSaturateFilterAmount(Element* element) {
+    EXPECT_EQ(1u, element->GetComputedStyle()->Filter().size());
+    const FilterOperation* filter =
+        element->GetComputedStyle()->Filter().Operations()[0];
+    EXPECT_EQ(FilterOperation::OperationType::SATURATE, filter->GetType());
+    return static_cast<const BasicColorMatrixFilterOperation*>(filter)
+        ->Amount();
+  }
+
   void InvalidateCompositorKeyframesSnapshot(Animation* animation) {
     auto* keyframe_effect = DynamicTo<KeyframeEffect>(animation->effect());
     DCHECK(keyframe_effect);
@@ -134,7 +143,7 @@ TEST_P(CSSAnimationsTest, RetargetedTransition) {
 TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      #test { transition: filter 1s; }
+      #test { transition: filter 1s linear; }
       .saturate { filter: saturate(20%); }
       .contrast { filter: contrast(20%); }
     </style>
@@ -152,14 +161,13 @@ TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   AdvanceClockSeconds(0.003);
 
-  // The computed style still contains no filter until the next frame.
-  EXPECT_TRUE(element->GetComputedStyle()->Filter().IsEmpty());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1.0 * (1 - 0.003) + 0.2 * 0.003, GetSaturateFilterAmount(element));
 
   // Now we start a contrast filter. Since it will try to combine with
   // the in progress saturate filter, and be incompatible, there should
   // be no transition and it should immediately apply on the next frame.
   element->setAttribute(html_names::kClassAttr, "contrast");
-  EXPECT_TRUE(element->GetComputedStyle()->Filter().IsEmpty());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0.2, GetContrastFilterAmount(element));
 }
