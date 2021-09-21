@@ -43,6 +43,14 @@ Polymer({
       value: '',
     },
 
+    /**
+     * This value is set to true if UserPrintersAllowed policy is enabled.
+     */
+    userPrintersAllowed: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @type {?CupsPrinterInfo} */
     activePrinter: {
       type: Object,
@@ -153,6 +161,7 @@ Polymer({
     const item = e.detail.item;
     this.setActivePrinter_(item);
     this.savingPrinter_ = true;
+
     CupsPrintersBrowserProxyImpl.getInstance()
         .addCupsPrinter(item.printerInfo)
         .then(

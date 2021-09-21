@@ -120,6 +120,8 @@
 
   <template is="dom-if" if="[[canAddPrinter]]" restamp>
     <settings-cups-nearby-printers search-term="[[searchTerm]]"
+        user-printers-allowed="[[!prefs.native_printing.
+            user_native_printers_allowed.value]]"
         active-printer="{{activePrinter}}"
         printers-count="{{nearbyPrinterCount_}}">
     </settings-cups-nearby-printers>
