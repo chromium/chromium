@@ -82,7 +82,6 @@ struct TestParams {
   const base::Time binary_build_time;
 };
 
-// No-op functions used to create a MetricsStateManager.
 void NoOpStoreClientInfoBackup(const metrics::ClientInfo&) {}
 std::unique_ptr<metrics::ClientInfo> NoOpLoadClientInfoBackup() {
   return nullptr;
@@ -817,9 +816,7 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
   metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/true,
                                                            /*enabled=*/true);
   auto metrics_state_manager = metrics::MetricsStateManager::Create(
-      &prefs_, &enabled_state_provider, std::wstring(), base::FilePath(),
-      base::BindRepeating(&NoOpStoreClientInfoBackup),
-      base::BindRepeating(&NoOpLoadClientInfoBackup));
+      &prefs_, &enabled_state_provider, std::wstring(), base::FilePath());
 
   // Check that field trials are created from the seed. The test seed contains a
   // single study with an experiment targeting 100% of users in India. Since

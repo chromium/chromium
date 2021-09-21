@@ -64,16 +64,6 @@ const int kMaxHistogramGatheringWaitDuration = 60000;  // 60 seconds.
 
 const int kMaxHistogramStorageKiB = 100 << 10;  // 100 MiB
 
-// Callbacks for MetricsStateManager::Create. Store/LoadClientInfo
-// allow Windows Chrome to back up ClientInfo. They're no-ops for
-// AndroidMetricsServiceClient.
-
-void StoreClientInfo(const ClientInfo& client_info) {}
-
-std::unique_ptr<ClientInfo> LoadClientInfo() {
-  return nullptr;
-}
-
 // Divides the spectrum of uint32_t values into 1000 ~equal-sized buckets (range
 // [0, 999] inclusive), and returns which bucket |value| falls into. Ex. given
 // 2^30, this would return 250, because 25% of uint32_t values fall below the
@@ -248,9 +238,7 @@ void AndroidMetricsServiceClient::Initialize(
   pref_service_ = pref_service;
 
   metrics_state_manager_ = MetricsStateManager::Create(
-      pref_service_, this, std::wstring(), user_data_dir,
-      base::BindRepeating(&StoreClientInfo),
-      base::BindRepeating(&LoadClientInfo));
+      pref_service_, this, std::wstring(), user_data_dir);
 
   // Creates the FieldTrialList using the low entropy provider. The low entropy
   // provider is used instead of the default provider because the default

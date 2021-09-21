@@ -181,8 +181,8 @@ class MetricsStateManager final {
       EnabledStateProvider* enabled_state_provider,
       const std::wstring& backup_registry_key,
       const base::FilePath& user_data_dir,
-      StoreClientInfoCallback store_client_info,
-      LoadClientInfoCallback load_client_info,
+      StoreClientInfoCallback store_client_info = StoreClientInfoCallback(),
+      LoadClientInfoCallback load_client_info = LoadClientInfoCallback(),
       StartupVisibility startup_visibility = StartupVisibility::kUnknown);
 
   // Registers local state prefs used by this class.

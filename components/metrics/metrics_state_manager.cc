@@ -70,6 +70,12 @@ void LogClonedInstall() {
   UMA_STABILITY_HISTOGRAM_ENUMERATION("UMA.IsClonedInstall", 1, 2);
 }
 
+// No-op functions used to create a MetricsStateManager.
+void NoOpStoreClientInfoBackup(const metrics::ClientInfo&) {}
+std::unique_ptr<metrics::ClientInfo> NoOpLoadClientInfoBackup() {
+  return nullptr;
+}
+
 class MetricsStateMetricsProvider : public MetricsProvider {
  public:
   MetricsStateMetricsProvider(
@@ -442,7 +448,12 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
   if (!instance_exists_) {
     result.reset(new MetricsStateManager(
         local_state, enabled_state_provider, backup_registry_key, user_data_dir,
-        std::move(store_client_info), std::move(retrieve_client_info),
+        store_client_info.is_null()
+            ? base::BindRepeating(&NoOpStoreClientInfoBackup)
+            : std::move(store_client_info),
+        retrieve_client_info.is_null()
+            ? base::BindRepeating(&NoOpLoadClientInfoBackup)
+            : std::move(retrieve_client_info),
         startup_visibility));
   }
   return result;

@@ -66,14 +66,6 @@ const char kBase64SeedSignature[] =
     "MEQCIDD1IVxjzWYncun+9IGzqYjZvqxxujQEayJULTlbTGA/AiAr0oVmEgVUQZBYq5VLOSvy"
     "96JkMYgzTkHPwbv7K/CmgA==";
 
-// A stub for the metrics state manager.
-void StubStoreClientInfo(const metrics::ClientInfo& /* client_info */) {}
-
-// A stub for the metrics state manager.
-std::unique_ptr<metrics::ClientInfo> StubLoadClientInfo() {
-  return nullptr;
-}
-
 // TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
@@ -356,8 +348,7 @@ class VariationsServiceTest : public ::testing::Test {
     if (!metrics_state_manager_) {
       metrics_state_manager_ = metrics::MetricsStateManager::Create(
           &prefs_, enabled_state_provider_.get(), std::wstring(),
-          base::FilePath(), base::BindRepeating(&StubStoreClientInfo),
-          base::BindRepeating(&StubLoadClientInfo));
+          base::FilePath());
       metrics_state_manager_->InstantiateFieldTrialList();
     }
     return metrics_state_manager_.get();
