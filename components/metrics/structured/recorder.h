@@ -79,17 +79,16 @@ class Recorder : public StructuredMetricsClient::RecordingDelegate {
   void SetUiTaskRunner(
       const scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
+  void AddObserver(RecorderImpl* observer);
+  void RemoveObserver(RecorderImpl* observer);
+
  private:
   friend class base::NoDestructor<Recorder>;
-  friend class StructuredMetricsProvider;
 
   Recorder();
   ~Recorder() override;
   Recorder(const Recorder&) = delete;
   Recorder& operator=(const Recorder&) = delete;
-
-  void AddObserver(RecorderImpl* observer);
-  void RemoveObserver(RecorderImpl* observer);
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
