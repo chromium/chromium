@@ -14,12 +14,12 @@ rootWebArea
 ++++++++++++++++inlineTextBox name='50'
 ++++++++++++staticText name=':'
 ++++++++++++++inlineTextBox name=':'
-++++++++++++spinButton name='Seconds' placeholder='--' value='02' valueForRange=2.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++spinButton name='Seconds' placeholder='--' value='02' restriction=disabled valueForRange=2.00 minValueForRange=0.00 maxValueForRange=59.00
 ++++++++++++++staticText name='02'
 ++++++++++++++++inlineTextBox name='02'
 ++++++++++++staticText name='.'
 ++++++++++++++inlineTextBox name='.'
-++++++++++++spinButton name='Milliseconds' placeholder='---' value='922' valueForRange=922.00 minValueForRange=0.00 maxValueForRange=999.00
+++++++++++++spinButton name='Milliseconds' placeholder='---' value='922' restriction=disabled valueForRange=922.00 minValueForRange=0.00 maxValueForRange=999.00
 ++++++++++++++staticText name='922'
 ++++++++++++++++inlineTextBox name='922'
 ++++++++++++staticText name=' '
