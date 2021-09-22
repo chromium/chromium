@@ -275,6 +275,8 @@ enum BadMessageReason {
   MDDH_INVALID_PERMITTED_ORIGIN = 247,
   MDDH_NOT_TOP_LEVEL = 248,
   RFH_DID_CHANGE_IFRAME_ATTRIBUTE = 249,
+  FARI_LOGOUT_BAD_ENDPOINT = 250,
+  RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE = 251,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
