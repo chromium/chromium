@@ -22,6 +22,8 @@ static_library("feature_status_tracker") {
     "quick_pair_feature_status_tracker.h",
     "quick_pair_feature_status_tracker_impl.cc",
     "quick_pair_feature_status_tracker_impl.h",
+    "screen_state_enabled_provider.cc",
+    "screen_state_enabled_provider.h",
   ]
 
   deps = [
@@ -31,6 +33,8 @@ static_library("feature_status_tracker") {
     "//components/user_manager",
     "//device/bluetooth",
     "//google_apis",
+    "//ui/display",
+    "//ui/display/manager",
   ]
 }
 
@@ -49,6 +53,8 @@ static_library("test_support") {
     "mock_logged_in_user_enabled_provider.h",
     "mock_quick_pair_feature_status_tracker.cc",
     "mock_quick_pair_feature_status_tracker.h",
+    "mock_screen_state_enabled_provider.cc",
+    "mock_screen_state_enabled_provider.h",
     "quick_pair_feature_status_tracker.h",
   ]
 
@@ -68,11 +74,13 @@ source_set("unit_tests") {
     "base_enabled_provider_unittest.cc",
     "bluetooth_enabled_provider_unittest.cc",
     "fast_pair_enabled_provider_unittest.cc",
+    "screen_state_enabled_provider_unittest.cc",
   ]
 
   deps = [
     ":feature_status_tracker",
     ":test_support",
+    "//ash:test_support",
     "//ash/constants",
     "//ash/quick_pair/common",
     "//base/test:test_support",
@@ -80,5 +88,6 @@ source_set("unit_tests") {
     "//device/bluetooth",
     "//device/bluetooth:mocks",
     "//testing/gtest",
+    "//ui/display/fake",
   ]
 }
