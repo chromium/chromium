@@ -44,6 +44,11 @@ namespace {
 class MockProcessLauncherDelegate : public WorkerProcessLauncher::Delegate {
  public:
   MockProcessLauncherDelegate() {}
+
+  MockProcessLauncherDelegate(const MockProcessLauncherDelegate&) = delete;
+  MockProcessLauncherDelegate& operator=(const MockProcessLauncherDelegate&) =
+      delete;
+
   ~MockProcessLauncherDelegate() override {}
 
   // WorkerProcessLauncher::Delegate interface.
@@ -51,14 +56,15 @@ class MockProcessLauncherDelegate : public WorkerProcessLauncher::Delegate {
   MOCK_METHOD1(Send, void(IPC::Message*));
   MOCK_METHOD0(CloseChannel, void());
   MOCK_METHOD0(KillProcess, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProcessLauncherDelegate);
 };
 
 class MockIpcDelegate : public WorkerProcessIpcDelegate {
  public:
   MockIpcDelegate() {}
+
+  MockIpcDelegate(const MockIpcDelegate&) = delete;
+  MockIpcDelegate& operator=(const MockIpcDelegate&) = delete;
+
   ~MockIpcDelegate() override {}
 
   // WorkerProcessIpcDelegate interface.
@@ -66,23 +72,21 @@ class MockIpcDelegate : public WorkerProcessIpcDelegate {
   MOCK_METHOD1(OnMessageReceived, bool(const IPC::Message&));
   MOCK_METHOD1(OnPermanentError, void(int));
   MOCK_METHOD0(OnWorkerProcessStopped, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIpcDelegate);
 };
 
 class MockWorkerListener : public IPC::Listener {
  public:
   MockWorkerListener() {}
+
+  MockWorkerListener(const MockWorkerListener&) = delete;
+  MockWorkerListener& operator=(const MockWorkerListener&) = delete;
+
   ~MockWorkerListener() override {}
 
   MOCK_METHOD3(OnCrash, void(const std::string&, const std::string&, int));
 
   // IPC::Listener implementation
   bool OnMessageReceived(const IPC::Message& message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWorkerListener);
 };
 
 bool MockWorkerListener::OnMessageReceived(const IPC::Message& message) {

@@ -325,6 +325,9 @@ class WebrtcTransport::PeerConnectionWrapper
     thread_join_watchdog_ = std::make_unique<ThreadJoinWatchdog>();
   }
 
+  PeerConnectionWrapper(const PeerConnectionWrapper&) = delete;
+  PeerConnectionWrapper& operator=(const PeerConnectionWrapper&) = delete;
+
   ~PeerConnectionWrapper() override {
     thread_join_watchdog_->Arm();
 
@@ -426,8 +429,6 @@ class WebrtcTransport::PeerConnectionWrapper
   base::OnceClosure before_disarm_thread_join_watchdog_callback_;
 
   base::WeakPtr<WebrtcTransport> transport_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionWrapper);
 };
 
 WebrtcTransport::WebrtcTransport(

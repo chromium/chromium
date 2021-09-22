@@ -28,6 +28,10 @@ class JniGlDisplayHandler::Core : public protocol::CursorShapeStub,
                                   public GlRendererDelegate {
  public:
   Core(base::WeakPtr<JniGlDisplayHandler> shell);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   // GlRendererDelegate interface.
@@ -75,8 +79,6 @@ class JniGlDisplayHandler::Core : public protocol::CursorShapeStub,
   // Used on display thread.
   base::WeakPtr<Core> weak_ptr_;
   base::WeakPtrFactory<Core> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 JniGlDisplayHandler::Core::Core(base::WeakPtr<JniGlDisplayHandler> shell)

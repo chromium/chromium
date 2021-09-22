@@ -19,6 +19,10 @@ namespace {
 class ContinueWindowAura : public ContinueWindow {
  public:
   ContinueWindowAura();
+
+  ContinueWindowAura(const ContinueWindowAura&) = delete;
+  ContinueWindowAura& operator=(const ContinueWindowAura&) = delete;
+
   ~ContinueWindowAura() override;
 
   void OnMessageBoxResult(MessageBox::Result result);
@@ -30,7 +34,6 @@ class ContinueWindowAura : public ContinueWindow {
 
  private:
   std::unique_ptr<MessageBox> message_box_;
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindowAura);
 };
 
 ContinueWindowAura::ContinueWindowAura() = default;

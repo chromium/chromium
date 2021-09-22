@@ -21,6 +21,9 @@ class LocalInputMonitor;
 // the local user.
 class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
  public:
+  It2MeDesktopEnvironment(const It2MeDesktopEnvironment&) = delete;
+  It2MeDesktopEnvironment& operator=(const It2MeDesktopEnvironment&) = delete;
+
   ~It2MeDesktopEnvironment() override;
 
  protected:
@@ -42,8 +45,6 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
 
   // Notifies the client session about the local mouse movements.
   std::unique_ptr<LocalInputMonitor> local_input_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeDesktopEnvironment);
 };
 
 // Used to create |It2MeDesktopEnvironment| instances.
@@ -54,15 +55,18 @@ class It2MeDesktopEnvironmentFactory : public BasicDesktopEnvironmentFactory {
       scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  It2MeDesktopEnvironmentFactory(const It2MeDesktopEnvironmentFactory&) =
+      delete;
+  It2MeDesktopEnvironmentFactory& operator=(
+      const It2MeDesktopEnvironmentFactory&) = delete;
+
   ~It2MeDesktopEnvironmentFactory() override;
 
   // DesktopEnvironmentFactory interface.
   std::unique_ptr<DesktopEnvironment> Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
       const DesktopEnvironmentOptions& options) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(It2MeDesktopEnvironmentFactory);
 };
 
 }  // namespace remoting

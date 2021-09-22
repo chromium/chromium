@@ -28,6 +28,10 @@ class MouseCursorMonitorProxy::Core
     : public webrtc::MouseCursorMonitor::Callback {
  public:
   explicit Core(base::WeakPtr<MouseCursorMonitorProxy> proxy);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   void CreateMouseCursorMonitor(const webrtc::DesktopCaptureOptions& options);
@@ -48,8 +52,6 @@ class MouseCursorMonitorProxy::Core
   base::WeakPtr<MouseCursorMonitorProxy> proxy_;
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 MouseCursorMonitorProxy::Core::Core(

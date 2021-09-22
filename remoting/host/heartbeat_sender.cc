@@ -143,6 +143,10 @@ class HeartbeatSender::HeartbeatClientImpl final
   explicit HeartbeatClientImpl(
       OAuthTokenGetter* oauth_token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  HeartbeatClientImpl(const HeartbeatClientImpl&) = delete;
+  HeartbeatClientImpl& operator=(const HeartbeatClientImpl&) = delete;
+
   ~HeartbeatClientImpl() override;
 
   void Heartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
@@ -151,7 +155,6 @@ class HeartbeatSender::HeartbeatClientImpl final
 
  private:
   ProtobufHttpClient http_client_;
-  DISALLOW_COPY_AND_ASSIGN(HeartbeatClientImpl);
 };
 
 HeartbeatSender::HeartbeatClientImpl::HeartbeatClientImpl(

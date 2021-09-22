@@ -37,6 +37,10 @@ class TestTokenStorageOnDisk : public TestTokenStorage {
  public:
   TestTokenStorageOnDisk(const std::string& user_name,
                          const base::FilePath& tokens_file_path);
+
+  TestTokenStorageOnDisk(const TestTokenStorageOnDisk&) = delete;
+  TestTokenStorageOnDisk& operator=(const TestTokenStorageOnDisk&) = delete;
+
   ~TestTokenStorageOnDisk() override;
 
   // TestTokenStorage interface.
@@ -62,8 +66,6 @@ class TestTokenStorageOnDisk : public TestTokenStorage {
 
   // Path used to retrieve the tokens file.
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTokenStorageOnDisk);
 };
 
 TestTokenStorageOnDisk::TestTokenStorageOnDisk(const std::string& user_name,

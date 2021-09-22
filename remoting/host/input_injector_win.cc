@@ -194,6 +194,10 @@ class InputInjectorWin : public InputInjector {
  public:
   InputInjectorWin(scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
                    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  InputInjectorWin(const InputInjectorWin&) = delete;
+  InputInjectorWin& operator=(const InputInjectorWin&) = delete;
+
   ~InputInjectorWin() override;
 
   // ClipboardStub interface.
@@ -248,8 +252,6 @@ class InputInjectorWin : public InputInjector {
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorWin);
 };
 
 InputInjectorWin::InputInjectorWin(

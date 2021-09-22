@@ -115,6 +115,10 @@ int GetSequentialId(const std::string& id) {
 class JingleSession::OrderedMessageQueue {
  public:
   OrderedMessageQueue() = default;
+
+  OrderedMessageQueue(const OrderedMessageQueue&) = delete;
+  OrderedMessageQueue& operator=(const OrderedMessageQueue&) = delete;
+
   ~OrderedMessageQueue() = default;
 
   // Returns the list of messages ordered by their sequential IDs.
@@ -131,8 +135,6 @@ class JingleSession::OrderedMessageQueue {
   std::map<int, PendingMessage> queue_;
 
   int next_incoming_ = kAny;
-
-  DISALLOW_COPY_AND_ASSIGN(OrderedMessageQueue);
 };
 
 std::vector<JingleSession::PendingMessage>

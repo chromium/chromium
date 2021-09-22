@@ -73,6 +73,10 @@ class ChromotingHost : public ClientSession::EventHandler {
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
       const DesktopEnvironmentOptions& options);
+
+  ChromotingHost(const ChromotingHost&) = delete;
+  ChromotingHost& operator=(const ChromotingHost&) = delete;
+
   ~ChromotingHost() override;
 
   // Asynchronously starts the host.
@@ -174,8 +178,6 @@ class ChromotingHost : public ClientSession::EventHandler {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ChromotingHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingHost);
 };
 
 }  // namespace remoting

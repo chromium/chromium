@@ -30,6 +30,10 @@ class MouseRawInputHandlerWin : public LocalInputMonitorWin::RawInputHandler {
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       LocalInputMonitor::PointerMoveCallback on_mouse_move,
       base::OnceClosure disconnect_callback);
+
+  MouseRawInputHandlerWin(const MouseRawInputHandlerWin&) = delete;
+  MouseRawInputHandlerWin& operator=(const MouseRawInputHandlerWin&) = delete;
+
   ~MouseRawInputHandlerWin() override;
 
   // LocalInputMonitorWin::RawInputHandler implementation.
@@ -48,8 +52,6 @@ class MouseRawInputHandlerWin : public LocalInputMonitorWin::RawInputHandler {
 
   // Tracks whether the instance is registered to receive raw input events.
   bool registered_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseRawInputHandlerWin);
 };
 
 MouseRawInputHandlerWin::MouseRawInputHandlerWin(

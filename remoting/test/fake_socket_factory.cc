@@ -48,6 +48,10 @@ class FakeUdpSocket : public rtc::AsyncPacketSocket {
   FakeUdpSocket(FakePacketSocketFactory* factory,
                 scoped_refptr<FakeNetworkDispatcher> dispatcher,
                 const rtc::SocketAddress& local_address);
+
+  FakeUdpSocket(const FakeUdpSocket&) = delete;
+  FakeUdpSocket& operator=(const FakeUdpSocket&) = delete;
+
   ~FakeUdpSocket() override;
 
   void ReceivePacket(const rtc::SocketAddress& from,
@@ -77,8 +81,6 @@ class FakeUdpSocket : public rtc::AsyncPacketSocket {
   scoped_refptr<FakeNetworkDispatcher> dispatcher_;
   rtc::SocketAddress local_address_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUdpSocket);
 };
 
 FakeUdpSocket::FakeUdpSocket(FakePacketSocketFactory* factory,

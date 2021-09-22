@@ -53,6 +53,11 @@ const char kTestPinBad[] = "654321";
 class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
  public:
   NegotiatingAuthenticatorTest() = default;
+
+  NegotiatingAuthenticatorTest(const NegotiatingAuthenticatorTest&) = delete;
+  NegotiatingAuthenticatorTest& operator=(const NegotiatingAuthenticatorTest&) =
+      delete;
+
   ~NegotiatingAuthenticatorTest() override = default;
 
  protected:
@@ -158,8 +163,6 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
 
  private:
   scoped_refptr<PairingRegistry> pairing_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(NegotiatingAuthenticatorTest);
 };
 
 struct PairingTestParameters {

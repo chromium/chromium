@@ -42,6 +42,10 @@ namespace protocol {
 class MockAuthenticator : public Authenticator {
  public:
   MockAuthenticator();
+
+  MockAuthenticator(const MockAuthenticator&) = delete;
+  MockAuthenticator& operator=(const MockAuthenticator&) = delete;
+
   ~MockAuthenticator() override;
 
   MOCK_CONST_METHOD0(state, Authenticator::State());
@@ -62,15 +66,18 @@ class MockAuthenticator : public Authenticator {
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override {
     return base::WrapUnique(GetNextMessagePtr());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAuthenticator);
 };
 
 class MockConnectionToClientEventHandler
     : public ConnectionToClient::EventHandler {
  public:
   MockConnectionToClientEventHandler();
+
+  MockConnectionToClientEventHandler(
+      const MockConnectionToClientEventHandler&) = delete;
+  MockConnectionToClientEventHandler& operator=(
+      const MockConnectionToClientEventHandler&) = delete;
+
   ~MockConnectionToClientEventHandler() override;
 
   MOCK_METHOD0(OnConnectionAuthenticating, void());
@@ -89,39 +96,42 @@ class MockConnectionToClientEventHandler
                              std::unique_ptr<MessagePipe> pipe) override {
     OnIncomingDataChannelPtr(channel_name, pipe.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockConnectionToClientEventHandler);
 };
 
 class MockClipboardStub : public ClipboardStub {
  public:
   MockClipboardStub();
+
+  MockClipboardStub(const MockClipboardStub&) = delete;
+  MockClipboardStub& operator=(const MockClipboardStub&) = delete;
+
   ~MockClipboardStub() override;
 
   MOCK_METHOD1(InjectClipboardEvent, void(const ClipboardEvent& event));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClipboardStub);
 };
 
 class MockInputStub : public InputStub {
  public:
   MockInputStub();
+
+  MockInputStub(const MockInputStub&) = delete;
+  MockInputStub& operator=(const MockInputStub&) = delete;
+
   ~MockInputStub() override;
 
   MOCK_METHOD1(InjectKeyEvent, void(const KeyEvent& event));
   MOCK_METHOD1(InjectTextEvent, void(const TextEvent& event));
   MOCK_METHOD1(InjectMouseEvent, void(const MouseEvent& event));
   MOCK_METHOD1(InjectTouchEvent, void(const TouchEvent& event));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInputStub);
 };
 
 class MockHostStub : public HostStub {
  public:
   MockHostStub();
+
+  MockHostStub(const MockHostStub&) = delete;
+  MockHostStub& operator=(const MockHostStub&) = delete;
+
   ~MockHostStub() override;
 
   MOCK_METHOD1(NotifyClientResolution,
@@ -135,14 +145,15 @@ class MockHostStub : public HostStub {
   MOCK_METHOD1(DeliverClientMessage, void(const ExtensionMessage& message));
   MOCK_METHOD1(SelectDesktopDisplay,
                void(const SelectDesktopDisplayRequest& message));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockHostStub);
 };
 
 class MockClientStub : public ClientStub {
  public:
   MockClientStub();
+
+  MockClientStub(const MockClientStub&) = delete;
+  MockClientStub& operator=(const MockClientStub&) = delete;
+
   ~MockClientStub() override;
 
   // ClientStub mock implementation.
@@ -161,25 +172,27 @@ class MockClientStub : public ClientStub {
 
   // KeyboardLayoutStub mock implementation.
   MOCK_METHOD1(SetKeyboardLayout, void(const KeyboardLayout& layout));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClientStub);
 };
 
 class MockCursorShapeStub : public CursorShapeStub {
  public:
   MockCursorShapeStub();
+
+  MockCursorShapeStub(const MockCursorShapeStub&) = delete;
+  MockCursorShapeStub& operator=(const MockCursorShapeStub&) = delete;
+
   ~MockCursorShapeStub() override;
 
   MOCK_METHOD1(SetCursorShape, void(const CursorShapeInfo& cursor_shape));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCursorShapeStub);
 };
 
 class MockVideoStub : public VideoStub {
  public:
   MockVideoStub();
+
+  MockVideoStub(const MockVideoStub&) = delete;
+  MockVideoStub& operator=(const MockVideoStub&) = delete;
+
   ~MockVideoStub() override;
 
   MOCK_METHOD2(ProcessVideoPacketPtr,
@@ -188,14 +201,15 @@ class MockVideoStub : public VideoStub {
                           base::OnceClosure done) override {
     ProcessVideoPacketPtr(video_packet.get(), &done);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockVideoStub);
 };
 
 class MockSession : public Session {
  public:
   MockSession();
+
+  MockSession(const MockSession&) = delete;
+  MockSession& operator=(const MockSession&) = delete;
+
   ~MockSession() override;
 
   MOCK_METHOD1(SetEventHandler, void(Session::EventHandler* event_handler));
@@ -205,14 +219,15 @@ class MockSession : public Session {
   MOCK_METHOD0(config, const SessionConfig&());
   MOCK_METHOD1(Close, void(ErrorCode error));
   MOCK_METHOD1(AddPlugin, void(SessionPlugin* plugin));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSession);
 };
 
 class MockSessionManager : public SessionManager {
  public:
   MockSessionManager();
+
+  MockSessionManager(const MockSessionManager&) = delete;
+  MockSessionManager& operator=(const MockSessionManager&) = delete;
+
   ~MockSessionManager() override;
 
   MOCK_METHOD1(AcceptIncoming, void(const IncomingSessionCallback&));
@@ -233,9 +248,6 @@ class MockSessionManager : public SessionManager {
       std::unique_ptr<AuthenticatorFactory> authenticator_factory) override {
     set_authenticator_factory_ptr(authenticator_factory.release());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSessionManager);
 };
 
 // Simple delegate that caches information on paired clients in memory.

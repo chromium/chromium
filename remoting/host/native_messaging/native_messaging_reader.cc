@@ -53,6 +53,10 @@ class NativeMessagingReader::Core {
        scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
        scoped_refptr<base::SequencedTaskRunner> read_task_runner,
        base::WeakPtr<NativeMessagingReader> reader_);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   // Reads a message from the Native Messaging client and passes it to
@@ -72,8 +76,6 @@ class NativeMessagingReader::Core {
 
   // Used to DCHECK that the reader code executes on the correct thread.
   scoped_refptr<base::SequencedTaskRunner> read_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 NativeMessagingReader::Core::Core(

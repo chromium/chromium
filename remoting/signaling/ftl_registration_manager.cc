@@ -72,6 +72,10 @@ class FtlRegistrationManager::RegistrationClientImpl final
   RegistrationClientImpl(
       OAuthTokenGetter* token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  RegistrationClientImpl(const RegistrationClientImpl&) = delete;
+  RegistrationClientImpl& operator=(const RegistrationClientImpl&) = delete;
+
   ~RegistrationClientImpl() override;
 
   // RegistrationClient implementations.
@@ -81,8 +85,6 @@ class FtlRegistrationManager::RegistrationClientImpl final
 
  private:
   ProtobufHttpClient http_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistrationClientImpl);
 };
 
 FtlRegistrationManager::RegistrationClientImpl::RegistrationClientImpl(

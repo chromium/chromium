@@ -68,6 +68,11 @@ class FakeIt2MeConfirmationDialog : public It2MeConfirmationDialog {
  public:
   FakeIt2MeConfirmationDialog(const std::string& remote_user_email,
                               DialogResult dialog_result);
+
+  FakeIt2MeConfirmationDialog(const FakeIt2MeConfirmationDialog&) = delete;
+  FakeIt2MeConfirmationDialog& operator=(const FakeIt2MeConfirmationDialog&) =
+      delete;
+
   ~FakeIt2MeConfirmationDialog() override;
 
   // It2MeConfirmationDialog implementation.
@@ -79,8 +84,6 @@ class FakeIt2MeConfirmationDialog : public It2MeConfirmationDialog {
 
   std::string remote_user_email_;
   DialogResult dialog_result_ = DialogResult::OK;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIt2MeConfirmationDialog);
 };
 
 FakeIt2MeConfirmationDialog::FakeIt2MeConfirmationDialog() = default;
@@ -103,6 +106,10 @@ void FakeIt2MeConfirmationDialog::Show(const std::string& remote_user_email,
 class FakeIt2MeDialogFactory : public It2MeConfirmationDialogFactory {
  public:
   FakeIt2MeDialogFactory();
+
+  FakeIt2MeDialogFactory(const FakeIt2MeDialogFactory&) = delete;
+  FakeIt2MeDialogFactory& operator=(const FakeIt2MeDialogFactory&) = delete;
+
   ~FakeIt2MeDialogFactory() override;
 
   std::unique_ptr<It2MeConfirmationDialog> Create() override;
@@ -121,8 +128,6 @@ class FakeIt2MeDialogFactory : public It2MeConfirmationDialogFactory {
   std::string remote_user_email_;
   DialogResult dialog_result_ = DialogResult::OK;
   bool dialog_created_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIt2MeDialogFactory);
 };
 
 FakeIt2MeDialogFactory::FakeIt2MeDialogFactory()
@@ -142,6 +147,10 @@ std::unique_ptr<It2MeConfirmationDialog> FakeIt2MeDialogFactory::Create() {
 class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
  public:
   It2MeHostTest();
+
+  It2MeHostTest(const It2MeHostTest&) = delete;
+  It2MeHostTest& operator=(const It2MeHostTest&) = delete;
+
   ~It2MeHostTest() override;
 
   // testing::Test interface.
@@ -211,8 +220,6 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner_;
 
   base::WeakPtrFactory<It2MeHostTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeHostTest);
 };
 
 It2MeHostTest::It2MeHostTest() {}

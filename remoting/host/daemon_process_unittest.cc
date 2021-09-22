@@ -50,12 +50,13 @@ enum Messages {
 class FakeDesktopSession : public DesktopSession {
  public:
   FakeDesktopSession(DaemonProcess* daemon_process, int id);
+
+  FakeDesktopSession(const FakeDesktopSession&) = delete;
+  FakeDesktopSession& operator=(const FakeDesktopSession&) = delete;
+
   ~FakeDesktopSession() override;
 
   void SetScreenResolution(const ScreenResolution& resolution) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopSession);
 };
 
 class MockDaemonProcess : public DaemonProcess {
@@ -63,6 +64,10 @@ class MockDaemonProcess : public DaemonProcess {
   MockDaemonProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
                     base::OnceClosure stopped_callback);
+
+  MockDaemonProcess(const MockDaemonProcess&) = delete;
+  MockDaemonProcess& operator=(const MockDaemonProcess&) = delete;
+
   ~MockDaemonProcess() override;
 
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
@@ -82,9 +87,6 @@ class MockDaemonProcess : public DaemonProcess {
   MOCK_METHOD1(DoCreateDesktopSessionPtr, DesktopSession*(int));
   MOCK_METHOD1(DoCrashNetworkProcess, void(const base::Location&));
   MOCK_METHOD0(LaunchNetworkProcess, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDaemonProcess);
 };
 
 FakeDesktopSession::FakeDesktopSession(DaemonProcess* daemon_process, int id)

@@ -87,6 +87,10 @@ class InputInjectorX11 : public InputInjector {
  public:
   explicit InputInjectorX11(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  InputInjectorX11(const InputInjectorX11&) = delete;
+  InputInjectorX11& operator=(const InputInjectorX11&) = delete;
+
   ~InputInjectorX11() override;
 
   void Init();
@@ -190,8 +194,6 @@ class InputInjectorX11 : public InputInjector {
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorX11);
 };
 
 InputInjectorX11::InputInjectorX11(

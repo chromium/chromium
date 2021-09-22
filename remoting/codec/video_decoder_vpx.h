@@ -23,6 +23,9 @@ class VideoDecoderVpx : public VideoDecoder {
   static std::unique_ptr<VideoDecoderVpx> CreateForVP8();
   static std::unique_ptr<VideoDecoderVpx> CreateForVP9();
 
+  VideoDecoderVpx(const VideoDecoderVpx&) = delete;
+  VideoDecoderVpx& operator=(const VideoDecoderVpx&) = delete;
+
   ~VideoDecoderVpx() override;
 
   // VideoDecoder interface.
@@ -35,8 +38,6 @@ class VideoDecoderVpx : public VideoDecoder {
 
   ScopedVpxCodec codec_;
   PixelFormat pixel_format_ = PixelFormat::BGRA;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderVpx);
 };
 
 }  // namespace remoting

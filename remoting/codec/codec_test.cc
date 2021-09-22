@@ -177,6 +177,9 @@ class VideoEncoderTester {
  public:
   VideoEncoderTester() : decoder_tester_(nullptr), data_available_(0) {}
 
+  VideoEncoderTester(const VideoEncoderTester&) = delete;
+  VideoEncoderTester& operator=(const VideoEncoderTester&) = delete;
+
   ~VideoEncoderTester() {
     EXPECT_GT(data_available_, 0);
   }
@@ -196,8 +199,6 @@ class VideoEncoderTester {
  private:
   VideoDecoderTester* decoder_tester_;
   int data_available_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderTester);
 };
 
 std::unique_ptr<DesktopFrame> PrepareFrame(const DesktopSize& size) {

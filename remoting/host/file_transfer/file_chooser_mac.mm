@@ -52,6 +52,9 @@ class MacFileChooserOnUiThread {
       scoped_refptr<base::SequencedTaskRunner> caller_task_runner,
       base::WeakPtr<FileChooserMac> file_chooser_mac);
 
+  MacFileChooserOnUiThread(const MacFileChooserOnUiThread&) = delete;
+  MacFileChooserOnUiThread& operator=(const MacFileChooserOnUiThread&) = delete;
+
   ~MacFileChooserOnUiThread();
 
   void Show();
@@ -63,14 +66,15 @@ class MacFileChooserOnUiThread {
   base::scoped_nsobject<NSOpenPanel> open_panel_;
   scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
   base::WeakPtr<FileChooserMac> file_chooser_mac_;
-
-  DISALLOW_COPY_AND_ASSIGN(MacFileChooserOnUiThread);
 };
 
 class FileChooserMac : public FileChooser {
  public:
   FileChooserMac(scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
                  ResultCallback callback);
+
+  FileChooserMac(const FileChooserMac&) = delete;
+  FileChooserMac& operator=(const FileChooserMac&) = delete;
 
   ~FileChooserMac() override;
 
@@ -83,8 +87,6 @@ class FileChooserMac : public FileChooser {
   FileChooser::ResultCallback callback_;
   base::SequenceBound<MacFileChooserOnUiThread> mac_file_chooser_on_ui_thread_;
   base::WeakPtrFactory<FileChooserMac> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileChooserMac);
 };
 
 MacFileChooserOnUiThread::MacFileChooserOnUiThread(

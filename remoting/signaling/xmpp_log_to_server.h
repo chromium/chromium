@@ -37,6 +37,10 @@ class XmppLogToServer : public LogToServer, public SignalStrategy::Listener {
       SignalStrategy* signal_strategy,
       const std::string& directory_bot_jid,
       scoped_refptr<base::SequencedTaskRunner> caller_task_runner = {});
+
+  XmppLogToServer(const XmppLogToServer&) = delete;
+  XmppLogToServer& operator=(const XmppLogToServer&) = delete;
+
   ~XmppLogToServer() override;
 
   // SignalStrategy::Listener interface.
@@ -62,7 +66,6 @@ class XmppLogToServer : public LogToServer, public SignalStrategy::Listener {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<XmppLogToServer> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(XmppLogToServer);
 };
 
 }  // namespace remoting

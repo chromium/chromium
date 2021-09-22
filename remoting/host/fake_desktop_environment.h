@@ -25,6 +25,10 @@ namespace remoting {
 class FakeInputInjector : public InputInjector {
  public:
   FakeInputInjector();
+
+  FakeInputInjector(const FakeInputInjector&) = delete;
+  FakeInputInjector& operator=(const FakeInputInjector&) = delete;
+
   ~FakeInputInjector() override;
 
   void Start(
@@ -62,8 +66,6 @@ class FakeInputInjector : public InputInjector {
   std::vector<protocol::ClipboardEvent>* clipboard_events_ = nullptr;
 
   base::WeakPtrFactory<FakeInputInjector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeInputInjector);
 };
 
 class FakeScreenControls : public ScreenControls {
@@ -80,6 +82,10 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
   explicit FakeDesktopEnvironment(
       scoped_refptr<base::SingleThreadTaskRunner> capture_thread,
       const DesktopEnvironmentOptions& options);
+
+  FakeDesktopEnvironment(const FakeDesktopEnvironment&) = delete;
+  FakeDesktopEnvironment& operator=(const FakeDesktopEnvironment&) = delete;
+
   ~FakeDesktopEnvironment() override;
 
   // Sets frame generator to be used for protocol::FakeDesktopCapturer created
@@ -126,14 +132,17 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
   const DesktopEnvironmentOptions options_;
 
   base::WeakPtrFactory<FakeDesktopEnvironment> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopEnvironment);
 };
 
 class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
  public:
   explicit FakeDesktopEnvironmentFactory(
       scoped_refptr<base::SingleThreadTaskRunner> capture_thread);
+
+  FakeDesktopEnvironmentFactory(const FakeDesktopEnvironmentFactory&) = delete;
+  FakeDesktopEnvironmentFactory& operator=(
+      const FakeDesktopEnvironmentFactory&) = delete;
+
   ~FakeDesktopEnvironmentFactory() override;
 
   // Sets frame generator to be used for protocol::FakeDesktopCapturer created
@@ -158,8 +167,6 @@ class FakeDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
   protocol::FakeDesktopCapturer::FrameGenerator frame_generator_;
 
   base::WeakPtr<FakeDesktopEnvironment> last_desktop_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopEnvironmentFactory);
 };
 
 }  // namespace remoting

@@ -28,6 +28,10 @@ class IpcHostEventLogger : public HostEventLogger, public HostStatusObserver {
   // Initializes the logger. |daemon_channel| must outlive this object.
   IpcHostEventLogger(scoped_refptr<HostStatusMonitor> monitor,
                      IPC::Sender* daemon_channel);
+
+  IpcHostEventLogger(const IpcHostEventLogger&) = delete;
+  IpcHostEventLogger& operator=(const IpcHostEventLogger&) = delete;
+
   ~IpcHostEventLogger() override;
 
   // HostStatusObserver interface.
@@ -48,8 +52,6 @@ class IpcHostEventLogger : public HostEventLogger, public HostStatusObserver {
   scoped_refptr<HostStatusMonitor> monitor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IpcHostEventLogger);
 };
 
 }

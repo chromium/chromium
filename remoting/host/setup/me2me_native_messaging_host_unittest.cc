@@ -170,6 +170,11 @@ namespace remoting {
 class MockDaemonControllerDelegate : public DaemonController::Delegate {
  public:
   MockDaemonControllerDelegate();
+
+  MockDaemonControllerDelegate(const MockDaemonControllerDelegate&) = delete;
+  MockDaemonControllerDelegate& operator=(const MockDaemonControllerDelegate&) =
+      delete;
+
   ~MockDaemonControllerDelegate() override;
 
   // DaemonController::Delegate interface.
@@ -184,9 +189,6 @@ class MockDaemonControllerDelegate : public DaemonController::Delegate {
                     DaemonController::CompletionCallback done) override;
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDaemonControllerDelegate);
 };
 
 MockDaemonControllerDelegate::MockDaemonControllerDelegate() = default;
@@ -247,6 +249,11 @@ MockDaemonControllerDelegate::GetUsageStatsConsent() {
 class Me2MeNativeMessagingHostTest : public testing::Test {
  public:
   Me2MeNativeMessagingHostTest();
+
+  Me2MeNativeMessagingHostTest(const Me2MeNativeMessagingHostTest&) = delete;
+  Me2MeNativeMessagingHostTest& operator=(const Me2MeNativeMessagingHostTest&) =
+      delete;
+
   ~Me2MeNativeMessagingHostTest() override;
 
   void SetUp() override;
@@ -290,8 +297,6 @@ class Me2MeNativeMessagingHostTest : public testing::Test {
   // Task runner of the host thread.
   scoped_refptr<AutoThreadTaskRunner> host_task_runner_;
   std::unique_ptr<NativeMessagingPipe> native_messaging_pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(Me2MeNativeMessagingHostTest);
 };
 
 Me2MeNativeMessagingHostTest::Me2MeNativeMessagingHostTest() = default;

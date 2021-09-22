@@ -31,6 +31,9 @@ class TypedBuffer {
 
   TypedBuffer(TypedBuffer&& rvalue) : TypedBuffer() { Swap(rvalue); }
 
+  TypedBuffer(const TypedBuffer&) = delete;
+  TypedBuffer& operator=(const TypedBuffer&) = delete;
+
   ~TypedBuffer() {
     if (buffer_) {
       delete[] reinterpret_cast<uint8_t*>(buffer_);
@@ -78,8 +81,6 @@ class TypedBuffer {
 
   // Length of the owned buffer in bytes.
   uint32_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedBuffer);
 };
 
 }  // namespace remoting

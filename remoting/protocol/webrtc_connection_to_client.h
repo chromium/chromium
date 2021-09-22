@@ -36,6 +36,10 @@ class WebrtcConnectionToClient : public ConnectionToClient,
       scoped_refptr<protocol::TransportContext> transport_context,
       scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
+
+  WebrtcConnectionToClient(const WebrtcConnectionToClient&) = delete;
+  WebrtcConnectionToClient& operator=(const WebrtcConnectionToClient&) = delete;
+
   ~WebrtcConnectionToClient() override;
 
   // ConnectionToClient interface.
@@ -98,8 +102,6 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   std::unique_ptr<HostControlDispatcher> control_dispatcher_;
   std::unique_ptr<HostEventDispatcher> event_dispatcher_;
   base::WeakPtrFactory<WebrtcConnectionToClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcConnectionToClient);
 };
 
 }  // namespace protocol

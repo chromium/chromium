@@ -18,6 +18,10 @@ class IpcScreenControls : public ScreenControls {
  public:
   explicit IpcScreenControls(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcScreenControls(const IpcScreenControls&) = delete;
+  IpcScreenControls& operator=(const IpcScreenControls&) = delete;
+
   ~IpcScreenControls() override;
 
   // SessionController interface.
@@ -26,8 +30,6 @@ class IpcScreenControls : public ScreenControls {
  private:
   // Wraps the IPC channel to the desktop session agent.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcScreenControls);
 };
 
 }  // namespace remoting

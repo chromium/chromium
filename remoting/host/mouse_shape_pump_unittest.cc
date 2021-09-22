@@ -36,6 +36,10 @@ static const int kHotspotY = 12;
 class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
  public:
   TestMouseCursorMonitor() : callback_(nullptr) {}
+
+  TestMouseCursorMonitor(const TestMouseCursorMonitor&) = delete;
+  TestMouseCursorMonitor& operator=(const TestMouseCursorMonitor&) = delete;
+
   ~TestMouseCursorMonitor() override = default;
 
   void Init(Callback* callback, Mode mode) override {
@@ -58,8 +62,6 @@ class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
 
  private:
   Callback* callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMouseCursorMonitor);
 };
 
 class MouseShapePumpTest : public testing::Test {

@@ -42,6 +42,10 @@ std::unique_ptr<AudioPacket> MakeAudioPacket(int channel_count = 2) {
 class FakeAudioEncoder : public AudioEncoder {
  public:
   FakeAudioEncoder() = default;
+
+  FakeAudioEncoder(const FakeAudioEncoder&) = delete;
+  FakeAudioEncoder& operator=(const FakeAudioEncoder&) = delete;
+
   ~FakeAudioEncoder() override = default;
 
   std::unique_ptr<AudioPacket> Encode(
@@ -54,9 +58,6 @@ class FakeAudioEncoder : public AudioEncoder {
     return packet;
   }
   int GetBitrate() override { return 160000; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioEncoder);
 };
 
 class AudioPumpTest : public testing::Test, public protocol::AudioStub {

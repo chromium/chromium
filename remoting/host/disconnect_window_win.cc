@@ -54,6 +54,10 @@ constexpr DWORD kAnimationDurationMs = 200;
 class DisconnectWindowWin : public HostWindow {
  public:
   DisconnectWindowWin();
+
+  DisconnectWindowWin(const DisconnectWindowWin&) = delete;
+  DisconnectWindowWin& operator=(const DisconnectWindowWin&) = delete;
+
   ~DisconnectWindowWin() override;
 
   // Allow dialog to auto-hide after a period of time.  The dialog will be
@@ -130,8 +134,6 @@ class DisconnectWindowWin : public HostWindow {
   webrtc::DesktopVector mouse_position_;
 
   base::WeakPtrFactory<DisconnectWindowWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectWindowWin);
 };
 
 // Returns the text for the given dialog control window.

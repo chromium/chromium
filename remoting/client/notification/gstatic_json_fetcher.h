@@ -24,6 +24,10 @@ class GstaticJsonFetcher final : public JsonFetcher,
  public:
   explicit GstaticJsonFetcher(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner);
+
+  GstaticJsonFetcher(const GstaticJsonFetcher&) = delete;
+  GstaticJsonFetcher& operator=(const GstaticJsonFetcher&) = delete;
+
   ~GstaticJsonFetcher() override;
 
   // JsonFetcher implementation.
@@ -43,8 +47,6 @@ class GstaticJsonFetcher final : public JsonFetcher,
   scoped_refptr<URLRequestContextGetter> request_context_getter_;
   base::flat_map<std::unique_ptr<net::URLFetcher>, FetchJsonFileCallback>
       fetcher_callback_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(GstaticJsonFetcher);
 };
 
 }  // namespace remoting

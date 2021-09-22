@@ -37,6 +37,10 @@ class DualBufferFrameConsumer : public protocol::FrameConsumer {
       RenderCallback callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       PixelFormat format);
+
+  DualBufferFrameConsumer(const DualBufferFrameConsumer&) = delete;
+  DualBufferFrameConsumer& operator=(const DualBufferFrameConsumer&) = delete;
+
   ~DualBufferFrameConsumer() override;
 
   // Feeds the callback on the right thread with a BasicDesktopFrame that merges
@@ -71,8 +75,6 @@ class DualBufferFrameConsumer : public protocol::FrameConsumer {
   base::ThreadChecker thread_checker_;
   base::WeakPtr<DualBufferFrameConsumer> weak_ptr_;
   base::WeakPtrFactory<DualBufferFrameConsumer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DualBufferFrameConsumer);
 };
 
 }  // namespace remoting

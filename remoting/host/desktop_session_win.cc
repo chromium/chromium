@@ -254,6 +254,10 @@ class ConsoleSession : public DesktopSessionWin {
     DaemonProcess* daemon_process,
     int id,
     WtsTerminalMonitor* monitor);
+
+  ConsoleSession(const ConsoleSession&) = delete;
+  ConsoleSession& operator=(const ConsoleSession&) = delete;
+
   ~ConsoleSession() override;
 
  protected:
@@ -265,8 +269,6 @@ class ConsoleSession : public DesktopSessionWin {
 
  private:
   std::unique_ptr<SasInjector> sas_injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsoleSession);
 };
 
 // DesktopSession implementation which attaches to virtual RDP console.
@@ -282,6 +284,10 @@ class RdpSession : public DesktopSessionWin {
     DaemonProcess* daemon_process,
     int id,
     WtsTerminalMonitor* monitor);
+
+  RdpSession(const RdpSession&) = delete;
+  RdpSession& operator=(const RdpSession&) = delete;
+
   ~RdpSession() override;
 
   // Performs the part of initialization that can fail.
@@ -304,6 +310,10 @@ class RdpSession : public DesktopSessionWin {
   class EventHandler : public IRdpDesktopSessionEventHandler {
    public:
     explicit EventHandler(base::WeakPtr<RdpSession> desktop_session);
+
+    EventHandler(const EventHandler&) = delete;
+    EventHandler& operator=(const EventHandler&) = delete;
+
     virtual ~EventHandler();
 
     // IUnknown interface.
@@ -323,8 +333,6 @@ class RdpSession : public DesktopSessionWin {
 
     // This class must be used on a single thread.
     base::ThreadChecker thread_checker_;
-
-    DISALLOW_COPY_AND_ASSIGN(EventHandler);
   };
 
   // Examines the system settings required to establish an RDP session.
@@ -344,8 +352,6 @@ class RdpSession : public DesktopSessionWin {
   std::string terminal_id_;
 
   base::WeakPtrFactory<RdpSession> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RdpSession);
 };
 
 ConsoleSession::ConsoleSession(

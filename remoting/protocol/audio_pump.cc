@@ -95,6 +95,10 @@ class AudioPump::Core {
   Core(base::WeakPtr<AudioPump> pump,
        std::unique_ptr<AudioSource> audio_source,
        std::unique_ptr<AudioEncoder> audio_encoder);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   void Start();
@@ -124,8 +128,6 @@ class AudioPump::Core {
 
   std::unique_ptr<media::ChannelMixer> mixer_;
   media::ChannelLayout mixer_input_layout_ = media::CHANNEL_LAYOUT_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 AudioPump::Core::Core(base::WeakPtr<AudioPump> pump,

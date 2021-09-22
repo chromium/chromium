@@ -48,6 +48,12 @@ std::u16string FormatMessage(const std::string& remote_user_email,
 class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
  public:
   explicit It2MeConfirmationDialogChromeOS(DialogStyle style);
+
+  It2MeConfirmationDialogChromeOS(const It2MeConfirmationDialogChromeOS&) =
+      delete;
+  It2MeConfirmationDialogChromeOS& operator=(
+      const It2MeConfirmationDialogChromeOS&) = delete;
+
   ~It2MeConfirmationDialogChromeOS() override;
 
   // It2MeConfirmationDialog implementation.
@@ -67,8 +73,6 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   ResultCallback callback_;
 
   DialogStyle style_;
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeConfirmationDialogChromeOS);
 };
 
 It2MeConfirmationDialogChromeOS::It2MeConfirmationDialogChromeOS(

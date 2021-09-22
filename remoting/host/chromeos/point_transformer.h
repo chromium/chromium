@@ -31,6 +31,10 @@ namespace remoting {
 class PointTransformer : public aura::WindowObserver {
  public:
   PointTransformer();
+
+  PointTransformer(const PointTransformer&) = delete;
+  PointTransformer& operator=(const PointTransformer&) = delete;
+
   ~PointTransformer() override;
 
   // Converts from root window coordinates to native screen coordinates.
@@ -48,8 +52,6 @@ class PointTransformer : public aura::WindowObserver {
   aura::Window* root_window_;
   gfx::Transform root_to_screen_;
   gfx::Transform screen_to_root_;
-
-  DISALLOW_COPY_AND_ASSIGN(PointTransformer);
 };
 
 }  // namespace remoting

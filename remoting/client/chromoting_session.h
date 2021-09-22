@@ -95,6 +95,9 @@ class ChromotingSession : public ClientInputInjector {
                     std::unique_ptr<protocol::AudioStub> audio_player,
                     const ConnectToHostInfo& info);
 
+  ChromotingSession(const ChromotingSession&) = delete;
+  ChromotingSession& operator=(const ChromotingSession&) = delete;
+
   ~ChromotingSession() override;
 
   // Gets the current feedback data and returns it to the callback on the
@@ -140,8 +143,6 @@ class ChromotingSession : public ClientInputInjector {
   // Created when the session is connected, then used, and destroyed on the
   // network thread when the instance is destroyed.
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingSession);
 };
 
 }  // namespace remoting

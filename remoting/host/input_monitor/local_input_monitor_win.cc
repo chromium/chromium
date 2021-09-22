@@ -27,6 +27,10 @@ class LocalInputMonitorWinImpl : public LocalInputMonitorWin {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       std::unique_ptr<RawInputHandler> raw_input_handler);
+
+  LocalInputMonitorWinImpl(const LocalInputMonitorWinImpl&) = delete;
+  LocalInputMonitorWinImpl& operator=(const LocalInputMonitorWinImpl&) = delete;
+
   ~LocalInputMonitorWinImpl() override;
 
  private:
@@ -73,8 +77,6 @@ class LocalInputMonitorWinImpl : public LocalInputMonitorWin {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalInputMonitorWinImpl);
 };
 
 LocalInputMonitorWinImpl::LocalInputMonitorWinImpl(

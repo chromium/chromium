@@ -109,6 +109,10 @@ class SystemInputInjectorStub : public ui::SystemInputInjector {
 class InputInjectorChromeos::Core {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   // Mirrors the public InputInjectorChromeos interface.
@@ -128,8 +132,6 @@ class InputInjectorChromeos::Core {
   // Used to rotate the input coordinates appropriately based on the current
   // display rotation settings.
   std::unique_ptr<PointTransformer> point_transformer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 InputInjectorChromeos::Core::Core() = default;

@@ -42,6 +42,11 @@ class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner), callback_(nullptr) {
   }
+
+  ThreadCheckMouseCursorMonitor(const ThreadCheckMouseCursorMonitor&) = delete;
+  ThreadCheckMouseCursorMonitor& operator=(
+      const ThreadCheckMouseCursorMonitor&) = delete;
+
   ~ThreadCheckMouseCursorMonitor() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
@@ -70,8 +75,6 @@ class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   Callback* callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckMouseCursorMonitor);
 };
 
 class MouseCursorMonitorProxyTest

@@ -23,6 +23,10 @@ class VideoStub;
 class ClientVideoDispatcher : public ChannelDispatcherBase {
  public:
   ClientVideoDispatcher(VideoStub* video_stub, ClientStub* client_stub);
+
+  ClientVideoDispatcher(const ClientVideoDispatcher&) = delete;
+  ClientVideoDispatcher& operator=(const ClientVideoDispatcher&) = delete;
+
   ~ClientVideoDispatcher() override;
 
  private:
@@ -44,8 +48,6 @@ class ClientVideoDispatcher : public ChannelDispatcherBase {
       webrtc::DesktopVector(kDefaultDpi, kDefaultDpi);
 
   base::WeakPtrFactory<ClientVideoDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientVideoDispatcher);
 };
 
 }  // namespace protocol

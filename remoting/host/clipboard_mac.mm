@@ -32,6 +32,10 @@ namespace remoting {
 class ClipboardMac : public Clipboard {
  public:
   ClipboardMac();
+
+  ClipboardMac(const ClipboardMac&) = delete;
+  ClipboardMac& operator=(const ClipboardMac&) = delete;
+
   ~ClipboardMac() override;
 
   void Start(
@@ -44,8 +48,6 @@ class ClipboardMac : public Clipboard {
   std::unique_ptr<protocol::ClipboardStub> client_clipboard_;
   std::unique_ptr<base::RepeatingTimer> clipboard_polling_timer_;
   NSInteger current_change_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardMac);
 };
 
 ClipboardMac::ClipboardMac() : current_change_count_(0) {}

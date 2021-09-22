@@ -25,6 +25,10 @@ class RendererProxy {
  public:
   // task_runner: The task runner that |renderer_| should be run on.
   RendererProxy(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  RendererProxy(const RendererProxy&) = delete;
+  RendererProxy& operator=(const RendererProxy&) = delete;
+
   ~RendererProxy();
 
   // Initialize with the renderer to be proxied.
@@ -47,8 +51,6 @@ class RendererProxy {
   std::unique_ptr<remoting::QueuedTaskPoster> ui_task_poster_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RendererProxy);
 };
 
 }  // namespace remoting

@@ -30,6 +30,11 @@ class KeyboardRawInputHandlerWin
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       LocalInputMonitor::KeyPressedCallback on_key_event_callback,
       base::OnceClosure disconnect_callback);
+
+  KeyboardRawInputHandlerWin(const KeyboardRawInputHandlerWin&) = delete;
+  KeyboardRawInputHandlerWin& operator=(const KeyboardRawInputHandlerWin&) =
+      delete;
+
   ~KeyboardRawInputHandlerWin() override;
 
   // LocalInputMonitorWin::RawInputHandler implementation.
@@ -46,8 +51,6 @@ class KeyboardRawInputHandlerWin
 
   // Tracks whether the instance is registered to receive raw input events.
   bool registered_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardRawInputHandlerWin);
 };
 
 KeyboardRawInputHandlerWin::KeyboardRawInputHandlerWin(

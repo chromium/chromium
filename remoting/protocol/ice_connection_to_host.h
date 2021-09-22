@@ -40,6 +40,10 @@ class IceConnectionToHost : public ConnectionToHost,
                             public ChannelDispatcherBase::EventHandler {
  public:
   IceConnectionToHost();
+
+  IceConnectionToHost(const IceConnectionToHost&) = delete;
+  IceConnectionToHost& operator=(const IceConnectionToHost&) = delete;
+
   ~IceConnectionToHost() override;
 
   // ConnectionToHost interface.
@@ -108,8 +112,6 @@ class IceConnectionToHost : public ConnectionToHost,
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IceConnectionToHost);
 };
 
 }  // namespace protocol

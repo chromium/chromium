@@ -72,6 +72,11 @@ class RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl final
   RegisterSupportHostClientImpl(
       OAuthTokenGetter* token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  RegisterSupportHostClientImpl(const RegisterSupportHostClientImpl&) = delete;
+  RegisterSupportHostClientImpl& operator=(
+      const RegisterSupportHostClientImpl&) = delete;
+
   ~RegisterSupportHostClientImpl() override;
 
   void RegisterSupportHost(
@@ -81,8 +86,6 @@ class RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl final
 
  private:
   ProtobufHttpClient http_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegisterSupportHostClientImpl);
 };
 
 RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl::

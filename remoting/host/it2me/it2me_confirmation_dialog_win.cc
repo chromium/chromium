@@ -32,14 +32,16 @@ constexpr base::TimeDelta kDialogTimeout = base::TimeDelta::FromMinutes(1);
 class It2MeConfirmationDialogWin : public It2MeConfirmationDialog {
  public:
   It2MeConfirmationDialogWin();
+
+  It2MeConfirmationDialogWin(const It2MeConfirmationDialogWin&) = delete;
+  It2MeConfirmationDialogWin& operator=(const It2MeConfirmationDialogWin&) =
+      delete;
+
   ~It2MeConfirmationDialogWin() override;
 
   // It2MeConfirmationDialog implementation.
   void Show(const std::string& remote_user_email,
             ResultCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(It2MeConfirmationDialogWin);
 };
 
 It2MeConfirmationDialogWin::It2MeConfirmationDialogWin() = default;

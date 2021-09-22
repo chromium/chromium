@@ -19,6 +19,10 @@ namespace remoting {
 class MessageTracker final {
  public:
   MessageTracker();
+
+  MessageTracker(const MessageTracker&) = delete;
+  MessageTracker& operator=(const MessageTracker&) = delete;
+
   ~MessageTracker();
 
   // Tracks |id|. If |id| is already tracked then it will update its tracking
@@ -42,7 +46,6 @@ class MessageTracker final {
 
   std::map<std::string, base::Time> tracked_ids_;
   base::OneShotTimer cleanup_timer_;
-  DISALLOW_COPY_AND_ASSIGN(MessageTracker);
 };
 
 }  // namespace remoting

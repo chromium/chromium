@@ -23,6 +23,10 @@ namespace protocol {
 class FakeVideoStream : public protocol::VideoStream {
  public:
   FakeVideoStream();
+
+  FakeVideoStream(const FakeVideoStream&) = delete;
+  FakeVideoStream& operator=(const FakeVideoStream&) = delete;
+
   ~FakeVideoStream() override;
 
   // protocol::VideoStream interface.
@@ -42,13 +46,15 @@ class FakeVideoStream : public protocol::VideoStream {
   Observer* observer_ = nullptr;
 
   base::WeakPtrFactory<FakeVideoStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoStream);
 };
 
 class FakeConnectionToClient : public ConnectionToClient {
  public:
   FakeConnectionToClient(std::unique_ptr<Session> session);
+
+  FakeConnectionToClient(const FakeConnectionToClient&) = delete;
+  FakeConnectionToClient& operator=(const FakeConnectionToClient&) = delete;
+
   ~FakeConnectionToClient() override;
 
   void SetEventHandler(EventHandler* event_handler) override;
@@ -113,8 +119,6 @@ class FakeConnectionToClient : public ConnectionToClient {
 
   bool is_connected_ = true;
   ErrorCode disconnect_error_ = OK;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionToClient);
 };
 
 }  // namespace protocol

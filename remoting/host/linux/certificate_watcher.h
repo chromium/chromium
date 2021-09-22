@@ -36,6 +36,9 @@ class CertificateWatcher : public remoting::HostStatusObserver {
       const base::RepeatingClosure& restart_action,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
+  CertificateWatcher(const CertificateWatcher&) = delete;
+  CertificateWatcher& operator=(const CertificateWatcher&) = delete;
+
   // The message loop of io_task_runner MUST be running after the destructor is
   // called, otherwise there will be memory leaks.
   ~CertificateWatcher() override;
@@ -95,8 +98,6 @@ class CertificateWatcher : public remoting::HostStatusObserver {
   base::TimeDelta delay_;
 
   base::WeakPtrFactory<CertificateWatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateWatcher);
 };
 
 }  // namespace remoting

@@ -40,6 +40,10 @@ namespace protocol {
 class PairingAuthenticatorBase : public Authenticator {
  public:
   PairingAuthenticatorBase();
+
+  PairingAuthenticatorBase(const PairingAuthenticatorBase&) = delete;
+  PairingAuthenticatorBase& operator=(const PairingAuthenticatorBase&) = delete;
+
   ~PairingAuthenticatorBase() override;
 
   // Authenticator interface.
@@ -81,8 +85,6 @@ class PairingAuthenticatorBase : public Authenticator {
   void CheckForFailedSpakeExchange(base::OnceClosure resume_callback);
 
   base::WeakPtrFactory<PairingAuthenticatorBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PairingAuthenticatorBase);
 };
 
 }  // namespace protocol

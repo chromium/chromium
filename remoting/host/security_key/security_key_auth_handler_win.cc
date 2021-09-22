@@ -56,6 +56,11 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
  public:
   explicit SecurityKeyAuthHandlerWin(
       ClientSessionDetails* client_session_details);
+
+  SecurityKeyAuthHandlerWin(const SecurityKeyAuthHandlerWin&) = delete;
+  SecurityKeyAuthHandlerWin& operator=(const SecurityKeyAuthHandlerWin&) =
+      delete;
+
   ~SecurityKeyAuthHandlerWin() override;
 
  private:
@@ -104,8 +109,6 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SecurityKeyAuthHandlerWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyAuthHandlerWin);
 };
 
 std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create(

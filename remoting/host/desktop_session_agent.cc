@@ -106,6 +106,9 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
                              handle, id, std::move(on_deleted_callback)));
   }
 
+  SharedMemoryImpl(const SharedMemoryImpl&) = delete;
+  SharedMemoryImpl& operator=(const SharedMemoryImpl&) = delete;
+
   ~SharedMemoryImpl() override { std::move(on_deleted_callback_).Run(); }
 
   const base::ReadOnlySharedMemoryRegion& region() const { return region_; }
@@ -135,8 +138,6 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
   // webrtc::ScreenCapturer.
   base::win::ScopedHandle writable_handle_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryImpl);
 };
 
 namespace {
@@ -149,6 +150,11 @@ class DesktopSessionClipboardStub : public protocol::ClipboardStub {
  public:
   explicit DesktopSessionClipboardStub(
       scoped_refptr<DesktopSessionAgent> desktop_session_agent);
+
+  DesktopSessionClipboardStub(const DesktopSessionClipboardStub&) = delete;
+  DesktopSessionClipboardStub& operator=(const DesktopSessionClipboardStub&) =
+      delete;
+
   ~DesktopSessionClipboardStub() override;
 
   // protocol::ClipboardStub implementation.
@@ -156,8 +162,6 @@ class DesktopSessionClipboardStub : public protocol::ClipboardStub {
 
  private:
   scoped_refptr<DesktopSessionAgent> desktop_session_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionClipboardStub);
 };
 
 DesktopSessionClipboardStub::DesktopSessionClipboardStub(

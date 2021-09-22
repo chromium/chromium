@@ -33,6 +33,10 @@ typedef void(NTAPI* SendSASFunction)(BOOL);
 class ScopedSoftwareSasPolicy {
  public:
   ScopedSoftwareSasPolicy();
+
+  ScopedSoftwareSasPolicy(const ScopedSoftwareSasPolicy&) = delete;
+  ScopedSoftwareSasPolicy& operator=(const ScopedSoftwareSasPolicy&) = delete;
+
   ~ScopedSoftwareSasPolicy();
 
   bool Apply();
@@ -43,8 +47,6 @@ class ScopedSoftwareSasPolicy {
 
   // True if the policy needs to be restored.
   bool restore_policy_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSoftwareSasPolicy);
 };
 
 ScopedSoftwareSasPolicy::ScopedSoftwareSasPolicy() = default;

@@ -25,6 +25,10 @@ namespace {
 class DisconnectWindowGtk : public HostWindow {
  public:
   DisconnectWindowGtk();
+
+  DisconnectWindowGtk(const DisconnectWindowGtk&) = delete;
+  DisconnectWindowGtk& operator=(const DisconnectWindowGtk&) = delete;
+
   ~DisconnectWindowGtk() override;
 
   // HostWindow overrides.
@@ -65,8 +69,6 @@ class DisconnectWindowGtk : public HostWindow {
   // notifications.
   int current_width_;
   int current_height_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectWindowGtk);
 };
 
 // Helper function for creating a rectangular path with rounded corners, as

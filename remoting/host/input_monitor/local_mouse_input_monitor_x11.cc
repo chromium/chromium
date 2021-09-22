@@ -37,6 +37,11 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       LocalInputMonitor::PointerMoveCallback on_mouse_move);
+
+  LocalMouseInputMonitorX11(const LocalMouseInputMonitorX11&) = delete;
+  LocalMouseInputMonitorX11& operator=(const LocalMouseInputMonitorX11&) =
+      delete;
+
   ~LocalMouseInputMonitorX11() override;
 
  private:
@@ -81,8 +86,6 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMouseInputMonitorX11);
 };
 
 LocalMouseInputMonitorX11::LocalMouseInputMonitorX11(

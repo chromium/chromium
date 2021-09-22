@@ -30,6 +30,11 @@ using remoting::protocol::PairingRegistry;
 class MockPairingRegistryCallbacks {
  public:
   MockPairingRegistryCallbacks() = default;
+
+  MockPairingRegistryCallbacks(const MockPairingRegistryCallbacks&) = delete;
+  MockPairingRegistryCallbacks& operator=(const MockPairingRegistryCallbacks&) =
+      delete;
+
   virtual ~MockPairingRegistryCallbacks() = default;
 
   MOCK_METHOD1(DoneCallback, void(bool));
@@ -39,9 +44,6 @@ class MockPairingRegistryCallbacks {
   void GetAllPairingsCallback(std::unique_ptr<base::ListValue> pairings) {
     GetAllPairingsCallbackPtr(pairings.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPairingRegistryCallbacks);
 };
 
 // Verify that a pairing Dictionary has correct entries, but doesn't include

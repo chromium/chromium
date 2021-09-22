@@ -21,6 +21,9 @@ class FileChooser {
 
   FileChooser() = default;
 
+  FileChooser(const FileChooser&) = delete;
+  FileChooser& operator=(const FileChooser&) = delete;
+
   // If the file dialog is currently displayed, destroys it without invoking
   // |callback|.
   virtual ~FileChooser() = default;
@@ -35,9 +38,6 @@ class FileChooser {
   static std::unique_ptr<FileChooser> Create(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       ResultCallback callback);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileChooser);
 };
 
 }  // namespace remoting

@@ -18,14 +18,15 @@ class ClipboardEvent;
 class ClipboardStub {
  public:
   ClipboardStub() {}
+
+  ClipboardStub(const ClipboardStub&) = delete;
+  ClipboardStub& operator=(const ClipboardStub&) = delete;
+
   virtual ~ClipboardStub() {}
 
   // Implementations must not assume the presence of |event|'s fields, nor that
   // |event.data| is correctly encoded according to the specified MIME-type.
   virtual void InjectClipboardEvent(const ClipboardEvent& event) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClipboardStub);
 };
 
 }  // namespace protocol

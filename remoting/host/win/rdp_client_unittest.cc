@@ -42,13 +42,15 @@ const DWORD kDefaultRdpPort = 3389;
 class MockRdpClientEventHandler : public RdpClient::EventHandler {
  public:
   MockRdpClientEventHandler() {}
+
+  MockRdpClientEventHandler(const MockRdpClientEventHandler&) = delete;
+  MockRdpClientEventHandler& operator=(const MockRdpClientEventHandler&) =
+      delete;
+
   virtual ~MockRdpClientEventHandler() {}
 
   MOCK_METHOD0(OnRdpConnected, void());
   MOCK_METHOD0(OnRdpClosed, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockRdpClientEventHandler);
 };
 
 // a14498c6-7f3b-4e42-9605-6c4a20d53c87

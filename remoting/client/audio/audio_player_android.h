@@ -19,6 +19,10 @@ namespace remoting {
 class AudioPlayerAndroid : public AudioPlayer {
  public:
   AudioPlayerAndroid();
+
+  AudioPlayerAndroid(const AudioPlayerAndroid&) = delete;
+  AudioPlayerAndroid& operator=(const AudioPlayerAndroid&) = delete;
+
   ~AudioPlayerAndroid() override;
 
   base::WeakPtr<AudioPlayerAndroid> GetWeakPtr();
@@ -48,8 +52,6 @@ class AudioPlayerAndroid : public AudioPlayer {
   uint32_t sample_per_frame_ = 0;
 
   base::WeakPtrFactory<AudioPlayerAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPlayerAndroid);
 };
 
 }  // namespace remoting

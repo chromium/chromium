@@ -35,6 +35,10 @@ class MessageBox {
              const std::u16string& ok_label,
              const std::u16string& cancel_label,
              ResultCallback result_callback);
+
+  MessageBox(const MessageBox&) = delete;
+  MessageBox& operator=(const MessageBox&) = delete;
+
   ~MessageBox();
 
   void Show();
@@ -43,8 +47,6 @@ class MessageBox {
   class Core;
   Core* core_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageBox);
 };
 
 }  // namespace remoting

@@ -17,6 +17,10 @@ class HostVideoStatsDispatcher : public ChannelDispatcherBase,
                                  public VideoStatsStub {
  public:
   explicit HostVideoStatsDispatcher(const std::string& stream_name);
+
+  HostVideoStatsDispatcher(const HostVideoStatsDispatcher&) = delete;
+  HostVideoStatsDispatcher& operator=(const HostVideoStatsDispatcher&) = delete;
+
   ~HostVideoStatsDispatcher() override;
 
   // VideoStatsStub interface.
@@ -25,8 +29,6 @@ class HostVideoStatsDispatcher : public ChannelDispatcherBase,
 
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
-
-  DISALLOW_COPY_AND_ASSIGN(HostVideoStatsDispatcher);
 };
 
 }  // namespace protocol

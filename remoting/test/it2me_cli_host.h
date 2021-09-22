@@ -30,6 +30,10 @@ class It2MeCliHost final : public extensions::NativeMessageHost::Client {
   static void PrintHelp();
 
   It2MeCliHost();
+
+  It2MeCliHost(const It2MeCliHost&) = delete;
+  It2MeCliHost& operator=(const It2MeCliHost&) = delete;
+
   ~It2MeCliHost() override;
 
   void Start();
@@ -80,7 +84,6 @@ class It2MeCliHost final : public extensions::NativeMessageHost::Client {
   bool remote_connected_;
 
   base::WeakPtrFactory<It2MeCliHost> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(It2MeCliHost);
 };
 
 }  // namespace remoting

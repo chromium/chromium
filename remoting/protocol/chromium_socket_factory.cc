@@ -63,6 +63,10 @@ std::unique_ptr<net::UDPServerSocket> CreateUdpSocketAndListen(
 class UdpPacketSocket : public rtc::AsyncPacketSocket {
  public:
   UdpPacketSocket();
+
+  UdpPacketSocket(const UdpPacketSocket&) = delete;
+  UdpPacketSocket& operator=(const UdpPacketSocket&) = delete;
+
   ~UdpPacketSocket() override;
 
   bool Init(const rtc::SocketAddress& local_address,
@@ -122,8 +126,6 @@ class UdpPacketSocket : public rtc::AsyncPacketSocket {
   bool send_pending_;
   std::list<PendingPacket> send_queue_;
   int send_queue_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(UdpPacketSocket);
 };
 
 UdpPacketSocket::PendingPacket::PendingPacket(const void* buffer,

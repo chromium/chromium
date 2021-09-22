@@ -112,6 +112,10 @@ class InputInjectorMac : public InputInjector {
   explicit InputInjectorMac(
       scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
+
+  InputInjectorMac(const InputInjectorMac&) = delete;
+  InputInjectorMac& operator=(const InputInjectorMac&) = delete;
+
   ~InputInjectorMac() override;
 
   // ClipboardStub interface.
@@ -167,8 +171,6 @@ class InputInjectorMac : public InputInjector {
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorMac);
 };
 
 InputInjectorMac::InputInjectorMac(

@@ -32,6 +32,10 @@ class AudioCapturerLinux : public AudioCapturer,
 
   explicit AudioCapturerLinux(
       scoped_refptr<AudioPipeReader> pipe_reader);
+
+  AudioCapturerLinux(const AudioCapturerLinux&) = delete;
+  AudioCapturerLinux& operator=(const AudioCapturerLinux&) = delete;
+
   ~AudioCapturerLinux() override;
 
   // AudioCapturer interface.
@@ -45,8 +49,6 @@ class AudioCapturerLinux : public AudioCapturer,
   PacketCapturedCallback callback_;
 
   AudioSilenceDetector silence_detector_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioCapturerLinux);
 };
 
 }  // namespace remoting

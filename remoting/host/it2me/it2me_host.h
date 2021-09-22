@@ -229,12 +229,13 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 class It2MeHostFactory {
  public:
   It2MeHostFactory();
+
+  It2MeHostFactory(const It2MeHostFactory&) = delete;
+  It2MeHostFactory& operator=(const It2MeHostFactory&) = delete;
+
   virtual ~It2MeHostFactory();
 
   virtual scoped_refptr<It2MeHost> CreateIt2MeHost();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(It2MeHostFactory);
 };
 
 }  // namespace remoting

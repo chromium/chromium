@@ -48,6 +48,9 @@ class DaemonProcess
  public:
   typedef std::list<DesktopSession*> DesktopSessionList;
 
+  DaemonProcess(const DaemonProcess&) = delete;
+  DaemonProcess& operator=(const DaemonProcess&) = delete;
+
   ~DaemonProcess() override;
 
   // Creates a platform-specific implementation of the daemon process object
@@ -209,8 +212,6 @@ class DaemonProcess
   int process_stats_request_count_ = 0;
 
   CurrentProcessStatsAgent current_process_stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(DaemonProcess);
 };
 
 }  // namespace remoting

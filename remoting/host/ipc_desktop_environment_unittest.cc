@@ -77,6 +77,11 @@ namespace {
 class MockScreenCapturerCallback : public webrtc::DesktopCapturer::Callback {
  public:
   MockScreenCapturerCallback() = default;
+
+  MockScreenCapturerCallback(const MockScreenCapturerCallback&) = delete;
+  MockScreenCapturerCallback& operator=(const MockScreenCapturerCallback&) =
+      delete;
+
   ~MockScreenCapturerCallback() override = default;
 
   MOCK_METHOD2(OnCaptureResultPtr,
@@ -86,15 +91,16 @@ class MockScreenCapturerCallback : public webrtc::DesktopCapturer::Callback {
                        std::unique_ptr<webrtc::DesktopFrame> frame) override {
     OnCaptureResultPtr(result, &frame);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockScreenCapturerCallback);
 };
 
 // Receives messages sent from the network process to the daemon.
 class FakeDaemonSender : public IPC::Sender {
  public:
   FakeDaemonSender() = default;
+
+  FakeDaemonSender(const FakeDaemonSender&) = delete;
+  FakeDaemonSender& operator=(const FakeDaemonSender&) = delete;
+
   ~FakeDaemonSender() override = default;
 
   // IPC::Sender implementation.
@@ -106,14 +112,16 @@ class FakeDaemonSender : public IPC::Sender {
 
  private:
   void OnMessageReceived(const IPC::Message& message);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDaemonSender);
 };
 
 // Receives messages sent from the desktop process to the daemon.
 class MockDaemonListener : public IPC::Listener {
  public:
   MockDaemonListener() = default;
+
+  MockDaemonListener(const MockDaemonListener&) = delete;
+  MockDaemonListener& operator=(const MockDaemonListener&) = delete;
+
   ~MockDaemonListener() override = default;
 
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -121,9 +129,6 @@ class MockDaemonListener : public IPC::Listener {
   MOCK_METHOD1(OnDesktopAttached, void(const IPC::ChannelHandle&));
   MOCK_METHOD1(OnChannelConnected, void(int32_t));
   MOCK_METHOD0(OnChannelError, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDaemonListener);
 };
 
 bool FakeDaemonSender::Send(IPC::Message* message) {

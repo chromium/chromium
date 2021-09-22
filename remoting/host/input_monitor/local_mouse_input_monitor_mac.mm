@@ -38,6 +38,11 @@ class LocalMouseInputMonitorMac : public LocalPointerInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       LocalInputMonitor::PointerMoveCallback on_mouse_move);
+
+  LocalMouseInputMonitorMac(const LocalMouseInputMonitorMac&) = delete;
+  LocalMouseInputMonitorMac& operator=(const LocalMouseInputMonitorMac&) =
+      delete;
+
   ~LocalMouseInputMonitorMac() override;
 
  private:
@@ -46,8 +51,6 @@ class LocalMouseInputMonitorMac : public LocalPointerInputMonitor {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMouseInputMonitorMac);
 };
 
 }  // namespace

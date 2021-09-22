@@ -45,6 +45,10 @@ class WebrtcVideoStream : public VideoStream,
                           public VideoChannelStateObserver {
  public:
   explicit WebrtcVideoStream(const SessionOptions& options);
+
+  WebrtcVideoStream(const WebrtcVideoStream&) = delete;
+  WebrtcVideoStream& operator=(const WebrtcVideoStream&) = delete;
+
   ~WebrtcVideoStream() override;
 
   void Start(std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer,
@@ -147,8 +151,6 @@ class WebrtcVideoStream : public VideoStream,
   bool recreate_encoder_ = false;
 
   base::WeakPtrFactory<WebrtcVideoStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcVideoStream);
 };
 
 }  // namespace protocol

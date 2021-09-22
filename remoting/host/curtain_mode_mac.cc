@@ -290,6 +290,10 @@ class CurtainModeMac : public CurtainMode {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control);
+
+  CurtainModeMac(const CurtainModeMac&) = delete;
+  CurtainModeMac& operator=(const CurtainModeMac&) = delete;
+
   ~CurtainModeMac() override;
 
   // Overriden from CurtainMode.
@@ -297,8 +301,6 @@ class CurtainModeMac : public CurtainMode {
 
  private:
   scoped_refptr<SessionWatcher> session_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(CurtainModeMac);
 };
 
 CurtainModeMac::CurtainModeMac(

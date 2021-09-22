@@ -191,6 +191,9 @@ class PamHandle {
     }
   }
 
+  PamHandle(const PamHandle&) = delete;
+  PamHandle& operator=(const PamHandle&) = delete;
+
   // Terminates PAM transaction
   ~PamHandle() {
     if (pam_handle_ != nullptr) {
@@ -280,8 +283,6 @@ class PamHandle {
  private:
   pam_handle_t* pam_handle_ = nullptr;
   int last_return_code_ = PAM_SUCCESS;
-
-  DISALLOW_COPY_AND_ASSIGN(PamHandle);
 };
 
 // Initializes the gExecutablePath global to the location of the running

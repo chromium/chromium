@@ -51,6 +51,11 @@ constexpr base::TimeDelta kDialogTimeout = base::TimeDelta::FromMinutes(1);
 class It2MeConfirmationDialogMac : public It2MeConfirmationDialog {
  public:
   It2MeConfirmationDialogMac();
+
+  It2MeConfirmationDialogMac(const It2MeConfirmationDialogMac&) = delete;
+  It2MeConfirmationDialogMac& operator=(const It2MeConfirmationDialogMac&) =
+      delete;
+
   ~It2MeConfirmationDialogMac() override;
 
   // It2MeConfirmationDialog implementation.
@@ -65,8 +70,6 @@ class It2MeConfirmationDialogMac : public It2MeConfirmationDialog {
   ResultCallback result_callback_;
 
   base::OneShotTimer dialog_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeConfirmationDialogMac);
 };
 
 It2MeConfirmationDialogMac::It2MeConfirmationDialogMac() {}

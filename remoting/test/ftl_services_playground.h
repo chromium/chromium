@@ -31,6 +31,10 @@ class TestTokenStorage;
 class FtlServicesPlayground {
  public:
   FtlServicesPlayground();
+
+  FtlServicesPlayground(const FtlServicesPlayground&) = delete;
+  FtlServicesPlayground& operator=(const FtlServicesPlayground&) = delete;
+
   ~FtlServicesPlayground();
 
   bool ShouldPrintHelp();
@@ -77,7 +81,6 @@ class FtlServicesPlayground {
   base::OnceClosure receive_messages_done_callback_;
 
   base::WeakPtrFactory<FtlServicesPlayground> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FtlServicesPlayground);
 };
 
 }  // namespace remoting

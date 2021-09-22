@@ -33,6 +33,9 @@ class Transport;
 // created by the JingleSessionManager.
 class JingleSession : public Session {
  public:
+  JingleSession(const JingleSession&) = delete;
+  JingleSession& operator=(const JingleSession&) = delete;
+
   ~JingleSession() override;
 
   // Session interface.
@@ -183,8 +186,6 @@ class JingleSession : public Session {
   std::vector<SessionPlugin*> plugins_;
 
   base::WeakPtrFactory<JingleSession> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JingleSession);
 };
 
 }  // namespace protocol

@@ -38,6 +38,10 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
       scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control);
+
+  DesktopCapturerProxy(const DesktopCapturerProxy&) = delete;
+  DesktopCapturerProxy& operator=(const DesktopCapturerProxy&) = delete;
+
   ~DesktopCapturerProxy() override;
 
   // CreateCapturer() should be used if the capturer needs to be created on the
@@ -81,8 +85,6 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
   std::unique_ptr<DesktopDisplayInfoLoader> desktop_display_info_loader_;
 
   base::WeakPtrFactory<DesktopCapturerProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopCapturerProxy);
 };
 
 }  // namespace remoting

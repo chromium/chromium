@@ -52,6 +52,10 @@ namespace {
 class MockDaemonListener : public IPC::Listener {
  public:
   MockDaemonListener() = default;
+
+  MockDaemonListener(const MockDaemonListener&) = delete;
+  MockDaemonListener& operator=(const MockDaemonListener&) = delete;
+
   ~MockDaemonListener() override = default;
 
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -59,14 +63,15 @@ class MockDaemonListener : public IPC::Listener {
   MOCK_METHOD1(OnDesktopAttached, void(const IPC::ChannelHandle&));
   MOCK_METHOD1(OnChannelConnected, void(int32_t));
   MOCK_METHOD0(OnChannelError, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDaemonListener);
 };
 
 class MockNetworkListener : public IPC::Listener {
  public:
   MockNetworkListener() = default;
+
+  MockNetworkListener(const MockNetworkListener&) = delete;
+  MockNetworkListener& operator=(const MockNetworkListener&) = delete;
+
   ~MockNetworkListener() override = default;
 
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -75,9 +80,6 @@ class MockNetworkListener : public IPC::Listener {
   MOCK_METHOD0(OnChannelError, void());
 
   MOCK_METHOD0(OnDesktopEnvironmentCreated, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkListener);
 };
 
 bool MockDaemonListener::OnMessageReceived(const IPC::Message& message) {

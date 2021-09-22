@@ -63,6 +63,10 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   // |ipc_handler| must outlive this object.
   WorkerProcessLauncher(std::unique_ptr<Delegate> launcher_delegate,
                         WorkerProcessIpcDelegate* ipc_handler);
+
+  WorkerProcessLauncher(const WorkerProcessLauncher&) = delete;
+  WorkerProcessLauncher& operator=(const WorkerProcessLauncher&) = delete;
+
   ~WorkerProcessLauncher() override;
 
   // Asks the worker process to crash and generate a dump, and closes the IPC
@@ -159,8 +163,6 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   base::win::ScopedHandle worker_process_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerProcessLauncher);
 };
 
 }  // namespace remoting

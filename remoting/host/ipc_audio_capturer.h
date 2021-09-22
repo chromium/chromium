@@ -21,6 +21,10 @@ class IpcAudioCapturer : public AudioCapturer {
  public:
   explicit IpcAudioCapturer(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcAudioCapturer(const IpcAudioCapturer&) = delete;
+  IpcAudioCapturer& operator=(const IpcAudioCapturer&) = delete;
+
   ~IpcAudioCapturer() override;
 
   // AudioCapturer interface.
@@ -38,8 +42,6 @@ class IpcAudioCapturer : public AudioCapturer {
 
   // Used to cancel tasks pending on the capturer when it is stopped.
   base::WeakPtrFactory<IpcAudioCapturer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IpcAudioCapturer);
 };
 
 }  // namespace remoting

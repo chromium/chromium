@@ -33,6 +33,11 @@ class ElevatedNativeMessagingHost
                               bool elevate_process,
                               base::TimeDelta host_timeout,
                               extensions::NativeMessageHost::Client* client);
+
+  ElevatedNativeMessagingHost(const ElevatedNativeMessagingHost&) = delete;
+  ElevatedNativeMessagingHost& operator=(const ElevatedNativeMessagingHost&) =
+      delete;
+
   ~ElevatedNativeMessagingHost() override;
 
   // extensions::NativeMessagingChannel::EventHandle implementation.
@@ -76,8 +81,6 @@ class ElevatedNativeMessagingHost
   base::OneShotTimer elevated_host_timer_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElevatedNativeMessagingHost);
 };
 
 }  // namespace remoting

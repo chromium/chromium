@@ -35,6 +35,10 @@ namespace remoting {
 class DesktopCapturerProxy::Core : public webrtc::DesktopCapturer::Callback {
  public:
   explicit Core(base::WeakPtr<DesktopCapturerProxy> proxy);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   void set_capturer(std::unique_ptr<webrtc::DesktopCapturer> capturer) {
@@ -59,8 +63,6 @@ class DesktopCapturerProxy::Core : public webrtc::DesktopCapturer::Callback {
   base::WeakPtr<DesktopCapturerProxy> proxy_;
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 DesktopCapturerProxy::Core::Core(base::WeakPtr<DesktopCapturerProxy> proxy)

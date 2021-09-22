@@ -57,6 +57,10 @@ const unsigned char kRequestData[] = {
 class TestClientStub : public protocol::ClientStub {
  public:
   TestClientStub();
+
+  TestClientStub(const TestClientStub&) = delete;
+  TestClientStub& operator=(const TestClientStub&) = delete;
+
   ~TestClientStub() override;
 
   // protocol::ClientStub implementation.
@@ -83,8 +87,6 @@ class TestClientStub : public protocol::ClientStub {
  private:
   protocol::ExtensionMessage message_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClientStub);
 };
 
 TestClientStub::TestClientStub() : run_loop_(new base::RunLoop) {}
@@ -137,6 +139,10 @@ void TestClientStub::CheckHostDataMessage(int id, const std::string& data) {
 class TestClientSessionDetails : public ClientSessionDetails {
  public:
   TestClientSessionDetails();
+
+  TestClientSessionDetails(const TestClientSessionDetails&) = delete;
+  TestClientSessionDetails& operator=(const TestClientSessionDetails&) = delete;
+
   ~TestClientSessionDetails() override;
 
   // ClientSessionDetails interface.
@@ -147,8 +153,6 @@ class TestClientSessionDetails : public ClientSessionDetails {
 
  private:
   uint32_t desktop_session_id_ = UINT32_MAX;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClientSessionDetails);
 };
 
 TestClientSessionDetails::TestClientSessionDetails() = default;
@@ -158,6 +162,12 @@ TestClientSessionDetails::~TestClientSessionDetails() = default;
 class SecurityKeyExtensionSessionTest : public testing::Test {
  public:
   SecurityKeyExtensionSessionTest();
+
+  SecurityKeyExtensionSessionTest(const SecurityKeyExtensionSessionTest&) =
+      delete;
+  SecurityKeyExtensionSessionTest& operator=(
+      const SecurityKeyExtensionSessionTest&) = delete;
+
   ~SecurityKeyExtensionSessionTest() override;
 
   void WaitForAndVerifyHostMessage();
@@ -175,9 +185,6 @@ class SecurityKeyExtensionSessionTest : public testing::Test {
 
   TestClientStub client_stub_;
   TestClientSessionDetails client_details_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyExtensionSessionTest);
 };
 
 SecurityKeyExtensionSessionTest::SecurityKeyExtensionSessionTest()

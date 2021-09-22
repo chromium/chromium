@@ -38,6 +38,12 @@ class RemotingRegisterSupportHostRequest final
   RemotingRegisterSupportHostRequest(
       std::unique_ptr<OAuthTokenGetter> token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  RemotingRegisterSupportHostRequest(
+      const RemotingRegisterSupportHostRequest&) = delete;
+  RemotingRegisterSupportHostRequest& operator=(
+      const RemotingRegisterSupportHostRequest&) = delete;
+
   ~RemotingRegisterSupportHostRequest() override;
 
   // RegisterSupportHostRequest implementation.
@@ -90,8 +96,6 @@ class RemotingRegisterSupportHostRequest final
   std::unique_ptr<RegisterSupportHostClient> register_host_client_;
 
   State state_ = State::NOT_STARTED;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingRegisterSupportHostRequest);
 };
 
 }  // namespace remoting

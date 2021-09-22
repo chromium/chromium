@@ -13,6 +13,11 @@ namespace remoting {
 class DaemonControllerDelegateWin : public DaemonController::Delegate {
  public:
   DaemonControllerDelegateWin();
+
+  DaemonControllerDelegateWin(const DaemonControllerDelegateWin&) = delete;
+  DaemonControllerDelegateWin& operator=(const DaemonControllerDelegateWin&) =
+      delete;
+
   ~DaemonControllerDelegateWin() override;
 
   // DaemonController::Delegate interface.
@@ -26,8 +31,6 @@ class DaemonControllerDelegateWin : public DaemonController::Delegate {
                     DaemonController::CompletionCallback done) override;
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DaemonControllerDelegateWin);
 };
 
 }  // namespace remoting

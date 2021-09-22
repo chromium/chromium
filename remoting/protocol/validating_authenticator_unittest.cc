@@ -46,6 +46,11 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 class ValidatingAuthenticatorTest : public testing::Test {
  public:
   ValidatingAuthenticatorTest();
+
+  ValidatingAuthenticatorTest(const ValidatingAuthenticatorTest&) = delete;
+  ValidatingAuthenticatorTest& operator=(const ValidatingAuthenticatorTest&) =
+      delete;
+
   ~ValidatingAuthenticatorTest() override;
 
   void ValidateCallback(const std::string& remote_jid,
@@ -77,8 +82,6 @@ class ValidatingAuthenticatorTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidatingAuthenticatorTest);
 };
 
 ValidatingAuthenticatorTest::ValidatingAuthenticatorTest() = default;

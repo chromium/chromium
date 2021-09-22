@@ -27,6 +27,12 @@ class LocalHotkeyInputMonitorChromeos : public LocalHotkeyInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       base::OnceClosure disconnect_callback);
+
+  LocalHotkeyInputMonitorChromeos(const LocalHotkeyInputMonitorChromeos&) =
+      delete;
+  LocalHotkeyInputMonitorChromeos& operator=(
+      const LocalHotkeyInputMonitorChromeos&) = delete;
+
   ~LocalHotkeyInputMonitorChromeos() override;
 
  private:
@@ -34,6 +40,10 @@ class LocalHotkeyInputMonitorChromeos : public LocalHotkeyInputMonitor {
    public:
     Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
          base::OnceClosure disconnect_callback);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     ~Core() override;
 
     void Start();
@@ -49,15 +59,11 @@ class LocalHotkeyInputMonitorChromeos : public LocalHotkeyInputMonitor {
 
     // Must be called on |caller_task_runner_|.
     base::OnceClosure disconnect_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // Task runner on which ui::events are received.
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalHotkeyInputMonitorChromeos);
 };
 
 LocalHotkeyInputMonitorChromeos::LocalHotkeyInputMonitorChromeos(

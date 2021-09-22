@@ -77,6 +77,10 @@ class VideoFramePump : public VideoStream,
                  std::unique_ptr<webrtc::DesktopCapturer> capturer,
                  std::unique_ptr<VideoEncoder> encoder,
                  protocol::VideoStub* video_stub);
+
+  VideoFramePump(const VideoFramePump&) = delete;
+  VideoFramePump& operator=(const VideoFramePump&) = delete;
+
   ~VideoFramePump() override;
 
   // VideoStream interface.
@@ -185,8 +189,6 @@ class VideoFramePump : public VideoStream,
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<VideoFramePump> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFramePump);
 };
 
 }  // namespace protocol

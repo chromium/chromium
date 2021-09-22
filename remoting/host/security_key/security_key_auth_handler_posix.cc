@@ -62,6 +62,11 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
  public:
   explicit SecurityKeyAuthHandlerPosix(
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
+
+  SecurityKeyAuthHandlerPosix(const SecurityKeyAuthHandlerPosix&) = delete;
+  SecurityKeyAuthHandlerPosix& operator=(const SecurityKeyAuthHandlerPosix&) =
+      delete;
+
   ~SecurityKeyAuthHandlerPosix() override;
 
  private:
@@ -124,8 +129,6 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
   base::TimeDelta request_timeout_;
 
   base::WeakPtrFactory<SecurityKeyAuthHandlerPosix> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyAuthHandlerPosix);
 };
 
 std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create(

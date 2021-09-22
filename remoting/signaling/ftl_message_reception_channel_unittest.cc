@@ -51,6 +51,11 @@ class FakeScopedProtobufHttpRequest : public ScopedProtobufHttpRequest {
  public:
   FakeScopedProtobufHttpRequest()
       : ScopedProtobufHttpRequest(base::DoNothing::Once()) {}
+
+  FakeScopedProtobufHttpRequest(const FakeScopedProtobufHttpRequest&) = delete;
+  FakeScopedProtobufHttpRequest& operator=(
+      const FakeScopedProtobufHttpRequest&) = delete;
+
   ~FakeScopedProtobufHttpRequest() override = default;
 
   base::WeakPtr<FakeScopedProtobufHttpRequest> GetWeakPtr() {
@@ -59,7 +64,6 @@ class FakeScopedProtobufHttpRequest : public ScopedProtobufHttpRequest {
 
  private:
   base::WeakPtrFactory<FakeScopedProtobufHttpRequest> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeScopedProtobufHttpRequest);
 };
 
 std::unique_ptr<FakeScopedProtobufHttpRequest> CreateFakeServerStream() {

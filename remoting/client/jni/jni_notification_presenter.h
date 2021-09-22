@@ -21,6 +21,10 @@ class JniNotificationPresenter final {
  public:
   explicit JniNotificationPresenter(
       const JavaObjectWeakGlobalRef& java_presenter);
+
+  JniNotificationPresenter(const JniNotificationPresenter&) = delete;
+  JniNotificationPresenter& operator=(const JniNotificationPresenter&) = delete;
+
   ~JniNotificationPresenter();
 
   void FetchNotification(JNIEnv* env,
@@ -33,8 +37,6 @@ class JniNotificationPresenter final {
   JavaObjectWeakGlobalRef java_presenter_;
   NotificationClient notification_client_;
   scoped_refptr<base::SequencedTaskRunner> sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(JniNotificationPresenter);
 };
 
 }  // namespace remoting

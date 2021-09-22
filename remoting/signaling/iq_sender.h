@@ -39,6 +39,10 @@ class IqSender : public SignalStrategy::Listener {
                               const jingle_xmpp::XmlElement* response)>;
 
   explicit IqSender(SignalStrategy* signal_strategy);
+
+  IqSender(const IqSender&) = delete;
+  IqSender& operator=(const IqSender&) = delete;
+
   ~IqSender() override;
 
   // Send an iq stanza. Returns an IqRequest object that represends
@@ -76,8 +80,6 @@ class IqSender : public SignalStrategy::Listener {
 
   SignalStrategy* signal_strategy_;
   IqRequestMap requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(IqSender);
 };
 
 // This call must only be used on the thread it was created on.
@@ -86,6 +88,10 @@ class IqRequest {
   IqRequest(IqSender* sender,
             IqSender::ReplyCallback callback,
             const std::string& addressee);
+
+  IqRequest(const IqRequest&) = delete;
+  IqRequest& operator=(const IqRequest&) = delete;
+
   ~IqRequest();
 
   // Sets timeout for the request. When the timeout expires the
@@ -108,8 +114,6 @@ class IqRequest {
   std::string addressee_;
 
   base::WeakPtrFactory<IqRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IqRequest);
 };
 
 }  // namespace remoting

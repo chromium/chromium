@@ -34,6 +34,10 @@ namespace remoting {
 class SecurityKeyIpcClientTest : public testing::Test {
  public:
   SecurityKeyIpcClientTest();
+
+  SecurityKeyIpcClientTest(const SecurityKeyIpcClientTest&) = delete;
+  SecurityKeyIpcClientTest& operator=(const SecurityKeyIpcClientTest&) = delete;
+
   ~SecurityKeyIpcClientTest() override;
 
   // Passed to the object used for testing to be called back to signal
@@ -110,9 +114,6 @@ class SecurityKeyIpcClientTest : public testing::Test {
 
   // Stores the contents of the last IPC message received for validation.
   std::string last_message_received_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcClientTest);
 };
 
 SecurityKeyIpcClientTest::SecurityKeyIpcClientTest()

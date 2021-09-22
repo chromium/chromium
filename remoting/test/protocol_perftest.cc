@@ -129,6 +129,9 @@ class ProtocolPerfTest
             capture_thread_.task_runner());
   }
 
+  ProtocolPerfTest(const ProtocolPerfTest&) = delete;
+  ProtocolPerfTest& operator=(const ProtocolPerfTest&) = delete;
+
   virtual ~ProtocolPerfTest() {
     host_thread_.task_runner()->DeleteSoon(FROM_HERE, host_.release());
     host_thread_.task_runner()->DeleteSoon(FROM_HERE,
@@ -430,9 +433,6 @@ class ProtocolPerfTest
   std::vector<protocol::FrameStats> frame_stats_;
 
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProtocolPerfTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -102,6 +102,10 @@ class ChromotingSession::Core : public ClientUserInterface,
   Core(ChromotingClientRuntime* runtime,
        std::unique_ptr<ClientTelemetryLogger> logger,
        std::unique_ptr<SessionContext> session_context);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   void RequestPairing(const std::string& device_name);
@@ -210,7 +214,6 @@ class ChromotingSession::Core : public ClientUserInterface,
   // InvalidateWeakPtrs() is called.
   base::WeakPtr<Core> weak_ptr_;
   base::WeakPtrFactory<Core> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 ChromotingSession::Core::Core(ChromotingClientRuntime* runtime,

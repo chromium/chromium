@@ -35,6 +35,10 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
                  scoped_refptr<AutoThreadTaskRunner> input_task_runner,
                  scoped_refptr<AutoThreadTaskRunner> io_task_runner,
                  mojo::ScopedMessagePipeHandle daemon_channel_handle);
+
+  DesktopProcess(const DesktopProcess&) = delete;
+  DesktopProcess& operator=(const DesktopProcess&) = delete;
+
   ~DesktopProcess() override;
 
   // DesktopSessionAgent::Delegate implementation.
@@ -89,8 +93,6 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
   scoped_refptr<DesktopSessionAgent> desktop_agent_;
 
   base::WeakPtrFactory<DesktopProcess> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopProcess);
 };
 
 }  // namespace remoting

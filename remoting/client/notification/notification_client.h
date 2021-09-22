@@ -31,6 +31,10 @@ class NotificationClient final {
 
   explicit NotificationClient(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner);
+
+  NotificationClient(const NotificationClient&) = delete;
+  NotificationClient& operator=(const NotificationClient&) = delete;
+
   ~NotificationClient();
 
   // Fetches notifications from the server and calls |callback| with the
@@ -74,8 +78,6 @@ class NotificationClient final {
   std::string current_version_;
   std::string locale_;
   bool should_ignore_dev_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationClient);
 };
 
 }  // namespace remoting

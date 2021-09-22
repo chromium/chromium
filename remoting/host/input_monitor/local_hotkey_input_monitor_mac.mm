@@ -45,6 +45,11 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::OnceClosure disconnect_callback);
+
+  LocalHotkeyInputMonitorMac(const LocalHotkeyInputMonitorMac&) = delete;
+  LocalHotkeyInputMonitorMac& operator=(const LocalHotkeyInputMonitorMac&) =
+      delete;
+
   ~LocalHotkeyInputMonitorMac() override;
 
  private:
@@ -53,8 +58,6 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalHotkeyInputMonitorMac);
 };
 
 }  // namespace

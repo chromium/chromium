@@ -18,6 +18,10 @@ class FakeIceConnection final
  public:
   FakeIceConnection(scoped_refptr<protocol::TransportContext> transport_context,
                     base::OnceClosure on_closed);
+
+  FakeIceConnection(const FakeIceConnection&) = delete;
+  FakeIceConnection& operator=(const FakeIceConnection&) = delete;
+
   ~FakeIceConnection() override;
 
   void OnAuthenticated();
@@ -41,7 +45,6 @@ class FakeIceConnection final
   std::unique_ptr<protocol::IceTransport> transport_;
   std::unique_ptr<protocol::ChannelDispatcherBase> control_dispatcher_;
   base::OnceClosure on_closed_;
-  DISALLOW_COPY_AND_ASSIGN(FakeIceConnection);
 };
 
 }  // namespace test

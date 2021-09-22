@@ -28,13 +28,15 @@ namespace {
 class ConfigFileWatcherDelegate : public ConfigFileWatcher::Delegate {
  public:
   ConfigFileWatcherDelegate() = default;
+
+  ConfigFileWatcherDelegate(const ConfigFileWatcherDelegate&) = delete;
+  ConfigFileWatcherDelegate& operator=(const ConfigFileWatcherDelegate&) =
+      delete;
+
   ~ConfigFileWatcherDelegate() override = default;
 
   MOCK_METHOD1(OnConfigUpdated, void(const std::string&));
   MOCK_METHOD0(OnConfigWatcherError, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigFileWatcherDelegate);
 };
 
 }  // namespace

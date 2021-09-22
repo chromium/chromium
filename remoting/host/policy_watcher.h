@@ -38,6 +38,9 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   // Called after detecting malformed policies.
   typedef base::RepeatingCallback<void()> PolicyErrorCallback;
 
+  PolicyWatcher(const PolicyWatcher&) = delete;
+  PolicyWatcher& operator=(const PolicyWatcher&) = delete;
+
   ~PolicyWatcher() override;
 
   // This guarantees that the |policy_updated_callback| is called at least once
@@ -172,8 +175,6 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   std::unique_ptr<policy::PolicyService> owned_policy_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyWatcher);
 };
 
 }  // namespace remoting

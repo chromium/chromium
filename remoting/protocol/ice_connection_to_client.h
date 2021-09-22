@@ -40,6 +40,10 @@ class IceConnectionToClient : public ConnectionToClient,
       scoped_refptr<TransportContext> transport_context,
       scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
+
+  IceConnectionToClient(const IceConnectionToClient&) = delete;
+  IceConnectionToClient& operator=(const IceConnectionToClient&) = delete;
+
   ~IceConnectionToClient() override;
 
   // ConnectionToClient interface.
@@ -94,8 +98,6 @@ class IceConnectionToClient : public ConnectionToClient,
   std::unique_ptr<HostEventDispatcher> event_dispatcher_;
   std::unique_ptr<HostVideoDispatcher> video_dispatcher_;
   std::unique_ptr<AudioWriter> audio_writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(IceConnectionToClient);
 };
 
 }  // namespace protocol

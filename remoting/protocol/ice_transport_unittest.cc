@@ -60,6 +60,11 @@ class TestTransportEventHandler : public IceTransport::EventHandler {
   typedef base::RepeatingCallback<void(ErrorCode error)> ErrorCallback;
 
   TestTransportEventHandler() = default;
+
+  TestTransportEventHandler(const TestTransportEventHandler&) = delete;
+  TestTransportEventHandler& operator=(const TestTransportEventHandler&) =
+      delete;
+
   ~TestTransportEventHandler() = default;
 
   void set_error_callback(const ErrorCallback& callback) {
@@ -75,8 +80,6 @@ class TestTransportEventHandler : public IceTransport::EventHandler {
 
  private:
   ErrorCallback error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTransportEventHandler);
 };
 
 }  // namespace

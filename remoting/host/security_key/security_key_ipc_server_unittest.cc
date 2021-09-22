@@ -41,6 +41,10 @@ class SecurityKeyIpcServerTest : public testing::Test,
                                  public ClientSessionDetails {
  public:
   SecurityKeyIpcServerTest();
+
+  SecurityKeyIpcServerTest(const SecurityKeyIpcServerTest&) = delete;
+  SecurityKeyIpcServerTest& operator=(const SecurityKeyIpcServerTest&) = delete;
+
   ~SecurityKeyIpcServerTest() override;
 
   // Passed to the object used for testing to be called back to signal
@@ -87,9 +91,6 @@ class SecurityKeyIpcServerTest : public testing::Test,
   std::string last_message_received_;
 
   uint32_t peer_session_id_ = UINT32_MAX;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcServerTest);
 };
 
 SecurityKeyIpcServerTest::SecurityKeyIpcServerTest()

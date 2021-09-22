@@ -20,6 +20,9 @@ class InputInjectorChromeos : public InputInjector {
   explicit InputInjectorChromeos(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  InputInjectorChromeos(const InputInjectorChromeos&) = delete;
+  InputInjectorChromeos& operator=(const InputInjectorChromeos&) = delete;
+
   ~InputInjectorChromeos() override;
 
   // Clipboard stub interface.
@@ -41,8 +44,6 @@ class InputInjectorChromeos : public InputInjector {
   // Task runner for input injection.
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorChromeos);
 };
 
 }  // namespace remoting

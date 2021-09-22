@@ -20,6 +20,10 @@ class CursorShapeStubProxy : public protocol::CursorShapeStub {
   CursorShapeStubProxy(
       base::WeakPtr<protocol::CursorShapeStub> stub,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  CursorShapeStubProxy(const CursorShapeStubProxy&) = delete;
+  CursorShapeStubProxy& operator=(const CursorShapeStubProxy&) = delete;
+
   ~CursorShapeStubProxy() override;
 
   // CursorShapeStub override.
@@ -28,8 +32,6 @@ class CursorShapeStubProxy : public protocol::CursorShapeStub {
  private:
   base::WeakPtr<protocol::CursorShapeStub> stub_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorShapeStubProxy);
 };
 
 }  // namespace remoting

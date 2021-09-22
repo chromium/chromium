@@ -18,6 +18,9 @@ namespace protocol {
 
 class AudioStub {
  public:
+  AudioStub(const AudioStub&) = delete;
+  AudioStub& operator=(const AudioStub&) = delete;
+
   virtual ~AudioStub() { }
 
   virtual void ProcessAudioPacket(std::unique_ptr<AudioPacket> audio_packet,
@@ -25,9 +28,6 @@ class AudioStub {
 
  protected:
   AudioStub() { }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioStub);
 };
 
 }  // namespace protocol

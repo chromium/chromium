@@ -18,6 +18,10 @@ namespace test {
 class FakeConnectionToHost : public protocol::ConnectionToHost {
  public:
   FakeConnectionToHost();
+
+  FakeConnectionToHost(const FakeConnectionToHost&) = delete;
+  FakeConnectionToHost& operator=(const FakeConnectionToHost&) = delete;
+
   ~FakeConnectionToHost() override;
 
   // ConnectionToHost interface.
@@ -56,8 +60,6 @@ class FakeConnectionToHost : public protocol::ConnectionToHost {
   testing::NiceMock<protocol::MockHostStub> mock_host_stub_;
   testing::NiceMock<protocol::MockInputStub> mock_input_stub_;
   std::unique_ptr<protocol::SessionConfig> session_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionToHost);
 };
 
 }  // namespace test

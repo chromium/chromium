@@ -33,6 +33,10 @@ class WebrtcConnectionToHost : public ConnectionToHost,
                                public ChannelDispatcherBase::EventHandler {
  public:
   WebrtcConnectionToHost();
+
+  WebrtcConnectionToHost(const WebrtcConnectionToHost&) = delete;
+  WebrtcConnectionToHost& operator=(const WebrtcConnectionToHost&) = delete;
+
   ~WebrtcConnectionToHost() override;
 
   // ConnectionToHost interface.
@@ -110,8 +114,6 @@ class WebrtcConnectionToHost : public ConnectionToHost,
   // Internal state of the connection.
   State state_ = INITIALIZING;
   ErrorCode error_ = OK;
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcConnectionToHost);
 };
 
 }  // namespace protocol

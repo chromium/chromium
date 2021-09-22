@@ -24,6 +24,10 @@ class LocalInputMonitorImpl : public LocalInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  LocalInputMonitorImpl(const LocalInputMonitorImpl&) = delete;
+  LocalInputMonitorImpl& operator=(const LocalInputMonitorImpl&) = delete;
+
   ~LocalInputMonitorImpl() override;
 
   // LocalInputMonitor implementation.
@@ -46,8 +50,6 @@ class LocalInputMonitorImpl : public LocalInputMonitor {
 
   // Indicates whether the instance is actively monitoring local input.
   bool monitoring_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalInputMonitorImpl);
 };
 
 LocalInputMonitorImpl::LocalInputMonitorImpl(

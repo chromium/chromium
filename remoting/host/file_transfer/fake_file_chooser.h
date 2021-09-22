@@ -14,6 +14,9 @@ class FakeFileChooser : public FileChooser {
  public:
   explicit FakeFileChooser(ResultCallback callback);
 
+  FakeFileChooser(const FakeFileChooser&) = delete;
+  FakeFileChooser& operator=(const FakeFileChooser&) = delete;
+
   ~FakeFileChooser() override;
 
   // FileChooser implementation.
@@ -24,8 +27,6 @@ class FakeFileChooser : public FileChooser {
 
  private:
   ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFileChooser);
 };
 
 }  // namespace remoting

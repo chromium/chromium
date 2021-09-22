@@ -18,6 +18,10 @@ namespace remoting {
 // with Windows sessions.
 class SessionDesktopEnvironment : public Me2MeDesktopEnvironment {
  public:
+  SessionDesktopEnvironment(const SessionDesktopEnvironment&) = delete;
+  SessionDesktopEnvironment& operator=(const SessionDesktopEnvironment&) =
+      delete;
+
   ~SessionDesktopEnvironment() override;
 
   // DesktopEnvironment implementation.
@@ -41,8 +45,6 @@ class SessionDesktopEnvironment : public Me2MeDesktopEnvironment {
 
   // Used to lock the workstation for the current session.
   base::RepeatingClosure lock_workstation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionDesktopEnvironment);
 };
 
 // Used to create |SessionDesktopEnvironment| instances.
@@ -55,6 +57,12 @@ class SessionDesktopEnvironmentFactory : public Me2MeDesktopEnvironmentFactory {
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       const base::RepeatingClosure& inject_sas,
       const base::RepeatingClosure& lock_workstation);
+
+  SessionDesktopEnvironmentFactory(const SessionDesktopEnvironmentFactory&) =
+      delete;
+  SessionDesktopEnvironmentFactory& operator=(
+      const SessionDesktopEnvironmentFactory&) = delete;
+
   ~SessionDesktopEnvironmentFactory() override;
 
   // DesktopEnvironmentFactory implementation.
@@ -68,8 +76,6 @@ class SessionDesktopEnvironmentFactory : public Me2MeDesktopEnvironmentFactory {
 
   // Used to lock the workstation for the current session.
   base::RepeatingClosure lock_workstation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionDesktopEnvironmentFactory);
 };
 
 }  // namespace remoting

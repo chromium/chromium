@@ -26,6 +26,10 @@ namespace {
 class ContinueWindowWin : public ContinueWindow {
  public:
   ContinueWindowWin();
+
+  ContinueWindowWin(const ContinueWindowWin&) = delete;
+  ContinueWindowWin& operator=(const ContinueWindowWin&) = delete;
+
   ~ContinueWindowWin() override;
 
  protected:
@@ -42,8 +46,6 @@ class ContinueWindowWin : public ContinueWindow {
   void EndDialog();
 
   HWND hwnd_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindowWin);
 };
 
 ContinueWindowWin::ContinueWindowWin()

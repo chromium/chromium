@@ -19,6 +19,10 @@ class ClipboardFilter : public ClipboardStub {
  public:
   ClipboardFilter();
   explicit ClipboardFilter(ClipboardStub* clipboard_stub);
+
+  ClipboardFilter(const ClipboardFilter&) = delete;
+  ClipboardFilter& operator=(const ClipboardFilter&) = delete;
+
   ~ClipboardFilter() override;
 
   // Set the ClipboardStub that events will be forwarded to.
@@ -34,8 +38,6 @@ class ClipboardFilter : public ClipboardStub {
  private:
   ClipboardStub* clipboard_stub_;
   bool enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardFilter);
 };
 
 }  // namespace protocol
