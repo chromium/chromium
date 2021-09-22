@@ -12,8 +12,6 @@ import("//ios/chrome/extension_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
-assert(current_toolchain != default_toolchain)
-
 tweak_info_plist("tweak_info_plist") {
   info_plist = "Info.plist"
 
