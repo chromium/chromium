@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -131,7 +132,9 @@ bool IsAppListLaunchRecordingEnabled() {
 }
 
 bool IsCategoricalSearchEnabled() {
-  return base::FeatureList::IsEnabled(kCategoricalSearch);
+  // Force categorical search for the latest version of the launcher.
+  return ash::features::IsAppListBubbleEnabled() ||
+         base::FeatureList::IsEnabled(kCategoricalSearch);
 }
 
 bool IsLauncherQueryHighlightingEnabled() {
