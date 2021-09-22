@@ -80,6 +80,7 @@ AppListBubbleView::AppListBubbleView(
   DCHECK(drag_and_drop_host);
 
   // Set up rounded corners and background blur, similar to TrayBubbleView.
+  // Layer color is set in OnThemeChanged().
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kUnifiedTrayCornerRadius});

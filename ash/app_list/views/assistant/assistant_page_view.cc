@@ -19,9 +19,11 @@
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/util/assistant_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -33,6 +35,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/background.h"
@@ -429,24 +432,37 @@ void AssistantPageView::OnUiVisibilityChanged(
 void AssistantPageView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
-      assistant_colors::ColorName::kBgAssistantPlate));
+  if (features::IsAppListBubbleEnabled()) {
+    layer()->SetColor(ColorProvider::Get()->GetBaseLayerColor(
+        ColorProvider::BaseLayerType::kTransparent80));
+  } else {
+    background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
+        assistant_colors::ColorName::kBgAssistantPlate));
 
-  // Changing color of a background object doesn't trigger a paint.
-  SchedulePaint();
+    // Changing color of a background object doesn't trigger a paint.
+    SchedulePaint();
+  }
 }
 
 void AssistantPageView::InitLayout() {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+  if (features::IsAppListBubbleEnabled()) {
+    // Use a solid color layer with blur. The color is set in OnThemeChanged().
+    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  } else {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    SetBackground(
+        views::CreateSolidBackground(ash::assistant::ResolveAssistantColor(
+            assistant_colors::ColorName::kBgAssistantPlate)));
+  }
 
   view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(
       kSearchBoxBorderCornerRadiusSearchResult);
 
-  SetBackground(
-      views::CreateSolidBackground(ash::assistant::ResolveAssistantColor(
-          assistant_colors::ColorName::kBgAssistantPlate)));
   SetLayoutManager(std::make_unique<AssistantPageViewLayout>(this));
 
   // |assistant_view_delegate_| could be nullptr in test.

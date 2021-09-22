@@ -248,7 +248,8 @@ TEST_F(AppListBubbleViewTest, AssistantPageDoesNotHaveBackground) {
   ShowAppList();
   LeftClickOn(GetSearchBoxView()->assistant_button());
 
-  // Assistant not have a background so the blurred launcher is visible.
+  // Assistant not have a background so the blurred launcher is visible
+  // underneath the AppListBubbleAssistantPage view.
   EXPECT_FALSE(GetAssistantPage()->GetBackground());
 }
 

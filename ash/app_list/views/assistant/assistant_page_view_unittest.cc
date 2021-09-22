@@ -22,6 +22,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/views/background.h"
@@ -942,12 +943,48 @@ TEST_F(AssistantPageNonBubbleTest, ThemeDarkLightMode) {
                 /*is_dark_mode=*/true, /*use_debug_colors=*/false));
 }
 
-TEST_F(AssistantPageBubbleTest, AppListBubbleDoesNotHaveAssistantBackground) {
+// AppListBubble only uses AssistantPageView in tablet mode. Clamshell mode uses
+// AppListBubbleAssistantPage, which is tested in
+// AppListBubbleViewTest.AssistantPageDoesNotHaveBackground.
+TEST_F(AssistantPageBubbleTest, PageViewHasBackgroundBlurInTabletMode) {
   ASSERT_TRUE(features::IsAppListBubbleEnabled());
 
+  SetTabletMode(true);
   ShowAssistantUi();
 
   EXPECT_FALSE(page_view()->background());
+  ui::Layer* page_view_layer = page_view()->layer();
+  ASSERT_TRUE(page_view_layer);
+  EXPECT_FALSE(page_view_layer->fills_bounds_opaquely());
+  EXPECT_EQ(page_view_layer->background_blur(),
+            ColorProvider::kBackgroundBlurSigma);
+  EXPECT_EQ(page_view_layer->GetTargetColor(),
+            ColorProvider::Get()->GetBaseLayerColor(
+                ColorProvider::BaseLayerType::kTransparent80));
+}
+
+TEST_F(AssistantPageBubbleTest, BackgroundColorInDarkLightMode) {
+  ASSERT_TRUE(features::IsAppListBubbleEnabled());
+
+  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetActivePrefService());
+  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+
+  SetTabletMode(true);
+  ShowAssistantUi();
+
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
+            ColorProvider::Get()->GetBaseLayerColor(
+                ColorProvider::BaseLayerType::kTransparent80));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, true);
+  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+
+  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
+            ColorProvider::Get()->GetBaseLayerColor(
+                ColorProvider::BaseLayerType::kTransparent80));
 }
 
 //------------------------------------------------------------------------------
