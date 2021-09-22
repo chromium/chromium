@@ -651,12 +651,69 @@ export class FakeShimlessRmaService {
       this.triggerCalibrationObserver(
           {
             component: ComponentType.kBaseAccelerometer,
+            status: CalibrationStatus.kCalibrationWaiting,
+            progress: 0.0
+          },
+          1000);
+      this.triggerCalibrationObserver(
+          {
+            component: ComponentType.kBaseAccelerometer,
+            status: CalibrationStatus.kCalibrationInProgress,
+            progress: 0.2
+          },
+          2000);
+      this.triggerCalibrationObserver(
+          {
+            component: ComponentType.kBaseAccelerometer,
+            status: CalibrationStatus.kCalibrationInProgress,
+            progress: 0.4
+          },
+          3000);
+      this.triggerCalibrationObserver(
+          {
+            component: ComponentType.kBaseAccelerometer,
+            status: CalibrationStatus.kCalibrationInProgress,
+            progress: 0.6
+          },
+          4000);
+      this.triggerCalibrationObserver(
+          {
+            component: ComponentType.kBaseAccelerometer,
+            status: CalibrationStatus.kCalibrationInProgress,
+            progress: 0.8
+          },
+          5000);
+      this.triggerCalibrationObserver(
+          {
+            component: ComponentType.kLidAccelerometer,
+            status: CalibrationStatus.kCalibrationWaiting,
+            progress: 0.0
+          },
+          6000);
+      this.triggerCalibrationObserver(
+          {
+            component: ComponentType.kBaseAccelerometer,
             status: CalibrationStatus.kCalibrationComplete,
+            progress: 0.5
+          },
+          7000);
+      this.triggerCalibrationObserver(
+          {
+            component: ComponentType.kBaseAccelerometer,
+            status: CalibrationStatus.kCalibrationFailed,
             progress: 1.0
           },
-          1500);
+          8000);
+      this.triggerCalibrationObserver(
+          {
+            component: ComponentType.kGyroscope,
+            status: CalibrationStatus.kCalibrationSkip,
+            progress: 1.0
+          },
+          9000);
       this.triggerCalibrationOverallObserver(
-          CalibrationOverallStatus.kCalibrationOverallComplete, 3000);
+          CalibrationOverallStatus.kCalibrationOverallCurrentRoundComplete,
+          10000);
     }
   }
 
