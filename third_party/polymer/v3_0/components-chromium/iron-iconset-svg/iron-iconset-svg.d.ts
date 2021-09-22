@@ -105,6 +105,15 @@ interface IronIconsetSvgElement extends LegacyElementMixin, HTMLElement {
   applyIcon(element: Element|null, iconName: string): Element|null;
 
   /**
+   * Produce installable clone of the SVG element matching `id` in this
+   * iconset, or `undefined` if there is no matching element.
+   * @param iconName Name of the icon to apply.
+   * @param targetIsRTL Whether the target element is RTL.
+   * @return Returns an installable clone of the SVG element matching `id`.
+   */
+  createIcon(iconName: string, targetIsRTL: boolean): Element|null;
+
+  /**
    * Remove an icon from the given element by undoing the changes effected
    * by `applyIcon`.
    *

@@ -1,19 +1,20 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
-
 import {isRTL} from 'chrome://resources/js/util.m.js';
+import {IronIconsetSvgElement} from 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
 import {inDarkMode} from './dark_mode_mixin.js';
 
+type Range = {
+  to: number,
+  from: number,
+};
+
 /**
  * Returns true if the contents of the two page ranges are equal.
- * @param {!Array<{ to: number, from: number }>} array1 The first array.
- * @param {!Array<{ to: number, from: number }>} array2 The second array.
- * @return {boolean} true if the arrays are equal.
  */
-export function areRangesEqual(array1, array2) {
+export function areRangesEqual(array1: Range[], array2: Range[]): boolean {
   if (array1.length !== array2.length) {
     return false;
   }
@@ -25,14 +26,19 @@ export function areRangesEqual(array1, array2) {
   return true;
 }
 
+type LocalizedString = {
+  locale: string,
+  value: string,
+};
+
 /**
- * @param {!Array<!{locale: string, value: string}>} localizedStrings An array
- *     of strings with corresponding locales.
- * @param {string} locale Locale to look the string up for.
- * @return {string} A string for the requested {@code locale}. An empty string
+ * @param localizedStrings An array of strings with corresponding locales.
+ * @param locale Locale to look the string up for.
+ * @return A string for the requested {@code locale}. An empty string
  *     if there's no string for the specified locale found.
  */
-export function getStringForLocale(localizedStrings, locale) {
+function getStringForLocale(
+    localizedStrings: LocalizedString[], locale: string): string {
   locale = locale.toLowerCase();
   for (let i = 0; i < localizedStrings.length; i++) {
     if (localizedStrings[i].locale.toLowerCase() === locale) {
@@ -43,36 +49,37 @@ export function getStringForLocale(localizedStrings, locale) {
 }
 
 /**
- * @param {!Array<!{locale: string, value: string}>} localizedStrings An array
- *     of strings with corresponding locales.
+ * @param localizedStrings An array of strings with corresponding locales.
  * @return {string} A string for the current locale. An empty string if there's
  *     no string for the current locale found.
  */
-export function getStringForCurrentLocale(localizedStrings) {
+export function getStringForCurrentLocale(localizedStrings: LocalizedString[]):
+    string {
   // First try to find an exact match and then look for the language only.
   return getStringForLocale(localizedStrings, navigator.language) ||
       getStringForLocale(localizedStrings, navigator.language.split('-')[0]);
 }
 
 /**
- * @param {!Array<*>} args The arguments for the observer.
- * @return {boolean} Whether all arguments are defined.
+ * @param args The arguments for the observer.
+ * @return Whether all arguments are defined.
  */
-export function observerDepsDefined(args) {
+export function observerDepsDefined(args: any[]): boolean {
   return args.every(arg => arg !== undefined);
 }
 
 /**
  * Returns background images (icon and dropdown arrow) for use in a md-select.
- * @param {!IronIconsetSvgElement} iconset The iconset the icon is in.
- * @param {string} iconName The icon name
- * @param {!HTMLElement} el The element that contains the select.
- * @return {string} String containing inlined SVG of the icon and
+ * @param iconset The iconset the icon is in.
+ * @param iconName The icon name
+ * @param el The element that contains the select.
+ * @return String containing inlined SVG of the icon and
  *     url(path_to_arrow) separated by a comma.
  */
-export function getSelectDropdownBackground(iconset, iconName, el) {
+export function getSelectDropdownBackground(
+    iconset: IronIconsetSvgElement, iconName: string, el: HTMLElement): string {
   const serializer = new XMLSerializer();
-  const iconElement = iconset.createIcon(iconName, isRTL());
+  const iconElement = iconset.createIcon(iconName, isRTL()) as HTMLElement;
   const dark = inDarkMode();
   const fillColor = getComputedStyle(el).getPropertyValue(
       dark ? '--google-grey-refresh-500' : '--google-grey-600');

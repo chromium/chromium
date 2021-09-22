@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-export {CloudPrintInterface, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
+export {CloudPrintInterfaceEventType} from './cloud_print_interface.js';
 export {CloudPrintInterfaceImpl} from './cloud_print_interface_impl.js';
 export {ColorMode, createDestinationKey, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, makeRecentDestination} from './data/destination.js';
 // <if expr="chromeos or lacros">
@@ -23,9 +23,9 @@ export {PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './data/p
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';
-export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, ColorModeRestriction, DuplexModeRestriction, NativeInitialSettings, NativeLayer, NativeLayerImpl, PinModeRestriction} from './native_layer.js';
+export {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, NativeLayerImpl, PinModeRestriction} from './native_layer.js';
 // <if expr="chromeos or lacros">
-export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServer, PrintServersConfig} from './native_layer_cros.js';
+export {NativeLayerCrosImpl} from './native_layer_cros.js';
 // </if>
 export {getSelectDropdownBackground} from './print_preview_utils.js';
 export {PrintPreviewAdvancedSettingsDialogElement} from './ui/advanced_settings_dialog.js';

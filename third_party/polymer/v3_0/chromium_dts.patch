@@ -1,3 +1,23 @@
+diff --git a/components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts b/components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts
+index 8dc9834e50cc9..68adde705cd4a 100644
+--- a/components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts
++++ b/components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts
+@@ -104,6 +104,15 @@ interface IronIconsetSvgElement extends LegacyElementMixin, HTMLElement {
+    */
+   applyIcon(element: Element|null, iconName: string): Element|null;
+
++  /**
++   * Produce installable clone of the SVG element matching `id` in this
++   * iconset, or `undefined` if there is no matching element.
++   * @param iconName Name of the icon to apply.
++   * @param targetIsRTL Whether the target element is RTL.
++   * @return Returns an installable clone of the SVG element matching `id`.
++   */
++  createIcon(iconName: string, targetIsRTL: boolean): Element|null;
++
+   /**
+    * Remove an icon from the given element by undoing the changes effected
+    * by `applyIcon`.
 diff --git a/components-chromium/polymer/polymer.d.ts b/components-chromium/polymer/polymer.d.ts
 index a9f1aa64c5b8..a202c7fb06ba 100644
 --- a/components-chromium/polymer/polymer.d.ts

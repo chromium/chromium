@@ -76,9 +76,9 @@ preprocess_if_expr("preprocess") {
     "cloud_print_interface_impl.ts",
     "dark_mode_mixin.ts",
     "metrics.ts",
-    "native_layer.js",
+    "native_layer.ts",
     "print_preview.js",
-    "print_preview_utils.js",
+    "print_preview_utils.ts",
     "data/cdd.ts",
     "data/cloud_parsers.ts",
     "data/coordinate2d.ts",
@@ -106,7 +106,7 @@ preprocess_if_expr("preprocess") {
     in_files += [
       "data/print_server_store.ts",
       "data/printer_status_cros.ts",
-      "native_layer_cros.js",
+      "native_layer_cros.ts",
     ]
   }
 }
@@ -238,9 +238,9 @@ ts_library("build_ts") {
     "cloud_print_interface_impl.ts",
     "dark_mode_mixin.ts",
     "metrics.ts",
-    "native_layer.js",
+    "native_layer.ts",
     "print_preview.js",
-    "print_preview_utils.js",
+    "print_preview_utils.ts",
     "data/cdd.ts",
     "data/cloud_parsers.ts",
     "data/coordinate2d.ts",
@@ -303,7 +303,7 @@ ts_library("build_ts") {
     in_files += [
       "data/print_server_store.ts",
       "data/printer_status_cros.ts",
-      "native_layer_cros.js",
+      "native_layer_cros.ts",
       "ui/destination_dialog_cros.js",
       "ui/destination_dropdown_cros.js",
       "ui/destination_select_cros.js",
