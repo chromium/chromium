@@ -94,14 +94,14 @@ void FastPairRepositoryImpl::IsValidModelId(
 
 void FastPairRepositoryImpl::CheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
-    DeviceMetadataCallback callback) {
+    CheckAccountKeysCallback callback) {
   CheckAccountKeysImpl(account_key_filter, std::move(callback),
                        /*refresh_cache_on_miss=*/true);
 }
 
 void FastPairRepositoryImpl::CheckAccountKeysImpl(
     const AccountKeyFilter& account_key_filter,
-    DeviceMetadataCallback callback,
+    CheckAccountKeysCallback callback,
     bool refresh_cache_on_miss) {
   QP_LOG(INFO) << __func__;
   for (const auto& info : user_devices_cache_.fast_pair_info()) {
@@ -114,7 +114,11 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
         if (device.ParseFromString(info.device().discovery_item_bytes())) {
           QP_LOG(INFO) << "Account key matched with a paired device: "
                        << device.title();
-          GetDeviceMetadata(device.id(), std::move(callback));
+          GetDeviceMetadata(
+              device.id(),
+              base::BindOnce(&FastPairRepositoryImpl::CompleteAccountKeyLookup,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             std::move(callback), std::move(binary_key)));
           return;
         }
       }
@@ -130,21 +134,32 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
     return;
   }
 
-  std::move(callback).Run(nullptr);
+  std::move(callback).Run(absl::nullopt);
 }
 
 void FastPairRepositoryImpl::RetryCheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
-    DeviceMetadataCallback callback,
+    CheckAccountKeysCallback callback,
     absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
   if (!user_devices) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   UpdateUserDevicesCache(user_devices);
   CheckAccountKeysImpl(account_key_filter, std::move(callback),
                        /*refresh_cache_on_miss=*/false);
+}
+
+void FastPairRepositoryImpl::CompleteAccountKeyLookup(
+    CheckAccountKeysCallback callback,
+    const std::vector<uint8_t> account_key,
+    DeviceMetadata* device_metadata) {
+  if (!device_metadata) {
+    std::move(callback).Run(absl::nullopt);
+  }
+  std::move(callback).Run(
+      PairingMetadata(device_metadata, std::move(account_key)));
 }
 
 void FastPairRepositoryImpl::UpdateUserDevicesCache(

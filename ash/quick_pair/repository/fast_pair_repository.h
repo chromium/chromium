@@ -8,6 +8,7 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
+#include "ash/quick_pair/repository/fast_pair/pairing_metadata.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +22,8 @@ namespace quick_pair {
 
 class AccountKeyFilter;
 
+using CheckAccountKeysCallback =
+    base::OnceCallback<void(absl::optional<PairingMetadata>)>;
 using DeviceMetadataCallback = base::OnceCallback<void(DeviceMetadata*)>;
 using ValidModelIdCallback = base::OnceCallback<void(bool)>;
 
@@ -47,7 +50,7 @@ class FastPairRepository {
   // given filter.  If a match is found, metadata for the associated device will
   // be returned through the callback.
   virtual void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
-                                DeviceMetadataCallback callback) = 0;
+                                CheckAccountKeysCallback callback) = 0;
 
   // Stores the given |account_key| for a |device| on the server.
   virtual void AssociateAccountKey(const Device& device,

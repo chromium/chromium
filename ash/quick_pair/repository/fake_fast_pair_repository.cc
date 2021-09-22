@@ -45,8 +45,8 @@ void FakeFastPairRepository::IsValidModelId(
 
 void FakeFastPairRepository::CheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
-    DeviceMetadataCallback callback) {
-  std::move(callback).Run(nullptr);
+    CheckAccountKeysCallback callback) {
+  std::move(callback).Run(absl::nullopt);
 }
 
 void FakeFastPairRepository::AssociateAccountKey(

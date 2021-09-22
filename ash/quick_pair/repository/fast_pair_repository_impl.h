@@ -46,14 +46,14 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void IsValidModelId(const std::string& hex_model_id,
                       base::OnceCallback<void(bool)> callback) override;
   void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
-                        DeviceMetadataCallback callback) override;
+                        CheckAccountKeysCallback callback) override;
   void AssociateAccountKey(const Device& device,
                            const std::string& account_key) override;
   void DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
 
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
-                            DeviceMetadataCallback callback,
+                            CheckAccountKeysCallback callback,
                             bool refresh_cache_on_miss);
   void OnMetadataFetched(
       const std::string& normalized_model_id,
@@ -65,10 +65,13 @@ class FastPairRepositoryImpl : public FastPairRepository {
                       gfx::Image image);
   void RetryCheckAccountKeys(
       const AccountKeyFilter& account_key_filter,
-      DeviceMetadataCallback callback,
+      CheckAccountKeysCallback callback,
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
   void UpdateUserDevicesCache(
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
+  void CompleteAccountKeyLookup(CheckAccountKeysCallback callback,
+                                const std::vector<uint8_t> account_key,
+                                DeviceMetadata* device_metadata);
 
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;
