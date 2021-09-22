@@ -20,6 +20,16 @@ const VPNConfigType = {
   WIREGUARD: 'WireGuard',
 };
 
+/**
+ * Method to configure WireGuard local key pair.
+ * @enum {string}
+ */
+const WireGuardKeyConfigType = {
+  USE_CURRENT: 'UseCurrent',
+  GENERATE_NEW: 'GenerateNew',
+  USER_INPUT: 'UserInput',
+};
+
 // Note: This pattern does not work for elements that are stamped on initial
 // load because chromeos.networkConfig is not defined yet. <network-config>
 // however is always embedded in a <cr-dialog> so it is not stamped immediately.
@@ -211,6 +221,9 @@ Polymer({
      */
     vpnType_: String,
 
+    /** @private {WireGuardKeyConfigType|undefined} */
+    wireguardKeyType_: String,
+
     /** @private {string|undefined} */
     ipAddressInput_: String,
 
@@ -249,6 +262,15 @@ Polymer({
     showVpn_: {
       type: Object,
       value: null,
+    },
+
+    /**
+     * Whether the WireGuard private key input box should be shown.
+     * @private
+     */
+    isWireGuardUserPrivateKeyInputActive_: {
+      type: Boolean,
+      computed: 'updateWireGuardKeyType_(wireguardKeyType_)',
     },
 
     /**
@@ -298,6 +320,17 @@ Polymer({
         VPNConfigType.L2TP_IPSEC_CERT,
         VPNConfigType.OPEN_VPN,
       ],
+    },
+
+    /**
+     * Array of values for the WireGuard key configuration method dropdown.
+     * The actual value is set in initWireGuardKeyConfigType_() since the
+     * value differs for new network and existing networks.
+     * @private {!Array<string>}
+     */
+    wireguardKeyTypeItems_: {
+      type: Array,
+      value: [],
     },
 
     /**
@@ -387,6 +420,7 @@ Polymer({
     this.networkConfig_.getSupportedVpnTypes().then(response => {
       this.updateVpnTypeItems_(response.vpnTypes);
     });
+    this.initWireGuardKeyConfigType_();
 
     if (this.guid) {
       this.networkConfig_.getManagedProperties(this.guid).then(response => {
@@ -563,6 +597,21 @@ Polymer({
     if (responseTypes.includes('wireguard')) {
       this.vpnTypeItems_.push(VPNConfigType.WIREGUARD);
     }
+  },
+
+  /** @private */
+  initWireGuardKeyConfigType_() {
+    let items = [
+      WireGuardKeyConfigType.GENERATE_NEW,
+      WireGuardKeyConfigType.USER_INPUT,
+    ];
+    if (this.hasGuid_()) {
+      items = [...items, WireGuardKeyConfigType.USE_CURRENT];
+      this.wireguardKeyType_ = WireGuardKeyConfigType.USE_CURRENT;
+    } else {
+      this.wireguardKeyType_ = WireGuardKeyConfigType.GENERATE_NEW;
+    }
+    this.wireguardKeyTypeItems_ = items;
   },
 
   /** NetworkListenerBehavior override */
@@ -1118,6 +1167,11 @@ Polymer({
   },
 
   /** @private */
+  updateWireGuardKeyType_() {
+    return this.wireguardKeyType_ === WireGuardKeyConfigType.USER_INPUT;
+  },
+
+  /** @private */
   updateVpnType_() {
     if (this.configProperties_ === undefined || this.vpnType_ === undefined) {
       return;
@@ -1558,7 +1612,7 @@ Polymer({
   },
 
   /**
-   * @param {string} input
+   * @param {string|null|undefined} input
    * @return {boolean}
    * @private
    */
@@ -1582,7 +1636,7 @@ Polymer({
     if (!ipAddress || !ipAddress.match(/^([0-9]+\.){3}[0-9]+$/i)) {
       return false;
     }
-    if (wireguard.privateKey &&
+    if (this.isWireGuardUserPrivateKeyInputActive_ &&
         !this.isValidWireGuardKey_(wireguard.privateKey)) {
       return false;
     }
@@ -1761,6 +1815,11 @@ Polymer({
       propertiesToSet.nameServersConfigType = 'Static';
       propertiesToSet.staticIpConfig.nameServers =
           this.nameServersInput_.split(',');
+    }
+    if (this.wireguardKeyType_ === WireGuardKeyConfigType.USE_CURRENT) {
+      delete wireguard.privateKey;
+    } else if (this.wireguardKeyType_ === WireGuardKeyConfigType.GENERATE_NEW) {
+      wireguard.privateKey = '';
     }
   },
 

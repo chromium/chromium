@@ -1271,6 +1271,18 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_VPN_WIREGUARD_ALLOWED_IP" desc="Label for WireGuard peer allowed ip range.">
         Allowed IPs
       </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_KEY" desc="Label for choosing WireGuard key configuration method.">
+        Key
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_KEY_USE_CURRENT" desc="Label for WireGuard key configuration method to use current one.">
+        Use current keypair
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_KEY_GENERATE_NEW" desc="Label for WireGuard key configuration method to let Chrome OS general one.">
+        Generate random keypair
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_KEY_USER_INPUT" desc="Label for WireGuard key configuration method to use user inputed one.">
+        I have a keypair
+      </message>
       <message name="IDS_ONC_CELLULAR_ACTIVATION_STATE" desc="ONC Property label for Cellular.ActivationState">
         Activation status
       </message>

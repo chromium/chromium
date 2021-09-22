@@ -176,6 +176,16 @@ suite('network-config', function() {
       assertTrue(!!networkConfig.$$('#wireguard-ip-input'));
     });
 
+    test('Switch key config type', function() {
+      networkConfig.set('vpnType_', 'WireGuard');
+      Polymer.dom.flush();
+      assertFalse(!!networkConfig.$$('#wireguardPrivateKeyInput'));
+      networkConfig.set('wireguardKeyType_', 'UserInput');
+      return flushAsync().then(() => {
+        assertTrue(!!networkConfig.$$('#wireguardPrivateKeyInput'));
+      });
+    });
+
     test('Enable Connect', function() {
       networkConfig.set('vpnType_', 'WireGuard');
       Polymer.dom.flush();
@@ -223,6 +233,7 @@ suite('network-config', function() {
       return flushAsync().then(() => {
         const configProperties = networkConfig.get('configProperties_');
         const peer = configProperties.typeConfig.vpn.wireguard.peers[0];
+        assertEquals('UseCurrent', networkConfig.wireguardKeyType_);
         assertEquals('10.10.0.1', networkConfig.get('ipAddressInput_'));
         assertEquals(
             'KFhwdv4+jKpSXMW6xEUVtOe4Mo8l/xOvGmshmjiHx1Y=', peer.publicKey);

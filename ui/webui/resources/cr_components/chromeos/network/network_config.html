@@ -154,10 +154,17 @@
               value="{{nameServersInput_}}"
               property="[[managedProperties_.staticIpConfig.nameServers]]">
           </network-config-input>
-          <network-password-input label="[[i18n('OncVPN-WireGuard-PrivateKey')]]"
-              value="{{configProperties_.typeConfig.vpn.wireguard.privateKey}}"
-              property="[[managedProperties_.typeProperties.vpn.wireguard.privateKey]]">
-          </network-password-input>
+          <network-config-select label="[[i18n('OncVPN-WireGuard-Key')]]"
+              value="{{wireguardKeyType_}}" items="[[wireguardKeyTypeItems_]]"
+              onc-prefix="VPN.WireGuard.Key">
+          </network-config-select>
+          <template is="dom-if" if="[[isWireGuardUserPrivateKeyInputActive_]]">
+            <network-password-input label="[[i18n('OncVPN-WireGuard-PrivateKey')]]"
+                id="wireguardPrivateKeyInput"
+                value="{{configProperties_.typeConfig.vpn.wireguard.privateKey}}"
+                property="[[managedProperties_.typeProperties.vpn.wireguard.privateKey]]">
+            </network-password-input>
+          </template>
           <div class="peer-card">
             <div class="inline-text">[[i18n('OncVPN-WireGuard-Peer')]]</div>
             <network-config-input label="[[i18n('OncVPN-WireGuard-Peer-PublicKey')]]"
