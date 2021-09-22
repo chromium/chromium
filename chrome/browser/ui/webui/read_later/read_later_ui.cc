@@ -9,6 +9,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/read_later_resources.h"
 #include "chrome/grit/read_later_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -75,7 +77,13 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
                      show_side_panel && base::FeatureList::IsEnabled(
                                             features::kSidePanelDragAndDrop));
 
-  Profile* profile = Profile::FromWebUI(web_ui);
+  Profile* const profile = Profile::FromWebUI(web_ui);
+  ReadingListModel* const reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile);
+  source->AddBoolean(
+      "hasUnseenReadingListEntries",
+      reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
+
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));

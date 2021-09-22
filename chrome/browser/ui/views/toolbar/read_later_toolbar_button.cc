@@ -14,6 +14,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
@@ -27,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -166,6 +168,11 @@ ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
     : ToolbarButton(base::BindRepeating(&ReadLaterToolbarButton::ButtonPressed,
                                         base::Unretained(this))),
       browser_(browser),
+      dot_indicator_(views::DotIndicator::Install(image())),
+      dot_bounds_updater_(
+          std::make_unique<DotBoundsUpdater>(dot_indicator_, image())),
+      reading_list_model_(
+          ReadingListModelFactory::GetForBrowserContext(browser_->profile())),
       contents_wrapper_(std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
           GURL(chrome::kChromeUIReadLaterURL),
           browser_->profile(),
@@ -178,9 +185,56 @@ ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
+
+  if (reading_list_model_)
+    reading_list_model_scoped_observation_.Observe(reading_list_model_);
 }
 
 ReadLaterToolbarButton::~ReadLaterToolbarButton() = default;
+
+ReadLaterToolbarButton::DotBoundsUpdater::DotBoundsUpdater(
+    views::DotIndicator* dot_indicator,
+    views::ImageView* image)
+    : dot_indicator_(dot_indicator), image_(image) {
+  observation_.Observe(image);
+}
+
+ReadLaterToolbarButton::DotBoundsUpdater::~DotBoundsUpdater() = default;
+
+void ReadLaterToolbarButton::DotBoundsUpdater::OnViewBoundsChanged(
+    View* observed_view) {
+  gfx::Rect dot_rect(8, 8);
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    dot_rect = ScaleToEnclosingRect(
+        dot_rect, float{kDefaultTouchableIconSize} / kDefaultIconSize);
+  }
+  dot_rect.set_origin(image_->GetImageBounds().bottom_right() -
+                      dot_rect.bottom_right().OffsetFromOrigin());
+  dot_indicator_->SetBoundsRect(dot_rect);
+}
+
+void ReadLaterToolbarButton::ReadingListModelLoaded(
+    const ReadingListModel* model) {
+  if (model->unseen_size())
+    dot_indicator_->Show();
+}
+
+void ReadLaterToolbarButton::ReadingListModelBeingDeleted(
+    const ReadingListModel* model) {
+  DCHECK(model == reading_list_model_);
+  DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
+      reading_list_model_));
+  reading_list_model_scoped_observation_.Reset();
+}
+
+void ReadLaterToolbarButton::ReadingListDidApplyChanges(
+    ReadingListModel* model) {
+  if (!side_panel_webview_ && reading_list_model_->unseen_size() > 0) {
+    dot_indicator_->Show();
+  } else {
+    dot_indicator_->Hide();
+  }
+}
 
 void ReadLaterToolbarButton::ButtonPressed() {
   BrowserView* const browser_view =
@@ -207,6 +261,8 @@ void ReadLaterToolbarButton::ButtonPressed() {
         browser_view->right_aligned_side_panel()->AddChildView(
             std::move(webview));
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
+    reading_list_model_->MarkAllSeen();
+    dot_indicator_->Hide();
   } else {
     HideSidePanel();
   }
