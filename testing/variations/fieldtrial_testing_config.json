@@ -8111,6 +8111,39 @@
             ]
         }
     ],
+    "SharingHubLinkToggle": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SharingHubLinkToggle"
+                    ]
+                },
+                {
+                    "name": "Enabled_withImages",
+                    "params": {
+                        "image_enabled": "true"
+                    },
+                    "enable_features": [
+                        "SharingHubLinkToggle"
+                    ]
+                },
+                {
+                    "name": "Enabled_withScreenshots",
+                    "params": {
+                        "screenshot_enabled": "true"
+                    },
+                    "enable_features": [
+                        "SharingHubLinkToggle"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmartSuggestionForLargeDownloads": [
         {
             "platforms": [
