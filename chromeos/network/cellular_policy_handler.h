@@ -9,6 +9,7 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -73,11 +74,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
   void ProcessRequests();
   void AttemptInstallESim();
   const std::string& GetCurrentSmdpAddress() const;
+  std::string GetCurrentPolicyGuid() const;
   void OnESimProfileInstallAttemptComplete(
       HermesResponseStatus hermes_status,
       absl::optional<dbus::ObjectPath> profile_path,
       absl::optional<std::string> service_path);
   void PopRequestAndProcessNext();
+  void InvalidateCurrentRequest();
 
   CellularESimInstaller* cellular_esim_installer_ = nullptr;
   NetworkProfileHandler* network_profile_handler_ = nullptr;
@@ -87,6 +90,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
   bool is_installing_ = false;
   base::circular_deque<std::unique_ptr<InstallPolicyESimRequest>>
       remaining_install_requests_;
+  base::OneShotTimer retry_timer_;
 
   // Provides us the backoff timers for AttemptInstallESim().
   net::BackoffEntry retry_backoff_;

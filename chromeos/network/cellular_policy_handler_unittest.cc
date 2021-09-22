@@ -257,4 +257,23 @@ TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
   CheckShillConfiguration(/*is_installed=*/false);
 }
 
+TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
+  // Verify that the first request should be invalidated when the second
+  // request is queued.
+  std::string policy = GenerateCellularPolicy("000");
+  InstallESimPolicy(policy,
+                    /*activation_code=*/"000",
+                    /*expect_install_success=*/false);
+  policy = GenerateCellularPolicy(HermesEuiccClient::Get()
+                                      ->GetTestInterface()
+                                      ->GenerateFakeActivationCode());
+
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
+                    /*expect_install_success=*/true);
+  CheckShillConfiguration(/*is_installed=*/true);
+}
+
 }  // namespace chromeos
