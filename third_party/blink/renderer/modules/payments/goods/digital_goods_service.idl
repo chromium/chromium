@@ -12,4 +12,7 @@
 
   [CallWith=ScriptState, MeasureAs=DigitalGoodsListPurchases]
   Promise<sequence<PurchaseDetails>> listPurchases();
+
+  [CallWith=ScriptState, MeasureAs=DigitalGoodsConsume]
+  Promise<void> consume(DOMString purchaseToken);
 };

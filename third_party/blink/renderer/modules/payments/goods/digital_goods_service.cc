@@ -50,6 +50,15 @@ void OnListPurchasesResponse(
   resolver->Resolve(std::move(blink_purchase_details_list));
 }
 
+void OnConsumeResponse(ScriptPromiseResolver* resolver,
+                       BillingResponseCode code) {
+  if (code != BillingResponseCode::kOk) {
+    resolver->Reject(mojo::ConvertTo<String>(code));
+    return;
+  }
+  resolver->Resolve();
+}
+
 }  // namespace
 
 DigitalGoodsService::DigitalGoodsService(
@@ -83,6 +92,28 @@ ScriptPromise DigitalGoodsService::listPurchases(ScriptState* script_state) {
 
   mojo_service_->ListPurchases(
       WTF::Bind(&OnListPurchasesResponse, WrapPersistent(resolver)));
+  return promise;
+}
+
+ScriptPromise DigitalGoodsService::consume(ScriptState* script_state,
+                                           const String& purchase_token) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  if (purchase_token.IsEmpty()) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "Must specify purchase token."));
+    return promise;
+  }
+
+  // Implement `consume` functionality using existing `acknowledge` mojo call
+  // with `make_available_again` always true. This is defined to use up an item
+  // in the same way as `consume`.
+  // TODO(crbug.com/1250604): Replace with `consume` mojo call when available.
+  bool make_available_again = true;
+  mojo_service_->Acknowledge(
+      purchase_token, make_available_again,
+      WTF::Bind(&OnConsumeResponse, WrapPersistent(resolver)));
   return promise;
 }
 

@@ -91,6 +91,24 @@ digital_goods_test(async service => {
 }, {title: 'GetDetails internal error.'});
 
 digital_goods_test(async service => {
+  const response = await service.consume('token1');
+  assert_equals(response, undefined);
+}, {
+  // Consume should currently do "acknowledge repeatable" on mojo backend.
+  expectedAction: 'acknowledge:token1 true',
+  title: 'Consume a purchase token.'
+});
+
+digital_goods_test(async service => {
+  try {
+    await service.consume('fail');
+    assert_unreached();
+  } catch (error) {
+    assert_equals(error, 'error');
+  }
+}, {title: 'Consume with bad purchase token should error.'});
+
+digital_goods_test(async service => {
   const response = await service.listPurchases();
   assert_equals(response.length, 10);
 
