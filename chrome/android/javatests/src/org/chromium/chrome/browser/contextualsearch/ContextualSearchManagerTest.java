@@ -3978,6 +3978,7 @@ public class ContextualSearchManagerTest {
     @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/1240342")
     @Feature({"ContextualSearch"})
     public void testRelatedSearchesItemNotSelected() throws Exception {
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         Assert.assertFalse("Related Searches should have been requested but were not!",
@@ -3999,6 +4000,7 @@ public class ContextualSearchManagerTest {
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1182040")
     @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/1240342")
     public void testRelatedSearchesItemSelected() throws Exception {
+        FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
         mFakeServer.reset();
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
