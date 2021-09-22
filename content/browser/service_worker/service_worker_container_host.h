@@ -14,8 +14,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "content/public/common/child_process_host.h"
@@ -441,7 +443,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // can change to another FrameTreeNode over its lifetime while its RFH ID
   // never changes. See also comments for RenderFrameHost::GetFrameTreeNodeId()
   // for more details.
-  int GetFrameTreeNodeIdForOngoingNavigation() const;
+  int GetFrameTreeNodeIdForOngoingNavigation(
+      base::PassKey<StoragePartitionImpl>) const;
 
   // For service worker clients.
   const std::string& client_uuid() const;

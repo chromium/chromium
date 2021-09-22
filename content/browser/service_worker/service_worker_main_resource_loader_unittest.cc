@@ -512,7 +512,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     loader_ = std::make_unique<ServiceWorkerMainResourceLoader>(
         base::BindOnce(&ServiceWorkerMainResourceLoaderTest::Fallback,
                        base::Unretained(this)),
-        container_host_);
+        container_host_,
+        /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId);
 
     // Load |request.url|.
     loader_->StartRequest(*request, loader_remote_.BindNewPipeAndPassReceiver(),

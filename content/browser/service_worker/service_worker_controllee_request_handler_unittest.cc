@@ -60,6 +60,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               test->container_host_,
               destination,
               /*skip_service_worker=*/false,
+              /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
               base::DoNothing())) {}
 
     void MaybeCreateLoader() {
@@ -416,7 +417,9 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, SkipServiceWorker) {
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
           context()->AsWeakPtr(), container_host_,
           network::mojom::RequestDestination::kDocument,
-          /*skip_service_worker=*/true, base::DoNothing()));
+          /*skip_service_worker=*/true,
+          /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
+          base::DoNothing()));
 
   // Conduct a main resource load.
   test_resources.MaybeCreateLoader();
@@ -457,7 +460,9 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
       std::make_unique<ServiceWorkerControlleeRequestHandler>(
           context()->AsWeakPtr(), container_host_,
           network::mojom::RequestDestination::kDocument,
-          /*skip_service_worker=*/false, base::DoNothing()));
+          /*skip_service_worker=*/false,
+          /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
+          base::DoNothing()));
 
   // Destroy the context and make a new one.
   helper_->context_wrapper()->DeleteAndStartOver();

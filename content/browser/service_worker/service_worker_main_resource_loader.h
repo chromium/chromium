@@ -66,7 +66,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // is used instead of NavigationURLLoaderImpl.
   ServiceWorkerMainResourceLoader(
       NavigationLoaderInterceptor::FallbackCallback fallback_callback,
-      base::WeakPtr<ServiceWorkerContainerHost> container_host);
+      base::WeakPtr<ServiceWorkerContainerHost> container_host,
+      int frame_tree_node_id);
 
   ServiceWorkerMainResourceLoader(const ServiceWorkerMainResourceLoader&) =
       delete;
@@ -165,6 +166,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   network::ResourceRequest resource_request_;
 
   base::WeakPtr<ServiceWorkerContainerHost> container_host_;
+  const int frame_tree_node_id_;
 
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
   std::unique_ptr<StreamWaiter> stream_waiter_;

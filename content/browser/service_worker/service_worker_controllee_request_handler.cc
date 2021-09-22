@@ -69,12 +69,14 @@ ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
     base::WeakPtr<ServiceWorkerContainerHost> container_host,
     network::mojom::RequestDestination destination,
     bool skip_service_worker,
+    int frame_tree_node_id,
     ServiceWorkerAccessedCallback service_worker_accessed_callback)
     : context_(std::move(context)),
       container_host_(std::move(container_host)),
       destination_(destination),
       skip_service_worker_(skip_service_worker),
       force_update_started_(false),
+      frame_tree_node_id_(frame_tree_node_id),
       service_worker_accessed_callback_(
           std::move(service_worker_accessed_callback)) {
   DCHECK(ServiceWorkerUtils::IsMainRequestDestination(destination));
@@ -418,7 +420,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
   // ServiceWorkerMainResourceLoader which does that work.
   loader_wrapper_ = std::make_unique<ServiceWorkerMainResourceLoaderWrapper>(
       std::make_unique<ServiceWorkerMainResourceLoader>(
-          std::move(fallback_callback_), container_host_));
+          std::move(fallback_callback_), container_host_, frame_tree_node_id_));
 
   TRACE_EVENT_WITH_FLOW1(
       "ServiceWorker",

@@ -210,7 +210,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // callback or fallback callback.
   request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
       context_core->AsWeakPtr(), handle_->container_host(),
-      request_destination_, skip_service_worker,
+      request_destination_, skip_service_worker, frame_tree_node_id_,
       handle_->service_worker_accessed_callback());
 
   // Update `isolation_info_` in case a redirect has occurred.

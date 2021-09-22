@@ -77,9 +77,11 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
 
 ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     NavigationLoaderInterceptor::FallbackCallback fallback_callback,
-    base::WeakPtr<ServiceWorkerContainerHost> container_host)
+    base::WeakPtr<ServiceWorkerContainerHost> container_host,
+    int frame_tree_node_id)
     : fallback_callback_(std::move(fallback_callback)),
-      container_host_(std::move(container_host)) {
+      container_host_(std::move(container_host)),
+      frame_tree_node_id_(frame_tree_node_id) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader", this,
@@ -173,8 +175,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   if (container_host_->IsContainerForWindowClient()) {
     did_navigation_preload_ = fetch_dispatcher_->MaybeStartNavigationPreload(
-        resource_request_, std::move(context),
-        container_host_->GetFrameTreeNodeIdForOngoingNavigation());
+        resource_request_, std::move(context), frame_tree_node_id_);
   }
 
   // Record worker start time here as |fetch_dispatcher_| will start a service

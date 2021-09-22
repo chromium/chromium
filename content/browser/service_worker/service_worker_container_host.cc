@@ -1082,8 +1082,11 @@ int ServiceWorkerContainerHost::GetProcessId() const {
   return process_id_for_worker_client_;
 }
 
-int ServiceWorkerContainerHost::GetFrameTreeNodeIdForOngoingNavigation() const {
+int ServiceWorkerContainerHost::GetFrameTreeNodeIdForOngoingNavigation(
+    base::PassKey<StoragePartitionImpl>) const {
   DCHECK(IsContainerForWindowClient());
+  DCHECK_NE(ongoing_navigation_frame_tree_node_id_,
+            RenderFrameHost::kNoFrameTreeNodeId);
   return ongoing_navigation_frame_tree_node_id_;
 }
 

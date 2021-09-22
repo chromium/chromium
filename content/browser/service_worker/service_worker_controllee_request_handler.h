@@ -50,6 +50,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       base::WeakPtr<ServiceWorkerContainerHost> container_host,
       network::mojom::RequestDestination destination,
       bool skip_service_worker,
+      int frame_tree_node_id,
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
 
   ServiceWorkerControlleeRequestHandler(
@@ -118,6 +119,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   blink::StorageKey storage_key_;
   bool force_update_started_;
   base::TimeTicks registration_lookup_start_time_;
+  const int frame_tree_node_id_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;

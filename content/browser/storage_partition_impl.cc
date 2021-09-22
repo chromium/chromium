@@ -1766,7 +1766,8 @@ void StoragePartitionImpl::OnAuthRequired(
           // FrameTreeNode ID.
           // TODO(https://crbug.com/1239554): Optimize locating logic.
           process_id = network::mojom::kBrowserProcessId;
-          routing_id = container_host->GetFrameTreeNodeIdForOngoingNavigation();
+          routing_id = container_host->GetFrameTreeNodeIdForOngoingNavigation(
+              base::PassKey<StoragePartitionImpl>());
         }
       }
     }
@@ -1830,7 +1831,8 @@ void StoragePartitionImpl::OnCertificateRequested(
           // a FrameTreeNode ID.
           // TODO(https://crbug.com/1239554): Optimize locating logic.
           process_id = network::mojom::kBrowserProcessId;
-          routing_id = container_host->GetFrameTreeNodeIdForOngoingNavigation();
+          routing_id = container_host->GetFrameTreeNodeIdForOngoingNavigation(
+              base::PassKey<StoragePartitionImpl>());
         }
       }
     }
