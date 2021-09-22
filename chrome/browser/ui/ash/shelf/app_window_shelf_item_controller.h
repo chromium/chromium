@@ -78,7 +78,7 @@ class AppWindowShelfItemController : public ash::ShelfItemDelegate,
   AppWindowBase* GetLastActiveWindow();
 
  private:
-  friend class ChromeShelfControllerTest;
+  friend class ChromeShelfControllerTestBase;
 
   WindowList::iterator GetFromNativeWindow(aura::Window* window,
                                            WindowList& list);

@@ -314,7 +314,7 @@ class ChromeShelfController
       const std::u16string& title = std::u16string());
 
  private:
-  friend class ChromeShelfControllerTest;
+  friend class ChromeShelfControllerTestBase;
   friend class ShelfAppBrowserTest;
   friend class ShelfPlatformAppBrowserTest;
   friend class TestChromeShelfController;
