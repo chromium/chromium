@@ -15,6 +15,7 @@
 #include "chrome/browser/cart/cart_metrics_tracker.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/cart/discount_url_loader.h"
+#include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -116,6 +117,8 @@ class CartService : public history::HistoryServiceObserver,
                      const history::DeletionInfo& deletion_info) override;
   // Returns whether a discount with |rule_id| is used or not.
   bool IsDiscountUsed(const std::string& rule_id);
+  // Records timestamp of the latest fetch for discount.
+  void RecordFetchTimestamp();
   // KeyedService:
   void Shutdown() override;
 
@@ -124,6 +127,7 @@ class CartService : public history::HistoryServiceObserver,
   friend class CartServiceTest;
   friend class CartServiceDiscountTest;
   friend class CartServiceBrowserDiscountTest;
+  friend class CartServiceDiscountFetchTest;
   FRIEND_TEST_ALL_PREFIXES(CartHandlerNtpModuleFakeDataTest,
                            TestEnableFakeData);
 
@@ -184,6 +188,9 @@ class CartService : public history::HistoryServiceObserver,
   // Set discount_link_fetcher_ for testing purpose.
   void SetCartDiscountLinkFetcherForTesting(
       std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher);
+  // Set fetch_discount_worker_ for testing purpose.
+  void SetFetchDiscountWorkerForTesting(
+      std::unique_ptr<FetchDiscountWorker> fetch_discount_worker);
   // Returns whether a URL should be skipped based on server-side bloom filter.
   bool ShouldSkip(const GURL& url);
   void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto);
@@ -199,6 +206,7 @@ class CartService : public history::HistoryServiceObserver,
   absl::optional<base::Value> domain_name_mapping_;
   absl::optional<base::Value> domain_cart_url_mapping_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
+  std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_for_testing_;
   std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher_;
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
   std::unique_ptr<CartMetricsTracker> metrics_tracker_;

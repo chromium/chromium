@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
+#include "chrome/browser/cart/cart_features.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -23,12 +24,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
-// Default value is 6 hours.
-constexpr base::FeatureParam<base::TimeDelta> kDelayFetchParam(
-    &ntp_features::kNtpChromeCartModule,
-    "delay-fetch-discount",
-    base::TimeDelta::FromHours(6));
-
 const char kOauthName[] = "rbd";
 const char kOauthScopes[] = "https://www.googleapis.com/auth/chromememex";
 const char kEmptyToken[] = "";
@@ -49,6 +44,10 @@ void CartServiceDelegate::UpdateCart(
     const bool is_tester) {
   cart_service_->UpdateDiscounts(GURL(cart_url), std::move(new_proto),
                                  is_tester);
+}
+
+void CartServiceDelegate::RecordFetchTimestamp() {
+  cart_service_->RecordFetchTimestamp();
 }
 
 FetchDiscountWorker::FetchDiscountWorker(
@@ -79,7 +78,6 @@ void FetchDiscountWorker::Start(base::TimeDelta delay) {
 
 void FetchDiscountWorker::PrepareToFetch() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
   if (identity_manager_ &&
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     FetchOauthToken();
@@ -139,6 +137,7 @@ void FetchDiscountWorker::ReadyToFetch(
       base::BindOnce(&FetchDiscountWorker::AfterDiscountFetched,
                      weak_ptr_factory_.GetWeakPtr());
 
+  cart_service_delegate_->RecordFetchTimestamp();
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -263,7 +262,7 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
           ntp_features::kNtpChromeCartModule,
           ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
           false)) {
-    // Continue to work
-    Start(kDelayFetchParam.Get());
+    // Continue to work.
+    Start(cart_features::kDiscountFetchDelayParam.Get());
   }
 }

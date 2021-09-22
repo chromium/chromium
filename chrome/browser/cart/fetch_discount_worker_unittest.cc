@@ -9,7 +9,9 @@
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/variations.mojom.h"
@@ -272,8 +274,8 @@ class FetchDiscountWorkerTest : public testing::Test {
   FetchDiscountWorkerTest() {
     features_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
-          "true"}});
+        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
+         {"discount-fetch-delay", "6h"}});
   }
   void SetUp() override {
     test_shared_url_loader_factory_ =
@@ -353,12 +355,16 @@ class FetchDiscountWorkerTest : public testing::Test {
 
 
 TEST_F(FetchDiscountWorkerTest, TestStart_EndToEnd) {
+  EXPECT_EQ(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+            base::Time());
   CartDiscountFetcher::CartDiscountMap fake_result;
   CreateCartDiscountFetcherFactory(std::move(fake_result), false);
   CreateWorker();
 
   fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
   task_environment_.RunUntilIdle();
+  EXPECT_NE(profile_.GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime),
+            base::Time());
 }
 
 TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithRBDDiscount) {

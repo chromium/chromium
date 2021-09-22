@@ -14,6 +14,11 @@ constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
     // This regex does not match anything.
     "\\b\\B"};
 
+// Default value is 6 hours.
+constexpr base::FeatureParam<base::TimeDelta> kDiscountFetchDelayParam(
+    &ntp_features::kNtpChromeCartModule,
+    "discount-fetch-delay",
+    base::TimeDelta::FromHours(6));
 }  // namespace cart_features
 
 #endif  // CHROME_BROWSER_CART_CART_FEATURES_H_
