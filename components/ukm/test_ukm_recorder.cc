@@ -163,8 +163,9 @@ TestAutoSetUkmRecorder::~TestAutoSetUkmRecorder() {
 }
 
 std::vector<TestUkmRecorder::HumanReadableUkmMetrics>
-TestUkmRecorder::GetMetrics(std::string entry_name,
-                            const std::vector<std::string>& metric_names) {
+TestUkmRecorder::GetMetrics(
+    std::string entry_name,
+    const std::vector<std::string>& metric_names) const {
   std::vector<TestUkmRecorder::HumanReadableUkmMetrics> result;
   for (const auto& entry : GetEntries(entry_name, metric_names)) {
     result.push_back(entry.metrics);
@@ -174,7 +175,7 @@ TestUkmRecorder::GetMetrics(std::string entry_name,
 
 std::vector<TestUkmRecorder::HumanReadableUkmEntry> TestUkmRecorder::GetEntries(
     std::string entry_name,
-    const std::vector<std::string>& metric_names) {
+    const std::vector<std::string>& metric_names) const {
   std::vector<TestUkmRecorder::HumanReadableUkmEntry> results;
   for (const ukm::mojom::UkmEntry* entry : GetEntriesByName(entry_name)) {
     HumanReadableUkmEntry result;

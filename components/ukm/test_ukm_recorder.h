@@ -108,13 +108,13 @@ class TestUkmRecorder : public UkmRecorderImpl {
   // human-readable form, allowing to write clearer test expectations.
   std::vector<HumanReadableUkmMetrics> GetMetrics(
       std::string entry_name,
-      const std::vector<std::string>& metric_names);
+      const std::vector<std::string>& metric_names) const;
 
   // A test helper returning all entries for a given name in a human-readable
   // form, allowing to write clearer test expectations.
   std::vector<HumanReadableUkmEntry> GetEntries(
       std::string entry_name,
-      const std::vector<std::string>& metric_names);
+      const std::vector<std::string>& metric_names) const;
 
  private:
   uint64_t entry_hash_to_wait_for_ = 0;
