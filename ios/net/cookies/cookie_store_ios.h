@@ -68,6 +68,9 @@ class CookieStoreIOS : public net::CookieStore,
   // is finished.
   CookieStoreIOS(NSHTTPCookieStorage* ns_cookie_store, NetLog* net_log);
 
+  CookieStoreIOS(const CookieStoreIOS&) = delete;
+  CookieStoreIOS& operator=(const CookieStoreIOS&) = delete;
+
   ~CookieStoreIOS() override;
 
   enum CookiePolicy { ALLOW, BLOCK };
@@ -135,20 +138,27 @@ class CookieStoreIOS : public net::CookieStore,
                        public CookieChangeSubscription {
    public:
     explicit Subscription(base::CallbackListSubscription subscription);
+
+    Subscription(const Subscription&) = delete;
+    Subscription& operator=(const Subscription&) = delete;
+
     ~Subscription() override;
 
     void ResetSubscription();
 
    private:
     base::CallbackListSubscription subscription_;
-
-    DISALLOW_COPY_AND_ASSIGN(Subscription);
   };
 
   // CookieChangeDispatcher implementation that proxies into IOSCookieStore.
   class CookieChangeDispatcherIOS : public CookieChangeDispatcher {
    public:
     explicit CookieChangeDispatcherIOS(CookieStoreIOS* cookie_store);
+
+    CookieChangeDispatcherIOS(const CookieChangeDispatcherIOS&) = delete;
+    CookieChangeDispatcherIOS& operator=(const CookieChangeDispatcherIOS&) =
+        delete;
+
     ~CookieChangeDispatcherIOS() override;
 
     // net::CookieChangeDispatcher
@@ -166,8 +176,6 @@ class CookieStoreIOS : public net::CookieStore,
     // Instances of this class are always members of CookieStoreIOS, so
     // |cookie_store| is guaranteed to outlive this instance.
     CookieStoreIOS* const cookie_store_;
-
-    DISALLOW_COPY_AND_ASSIGN(CookieChangeDispatcherIOS);
   };
 
   // Interface only used by CookieChangeDispatcherIOS.
@@ -304,8 +312,6 @@ class CookieStoreIOS : public net::CookieStore,
   CookieChangeDispatcherIOS change_dispatcher_;
 
   base::WeakPtrFactory<CookieStoreIOS> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieStoreIOS);
 };
 
 }  // namespace net

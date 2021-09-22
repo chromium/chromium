@@ -25,6 +25,12 @@ class IOSProfileSessionDurationsService : public KeyedService {
   // not monitor profile session durations.
   IOSProfileSessionDurationsService(syncer::SyncService* sync_service,
                                     signin::IdentityManager* identity_manager);
+
+  IOSProfileSessionDurationsService(const IOSProfileSessionDurationsService&) =
+      delete;
+  IOSProfileSessionDurationsService& operator=(
+      const IOSProfileSessionDurationsService&) = delete;
+
   ~IOSProfileSessionDurationsService() override;
 
   // KeyedService:
@@ -42,8 +48,6 @@ class IOSProfileSessionDurationsService : public KeyedService {
       metrics_recorder_;
 
   bool is_session_active_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSProfileSessionDurationsService);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_PROFILE_SESSION_DURATIONS_SERVICE_H_

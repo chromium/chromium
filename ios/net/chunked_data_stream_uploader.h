@@ -35,6 +35,11 @@ class ChunkedDataStreamUploader : public net::UploadDataStream {
   };
 
   ChunkedDataStreamUploader(Delegate* delegate);
+
+  ChunkedDataStreamUploader(const ChunkedDataStreamUploader&) = delete;
+  ChunkedDataStreamUploader& operator=(const ChunkedDataStreamUploader&) =
+      delete;
+
   ~ChunkedDataStreamUploader() override;
 
   // Interface for iOS layer to try to upload data. If there already has a
@@ -76,8 +81,6 @@ class ChunkedDataStreamUploader : public net::UploadDataStream {
   bool is_front_of_stream_;
 
   base::WeakPtrFactory<ChunkedDataStreamUploader> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkedDataStreamUploader);
 };
 
 }  // namespace net

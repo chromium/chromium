@@ -22,6 +22,11 @@ class CardNameFixFlowViewBridge : public CardNameFixFlowView {
  public:
   CardNameFixFlowViewBridge(CardNameFixFlowController* controller,
                             UIViewController* base_view_controller);
+
+  CardNameFixFlowViewBridge(const CardNameFixFlowViewBridge&) = delete;
+  CardNameFixFlowViewBridge& operator=(const CardNameFixFlowViewBridge&) =
+      delete;
+
   ~CardNameFixFlowViewBridge() override;
 
   // CardNameFixFlowView:
@@ -54,8 +59,6 @@ class CardNameFixFlowViewBridge : public CardNameFixFlowView {
   __weak UIViewController* presenting_view_controller_;
 
   base::WeakPtrFactory<CardNameFixFlowViewBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowViewBridge);
 };
 
 }  // namespace autofill

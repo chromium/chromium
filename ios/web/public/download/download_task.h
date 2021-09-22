@@ -122,9 +122,11 @@ class DownloadTask {
   virtual void RemoveObserver(DownloadTaskObserver* observer) = 0;
 
   DownloadTask() = default;
-  virtual ~DownloadTask() = default;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadTask);
+  DownloadTask(const DownloadTask&) = delete;
+  DownloadTask& operator=(const DownloadTask&) = delete;
+
+  virtual ~DownloadTask() = default;
 };
 
 }  // namespace web

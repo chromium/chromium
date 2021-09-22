@@ -15,13 +15,14 @@ namespace ios_web_view {
 class WebViewWebMainDelegate : public web::WebMainDelegate {
  public:
   WebViewWebMainDelegate();
+
+  WebViewWebMainDelegate(const WebViewWebMainDelegate&) = delete;
+  WebViewWebMainDelegate& operator=(const WebViewWebMainDelegate&) = delete;
+
   ~WebViewWebMainDelegate() override;
 
   // WebMainDelegate implementation.
   void BasicStartupComplete() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewWebMainDelegate);
 };
 
 }  // namespace ios_web_view

@@ -155,6 +155,9 @@ class SafeBrowsingServiceTest : public PlatformTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  SafeBrowsingServiceTest(const SafeBrowsingServiceTest&) = delete;
+  SafeBrowsingServiceTest& operator=(const SafeBrowsingServiceTest&) = delete;
+
   ~SafeBrowsingServiceTest() override {
     safe_browsing_service_->ShutDown();
 
@@ -231,8 +234,6 @@ class SafeBrowsingServiceTest : public PlatformTest {
   safe_browsing::TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_;
   // Owned by V4Database.
   safe_browsing::TestV4StoreFactory* store_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingServiceTest);
 };
 
 TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {

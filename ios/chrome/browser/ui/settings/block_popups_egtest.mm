@@ -66,6 +66,11 @@ class ScopedBlockPopupsException {
     [BlockPopupsAppInterface setPopupPolicy:CONTENT_SETTING_ALLOW
                                  forPattern:pattern_];
   }
+
+  ScopedBlockPopupsException(const ScopedBlockPopupsException&) = delete;
+  ScopedBlockPopupsException& operator=(const ScopedBlockPopupsException&) =
+      delete;
+
   ~ScopedBlockPopupsException() {
     [BlockPopupsAppInterface setPopupPolicy:CONTENT_SETTING_DEFAULT
                                  forPattern:pattern_];
@@ -74,8 +79,6 @@ class ScopedBlockPopupsException {
  private:
   // The exception pattern that this object is managing.
   NSString* pattern_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBlockPopupsException);
 };
 }  // namespace
 

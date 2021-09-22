@@ -25,6 +25,11 @@ class FaviconWebStateDispatcher;
 // distillation.
 class ReadingListDistillerPageDelegate {
  public:
+  ReadingListDistillerPageDelegate(const ReadingListDistillerPageDelegate&) =
+      delete;
+  ReadingListDistillerPageDelegate& operator=(
+      const ReadingListDistillerPageDelegate&) = delete;
+
   virtual ~ReadingListDistillerPageDelegate();
 
   // A callback called if the URL passed to the distilled led to a redirection.
@@ -37,7 +42,6 @@ class ReadingListDistillerPageDelegate {
 
  protected:
   ReadingListDistillerPageDelegate();
-  DISALLOW_COPY_AND_ASSIGN(ReadingListDistillerPageDelegate);
 };
 
 // An DistillerPageIOS that will retain WebState to allow favicon download and
@@ -52,6 +56,10 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
       web::BrowserState* browser_state,
       FaviconWebStateDispatcher* web_state_dispatcher,
       ReadingListDistillerPageDelegate* delegate);
+
+  ReadingListDistillerPage(const ReadingListDistillerPage&) = delete;
+  ReadingListDistillerPage& operator=(const ReadingListDistillerPage&) = delete;
+
   ~ReadingListDistillerPage() override;
 
  protected:
@@ -103,8 +111,6 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
   ReadingListDistillerPageDelegate* delegate_;
   int delayed_task_id_;
   base::WeakPtrFactory<ReadingListDistillerPage> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListDistillerPage);
 };
 
 }  // namespace reading_list

@@ -20,6 +20,9 @@ class FormSuggestionTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<FormSuggestionTabHelper> {
  public:
+  FormSuggestionTabHelper(const FormSuggestionTabHelper&) = delete;
+  FormSuggestionTabHelper& operator=(const FormSuggestionTabHelper&) = delete;
+
   ~FormSuggestionTabHelper() override;
 
   // Creates a FormSuggestionTabHelper and attaches it to the given |web_state|.
@@ -43,8 +46,6 @@ class FormSuggestionTabHelper
   __strong FormSuggestionController* controller_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FormSuggestionTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_FORM_SUGGESTION_TAB_HELPER_H_

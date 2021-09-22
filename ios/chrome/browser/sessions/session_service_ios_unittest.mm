@@ -40,6 +40,10 @@ namespace {
 class SessionServiceTest : public PlatformTest {
  public:
   SessionServiceTest() = default;
+
+  SessionServiceTest(const SessionServiceTest&) = delete;
+  SessionServiceTest& operator=(const SessionServiceTest&) = delete;
+
   ~SessionServiceTest() override = default;
 
  protected:
@@ -103,8 +107,6 @@ class SessionServiceTest : public PlatformTest {
   SessionServiceIOS* session_service_ = nil;
   FakeWebStateListDelegate web_state_list_delegate_;
   base::FilePath directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionServiceTest);
 };
 
 TEST_F(SessionServiceTest, SessionPathForDirectory) {

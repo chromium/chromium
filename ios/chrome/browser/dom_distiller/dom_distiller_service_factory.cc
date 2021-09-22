@@ -40,10 +40,10 @@ class DomDistillerKeyedService : public KeyedService,
                             std::move(distilled_page_prefs),
                             std::move(distiller_ui_handle)) {}
 
-  ~DomDistillerKeyedService() override {}
+  DomDistillerKeyedService(const DomDistillerKeyedService&) = delete;
+  DomDistillerKeyedService& operator=(const DomDistillerKeyedService&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomDistillerKeyedService);
+  ~DomDistillerKeyedService() override {}
 };
 }  // namespace
 

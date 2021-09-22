@@ -74,12 +74,13 @@ class WebFrame : public base::SupportsUserData {
   // Returns the WebFrameInternal instance for this object.
   virtual WebFrameInternal* GetWebFrameInternal() = 0;
 
+  WebFrame(const WebFrame&) = delete;
+  WebFrame& operator=(const WebFrame&) = delete;
+
   ~WebFrame() override {}
 
  protected:
   WebFrame() {}
-
-  DISALLOW_COPY_AND_ASSIGN(WebFrame);
 };
 
 }  // namespace web

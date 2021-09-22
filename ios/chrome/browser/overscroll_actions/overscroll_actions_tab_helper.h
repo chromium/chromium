@@ -22,6 +22,10 @@ class OverscrollActionsTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<OverscrollActionsTabHelper> {
  public:
+  OverscrollActionsTabHelper(const OverscrollActionsTabHelper&) = delete;
+  OverscrollActionsTabHelper& operator=(const OverscrollActionsTabHelper&) =
+      delete;
+
   ~OverscrollActionsTabHelper() override;
 
   // Sets the delegate. The delegate is not owned by the tab helper.
@@ -53,8 +57,6 @@ class OverscrollActionsTabHelper
   web::WebState* web_state_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollActionsTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_OVERSCROLL_ACTIONS_TAB_HELPER_H_

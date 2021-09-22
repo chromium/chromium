@@ -28,6 +28,9 @@ class TestBrowser : public Browser {
   // requires a task environment).
   TestBrowser();
 
+  TestBrowser(const TestBrowser&) = delete;
+  TestBrowser& operator=(const TestBrowser&) = delete;
+
   ~TestBrowser() override;
 
   // Browser.
@@ -48,8 +51,6 @@ class TestBrowser : public Browser {
   ChromeBrowserState* browser_state_ = nullptr;
   WebStateList* web_state_list_ = nullptr;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowser);
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_TEST_BROWSER_H_

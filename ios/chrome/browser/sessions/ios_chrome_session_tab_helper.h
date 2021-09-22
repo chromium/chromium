@@ -12,6 +12,10 @@
 class IOSChromeSessionTabHelper
     : public web::WebStateUserData<IOSChromeSessionTabHelper> {
  public:
+  IOSChromeSessionTabHelper(const IOSChromeSessionTabHelper&) = delete;
+  IOSChromeSessionTabHelper& operator=(const IOSChromeSessionTabHelper&) =
+      delete;
+
   ~IOSChromeSessionTabHelper() override;
 
   // Returns the identifier used by session restore for this tab.
@@ -34,8 +38,6 @@ class IOSChromeSessionTabHelper
   SessionID window_id_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeSessionTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_IOS_CHROME_SESSION_TAB_HELPER_H_

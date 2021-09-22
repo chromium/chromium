@@ -62,12 +62,13 @@ class TestMain {
     CHECK(!loaded_locale.empty());
   }
 
+  TestMain(const TestMain&) = delete;
+  TestMain& operator=(const TestMain&) = delete;
+
   ~TestMain() {}
 
  private:
   base::AtExitManager exit_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMain);
 };
 
 }

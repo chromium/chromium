@@ -22,6 +22,11 @@ class WebStateListMetricsBrowserAgent
       public web::WebStateObserver,
       public BrowserUserData<WebStateListMetricsBrowserAgent> {
  public:
+  WebStateListMetricsBrowserAgent(const WebStateListMetricsBrowserAgent&) =
+      delete;
+  WebStateListMetricsBrowserAgent& operator=(
+      const WebStateListMetricsBrowserAgent&) = delete;
+
   ~WebStateListMetricsBrowserAgent() override;
 
   // Creates the WebStateListMetricsBrowserAgent associating it with |browser|.
@@ -75,8 +80,6 @@ class WebStateListMetricsBrowserAgent
   bool metric_collection_paused_ = false;
 
   std::unique_ptr<AllWebStateObservationForwarder> web_state_forwarder_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListMetricsBrowserAgent);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_METRICS_BROWSER_AGENT_H_

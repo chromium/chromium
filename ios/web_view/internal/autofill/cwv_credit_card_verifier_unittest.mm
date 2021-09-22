@@ -49,6 +49,9 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
  public:
   FakeCardUnmaskDelegate() : weak_factory_(this) {}
 
+  FakeCardUnmaskDelegate(const FakeCardUnmaskDelegate&) = delete;
+  FakeCardUnmaskDelegate& operator=(const FakeCardUnmaskDelegate&) = delete;
+
   virtual ~FakeCardUnmaskDelegate() {}
 
   // CardUnmaskDelegate implementation.
@@ -86,8 +89,6 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
   UserProvidedUnmaskDetails unmask_details_;
 
   base::WeakPtrFactory<FakeCardUnmaskDelegate> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCardUnmaskDelegate);
 };
 
 class CWVCreditCardVerifierTest : public PlatformTest {

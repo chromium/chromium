@@ -28,6 +28,10 @@ class DownloadTask;
 class DownloadManagerMediator : public web::DownloadTaskObserver {
  public:
   DownloadManagerMediator();
+
+  DownloadManagerMediator(const DownloadManagerMediator&) = delete;
+  DownloadManagerMediator& operator=(const DownloadManagerMediator&) = delete;
+
   ~DownloadManagerMediator() override;
 
   // Sets download manager consumer. Not retained by mediator.
@@ -84,7 +88,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   web::DownloadTask* task_ = nullptr;
   __weak id<DownloadManagerConsumer> consumer_ = nil;
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerMediator);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_MEDIATOR_H_

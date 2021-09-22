@@ -16,6 +16,10 @@
 class ScopedFullscreenDisabler : public FullscreenControllerObserver {
  public:
   explicit ScopedFullscreenDisabler(FullscreenController* controller);
+
+  ScopedFullscreenDisabler(const ScopedFullscreenDisabler&) = delete;
+  ScopedFullscreenDisabler& operator=(const ScopedFullscreenDisabler&) = delete;
+
   ~ScopedFullscreenDisabler() override;
 
  private:
@@ -27,8 +31,6 @@ class ScopedFullscreenDisabler : public FullscreenControllerObserver {
       scoped_observer_{this};
   // The FullscreenController being disabled by this object.
   FullscreenController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFullscreenDisabler);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_SCOPED_FULLSCREEN_DISABLER_H_

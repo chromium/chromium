@@ -166,6 +166,9 @@ class WebStateListTest : public PlatformTest {
     web_state_list_.AddObserver(&observer_);
   }
 
+  WebStateListTest(const WebStateListTest&) = delete;
+  WebStateListTest& operator=(const WebStateListTest&) = delete;
+
   ~WebStateListTest() override { web_state_list_.RemoveObserver(&observer_); }
 
  protected:
@@ -196,9 +199,6 @@ class WebStateListTest : public PlatformTest {
         WebStateList::kInvalidIndex, std::move(web_state),
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateListTest);
 };
 
 // Tests that empty() matches count() != 0.

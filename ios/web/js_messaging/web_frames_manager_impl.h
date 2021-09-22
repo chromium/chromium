@@ -16,6 +16,10 @@ class WebFrame;
 class WebFramesManagerImpl : public WebFramesManager {
  public:
   explicit WebFramesManagerImpl();
+
+  WebFramesManagerImpl(const WebFramesManagerImpl&) = delete;
+  WebFramesManagerImpl& operator=(const WebFramesManagerImpl&) = delete;
+
   ~WebFramesManagerImpl() override;
 
   // Adds |frame| to the list of web frames. A frame with the same frame ID must
@@ -40,8 +44,6 @@ class WebFramesManagerImpl : public WebFramesManager {
   WebFrame* main_web_frame_ = nullptr;
 
   base::WeakPtrFactory<WebFramesManagerImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebFramesManagerImpl);
 };
 
 }  // namespace web

@@ -47,13 +47,16 @@ class IOSChromeMetricsServicesManagerClient::IOSChromeEnabledStateProvider
     : public metrics::EnabledStateProvider {
  public:
   IOSChromeEnabledStateProvider() {}
+
+  IOSChromeEnabledStateProvider(const IOSChromeEnabledStateProvider&) = delete;
+  IOSChromeEnabledStateProvider& operator=(
+      const IOSChromeEnabledStateProvider&) = delete;
+
   ~IOSChromeEnabledStateProvider() override {}
 
   bool IsConsentGiven() const override {
     return IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeEnabledStateProvider);
 };
 
 IOSChromeMetricsServicesManagerClient::IOSChromeMetricsServicesManagerClient(

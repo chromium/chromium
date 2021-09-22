@@ -109,6 +109,10 @@ class WebState : public base::SupportsUserData {
   class InterfaceBinder {
    public:
     explicit InterfaceBinder(WebState* web_state);
+
+    InterfaceBinder(const InterfaceBinder&) = delete;
+    InterfaceBinder& operator=(const InterfaceBinder&) = delete;
+
     ~InterfaceBinder();
 
     template <typename Interface>
@@ -142,8 +146,6 @@ class WebState : public base::SupportsUserData {
 
     WebState* const web_state_;
     std::map<std::string, Callback> callbacks_;
-
-    DISALLOW_COPY_AND_ASSIGN(InterfaceBinder);
   };
 
   // Creates a new WebState.

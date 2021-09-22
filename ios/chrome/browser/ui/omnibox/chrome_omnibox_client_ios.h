@@ -18,6 +18,10 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
  public:
   ChromeOmniboxClientIOS(WebOmniboxEditController* controller,
                          ChromeBrowserState* browser_state);
+
+  ChromeOmniboxClientIOS(const ChromeOmniboxClientIOS&) = delete;
+  ChromeOmniboxClientIOS& operator=(const ChromeOmniboxClientIOS&) = delete;
+
   ~ChromeOmniboxClientIOS() override;
 
   // OmniboxClient.
@@ -59,8 +63,6 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   WebOmniboxEditController* controller_;
   ChromeBrowserState* browser_state_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOmniboxClientIOS);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_CLIENT_IOS_H_

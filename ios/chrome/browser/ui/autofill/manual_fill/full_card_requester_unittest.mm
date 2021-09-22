@@ -37,6 +37,10 @@ class FakeResultDelegate
     : public autofill::payments::FullCardRequest::ResultDelegate {
  public:
   FakeResultDelegate() : weak_ptr_factory_(this) {}
+
+  FakeResultDelegate(const FakeResultDelegate&) = delete;
+  FakeResultDelegate& operator=(const FakeResultDelegate&) = delete;
+
   ~FakeResultDelegate() override {}
 
   void OnFullCardRequestSucceeded(
@@ -54,8 +58,6 @@ class FakeResultDelegate
 
  private:
   base::WeakPtrFactory<FakeResultDelegate> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeResultDelegate);
 };
 
 class PaymentRequestFullCardRequesterTest : public PlatformTest {

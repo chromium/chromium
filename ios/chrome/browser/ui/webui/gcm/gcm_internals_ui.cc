@@ -31,6 +31,11 @@ namespace {
 class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
  public:
   GcmInternalsUIMessageHandler();
+
+  GcmInternalsUIMessageHandler(const GcmInternalsUIMessageHandler&) = delete;
+  GcmInternalsUIMessageHandler& operator=(const GcmInternalsUIMessageHandler&) =
+      delete;
+
   ~GcmInternalsUIMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -55,8 +60,6 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
 
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<GcmInternalsUIMessageHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GcmInternalsUIMessageHandler);
 };
 
 GcmInternalsUIMessageHandler::GcmInternalsUIMessageHandler()

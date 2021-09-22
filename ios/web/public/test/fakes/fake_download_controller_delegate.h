@@ -20,6 +20,12 @@ class WebState;
 class FakeDownloadControllerDelegate : public DownloadControllerDelegate {
  public:
   FakeDownloadControllerDelegate(DownloadController* controller);
+
+  FakeDownloadControllerDelegate(const FakeDownloadControllerDelegate&) =
+      delete;
+  FakeDownloadControllerDelegate& operator=(
+      const FakeDownloadControllerDelegate&) = delete;
+
   ~FakeDownloadControllerDelegate() override;
 
   using AliveDownloadTaskList =
@@ -38,8 +44,6 @@ class FakeDownloadControllerDelegate : public DownloadControllerDelegate {
 
   DownloadController* controller_ = nullptr;
   AliveDownloadTaskList alive_download_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDownloadControllerDelegate);
 };
 
 }  // namespace web

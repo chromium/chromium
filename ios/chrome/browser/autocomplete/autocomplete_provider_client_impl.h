@@ -24,6 +24,12 @@ class ComponentUpdateService;
 class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
  public:
   explicit AutocompleteProviderClientImpl(ChromeBrowserState* browser_state);
+
+  AutocompleteProviderClientImpl(const AutocompleteProviderClientImpl&) =
+      delete;
+  AutocompleteProviderClientImpl& operator=(
+      const AutocompleteProviderClientImpl&) = delete;
+
   ~AutocompleteProviderClientImpl() override;
 
   // AutocompleteProviderClient implementation.
@@ -91,8 +97,6 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       url_consent_helper_;
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteProviderClientImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_

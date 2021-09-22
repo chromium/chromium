@@ -26,6 +26,10 @@ class WebUIIOSImpl : public web::WebUIIOS,
                      public base::SupportsWeakPtr<WebUIIOSImpl> {
  public:
   explicit WebUIIOSImpl(WebState* web_state);
+
+  WebUIIOSImpl(const WebUIIOSImpl&) = delete;
+  WebUIIOSImpl& operator=(const WebUIIOSImpl&) = delete;
+
   ~WebUIIOSImpl() override;
 
   // WebUIIOS implementation:
@@ -84,8 +88,6 @@ class WebUIIOSImpl : public web::WebUIIOS,
   WebState* web_state_;
 
   std::unique_ptr<WebUIIOSController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIIOSImpl);
 };
 
 }  // namespace web

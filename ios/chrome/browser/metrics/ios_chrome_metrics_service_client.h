@@ -45,6 +45,10 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
                                       public ukm::UkmConsentStateObserver,
                                       public web::GlobalWebStateObserver {
  public:
+  IOSChromeMetricsServiceClient(const IOSChromeMetricsServiceClient&) = delete;
+  IOSChromeMetricsServiceClient& operator=(
+      const IOSChromeMetricsServiceClient&) = delete;
+
   ~IOSChromeMetricsServiceClient() override;
 
   // Factory function.
@@ -162,8 +166,6 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   base::CallbackListSubscription omnibox_url_opened_subscription_;
 
   base::WeakPtrFactory<IOSChromeMetricsServiceClient> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMetricsServiceClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_CHROME_METRICS_SERVICE_CLIENT_H_

@@ -29,6 +29,9 @@ class WebMainRunnerImpl : public WebMainRunner {
         completed_basic_startup_(false),
         delegate_(nullptr) {}
 
+  WebMainRunnerImpl(const WebMainRunnerImpl&) = delete;
+  WebMainRunnerImpl& operator=(const WebMainRunnerImpl&) = delete;
+
   ~WebMainRunnerImpl() override {
     if (is_initialized_ && !is_shutdown_) {
       ShutDown();
@@ -121,8 +124,6 @@ class WebMainRunnerImpl : public WebMainRunner {
   WebClient empty_web_client_;
 
   std::unique_ptr<WebMainLoop> main_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMainRunnerImpl);
 };
 
 // static

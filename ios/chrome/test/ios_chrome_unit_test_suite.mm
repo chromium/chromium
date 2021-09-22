@@ -31,6 +31,12 @@ class IOSChromeUnitTestSuiteInitializer
     : public testing::EmptyTestEventListener {
  public:
   IOSChromeUnitTestSuiteInitializer() {}
+
+  IOSChromeUnitTestSuiteInitializer(const IOSChromeUnitTestSuiteInitializer&) =
+      delete;
+  IOSChromeUnitTestSuiteInitializer& operator=(
+      const IOSChromeUnitTestSuiteInitializer&) = delete;
+
   ~IOSChromeUnitTestSuiteInitializer() override {}
 
   void OnTestStart(const testing::TestInfo& test_info) override {
@@ -56,8 +62,6 @@ class IOSChromeUnitTestSuiteInitializer
  private:
   std::unique_ptr<ios::ChromeBrowserProvider> chrome_browser_provider_;
   std::unique_ptr<ApplicationContext> application_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeUnitTestSuiteInitializer);
 };
 
 }  // namespace

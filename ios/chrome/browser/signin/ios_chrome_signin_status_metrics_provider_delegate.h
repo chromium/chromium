@@ -18,6 +18,12 @@ class IOSChromeSigninStatusMetricsProviderDelegate
       public IdentityManagerFactoryObserver {
  public:
   IOSChromeSigninStatusMetricsProviderDelegate();
+
+  IOSChromeSigninStatusMetricsProviderDelegate(
+      const IOSChromeSigninStatusMetricsProviderDelegate&) = delete;
+  IOSChromeSigninStatusMetricsProviderDelegate& operator=(
+      const IOSChromeSigninStatusMetricsProviderDelegate&) = delete;
+
   ~IOSChromeSigninStatusMetricsProviderDelegate() override;
 
  private:
@@ -32,8 +38,6 @@ class IOSChromeSigninStatusMetricsProviderDelegate
 
   // Returns the loaded ChromeBrowserState instances.
   std::vector<ChromeBrowserState*> GetLoadedChromeBrowserStates();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeSigninStatusMetricsProviderDelegate);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_IOS_CHROME_SIGNIN_STATUS_METRICS_PROVIDER_DELEGATE_H_

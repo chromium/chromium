@@ -69,6 +69,11 @@ class IOSChromePasswordManagerClient
   explicit IOSChromePasswordManagerClient(
       id<IOSChromePasswordManagerClientBridge> bridge);
 
+  IOSChromePasswordManagerClient(const IOSChromePasswordManagerClient&) =
+      delete;
+  IOSChromePasswordManagerClient& operator=(
+      const IOSChromePasswordManagerClient&) = delete;
+
   ~IOSChromePasswordManagerClient() override;
 
   // password_manager::PasswordManagerClient implementation.
@@ -204,8 +209,6 @@ class IOSChromePasswordManagerClient
   base::ScopedObservation<PasswordProtectionJavaScriptFeature,
                           InputEventObserver>
       input_event_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromePasswordManagerClient);
   base::WeakPtrFactory<IOSChromePasswordManagerClient> weak_factory_{this};
 };
 

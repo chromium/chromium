@@ -19,6 +19,9 @@ class WebState;
 // Tracks information related to a single navigation.
 class FakeNavigationContext : public NavigationContext {
  public:
+  FakeNavigationContext(const FakeNavigationContext&) = delete;
+  FakeNavigationContext& operator=(const FakeNavigationContext&) = delete;
+
   ~FakeNavigationContext() override;
   FakeNavigationContext();
 
@@ -63,8 +66,6 @@ class FakeNavigationContext : public NavigationContext {
   __strong NSError* error_ = nil;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
   bool renderer_initiated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationContext);
 };
 
 }  // namespace web

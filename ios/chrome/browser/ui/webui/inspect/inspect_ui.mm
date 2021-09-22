@@ -61,6 +61,10 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
                           public JavaScriptConsoleFeatureDelegate {
  public:
   InspectDOMHandler();
+
+  InspectDOMHandler(const InspectDOMHandler&) = delete;
+  InspectDOMHandler& operator=(const InspectDOMHandler&) = delete;
+
   ~InspectDOMHandler() override;
 
   // WebUIIOSMessageHandler implementation
@@ -81,8 +85,6 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
 
   // Whether or not logging is enabled.
   bool logging_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectDOMHandler);
 };
 
 InspectDOMHandler::InspectDOMHandler() {}

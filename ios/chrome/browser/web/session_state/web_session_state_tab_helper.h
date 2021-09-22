@@ -23,6 +23,9 @@ class WebSessionStateTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<WebSessionStateTabHelper> {
  public:
+  WebSessionStateTabHelper(const WebSessionStateTabHelper&) = delete;
+  WebSessionStateTabHelper& operator=(const WebSessionStateTabHelper&) = delete;
+
   ~WebSessionStateTabHelper() override;
 
   static void CreateForWebState(web::WebState* web_state);
@@ -72,8 +75,6 @@ class WebSessionStateTabHelper
   web::WebState* web_state_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebSessionStateTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_SESSION_STATE_WEB_SESSION_STATE_TAB_HELPER_H_

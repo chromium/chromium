@@ -31,6 +31,10 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
       ChromeBrowserState* browser_state,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service);
+
+  BookmarkClientImpl(const BookmarkClientImpl&) = delete;
+  BookmarkClientImpl& operator=(const BookmarkClientImpl&) = delete;
+
   ~BookmarkClientImpl() override;
 
   // bookmarks::BookmarkClient:
@@ -68,8 +72,6 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
   // Pointer to the BookmarkSyncService responsible for encoding and decoding
   // sync metadata persisted together with the bookmarks model.
   sync_bookmarks::BookmarkSyncService* bookmark_sync_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkClientImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_CLIENT_IMPL_H_

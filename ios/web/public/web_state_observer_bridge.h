@@ -91,6 +91,10 @@ class WebStateObserverBridge : public web::WebStateObserver {
   // It it the responsibility of calling code to add/remove the instance
   // from the WebStates observer lists.
   WebStateObserverBridge(id<CRWWebStateObserver> observer);
+
+  WebStateObserverBridge(const WebStateObserverBridge&) = delete;
+  WebStateObserverBridge& operator=(const WebStateObserverBridge&) = delete;
+
   ~WebStateObserverBridge() override;
 
   // web::WebStateObserver methods.
@@ -123,7 +127,6 @@ class WebStateObserverBridge : public web::WebStateObserver {
 
  private:
   __weak id<CRWWebStateObserver> observer_ = nil;
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserverBridge);
 };
 
 }  // namespace web

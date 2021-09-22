@@ -34,6 +34,10 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
       syncer::DeviceInfoSyncService* device_info_sync_service,
       invalidation::InvalidationService* invalidation_service,
       syncer::SyncInvalidationsService* sync_invalidations_service);
+
+  WebViewSyncClient(const WebViewSyncClient&) = delete;
+  WebViewSyncClient& operator=(const WebViewSyncClient&) = delete;
+
   ~WebViewSyncClient() override;
 
   // BrowserSyncClient implementation.
@@ -76,8 +80,6 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
 
   std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
       component_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewSyncClient);
 };
 
 }  // namespace ios_web_view

@@ -72,6 +72,9 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
                     browser_state_->GetStatePath()))),
         session_sync_prefs_(browser_state->GetPrefs()) {}
 
+  SyncSessionsClientImpl(const SyncSessionsClientImpl&) = delete;
+  SyncSessionsClientImpl& operator=(const SyncSessionsClientImpl&) = delete;
+
   ~SyncSessionsClientImpl() override {}
 
   // SyncSessionsClient implementation.
@@ -121,8 +124,6 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
   const std::unique_ptr<IOSChromeLocalSessionEventRouter>
       local_session_event_router_;
   sync_sessions::SessionSyncPrefs session_sync_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsClientImpl);
 };
 
 }  // namespace

@@ -25,6 +25,12 @@ class BrowsingDataRemoverObserverBridge : public BrowsingDataRemoverObserver {
  public:
   explicit BrowsingDataRemoverObserverBridge(
       id<BrowsingDataRemoverObserving> observer);
+
+  BrowsingDataRemoverObserverBridge(const BrowsingDataRemoverObserverBridge&) =
+      delete;
+  BrowsingDataRemoverObserverBridge& operator=(
+      const BrowsingDataRemoverObserverBridge&) = delete;
+
   ~BrowsingDataRemoverObserverBridge() override;
 
   // BrowsingDataRemoverObserver methods.
@@ -33,8 +39,6 @@ class BrowsingDataRemoverObserverBridge : public BrowsingDataRemoverObserver {
 
  private:
   __weak id<BrowsingDataRemoverObserving> observer_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_OBSERVER_BRIDGE_H_

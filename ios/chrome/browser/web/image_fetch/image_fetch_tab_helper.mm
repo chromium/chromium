@@ -41,6 +41,9 @@ const int kGetImageDataByJsTimeout = 300;
 class ImageFetcher : public image_fetcher::IOSImageDataFetcherWrapper,
                      public base::SupportsUserData::Data {
  public:
+  ImageFetcher(const ImageFetcher&) = delete;
+  ImageFetcher& operator=(const ImageFetcher&) = delete;
+
   ~ImageFetcher() override = default;
 
   ImageFetcher(
@@ -57,8 +60,6 @@ class ImageFetcher : public image_fetcher::IOSImageDataFetcherWrapper,
     return static_cast<ImageFetcher*>(
         browser_state->GetUserData(&kImageFetcherKeyName));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcher);
 };
 }
 

@@ -41,6 +41,11 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
  public:
   WebStatePolicyDeciderBridge(web::WebState* web_state,
                               id<CRWWebStatePolicyDecider> decider);
+
+  WebStatePolicyDeciderBridge(const WebStatePolicyDeciderBridge&) = delete;
+  WebStatePolicyDeciderBridge& operator=(const WebStatePolicyDeciderBridge&) =
+      delete;
+
   ~WebStatePolicyDeciderBridge() override;
 
   // web::WebStatePolicyDecider methods.
@@ -58,8 +63,6 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
  private:
   // CRWWebStatePolicyDecider which receives forwarded calls.
   __weak id<CRWWebStatePolicyDecider> decider_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStatePolicyDeciderBridge);
 };
 
 }  // web

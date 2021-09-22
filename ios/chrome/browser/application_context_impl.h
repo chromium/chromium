@@ -34,6 +34,10 @@ class ApplicationContextImpl : public ApplicationContext {
   ApplicationContextImpl(base::SequencedTaskRunner* local_state_task_runner,
                          const base::CommandLine& command_line,
                          const std::string& locale);
+
+  ApplicationContextImpl(const ApplicationContextImpl&) = delete;
+  ApplicationContextImpl& operator=(const ApplicationContextImpl&) = delete;
+
   ~ApplicationContextImpl() override;
 
   // Called before the browser threads are created.
@@ -124,8 +128,6 @@ class ApplicationContextImpl : public ApplicationContext {
       network_connection_tracker_;
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplicationContextImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_IMPL_H_

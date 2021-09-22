@@ -25,6 +25,9 @@ enum class PageLoadCompletionStatus : bool { SUCCESS = 0, FAILURE = 1 };
 // load events from WebState.
 class WebStateObserver {
  public:
+  WebStateObserver(const WebStateObserver&) = delete;
+  WebStateObserver& operator=(const WebStateObserver&) = delete;
+
   virtual ~WebStateObserver();
 
   // These methods are invoked every time the WebState changes visibility.
@@ -146,9 +149,6 @@ class WebStateObserver {
 
  protected:
   WebStateObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserver);
 };
 
 }  // namespace web

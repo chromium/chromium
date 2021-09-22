@@ -214,6 +214,12 @@ class MainControllerAuthenticationServiceDelegate
   MainControllerAuthenticationServiceDelegate(
       ChromeBrowserState* browser_state,
       id<BrowsingDataCommands> dispatcher);
+
+  MainControllerAuthenticationServiceDelegate(
+      const MainControllerAuthenticationServiceDelegate&) = delete;
+  MainControllerAuthenticationServiceDelegate& operator=(
+      const MainControllerAuthenticationServiceDelegate&) = delete;
+
   ~MainControllerAuthenticationServiceDelegate() override;
 
   // AuthenticationServiceDelegate implementation.
@@ -222,8 +228,6 @@ class MainControllerAuthenticationServiceDelegate
  private:
   ChromeBrowserState* browser_state_ = nullptr;
   __weak id<BrowsingDataCommands> dispatcher_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(MainControllerAuthenticationServiceDelegate);
 };
 
 MainControllerAuthenticationServiceDelegate::

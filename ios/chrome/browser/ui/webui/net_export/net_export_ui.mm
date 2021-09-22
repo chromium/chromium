@@ -56,6 +56,10 @@ class NetExportMessageHandler
       public net_log::NetExportFileWriter::StateObserver {
  public:
   NetExportMessageHandler();
+
+  NetExportMessageHandler(const NetExportMessageHandler&) = delete;
+  NetExportMessageHandler& operator=(const NetExportMessageHandler&) = delete;
+
   ~NetExportMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -86,8 +90,6 @@ class NetExportMessageHandler
       state_observation_manager_{this};
 
   base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetExportMessageHandler);
 };
 
 NetExportMessageHandler::NetExportMessageHandler()

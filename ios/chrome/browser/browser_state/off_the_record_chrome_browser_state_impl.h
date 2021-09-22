@@ -18,6 +18,11 @@ class PrefServiceSyncable;
 // by a non-incognito ChromeBrowserState instance.
 class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
  public:
+  OffTheRecordChromeBrowserStateImpl(
+      const OffTheRecordChromeBrowserStateImpl&) = delete;
+  OffTheRecordChromeBrowserStateImpl& operator=(
+      const OffTheRecordChromeBrowserStateImpl&) = delete;
+
   ~OffTheRecordChromeBrowserStateImpl() override;
 
   // ChromeBrowserState:
@@ -58,8 +63,6 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
 
   std::unique_ptr<OffTheRecordChromeBrowserStateIOData::Handle> io_data_;
   std::unique_ptr<PrefProxyConfigTracker> pref_proxy_config_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(OffTheRecordChromeBrowserStateImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_OFF_THE_RECORD_CHROME_BROWSER_STATE_IMPL_H_

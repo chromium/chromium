@@ -280,6 +280,10 @@ class NavigationManagerImpl : public NavigationManager {
   class WKWebViewCache {
    public:
     explicit WKWebViewCache(NavigationManagerImpl* navigation_manager);
+
+    WKWebViewCache(const WKWebViewCache&) = delete;
+    WKWebViewCache& operator=(const WKWebViewCache&) = delete;
+
     ~WKWebViewCache();
 
     // Returns true if the navigation manager is attached to a WKWebView.
@@ -329,8 +333,6 @@ class NavigationManagerImpl : public NavigationManager {
 
     std::vector<std::unique_ptr<NavigationItemImpl>> cached_items_;
     int cached_current_item_index_;
-
-    DISALLOW_COPY_AND_ASSIGN(WKWebViewCache);
   };
 
   // Type of the list passed to restore items.

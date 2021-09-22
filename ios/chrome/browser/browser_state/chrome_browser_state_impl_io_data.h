@@ -27,6 +27,10 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   class Handle {
    public:
     explicit Handle(ChromeBrowserState* browser_state);
+
+    Handle(const Handle&) = delete;
+    Handle& operator=(const Handle&) = delete;
+
     ~Handle();
 
     // Init() must be called before ~Handle(). It records most of the
@@ -83,8 +87,6 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
     ChromeBrowserState* const browser_state_;
 
     mutable bool initialized_;
-
-    DISALLOW_COPY_AND_ASSIGN(Handle);
   };
 
  private:

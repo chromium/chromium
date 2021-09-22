@@ -60,6 +60,9 @@ class ChromeBrowserStateIOData {
   typedef std::vector<scoped_refptr<IOSChromeURLRequestContextGetter>>
       IOSChromeURLRequestContextGetterVector;
 
+  ChromeBrowserStateIOData(const ChromeBrowserStateIOData&) = delete;
+  ChromeBrowserStateIOData& operator=(const ChromeBrowserStateIOData&) = delete;
+
   virtual ~ChromeBrowserStateIOData();
 
   // Utility to install additional WebUI handlers into the |job_factory|.
@@ -260,8 +263,6 @@ class ChromeBrowserStateIOData {
       chrome_http_user_agent_settings_;
 
   const ChromeBrowserStateType browser_state_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateIOData);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IO_DATA_H_

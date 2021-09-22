@@ -99,6 +99,10 @@ class ChromeIdentityService {
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Handles identity list changed events.
@@ -120,9 +124,6 @@ class ChromeIdentityService {
 
     // Called when the ChromeIdentityService will be destroyed.
     virtual void OnChromeIdentityServiceWillBeDestroyed() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Callback invoked for each ChromeIdentity when iterating over them with
@@ -131,6 +132,10 @@ class ChromeIdentityService {
       base::RepeatingCallback<IdentityIteratorCallbackResult(ChromeIdentity*)>;
 
   ChromeIdentityService();
+
+  ChromeIdentityService(const ChromeIdentityService&) = delete;
+  ChromeIdentityService& operator=(const ChromeIdentityService&) = delete;
+
   virtual ~ChromeIdentityService();
 
   // Handles open URL authentication callback. Returns whether the URL was
@@ -279,8 +284,6 @@ class ChromeIdentityService {
 
  private:
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeIdentityService);
 };
 
 }  // namespace ios

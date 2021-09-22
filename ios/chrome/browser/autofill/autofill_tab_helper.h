@@ -28,6 +28,9 @@ class PasswordManager;
 class AutofillTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<AutofillTabHelper> {
  public:
+  AutofillTabHelper(const AutofillTabHelper&) = delete;
+  AutofillTabHelper& operator=(const AutofillTabHelper&) = delete;
+
   ~AutofillTabHelper() override;
 
   // Create an AutofillTabHelper and attaches it to the given |web_state|.
@@ -60,8 +63,6 @@ class AutofillTabHelper : public web::WebStateObserver,
   std::unique_ptr<autofill::ChromeAutofillClientIOS> autofill_client_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_TAB_HELPER_H_

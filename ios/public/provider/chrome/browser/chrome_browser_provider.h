@@ -61,6 +61,10 @@ class ChromeBrowserProvider {
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Called when a new ChromeIdentityService has been installed.
@@ -69,9 +73,6 @@ class ChromeBrowserProvider {
 
     // Called when the ChromeBrowserProvider will be destroyed.
     virtual void OnChromeBrowserProviderWillBeDestroyed() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // The constructor is called before web startup.

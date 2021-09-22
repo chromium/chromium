@@ -102,6 +102,10 @@ namespace web {
 class WebStateDelegateBridge : public web::WebStateDelegate {
  public:
   explicit WebStateDelegateBridge(id<CRWWebStateDelegate> delegate);
+
+  WebStateDelegateBridge(const WebStateDelegateBridge&) = delete;
+  WebStateDelegateBridge& operator=(const WebStateDelegateBridge&) = delete;
+
   ~WebStateDelegateBridge() override;
 
   // web::WebStateDelegate methods.
@@ -144,7 +148,6 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
  private:
   // CRWWebStateDelegate which receives forwarded calls.
   __weak id<CRWWebStateDelegate> delegate_ = nil;
-  DISALLOW_COPY_AND_ASSIGN(WebStateDelegateBridge);
 };
 
 }  // web

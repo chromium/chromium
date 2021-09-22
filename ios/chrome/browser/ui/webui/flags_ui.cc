@@ -60,6 +60,10 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
 class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
  public:
   FlagsDOMHandler() : access_(flags_ui::kGeneralAccessFlagsOnly) {}
+
+  FlagsDOMHandler(const FlagsDOMHandler&) = delete;
+  FlagsDOMHandler& operator=(const FlagsDOMHandler&) = delete;
+
   ~FlagsDOMHandler() override {}
 
   // Initializes the DOM handler with the provided flags storage and flags
@@ -86,8 +90,6 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   flags_ui::FlagAccess access_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsDOMHandler);
 };
 
 void FlagsDOMHandler::RegisterMessages() {

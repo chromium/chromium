@@ -13,6 +13,10 @@
 class IOSChromeFieldTrials : public variations::PlatformFieldTrials {
  public:
   IOSChromeFieldTrials() {}
+
+  IOSChromeFieldTrials(const IOSChromeFieldTrials&) = delete;
+  IOSChromeFieldTrials& operator=(const IOSChromeFieldTrials&) = delete;
+
   ~IOSChromeFieldTrials() override {}
 
   // variations::PlatformFieldTrials:
@@ -21,9 +25,6 @@ class IOSChromeFieldTrials : public variations::PlatformFieldTrials {
       bool has_seed,
       const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeFieldTrials);
 };
 
 #endif  // IOS_CHROME_BROWSER_IOS_CHROME_FIELD_TRIALS_H_

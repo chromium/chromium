@@ -21,6 +21,11 @@ class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
  public:
   // |web_state_list| must outlive this LocationBarModelDelegateIOS object.
   explicit LocationBarModelDelegateIOS(WebStateList* web_state_list);
+
+  LocationBarModelDelegateIOS(const LocationBarModelDelegateIOS&) = delete;
+  LocationBarModelDelegateIOS& operator=(const LocationBarModelDelegateIOS&) =
+      delete;
+
   ~LocationBarModelDelegateIOS() override;
 
   // LocationBarModelDelegate implementation:
@@ -49,8 +54,6 @@ class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
   web::WebState* GetActiveWebState() const;
 
   WebStateList* web_state_list_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(LocationBarModelDelegateIOS);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_

@@ -17,6 +17,9 @@ class WebState;
 // Class used to serialize values added to SerializableUserDataManager.
 class SerializableUserData {
  public:
+  SerializableUserData(const SerializableUserData&) = delete;
+  SerializableUserData& operator=(const SerializableUserData&) = delete;
+
   virtual ~SerializableUserData() = default;
 
   // Factory method.
@@ -30,9 +33,6 @@ class SerializableUserData {
 
  protected:
   SerializableUserData() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SerializableUserData);
 };
 
 // Class that can be used to add serializable user data to a WebState.

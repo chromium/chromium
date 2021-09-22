@@ -25,6 +25,11 @@ class WKWebViewConfigurationProviderObserver;
 // threadsafe. Must be used only on the main thread.
 class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
  public:
+  WKWebViewConfigurationProvider(const WKWebViewConfigurationProvider&) =
+      delete;
+  WKWebViewConfigurationProvider& operator=(
+      const WKWebViewConfigurationProvider&) = delete;
+
   ~WKWebViewConfigurationProvider() override;
 
   // Returns a provider for the given |browser_state|. Lazily attaches one if it
@@ -94,8 +99,6 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // will add more complixity if they are destructed on the IO thread.
   base::ObserverList<WKWebViewConfigurationProviderObserver, false>::Unchecked
       observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WKWebViewConfigurationProvider);
 };
 
 }  // namespace web

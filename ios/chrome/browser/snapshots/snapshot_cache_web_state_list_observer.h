@@ -14,6 +14,12 @@
 class SnapshotCacheWebStateListObserver : public WebStateListObserver {
  public:
   explicit SnapshotCacheWebStateListObserver(SnapshotCache* snapshot_cache);
+
+  SnapshotCacheWebStateListObserver(const SnapshotCacheWebStateListObserver&) =
+      delete;
+  SnapshotCacheWebStateListObserver& operator=(
+      const SnapshotCacheWebStateListObserver&) = delete;
+
   ~SnapshotCacheWebStateListObserver() override;
 
  private:
@@ -25,8 +31,6 @@ class SnapshotCacheWebStateListObserver : public WebStateListObserver {
                            ActiveWebStateChangeReason reason) override;
 
   SnapshotCache* snapshot_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotCacheWebStateListObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_WEB_STATE_LIST_OBSERVER_H_

@@ -37,6 +37,9 @@ class SearchEngineTabHelper
       public web::WebStateUserData<SearchEngineTabHelper>,
       public favicon::FaviconDriverObserver {
  public:
+  SearchEngineTabHelper(const SearchEngineTabHelper&) = delete;
+  SearchEngineTabHelper& operator=(const SearchEngineTabHelper&) = delete;
+
   ~SearchEngineTabHelper() override;
 
  private:
@@ -90,8 +93,6 @@ class SearchEngineTabHelper
   base::CallbackListSubscription subscription_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_H_

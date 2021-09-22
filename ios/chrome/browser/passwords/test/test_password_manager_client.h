@@ -27,6 +27,11 @@ class TestPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
   TestPasswordManagerClient();
+
+  TestPasswordManagerClient(const TestPasswordManagerClient&) = delete;
+  TestPasswordManagerClient& operator=(const TestPasswordManagerClient&) =
+      delete;
+
   ~TestPasswordManagerClient() override;
 
   // PromptUserTo*Ptr functions allow to both override PromptUserTo* methods
@@ -69,8 +74,6 @@ class TestPasswordManagerClient
   PasswordManager password_manager_;
   std::unique_ptr<PasswordFormManagerForUI> manager_;
   scoped_refptr<TestPasswordStore> store_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPasswordManagerClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_TEST_TEST_PASSWORD_MANAGER_CLIENT_H_

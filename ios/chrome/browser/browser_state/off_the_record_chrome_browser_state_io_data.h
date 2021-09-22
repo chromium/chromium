@@ -44,6 +44,10 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
   class Handle {
    public:
     explicit Handle(ChromeBrowserState* browser_state);
+
+    Handle(const Handle&) = delete;
+    Handle& operator=(const Handle&) = delete;
+
     ~Handle();
 
     scoped_refptr<IOSChromeURLRequestContextGetter>
@@ -77,8 +81,6 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
     ChromeBrowserState* const browser_state_;
 
     mutable bool initialized_;
-
-    DISALLOW_COPY_AND_ASSIGN(Handle);
   };
 
  private:

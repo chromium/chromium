@@ -30,6 +30,10 @@ class ProfileSyncComponentsFactoryImpl;
 class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
  public:
   explicit IOSChromeSyncClient(ChromeBrowserState* browser_state);
+
+  IOSChromeSyncClient(const IOSChromeSyncClient&) = delete;
+  IOSChromeSyncClient& operator=(const IOSChromeSyncClient&) = delete;
+
   ~IOSChromeSyncClient() override;
 
   // BrowserSyncClient implementation.
@@ -75,8 +79,6 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
 
   // The task runner for the |web_data_service_|, if any.
   scoped_refptr<base::SingleThreadTaskRunner> db_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeSyncClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_IOS_CHROME_SYNC_CLIENT_H__

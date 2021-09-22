@@ -18,10 +18,11 @@ class WebUIIOS;
 class GCMInternalsUI : public web::WebUIIOSController {
  public:
   explicit GCMInternalsUI(web::WebUIIOS* web_ui, const std::string& host);
-  ~GCMInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMInternalsUI);
+  GCMInternalsUI(const GCMInternalsUI&) = delete;
+  GCMInternalsUI& operator=(const GCMInternalsUI&) = delete;
+
+  ~GCMInternalsUI() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_GCM_GCM_INTERNALS_UI_H_

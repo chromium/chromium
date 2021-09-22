@@ -113,10 +113,11 @@ class DownloadController {
   virtual DownloadControllerDelegate* GetDelegate() const = 0;
 
   DownloadController() = default;
-  virtual ~DownloadController() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadController);
+  DownloadController(const DownloadController&) = delete;
+  DownloadController& operator=(const DownloadController&) = delete;
+
+  virtual ~DownloadController() = default;
 };
 
 }  // namespace web

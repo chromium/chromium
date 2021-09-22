@@ -81,6 +81,10 @@ class DownloadTaskImpl : public DownloadTask {
   bool HasPerformedBackgroundDownload() const override;
   void AddObserver(DownloadTaskObserver* observer) override;
   void RemoveObserver(DownloadTaskObserver* observer) override;
+
+  DownloadTaskImpl(const DownloadTaskImpl&) = delete;
+  DownloadTaskImpl& operator=(const DownloadTaskImpl&) = delete;
+
   ~DownloadTaskImpl() override;
 
  private:
@@ -143,8 +147,6 @@ class DownloadTaskImpl : public DownloadTask {
   id<NSObject> observer_ = nil;
 
   base::WeakPtrFactory<DownloadTaskImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTaskImpl);
 };
 
 }  // namespace web

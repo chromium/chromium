@@ -18,6 +18,11 @@ class WebState;
 class FakeFindInPageManagerDelegate : public FindInPageManagerDelegate {
  public:
   FakeFindInPageManagerDelegate();
+
+  FakeFindInPageManagerDelegate(const FakeFindInPageManagerDelegate&) = delete;
+  FakeFindInPageManagerDelegate& operator=(
+      const FakeFindInPageManagerDelegate&) = delete;
+
   ~FakeFindInPageManagerDelegate() override;
 
   // FindInPageManagerDelegate override
@@ -47,7 +52,6 @@ class FakeFindInPageManagerDelegate : public FindInPageManagerDelegate {
 
  private:
   std::unique_ptr<State> delegate_state_;
-  DISALLOW_COPY_AND_ASSIGN(FakeFindInPageManagerDelegate);
 };
 
 }  // namespace web

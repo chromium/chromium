@@ -20,6 +20,9 @@
 class FindTabHelper : public web::WebStateObserver,
                       public web::WebStateUserData<FindTabHelper> {
  public:
+  FindTabHelper(const FindTabHelper&) = delete;
+  FindTabHelper& operator=(const FindTabHelper&) = delete;
+
   ~FindTabHelper() override;
 
   enum FindDirection {
@@ -81,8 +84,6 @@ class FindTabHelper : public web::WebStateObserver,
   FindInPageController* controller_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FindTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_FIND_IN_PAGE_FIND_TAB_HELPER_H_

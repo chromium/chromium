@@ -26,6 +26,10 @@ class BrowserImpl : public Browser {
  public:
   // Constructs a BrowserImpl attached to |browser_state|.
   BrowserImpl(ChromeBrowserState* browser_state);
+
+  BrowserImpl(const BrowserImpl&) = delete;
+  BrowserImpl& operator=(const BrowserImpl&) = delete;
+
   ~BrowserImpl() override;
 
   // Browser.
@@ -46,8 +50,6 @@ class BrowserImpl : public Browser {
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_IMPL_H_

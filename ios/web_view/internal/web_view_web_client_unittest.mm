@@ -29,6 +29,10 @@ class WebViewWebClientTest : public web::WebTest {
         l10n_util::GetLocaleOverride(), /*delegate=*/nullptr,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
   }
+
+  WebViewWebClientTest(const WebViewWebClientTest&) = delete;
+  WebViewWebClientTest& operator=(const WebViewWebClientTest&) = delete;
+
   ~WebViewWebClientTest() override {
     ui::ResourceBundle::CleanupSharedInstance();
   }
@@ -42,9 +46,6 @@ class WebViewWebClientTest : public web::WebTest {
     web::WebTest::TearDown();
     CWVWebView.customUserAgent = nil;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewWebClientTest);
 };
 
 // Tests that WebViewWebClientTest's GetUserAgent is configured by CWVWebView.

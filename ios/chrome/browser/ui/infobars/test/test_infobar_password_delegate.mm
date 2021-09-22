@@ -33,6 +33,10 @@ class MockDelegate
 class MockFormSaver : public password_manager::StubFormSaver {
  public:
   MockFormSaver() = default;
+
+  MockFormSaver(const MockFormSaver&) = delete;
+  MockFormSaver& operator=(const MockFormSaver&) = delete;
+
   ~MockFormSaver() override = default;
 
   // FormSaver:
@@ -51,9 +55,6 @@ class MockFormSaver : public password_manager::StubFormSaver {
     return *static_cast<MockFormSaver*>(
         form_manager->profile_store_form_saver());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFormSaver);
 };
 
 std::unique_ptr<password_manager::CredentialManagerPasswordFormManager>

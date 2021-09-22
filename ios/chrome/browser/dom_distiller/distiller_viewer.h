@@ -38,6 +38,10 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
 
   DistillerViewerInterface(PrefService* prefs)
       : DomDistillerRequestViewBase(new DistilledPagePrefs(prefs)) {}
+
+  DistillerViewerInterface(const DistillerViewerInterface&) = delete;
+  DistillerViewerInterface& operator=(const DistillerViewerInterface&) = delete;
+
   ~DistillerViewerInterface() override {}
 
   void OnArticleReady(
@@ -46,8 +50,6 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
   void SendJavaScript(const std::string& buffer) override = 0;
 
   virtual std::string GetCspNonce() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DistillerViewerInterface);
 };
 
 // A very simple and naive implementation of the DistillerViewer.
@@ -70,6 +72,10 @@ class DistillerViewer : public DistillerViewerInterface {
                   PrefService* prefs,
                   const GURL& url,
                   DistillationFinishedCallback callback);
+
+  DistillerViewer(const DistillerViewer&) = delete;
+  DistillerViewer& operator=(const DistillerViewer&) = delete;
+
   ~DistillerViewer() override;
 
   // DistillerViewerInterface implementation
@@ -100,8 +106,6 @@ class DistillerViewer : public DistillerViewerInterface {
   DistillationFinishedCallback callback_;
   // Keep reference of the distiller_ during distillation.
   std::unique_ptr<Distiller> distiller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DistillerViewer);
 };
 
 }  // namespace dom_distiller

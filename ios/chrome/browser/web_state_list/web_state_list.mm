@@ -38,6 +38,10 @@ bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
 class WebStateList::WebStateWrapper {
  public:
   explicit WebStateWrapper(std::unique_ptr<web::WebState> web_state);
+
+  WebStateWrapper(const WebStateWrapper&) = delete;
+  WebStateWrapper& operator=(const WebStateWrapper&) = delete;
+
   ~WebStateWrapper();
 
   web::WebState* web_state() const { return web_state_.get(); }
@@ -71,8 +75,6 @@ class WebStateList::WebStateWrapper {
   std::unique_ptr<web::WebState> web_state_;
   WebStateOpener opener_;
   bool should_reset_opener_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateWrapper);
 };
 
 WebStateList::WebStateWrapper::WebStateWrapper(

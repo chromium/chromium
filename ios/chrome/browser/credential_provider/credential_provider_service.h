@@ -37,6 +37,11 @@ class CredentialProviderService
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);
+
+  CredentialProviderService(const CredentialProviderService&) = delete;
+  CredentialProviderService& operator=(const CredentialProviderService&) =
+      delete;
+
   ~CredentialProviderService() override;
 
   // KeyedService:
@@ -127,8 +132,6 @@ class CredentialProviderService
 
   // Weak pointer factory.
   base::WeakPtrFactory<CredentialProviderService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderService);
 };
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_H_

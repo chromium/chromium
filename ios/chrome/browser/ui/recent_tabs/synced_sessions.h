@@ -54,6 +54,10 @@ class DistantSession {
   // |sync_service|. |sync_service| must not be null.
   DistantSession(sync_sessions::SessionSyncService* sync_service,
                  const std::string& tag);
+
+  DistantSession(const DistantSession&) = delete;
+  DistantSession& operator=(const DistantSession&) = delete;
+
   ~DistantSession();
   void InitWithSyncedSession(const sync_sessions::SyncedSession* synced_session,
                              sync_sessions::OpenTabsUIDelegate* open_tabs);
@@ -62,8 +66,6 @@ class DistantSession {
   base::Time modified_time;
   sync_pb::SyncEnums::DeviceType device_type;
   std::vector<std::unique_ptr<DistantTab>> tabs;
-
-  DISALLOW_COPY_AND_ASSIGN(DistantSession);
 };
 
 // Class containing distant sessions.
@@ -76,6 +78,10 @@ class SyncedSessions {
   explicit SyncedSessions(sync_sessions::SessionSyncService* sync_service);
   SyncedSessions(sync_sessions::SessionSyncService* sync_service,
                  const std::string& tag);
+
+  SyncedSessions(const SyncedSessions&) = delete;
+  SyncedSessions& operator=(const SyncedSessions&) = delete;
+
   ~SyncedSessions();
   DistantSession const* GetSession(size_t index) const;
   DistantSession const* GetSessionWithTag(const std::string& tag) const;
@@ -88,8 +94,6 @@ class SyncedSessions {
 
  private:
   std::vector<std::unique_ptr<const DistantSession>> sessions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedSessions);
 };
 
 }  // namespace synced_sessions

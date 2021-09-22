@@ -21,6 +21,9 @@ class NSHTTPSystemCookieStore : public net::SystemCookieStore {
 
   explicit NSHTTPSystemCookieStore(NSHTTPCookieStorage* cookie_store);
 
+  NSHTTPSystemCookieStore(const NSHTTPSystemCookieStore&) = delete;
+  NSHTTPSystemCookieStore& operator=(const NSHTTPSystemCookieStore&) = delete;
+
   ~NSHTTPSystemCookieStore() override;
 
   // Gets cookies for URL and calls |callback| async on these cookies.
@@ -67,8 +70,6 @@ class NSHTTPSystemCookieStore : public net::SystemCookieStore {
   void ClearStore();
 
   NSHTTPCookieStorage* cookie_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(NSHTTPSystemCookieStore);
 };
 
 }  // namespace net

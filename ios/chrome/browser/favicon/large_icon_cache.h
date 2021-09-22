@@ -29,6 +29,10 @@ struct LargeIconResult;
 class LargeIconCache : public KeyedService {
  public:
   LargeIconCache();
+
+  LargeIconCache(const LargeIconCache&) = delete;
+  LargeIconCache& operator=(const LargeIconCache&) = delete;
+
   ~LargeIconCache() override;
 
   // |LargeIconService| does everything on callbacks, and iOS needs to load the
@@ -46,8 +50,6 @@ class LargeIconCache : public KeyedService {
       const favicon_base::LargeIconResult& large_icon_result);
 
   base::MRUCache<GURL, std::unique_ptr<LargeIconCacheEntry>> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(LargeIconCache);
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_LARGE_ICON_CACHE_H_

@@ -42,6 +42,12 @@ class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider,
   };
 
   explicit IOSChromeStabilityMetricsProvider(PrefService* local_state);
+
+  IOSChromeStabilityMetricsProvider(const IOSChromeStabilityMetricsProvider&) =
+      delete;
+  IOSChromeStabilityMetricsProvider& operator=(
+      const IOSChromeStabilityMetricsProvider&) = delete;
+
   ~IOSChromeStabilityMetricsProvider() override;
 
   // metrics::MetricsDataProvider:
@@ -69,8 +75,6 @@ class IOSChromeStabilityMetricsProvider : public metrics::MetricsProvider,
 
   // True if recording is currently enabled.
   bool recording_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeStabilityMetricsProvider);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_CHROME_STABILITY_METRICS_PROVIDER_H_

@@ -27,6 +27,11 @@ class IOSSecurityInterstitialPage {
   IOSSecurityInterstitialPage(web::WebState* web_state,
                               const GURL& request_url,
                               IOSBlockingPageControllerClient* client);
+
+  IOSSecurityInterstitialPage(const IOSSecurityInterstitialPage&) = delete;
+  IOSSecurityInterstitialPage& operator=(const IOSSecurityInterstitialPage&) =
+      delete;
+
   virtual ~IOSSecurityInterstitialPage();
 
   // Returns the HTML that should be displayed in the page
@@ -67,8 +72,6 @@ class IOSSecurityInterstitialPage {
   // Used to interact with the embedder. Unowned pointer; must outlive |this|
   // instance.
   IOSBlockingPageControllerClient* const client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSSecurityInterstitialPage);
 };
 
 }  // namespace security_interstitials

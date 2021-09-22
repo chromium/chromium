@@ -22,6 +22,10 @@ class IOSThreadProfiler;
 class IOSChromeMainParts : public web::WebMainParts {
  public:
   explicit IOSChromeMainParts(const base::CommandLine& parsed_command_line);
+
+  IOSChromeMainParts(const IOSChromeMainParts&) = delete;
+  IOSChromeMainParts& operator=(const IOSChromeMainParts&) = delete;
+
   ~IOSChromeMainParts() override;
 
  private:
@@ -64,8 +68,6 @@ class IOSChromeMainParts : public web::WebMainParts {
   // Manages heap (memory) profiling. Requires the allocator shim to be enabled.
   std::unique_ptr<HeapProfilerController> heap_profiler_controller_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMainParts);
 };
 
 #endif  // IOS_CHROME_BROWSER_IOS_CHROME_MAIN_PARTS_H_

@@ -186,6 +186,10 @@ class AutofillControllerTest : public ChromeWebTest {
  public:
   AutofillControllerTest()
       : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+
+  AutofillControllerTest(const AutofillControllerTest&) = delete;
+  AutofillControllerTest& operator=(const AutofillControllerTest&) = delete;
+
   ~AutofillControllerTest() override {}
 
  protected:
@@ -239,8 +243,6 @@ class AutofillControllerTest : public ChromeWebTest {
   FormInputAccessoryMediator* accessory_mediator_;
 
   PasswordController* passwordController_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillControllerTest);
 };
 
 void AutofillControllerTest::SetUp() {

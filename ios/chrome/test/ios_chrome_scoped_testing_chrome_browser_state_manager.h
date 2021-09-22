@@ -19,13 +19,17 @@ class IOSChromeScopedTestingChromeBrowserStateManager {
  public:
   explicit IOSChromeScopedTestingChromeBrowserStateManager(
       std::unique_ptr<ios::ChromeBrowserStateManager> browser_state_manager);
+
+  IOSChromeScopedTestingChromeBrowserStateManager(
+      const IOSChromeScopedTestingChromeBrowserStateManager&) = delete;
+  IOSChromeScopedTestingChromeBrowserStateManager& operator=(
+      const IOSChromeScopedTestingChromeBrowserStateManager&) = delete;
+
   ~IOSChromeScopedTestingChromeBrowserStateManager();
 
  private:
   std::unique_ptr<ios::ChromeBrowserStateManager> browser_state_manager_;
   ios::ChromeBrowserStateManager* saved_browser_state_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeScopedTestingChromeBrowserStateManager);
 };
 
 #endif  // IOS_CHROME_TEST_IOS_CHROME_SCOPED_TESTING_CHROME_BROWSER_STATE_MANAGER_H_

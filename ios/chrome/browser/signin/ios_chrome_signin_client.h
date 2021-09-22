@@ -23,6 +23,10 @@ class IOSChromeSigninClient : public SigninClient {
       ChromeBrowserState* browser_state,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       scoped_refptr<HostContentSettingsMap> host_content_settings_map);
+
+  IOSChromeSigninClient(const IOSChromeSigninClient&) = delete;
+  IOSChromeSigninClient& operator=(const IOSChromeSigninClient&) = delete;
+
   ~IOSChromeSigninClient() override;
 
   // KeyedService implementation.
@@ -54,8 +58,6 @@ class IOSChromeSigninClient : public SigninClient {
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // Used to add and remove content settings observers.
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeSigninClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_IOS_CHROME_SIGNIN_CLIENT_H_

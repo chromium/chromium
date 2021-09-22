@@ -35,6 +35,10 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // specified ChromeBrowserstate. Use Remove to initiate the removal.
   BrowsingDataRemoverImpl(ChromeBrowserState* browser_state,
                           SessionServiceIOS* session_service);
+
+  BrowsingDataRemoverImpl(const BrowsingDataRemoverImpl&) = delete;
+  BrowsingDataRemoverImpl& operator=(const BrowsingDataRemoverImpl&) = delete;
+
   ~BrowsingDataRemoverImpl() override;
 
   // KeyedService implementation.
@@ -130,8 +134,6 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   base::CallbackListSubscription template_url_subscription_;
 
   base::WeakPtrFactory<BrowsingDataRemoverImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_

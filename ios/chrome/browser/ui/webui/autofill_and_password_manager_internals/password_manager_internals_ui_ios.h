@@ -15,10 +15,12 @@ class PasswordManagerInternalsUIIOS : public web::WebUIIOSController {
  public:
   explicit PasswordManagerInternalsUIIOS(web::WebUIIOS* web_ui,
                                          const std::string& host);
-  ~PasswordManagerInternalsUIIOS() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerInternalsUIIOS);
+  PasswordManagerInternalsUIIOS(const PasswordManagerInternalsUIIOS&) = delete;
+  PasswordManagerInternalsUIIOS& operator=(
+      const PasswordManagerInternalsUIIOS&) = delete;
+
+  ~PasswordManagerInternalsUIIOS() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_PASSWORD_MANAGER_INTERNALS_UI_IOS_H_

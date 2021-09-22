@@ -34,6 +34,12 @@ class WebViewTranslateService {
       : public web_resource::ResourceRequestAllowedNotifier::Observer {
    public:
     TranslateRequestsAllowedListener();
+
+    TranslateRequestsAllowedListener(const TranslateRequestsAllowedListener&) =
+        delete;
+    TranslateRequestsAllowedListener& operator=(
+        const TranslateRequestsAllowedListener&) = delete;
+
     ~TranslateRequestsAllowedListener() override;
 
     // ResourceRequestAllowedNotifier::Observer methods.
@@ -43,8 +49,6 @@ class WebViewTranslateService {
     // Notifier class to know if it's allowed to make network resource requests.
     web_resource::ResourceRequestAllowedNotifier
         resource_request_allowed_notifier_;
-
-    DISALLOW_COPY_AND_ASSIGN(TranslateRequestsAllowedListener);
   };
 
   WebViewTranslateService();

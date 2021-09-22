@@ -65,6 +65,10 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   explicit WebStateImpl(const CreateParams& params);
   // Constructor for WebStatesImpls created for deserialized sessions
   WebStateImpl(const CreateParams& params, CRWSessionStorage* session_storage);
+
+  WebStateImpl(const WebStateImpl&) = delete;
+  WebStateImpl& operator=(const WebStateImpl&) = delete;
+
   ~WebStateImpl() override;
 
   // Gets/Sets the CRWWebController that backs this object.
@@ -408,8 +412,6 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   UserAgentType user_agent_type_;
 
   base::WeakPtrFactory<WebStateImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateImpl);
 };
 
 }  // namespace web

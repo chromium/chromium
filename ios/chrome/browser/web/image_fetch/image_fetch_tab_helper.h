@@ -37,6 +37,9 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
                             public web::WebStateObserver,
                             public web::WebStateUserData<ImageFetchTabHelper> {
  public:
+  ImageFetchTabHelper(const ImageFetchTabHelper&) = delete;
+  ImageFetchTabHelper& operator=(const ImageFetchTabHelper&) = delete;
+
   ~ImageFetchTabHelper() override;
 
   // Callback for GetImageData. |data| will be in binary format, or nil if
@@ -106,8 +109,6 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   base::WeakPtrFactory<ImageFetchTabHelper> weak_ptr_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetchTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_IMAGE_FETCH_TAB_HELPER_H_

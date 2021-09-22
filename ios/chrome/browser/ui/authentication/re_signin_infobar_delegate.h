@@ -28,6 +28,10 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   ReSignInInfoBarDelegate(ChromeBrowserState* browser_state,
                           id<SigninPresenter> presenter);
+
+  ReSignInInfoBarDelegate(const ReSignInInfoBarDelegate&) = delete;
+  ReSignInInfoBarDelegate& operator=(const ReSignInInfoBarDelegate&) = delete;
+
   ~ReSignInInfoBarDelegate() override;
 
   // Creates a re-sign-in error infobar and adds it to the |web_state|. Returns
@@ -62,8 +66,6 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
   ChromeBrowserState* browser_state_;
   gfx::Image icon_;
   id<SigninPresenter> presenter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReSignInInfoBarDelegate);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_RE_SIGNIN_INFOBAR_DELEGATE_H_

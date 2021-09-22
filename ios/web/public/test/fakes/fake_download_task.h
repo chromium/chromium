@@ -18,6 +18,10 @@ namespace web {
 class FakeDownloadTask : public DownloadTask {
  public:
   FakeDownloadTask(const GURL& original_url, const std::string& mime_type);
+
+  FakeDownloadTask(const FakeDownloadTask&) = delete;
+  FakeDownloadTask& operator=(const FakeDownloadTask&) = delete;
+
   ~FakeDownloadTask() override;
 
   // DownloadTask overrides:
@@ -77,8 +81,6 @@ class FakeDownloadTask : public DownloadTask {
   std::u16string suggested_file_name_;
   bool has_performed_background_download_ = false;
   __strong NSString* identifier_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDownloadTask);
 };
 
 }  // namespace web

@@ -51,6 +51,10 @@ class WebViewPasswordManagerClient
       password_manager::PasswordReuseManager* reuse_manager,
       password_manager::PasswordRequirementsService* requirements_service);
 
+  WebViewPasswordManagerClient(const WebViewPasswordManagerClient&) = delete;
+  WebViewPasswordManagerClient& operator=(const WebViewPasswordManagerClient&) =
+      delete;
+
   ~WebViewPasswordManagerClient() override;
 
   // password_manager::PasswordManagerClient implementation.
@@ -163,8 +167,6 @@ class WebViewPasswordManagerClient
   // Helper for performing logic that is common between
   // ChromePasswordManagerClient and IOSChromePasswordManagerClient.
   password_manager::PasswordManagerClientHelper helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPasswordManagerClient);
 };
 }  // namespace ios_web_view
 

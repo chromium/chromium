@@ -42,13 +42,17 @@ class FontSizeTabHelperFakeWebStateTest : public PlatformTest {
 
     FontSizeTabHelper::CreateForWebState(&web_state_);
   }
+
+  FontSizeTabHelperFakeWebStateTest(const FontSizeTabHelperFakeWebStateTest&) =
+      delete;
+  FontSizeTabHelperFakeWebStateTest& operator=(
+      const FontSizeTabHelperFakeWebStateTest&) = delete;
+
   ~FontSizeTabHelperFakeWebStateTest() override {}
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   web::FakeWebState web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontSizeTabHelperFakeWebStateTest);
 };
 
 // Tests that zoom is only enabled if the page content is html.
@@ -77,6 +81,10 @@ class FontSizeTabHelperTest : public ChromeWebTest {
           [invocation setReturnValue:&preferred_content_size_category_];
         });
   }
+
+  FontSizeTabHelperTest(const FontSizeTabHelperTest&) = delete;
+  FontSizeTabHelperTest& operator=(const FontSizeTabHelperTest&) = delete;
+
   ~FontSizeTabHelperTest() override { [application_ stopMocking]; }
 
   void SetUp() override {
@@ -170,8 +178,6 @@ class FontSizeTabHelperTest : public ChromeWebTest {
   UIContentSizeCategory preferred_content_size_category_ =
       UIContentSizeCategoryLarge;
   id application_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(FontSizeTabHelperTest);
 };
 
 // Tests that a web page's font size is set properly in a procedure started

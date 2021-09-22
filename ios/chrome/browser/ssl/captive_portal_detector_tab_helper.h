@@ -27,6 +27,11 @@ class WebState;
 class CaptivePortalDetectorTabHelper
     : public web::WebStateUserData<CaptivePortalDetectorTabHelper> {
  public:
+  CaptivePortalDetectorTabHelper(const CaptivePortalDetectorTabHelper&) =
+      delete;
+  CaptivePortalDetectorTabHelper& operator=(
+      const CaptivePortalDetectorTabHelper&) = delete;
+
   ~CaptivePortalDetectorTabHelper() override;
 
   // Creates a Tab Helper and attaches it to |web_state|. The |delegate| is not
@@ -57,8 +62,6 @@ class CaptivePortalDetectorTabHelper
   std::unique_ptr<captive_portal::CaptivePortalDetector> detector_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalDetectorTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_SSL_CAPTIVE_PORTAL_DETECTOR_TAB_HELPER_H_

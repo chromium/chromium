@@ -21,6 +21,11 @@ class WebViewPasswordFeatureManager
  public:
   WebViewPasswordFeatureManager(PrefService* pref_service,
                                 const syncer::SyncService* sync_service);
+
+  WebViewPasswordFeatureManager(const WebViewPasswordFeatureManager&) = delete;
+  WebViewPasswordFeatureManager& operator=(
+      const WebViewPasswordFeatureManager&) = delete;
+
   ~WebViewPasswordFeatureManager() override = default;
 
   bool IsGenerationEnabled() const override;
@@ -51,8 +56,6 @@ class WebViewPasswordFeatureManager
  private:
   PrefService* const pref_service_;
   const syncer::SyncService* const sync_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPasswordFeatureManager);
 };
 }  // namespace ios_web_view
 

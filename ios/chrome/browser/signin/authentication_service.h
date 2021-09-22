@@ -45,6 +45,10 @@ class AuthenticationService : public KeyedService,
                         ChromeAccountManagerService* account_manager_service,
                         signin::IdentityManager* identity_manager,
                         syncer::SyncService* sync_service);
+
+  AuthenticationService(const AuthenticationService&) = delete;
+  AuthenticationService& operator=(const AuthenticationService&) = delete;
+
   ~AuthenticationService() override;
 
   // Registers the preferences used by AuthenticationService;
@@ -241,8 +245,6 @@ class AuthenticationService : public KeyedService,
       account_manager_service_observation_{this};
 
   base::WeakPtrFactory<AuthenticationService> weak_pointer_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticationService);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_H_

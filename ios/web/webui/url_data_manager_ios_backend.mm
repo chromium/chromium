@@ -112,6 +112,9 @@ class URLRequestChromeJob : public net::URLRequestJob {
                       BrowserState* browser_state,
                       bool is_incognito);
 
+  URLRequestChromeJob(const URLRequestChromeJob&) = delete;
+  URLRequestChromeJob& operator=(const URLRequestChromeJob&) = delete;
+
   ~URLRequestChromeJob() override;
 
   // net::URLRequestJob implementation.
@@ -216,8 +219,6 @@ class URLRequestChromeJob : public net::URLRequestJob {
   URLDataManagerIOSBackend* backend_;
 
   base::WeakPtrFactory<URLRequestChromeJob> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestChromeJob);
 };
 
 URLRequestChromeJob::URLRequestChromeJob(net::URLRequest* request,
@@ -415,6 +416,10 @@ class ChromeProtocolHandler
   // |is_incognito| should be set for incognito profiles.
   ChromeProtocolHandler(BrowserState* browser_state, bool is_incognito)
       : browser_state_(browser_state), is_incognito_(is_incognito) {}
+
+  ChromeProtocolHandler(const ChromeProtocolHandler&) = delete;
+  ChromeProtocolHandler& operator=(const ChromeProtocolHandler&) = delete;
+
   ~ChromeProtocolHandler() override {}
 
   std::unique_ptr<net::URLRequestJob> CreateJob(
@@ -434,8 +439,6 @@ class ChromeProtocolHandler
 
   // True when generated from an incognito profile.
   const bool is_incognito_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProtocolHandler);
 };
 
 }  // namespace

@@ -26,6 +26,9 @@ class SyncObserverBridge : public syncer::SyncServiceObserver {
   SyncObserverBridge(id<SyncObserverModelBridge> delegate,
                      syncer::SyncService* service);
 
+  SyncObserverBridge(const SyncObserverBridge&) = delete;
+  SyncObserverBridge& operator=(const SyncObserverBridge&) = delete;
+
   ~SyncObserverBridge() override;
 
   // syncer::SyncServiceObserver implementation:
@@ -36,8 +39,6 @@ class SyncObserverBridge : public syncer::SyncServiceObserver {
   __weak id<SyncObserverModelBridge> delegate_ = nil;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SYNC_OBSERVER_BRIDGE_H_

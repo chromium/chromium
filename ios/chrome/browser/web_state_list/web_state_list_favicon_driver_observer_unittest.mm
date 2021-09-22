@@ -40,6 +40,12 @@
 class WebStateListFaviconDriverObserverTest : public PlatformTest {
  public:
   WebStateListFaviconDriverObserverTest();
+
+  WebStateListFaviconDriverObserverTest(
+      const WebStateListFaviconDriverObserverTest&) = delete;
+  WebStateListFaviconDriverObserverTest& operator=(
+      const WebStateListFaviconDriverObserverTest&) = delete;
+
   ~WebStateListFaviconDriverObserverTest() override = default;
 
   favicon::FaviconDriver* CreateAndInsertWebState();
@@ -59,8 +65,6 @@ class WebStateListFaviconDriverObserverTest : public PlatformTest {
   WebStateList web_state_list_;
   FakeWebStateFaviconDriverObserver* favicon_observer_;
   WebStateListFaviconDriverObserver web_state_list_favicon_driver_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListFaviconDriverObserverTest);
 };
 
 WebStateListFaviconDriverObserverTest::WebStateListFaviconDriverObserverTest()

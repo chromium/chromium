@@ -37,6 +37,10 @@ class InternalsUIHandler : public web::WebUIIOSMessageHandler,
 
   explicit InternalsUIHandler(std::string call_on_load,
                               GetLogRouterFunction get_log_router_function);
+
+  InternalsUIHandler(const InternalsUIHandler&) = delete;
+  InternalsUIHandler& operator=(const InternalsUIHandler&) = delete;
+
   ~InternalsUIHandler() override;
 
  private:
@@ -58,8 +62,6 @@ class InternalsUIHandler : public web::WebUIIOSMessageHandler,
 
   // Whether |this| is registered as a log receiver with the LogRouter.
   bool registered_with_log_router_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalsUIHandler);
 };
 
 }  // namespace autofill

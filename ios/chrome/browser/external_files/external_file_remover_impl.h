@@ -29,6 +29,10 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   // the removal.
   ExternalFileRemoverImpl(ChromeBrowserState* browser_state,
                           sessions::TabRestoreService* tab_restore_service);
+
+  ExternalFileRemoverImpl(const ExternalFileRemoverImpl&) = delete;
+  ExternalFileRemoverImpl& operator=(const ExternalFileRemoverImpl&) = delete;
+
   ~ExternalFileRemoverImpl() override;
 
   // ExternalFileRemover methods.
@@ -71,8 +75,6 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   SEQUENCE_CHECKER(sequence_checker_);
   // Used to ensure |Remove()| is not run when this object is destroyed.
   base::WeakPtrFactory<ExternalFileRemoverImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalFileRemoverImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_EXTERNAL_FILES_EXTERNAL_FILE_REMOVER_IMPL_H_

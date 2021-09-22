@@ -82,6 +82,9 @@ class ChromeWebClientTest : public PlatformTest {
     browser_state_ = TestChromeBrowserState::Builder().Build();
   }
 
+  ChromeWebClientTest(const ChromeWebClientTest&) = delete;
+  ChromeWebClientTest& operator=(const ChromeWebClientTest&) = delete;
+
   ~ChromeWebClientTest() override = default;
 
   ChromeBrowserState* browser_state() { return browser_state_.get(); }
@@ -89,8 +92,6 @@ class ChromeWebClientTest : public PlatformTest {
  private:
   base::test::TaskEnvironment environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebClientTest);
 };
 
 TEST_F(ChromeWebClientTest, UserAgent) {

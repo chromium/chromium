@@ -35,6 +35,9 @@ class ChromeIOSTranslateClient
       public web::WebStateObserver,
       public web::WebStateUserData<ChromeIOSTranslateClient> {
  public:
+  ChromeIOSTranslateClient(const ChromeIOSTranslateClient&) = delete;
+  ChromeIOSTranslateClient& operator=(const ChromeIOSTranslateClient&) = delete;
+
   ~ChromeIOSTranslateClient() override;
 
   // Creates a translation client tab helper and attaches it to |web_state|
@@ -79,8 +82,6 @@ class ChromeIOSTranslateClient
   translate::IOSTranslateDriver translate_driver_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeIOSTranslateClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_TRANSLATE_CHROME_IOS_TRANSLATE_CLIENT_H_

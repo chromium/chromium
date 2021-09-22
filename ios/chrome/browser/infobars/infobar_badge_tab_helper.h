@@ -28,6 +28,9 @@ class WebState;
 class InfobarBadgeTabHelper
     : public web::WebStateUserData<InfobarBadgeTabHelper> {
  public:
+  InfobarBadgeTabHelper(const InfobarBadgeTabHelper&) = delete;
+  InfobarBadgeTabHelper& operator=(const InfobarBadgeTabHelper&) = delete;
+
   ~InfobarBadgeTabHelper() override;
 
   // Sets the InfobarBadgeTabHelperDelegate to |delegate|.
@@ -123,7 +126,6 @@ class InfobarBadgeTabHelper
   std::map<InfobarType, InfobarBadgeModel*> infobar_badge_models_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-  DISALLOW_COPY_AND_ASSIGN(InfobarBadgeTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_INFOBAR_BADGE_TAB_HELPER_H_

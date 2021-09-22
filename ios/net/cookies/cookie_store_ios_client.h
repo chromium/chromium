@@ -22,13 +22,14 @@ CookieStoreIOSClient* GetCookieStoreIOSClient();
 class CookieStoreIOSClient {
  public:
   CookieStoreIOSClient();
+
+  CookieStoreIOSClient(const CookieStoreIOSClient&) = delete;
+  CookieStoreIOSClient& operator=(const CookieStoreIOSClient&) = delete;
+
   virtual ~CookieStoreIOSClient();
 
   // Returns instance of SequencedTaskRunner used for blocking file I/O.
   virtual scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieStoreIOSClient);
 };
 
 }  // namespace net

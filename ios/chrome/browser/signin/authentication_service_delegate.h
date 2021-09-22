@@ -12,6 +12,11 @@
 class AuthenticationServiceDelegate {
  public:
   AuthenticationServiceDelegate() = default;
+
+  AuthenticationServiceDelegate(const AuthenticationServiceDelegate&) = delete;
+  AuthenticationServiceDelegate& operator=(
+      const AuthenticationServiceDelegate&) = delete;
+
   virtual ~AuthenticationServiceDelegate() = default;
 
   // Invoked by AuthenticationService after the user has signed out. All the
@@ -23,7 +28,6 @@ class AuthenticationServiceDelegate {
   friend class AuthenticationServiceDelegateFake;
 
   int clear_browsing_data_counter_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(AuthenticationServiceDelegate);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_DELEGATE_H_

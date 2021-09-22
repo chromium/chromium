@@ -24,6 +24,11 @@ class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
  public:
   SpeechInputLocaleConfigImpl(NSArray<VoiceSearchLanguage*>* languages,
                               NSArray<SpeechInputLocaleMatch*>* locale_matches);
+
+  SpeechInputLocaleConfigImpl(const SpeechInputLocaleConfigImpl&) = delete;
+  SpeechInputLocaleConfigImpl& operator=(const SpeechInputLocaleConfigImpl&) =
+      delete;
+
   ~SpeechInputLocaleConfigImpl() override;
 
   // Returns the available locale that matches |locale_code|.  Defaults to en-US
@@ -66,8 +71,6 @@ class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
   std::map<std::string, size_t> default_locale_indices_for_languages_;
   // The languages available for Text To Speech search results.
   std::vector<std::string> text_to_speech_languages_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechInputLocaleConfigImpl);
 };
 
 }  // namespace voice

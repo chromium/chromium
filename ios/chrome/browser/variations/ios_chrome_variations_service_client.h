@@ -19,6 +19,12 @@ class IOSChromeVariationsServiceClient
     : public variations::VariationsServiceClient {
  public:
   IOSChromeVariationsServiceClient();
+
+  IOSChromeVariationsServiceClient(const IOSChromeVariationsServiceClient&) =
+      delete;
+  IOSChromeVariationsServiceClient& operator=(
+      const IOSChromeVariationsServiceClient&) = delete;
+
   ~IOSChromeVariationsServiceClient() override;
 
  private:
@@ -29,8 +35,6 @@ class IOSChromeVariationsServiceClient
   version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeVariationsServiceClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_VARIATIONS_IOS_CHROME_VARIATIONS_SERVICE_CLIENT_H_

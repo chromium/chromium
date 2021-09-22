@@ -20,6 +20,12 @@ class FakeLanguageDetectionTabHelperObserver
     : public language::IOSLanguageDetectionTabHelper::Observer {
  public:
   FakeLanguageDetectionTabHelperObserver(web::WebState* web_state);
+
+  FakeLanguageDetectionTabHelperObserver(
+      const FakeLanguageDetectionTabHelperObserver&) = delete;
+  FakeLanguageDetectionTabHelperObserver& operator=(
+      const FakeLanguageDetectionTabHelperObserver&) = delete;
+
   ~FakeLanguageDetectionTabHelperObserver() override;
 
   // language::IOSLanguageDetectionTabHelper::Observer
@@ -39,8 +45,6 @@ class FakeLanguageDetectionTabHelperObserver
   // Stops observing the IOSLanguageDetectionTabHelper instance associated with
   // |web_state_| and sets |web_state_| to null.
   void StopObservingIOSLanguageDetectionTabHelper();
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLanguageDetectionTabHelperObserver);
 };
 
 #endif  // IOS_CHROME_TEST_FAKES_FAKE_LANGUAGE_DETECTION_TAB_HELPER_OBSERVER_H_

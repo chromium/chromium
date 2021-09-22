@@ -44,6 +44,11 @@ class ScopedQRScannerVoiceSearchOverride {
                                                     isOn:YES];
   }
 
+  ScopedQRScannerVoiceSearchOverride(
+      const ScopedQRScannerVoiceSearchOverride&) = delete;
+  ScopedQRScannerVoiceSearchOverride& operator=(
+      const ScopedQRScannerVoiceSearchOverride&) = delete;
+
   ~ScopedQRScannerVoiceSearchOverride() {
     [QRScannerAppInterface overrideVoiceOverCheckForQRScannerViewController:
                                scanner_view_controller_
@@ -52,8 +57,6 @@ class ScopedQRScannerVoiceSearchOverride {
 
  private:
   UIViewController* scanner_view_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedQRScannerVoiceSearchOverride);
 };
 
 // TODO(crbug.com/1015113) The EG2 macro is breaking indexing for some reason

@@ -19,6 +19,10 @@ typedef NSArray<ChromeIdentity*>* (^SignedInIdentitiesBlock)(void);
 class MailtoHandlerProvider {
  public:
   MailtoHandlerProvider();
+
+  MailtoHandlerProvider(const MailtoHandlerProvider&) = delete;
+  MailtoHandlerProvider& operator=(const MailtoHandlerProvider&) = delete;
+
   virtual ~MailtoHandlerProvider();
 
   // Sets up mailto handling for |browser_state|.
@@ -43,9 +47,6 @@ class MailtoHandlerProvider {
   // Handles the specified mailto: URL. The provider falls back on the built-in
   // URL handling in case of error.
   virtual void HandleMailtoURL(NSURL* url) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MailtoHandlerProvider);
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_MAILTO_MAILTO_HANDLER_PROVIDER_H_

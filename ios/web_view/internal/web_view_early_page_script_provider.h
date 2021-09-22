@@ -23,6 +23,11 @@ namespace ios_web_view {
 // Not threadsafe. Must be used only on the main thread.
 class WebViewEarlyPageScriptProvider : public base::SupportsUserData::Data {
  public:
+  WebViewEarlyPageScriptProvider(const WebViewEarlyPageScriptProvider&) =
+      delete;
+  WebViewEarlyPageScriptProvider& operator=(
+      const WebViewEarlyPageScriptProvider&) = delete;
+
   ~WebViewEarlyPageScriptProvider() override;
 
   // Returns a provider for the given |browser_state|. Lazily attaches one if it
@@ -42,8 +47,6 @@ class WebViewEarlyPageScriptProvider : public base::SupportsUserData::Data {
 
   // The JavaScript source code.
   NSString* _Nonnull script_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewEarlyPageScriptProvider);
 };
 
 }  // namespace ios_web_view
