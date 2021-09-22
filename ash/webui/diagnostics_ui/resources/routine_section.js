@@ -203,6 +203,16 @@ Polymer({
       value: false,
       computed: 'getUsingRoutineGroupsVal_(routines.*)',
     },
+
+    /**
+     * Only used with routine groups.
+     * @type {boolean}
+     * */
+    ignoreRoutineStatusUpdates: {
+      type: Boolean,
+      value: false,
+    },
+
   },
 
   observers: [
@@ -335,6 +345,7 @@ Polymer({
         TestSuiteStatus.kCompleted;
     this.routineStartTimeMs_ = -1;
     this.runTestsButtonText = loadTimeData.getString('runAgainButtonText');
+    this.ignoreRoutineStatusUpdates = false;
     this.cleanUp_();
     if (status === ExecutionProgress.kCancelled) {
       this.badgeText_ = loadTimeData.getString('testStoppedBadgeText');
@@ -351,6 +362,10 @@ Polymer({
    * @private
    */
   handleRunningRoutineStatus_(status, resultListElem) {
+    if (this.ignoreRoutineStatusUpdates) {
+      return;
+    }
+
     if (status.result && status.result.powerResult) {
       this.powerRoutineResult_ = status.result.powerResult;
     }
@@ -359,6 +374,9 @@ Polymer({
         getSimpleResult(status.result) !== StandardRoutineResult.kTestPassed &&
         !this.failedTest_) {
       this.failedTest_ = status.routine;
+      // Prevent the "linking" animation from showing since we've encountered
+      // a failure and are stopping status updates.
+      this.hideVerticalLines = true;
     }
 
     // Execution progress is checked here to avoid overwriting
@@ -370,6 +388,13 @@ Polymer({
     this.executionStatus_ = status.progress;
 
     resultListElem.onStatusUpdate.call(resultListElem, status);
+    if (this.usingRoutineGroups && this.failedTest_) {
+      // Prevent 'routine-result-list' from receiving further updates
+      // and display the skipped badge for the remaining routine
+      // groups.
+      this.ignoreRoutineStatusUpdates = true;
+      resultListElem.updateRoutineUIAfterFailure();
+    }
   },
 
   /** @private */
@@ -599,6 +624,7 @@ Polymer({
     this.currentTestName_ = '';
     this.executionStatus_ = ExecutionProgress.kNotStarted;
     this.$.collapse.hide();
+    this.ignoreRoutineStatusUpdates = false;
   },
 
   /**

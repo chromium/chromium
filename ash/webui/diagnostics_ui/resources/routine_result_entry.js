@@ -247,6 +247,11 @@ Polymer({
         this.setBadgeTypeAndText_(badgeType, badgeText);
         this.announceRoutineStatus_();
         break;
+      case ExecutionProgress.kSkipped:
+        this.setBadgeTypeAndText_(
+            BadgeType.SKIPPED, loadTimeData.getString('testSkippedBadgeText'));
+        this.announceRoutineStatus_();
+        break;
       default:
         assertNotReached();
     }

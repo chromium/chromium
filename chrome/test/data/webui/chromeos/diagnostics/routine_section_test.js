@@ -9,6 +9,7 @@ import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnosti
 import {fakePowerRoutineResults, fakeRoutineResults} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
 import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -52,7 +53,7 @@ export function routineSectionTestSuite() {
 
   /**
    * Initializes the element and sets the routines.
-   * @param {!Array<!RoutineType>} routines
+   * @param {!Array<!RoutineType|RoutineGroup>} routines
    * @param {number=} runtime in minutes.
    */
   function initializeRoutineSection(routines, runtime = 1) {
@@ -69,7 +70,7 @@ export function routineSectionTestSuite() {
     routineSectionElement.testSuiteStatus = TestSuiteStatus.kNotRunning;
     routineSectionElement.routineRuntime = runtime;
 
-    if (routines.length === 1 && [
+    if (!(routines[0] instanceof RoutineGroup) && routines.length === 1 && [
           RoutineType.kBatteryDischarge, RoutineType.kBatteryCharge
         ].includes(routines[0])) {
       routineSectionElement.isPowerRoutine = true;
@@ -951,6 +952,85 @@ export function routineSectionTestSuite() {
               routineSectionElement.$$('.routine-status-container'))));
           assertFalse(isVisible(/** @type {!HTMLElement} */ (
               routineSectionElement.$$('.button-container'))));
+        });
+  });
+
+  test('StopAfterFirstFailureInRoutineGroup', () => {
+    let localNetworkGroup = new RoutineGroup(
+        [RoutineType.kGatewayCanBePinged, RoutineType.kLanConnectivity],
+        'localNetworkGroupLabel');
+
+    let nameResolutionGroup = new RoutineGroup(
+        [RoutineType.kDnsResolverPresent], 'nameResolutionGroupLabel');
+    let groups = [localNetworkGroup, nameResolutionGroup];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kGatewayCanBePinged, StandardRoutineResult.kTestPassed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kLanConnectivity, StandardRoutineResult.kTestFailed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kDnsResolverPresent, StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(groups)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          const entries = getEntries();
+
+          // First routine should be running.
+          assertEquals(
+              RoutineType.kGatewayCanBePinged, entries[0].item.routines[0]);
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+
+          // Second routine in the first group should be running.
+          assertEquals(
+              RoutineType.kLanConnectivity, entries[0].item.routines[1]);
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+          // We've encountered a test failure which means we should no longer
+          // update the status of our remaining routine result entries.
+          assertTrue(routineSectionElement.ignoreRoutineStatusUpdates);
+
+          // Second routine in the first group should have completed.
+
+          assertEquals(
+              RoutineType.kLanConnectivity, entries[0].item.routines[1]);
+          assertEquals(ExecutionProgress.kCompleted, entries[0].item.progress);
+
+          // Text badge should display 'FAILED' for the first group.
+          const textBadge = entries[0].shadowRoot.querySelector('#status');
+          dx_utils.assertElementContainsText(
+              textBadge.$$('#textBadge'), 'FAILED');
+
+          // Remaining routine groups should display the skipped state.
+          assertEquals(ExecutionProgress.kSkipped, entries[1].item.progress);
+
+          // Remaining routine should still be running in the background.
+          assertEquals(
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.kRunning);
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          // All tests are completed and the ignore updates flag should be off
+          // again.
+          assertEquals(
+              routineSectionElement.testSuiteStatus,
+              TestSuiteStatus.kCompleted);
+          assertFalse(routineSectionElement.ignoreRoutineStatusUpdates);
         });
   });
 }
