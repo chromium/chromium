@@ -9,6 +9,10 @@
 #include "ash/public/cpp/projector/projector_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace ash {
 
 // A mock implementation of ProjectorClient for use in tests.
@@ -22,6 +26,8 @@ class ASH_EXPORT MockProjectorClient : public ProjectorClient {
   // ProjectorClient:
   MOCK_METHOD0(StartSpeechRecognition, void());
   MOCK_METHOD0(StopSpeechRecognition, void());
+  MOCK_CONST_METHOD1(GetDriveFsMountPointPath, bool(base::FilePath*));
+  MOCK_CONST_METHOD0(IsDriveFsMounted, bool());
   MOCK_METHOD0(ShowSelfieCam, void());
   MOCK_METHOD0(CloseSelfieCam, void());
 

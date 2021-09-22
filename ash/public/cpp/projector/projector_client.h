@@ -7,6 +7,10 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace ash {
 
 // Creates interface to access Browser side functionalities for the
@@ -20,6 +24,9 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
 
   virtual void StartSpeechRecognition() = 0;
   virtual void StopSpeechRecognition() = 0;
+  // Returns false if Drive is not enabled.
+  virtual bool GetDriveFsMountPointPath(base::FilePath* result) const = 0;
+  virtual bool IsDriveFsMounted() const = 0;
 
   // TODO(crbug/1199396): Migrate to IPC after Lacros launch and ash-chrome
   // deprecation.

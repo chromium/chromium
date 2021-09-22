@@ -9,8 +9,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/projector/projector_session.h"
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -22,6 +24,13 @@ class ASH_EXPORT ProjectorSessionImpl : public ProjectorSession {
   ~ProjectorSessionImpl() override;
 
   const std::string& storage_dir() const { return storage_dir_; }
+  void set_screencast_container_path(
+      const base::FilePath& screencast_container_path) {
+    screencast_container_path_ = screencast_container_path;
+  }
+  const absl::optional<base::FilePath>& screencast_container_path() const {
+    return screencast_container_path_;
+  }
 
   // Start a projector session. `storage_dir` is the container directory name
   // for screencasts and will be used to create the storage path.
@@ -35,6 +44,11 @@ class ASH_EXPORT ProjectorSessionImpl : public ProjectorSession {
   void NotifySessionActiveStateChanged(bool active);
 
   std::string storage_dir_;
+
+  // The file path of the screencast container. Only contains value after
+  // recording is started and the container directory is created. Value will be
+  // reset when Projector session is stopped.
+  absl::optional<base::FilePath> screencast_container_path_;
 
   base::ObserverList<ProjectorSessionObserver> observers_;
 };
