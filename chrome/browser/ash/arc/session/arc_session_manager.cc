@@ -430,7 +430,9 @@ bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
 
   // For GMS checkin errors
   if (result.gms_check_in_error() ==
-      mojom::GMSCheckInError::GMS_CHECK_IN_TIMEOUT) {
+          mojom::GMSCheckInError::GMS_CHECK_IN_FAILED ||
+      result.gms_check_in_error() ==
+          mojom::GMSCheckInError::GMS_CHECK_IN_TIMEOUT) {
     return true;
   }
 
