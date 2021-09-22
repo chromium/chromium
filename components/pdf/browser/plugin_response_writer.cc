@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -57,6 +58,11 @@ html {
 $3
 </script>
 )";
+
+  // TODO(crbug.com/1252096): We should load the injected scripts as network
+  // resources instead. Until then, feel free to raise this limit as necessary.
+  if (stream_info.injected_script)
+    DCHECK_LE(stream_info.injected_script->size(), 8'192u);
 
   return base::ReplaceStringPlaceholders(
       kResponseTemplate,
