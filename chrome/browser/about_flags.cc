@@ -1461,8 +1461,7 @@ const FeatureEntry::FeatureParam kNtpShoppingTasksModuleFakeData[] = {
     {ntp_features::kNtpShoppingTasksModuleDataParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpShoppingTasksModuleVariations[] = {
     {"- Fake Data", kNtpShoppingTasksModuleFakeData,
-     base::size(kNtpShoppingTasksModuleFakeData),
-     "t3329139" /* variation_id */},
+     base::size(kNtpShoppingTasksModuleFakeData), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpDriveModuleFakeData[] = {
