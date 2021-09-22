@@ -1044,7 +1044,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4465818729556336129">Tento dokument je dôverný a správca jeho vytlačenie neodporúča.</translation>
 <translation id="4476953670630786061">Tento formulár nie je zabezpečený. Automatické dopĺňanie bolo vypnuté.</translation>
 <translation id="4477350412780666475">Ďalšia stopa</translation>
-<translation id="4481251927743463293">Čo robí režim inkognito</translation>
+<translation id="4481251927743463293">Čo režim inkognito robí</translation>
 <translation id="4481394504112738036">Dôverný súbor</translation>
 <translation id="4482953324121162758">Tento web nebude preložený.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1148,11 +1148,11 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4819347708020428563">Chcete upraviť poznámky v predvolenom zobrazení?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter vytvoríte rýchlym spôsobom novú tabuľku Google</translation>
 <translation id="4825507807291741242">Pôsobivé</translation>
-<translation id="4827402517081186284">Režim inkognito vás na internete nedokáže úplne skryť:
+<translation id="4827402517081186284">Režim inkognito neznamená vašu neviditeľnosť na internete:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />weby vedia o vašej návšteve;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />zamestnanci alebo školy môžu sledovať aktivitu prehliadania;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />poskytovatelia internetu môžu monitorovať webovú premávku.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />zamestnávateľ či škola môže sledovať vašu aktivitu prehliadania;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />poskytovateľ internetu môže monitorovať webovú premávku.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Rozprávkové</translation>
 <translation id="4840250757394056958">Zobraziť históriu Chromu</translation>
