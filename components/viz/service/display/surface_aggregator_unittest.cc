@@ -1221,6 +1221,107 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   EXPECT_FALSE(second_parent.GetSurface()->HasUndrawnActiveFrame());
 }
 
+// Verify that when the parent and child surface have different device scale
+// factors both the damage_rect and aggregated quads from the child surface are
+// scaled appropriately. https://crbug.com/1115896 was caused by a mismatch in
+// the scaling of quads and damage from a child surface.
+TEST_F(SurfaceAggregatorValidSurfaceTest, ScaleForDeviceScaleFactor) {
+  auto child_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
+  TestSurfaceIdAllocator child_surface_id(child_support->frame_sink_id());
+
+  constexpr gfx::Rect child_surface_rect(200, 200);
+  constexpr gfx::Rect child_quad_rect(50, 50);
+  // Matches the where the solid color draw quad appears.
+  constexpr gfx::Rect child_damage_rect(100, 100, 50, 50);
+
+  auto child_pass =
+      RenderPassBuilder(CompositorRenderPassId{1}, child_surface_rect)
+          .AddSolidColorQuad(child_quad_rect, SK_ColorRED)
+          .SetQuadToTargetTranslation(100, 100)
+          .SetDamageRect(child_damage_rect)
+          .Build();
+
+  {
+    child_support->SubmitCompositorFrame(
+        child_surface_id.local_surface_id(),
+        CompositorFrameBuilder()
+            .AddRenderPass(child_pass->DeepCopy())
+            .SetDeviceScaleFactor(2.0f)
+            .Build());
+  }
+
+  constexpr gfx::Rect root_quad_rect(10, 10);
+  {
+    auto pass =
+        RenderPassBuilder(CompositorRenderPassId{1}, gfx::Rect(kSurfaceSize))
+            .AddSolidColorQuad(root_quad_rect, SK_ColorRED)
+            .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                            SurfaceRange(child_surface_id))
+            .Build();
+
+    CompositorFrame frame = CompositorFrameBuilder()
+                                .AddRenderPass(std::move(pass))
+                                .SetDeviceScaleFactor(1.0f)
+                                .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  {
+    // The first aggregation will have full damage so the results aren't super
+    // interesting.
+    auto frame = AggregateFrame(root_surface_id_);
+    EXPECT_EQ(frame.render_pass_list.size(), 1u);
+  }
+
+  {
+    // Submit a new CF to the child surface. Nothing has changed but we'll use
+    // the real damage this time.
+    child_support->SubmitCompositorFrame(
+        child_surface_id.local_surface_id(),
+        CompositorFrameBuilder()
+            .AddRenderPass(std::move(child_pass))
+            .SetDeviceScaleFactor(2.0f)
+            .Build());
+  }
+
+  {
+    auto frame = AggregateFrame(root_surface_id_);
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& render_pass = *frame.render_pass_list[0];
+
+    // Since the child surface has DSF=2 and root surface has DSF=1 the child
+    // surface will be scaled by a factor of 0.5. Both the damage and quads
+    // should be scaled by this factor. Only the child surface contributes
+    // damage this aggregation so the (100,100 50x50) damage_rect will be scaled
+    // to (50,50 25x25).
+    constexpr gfx::Rect expected_scaled_child_rect(50, 50, 25, 25);
+    EXPECT_EQ(render_pass.damage_rect, expected_scaled_child_rect);
+
+    EXPECT_EQ(render_pass.quad_list.size(), 2u);
+
+    // The quad coming from the root render pass isn't scaled.
+    auto* root_quad = render_pass.quad_list.ElementAt(0);
+    EXPECT_EQ(root_quad->material, DrawQuad::Material::kSolidColor);
+    EXPECT_EQ(root_quad->rect, root_quad_rect);
+    EXPECT_TRUE(
+        root_quad->shared_quad_state->quad_to_target_transform.IsIdentity());
+
+    // The quad coming from the child render pass has the same scale factor
+    // applied to it as the damage. The transformed quad rect should match the
+    // expected damage rect since the quad rect and damage rect matched before
+    // scaling.
+    auto* child_quad = render_pass.quad_list.ElementAt(1);
+    EXPECT_EQ(child_quad->material, DrawQuad::Material::kSolidColor);
+    EXPECT_EQ(child_quad->rect, child_quad_rect);
+    gfx::Rect scaled_child_quad_rect = cc::MathUtil::MapEnclosingClippedRect(
+        child_quad->shared_quad_state->quad_to_target_transform,
+        child_quad->rect);
+    EXPECT_EQ(expected_scaled_child_rect, scaled_child_quad_rect);
+  }
+}
+
 // This test verifies that the appropriate transform will be applied to a
 // surface embedded by a parent SurfaceDrawQuad marked as
 // stretch_content_to_fill_bounds.
@@ -2935,18 +3036,20 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
       aggregated_damage_callback,
       OnAggregatedDamage(fallback_child_surface_id.local_surface_id(), _, _, _))
       .Times(0);
-  // The damage of the root should be equal to the damage of the primary
-  // surface.
+
+  // The damage of the root should be equal to the damage of the primary surface
+  // after scaling by 0.5 since the root surface has DSF=1 and primary surface
+  // has DSF=2.
+  gfx::Rect scaled_primary_surface_rect =
+      gfx::ScaleToEnclosingRect(gfx::Rect(primary_surface_size), 0.5, 0.5);
   EXPECT_CALL(
       aggregated_damage_callback,
       OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
-                         gfx::Rect(primary_surface_size), next_display_time()))
+                         scaled_primary_surface_rect, next_display_time()))
       .Times(1);
 
   AggregateAndVerify(expected_passes3,
                      {root_surface_id_, primary_child_surface_id});
-
-  testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
 }
 
 // Tests that damage rects are aggregated correctly when surfaces change.

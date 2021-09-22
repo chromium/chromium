@@ -1454,6 +1454,13 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
             y_scale = static_cast<float>(surface_quad->rect.height()) /
                       child_size.height();
           }
+        } else {
+          // If not stretching to fit bounds then scale to adjust to device
+          // scale factor differences between child and parent surface. This
+          // scale factor is later applied to quads in the aggregated frame.
+          x_scale = y_scale =
+              resolved_frame.surface()->device_scale_factor() /
+              child_resolved_frame->surface()->device_scale_factor();
         }
         // If the surface quad is to be merged potentially, the current
         // effective accumulated damage needs to be taken into account. This

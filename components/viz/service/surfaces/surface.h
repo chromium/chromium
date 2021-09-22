@@ -119,6 +119,9 @@ class VIZ_SERVICE_EXPORT Surface final {
   const gfx::Size& size_in_pixels() const {
     return surface_info_.size_in_pixels();
   }
+  float device_scale_factor() const {
+    return surface_info_.device_scale_factor();
+  }
 
   base::WeakPtr<SurfaceClient> client() { return surface_client_; }
 
