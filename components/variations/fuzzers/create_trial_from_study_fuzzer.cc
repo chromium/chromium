@@ -48,19 +48,18 @@ class TestOverrideStringCallback {
 };
 
 struct Environment {
-  Environment()
-      : field_trial_list(std::make_unique<SHA1EntropyProvider>("client_id")) {
-    base::CommandLine::Init(0, nullptr);
-    base::FeatureList::InitializeInstance(std::string(), std::string());
-  }
+  Environment() { base::CommandLine::Init(0, nullptr); }
 
-  base::FieldTrialList field_trial_list;
   base::AtExitManager at_exit_manager;
 };
 
 }  // namespace
 
 void CreateTrialFromStudyFuzzer(const Study& study) {
+  base::FieldTrialList field_trial_list(
+      std::make_unique<SHA1EntropyProvider>("client_id"));
+  base::FeatureList feature_list;
+
   TestOverrideStringCallback override_callback;
   base::MockEntropyProvider mock_low_entropy_provider(0.9);
 
@@ -69,7 +68,7 @@ void CreateTrialFromStudyFuzzer(const Study& study) {
   if (processed_study.Init(&study, is_expired)) {
     VariationsSeedProcessor().CreateTrialFromStudy(
         processed_study, override_callback.callback(),
-        &mock_low_entropy_provider, base::FeatureList::GetInstance());
+        &mock_low_entropy_provider, &feature_list);
   }
 }
 
