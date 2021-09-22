@@ -522,8 +522,9 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
 }
 #endif
 
-#if defined(OS_MAC)
-// http://crbug.com/81451 for mac
+// https://crbug.com/81451 for mac
+// https://crbug.com/1249688 for Lacros
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AccessKeys DISABLED_AccessKeys
 #else
 #define MAYBE_AccessKeys AccessKeys
