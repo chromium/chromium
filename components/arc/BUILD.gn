@@ -440,6 +440,8 @@ static_library("arc_test_support") {
     "test/fake_storage_manager_instance.h",
     "test/fake_timer_instance.cc",
     "test/fake_timer_instance.h",
+    "test/fake_tracing_instance.cc",
+    "test/fake_tracing_instance.h",
     "test/fake_wake_lock_instance.cc",
     "test/fake_wake_lock_instance.h",
     "test/fake_wallpaper_instance.cc",
