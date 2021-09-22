@@ -84,7 +84,6 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
     _subtitleLabel = [[UILabel alloc] init];
     _subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-    _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     [_subtitleLabel
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:UILayoutConstraintAxisVertical];
@@ -186,8 +185,11 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 #pragma mark - properties
 
 - (void)setDisabled:(BOOL)disabled {
-  _titleLabel.textColor = disabled ? [UIColor colorNamed:kTextSecondaryColor]
+  _titleLabel.textColor = disabled ? [UIColor colorNamed:kTextQuaternaryColor]
                                    : [UIColor colorNamed:kTextPrimaryColor];
+  _subtitleLabel.textColor = disabled
+                                 ? [UIColor colorNamed:kTextQuaternaryColor]
+                                 : [UIColor colorNamed:kTextSecondaryColor];
   _disclosureImageView.image =
       disabled ? nil : [UIImage imageNamed:@"table_view_cell_chevron"];
   _disabled = disabled;
