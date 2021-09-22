@@ -21,6 +21,7 @@
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -70,6 +71,7 @@ class MediatorTest : public testing::Test {
   MockPairerBroker* mock_pairer_broker_;
   MockUIBroker* mock_ui_broker_;
   std::unique_ptr<Mediator> mediator_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(MediatorTest, TogglesScanningWhenFastPairEnabledChanges) {

@@ -15,6 +15,7 @@ namespace ash {
 namespace quick_pair {
 
 struct Device;
+class FastPairFeatureUsageMetricsLogger;
 
 // Observes pairing, scanning and UI events and logs corresponding metrics.
 class QuickPairMetricsLogger : public PairerBroker::Observer,
@@ -50,6 +51,8 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
   void OnDeviceFound(scoped_refptr<Device> device) override;
   void OnDeviceLost(scoped_refptr<Device> device) override;
 
+  std::unique_ptr<FastPairFeatureUsageMetricsLogger>
+      feature_usage_metrics_logger_;
   base::ScopedObservation<ScannerBroker, ScannerBroker::Observer>
       scanner_broker_observation_{this};
   base::ScopedObservation<PairerBroker, PairerBroker::Observer>

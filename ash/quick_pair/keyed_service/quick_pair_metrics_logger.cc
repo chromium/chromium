@@ -5,15 +5,17 @@
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
 
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 
 namespace ash {
 namespace quick_pair {
 
 QuickPairMetricsLogger::QuickPairMetricsLogger(ScannerBroker* scanner_broker,
                                                PairerBroker* pairer_broker,
-                                               UIBroker* ui_broker) {
+                                               UIBroker* ui_broker)
+    : feature_usage_metrics_logger_(
+          std::make_unique<FastPairFeatureUsageMetricsLogger>()) {
   scanner_broker_observation_.Observe(scanner_broker);
   pairer_broker_observation_.Observe(pairer_broker);
   ui_broker_observation_.Observe(ui_broker);
@@ -26,6 +28,7 @@ void QuickPairMetricsLogger::OnDevicePaired(scoped_refptr<Device> device) {
     case Protocol::kFastPair:
       RecordFastPairEngagementFlow(
           FastPairEngagementFlowEvent::kPairingSucceeded);
+      feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
       break;
   }
 }
@@ -35,6 +38,7 @@ void QuickPairMetricsLogger::OnPairFailure(scoped_refptr<Device> device,
   switch (device->protocol) {
     case Protocol::kFastPair:
       RecordFastPairEngagementFlow(FastPairEngagementFlowEvent::kPairingFailed);
+      feature_usage_metrics_logger_->RecordUsage(/*success=*/false);
       break;
   }
 }
@@ -52,6 +56,7 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
         case DiscoveryAction::kDismissed:
           RecordFastPairEngagementFlow(
               FastPairEngagementFlowEvent::kDiscoveryUiDismissed);
+          feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
           break;
       }
       break;
