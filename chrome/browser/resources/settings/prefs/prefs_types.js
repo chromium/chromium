@@ -3,54 +3,44 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Types for CrSettingsPrefsElement.
+ * @fileoverview Global state for prefs initialization status.
  */
 
-/**
- * Global state for prefs status.
- */
-export const CrSettingsPrefs = (function() {
-  const CrSettingsPrefsInternal = {
-    /**
-     * Resolves the CrSettingsPrefs.initialized promise.
-     */
-    setInitialized() {
-      /** @public {boolean} */
-      CrSettingsPrefsInternal.isInitialized = true;
-      CrSettingsPrefsInternal.resolve_();
-    },
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-    /**
-     * Restores state for testing.
-     */
-    resetForTesting() {
-      CrSettingsPrefsInternal.setup_();
-    },
+class CrSettingsPrefsInternal {
+  constructor() {
+    /** @type {boolean} */
+    this.isInitialized = false;
 
     /**
      * Whether to defer initialization. Used in testing to prevent premature
      * initialization when intending to fake the settings API.
      * @type {boolean}
      */
-    deferInitialization: false,
+    this.deferInitialization = false;
 
-    /**
-     * Called to set up the promise and resolve methods.
-     * @private
-     */
-    setup_() {
-      CrSettingsPrefsInternal.isInitialized = false;
-      /**
-       * Promise to be resolved when all settings have been initialized.
-       * @type {!Promise}
-       */
-      CrSettingsPrefsInternal.initialized = new Promise(function(resolve) {
-        CrSettingsPrefsInternal.resolve_ = resolve;
-      });
-    },
-  };
+    /** @private {!PromiseResolver} */
+    this.initializedResolver_ = new PromiseResolver();
+  }
 
-  CrSettingsPrefsInternal.setup_();
+  /** @return {!Promise} */
+  get initialized() {
+    return this.initializedResolver_.promise;
+  }
 
-  return CrSettingsPrefsInternal;
-})();
+  /** Resolves the |initialized| promise. */
+  setInitialized() {
+    this.isInitialized = true;
+    this.initializedResolver_.resolve();
+  }
+
+  /** Restores state for testing. */
+  resetForTesting() {
+    this.isInitialized = false;
+    this.initializedResolver_ = new PromiseResolver();
+  }
+}
+
+/** @type {!CrSettingsPrefsInternal} */
+export const CrSettingsPrefs = new CrSettingsPrefsInternal();

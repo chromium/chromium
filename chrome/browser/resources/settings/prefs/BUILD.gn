@@ -36,4 +36,5 @@ js_library("prefs_behavior") {
 }
 
 js_library("prefs_types") {
+  deps = [ "//ui/webui/resources/js:promise_resolver.m" ]
 }
