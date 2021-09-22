@@ -1031,7 +1031,8 @@
   },
   {
     "prefix": "force-renderer-accessibility",
-    "bases": ["accessibility/details-summary-crash.html",
+    "bases": ["accessibility/accessibility-beforematch-marker-crash.html",
+              "accessibility/details-summary-crash.html",
               "accessibility/slot-poison.html",
               "accessibility/virtual-node-child-removal.html",
               "accessibility/virtual-node-parent-removal.html",

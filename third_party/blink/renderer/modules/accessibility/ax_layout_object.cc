@@ -533,8 +533,9 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
       // be inconsistent with the list marker.
       const AXObject* list_marker_object =
           ContainerListMarkerIncludingIgnored();
-      if (list_marker_object->GetLayoutObject()->IsListMarkerForSummary() ||
-          !list_marker_object->AccessibilityIsIgnored()) {
+      if (list_marker_object &&
+          (list_marker_object->GetLayoutObject()->IsListMarkerForSummary() ||
+           !list_marker_object->AccessibilityIsIgnored())) {
         if (ignored_reasons)
           ignored_reasons->push_back(IgnoredReason(kAXPresentational));
         return true;
