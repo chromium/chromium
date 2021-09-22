@@ -787,9 +787,12 @@ void PrintPreviewHandler::HandleShowSystemDialog(
   if (!initiator)
     return;
 
+  auto weak_this = weak_factory_.GetWeakPtr();
   auto* print_view_manager = PrintViewManager::FromWebContents(initiator);
   print_view_manager->PrintForSystemDialogNow(base::BindOnce(
       &PrintPreviewHandler::ClosePreviewDialog, weak_factory_.GetWeakPtr()));
+  if (!weak_this)
+    return;
 
   // Cancel the pending preview request if exists.
   print_preview_ui()->OnCancelPendingPreviewRequest();
