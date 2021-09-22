@@ -62,7 +62,6 @@ public class DownloadDialogBridgeUnitTest {
             DownloadLocationDialogType.DEFAULT;
     private static final @DownloadLocationDialogType int LOCATION_DIALOG_ERROR_TYPE =
             DownloadLocationDialogType.NAME_CONFLICT;
-    // TODO(crbug/1248017): Add LocationDialog tests for Incognito mode.
     private static final Boolean isIncognito = false;
 
     private static final String SUGGESTED_PATH = "sdcard/download.txt";
