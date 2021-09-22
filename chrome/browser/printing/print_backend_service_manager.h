@@ -40,11 +40,6 @@ class PrintBackendServiceManager {
   // services.  This signal might alter the manager's internal optimizations.
   void UnregisterClient(uint32_t id);
 
-  // Acquires a remote handle to the Print Backend Service instance, launching a
-  // process to host the service if necessary.
-  const mojo::Remote<printing::mojom::PrintBackendService>& GetService(
-      const std::string& printer_name);
-
   // Wrappers around mojom::PrintBackendService call.
   void EnumeratePrinters(
       mojom::PrintBackendService::EnumeratePrintersCallback callback);
@@ -139,6 +134,11 @@ class PrintBackendServiceManager {
 
   // Determine the remote ID that is used for the specified `printer_name`.
   std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
+
+  // Acquires a remote handle to the Print Backend Service instance, launching a
+  // process to host the service if necessary.
+  const mojo::Remote<printing::mojom::PrintBackendService>& GetService(
+      const std::string& printer_name);
 
   // Help function to reset idle timeout duration to a short value.
   void UpdateServiceToShortIdleTimeout(

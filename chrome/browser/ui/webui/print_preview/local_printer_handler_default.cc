@@ -111,8 +111,7 @@ void OnDidFetchCapabilities(
 
       // Retry the operation which should now happen at a higher privilege
       // level.
-      auto& service = service_mgr.GetService(device_name);
-      service->FetchCapabilities(
+      service_mgr.FetchCapabilities(
           device_name,
           base::BindOnce(&OnDidFetchCapabilities, device_name,
                          /*elevated_privileges=*/true, has_secure_protocol,
