@@ -23,9 +23,7 @@ namespace {
 // accesses resources.
 class QuickAnswersMenuObserverTest : public InProcessBrowserTest {
  public:
-  QuickAnswersMenuObserverTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kQuickAnswers);
-  }
+  QuickAnswersMenuObserverTest() = default;
 
   QuickAnswersMenuObserverTest(const QuickAnswersMenuObserverTest&) = delete;
   QuickAnswersMenuObserverTest& operator=(const QuickAnswersMenuObserverTest&) =
@@ -65,8 +63,6 @@ class QuickAnswersMenuObserverTest : public InProcessBrowserTest {
   QuickAnswersMenuObserver* observer() { return observer_.get(); }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-
   std::unique_ptr<QuickAnswersMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
 };

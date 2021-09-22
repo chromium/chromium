@@ -2495,16 +2495,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "enable-quick-answers",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 95
-  },
-  {
-    "name": "enable-quick-answers-on-editable-text",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-quick-answers-v2",
     "owners": [ "croissant-eng" ],
     "expiry_milestone": 100

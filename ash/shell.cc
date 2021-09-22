@@ -1157,9 +1157,7 @@ void Shell::Init(
       std::make_unique<FullscreenMagnifierController>();
   mru_window_tracker_ = std::make_unique<MruWindowTracker>();
   assistant_controller_ = std::make_unique<AssistantControllerImpl>();
-  if (chromeos::features::IsQuickAnswersEnabled()) {
-    quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
-  }
+  quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
 
   // |assistant_controller_| is put before |ambient_controller_| as it will be
   // used by the latter.

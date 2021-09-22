@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/components/quick_answers/quick_answers_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
@@ -90,12 +89,6 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
   // Skip password input field.
   if (params.input_field_type ==
       blink::mojom::ContextMenuDataInputFieldType::kPassword) {
-    return;
-  }
-
-  // Skip editable text selection if the feature is not enabled.
-  if (params.is_editable &&
-      !chromeos::features::IsQuickAnswersOnEditableTextEnabled()) {
     return;
   }
 

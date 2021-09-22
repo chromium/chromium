@@ -4524,15 +4524,6 @@ const char kEnablePalmSuppressionName[] =
 const char kEnablePalmSuppressionDescription[] =
     "If enabled, suppresses touch when a stylus is on a touchscreen.";
 
-const char kEnableQuickAnswersName[] = "Enable Quick Answers";
-const char kEnableQuickAnswersDescription[] =
-    "Enable the Quick Answers feature";
-
-const char kEnableQuickAnswersOnEditableTextName[] =
-    "Enable Quick Answers on editable text";
-const char kEnableQuickAnswersOnEditableTextDescription[] =
-    "Enable Quick Answers on editable text.";
-
 const char kEnableQuickAnswersV2Name[] = "Enable Quick Answers V2 features";
 const char kEnableQuickAnswersV2Description[] =
     "Enable Quick Answers V2 features.";

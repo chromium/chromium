@@ -145,10 +145,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   if (chromeos::features::IsAmbientModeEnabled())
     ambient_client_ = std::make_unique<AmbientClientImpl>();
 
-  if (chromeos::features::IsQuickAnswersEnabled()) {
-    quick_answers_browser_client_ =
-        std::make_unique<QuickAnswersBrowserClientImpl>();
-  }
+  quick_answers_browser_client_ =
+      std::make_unique<QuickAnswersBrowserClientImpl>();
 
   media_notification_provider_ =
       std::make_unique<MediaNotificationProviderImpl>();

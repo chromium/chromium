@@ -2581,12 +2581,6 @@ extern const char kEnablePalmOnToolTypePalmDescription[];
 extern const char kEnablePalmSuppressionName[];
 extern const char kEnablePalmSuppressionDescription[];
 
-extern const char kEnableQuickAnswersName[];
-extern const char kEnableQuickAnswersDescription[];
-
-extern const char kEnableQuickAnswersOnEditableTextName[];
-extern const char kEnableQuickAnswersOnEditableTextDescription[];
-
 extern const char kEnableQuickAnswersV2Name[];
 extern const char kEnableQuickAnswersV2Description[];
 

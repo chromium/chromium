@@ -8,7 +8,6 @@
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
@@ -21,10 +20,7 @@ constexpr gfx::Rect kDefaultAnchorBoundsInScreen =
 
 class QuickAnswersUiControllerTest : public AshTestBase {
  protected:
-  QuickAnswersUiControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kQuickAnswers);
-  }
+  QuickAnswersUiControllerTest() = default;
   QuickAnswersUiControllerTest(const QuickAnswersUiControllerTest&) = delete;
   QuickAnswersUiControllerTest& operator=(const QuickAnswersUiControllerTest&) =
       delete;
@@ -44,7 +40,6 @@ class QuickAnswersUiControllerTest : public AshTestBase {
 
  private:
   QuickAnswersUiController* ui_controller_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {

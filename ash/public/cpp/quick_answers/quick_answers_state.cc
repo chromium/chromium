@@ -334,8 +334,7 @@ void QuickAnswersState::UpdateEligibility() {
     return;
   }
   is_eligible_ =
-      (chromeos::features::IsQuickAnswersEnabled() &&
-       assistant_state->settings_enabled().value() &&
+      (assistant_state->settings_enabled().value() &&
        IsQuickAnswersAllowedForLocale(assistant_state->locale().value(),
                                       icu::Locale::getDefault().getName()) &&
        assistant_state->context_enabled().value() &&

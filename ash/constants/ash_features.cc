@@ -876,14 +876,6 @@ const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to enable quick answers.
-const base::Feature kQuickAnswers{"QuickAnswers",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether to trigger quick answers on editable text selection.
-const base::Feature kQuickAnswersOnEditableText{
-    "QuickAnswersOnEditableText", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable quick answers V2 features.
 const base::Feature kQuickAnswersV2{"QuickAnswersV2",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1567,14 +1559,6 @@ bool IsProjectorEnabled() {
 bool IsProjectorFeaturePodEnabled() {
   return IsProjectorEnabled() &&
          base::FeatureList::IsEnabled(kProjectorFeaturePod);
-}
-
-bool IsQuickAnswersEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswers);
-}
-
-bool IsQuickAnswersOnEditableTextEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersOnEditableText);
 }
 
 bool IsQuickAnswersV2Enabled() {

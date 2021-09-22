@@ -9,17 +9,13 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace ash {
 
 class QuickAnswersStateControllerTest : public AshTestBase {
  protected:
-  QuickAnswersStateControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kQuickAnswers);
-  }
+  QuickAnswersStateControllerTest() = default;
   QuickAnswersStateControllerTest(const QuickAnswersStateControllerTest&) =
       delete;
   QuickAnswersStateControllerTest& operator=(
@@ -47,7 +43,6 @@ class QuickAnswersStateControllerTest : public AshTestBase {
 
  private:
   PrefService* prefs_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(QuickAnswersStateControllerTest, FeatureEligible) {
