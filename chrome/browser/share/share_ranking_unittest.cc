@@ -272,6 +272,45 @@ TEST_F(ShareRankingStaticTest, LowestUsageItemSwappedIgnoringDisplayOrder) {
   EXPECT_EQ(persisted, expected_persisted);
 }
 
+TEST_F(ShareRankingStaticTest, SystemAppsReplaceUnavailableInRankedOrder) {
+  // This test ensures that unavailable app "slots" in the old ranking are
+  // replaced by available apps in the order of the old ranking, *not* in the
+  // order supplied by the system.
+  const ShareRanking::Ranking current{
+      "aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj",
+  };
+  const std::vector<std::string> available{
+      "iii", "ggg", "eee", "ccc", "aaa",
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, &displayed,
+                               &persisted);
+
+  ShareRanking::Ranking expected_displayed{"aaa", "eee", "ccc", "$more"};
+
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, NotEnoughPreferredApps) {
+  const ShareRanking::Ranking current{
+      "aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj",
+  };
+  const std::vector<std::string> available{
+      "zzz", "yyy", "xxx", "ccc", "aaa",
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, &displayed,
+                               &persisted);
+
+  ShareRanking::Ranking expected_displayed{"aaa", "zzz", "ccc", "$more"};
+
+  EXPECT_EQ(displayed, expected_displayed);
+}
+
 // Regression test for https://crbug.com/1233232
 TEST_F(ShareRankingTest, OldRankingContainsItemsWithNoRecentHistory) {
   std::map<std::string, int> history = {
