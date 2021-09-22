@@ -11,12 +11,10 @@
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/messages_feature.h"
-#include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -46,15 +44,9 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  // is_saving_google_account indicates whether the user is syncing
-  // passwords to their Google Account.
-  const bool is_saving_google_account =
-      password_bubble_experiment::IsSmartLockUser(
-          SyncServiceFactory::GetForProfile(profile));
 
   absl::optional<AccountInfo> account_info =
-      password_manager::GetAccountInfoForPasswordMessages(
-          profile, is_saving_google_account);
+      password_manager::GetAccountInfoForPasswordMessages(profile);
   DisplaySavePasswordPromptInternal(web_contents, std::move(form_to_save),
                                     std::move(account_info), update_password);
 }
