@@ -379,6 +379,9 @@ void PasswordProtectionRequest::SendRequestWithToken(
     resource_request->headers.SetHeader(
         net::HttpRequestHeaders::kAuthorization,
         base::StrCat({kAuthHeaderBearer, access_token}));
+    // Remove cookies if access token is attached since we only need one
+    // identifier.
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   }
   resource_request->url =
       PasswordProtectionServiceBase::GetPasswordProtectionRequestUrl();

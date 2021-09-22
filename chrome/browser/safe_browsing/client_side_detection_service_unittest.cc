@@ -300,6 +300,9 @@ TEST_F(ClientSideDetectionServiceTest,
         EXPECT_TRUE(request.headers.GetHeader(
             net::HttpRequestHeaders::kAuthorization, &out));
         EXPECT_EQ(out, kAuthHeaderBearer + access_token);
+        // Cookies should be removed when token is set.
+        EXPECT_EQ(request.credentials_mode,
+                  network::mojom::CredentialsMode::kOmit);
       }));
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
   EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));
@@ -324,6 +327,9 @@ TEST_F(ClientSideDetectionServiceTest,
         std::string out;
         EXPECT_FALSE(request.headers.GetHeader(
             net::HttpRequestHeaders::kAuthorization, &out));
+        // Cookies should be attached when token is empty.
+        EXPECT_EQ(request.credentials_mode,
+                  network::mojom::CredentialsMode::kInclude);
       }));
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
   EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));
