@@ -120,8 +120,7 @@ class CrossFadeObserver : public aura::WindowObserver,
         [](const absl::optional<std::string>& histogram_name, int smoothness) {
           if (histogram_name) {
             DCHECK(!histogram_name->empty());
-            base::UmaHistogramPercentageObsoleteDoNotUse(*histogram_name,
-                                                         smoothness);
+            base::UmaHistogramPercentage(*histogram_name, smoothness);
           } else {
             UMA_HISTOGRAM_PERCENTAGE(kCrossFadeSmoothness, smoothness);
           }

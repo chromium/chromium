@@ -194,18 +194,15 @@ class ShelfFocusSearch : public views::FocusSearch {
 };
 
 void ReportMoveAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentageObsoleteDoNotUse(kShelfIconMoveAnimationHistogram,
-                                               smoothness);
+  base::UmaHistogramPercentage(kShelfIconMoveAnimationHistogram, smoothness);
 }
 
 void ReportFadeInAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentageObsoleteDoNotUse(
-      kShelfIconFadeInAnimationHistogram, smoothness);
+  base::UmaHistogramPercentage(kShelfIconFadeInAnimationHistogram, smoothness);
 }
 
 void ReportFadeOutAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentageObsoleteDoNotUse(
-      kShelfIconFadeOutAnimationHistogram, smoothness);
+  base::UmaHistogramPercentage(kShelfIconFadeOutAnimationHistogram, smoothness);
 }
 
 // Returns the id of the display on which |view| is shown.
