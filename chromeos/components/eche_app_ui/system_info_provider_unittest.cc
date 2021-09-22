@@ -3,23 +3,31 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/eche_app_ui/system_info_provider.h"
+#include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/json/json_reader.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace eche_app {
 
+using chromeos::network_config::mojom::ConnectionStateType;
+
 const char kFakeDeviceName[] = "Guanru's Chromebook";
 const char kFakeBoardName[] = "atlas";
 const bool kFakeTabletMode = true;
+const ConnectionStateType kFakeWifiConnectionState =
+    ConnectionStateType::kConnected;
 
 void ParseJson(const std::string& json,
                std::string& device_name,
                std::string& board_name,
-               bool& tablet_mode) {
+               bool& tablet_mode,
+               std::string& wifi_connection_state) {
   std::unique_ptr<base::Value> message_value =
       base::JSONReader::ReadDeprecated(json);
   base::DictionaryValue* message_dictionary;
@@ -27,6 +35,8 @@ void ParseJson(const std::string& json,
   message_dictionary->GetString(kJsonDeviceNameKey, &device_name);
   message_dictionary->GetString(kJsonBoardNameKey, &board_name);
   message_dictionary->GetBoolean(kJsonTabletModeKey, &tablet_mode);
+  message_dictionary->GetString(kJsonWifiConnectionStateKey,
+                                &wifi_connection_state);
 }
 
 class FakeTabletMode : public ash::TabletMode {
@@ -84,7 +94,12 @@ std::string chromeos::eche_app::Callback::system_info_ = "";
 
 class SystemInfoProviderTest : public testing::Test {
  protected:
-  SystemInfoProviderTest() = default;
+  SystemInfoProviderTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::DEFAULT,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    ash::GetNetworkConfigService(
+        remote_cros_network_config_.BindNewPipeAndPassReceiver());
+  }
   SystemInfoProviderTest(const SystemInfoProviderTest&) = delete;
   SystemInfoProviderTest& operator=(const SystemInfoProviderTest&) = delete;
   ~SystemInfoProviderTest() override = default;
@@ -98,7 +113,9 @@ class SystemInfoProviderTest : public testing::Test {
         std::make_unique<SystemInfoProvider>(SystemInfo::Builder()
                                                  .SetDeviceName(kFakeDeviceName)
                                                  .SetBoardName(kFakeBoardName)
-                                                 .Build());
+                                                 .Build(),
+                                             remote_cros_network_config_.get());
+    SetWifiConnectionStateList();
   }
   void TearDown() override {
     system_info_provider_.reset();
@@ -108,23 +125,42 @@ class SystemInfoProviderTest : public testing::Test {
     system_info_provider_->GetSystemInfo(
         base::BindOnce(&Callback::GetSystemInfoCallback));
   }
+  void SetWifiConnectionStateList() {
+    system_info_provider_->OnWifiNetworkList(GetWifiNetworkStateList());
+  }
+  std::vector<network_config::mojom::NetworkStatePropertiesPtr>
+  GetWifiNetworkStateList() {
+    std::vector<network_config::mojom::NetworkStatePropertiesPtr> result;
+    auto network =
+        ::chromeos::network_config::mojom::NetworkStateProperties::New();
+    network->type = chromeos::network_config::mojom::NetworkType::kWiFi;
+    network->connection_state = kFakeWifiConnectionState;
+    result.emplace_back(std::move(network));
+    return result;
+  }
 
  private:
+  base::test::TaskEnvironment task_environment_;
+
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+      remote_cros_network_config_;
 };
 
 TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   std::string device_name = "";
   std::string board_name = "";
   bool tablet_mode = false;
+  std::string wifi_connection_state = "";
 
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
-  ParseJson(json, device_name, board_name, tablet_mode);
+  ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
   EXPECT_EQ(board_name, kFakeBoardName);
   EXPECT_EQ(tablet_mode, kFakeTabletMode);
+  EXPECT_EQ(wifi_connection_state, "connected");
 }
 
 }  // namespace eche_app

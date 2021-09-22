@@ -11,6 +11,7 @@
 #include "chromeos/components/eche_app_ui/mojom/types_mojom_traits.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace chromeos {
 namespace eche_app {
@@ -18,14 +19,33 @@ namespace eche_app {
 const char kJsonDeviceNameKey[] = "device_name";
 const char kJsonBoardNameKey[] = "board_name";
 const char kJsonTabletModeKey[] = "tablet_mode";
+const char kJsonWifiConnectionStateKey[] = "wifi_connection_state";
 
-SystemInfoProvider::SystemInfoProvider(std::unique_ptr<SystemInfo> system_info)
-    : system_info_(std::move(system_info)) {
+using chromeos::network_config::mojom::ConnectionStateType;
+
+const std::map<network_config::mojom::ConnectionStateType, const char*>
+    CONNECTION_STATE_TYPE{
+        {ConnectionStateType::kOnline, "online"},
+        {ConnectionStateType::kConnected, "connected"},
+        {ConnectionStateType::kPortal, "portal"},
+        {ConnectionStateType::kConnecting, "connecting"},
+        {ConnectionStateType::kNotConnected, "not_connected"}};
+
+SystemInfoProvider::SystemInfoProvider(
+    std::unique_ptr<SystemInfo> system_info,
+    network_config::mojom::CrosNetworkConfig* cros_network_config)
+    : system_info_(std::move(system_info)),
+      cros_network_config_(cros_network_config),
+      wifi_connection_state_(
+          chromeos::network_config::mojom::ConnectionStateType::kNotConnected) {
   // TODO(samchiu): The intention of null check was for unit test. Add a fake
   // ScreenBacklight object to remove null check.
   if (ash::ScreenBacklight::Get())
     ash::ScreenBacklight::Get()->AddObserver(this);
   ash::TabletMode::Get()->AddObserver(this);
+  cros_network_config_->AddObserver(
+      cros_network_config_receiver_.BindNewPipeAndPassRemote());
+  FetchWifiNetworkList();
 }
 
 SystemInfoProvider::~SystemInfoProvider() {
@@ -43,6 +63,12 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.SetString(kJsonBoardNameKey, system_info_->GetBoardName());
   json_dictionary.SetBoolean(kJsonTabletModeKey,
                              ash::TabletMode::Get()->InTabletMode());
+  auto found_type = CONNECTION_STATE_TYPE.find(wifi_connection_state_);
+  std::string connecton_state_string =
+      found_type == CONNECTION_STATE_TYPE.end() ? "" : found_type->second;
+  json_dictionary.SetString(kJsonWifiConnectionStateKey,
+                            connecton_state_string);
+
   std::string json_message;
   base::JSONWriter::Write(json_dictionary, &json_message);
   std::move(callback).Run(json_message);
@@ -83,6 +109,35 @@ void SystemInfoProvider::OnTabletModeStarted() {
 
 void SystemInfoProvider::OnTabletModeEnded() {
   SetTabletModeChanged(false);
+}
+
+// network_config::mojom::CrosNetworkConfigObserver implementation:
+void SystemInfoProvider::OnNetworkStateChanged(
+    chromeos::network_config::mojom::NetworkStatePropertiesPtr network) {
+  FetchWifiNetworkList();
+}
+
+void SystemInfoProvider::FetchWifiNetworkList() {
+  cros_network_config_->GetNetworkStateList(
+      network_config::mojom::NetworkFilter::New(
+          network_config::mojom::FilterType::kVisible,
+          network_config::mojom::NetworkType::kWiFi,
+          network_config::mojom::kNoLimit),
+      base::BindOnce(&SystemInfoProvider::OnWifiNetworkList,
+                     base::Unretained(this)));
+}
+
+void SystemInfoProvider::OnWifiNetworkList(
+    std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
+  using chromeos::network_config::mojom::NetworkType;
+
+  for (const auto& network : networks) {
+    if (network->type == NetworkType::kWiFi) {
+      PA_LOG(VERBOSE) << "OnWifiNetworkList: " << network->connection_state;
+      wifi_connection_state_ = network->connection_state;
+      return;
+    }
+  }
 }
 
 }  // namespace eche_app

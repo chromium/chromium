@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,16 +18,21 @@ namespace eche_app {
 extern const char kJsonDeviceNameKey[];
 extern const char kJsonBoardNameKey[];
 extern const char kJsonTabletModeKey[];
+extern const char kJsonWifiConnectionStateKey[];
 
 class SystemInfo;
 
 // Provides the system information likes board/device names for EcheApp and
 // exposes the interface via mojoa.
-class SystemInfoProvider : public mojom::SystemInfoProvider,
-                           public ash::ScreenBacklightObserver,
-                           public ash::TabletModeObserver {
+class SystemInfoProvider
+    : public mojom::SystemInfoProvider,
+      public ash::ScreenBacklightObserver,
+      public ash::TabletModeObserver,
+      public network_config::mojom::CrosNetworkConfigObserver {
  public:
-  explicit SystemInfoProvider(std::unique_ptr<SystemInfo> system_info);
+  explicit SystemInfoProvider(
+      std::unique_ptr<SystemInfo> system_info,
+      network_config::mojom::CrosNetworkConfig* cros_network_config);
   ~SystemInfoProvider() override;
 
   SystemInfoProvider(const SystemInfoProvider&) = delete;
@@ -41,6 +47,8 @@ class SystemInfoProvider : public mojom::SystemInfoProvider,
   void Bind(mojo::PendingReceiver<mojom::SystemInfoProvider> receiver);
 
  private:
+  friend class SystemInfoProviderTest;
+
   // ash::ScreenBacklightObserver overrides;
   void OnScreenBacklightStateChanged(
       ash::ScreenBacklightState screen_state) override;
@@ -49,9 +57,30 @@ class SystemInfoProvider : public mojom::SystemInfoProvider,
   void OnTabletModeEnded() override;
 
   void SetTabletModeChanged(bool enabled);
+
+  // network_config::mojom::CrosNetworkConfigObserver overrides:
+  void OnActiveNetworksChanged(
+      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks)
+      override {}
+  void OnDeviceStateListChanged() override {}
+  void OnNetworkStateChanged(
+      chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
+      override;
+  void OnNetworkStateListChanged() override {}
+  void OnVpnProvidersChanged() override {}
+  void OnNetworkCertificatesChanged() override {}
+
+  void FetchWifiNetworkList();
+  void OnWifiNetworkList(
+      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks);
+
   mojo::Receiver<mojom::SystemInfoProvider> info_receiver_{this};
   mojo::Remote<mojom::SystemInfoObserver> observer_remote_;
+  mojo::Receiver<network_config::mojom::CrosNetworkConfigObserver>
+      cros_network_config_receiver_{this};
   std::unique_ptr<SystemInfo> system_info_;
+  network_config::mojom::CrosNetworkConfig* cros_network_config_;
+  network_config::mojom::ConnectionStateType wifi_connection_state_;
 };
 
 }  // namespace eche_app

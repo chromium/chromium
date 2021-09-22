@@ -14,7 +14,9 @@
 #include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class PrefService;
 
@@ -83,10 +85,12 @@ class EcheAppManager : public KeyedService {
       eche_notification_click_handler_;
   std::unique_ptr<EcheConnector> eche_connector_;
   std::unique_ptr<EcheSignaler> signaler_;
-  std::unique_ptr<SystemInfoProvider> system_info_provider_;
   std::unique_ptr<EcheUidProvider> uid_;
   std::unique_ptr<EcheRecentAppClickHandler> eche_recent_app_click_handler_;
   std::unique_ptr<EcheNotificationGenerator> notification_generator_;
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+      remote_cros_network_config_;
+  std::unique_ptr<SystemInfoProvider> system_info_provider_;
 };
 
 }  // namespace eche_app

@@ -23,6 +23,7 @@
  *    boardName: string,
  *    deviceName: string,
  *    tabletMode: boolean,
+ *    wifiConnectionState: string,
  * }}
  */
 /* #export */ let SystemInfo;
