@@ -1368,13 +1368,15 @@ void MediaSessionImpl::OnServiceDestroyed(MediaSessionServiceImpl* service) {
 
 void MediaSessionImpl::OnMediaSessionPlaybackStateChanged(
     MediaSessionServiceImpl* service) {
-  // Even though the back-forward cache is allowed at OnServiceCreated, it is
-  // disabled when the playback state is changed as this affects the visible UI
-  // for MediaSession.
-  BackForwardCache::DisableForRenderFrameHost(
-      service->GetRenderFrameHostId(),
-      BackForwardCacheDisable::DisabledReason(
-          BackForwardCacheDisable::DisabledReasonId::kMediaSession));
+  if (!BackForwardCacheImpl::IsMediaSessionPlaybackStateChangedAllowed()) {
+    // Even though the back-forward cache is allowed at OnServiceCreated, it is
+    // disabled when the playback state is changed as this affects the visible
+    // UI for MediaSession.
+    BackForwardCache::DisableForRenderFrameHost(
+        service->GetRenderFrameHostId(),
+        BackForwardCacheDisable::DisabledReason(
+            BackForwardCacheDisable::DisabledReasonId::kMediaSession));
+  }
 
   if (service != routed_service_)
     return;
@@ -1472,6 +1474,17 @@ void MediaSessionImpl::UpdateRoutedService() {
   RebuildAndNotifyActionsChanged();
   RebuildAndNotifyMediaSessionInfoChanged();
   RebuildAndNotifyMediaPositionChanged();
+
+  if (routed_service_ &&
+      !BackForwardCacheImpl::IsMediaSessionServiceAllowed()) {
+    // A page in the back-forward cache may affect the media control UI
+    // displayed to users. So it is marked as ineligible as soon as a
+    // MediaSession service is associated with it.
+    BackForwardCache::DisableForRenderFrameHost(
+        routed_service_->GetRenderFrameHostId(),
+        BackForwardCacheDisable::DisabledReason(
+            BackForwardCacheDisable::DisabledReasonId::kMediaSessionService));
+  }
 }
 
 MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {
