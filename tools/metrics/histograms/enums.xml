@@ -68234,6 +68234,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Server error"/>
 </enum>
 
+<enum name="PrivacySandboxAggregationServiceStorageSqlInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to open DB in memory"/>
+  <int value="2" label="Failed to open DB file"/>
+  <int value="3" label="Failed to create directory"/>
+  <int value="4" label="Failed to initialize schema"/>
+</enum>
+
 <enum name="PrivacySandboxReferrer">
   <int value="0" label="Privacy Settings"/>
   <int value="1" label="Cookie Settings Snackbar"/>

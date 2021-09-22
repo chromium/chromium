@@ -7,7 +7,7 @@
 #include <tuple>
 
 #include "base/task/thread_pool.h"
-#include "content/browser/aggregation_service/aggregation_service_storage.h"
+#include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 
 namespace content {
 
@@ -37,9 +37,13 @@ testing::AssertionResult PublicKeysEqual(const std::vector<PublicKey>& expected,
 
 }  // namespace aggregation_service
 
-TestAggregatableReportManager::TestAggregatableReportManager()
-    : storage_(base::SequenceBound<AggregationServiceStorage>(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}))) {}
+TestAggregatableReportManager::TestAggregatableReportManager(
+    const base::Clock* clock)
+    : storage_(base::SequenceBound<AggregationServiceStorageSql>(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+          /*run_in_memory=*/true,
+          /*path_to_database=*/base::FilePath(),
+          clock)) {}
 
 TestAggregatableReportManager::~TestAggregatableReportManager() = default;
 

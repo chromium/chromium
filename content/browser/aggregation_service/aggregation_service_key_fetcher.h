@@ -5,12 +5,15 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_FETCHER_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_FETCHER_H_
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -38,8 +41,8 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
       const AggregationServiceKeyFetcher& other) = delete;
   ~AggregationServiceKeyFetcher();
 
-  // Gets the public key for `origin` and triggers the `callback` once
-  // completed.
+  // Gets a currently valid public key for `origin` and triggers the `callback`
+  // once completed.
   //
   // Helper server's keys must be rotated weekly which is primarily to limit the
   // impact of a compromised key. Any public key must be valid when fetched and

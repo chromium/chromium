@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_PUBLIC_KEY_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_PUBLIC_KEY_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <ostream>
@@ -29,6 +30,8 @@ struct CONTENT_EXPORT PublicKey {
 
   // The key itself.
   std::vector<uint8_t> key;
+
+  static constexpr size_t kMaxIdSize = 128;
 };
 
 struct CONTENT_EXPORT PublicKeysForOrigin {
@@ -40,6 +43,8 @@ struct CONTENT_EXPORT PublicKeysForOrigin {
 
   url::Origin origin;
   std::vector<PublicKey> keys;
+
+  static constexpr size_t kMaxNumberKeys = 10;
 };
 
 // Only used for logging.

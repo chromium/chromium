@@ -7,10 +7,10 @@
 #include <stdint.h>
 
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,6 +29,10 @@ absl::optional<PublicKey> GetPublicKey(base::Value& value) {
   if (!id || !id.value().is_string())
     return absl::nullopt;
 
+  std::string key_id = id->GetString();
+  if (key_id.size() > PublicKey::kMaxIdSize)
+    return absl::nullopt;
+
   absl::optional<base::Value> key = value.ExtractKey("key");
   if (!key || !key.value().is_string())
     return absl::nullopt;
@@ -39,7 +43,7 @@ absl::optional<PublicKey> GetPublicKey(base::Value& value) {
 
   // TODO(crbug.com/1238458): Check that the length of the vector is as
   // expected.
-  return PublicKey(id.value().GetString(),
+  return PublicKey(std::move(key_id),
                    std::vector<uint8_t>(key_string.begin(), key_string.end()));
 }
 
@@ -55,10 +59,15 @@ std::vector<PublicKey> GetPublicKeys(base::Value& value) {
   if (!keys_json.has_value() || !keys_json.value().is_list())
     return {};
 
-  std::vector<PublicKey> keys_vec;
-  std::unordered_set<std::string> key_ids_set;
+  std::vector<PublicKey> public_keys;
+  base::flat_set<std::string> key_ids_set;
 
   for (auto& key_json : keys_json.value().GetList()) {
+    // Return error (i.e. empty vector) if more keys than expected are
+    // specified.
+    if (public_keys.size() == PublicKeysForOrigin::kMaxNumberKeys)
+      return {};
+
     absl::optional<PublicKey> key = GetPublicKey(key_json);
 
     // Return error (i.e. empty vector) if any of the keys are invalid.
@@ -69,10 +78,10 @@ std::vector<PublicKey> GetPublicKeys(base::Value& value) {
     if (!key_ids_set.insert(key.value().id).second)
       return {};
 
-    keys_vec.push_back(key.value());
+    public_keys.push_back(std::move(key.value()));
   }
 
-  return keys_vec;
+  return public_keys;
 }
 
 }  // namespace aggregation_service

@@ -15,6 +15,10 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace content {
 
 namespace aggregation_service {
@@ -30,7 +34,7 @@ const std::vector<uint8_t> kEFGH5678AsBytes = {16, 81, 135, 231, 174, 252};
 
 class TestAggregatableReportManager : public AggregatableReportManager {
  public:
-  TestAggregatableReportManager();
+  explicit TestAggregatableReportManager(const base::Clock* clock);
   TestAggregatableReportManager(const TestAggregatableReportManager& other) =
       delete;
   TestAggregatableReportManager& operator=(

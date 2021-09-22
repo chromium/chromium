@@ -21,7 +21,9 @@ namespace content {
 class TestAggregationServiceImplTest : public testing::Test {
  public:
   TestAggregationServiceImplTest()
-      : impl_(std::make_unique<TestAggregationServiceImpl>()) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        impl_(std::make_unique<TestAggregationServiceImpl>(
+            task_environment_.GetMockClock())) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;

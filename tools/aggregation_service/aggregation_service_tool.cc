@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/test/test_aggregation_service.h"
@@ -27,7 +28,8 @@
 namespace aggregation_service {
 
 AggregationServiceTool::AggregationServiceTool()
-    : agg_service_(content::TestAggregationService::Create()) {}
+    : agg_service_(content::TestAggregationService::Create(
+          base::DefaultClock::GetInstance())) {}
 
 AggregationServiceTool::~AggregationServiceTool() = default;
 

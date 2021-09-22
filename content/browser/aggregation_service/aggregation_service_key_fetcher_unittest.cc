@@ -10,6 +10,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/clock.h"
+#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,12 +23,15 @@ namespace content {
 class AggregationServiceKeyFetcherTest : public testing::Test {
  public:
   AggregationServiceKeyFetcherTest()
-      : fetcher_(std::make_unique<AggregationServiceKeyFetcher>(&manager_)) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        manager_(task_environment_.GetMockClock()),
+        fetcher_(std::make_unique<AggregationServiceKeyFetcher>(&manager_)) {}
 
   void SetPublicKeys(const PublicKeysForOrigin& keys) {
     manager_.GetKeyStorage()
         .AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
-        .WithArgs(keys);
+        .WithArgs(keys, /*fetch_time=*/clock().Now(),
+                  /*expiry_time=*/base::Time::Max());
   }
 
   void ExpectPublicKeyFetched(const url::Origin& origin,
@@ -67,6 +72,9 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestAggregatableReportManager manager_;
   std::unique_ptr<AggregationServiceKeyFetcher> fetcher_;
+
+ private:
+  const base::Clock& clock() { return *task_environment_.GetMockClock(); }
 };
 
 TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeys_Succeed) {
@@ -81,11 +89,6 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeys_Succeed) {
 TEST_F(AggregationServiceKeyFetcherTest,
        GetPublicKeysUntrustworthyOrigin_Failed) {
   url::Origin origin = url::Origin::Create(GURL("http://a.com"));
-  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
-  PublicKeysForOrigin origin_keys(origin, {key});
-
-  SetPublicKeys(origin_keys);
-
   ExpectKeyFetchFailure(
       origin,
       AggregationServiceKeyFetcher::PublicKeyFetchStatus::kUntrustworthyOrigin);
@@ -93,11 +96,6 @@ TEST_F(AggregationServiceKeyFetcherTest,
 
 TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysOpaqueOrigin_Failed) {
   url::Origin origin = url::Origin::Create(GURL("about:blank"));
-  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
-  PublicKeysForOrigin origin_keys(origin, {key});
-
-  SetPublicKeys(origin_keys);
-
   ExpectKeyFetchFailure(
       origin,
       AggregationServiceKeyFetcher::PublicKeyFetchStatus::kUntrustworthyOrigin);
@@ -106,13 +104,7 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysOpaqueOrigin_Failed) {
 TEST_F(AggregationServiceKeyFetcherTest,
        GetPublicKeysWithNoKeysForOrigin_Failed) {
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
-  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
-  PublicKeysForOrigin origin_keys(origin, {key});
-
-  SetPublicKeys(origin_keys);
-
-  url::Origin other_origin = url::Origin::Create(GURL("https://b.com"));
-  ExpectKeyFetchFailure(other_origin,
+  ExpectKeyFetchFailure(origin,
                         AggregationServiceKeyFetcher::PublicKeyFetchStatus::
                             kPublicKeyFetchFailed);
 }

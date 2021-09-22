@@ -16,6 +16,7 @@ template <class T>
 class scoped_refptr;
 
 namespace base {
+class Clock;
 class Value;
 }  // namespace base
 
@@ -36,7 +37,8 @@ class TestAggregationService {
   virtual ~TestAggregationService() = default;
 
   // Creates an instance of the service.
-  static std::unique_ptr<TestAggregationService> Create();
+  static std::unique_ptr<TestAggregationService> Create(
+      const base::Clock* clock);
 
   // Parses the keys for `origin` from `json_string`, and saves the set of keys
   // to storage. `callback` will be run once completed which takes a boolean

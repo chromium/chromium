@@ -1869,7 +1869,7 @@ test("content_unittests") {
     "../browser/accessibility/touch_passthrough_manager_unittest.cc",
     "../browser/aggregation_service/aggregatable_report_sender_unittest.cc",
     "../browser/aggregation_service/aggregation_service_key_fetcher_unittest.cc",
-    "../browser/aggregation_service/aggregation_service_storage_unittest.cc",
+    "../browser/aggregation_service/aggregation_service_storage_sql_unittest.cc",
     "../browser/aggregation_service/public_key_parsing_utils_unittest.cc",
     "../browser/background_fetch/background_fetch_cross_origin_filter_unittest.cc",
     "../browser/background_fetch/background_fetch_data_manager_unittest.cc",

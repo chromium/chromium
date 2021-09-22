@@ -10,8 +10,9 @@
 
 namespace content {
 
-std::unique_ptr<TestAggregationService> TestAggregationService::Create() {
-  return std::make_unique<TestAggregationServiceImpl>();
+std::unique_ptr<TestAggregationService> TestAggregationService::Create(
+    const base::Clock* clock) {
+  return std::make_unique<TestAggregationServiceImpl>(clock);
 }
 
 }  // namespace content
