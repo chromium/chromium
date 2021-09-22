@@ -316,12 +316,11 @@ void AssistantClientV1::CancelSpeakerIdEnrollment(
 void AssistantClientV1::GetSpeakerIdEnrollmentInfo(
     const ::assistant::api::GetSpeakerIdEnrollmentInfoRequest& request,
     base::OnceCallback<void(bool user_model_exists)> on_done) {
-  auto callback = base::BindOnce(
-      [](base::OnceCallback<void(bool user_model_exists)> cb,
-         const assistant_client::SpeakerIdEnrollmentStatus& status) {
-        std::move(cb).Run(status.user_model_exists);
-      },
-      std::move(on_done));
+  auto callback =
+      AdaptCallback<const assistant_client::SpeakerIdEnrollmentStatus&>(
+          /*once_callback=*/std::move(on_done),
+          /*transformer=*/[](const assistant_client::SpeakerIdEnrollmentStatus&
+                                 status) { return status.user_model_exists; });
 
   assistant_manager_internal()->GetSpeakerIdEnrollmentStatus(
       request.cloud_enrollment_status_request().user_id(),
