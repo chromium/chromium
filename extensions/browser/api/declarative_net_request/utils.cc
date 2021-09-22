@@ -503,8 +503,8 @@ std::string GetParseError(ParseResult error_reason, int rule_id) {
       return ErrorUtils::FormatErrorMessage(kErrorCannotAppendRequestHeader,
                                             base::NumberToString(rule_id));
     case ParseResult::ERROR_REGEX_TOO_LARGE:
-      // These rules are ignored while indexing and so won't cause an error.
-      break;
+      return ErrorUtils::FormatErrorMessage(
+          kErrorRegexTooLarge, base::NumberToString(rule_id), kRegexFilterKey);
     case ParseResult::ERROR_MULTIPLE_FILTERS_SPECIFIED:
       return ErrorUtils::FormatErrorMessage(kErrorMultipleFilters,
                                             base::NumberToString(rule_id),

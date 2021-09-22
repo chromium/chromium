@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INDEX_HELPER_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_INDEX_HELPER_H_
 
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -47,7 +48,7 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   static void IndexStaticRulesets(
       const Extension& extension,
       FileBackedRulesetSource::RulesetFilter ruleset_filter,
-      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior,
+      uint8_t parse_flags,
       IndexCallback callback);
 
   // Synchronously indexes the static rulesets for an extension. Must be called
@@ -56,7 +57,7 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   static Result IndexStaticRulesetsUnsafe(
       const Extension& extension,
       FileBackedRulesetSource::RulesetFilter ruleset_filter,
-      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior);
+      uint8_t parse_flags);
 
  private:
   friend class base::RefCountedThreadSafe<IndexHelper>;
@@ -68,8 +69,7 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   ~IndexHelper();
 
   // Starts indexing the rulesets.
-  void Start(
-      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior);
+  void Start(uint8_t parse_flags);
 
   // Callback invoked when indexing of all rulesets is completed.
   void OnAllRulesetsIndexed();

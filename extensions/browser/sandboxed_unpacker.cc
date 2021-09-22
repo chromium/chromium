@@ -704,11 +704,10 @@ void SandboxedUnpacker::IndexAndPersistJSONRulesetsIfNeeded() {
 
   // Ignore rule parsing errors since ruleset indexing (and therefore rule
   // parsing) is deferred until the ruleset is enabled for packed extensions.
-  auto invalid_rule_parse_behavior =
-      declarative_net_request::RulesetSource::InvalidRuleParseBehavior::kIgnore;
+  auto parse_flags = declarative_net_request::RulesetSource::kNone;
 
   declarative_net_request::IndexHelper::IndexStaticRulesets(
-      *extension_, ruleset_filter, invalid_rule_parse_behavior,
+      *extension_, ruleset_filter, parse_flags,
       base::BindOnce(&SandboxedUnpacker::OnJSONRulesetsIndexed, this));
 }
 

@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -195,8 +196,7 @@ class FileBackedRulesetSource : public RulesetSource {
   // JSON rules file is parsed in-process. Note: This must be called on a
   // sequence where file IO is allowed.
   IndexAndPersistJSONRulesetResult IndexAndPersistJSONRulesetUnsafe(
-      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior)
-      const;
+      uint8_t parse_flags) const;
 
   using IndexAndPersistJSONRulesetCallback =
       base::OnceCallback<void(IndexAndPersistJSONRulesetResult)>;
@@ -207,7 +207,7 @@ class FileBackedRulesetSource : public RulesetSource {
   // NOTE: This must be called on a sequence where file IO is allowed.
   void IndexAndPersistJSONRuleset(
       data_decoder::DataDecoder* decoder,
-      RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior,
+      uint8_t parse_flags,
       IndexAndPersistJSONRulesetCallback callback) const;
 
   // Reads JSON rules synchronously. Callers should only use this if the JSON is

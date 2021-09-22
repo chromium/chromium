@@ -20,11 +20,15 @@ namespace declarative_net_request {
 // Holds the result of indexing a JSON ruleset.
 class ParseInfo {
  public:
+  struct RuleWarning {
+    int rule_id;
+    std::string message;
+  };
+
   // Constructor to be used on success.
   ParseInfo(size_t rules_count,
             size_t regex_rules_count,
-            std::vector<int> regex_limit_exceeded_rules,
-            std::vector<std::string> rule_ignored_warnings,
+            std::vector<RuleWarning> rule_ignored_warnings,
             flatbuffers::DetachedBuffer buffer,
             int ruleset_checksum);
 
@@ -46,14 +50,7 @@ class ParseInfo {
     return error_;
   }
 
-  // Rules which exceed the per-rule regex memory limit. These are ignored
-  // during indexing.
-  const std::vector<int>& regex_limit_exceeded_rules() const {
-    DCHECK(!has_error_);
-    return regex_limit_exceeded_rules_;
-  }
-
-  const std::vector<std::string>& rule_ignored_warnings() const {
+  const std::vector<RuleWarning>& rule_ignored_warnings() const {
     DCHECK(!has_error_);
     return rule_ignored_warnings_;
   }
@@ -87,12 +84,11 @@ class ParseInfo {
   // Only valid iff |has_error_| is false.
   size_t rules_count_ = 0;
   size_t regex_rules_count_ = 0;
-  std::vector<int> regex_limit_exceeded_rules_;
   flatbuffers::DetachedBuffer buffer_;
   int ruleset_checksum_ = -1;
 
-  // Install warnings for rules which could not be parsed and are ignored.
-  std::vector<std::string> rule_ignored_warnings_;
+  // Warnings for rules which could not be parsed and were therefore ignored.
+  std::vector<RuleWarning> rule_ignored_warnings_;
 };
 
 }  // namespace declarative_net_request

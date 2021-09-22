@@ -123,7 +123,7 @@ IndexHelper::Result& IndexHelper::Result::operator=(Result&&) = default;
 void IndexHelper::IndexStaticRulesets(
     const Extension& extension,
     FileBackedRulesetSource::RulesetFilter ruleset_filter,
-    RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior,
+    uint8_t parse_flags,
     IndexCallback callback) {
   // Note we use ref-counting instead of manual memory management since there
   // are some subtle cases:
@@ -134,22 +134,22 @@ void IndexHelper::IndexStaticRulesets(
   auto index_helper = base::WrapRefCounted(new IndexHelper(
       FileBackedRulesetSource::CreateStatic(extension, ruleset_filter),
       std::move(callback)));
-  index_helper->Start(invalid_rule_parse_behavior);
+  index_helper->Start(parse_flags);
 }
 
 // static
 IndexHelper::Result IndexHelper::IndexStaticRulesetsUnsafe(
     const Extension& extension,
     FileBackedRulesetSource::RulesetFilter ruleset_filter,
-    RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior) {
+    uint8_t parse_flags) {
   std::vector<FileBackedRulesetSource> sources =
       FileBackedRulesetSource::CreateStatic(extension, ruleset_filter);
 
   IndexResults results;
   results.reserve(sources.size());
   for (const FileBackedRulesetSource& source : sources) {
-    results.emplace_back(&source, source.IndexAndPersistJSONRulesetUnsafe(
-                                      invalid_rule_parse_behavior));
+    results.emplace_back(&source,
+                         source.IndexAndPersistJSONRulesetUnsafe(parse_flags));
   }
 
   // Don't log histograms for unpacked extensions so that the histograms reflect
@@ -165,8 +165,7 @@ IndexHelper::IndexHelper(std::vector<FileBackedRulesetSource> sources,
 
 IndexHelper::~IndexHelper() = default;
 
-void IndexHelper::Start(
-    RulesetSource::InvalidRuleParseBehavior invalid_rule_parse_behavior) {
+void IndexHelper::Start(uint8_t parse_flags) {
   // |all_done_closure| will be invoked once |barrier_closure| is run
   // |sources_.size()| times.
   base::OnceClosure all_done_closure =
@@ -178,8 +177,8 @@ void IndexHelper::Start(
     // Since |sources_| is const, |sources_[i]| is guaranteed to remain valid.
     auto callback = base::BindOnce(&IndexHelper::OnRulesetIndexed, this,
                                    barrier_closure, i);
-    sources_[i].IndexAndPersistJSONRuleset(
-        &decoder_, invalid_rule_parse_behavior, std::move(callback));
+    sources_[i].IndexAndPersistJSONRuleset(&decoder_, parse_flags,
+                                           std::move(callback));
   }
 }
 

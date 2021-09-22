@@ -162,7 +162,6 @@ extern const char kErrorMultipleFilters[];
 extern const char kErrorRegexSubstitutionWithoutFilter[];
 extern const char kErrorInvalidAllowAllRequestsResourceType[];
 extern const char kErrorRegexTooLarge[];
-extern const char kErrorRegexesTooLarge[];
 extern const char kErrorNoHeaderListsSpecified[];
 extern const char kErrorInvalidHeaderName[];
 extern const char kErrorInvalidHeaderValue[];

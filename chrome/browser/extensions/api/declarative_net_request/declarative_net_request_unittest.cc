@@ -226,14 +226,11 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
 
     extension_ = loader_->LoadExtension(extension_dir_);
 
+    // Neither warnings nor errors are raised for problematic static rules for
+    // packed extensions.
     EXPECT_TRUE(extension_.get());
     const std::vector<std::u16string>* errors = error_reporter()->GetErrors();
     ASSERT_TRUE(errors->empty());
-
-    // TODO(crbug.com/879355): CrxInstaller reloads the extension after moving
-    // it, which causes it to lose the install warning. This should be fixed.
-    // Once it is, we should verify that the expected error matches the first
-    // warning here.
   }
 
   enum class RulesetScope { kDynamic, kSession };

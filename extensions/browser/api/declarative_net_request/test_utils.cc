@@ -370,9 +370,10 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
   JSONFileValueSerializer(source.json_path()).Serialize(*builder.Build());
 
   // Index ruleset.
+  auto parse_flags = FileBackedRulesetSource::kRaiseErrorOnInvalidRules |
+                     FileBackedRulesetSource::kRaiseWarningOnLargeRegexRules;
   IndexAndPersistJSONRulesetResult result =
-      source.IndexAndPersistJSONRulesetUnsafe(
-          FileBackedRulesetSource::InvalidRuleParseBehavior::kError);
+      source.IndexAndPersistJSONRulesetUnsafe(parse_flags);
   if (result.status == IndexStatus::kError) {
     DCHECK(result.error.empty()) << result.error;
     return false;

@@ -18,14 +18,12 @@ namespace declarative_net_request {
 
 ParseInfo::ParseInfo(size_t rules_count,
                      size_t regex_rules_count,
-                     std::vector<int> regex_limit_exceeded_rules,
-                     std::vector<std::string> rule_ignored_warnings,
+                     std::vector<RuleWarning> rule_ignored_warnings,
                      flatbuffers::DetachedBuffer buffer,
                      int ruleset_checksum)
     : has_error_(false),
       rules_count_(rules_count),
       regex_rules_count_(regex_rules_count),
-      regex_limit_exceeded_rules_(std::move(regex_limit_exceeded_rules)),
       buffer_(std::move(buffer)),
       ruleset_checksum_(ruleset_checksum),
       rule_ignored_warnings_(std::move(rule_ignored_warnings)) {}

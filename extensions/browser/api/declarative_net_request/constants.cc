@@ -57,9 +57,6 @@ const char kErrorInvalidAllowAllRequestsResourceType[] =
 const char kErrorRegexTooLarge[] =
     "Rule with id * specified a more complex regex than allowed as part of the "
     "\"*\" key.";
-const char kErrorRegexesTooLarge[] =
-    "Rules with ids [*] specified a more complex regex than allowed as part of "
-    "the \"*\" key.";
 const char kErrorNoHeaderListsSpecified[] =
     "Rule with id * does not specify a value for \"*\" or \"*\" key. At least "
     "one of these keys must be specified with a non-empty list.";

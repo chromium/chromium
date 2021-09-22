@@ -115,20 +115,11 @@ std::unique_ptr<RulesetMatcher> CreateSessionScopedMatcher(
   RulesetSource source(kSessionRulesetID, GetDynamicAndSessionRuleLimit(),
                        extension_id, true /* enabled */);
 
-  ParseInfo info = source.IndexRules(
-      std::move(rules), RulesetSource::InvalidRuleParseBehavior::kError);
+  auto parse_flags = RulesetSource::kRaiseErrorOnInvalidRules |
+                     RulesetSource::kRaiseErrorOnLargeRegexRules;
+  ParseInfo info = source.IndexRules(std::move(rules), parse_flags);
   if (info.has_error()) {
     *error = info.error();
-    return nullptr;
-  }
-
-  // Treat rules which exceed the regex memory limit as errors; just surface an
-  // error for the first such rule.
-  if (!info.regex_limit_exceeded_rules().empty()) {
-    *error = ErrorUtils::FormatErrorMessage(
-        kErrorRegexTooLarge,
-        base::NumberToString(info.regex_limit_exceeded_rules()[0]),
-        kRegexFilterKey);
     return nullptr;
   }
 
