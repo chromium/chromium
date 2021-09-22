@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -88,6 +89,17 @@ int PrerenderHostRegistry::CreateAndStartHost(
   base::ScopedClosureRunner notify_trigger(
       base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
                      base::Unretained(this), attributes->url));
+
+  // Don't prerender when the trigger is in the background.
+  auto* web_contents =
+      WebContents::FromRenderFrameHost(&initiator_render_frame_host);
+  DCHECK(web_contents);
+  if (web_contents->GetVisibility() == Visibility::HIDDEN) {
+    base::UmaHistogramEnumeration(
+        "Prerender.Experimental.PrerenderHostFinalStatus",
+        PrerenderHost::FinalStatus::kTriggerBackgrounded);
+    return RenderFrameHost::kNoFrameTreeNodeId;
+  }
 
   // Don't prerender on low-end devices.
   // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch

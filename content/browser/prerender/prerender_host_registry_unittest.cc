@@ -683,6 +683,30 @@ TEST_F(PrerenderHostRegistryTest,
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 
+TEST_F(PrerenderHostRegistryTest,
+       DontStartPrerenderWhenTriggerIsAlreadyHidden) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  // The visibility state to be HIDDEN will cause prerendering not started.
+  web_contents->WasHidden();
+
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+  EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  EXPECT_EQ(prerender_host, nullptr);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kTriggerBackgrounded, 1);
+}
+
 // -------------------------------------------------
 // Activation navigation parameter matching unit tests.
 // These tests change a parameter to differentiate the activation request from
