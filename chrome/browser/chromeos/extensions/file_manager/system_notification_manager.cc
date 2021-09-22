@@ -75,7 +75,7 @@ SystemNotificationManager::CreateNotification(
   return ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       std::u16string(), GURL(), message_center::NotifierId(),
-      message_center::RichNotificationData(), delegate, kNotificationGoogleIcon,
+      message_center::RichNotificationData(), delegate, kProductIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
@@ -155,8 +155,7 @@ SystemNotificationManager::CreateProgressNotification(
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&SystemNotificationManager::HandleProgressClick,
                               weak_ptr_factory_.GetWeakPtr(), notification_id)),
-      kNotificationGoogleIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+      kProductIcon, message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
 void SystemNotificationManager::Dismiss(const std::string& notification_id) {
