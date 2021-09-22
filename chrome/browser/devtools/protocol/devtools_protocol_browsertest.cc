@@ -121,7 +121,8 @@ class DevToolsProtocolTest_AppId : public DevToolsProtocolTest {
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId, ReturnsManifestAppId) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(embedded_test_server()->GetURL("/web_apps/basic.html"));
+  const GURL url(embedded_test_server()->GetURL(
+      "/banners/manifest_test_page.html?manifest=manifest_with_id.json"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   Attach();
 

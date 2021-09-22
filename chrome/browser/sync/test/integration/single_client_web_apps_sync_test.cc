@@ -256,6 +256,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.description = u"Test description";
   info.start_url = url;
   info.scope = url;
+  info.manifest_id = manifest_id;
   const web_app::AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
@@ -285,6 +286,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.description = u"Test description";
   info.start_url = url;
   info.scope = url;
+  info.manifest_id = manifest_id;
   const web_app::AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 

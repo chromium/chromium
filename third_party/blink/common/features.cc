@@ -810,7 +810,7 @@ const base::Feature kWebAppEnableLinkCapturing{
 // app manifests. See explainer for more information:
 // https://github.com/philloooo/pwa-unique-id
 const base::Feature kWebAppEnableManifestId{"WebAppEnableManifestId",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls URL handling feature in web apps. Controls parsing of "url_handlers"
 // field in web app manifests. See explainer for more information:

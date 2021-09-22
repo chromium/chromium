@@ -13,6 +13,5 @@
     }
   ],
   "start_url": "basic.html",
-  "display": "standalone",
-  "id": "some_id"
+  "display": "standalone"
 }
