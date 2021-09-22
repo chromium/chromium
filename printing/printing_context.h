@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   void ResetSettings();
 
   // Does bookkeeping when an error occurs.
-  mojom::ResultCode OnError();
+  virtual mojom::ResultCode OnError();
 
   // Complete print context settings.
   std::unique_ptr<PrintSettings> settings_;

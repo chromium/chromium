@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextWin : public PrintingContext {
   virtual mojom::ResultCode InitializeSettings(const std::wstring& device_name,
                                                DEVMODE* dev_mode);
 
+  // PrintingContext implementation.
+  mojom::ResultCode OnError() override;
+
   void set_context(HDC context) { context_ = context; }
 
  private:

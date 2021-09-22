@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/win/windows_types.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/win_helper.h"
 #include "printing/buildflags/buildflags.h"
@@ -270,8 +271,11 @@ mojom::ResultCode PrintingContextWin::InitWithSettingsForTest(
 
   // TODO(maruel): settings_.ToDEVMODE()
   ScopedPrinterHandle printer;
-  if (!printer.OpenPrinterWithName(base::as_wcstr(settings_->device_name())))
-    return mojom::ResultCode::kFailed;
+  if (!printer.OpenPrinterWithName(base::as_wcstr(settings_->device_name()))) {
+    return logging::GetLastSystemErrorCode() == ERROR_ACCESS_DENIED
+               ? mojom::ResultCode::kAccessDenied
+               : mojom::ResultCode::kFailed;
+  }
 
   std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
       CreateDevMode(printer.Get(), nullptr);
@@ -411,6 +415,19 @@ mojom::ResultCode PrintingContextWin::InitializeSettings(
                                                  settings_.get());
 
   return mojom::ResultCode::kSuccess;
+}
+
+mojom::ResultCode PrintingContextWin::OnError() {
+  mojom::ResultCode result;
+  if (abort_printing_) {
+    result = mojom::ResultCode::kCanceled;
+  } else {
+    result = logging::GetLastSystemErrorCode() == ERROR_ACCESS_DENIED
+                 ? mojom::ResultCode::kAccessDenied
+                 : mojom::ResultCode::kFailed;
+  }
+  ResetSettings();
+  return result;
 }
 
 HWND PrintingContextWin::GetRootWindow(gfx::NativeView view) {
