@@ -143,6 +143,16 @@ suite('PrivacyReviewPage', function() {
         isChildVisible(page, '#historySyncFragment'));
   }
 
+  /**
+   * @param {number} activeIndex
+   * @param {number} stepCount
+   */
+  function assertStepIndicatorModel(activeIndex, stepCount) {
+    const model = page.computeStepIndicatorModel_();
+    assertEquals(activeIndex, model.active);
+    assertEquals(stepCount, model.total);
+  }
+
   function assertWelcomeCardVisible() {
     assertQueryParameter('welcome');
     assertCardComponentsVisible({
@@ -150,23 +160,28 @@ suite('PrivacyReviewPage', function() {
     });
   }
 
-  function assertCompletionCardVisible() {
+  /** @param {boolean|undefined} opt_isSyncOn */
+  function assertCompletionCardVisible(opt_isSyncOn) {
     assertQueryParameter('completion');
     assertCardComponentsVisible({
       isCompletionFragmentVisibleExpected: true,
     });
+    assertStepIndicatorModel(opt_isSyncOn ? 3 : 2, opt_isSyncOn ? 4 : 3);
   }
 
-  function assertMsbbCardVisible() {
+  /** @param {boolean|undefined} opt_isSyncOn */
+  function assertMsbbCardVisible(opt_isSyncOn) {
     assertQueryParameter('msbb');
     assertCardComponentsVisible({
       headerTextExpected: page.i18n('privacyReviewMsbbCardHeader'),
       isSettingFooterVisibleExpected: true,
       isMsbbFragmentVisibleExpected: true,
     });
+    assertStepIndicatorModel(0, opt_isSyncOn ? 4 : 3);
   }
 
-  function assertClearOnExitCardVisible() {
+  /** @param {boolean|undefined} opt_isSyncOn */
+  function assertClearOnExitCardVisible(opt_isSyncOn) {
     assertQueryParameter('clearOnExit');
     assertCardComponentsVisible({
       headerTextExpected: page.i18n('privacyReviewClearOnExitCardHeader'),
@@ -174,6 +189,7 @@ suite('PrivacyReviewPage', function() {
       isBackButtonVisibleExpected: true,
       isClearOnExitFragmentVisibleExpected: true,
     });
+    assertStepIndicatorModel(1, opt_isSyncOn ? 4 : 3);
   }
 
   function assertHistorySyncCardVisible() {
@@ -184,6 +200,7 @@ suite('PrivacyReviewPage', function() {
       isBackButtonVisibleExpected: true,
       isHistorySyncFragmentVisibleExpected: true,
     });
+    assertStepIndicatorModel(2, 4);
   }
 
   test('welcomeForwardNavigation', function() {
@@ -195,6 +212,9 @@ suite('PrivacyReviewPage', function() {
     page.shadowRoot.querySelector('#startButton').click();
     flush();
     assertMsbbCardVisible();
+
+    setSyncEnabled(true);
+    assertMsbbCardVisible(true);
   });
 
   test('msbbForwardNavigation', function() {
@@ -218,7 +238,7 @@ suite('PrivacyReviewPage', function() {
   test('clearOnExitForwardNavigationSyncOn', function() {
     navigateToStep('clearOnExit');
     setSyncEnabled(true);
-    assertClearOnExitCardVisible();
+    assertClearOnExitCardVisible(true);
 
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
@@ -242,7 +262,7 @@ suite('PrivacyReviewPage', function() {
 
     page.shadowRoot.querySelector('#backButton').click();
     flush();
-    assertClearOnExitCardVisible();
+    assertClearOnExitCardVisible(true);
   });
 
   test('historySyncCardForwardNavigation', function() {
@@ -252,7 +272,7 @@ suite('PrivacyReviewPage', function() {
 
     page.shadowRoot.querySelector('#nextButton').click();
     flush();
-    assertCompletionCardVisible();
+    assertCompletionCardVisible(true);
   });
 
   test('historySyncNavigatesAwayOnSyncOff', function() {

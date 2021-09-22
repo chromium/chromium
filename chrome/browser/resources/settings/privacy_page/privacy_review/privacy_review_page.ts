@@ -39,12 +39,6 @@ enum PrivacyReviewStep {
   COMPLETION = 'completion',
 }
 
-/**
- * TODO(crbug/1215630): This should be computed from the number of steps the
- * user will actually see, but not all steps are implemented yet.
- */
-const REVIEW_STEPS: number = 5;
-
 interface PrivacyReviewStepComponents {
   headerString?: string;
   onForwardNavigation(): void;
@@ -263,25 +257,24 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         .onBackNavigation!();
   }
 
-  private computeActiveStepIndex_(): number {
-    switch (this.privacyReviewStep_) {
-      case PrivacyReviewStep.MSBB:
-        return 0;
-      case PrivacyReviewStep.CLEAR_ON_EXIT:
-        return 1;
-      case PrivacyReviewStep.HISTORY_SYNC:
-        return 2;
-      default:
-        // Welcome or completion cards do not show the step indicator, but since
-        // the HTML element is still present it's computed anyway.
-        return 0;
-    }
-  }
-
   private computeStepIndicatorModel_(): StepIndicatorModel {
+    let stepCount = 0;
+    let activeIndex = 0;
+    for (const step of Object.values(PrivacyReviewStep)) {
+      if (step === PrivacyReviewStep.WELCOME) {
+        // This card has no step in the step indicator.
+        continue;
+      }
+      if (this.privacyReviewStepToComponentsMap_.get(step)!.isAvailable()) {
+        if (step === this.privacyReviewStep_) {
+          activeIndex = stepCount;
+        }
+        ++stepCount;
+      }
+    }
     return {
-      active: this.computeActiveStepIndex_(),
-      total: REVIEW_STEPS,
+      active: activeIndex,
+      total: stepCount,
     };
   }
 
