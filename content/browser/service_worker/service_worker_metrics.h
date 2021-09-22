@@ -13,8 +13,6 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "ui/base/page_transition_types.h"
 
-class GURL;
-
 namespace content {
 
 class ServiceWorkerMetrics {
@@ -94,19 +92,6 @@ class ServiceWorkerMetrics {
     kMaxValue = PUSH_SUBSCRIPTION_CHANGE,
   };
 
-  // Used for UMA. Append only.
-  enum class Site {
-    OTHER,  // Obsolete for UMA. Use WITH_FETCH_HANDLER or
-            // WITHOUT_FETCH_HANDLER.
-    NEW_TAB_PAGE,
-    WITH_FETCH_HANDLER,
-    WITHOUT_FETCH_HANDLER,
-    PLUS,
-    INBOX,
-    DOCS,
-    kMaxValue = DOCS,
-  };
-
   // Not used for UMA.
   enum class StartSituation {
     // Failed to allocate a process.
@@ -169,17 +154,10 @@ class ServiceWorkerMetrics {
   // Converts a start situation to a string. Used for tracing.
   static const char* StartSituationToString(StartSituation start_situation);
 
-  // If the |url| is not a special site, returns Site::OTHER.
-  static Site SiteFromURL(const GURL& url);
-
   // Counts the result of reading a service worker script from storage.
   static void CountReadResponseResult(ReadResponseResult result);
   // Counts the result of writing a service worker script to storage.
   static void CountWriteResponseResult(WriteResponseResult result);
-
-  // Counts the number of page loads controlled by a Service Worker.
-  static void CountControlledPageLoad(Site site,
-                                      bool is_main_frame_load);
 
   // Records the result of trying to start an installed worker.
   static void RecordStartInstalledWorkerStatus(

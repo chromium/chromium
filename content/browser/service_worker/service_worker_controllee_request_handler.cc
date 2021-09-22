@@ -397,9 +397,6 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
   DCHECK_EQ(active_version, container_host_->controller());
   DCHECK_NE(active_version->fetch_handler_existence(),
             ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN);
-  ServiceWorkerMetrics::CountControlledPageLoad(
-      active_version->site_for_uma(),
-      destination_ == network::mojom::RequestDestination::kDocument);
 
   if (blink::IsRequestDestinationFrame(destination_))
     container_host_->AddServiceWorkerToUpdate(active_version);

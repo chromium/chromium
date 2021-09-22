@@ -643,6 +643,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.MainFramePageLoad" enum="ServiceWorkerSite"
     expires_after="2021-10-17">
+  <obsolete>
+    Removed in September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -685,6 +688,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.PageLoad" enum="ServiceWorkerSite"
     expires_after="2021-12-26">
+  <obsolete>
+    Removed in September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>Counts page loads controlled by a service worker.</summary>

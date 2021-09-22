@@ -75238,6 +75238,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ServiceWorkerSite">
+  <obsolete>
+    Removed in November 2021.
+  </obsolete>
   <int value="0" label="Other (unused)"/>
   <int value="1" label="NewTabPage"/>
   <int value="2" label="WithFetchHandler"/>

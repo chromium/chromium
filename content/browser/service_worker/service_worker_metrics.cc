@@ -207,36 +207,6 @@ const char* ServiceWorkerMetrics::StartSituationToString(
   return "error";
 }
 
-ServiceWorkerMetrics::Site ServiceWorkerMetrics::SiteFromURL(const GURL& url) {
-  // TODO(falken): Plumb through ContentBrowserClient::GetMetricSuffixForURL or
-  // figure out a way to remove ServiceWorkerMetrics::Site entirely instead of
-  // hardcoding sites in //content.
-
-  // This inaccurately matches google.example.com, see the TODO above.
-  static const char google_like_scope_prefix[] = "https://www.google.";
-  static const char ntp_scope_path[] = "/_/chrome/";
-  if (base::StartsWith(url.spec(), google_like_scope_prefix,
-                       base::CompareCase::INSENSITIVE_ASCII) &&
-      base::StartsWith(url.path(), ntp_scope_path,
-                       base::CompareCase::SENSITIVE)) {
-    return ServiceWorkerMetrics::Site::NEW_TAB_PAGE;
-  }
-
-  const base::StringPiece host = url.host_piece();
-  if (host == "plus.google.com")
-    return ServiceWorkerMetrics::Site::PLUS;
-  if (host == "inbox.google.com")
-    return ServiceWorkerMetrics::Site::INBOX;
-  if (host == "docs.google.com")
-    return ServiceWorkerMetrics::Site::DOCS;
-  if (host == "drive.google.com") {
-    // TODO(falken): This should not be DOCS but historically we logged them
-    // together.
-    return ServiceWorkerMetrics::Site::DOCS;
-  }
-  return ServiceWorkerMetrics::Site::OTHER;
-}
-
 void ServiceWorkerMetrics::CountReadResponseResult(
     ServiceWorkerMetrics::ReadResponseResult result) {
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.DiskCache.ReadResponseResult",
@@ -247,15 +217,6 @@ void ServiceWorkerMetrics::CountWriteResponseResult(
     ServiceWorkerMetrics::WriteResponseResult result) {
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.DiskCache.WriteResponseResult",
                             result, NUM_WRITE_RESPONSE_RESULT_TYPES);
-}
-
-void ServiceWorkerMetrics::CountControlledPageLoad(Site site,
-                                                   bool is_main_frame_load) {
-  DCHECK_NE(site, Site::OTHER);
-  UMA_HISTOGRAM_ENUMERATION("ServiceWorker.PageLoad", site);
-  if (is_main_frame_load) {
-    UMA_HISTOGRAM_ENUMERATION("ServiceWorker.MainFramePageLoad", site);
-  }
 }
 
 void ServiceWorkerMetrics::RecordStartInstalledWorkerStatus(
