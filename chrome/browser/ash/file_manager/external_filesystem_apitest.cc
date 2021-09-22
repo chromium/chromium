@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/lazy_background_page_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
@@ -258,28 +259,6 @@ bool InitializeLocalFileSystem(std::string mount_point_name,
   return TouchFile(test_dir, kTestDir.mtime, kTestDir.atime);
 }
 
-// Helper class to wait for a background page to load or close again.
-class BackgroundObserver {
- public:
-  BackgroundObserver()
-      : page_created_(extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-                      content::NotificationService::AllSources()),
-        page_closed_(extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                     content::NotificationService::AllSources()) {}
-
-  void WaitUntilLoaded() {
-    page_created_.Wait();
-  }
-
-  void WaitUntilClosed() {
-    page_closed_.Wait();
-  }
-
- private:
-  content::WindowedNotificationObserver page_created_;
-  content::WindowedNotificationObserver page_closed_;
-};
-
 // Base class for FileSystemExtensionApi tests.
 class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
  public:
@@ -360,7 +339,7 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
         extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
       }
 
-      BackgroundObserver page_complete;
+      LazyBackgroundObserver page_complete(profile());
       const Extension* file_handler =
           LoadExtension(test_data_dir_.AppendASCII(filehandler_path));
       if (!file_handler) {
