@@ -4,6 +4,7 @@
 
 #include "components/variations/processed_study.h"
 
+#include <cstdint>
 #include <set>
 #include <string>
 
@@ -28,7 +29,8 @@ enum class InvalidStudyReason {
   kTotalProbabilityOverflow = 6,
   kMissingDefaultExperimentInList = 7,
   kBlankStudyName = 8,
-  kMaxValue = kBlankStudyName,
+  kExperimentProbabilityOverflow = 9,
+  kMaxValue = kExperimentProbabilityOverflow,
 };
 
 void LogInvalidReason(InvalidStudyReason reason) {
@@ -51,15 +53,15 @@ bool ValidateStudyAndComputeTotalProbability(
   if (study.filter().has_min_version() &&
       !base::Version::IsValidWildcardString(study.filter().min_version())) {
     LogInvalidReason(InvalidStudyReason::kInvalidMinVersion);
-    DVLOG(1) << study.name() << " has invalid min version: "
-             << study.filter().min_version();
+    DVLOG(1) << study.name()
+             << " has invalid min version: " << study.filter().min_version();
     return false;
   }
   if (study.filter().has_max_version() &&
       !base::Version::IsValidWildcardString(study.filter().max_version())) {
     LogInvalidReason(InvalidStudyReason::kInvalidMaxVersion);
-    DVLOG(1) << study.name() << " has invalid max version: "
-             << study.filter().max_version();
+    DVLOG(1) << study.name()
+             << " has invalid max version: " << study.filter().max_version();
     return false;
   }
   if (study.filter().has_min_os_version() &&
@@ -119,6 +121,16 @@ bool ValidateStudyAndComputeTotalProbability(
       if (divisor != 0)
         multiple_assigned_groups = true;
 
+      if (experiment.probability_weight() >
+          std::numeric_limits<base::FieldTrial::Probability>::max()) {
+        LogInvalidReason(InvalidStudyReason::kExperimentProbabilityOverflow);
+        DVLOG(1) << study.name() << " has an experiment (" << experiment.name()
+                 << ") with a probability weight of "
+                 << experiment.probability_weight()
+                 << " that exceeds the maximum supported value";
+        return false;
+      }
+
       if (divisor + experiment.probability_weight() >
           std::numeric_limits<base::FieldTrial::Probability>::max()) {
         LogInvalidReason(InvalidStudyReason::kTotalProbabilityOverflow);
@@ -157,7 +169,6 @@ bool ValidateStudyAndComputeTotalProbability(
   return true;
 }
 
-
 }  // namespace
 
 // static
@@ -168,8 +179,7 @@ ProcessedStudy::ProcessedStudy() {}
 
 ProcessedStudy::ProcessedStudy(const ProcessedStudy& other) = default;
 
-ProcessedStudy::~ProcessedStudy() {
-}
+ProcessedStudy::~ProcessedStudy() = default;
 
 bool ProcessedStudy::Init(const Study* study, bool is_expired) {
   base::FieldTrial::Probability total_probability = 0;
