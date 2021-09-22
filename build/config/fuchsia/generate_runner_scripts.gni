@@ -148,11 +148,6 @@ template("fuchsia_package_runner") {
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot",
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm",
-
-      # TODO(crbug.com/1162314) Remove "symbolize" when transition to
-      # "symbolizer" is complete.
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolize",
-
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer",
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi",
     ]
