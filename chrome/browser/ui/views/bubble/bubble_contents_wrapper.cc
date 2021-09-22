@@ -38,8 +38,10 @@ BubbleContentsWrapper::BubbleContentsWrapper(
     content::BrowserContext* browser_context,
     int task_manager_string_id,
     bool enable_extension_apis,
-    bool webui_resizes_host)
+    bool webui_resizes_host,
+    bool esc_closes_ui)
     : webui_resizes_host_(webui_resizes_host),
+      esc_closes_ui_(esc_closes_ui),
       web_contents_(content::WebContents::Create(
           GetWebContentsCreateParams(browser_context))) {
   web_contents_->SetDelegate(this);
@@ -73,7 +75,7 @@ BubbleContentsWrapper::PreHandleKeyboardEvent(
   DCHECK_EQ(web_contents(), source);
   // Close the bubble if an escape event is detected. Handle this here to
   // prevent the renderer from capturing the event and not propagating it up.
-  if (host_ && IsEscapeEvent(event)) {
+  if (host_ && IsEscapeEvent(event) && esc_closes_ui_) {
     host_->CloseUI();
     return content::KeyboardEventProcessingResult::HANDLED;
   }

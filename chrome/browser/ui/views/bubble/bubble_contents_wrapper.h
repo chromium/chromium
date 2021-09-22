@@ -49,7 +49,8 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   BubbleContentsWrapper(content::BrowserContext* browser_context,
                         int task_manager_string_id,
                         bool enable_extension_apis,
-                        bool webui_resizes_host);
+                        bool webui_resizes_host,
+                        bool esc_closes_ui);
   ~BubbleContentsWrapper() override;
 
   // content::WebContentsDelegate:
@@ -91,6 +92,8 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   // If true will allow the wrapped WebContents to automatically resize its
   // RenderWidgetHostView and send back updates to `Host` for the new size.
   const bool webui_resizes_host_;
+  // If true will cause the ESC key to close the UI during pre-handling.
+  const bool esc_closes_ui_;
   base::WeakPtr<BubbleContentsWrapper::Host> host_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
@@ -106,11 +109,13 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
                          content::BrowserContext* browser_context,
                          int task_manager_string_id,
                          bool enable_extension_apis = false,
-                         bool webui_resizes_host = true)
+                         bool webui_resizes_host = true,
+                         bool esc_closes_ui = true)
       : BubbleContentsWrapper(browser_context,
                               task_manager_string_id,
                               enable_extension_apis,
-                              webui_resizes_host),
+                              webui_resizes_host,
+                              esc_closes_ui),
         webui_url_(webui_url) {}
 
   void ReloadWebContents() override {
