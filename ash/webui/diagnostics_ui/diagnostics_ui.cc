@@ -171,7 +171,6 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"networkEthernetAuthenticationNoneLabel", IDS_ONC_WIFI_SECURITY_NONE},
       {"networkIccidLabel", IDS_ONC_CELLULAR_ICCID},
       {"networkIpAddressLabel", IDS_NETWORK_DIAGNOSTICS_IP_ADDRESS},
-      {"networkLinkSpeedLabel", IDS_NETWORK_DIAGNOSTICS_LINK_SPEED},
       {"networkRoamingOff", IDS_DIAGNOSTICS_ROAMING_OFF},
       {"networkRoamingStateHome", IDS_ONC_CELLULAR_ROAMING_STATE_HOME},
       {"networkRoamingStateLabel", IDS_ONC_CELLULAR_ROAMING_STATE},

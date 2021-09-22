@@ -158,22 +158,6 @@ export function connectivityCardTestSuite() {
     });
   });
 
-  test(
-      'ConnectivityCardPopulated', () => {
-        return initializeConnectivityCard('ethernetGuid').then(() => {
-          const ethernetInfoElement = dx_utils.getEthernetInfoElement(
-              connectivityCardElement.$$('network-info'));
-          const linkSpeedDataPoint =
-              dx_utils.getDataPoint(ethernetInfoElement, '#linkSpeed');
-          assertTrue(isVisible(linkSpeedDataPoint));
-          assertEquals(linkSpeedDataPoint.header, 'Link Speed');
-          // TODO(ashleydp): Update expectation when link speed data added.
-          dx_utils.assertTextContains(
-              dx_utils.getDataPointValue(ethernetInfoElement, '#linkSpeed'),
-              '');
-        });
-      });
-
   test('TestsRunAutomaticallyWhenPageIsActive', () => {
     return initializeConnectivityCard('ethernetGuid', true)
         .then(

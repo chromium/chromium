@@ -1731,9 +1731,6 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_AUTHENTICATION" desc="Label for `Authentication` type data-point in network card.">
         Authentication
       </message>
-      <message name="IDS_NETWORK_DIAGNOSTICS_LINK_SPEED" desc="Label for Ethernet `Link Speed` type data-point in network card.">
-        Link Speed
-      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_SECURITY" desc="Label for `Security` type data-point in network card.">
         Security
       </message>

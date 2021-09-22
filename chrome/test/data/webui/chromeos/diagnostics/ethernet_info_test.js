@@ -58,15 +58,6 @@ export function ethernetInfoTestSuite() {
     });
   }
 
-  test('EthernetInfoPopulated', () => {
-    return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
-      // Element expected on screen but data currently missing in api.
-      // TODO(ashleydp): Update test when link speed data-point value provided.
-      assertTextContains(
-          getDataPointValue(ethernetInfoElement, '#linkSpeed'), '');
-    });
-  });
-
   test('EthernetInfoIpAddressBasedOnNetwork', () => {
     return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
       const expectedHeader = ethernetInfoElement.i18n('networkIpAddressLabel');
@@ -102,14 +93,5 @@ export function ethernetInfoTestSuite() {
               ethernetInfoElement, '#authentication', expectedHeader,
               expectedValue);
         });
-  });
-
-  test('EthernetInfoLinkSpeedBasedOnNetwork', () => {
-    return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
-      const expectedHeader = ethernetInfoElement.i18n('networkLinkSpeedLabel');
-      // TODO(ashleydp): Update test when Ethernet link speed data provided.
-      assertDataPointHasExpectedHeaderAndValue(
-          ethernetInfoElement, '#linkSpeed', expectedHeader, '');
-    });
   });
 }
