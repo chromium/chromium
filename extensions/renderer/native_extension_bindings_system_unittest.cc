@@ -926,17 +926,8 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
 
 // Tests that a context having access to an aliased API (like networking.onc)
 // does not allow for accessing the source API (networkingPrivate) directly.
-// TODO(https://crbug.com/1251349): Port //components/wifi to Fuchsia to enable
-// networking and networkingPrivate extensions.
-#if defined(OS_FUCHSIA)
-#define MAYBE_AccessToAliasSourceDoesntGiveAliasAccess \
-  DISABLED_AccessToAliasSourceDoesntGiveAliasAccess
-#else
-#define MAYBE_AccessToAliasSourceDoesntGiveAliasAccess \
-  AccessToAliasSourceDoesntGiveAliasAccess
-#endif
 TEST_F(NativeExtensionBindingsSystemUnittest,
-       MAYBE_AccessToAliasSourceDoesntGiveAliasAccess) {
+       AccessToAliasSourceDoesntGiveAliasAccess) {
   const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
@@ -967,17 +958,8 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
 // Tests that a context having access to the source for an aliased API does not
 // allow for accessing the alias.
-// TODO(https://crbug.com/1251349): Port //components/wifi to Fuchsia to enable
-// networking and networkingPrivate extensions.
-#if defined(OS_FUCHSIA)
-#define MAYBE_AccessToAliasDoesntGiveAliasSourceAccess \
-  DISABLED_AccessToAliasDoesntGiveAliasSourceAccess
-#else
-#define MAYBE_AccessToAliasDoesntGiveAliasSourceAccess \
-  AccessToAliasDoesntGiveAliasSourceAccess
-#endif
 TEST_F(NativeExtensionBindingsSystemUnittest,
-       MAYBE_AccessToAliasDoesntGiveAliasSourceAccess) {
+       AccessToAliasDoesntGiveAliasSourceAccess) {
   const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
@@ -1007,16 +989,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
 // Test that if an extension has access to both an alias and an alias source,
 // the objects on the API are different.
-// TODO(https://crbug.com/1251349): Port //components/wifi to Fuchsia to enable
-// networking and networkingPrivate extensions.
-#if defined(OS_FUCHSIA)
-#define MAYBE_AliasedAPIsAreDifferentObjects \
-  DISABLED_AliasedAPIsAreDifferentObjects
-#else
-#define MAYBE_AliasedAPIsAreDifferentObjects AliasedAPIsAreDifferentObjects
-#endif
-TEST_F(NativeExtensionBindingsSystemUnittest,
-       MAYBE_AliasedAPIsAreDifferentObjects) {
+TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
   const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")

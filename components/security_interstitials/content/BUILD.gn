@@ -116,7 +116,7 @@ static_library("security_interstitial_page") {
     deps += [ "//components/captive_portal/content" ]
   }
 
-  if (is_win || is_mac) {
+  if (is_win || is_mac || is_fuchsia) {
     deps += [ "//components/wifi" ]
   }
 
