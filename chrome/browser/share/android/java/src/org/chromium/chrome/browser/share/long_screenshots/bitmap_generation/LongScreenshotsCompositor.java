@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.util.Size;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -25,7 +26,8 @@ import org.chromium.url.GURL;
 public class LongScreenshotsCompositor {
     private PlayerCompositorDelegate mDelegate;
     private Callback<Integer> mCompositorCallback;
-    private int mCompositedWidth;
+    private Size mContentSize;
+    private Size mScrollOffset;
 
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
             new CompositorDelegateFactory();
@@ -65,10 +67,16 @@ public class LongScreenshotsCompositor {
     protected void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
-        mCompositedWidth = (frameContentSize != null && frameContentSize.length >= 2)
-                ? frameContentSize[0]
-                : 0;
+        mContentSize = getMainFrameValues(frameContentSize);
+        mScrollOffset = getMainFrameValues(scrollOffsets);
         mCompositorCallback.onResult(CompositorStatus.OK);
+    }
+
+    private Size getMainFrameValues(int[] arr) {
+        if (arr != null && arr.length >= 2) {
+            return new Size(arr[0], arr[1]);
+        }
+        return new Size(0, 0);
     }
 
     /**
@@ -90,10 +98,6 @@ public class LongScreenshotsCompositor {
             mDelegate.destroy();
             mDelegate = null;
         }
-    }
-
-    public int getWidth() {
-        return mCompositedWidth;
     }
 
     static class CompositorDelegateFactory implements PlayerCompositorDelegate.Factory {
@@ -119,6 +123,14 @@ public class LongScreenshotsCompositor {
 
     private PlayerCompositorDelegate.Factory getCompositorDelegateFactory() {
         return sCompositorDelegateFactory;
+    }
+
+    public Size getContentSize() {
+        return mContentSize;
+    }
+
+    public Size getScrollOffset() {
+        return mScrollOffset;
     }
 
     @VisibleForTesting

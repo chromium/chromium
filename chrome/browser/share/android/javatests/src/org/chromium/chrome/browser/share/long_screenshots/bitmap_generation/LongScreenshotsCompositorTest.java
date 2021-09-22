@@ -161,7 +161,7 @@ public class LongScreenshotsCompositorTest {
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(null, null, new int[] {1, 2}, null, null, null, null, 0);
-        Assert.assertEquals(1, compositor.getWidth());
+        Assert.assertEquals(1, compositor.getContentSize().getWidth());
 
         // RequestBitmap in mCompositorDelegate should match
         compositor.requestBitmap(mRect, 1f, onErrorCallback, onBitmapResult);
@@ -196,7 +196,7 @@ public class LongScreenshotsCompositorTest {
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
-        Assert.assertEquals(0, compositor.getWidth());
+        Assert.assertEquals(0, compositor.getContentSize().getWidth());
 
         // RequestBitmap in mCompositorDelegate should match
         compositor.requestBitmap(mRect, 1f, onErrorCallback, onBitmapResult);

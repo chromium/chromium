@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/paint_preview_policy.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace content {
 class WebContents;
@@ -73,6 +74,7 @@ class LongScreenshotsTabService
   // clip_height: How wide of a capture relative to clip_y.
   // in_memory: Use in memory capture mode.
   void CaptureTab(int tab_id,
+                  std::unique_ptr<GURL> url,
                   content::WebContents* contents,
                   int clip_x,
                   int clip_y,
@@ -87,6 +89,7 @@ class LongScreenshotsTabService
   void CaptureTabAndroid(
       JNIEnv* env,
       jint j_tab_id,
+      const base::android::JavaParamRef<jobject>& j_gurl,
       const base::android::JavaParamRef<jobject>& j_web_contents,
       jint clip_x,
       jint clip_y,
@@ -98,6 +101,8 @@ class LongScreenshotsTabService
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
 
  private:
+  friend class LongScreenshotsTabServiceTest;
+
   // Retrieves the content::WebContents from the |frame_tree_node_id|
   // (confirming that the contents are alive using the |frame_routing_id|).
   // Calls PaintPreviewBaseService to retrieve the bitmap and write it to file.
@@ -113,6 +118,14 @@ class LongScreenshotsTabService
 
   void OnCaptured(paint_preview::PaintPreviewBaseService::CaptureStatus status,
                   std::unique_ptr<paint_preview::CaptureResult> result);
+
+  content::RenderFrameHost* GetRootRenderFrameHost(
+      content::RenderFrameHost* main_frame,
+      const GURL& url);
+  bool IsAmpUrl(const GURL& url);
+
+  const re2::RE2 google_amp_cache_path_regex_;
+  const re2::RE2 google_amp_viewer_path_regex_;
 
   base::ScopedClosureRunner capture_handle_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

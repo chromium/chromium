@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.os.CancellationSignal;
+import android.util.Size;
 import android.view.ScrollCaptureCallback;
 import android.view.ScrollCaptureSession;
 
@@ -50,7 +51,6 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
 
     private final EntryManagerWrapper mEntryManagerWrapper;
     private Tab mCurrentTab;
-    private RenderCoordinates mRenderCoordinates;
     private EntryManager mEntryManager;
 
     private Rect mContentArea;
@@ -75,9 +75,9 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
             return;
         }
 
-        mRenderCoordinates = RenderCoordinates.fromWebContents(webContents);
-        mViewportRect = new Rect(0, 0, mRenderCoordinates.getLastFrameViewportWidthPixInt(),
-                mRenderCoordinates.getLastFrameViewportHeightPixInt());
+        RenderCoordinates renderCoordinates = RenderCoordinates.fromWebContents(webContents);
+        mViewportRect = new Rect(0, 0, renderCoordinates.getLastFrameViewportWidthPixInt(),
+                renderCoordinates.getLastFrameViewportHeightPixInt());
         onReady.accept(mViewportRect);
     }
 
@@ -87,25 +87,33 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
     public void onScrollCaptureStart(@NonNull ScrollCaptureSession session,
             @NonNull CancellationSignal signal, @NonNull Runnable onReady) {
         assert mCurrentTab != null;
-        // TODO(crbug.com/1239297): Add support for subscrollers.
-        mContentArea =
-                new Rect(0, 0, getScaledCoordinate(mRenderCoordinates.getContentWidthPixInt()),
-                        getScaledCoordinate(mRenderCoordinates.getContentHeightPixInt()));
-        // translate the viewport rect to its coordinates with respect to the content area.
-        mInitialRect = new Rect(mViewportRect);
-        mInitialRect.offsetTo(0, getScaledCoordinate(mRenderCoordinates.getScrollYPixInt()));
+
         mEntryManager = mEntryManagerWrapper.create(mCurrentTab);
         mEntryManager.addBitmapGeneratorObserver(new BitmapGeneratorObserver() {
             @Override
             public void onStatusChange(int status) {
                 if (status == EntryStatus.CAPTURE_IN_PROGRESS) return;
 
-                mEntryManager.removeBitmapGeneratorObserver(this);
-                if (status == EntryStatus.CAPTURE_COMPLETE) {
-                    onReady.run();
-                } else {
+                // Abort if BitmapGenerator is not initialized successfully.
+                if (status != EntryStatus.CAPTURE_COMPLETE) {
+                    mEntryManager.removeBitmapGeneratorObserver(this);
                     signal.cancel();
                 }
+            }
+
+            @Override
+            public void onCompositorReady(Size contentSize, Size scrollOffset) {
+                mEntryManager.removeBitmapGeneratorObserver(this);
+                if (contentSize.getWidth() == 0 || contentSize.getHeight() == 0) {
+                    signal.cancel();
+                    return;
+                }
+
+                mContentArea = new Rect(0, 0, contentSize.getWidth(), contentSize.getHeight());
+                // Offset the viewport rect with the offset height to get the initial rect.
+                mInitialRect = new Rect(mViewportRect);
+                mInitialRect.offsetTo(0, scrollOffset.getHeight());
+                onReady.run();
             }
         });
     }
@@ -148,16 +156,11 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
     // TODO(crbug.com/1231201): work out why this is causing a lint error
     @SuppressWarnings("Override")
     public void onScrollCaptureEnd(@NonNull Runnable onReady) {
-        mRenderCoordinates = null;
         mEntryManager = null;
         mContentArea = null;
         mInitialRect = null;
         mViewportRect = null;
         onReady.run();
-    }
-
-    private int getScaledCoordinate(double value) {
-        return (int) Math.floor(value / mRenderCoordinates.getPageScaleFactor());
     }
 
     void setCurrentTab(Tab tab) {

@@ -12,6 +12,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * The Java-side implementations of long_screenshots_tab_service.cc. The C++ side owns and controls
@@ -72,8 +73,8 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
         }
 
         LongScreenshotsTabServiceJni.get().captureTabAndroid(mNativeLongScreenshotsTabService,
-                tab.getId(), tab.getWebContents(), clipRect.left, clipRect.top, clipRect.right,
-                clipRect.height(), inMemory);
+                tab.getId(), tab.getUrl(), tab.getWebContents(), clipRect.left, clipRect.top,
+                clipRect.right, clipRect.height(), inMemory);
     }
 
     public void longScreenshotsClosed() {
@@ -97,7 +98,7 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
 
     @NativeMethods
     interface Natives {
-        void captureTabAndroid(long nativeLongScreenshotsTabService, int tabId,
+        void captureTabAndroid(long nativeLongScreenshotsTabService, int tabId, GURL url,
                 WebContents webContents, int clipX, int clipY, int clipWidth, int clipHeight,
                 boolean inMemory);
         void longScreenshotsClosedAndroid(long nativeLongScreenshotsTabService);

@@ -114,6 +114,14 @@ class LongScreenshotsTabServiceTest : public ChromeRenderViewHostTestHarness {
 
   LongScreenshotsTabService* GetService() { return service_.get(); }
 
+  bool TabService_IsAmpUrl(const GURL& url) { return service_->IsAmpUrl(url); }
+
+  content::RenderFrameHost* TabService_GetRootRenderFrameHost(
+      content::RenderFrameHost* frame,
+      const GURL& url) {
+    return service_->GetRootRenderFrameHost(frame, url);
+  }
+
   void OverrideInterface(MockPaintPreviewRecorder* recorder) {
     blink::AssociatedInterfaceProvider* remote_interfaces =
         web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();
@@ -141,7 +149,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, web_contents(), 0, 0, 1000, 1000, false);
+  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 0, 0,
+                      1000, 1000, false);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -175,7 +184,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabInMemory) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, web_contents(), 0, 0, 1000, 1000, true);
+  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 0, 0,
+                      1000, 1000, true);
   task_environment()->RunUntilIdle();
 
   // No file should have been created.
@@ -200,7 +210,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, web_contents(), 0, 0, 1000, 1000, false);
+  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 0, 0,
+                      1000, 1000, false);
 
   task_environment()->RunUntilIdle();
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -228,7 +239,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
   recorder.SetResponse(
       paint_preview::mojom::PaintPreviewStatus::kOk,
       paint_preview::mojom::PaintPreviewCaptureResponse::New());
-  service->CaptureTab(kTabId, web_contents(), 1000, 1000, 2000, 2000, false);
+  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 1000,
+                      1000, 2000, 2000, false);
   task_environment()->RunUntilIdle();
 
   service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
@@ -275,7 +287,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, web_contents(), 0, 0, 1000, 1000, false);
+  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 0, 0,
+                      1000, 1000, false);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -294,4 +307,28 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
       base::BindOnce([](bool exists) { EXPECT_FALSE(exists); }));
   task_environment()->RunUntilIdle();
 }
+
+TEST_F(LongScreenshotsTabServiceTest, AmpPageDetection) {
+  GURL amp_url("https://www.google.com/amp/s/example");
+  GURL amp_cahe_url(
+      "https://www-example-com.cdn.ampproject.org/c/www.example.com");
+  GURL non_amp_url("https://foo.com/amp/bar/");
+
+  ASSERT_TRUE(TabService_IsAmpUrl(amp_url));
+  ASSERT_TRUE(TabService_IsAmpUrl(amp_cahe_url));
+  ASSERT_FALSE(TabService_IsAmpUrl(non_amp_url));
+
+  auto* rfh = main_rfh();
+  ASSERT_EQ(rfh, TabService_GetRootRenderFrameHost(rfh, non_amp_url));
+  // The main frame has no child frame so main frame should be returned.
+  ASSERT_EQ(rfh, TabService_GetRootRenderFrameHost(rfh, amp_url));
+  auto* rfh_tester = content::RenderFrameHostTester::For(rfh);
+  auto* subframe = rfh_tester->AppendChild("child 1");
+  // Child frame should be returned.
+  ASSERT_EQ(subframe, TabService_GetRootRenderFrameHost(rfh, amp_url));
+  // main frame has more than one child frame. Main frame should be returned.
+  rfh_tester->AppendChild("child 2");
+  ASSERT_EQ(rfh, TabService_GetRootRenderFrameHost(rfh, amp_url));
+}
+
 }  // namespace long_screenshots

@@ -232,10 +232,10 @@ void PaintPreviewClient::InProgressDocumentCaptureState::RecordSuccessfulFrame(
   had_success = true;
 
   PaintPreviewFrameProto* frame_proto;
-  if (is_main_frame) {
+  if (frame_guid == root_frame_token) {
     main_frame_blink_recording_time = response->blink_recording_time;
     frame_proto = proto.mutable_root_frame();
-    frame_proto->set_is_main_frame(true);
+    frame_proto->set_is_main_frame(is_main_frame);
   } else {
     frame_proto = proto.add_subframes();
     frame_proto->set_is_main_frame(false);
@@ -319,6 +319,16 @@ void PaintPreviewClient::CapturePaintPreview(
   document_data.source_id =
       ukm::GetSourceIdForWebContentsDocument(web_contents());
   document_data.accepted_tokens = CreateAcceptedTokenList(render_frame_host);
+  auto token = render_frame_host->GetEmbeddingToken();
+  if (token.has_value()) {
+    document_data.root_frame_token = token.value();
+  } else {
+    // This should be impossible, but if it happens in a release build just
+    // abort.
+    DVLOG(1) << "Error: Root frame does not have an embedding token.";
+    NOTREACHED();
+    return;
+  }
   document_data.capture_links = params.inner.capture_links;
   document_data.max_per_capture_size = params.inner.max_capture_size;
   document_data.max_decoded_image_size_bytes =
@@ -420,8 +430,6 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
   if (!base::Contains(document_data->accepted_tokens, frame_guid))
     return;
 
-  if (params.is_main_frame)
-    document_data->root_frame_token = frame_guid;
   // Deduplicate data if a subframe is required multiple times.
   if (base::Contains(document_data->awaiting_subframes, frame_guid) ||
       base::Contains(document_data->finished_subframes, frame_guid))
