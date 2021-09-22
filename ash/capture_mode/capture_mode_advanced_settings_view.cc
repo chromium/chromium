@@ -13,6 +13,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -32,15 +33,17 @@ constexpr gfx::RoundedCornersF kBorderRadius{10.f};
 CaptureModeAdvancedSettingsView::CaptureModeAdvancedSettingsView()
     : save_to_menu_group_(AddChildView(std::make_unique<CaptureModeMenuGroup>(
           kCaptureModeFolderIcon,
-          IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO))) {
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO)))) {
   save_to_menu_group_->AddOption(
       base::BindRepeating(&CaptureModeAdvancedSettingsView::HandleOptionClick,
                           base::Unretained(this)),
-      IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO_DOWNLOADS, /*checked=*/true);
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO_DOWNLOADS),
+      /*checked=*/true);
   save_to_menu_group_->AddMenuItem(
       base::BindRepeating(&CaptureModeAdvancedSettingsView::HandleMenuClick,
                           base::Unretained(this)),
-      IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO_SELECT_FOLDER);
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO_SELECT_FOLDER));
 
   SetPaintToLayer();
   SetBackground(

@@ -11,7 +11,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -57,10 +56,11 @@ class CaptureModeMenuHeader : public views::View {
  public:
   METADATA_HEADER(CaptureModeMenuHeader);
 
-  CaptureModeMenuHeader(const gfx::VectorIcon& icon, int string_id)
+  CaptureModeMenuHeader(const gfx::VectorIcon& icon,
+                        std::u16string header_laber)
       : icon_view_(AddChildView(std::make_unique<views::ImageView>())),
-        label_view_(AddChildView(std::make_unique<views::Label>(
-            l10n_util::GetStringUTF16(string_id)))) {
+        label_view_(AddChildView(
+            std::make_unique<views::Label>(std::move(header_laber)))) {
     icon_view_->SetImageSize(kIconSize);
     icon_view_->SetPreferredSize(kIconSize);
     icon_view_->SetImage(gfx::CreateVectorIcon(
@@ -93,11 +93,11 @@ class CaptureModeOption : public views::Button {
   METADATA_HEADER(CaptureModeOption);
 
   CaptureModeOption(views::Button::PressedCallback callback,
-                    int string_id,
+                    std::u16string option_label,
                     bool checked)
       : views::Button(callback),
-        label_view_(AddChildView(std::make_unique<views::Label>(
-            l10n_util::GetStringUTF16(string_id)))),
+        label_view_(AddChildView(
+            std::make_unique<views::Label>(std::move(option_label)))),
         checked_icon_view_(AddChildView(std::make_unique<views::ImageView>())) {
     checked_icon_view_->SetImageSize(kIconSize);
     checked_icon_view_->SetPreferredSize(kIconSize);
@@ -131,10 +131,11 @@ class CaptureModeMenuItem : public views::Button {
  public:
   METADATA_HEADER(CaptureModeMenuItem);
 
-  CaptureModeMenuItem(views::Button::PressedCallback callback, int string_id)
+  CaptureModeMenuItem(views::Button::PressedCallback callback,
+                      std::u16string item_label)
       : views::Button(callback),
-        label_view_(AddChildView(std::make_unique<views::Label>(
-            l10n_util::GetStringUTF16(string_id)))) {
+        label_view_(AddChildView(
+            std::make_unique<views::Label>(std::move(item_label)))) {
     SetBorder(views::CreateEmptyBorder(kMenuItemPadding));
     ConfigLabelView(label_view_);
     CreateAndInitBoxLayoutForView(this);
@@ -154,9 +155,12 @@ END_METADATA
 }  // namespace
 
 CaptureModeMenuGroup::CaptureModeMenuGroup(const gfx::VectorIcon& header_icon,
-                                           int header_label_string_id) {
-  AddChildView(std::make_unique<CaptureModeMenuHeader>(header_icon,
-                                                       header_label_string_id));
+                                           std::u16string header_label) {
+  AddChildView(std::make_unique<CaptureModeMenuHeader>(
+      header_icon, std::move(header_label)));
+  options_container_ = AddChildView(std::make_unique<views::View>());
+  options_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kMenuGroupPadding,
       kSpaceBetweenMenuItem));
@@ -165,16 +169,16 @@ CaptureModeMenuGroup::CaptureModeMenuGroup(const gfx::VectorIcon& header_icon,
 CaptureModeMenuGroup::~CaptureModeMenuGroup() = default;
 
 void CaptureModeMenuGroup::AddOption(views::Button::PressedCallback callback,
-                                     int string_id,
+                                     std::u16string option_label,
                                      bool checked) {
-  AddChildView(
-      std::make_unique<CaptureModeOption>(callback, string_id, checked));
+  options_container_->AddChildView(std::make_unique<CaptureModeOption>(
+      callback, std::move(option_label), checked));
 }
 
 void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
-                                       int string_id) {
+                                       std::u16string item_label) {
   views::View::AddChildView(
-      std::make_unique<CaptureModeMenuItem>(callback, string_id));
+      std::make_unique<CaptureModeMenuItem>(callback, std::move(item_label)));
 }
 
 BEGIN_METADATA(CaptureModeMenuGroup, views::View)
