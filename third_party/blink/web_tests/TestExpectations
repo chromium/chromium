@@ -2848,7 +2848,6 @@ crbug.com/626703 [ Linux ] wpt_internal/webcodecs/basic_video_encoding.https.any
 crbug.com/626703 [ Mac11.0 ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/cookies/attributes/domain.sub.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/cookies/attributes/domain.sub.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
 crbug.com/626703 external/wpt/workers/interfaces/WorkerUtils/importScripts/blob-url.worker.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-get-target-ranges.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Skip Timeout ]
@@ -7005,9 +7004,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 crbug.com/1249176 [ Mac11-arm64 ] fast/layers/clip-rects-transformed-2.html [ Pass Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-click.html [ Failure Timeout ]
 
-
-# Sheriff 2021-09-15
-crbug.com/1250066 [ Win ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
 
 # Sheriff 2021-09-16
 crbug.com/1250457 [ Win7 ] http/tests/devtools/sources/debugger-ui/script-formatter-breakpoints-3.js [ Failure ]
