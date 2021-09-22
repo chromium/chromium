@@ -24,6 +24,7 @@ import {PluginController} from './controller.js';
 import {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
 import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 import {ViewerToolbarElement} from './elements/viewer-toolbar.js';
+import {Gesture} from './gesture_detector.js';
 // <if expr="enable_ink">
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
@@ -838,6 +839,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       case 'documentFocusChanged':
         this.documentHasFocus_ =
             /** @type {{ hasFocus: boolean }} */ (data).hasFocus;
+        return;
+      case 'gesture':
+        this.viewport.dispatchGesture(
+            /** @type {{ gesture: !Gesture }} */ (data).gesture);
         return;
     }
     assertNotReached('Unknown message type received: ' + data.type);

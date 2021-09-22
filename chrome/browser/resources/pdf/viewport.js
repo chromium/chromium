@@ -7,7 +7,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {$, hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 
 import {FittingType, Point} from './constants.js';
-import {GestureDetector, PinchEventDetail} from './gesture_detector.js';
+import {Gesture, GestureDetector, PinchEventDetail} from './gesture_detector.js';
 import {InactiveZoomManager, ZoomManager} from './zoom_manager.js';
 
 /**
@@ -1378,6 +1378,15 @@ export class Viewport {
     if (this.tracker_) {
       this.tracker_.removeAll();
     }
+  }
+
+  /**
+   * Dispatches a gesture external to this viewport.
+   * @param {!Gesture} gesture The gesture to dispatch.
+   */
+  dispatchGesture(gesture) {
+    this.gestureDetector_.getEventTarget().dispatchEvent(
+        new CustomEvent(gesture.type, {detail: gesture.detail}));
   }
 
   /**

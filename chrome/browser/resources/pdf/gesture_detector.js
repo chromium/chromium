@@ -7,6 +7,14 @@ import {Point} from './constants.js';
 
 /**
  * @typedef {{
+ *   type: string,
+ *   detail: !PinchEventDetail,
+ * }}
+ */
+export let Gesture;
+
+/**
+ * @typedef {{
  *   center: !Point,
  *   direction: (string|undefined),
  *   scaleRatio: (?number|undefined),

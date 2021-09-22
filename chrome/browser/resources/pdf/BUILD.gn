@@ -342,6 +342,7 @@ js_library("pdf_viewer") {
     ":browser_api",
     ":constants",
     ":controller",
+    ":gesture_detector",
     ":ink_controller",
     ":local_storage_proxy",
     ":metrics",

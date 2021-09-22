@@ -2611,7 +2611,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, CtrlWheelInvokesCustomZoom) {
 #define MAYBE_TouchscreenPinchInvokesCustomZoom \
   TouchscreenPinchInvokesCustomZoom
 #endif
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
                        MAYBE_TouchscreenPinchInvokesCustomZoom) {
   WebContents* guest_contents =
       LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));

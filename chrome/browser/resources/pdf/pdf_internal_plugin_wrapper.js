@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GestureDetector} from './gesture_detector.js';
+import {GestureDetector, PinchEventDetail} from './gesture_detector.js';
 
 const channel = new MessageChannel();
 
@@ -24,4 +24,22 @@ const srcUrl = new URL(plugin.getAttribute('src'));
 window.parent.postMessage(
     {type: 'connect', token: srcUrl.href}, srcUrl.origin, [channel.port2]);
 
+/**
+ * Relays gesture events to the parent frame.
+ * @param {!Event} e The gesture event.
+ */
+function relayGesture(e) {
+  const gestureEvent = /** @type {!CustomEvent<!PinchEventDetail>} */ (e);
+  channel.port1.postMessage({
+    type: 'gesture',
+    gesture: {
+      type: gestureEvent.type,
+      detail: gestureEvent.detail,
+    },
+  });
+}
+
 const gestureDetector = new GestureDetector(plugin);
+for (const type of ['pinchstart', 'pinchupdate', 'pinchend']) {
+  gestureDetector.getEventTarget().addEventListener(type, relayGesture);
+}
