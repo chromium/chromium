@@ -5515,7 +5515,6 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:google_key_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:keystore_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/desktop:elevated_command_support",
     ]
   }

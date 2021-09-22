@@ -15,6 +15,8 @@
 namespace enterprise_connectors {
 
 class DeviceTrustSignals;
+class EncryptedData;
+class KeyInfo;
 class SigningKeyPair;
 
 // This class is in charge of handling the key pair used for attestation. Also
