@@ -144,11 +144,11 @@ int MenuItemView::item_right_margin_;
 // static
 int MenuItemView::pref_menu_height_;
 
-MenuItemView::MenuItemView(MenuDelegate* delegate) : delegate_(delegate) {
-  // NOTE: don't check the delegate for NULL, UpdateMenuPartSizes() supplies a
-  // NULL delegate.
-  Init(nullptr, 0, Type::kSubMenu);
-}
+MenuItemView::MenuItemView(MenuDelegate* delegate)
+    : MenuItemView(/* parent */ nullptr,
+                   /* command */ 0,
+                   Type::kSubMenu,
+                   delegate) {}
 
 void MenuItemView::ChildPreferredSizeChanged(View* child) {
   invalidate_dimensions();
@@ -820,9 +820,8 @@ bool MenuItemView::IsTraversableByKeyboard() const {
 
 MenuItemView::MenuItemView(MenuItemView* parent,
                            int command,
-                           MenuItemView::Type type) {
-  Init(parent, command, type);
-}
+                           MenuItemView::Type type)
+    : MenuItemView(parent, command, type, /* delegate */ nullptr) {}
 
 MenuItemView::~MenuItemView() {
   if (GetMenuController())
@@ -832,9 +831,6 @@ MenuItemView::~MenuItemView() {
     delete item;
 }
 
-// Calculates all sizes that we can from the OS.
-//
-// This is invoked prior to Running a menu.
 void MenuItemView::UpdateMenuPartSizes() {
   const MenuConfig& config = MenuConfig::instance();
 
@@ -865,15 +861,16 @@ void MenuItemView::UpdateMenuPartSizes() {
   pref_menu_height_ = menu_item.GetPreferredSize().height();
 }
 
-void MenuItemView::Init(MenuItemView* parent,
-                        int command,
-                        MenuItemView::Type type) {
-  parent_menu_item_ = parent;
-  type_ = type;
-  command_ = command;
+MenuItemView::MenuItemView(MenuItemView* parent,
+                           int command,
+                           Type type,
+                           MenuDelegate* delegate)
+    : delegate_(delegate),
+      parent_menu_item_(parent),
+      type_(type),
+      command_(command) {
   // Assign our ID, this allows SubmenuItemView to find MenuItemViews.
   SetID(kMenuItemViewID);
-  has_icons_ = false;
 
   if (type_ == Type::kCheckbox || type_ == Type::kRadio) {
     radio_check_image_view_ = AddChildView(std::make_unique<ImageView>());
@@ -886,9 +883,6 @@ void MenuItemView::Init(MenuItemView* parent,
 
   if (type_ == Type::kActionableSubMenu)
     vertical_separator_ = AddChildView(std::make_unique<VerticalSeparator>());
-
-  if (submenu_arrow_image_view_)
-    submenu_arrow_image_view_->SetVisible(HasSubmenu());
 
   // Don't request enabled status from the root menu item as it is just
   // a container for real items. kEmpty items will be disabled.

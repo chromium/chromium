@@ -409,13 +409,15 @@ class VIEWS_EXPORT MenuItemView : public View {
     SkColor minor_fg_color = SK_ColorTRANSPARENT;
   };
 
+  MenuItemView(MenuItemView* parent,
+               int command,
+               Type type,
+               MenuDelegate* delegate);
+
   // Calculates all sizes that we can from the OS.
   //
   // This is invoked prior to Running a menu.
   void UpdateMenuPartSizes();
-
-  // Called by the two constructors to initialize this menu item.
-  void Init(MenuItemView* parent, int command, MenuItemView::Type type);
 
   // The RunXXX methods call into this to set up the necessary state before
   // running. |is_first_menu| is true if no menus are currently showing.
@@ -550,7 +552,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Type of menu. NOTE: MenuItemView doesn't itself represent SEPARATOR,
   // that is handled by an entirely different view class.
-  Type type_ = Type::kSubMenu;
+  const Type type_;
 
   // Whether we're selected.
   bool selected_ = false;
