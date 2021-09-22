@@ -158,7 +158,6 @@ void ChannelPosix::Write(MessagePtr message) {
                            message->NumHandlesForTransit());
 
   bool write_error = false;
-  bool queued = false;
   {
     base::AutoLock lock(write_lock_);
     if (reject_writes_)
@@ -169,7 +168,6 @@ void ChannelPosix::Write(MessagePtr message) {
     } else {
       outgoing_messages_.emplace_back(std::move(message), 0);
     }
-    queued = !outgoing_messages_.empty();
   }
   if (write_error) {
     // Invoke OnWriteError() asynchronously on the IO thread, in case Write()
@@ -178,7 +176,6 @@ void ChannelPosix::Write(MessagePtr message) {
                               base::BindOnce(&ChannelPosix::OnWriteError, this,
                                              Error::kDisconnected));
   }
-  UMA_HISTOGRAM_BOOLEAN("Mojo.Channel.WriteQueued", queued);
 }
 
 void ChannelPosix::LeakHandle() {
