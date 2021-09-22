@@ -2558,6 +2558,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-retail-coupons",
+    "owners": [ "meiliang", "yuezhanggg", "wychen", "dtrainor" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-reven-log-source",
     "owners": [ "xiangdongkong", "cros-feedback-app@google.com" ],
     "expiry_milestone": 100

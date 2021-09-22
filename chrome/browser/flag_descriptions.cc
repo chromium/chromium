@@ -1155,6 +1155,10 @@ const char kReduceHorizontalFlingVelocityDescription[] =
     "Reduces the velocity of horizontal flings to 20\% of their original"
     "velocity.";
 
+const char kRetailCouponsName[] = "Enable to fetch for retail coupons";
+const char kRetailCouponsDescription[] =
+    "Allow to fetch retail coupons for consented users";
+
 const char kEnableResamplingInputEventsName[] =
     "Enable resampling input events";
 const char kEnableResamplingInputEventsDescription[] =
