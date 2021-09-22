@@ -5,8 +5,6 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_COLOR_ID_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_COLOR_ID_H_
 
-#include "build/chromeos_buildflags.h"
-
 // Clang format mangles sectioned lists like the below badly.
 // clang-format off
 #define NATIVE_THEME_CROSS_PLATFORM_COLOR_IDS                                  \
@@ -88,7 +86,7 @@
   OP(kColorId_OverlayScrollbarThumbHoveredFill),                               \
   OP(kColorId_OverlayScrollbarThumbHoveredStroke),                             \
   OP(kColorId_OverlayScrollbarThumbStroke),                                    \
-  /* Message Center */ \
+  /* Message Center */                                                         \
   OP(kColorId_MessageCenterSmallImageMaskBackground),                          \
   OP(kColorId_MessageCenterSmallImageMaskForeground),                          \
   /* Notification view */                                                      \
@@ -176,19 +174,7 @@
   OP(kColorId_DisabledIconColor),                                              \
   OP(kColorId_SecondaryIconColor)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define NATIVE_THEME_CHROMEOS_COLOR_IDS                                        \
-  /* Notification view */                                                      \
-  OP(kColorId_NotificationButtonBackground)
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define NATIVE_THEME_COLOR_IDS                                                 \
-  NATIVE_THEME_CROSS_PLATFORM_COLOR_IDS,                                       \
-  NATIVE_THEME_CHROMEOS_COLOR_IDS
-#else
 #define NATIVE_THEME_COLOR_IDS NATIVE_THEME_CROSS_PLATFORM_COLOR_IDS
-#endif
 
 // clang-format on
 

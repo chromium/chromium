@@ -11,6 +11,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -476,10 +478,10 @@ bool MessageView::ShouldShowControlButtons() const {
 }
 
 void MessageView::UpdateBackgroundPainter() {
-  auto* theme = GetNativeTheme();
-  SkColor background_color = theme->GetSystemColor(
-      is_active_ ? ui::NativeTheme::kColorId_NotificationBackgroundActive
-                 : ui::NativeTheme::kColorId_NotificationBackground);
+  const auto* color_provider = GetColorProvider();
+  SkColor background_color = color_provider->GetColor(
+      is_active_ ? ui::kColorNotificationBackgroundActive
+                 : ui::kColorNotificationBackgroundInactive);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsNotificationsRefreshEnabled())
@@ -494,9 +496,8 @@ void MessageView::UpdateBackgroundPainter() {
 void MessageView::UpdateNestedBorder() {
   if (!is_nested_ || !GetWidget())
     return;
-
-  SkColor border_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_UnfocusedBorderColor);
+  SkColor border_color =
+      GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsNotificationsRefreshEnabled())

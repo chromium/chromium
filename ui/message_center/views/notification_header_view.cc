@@ -15,6 +15,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -118,8 +120,7 @@ void ExpandButton::OnBlur() {
 void ExpandButton::OnThemeChanged() {
   ImageView::OnThemeChanged();
   focus_painter_ = views::Painter::CreateSolidFocusPainter(
-      GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_FocusedBorderColor),
+      GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
       gfx::Insets(0, 0, 1, 1));
 }
 
@@ -423,8 +424,8 @@ void NotificationHeaderView::UpdateSummaryTextVisibility() {
 void NotificationHeaderView::UpdateColors() {
   if (!GetWidget())
     return;
-  SkColor color = accent_color_.value_or(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationDefaultAccentColor));
+  SkColor color = accent_color_.value_or(
+      GetColorProvider()->GetColor(ui::kColorNotificationHeaderForeground));
   app_name_view_->SetEnabledColor(color);
   summary_text_view_->SetEnabledColor(color);
   summary_text_divider_->SetEnabledColor(color);

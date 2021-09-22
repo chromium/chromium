@@ -5,6 +5,8 @@
 #include "ui/message_center/views/notification_input_container.h"
 
 #include "base/bind.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -120,14 +122,14 @@ void NotificationInputContainer::RemoveLayerBeneathView(ui::Layer* layer) {
 void NotificationInputContainer::OnThemeChanged() {
   View::OnThemeChanged();
 
-  auto* theme = GetNativeTheme();
-  textfield_->SetTextColor(theme->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationPlaceholderColor));
+  const auto* color_provider = GetColorProvider();
+  textfield_->SetTextColor(
+      color_provider->GetColor(ui::kColorNotificationInputForeground));
   SetTextfieldBackground();
   if (ink_drop_container_)
     textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  textfield_->set_placeholder_text_color(theme->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationPlaceholderColor));
+  textfield_->set_placeholder_text_color(color_provider->GetColor(
+      ui::kColorNotificationInputPlaceholderForeground));
   UpdateButtonImage();
 }
 
@@ -171,8 +173,8 @@ views::InkDropContainerView* NotificationInputContainer::InstallInkDrop() {
   views::InkDrop::Get(this)->SetVisibleOpacity(1);
   views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
       [](views::View* host) {
-        return host->GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_NotificationInkDropBase);
+        return host->GetColorProvider()->GetColor(
+            ui::kColorNotificationInputBackground);
       },
       this));
 
@@ -199,14 +201,13 @@ void NotificationInputContainer::UpdateButtonImage() {
   if (!GetWidget())
     return;
 
-  auto icon_color_id =
-      textfield_->GetText().empty()
-          ? ui::NativeTheme::kColorId_NotificationPlaceholderColor
-          : ui::NativeTheme::kColorId_NotificationColor;
+  auto icon_color_id = textfield_->GetText().empty()
+                           ? ui::kColorNotificationInputPlaceholderForeground
+                           : ui::kColorNotificationInputForeground;
   button_->SetImage(
       views::Button::STATE_NORMAL,
       gfx::CreateVectorIcon(kNotificationInlineReplyIcon, kInputReplyButtonSize,
-                            GetNativeTheme()->GetSystemColor(icon_color_id)));
+                            GetColorProvider()->GetColor(icon_color_id)));
 }
 
 }  // namespace message_center

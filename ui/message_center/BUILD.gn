@@ -124,6 +124,7 @@ component("message_center") {
         sources += [ "views/message_popup_view_mac.mm" ]
       }
       deps += [
+        "//ui/color",
         "//ui/compositor",
         "//ui/events",
         "//ui/views",
@@ -217,6 +218,7 @@ if (enable_message_center) {
         "views/relative_time_formatter_unittest.cc",
       ]
       deps += [
+        "//ui/color",
         "//ui/display",
         "//ui/strings",
         "//ui/views",

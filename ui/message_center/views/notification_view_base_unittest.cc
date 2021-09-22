@@ -12,6 +12,8 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_processor.h"
@@ -956,18 +958,14 @@ TEST_F(NotificationViewBaseTest, TestAccentColor) {
     notification_view()->ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
-  auto* theme = notification_view()->GetNativeTheme();
+  const auto* color_provider = notification_view()->GetColorProvider();
   auto app_icon_color_matches = [&](SkColor color) {
     SkBitmap expected =
         notification
             ->GenerateMaskedSmallIcon(
                 kSmallImageSizeMD, color,
-                theme->GetSystemColor(
-                    ui::NativeTheme::
-                        kColorId_MessageCenterSmallImageMaskBackground),
-                theme->GetSystemColor(
-                    ui::NativeTheme::
-                        kColorId_MessageCenterSmallImageMaskForeground))
+                color_provider->GetColor(ui::kColorNotificationIconBackground),
+                color_provider->GetColor(ui::kColorNotificationIconForeground))
             .AsBitmap();
     SkBitmap actual = *notification_view()
                            ->header_row_->app_icon_view_for_testing()
@@ -986,9 +984,9 @@ TEST_F(NotificationViewBaseTest, TestAccentColor) {
   EXPECT_EQ(
       kActionButtonTextColor,
       notification_view()->action_buttons_[1]->enabled_color_for_testing());
-  EXPECT_TRUE(app_icon_color_matches(
-      notification_view()->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_NotificationDefaultAccentColor)));
+  EXPECT_TRUE(
+      app_icon_color_matches(notification_view()->GetColorProvider()->GetColor(
+          ui::kColorNotificationHeaderForeground)));
 
   // If custom accent color is set, the header and the buttons should have the
   // same accent color.

@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -352,10 +351,6 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_NotificationBackground:
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    case NativeTheme::kColorId_NotificationButtonBackground:
-      return SkColorSetA(SK_ColorWHITE, 0.9 * 0xff);
-#endif
     case NativeTheme::kColorId_NotificationPlaceholderColor: {
       const SkColor color = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_TextOnProminentButtonColor, color_scheme);

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -22,10 +21,6 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
 
 namespace message_center {
 
@@ -148,17 +143,6 @@ void NotificationControlButtonsView::SetBackgroundColor(SkColor color) {
   background_color_ = color;
   UpdateButtonIconColors();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void NotificationControlButtonsView::OnThemeChanged() {
-  View::OnThemeChanged();
-  SkColor backgroundColor = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationButtonBackground);
-  if (ash::features::IsDarkLightModeEnabled())
-    backgroundColor = SK_ColorTRANSPARENT;
-  SetBackground(views::CreateSolidBackground(backgroundColor));
-}
-#endif
 
 void NotificationControlButtonsView::UpdateButtonIconColors() {
   SkColor icon_color = DetermineButtonIconColor();

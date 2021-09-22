@@ -7,7 +7,6 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 
 #include "base/macros.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/padded_button.h"
@@ -53,10 +52,6 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   PaddedButton* close_button() { return close_button_; }
   PaddedButton* settings_button() { return settings_button_; }
   PaddedButton* snooze_button() { return snooze_button_; }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnThemeChanged() override;
-#endif
 
  private:
   // Updates the button icon colors to the value of DetermineButtonIconColor().
