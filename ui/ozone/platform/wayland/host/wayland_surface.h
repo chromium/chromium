@@ -120,6 +120,10 @@ class WaylandSurface {
   // See: alpha-compositing-unstable-v1.xml
   void SetOpacity(const float opacity);
 
+  // Sets the blending equation of the wl_surface using
+  // zcr_blending_v1_set_blending. See: alpha-compositing-unstable-v1.xml
+  void SetBlending(const bool use_blending);
+
   // Set the destination size of the associated wl_surface according to
   // |dest_size_px|, which should be in physical pixels.
   // Note this method sends corresponding wayland requests immediately because

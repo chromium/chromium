@@ -339,6 +339,14 @@ void WaylandSurface::SetOpacity(const float opacity) {
   }
 }
 
+void WaylandSurface::SetBlending(const bool use_blending) {
+  if (blending()) {
+    zcr_blending_v1_set_blending(
+        blending(), use_blending ? ZCR_BLENDING_V1_BLENDING_EQUATION_PREMULT
+                                 : ZCR_BLENDING_V1_BLENDING_EQUATION_NONE);
+  }
+}
+
 void WaylandSurface::SetViewportDestination(const gfx::Size& dest_size_px) {
   if (dest_size_px == gfx::ScaleToRoundedSize(display_size_dip_, buffer_scale_))
     return;
