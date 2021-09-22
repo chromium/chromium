@@ -120,7 +120,8 @@
   },
   {
     "prefix": "stable",
-    "bases": ["fast/css3-text/css3-text-decoration/stable",
+    "bases": ["external/wpt/css/css-cascade/presentational-hints-cascade.html",
+              "fast/css3-text/css3-text-decoration/stable",
               "fast/dom/Window",
               "http/tests/navigation",
               "http/tests/sendbeacon",

@@ -519,7 +519,8 @@ static void MatchElementScopeRules(const Element& element,
     // Inline style is immutable as long as there is no CSSOM wrapper.
     bool is_inline_style_cacheable = !element.InlineStyle()->IsMutable();
     collector.AddElementStyleProperties(element.InlineStyle(),
-                                        is_inline_style_cacheable);
+                                        is_inline_style_cacheable,
+                                        true /* is_inline_style */);
   }
 
   collector.FinishAddingAuthorRulesForTreeScope(
