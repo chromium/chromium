@@ -28,7 +28,6 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
   PageInfoNewBubbleView(views::View* anchor_view,
                         const gfx::Rect& anchor_rect,
                         gfx::NativeView parent_window,
-                        Profile* profile,
                         content::WebContents* web_contents,
                         const GURL& url,
                         PageInfoClosingCallback closing_callback);

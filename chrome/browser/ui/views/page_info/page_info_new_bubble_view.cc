@@ -18,7 +18,6 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
     views::View* anchor_view,
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
-    Profile* profile,
     content::WebContents* associated_web_contents,
     const GURL& url,
     PageInfoClosingCallback closing_callback)
@@ -44,7 +43,8 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
   const int top_margin =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG).top();
   set_margins(gfx::Insets(top_margin, 0, bottom_margin, 0));
-  ui_delegate_ = std::make_unique<ChromePageInfoUiDelegate>(profile, url);
+  ui_delegate_ =
+      std::make_unique<ChromePageInfoUiDelegate>(web_contents(), url);
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents()), web_contents(),
       url);

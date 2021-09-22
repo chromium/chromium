@@ -204,7 +204,6 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
     views::View* anchor_view,
     const gfx::Rect& anchor_rect,
     gfx::NativeWindow parent_window,
-    Profile* profile,
     content::WebContents* web_contents,
     const GURL& url,
     PageInfoClosingCallback closing_callback) {
@@ -220,11 +219,11 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
     return new PageInfoNewBubbleView(anchor_view, anchor_rect, parent_view,
-                                     profile, web_contents, url,
+                                     web_contents, url,
                                      std::move(closing_callback));
   }
 
-  return new PageInfoBubbleView(anchor_view, anchor_rect, parent_view, profile,
+  return new PageInfoBubbleView(anchor_view, anchor_rect, parent_view,
                                 web_contents, url, std::move(closing_callback));
 }
 
@@ -244,7 +243,6 @@ PageInfoBubbleView::PageInfoBubbleView(
     views::View* anchor_view,
     const gfx::Rect& anchor_rect,
     gfx::NativeView parent_window,
-    Profile* profile,
     content::WebContents* associated_web_contents,
     const GURL& url,
     PageInfoClosingCallback closing_callback)
@@ -253,7 +251,6 @@ PageInfoBubbleView::PageInfoBubbleView(
                              parent_window,
                              PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
                              associated_web_contents),
-      profile_(profile),
       closing_callback_(std::move(closing_callback)) {
   DCHECK(closing_callback_);
   DCHECK(web_contents());
@@ -296,14 +293,16 @@ PageInfoBubbleView::PageInfoBubbleView(
   layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
                               views::GridLayout::kFixedSize,
                               hover_list_spacing);
+  ui_delegate_ =
+      std::make_unique<ChromePageInfoUiDelegate>(web_contents(), url);
   site_settings_view_ = layout->AddView(CreateSiteSettingsView());
 
-  if (!profile->IsGuestSession()) {
+  int link_text_id = 0;
+  int tooltip_text_id = 0;
+  if (ui_delegate_->ShouldShowSiteSettings(&link_text_id, &tooltip_text_id)) {
     layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
                                 views::GridLayout::kFixedSize, 0);
 
-    const std::u16string& tooltip =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP);
     site_settings_link = layout->AddView(std::make_unique<PageInfoHoverButton>(
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
@@ -311,9 +310,10 @@ PageInfoBubbleView::PageInfoBubbleView(
             },
             this),
         PageInfoViewFactory::GetSiteSettingsIcon(),
-        IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
+        /*title_resource_id=*/link_text_id, std::u16string(),
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-        tooltip, std::u16string()));
+        /*tooltip_text=*/l10n_util::GetStringUTF16(tooltip_text_id),
+        std::u16string()));
   }
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
@@ -329,7 +329,6 @@ PageInfoBubbleView::PageInfoBubbleView(
 
   SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
 
-  ui_delegate_ = std::make_unique<ChromePageInfoUiDelegate>(profile, url);
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents()), web_contents(),
       url);
@@ -813,9 +812,8 @@ void ShowPageInfoDialogImpl(Browser* browser,
   DCHECK(web_contents);
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
-          configuration.anchor_view, anchor_rect, parent_window,
-          browser->profile(), web_contents, virtual_url,
-          std::move(closing_callback));
+          configuration.anchor_view, anchor_rect, parent_window, web_contents,
+          virtual_url, std::move(closing_callback));
   bubble->SetHighlightedButton(configuration.highlighted_button);
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();

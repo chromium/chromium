@@ -3462,6 +3462,7 @@ Unknown properties are collapsed to zero. -->
   <int value="11" label="DBus Service (Plugin VM)"/>
   <int value="12" label="Notification (Plugin VM)"/>
   <int value="13" label="App Management main view (Borealis)"/>
+  <int value="14" label="Page info view"/>
 </enum>
 
 <enum name="AppManagementUserAction">

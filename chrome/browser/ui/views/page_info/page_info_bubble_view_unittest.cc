@@ -88,12 +88,10 @@ namespace test {
 class PageInfoBubbleViewTestApi {
  public:
   PageInfoBubbleViewTestApi(gfx::NativeView parent,
-                            Profile* profile,
                             content::WebContents* web_contents,
                             bool is_version_two)
       : bubble_delegate_(nullptr),
         parent_(parent),
-        profile_(profile),
         web_contents_(web_contents),
         is_version_two_(is_version_two) {
     CreateView();
@@ -105,13 +103,9 @@ class PageInfoBubbleViewTestApi {
     }
 
     views::View* anchor_view = nullptr;
-    Profile* profile =
-        use_off_the_record_profile_
-            ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-            : profile_;
     if (is_version_two_) {
       auto* bubble = new PageInfoNewBubbleView(
-          anchor_view, gfx::Rect(), parent_, profile, web_contents_, GURL(kUrl),
+          anchor_view, gfx::Rect(), parent_, web_contents_, GURL(kUrl),
           base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                          base::Unretained(this), run_loop_.QuitClosure()));
       presenter_ = bubble->presenter_.get();
@@ -121,7 +115,7 @@ class PageInfoBubbleViewTestApi {
           &static_cast<PageInfoMainView*>(current_view())->selector_rows_;
     } else {
       auto* bubble = new PageInfoBubbleView(
-          anchor_view, gfx::Rect(), parent_, profile, web_contents_, GURL(kUrl),
+          anchor_view, gfx::Rect(), parent_, web_contents_, GURL(kUrl),
           base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                          base::Unretained(this), run_loop_.QuitClosure()));
       presenter_ = bubble->presenter_.get();
@@ -292,11 +286,6 @@ class PageInfoBubbleViewTestApi {
 
   void WaitForBubbleClose() { run_loop_.Run(); }
 
-  void SetOffTheRecordProfile() {
-    use_off_the_record_profile_ = true;
-    CreateView();
-  }
-
  private:
   void OnPageInfoBubbleClosed(base::RepeatingCallback<void()> quit_closure,
                               views::Widget::ClosedReason closed_reason,
@@ -315,13 +304,11 @@ class PageInfoBubbleViewTestApi {
 
   // For recreating the view.
   gfx::NativeView parent_;
-  Profile* profile_;
   content::WebContents* web_contents_;
   base::RunLoop run_loop_;
   absl::optional<bool> reload_prompt_;
   absl::optional<views::Widget::ClosedReason> closed_reason_;
   bool is_version_two_;
-  bool use_off_the_record_profile_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewTestApi);
 };
@@ -337,7 +324,7 @@ constexpr char kTestUserEmail[] = "user@example.com";
 // so the helper can be composed with other helpers in the test harness.
 class ScopedWebContentsTestHelper {
  public:
-  ScopedWebContentsTestHelper()
+  explicit ScopedWebContentsTestHelper(bool off_the_record)
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -359,11 +346,13 @@ class ScopedWebContentsTestHelper {
                           HistoryServiceFactory::GetDefaultFactory()}});
     EXPECT_TRUE(profile_);
 
+    if (off_the_record)
+      profile_ = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     web_contents_ = factory_.CreateWebContents(profile_);
   }
 
-  Profile* profile() { return profile_; }
   content::WebContents* web_contents() { return web_contents_; }
+  Profile* profile() { return profile_; }
   TestingPrefServiceSimple* local_state() {
     return testing_profile_manager_.local_state()->Get();
   }
@@ -376,7 +365,7 @@ class ScopedWebContentsTestHelper {
 #endif
 
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  Profile* profile_ = nullptr;
   content::TestWebContentsFactory factory_;
   content::WebContents* web_contents_;  // Weak. Owned by factory_.
 
@@ -386,10 +375,11 @@ class ScopedWebContentsTestHelper {
 class PageInfoBubbleViewTest : public testing::Test,
                                public ::testing::WithParamInterface<bool> {
  public:
-  PageInfoBubbleViewTest() {
+  explicit PageInfoBubbleViewTest(bool off_the_record = false) {
     feature_list_.InitWithFeatureState(page_info::kPageInfoV2Desktop,
                                        is_page_info_v2_enabled());
-    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>();
+    web_contents_helper_ =
+        std::make_unique<ScopedWebContentsTestHelper>(off_the_record);
     views_helper_ = std::make_unique<views::ScopedViewsTestHelper>(
         std::make_unique<ChromeTestViewsDelegate<>>());
   }
@@ -417,8 +407,8 @@ class PageInfoBubbleViewTest : public testing::Test,
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents));
     api_ = std::make_unique<test::PageInfoBubbleViewTestApi>(
-        parent_window_->GetNativeView(), web_contents_helper_->profile(),
-        web_contents, is_page_info_v2_enabled());
+        parent_window_->GetNativeView(), web_contents,
+        is_page_info_v2_enabled());
   }
 
   void TearDown() override {
@@ -604,19 +594,20 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
 }
 
+class PageInfoBubbleViewOffTheRecordTest : public PageInfoBubbleViewTest {
+ public:
+  PageInfoBubbleViewOffTheRecordTest()
+      : PageInfoBubbleViewTest(/*off_the_record=*/true) {}
+};
+
 // Test resetting blocked in Incognito permission.
-TEST_P(PageInfoBubbleViewTest, ResetBlockedInIncognitoPermission) {
+TEST_P(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
   if (!is_page_info_v2_enabled()) {
     return;
   }
 
-  // This test uses OnSitePermissionChanged to inform the bubble of the
-  // permission changes, in production code this means the user interacted with
-  // page info and is thus reported to the sentiment service, inflating the
-  // expected interaction count.
-  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(6);
-
-  api_->SetOffTheRecordProfile();
+  // No sentiment service in incognito.
+  EXPECT_FALSE(mock_sentiment_service_);
 
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::NOTIFICATIONS;
@@ -1243,4 +1234,8 @@ TEST_P(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoBubbleViewTest,
+                         ::testing::Values(false, true));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewOffTheRecordTest,
                          ::testing::Values(false, true));

@@ -89,10 +89,10 @@ PageInfoMainView::PageInfoMainView(
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   site_settings_view_ = layout->AddView(CreateContainerView());
 
-  if (ui_delegate_->ShouldShowSiteSettings()) {
+  int link_text_id = 0;
+  int tooltip_text_id = 0;
+  if (ui_delegate_->ShouldShowSiteSettings(&link_text_id, &tooltip_text_id)) {
     layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-    const std::u16string& tooltip =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP);
     site_settings_link_ = layout->AddView(std::make_unique<PageInfoHoverButton>(
         base::BindRepeating(
             [](PageInfoMainView* view) {
@@ -100,9 +100,10 @@ PageInfoMainView::PageInfoMainView(
             },
             this),
         PageInfoViewFactory::GetSiteSettingsIcon(),
-        IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
+        /*title_resource_id=*/link_text_id, std::u16string(),
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-        tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
+        /*tooltip_text=*/l10n_util::GetStringUTF16(tooltip_text_id),
+        std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   }
 
   presenter_->InitializeUiState(this);

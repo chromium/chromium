@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -37,19 +38,23 @@ class PermissionMenuModelTest : public testing::Test {
   ChromePageInfoUiDelegate* delegate() { return delegate_.get(); }
 
   void SetOffTheRecordProfile() {
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr);
     delegate_ = std::make_unique<ChromePageInfoUiDelegate>(
-        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-        GURL("http://www.google.com"));
+        web_contents_.get(), GURL("http://www.google.com"));
   }
 
   void SetPageInfoUiDelegate() {
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     delegate_ = std::make_unique<ChromePageInfoUiDelegate>(
-        profile(), GURL("http://www.google.com"));
+        web_contents_.get(), GURL("http://www.google.com"));
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ChromePageInfoUiDelegate> delegate_;
 };
 

@@ -13,9 +13,14 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
  public:
-  ChromePageInfoUiDelegate(Profile* profile, const GURL& site_url);
+  ChromePageInfoUiDelegate(content::WebContents* web_contents,
+                           const GURL& site_url);
   ~ChromePageInfoUiDelegate() override = default;
 
   // Whether the combobox option for allowing a permission should be shown for
@@ -29,9 +34,10 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   std::u16string GetAutomaticallyBlockedReason(ContentSettingsType type);
 
 #if !defined(OS_ANDROID)
-  // Whether to show a link that takes the user to the chrome://settings subpage
-  // for `site_url_`.
-  bool ShouldShowSiteSettings();
+  // If PageInfo should show a link to the site or app's settings page, this
+  // will return true and set the params to the appropriate resource IDs (IDS_*).
+  // Otherwise, it will return false.
+  bool ShouldShowSiteSettings(int* link_text_id, int* tooltip_text_id);
 
   // The returned string, if non-empty, should be added as a sublabel that gives
   // extra details to the user concerning the granted permission.
@@ -45,7 +51,9 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
       ContentSettingsType type) override;
 
  private:
-  Profile* profile_;
+  Profile* GetProfile() const;
+
+  content::WebContents* web_contents_;
   GURL site_url_;
 };
 

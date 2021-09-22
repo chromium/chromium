@@ -1416,7 +1416,7 @@ bool LocationBarView::ShowPageInfoDialog() {
   DCHECK(GetWidget());
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
-          this, gfx::Rect(), GetWidget()->GetNativeWindow(), profile_, contents,
+          this, gfx::Rect(), GetWidget()->GetNativeWindow(), contents,
           entry->GetVirtualURL(),
           base::BindOnce(&LocationBarView::OnPageInfoBubbleClosed,
                          weak_factory_.GetWeakPtr()));

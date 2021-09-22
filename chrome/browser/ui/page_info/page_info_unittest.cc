@@ -1394,8 +1394,10 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
   }
 
   std::u16string GetDefaultSoundSettingString() {
-    auto delegate =
-        ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                      GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, CONTENT_SETTING_DEFAULT,
         default_setting_, content_settings::SettingSource::SETTING_SOURCE_USER,
@@ -1403,8 +1405,10 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
   }
 
   std::u16string GetSoundSettingString(ContentSetting setting) {
-    auto delegate =
-        ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                      GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, setting, default_setting_,
         content_settings::SettingSource::SETTING_SOURCE_USER,
@@ -1495,8 +1499,10 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, DefaultBlock_PrefOff) {
 // This test checks that the string for a permission dropdown that is not the
 // sound setting is unaffected.
 TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
-  auto delegate =
-      ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ChromePageInfoUiDelegate delegate(web_contents.get(),
+                                    GURL("http://www.example.com"));
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT),
       PageInfoUI::PermissionActionToUIString(
