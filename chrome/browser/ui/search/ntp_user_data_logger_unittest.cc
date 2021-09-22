@@ -500,36 +500,6 @@ TEST_F(NTPUserDataLoggerTest, ShouldRecordMostVisitedLoadTime) {
                                          delta_tiles_loaded, 1);
 }
 
-TEST_F(NTPUserDataLoggerTest, ShouldRecordLoadTimeRemoteNTPOther) {
-  base::HistogramTester histogram_tester;
-
-  TestNTPUserDataLogger logger(GURL("https://www.notgoogle.com/newtab"));
-  logger.is_google_ = false;
-
-  base::TimeDelta delta_tiles_loaded = base::TimeDelta::FromMilliseconds(100);
-
-  // This should trigger emitting histograms.
-  logger.LogMostVisitedLoaded(delta_tiles_loaded, /*using_most_visited=*/true,
-                              /*is_visible=*/true);
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.LocalNTP"),
-              IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web"),
-              SizeIs(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web.Google"),
-              IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web.Other"),
-              SizeIs(1));
-
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime",
-                                         delta_tiles_loaded, 1);
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime.Web",
-                                         delta_tiles_loaded, 1);
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime.Web.Other",
-                                         delta_tiles_loaded, 1);
-}
-
 TEST_F(NTPUserDataLoggerTest, ShouldRecordImpressionsAge) {
   base::HistogramTester histogram_tester;
 
@@ -597,21 +567,8 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordCustomizationActionFromNTPOther) {
   logger.LogEvent(NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED, delta_tiles_loaded);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.LocalNTP"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.WebUINTP"),
               IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web"),
-              SizeIs(1));
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web.Google"),
-              IsEmpty());
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.Web.Other"),
-              SizeIs(1));
-
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime",
-                                         delta_tiles_loaded, 1);
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime.Web",
-                                         delta_tiles_loaded, 1);
-  histogram_tester.ExpectTimeBucketCount("NewTabPage.LoadTime.Web.Other",
-                                         delta_tiles_loaded, 1);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.CustomizeAction"),
               IsEmpty());

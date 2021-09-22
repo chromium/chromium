@@ -10310,7 +10310,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="MostVisited" label="Loaded client-side suggestions."/>
   <suffix name="NewTab" label="NTP loaded on a new tab."/>
   <suffix name="Startup" label="NTP loaded during browser startup."/>
-  <suffix name="Web" label="Loaded server-side NTP."/>
+  <suffix name="Web" label="Loaded server-side NTP.">
+    <obsolete>
+      Removed in 09 2021.
+    </obsolete>
+  </suffix>
   <suffix name="WebUI3PNTP" label="Loaded 3P WebUI NTP."/>
   <suffix name="WebUINTP" label="Loaded WebUI NTP."/>
   <affected-histogram name="NewTabPage.LoadTime"/>
@@ -10329,7 +10333,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Deprecated NTP replaced by WebUI NTP M91.
     </obsolete>
   </affected-histogram>
-  <affected-histogram name="NewTabPage.LoadTime.Web"/>
+  <affected-histogram name="NewTabPage.LoadTime.Web">
+    <obsolete>
+      Removed in 09 2021.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NextTabState" separator="_">
