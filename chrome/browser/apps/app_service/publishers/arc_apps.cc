@@ -272,13 +272,7 @@ void ResetVerifiedLinks(
     const apps::mojom::ReplacedAppPreferencesPtr& replaced_app_preferences,
     arc::ArcServiceManager* arc_service_manager,
     ArcAppListPrefs* prefs) {
-  arc::mojom::IntentHelperInstance* instance = nullptr;
-  if (arc_service_manager) {
-    instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc_service_manager->arc_bridge_service()->intent_helper(),
-        ResetVerifiedLinks);
-  }
-  if (!instance) {
+  if (!arc_service_manager) {
     return;
   }
   std::vector<std::string> package_names;
@@ -296,7 +290,22 @@ void ResetVerifiedLinks(
       }
     }
   }
-  instance->ResetVerifiedLinks(package_names);
+
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->intent_helper(),
+      SetVerifiedLinks);
+  if (instance) {
+    instance->SetVerifiedLinks(package_names, /*always_open=*/false);
+    return;
+  }
+
+  // TODO(crbug.com/1251026): Remove ResetVerifiedLinks method.
+  instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->intent_helper(),
+      ResetVerifiedLinksDeprecated);
+  if (instance) {
+    instance->ResetVerifiedLinksDeprecated(package_names);
+  }
 }
 
 bool ShouldShow(const ArcAppListPrefs::AppInfo& app_info) {
@@ -985,6 +994,28 @@ void ArcApps::OnPreferredAppSet(
                   prefs);
   ResetVerifiedLinks(intent_filter, replaced_app_preferences,
                      arc_service_manager, prefs);
+}
+
+void ArcApps::OnSupportedLinksPreferenceChanged(const std::string& app_id,
+                                                bool open_in_app) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+  if (!app_info) {
+    return;
+  }
+
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(),
+        SetVerifiedLinks);
+  }
+  if (!instance) {
+    return;
+  }
+
+  instance->SetVerifiedLinks({app_info->package_name}, open_in_app);
 }
 
 void ArcApps::OnAppRegistered(const std::string& app_id,

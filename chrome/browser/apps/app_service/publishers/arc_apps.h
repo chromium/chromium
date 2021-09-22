@@ -121,6 +121,8 @@ class ArcApps : public KeyedService,
       apps::mojom::IntentFilterPtr intent_filter,
       apps::mojom::IntentPtr intent,
       apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) override;
+  void OnSupportedLinksPreferenceChanged(const std::string& app_id,
+                                         bool open_in_app) override;
 
   // ArcAppListPrefs::Observer overrides.
   void OnAppRegistered(const std::string& app_id,

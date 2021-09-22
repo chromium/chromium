@@ -58,8 +58,13 @@ void FakeIntentHelperInstance::AddPreferredPackage(
 void FakeIntentHelperInstance::AddPreferredApp(const std::string& package_name,
                                                IntentFilter intent_filter,
                                                mojom::IntentInfoPtr intent) {}
-void FakeIntentHelperInstance::ResetVerifiedLinks(
+
+void FakeIntentHelperInstance::ResetVerifiedLinksDeprecated(
     const std::vector<std::string>& package_names) {}
+
+void FakeIntentHelperInstance::SetVerifiedLinks(
+    const std::vector<std::string>& package_names,
+    bool always_open) {}
 
 void FakeIntentHelperInstance::GetFileSizeDeprecated(
     const std::string& url,

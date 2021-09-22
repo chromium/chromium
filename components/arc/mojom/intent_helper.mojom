@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 46
+// Next MinVersion: 47
 
 module arc.mojom;
 
@@ -356,8 +356,8 @@ interface IntentHelperHost {
 };
 
 // Sends intents to ARC on behalf of Chrome.
-// Deprecated method ID: 7
-// Next method ID: 21
+// Deprecated method ID: 7, 18
+// Next method ID: 22
 interface IntentHelperInstance {
   // Sets the given package as a preferred package. The next time an ACTION_VIEW
   // intent is sent with a URL that requires disambiguation, instead of opening
@@ -375,11 +375,16 @@ interface IntentHelperInstance {
                                      IntentFilter intent_filter,
                                      IntentInfo intent_info);
 
-  // Reset the verified link domain status to always ask for the
-  // |package_names|.
-  // This method will be called when Chrome OS replaced the preferred package
-  // from an ARC app to something else.
-  [MinVersion=35] ResetVerifiedLinks@18(array<string> package_names);
+  // DEPRECATED. Use SetVerifiedLinks instead.
+  // TODO(crbug.com/1251026): Remove method.
+  [MinVersion=35] ResetVerifiedLinksDeprecated@18(array<string> package_names);
+
+  // Set the verified link domain status to either always open (|always_open| is
+  // true) or always ask (|always_open| is false) for the |package_names|.
+  // This method will be called when Chrome OS changes the link capturing
+  // setting for an app.
+  [MinVersion=46] SetVerifiedLinks@21(array<string> package_names,
+                                      bool always_open);
 
   // DEPRECATED. Use FileSystemInstance.GetFileSize() instead.
   [MinVersion=15] GetFileSizeDeprecated@11(string url) => (int64 size);
