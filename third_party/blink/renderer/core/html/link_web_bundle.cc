@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
+#include "third_party/blink/renderer/core/loader/web_bundle/web_bundle_loader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
@@ -30,134 +31,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
-
-class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
-                        public ThreadableLoaderClient,
-                        public network::mojom::blink::WebBundleHandle {
- public:
-  WebBundleLoader(LinkWebBundle& link_web_bundle,
-                  Document& document,
-                  const KURL& url,
-                  CrossOriginAttributeValue cross_origin_attribute_value)
-      : link_web_bundle_(&link_web_bundle),
-        url_(url),
-        security_origin_(SecurityOrigin::Create(url)),
-        web_bundle_token_(base::UnguessableToken::Create()),
-        task_runner_(
-            document.GetFrame()->GetTaskRunner(TaskType::kInternalLoading)),
-        receivers_(this, document.GetExecutionContext()) {
-    ResourceRequest request(url);
-    request.SetUseStreamOnResponse(true);
-    // TODO(crbug.com/1082020): Revisit these once the fetch and process the
-    // linked resource algorithm [1] for <link rel=webbundle> is defined.
-    // [1]
-    // https://html.spec.whatwg.org/multipage/semantics.html#fetch-and-process-the-linked-resource
-    request.SetRequestContext(
-        mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE);
-
-    // https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md#requests-mode-and-credentials-mode
-    request.SetMode(network::mojom::blink::RequestMode::kCors);
-    switch (cross_origin_attribute_value) {
-      case kCrossOriginAttributeNotSet:
-      case kCrossOriginAttributeAnonymous:
-        request.SetCredentialsMode(
-            network::mojom::CredentialsMode::kSameOrigin);
-        break;
-      case kCrossOriginAttributeUseCredentials:
-        request.SetCredentialsMode(network::mojom::CredentialsMode::kInclude);
-        break;
-    }
-    request.SetRequestDestination(
-        network::mojom::RequestDestination::kWebBundle);
-    request.SetPriority(ResourceLoadPriority::kHigh);
-    // Skip the service worker for a short term solution.
-    // TODO(crbug.com/1240424): Figure out the ideal design of the service
-    // worker integration.
-    request.SetSkipServiceWorker(true);
-
-    mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
-        web_bundle_handle;
-    receivers_.Add(web_bundle_handle.InitWithNewPipeAndPassReceiver(),
-                   task_runner_);
-    request.SetWebBundleTokenParams(ResourceRequestHead::WebBundleTokenParams(
-        url_, web_bundle_token_, std::move(web_bundle_handle)));
-
-    ExecutionContext* execution_context = document.GetExecutionContext();
-    ResourceLoaderOptions resource_loader_options(
-        execution_context->GetCurrentWorld());
-    resource_loader_options.data_buffering_policy = kDoNotBufferData;
-
-    loader_ = MakeGarbageCollected<ThreadableLoader>(*execution_context, this,
-                                                     resource_loader_options);
-    loader_->Start(std::move(request));
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(link_web_bundle_);
-    visitor->Trace(loader_);
-    visitor->Trace(receivers_);
-  }
-
-  bool HasLoaded() const { return !failed_; }
-
-  // ThreadableLoaderClient
-  void DidStartLoadingResponseBody(BytesConsumer& consumer) override {
-    // Drain |consumer| so that DidFinishLoading is surely called later.
-    consumer.DrainAsDataPipe();
-  }
-  void DidFail(uint64_t, const ResourceError&) override { DidFailInternal(); }
-  void DidFailRedirectCheck(uint64_t) override { DidFailInternal(); }
-
-  // network::mojom::blink::WebBundleHandle
-  void Clone(mojo::PendingReceiver<network::mojom::blink::WebBundleHandle>
-                 receiver) override {
-    receivers_.Add(std::move(receiver), task_runner_);
-  }
-  void OnWebBundleError(network::mojom::WebBundleErrorType type,
-                        const String& message) override {
-    link_web_bundle_->OnWebBundleError(url_.ElidedString() + ": " + message);
-  }
-  void OnWebBundleLoadFinished(bool success) override {
-    if (failed_)
-      return;
-    failed_ = !success;
-    link_web_bundle_->NotifyLoaded();
-  }
-
-  const KURL& url() const { return url_; }
-  scoped_refptr<SecurityOrigin> GetSecurityOrigin() const {
-    return security_origin_;
-  }
-  const base::UnguessableToken& WebBundleToken() const {
-    return web_bundle_token_;
-  }
-
-  void ClearReceivers() {
-    // Clear receivers_ explicitly so that resources in the netwok process are
-    // released.
-    receivers_.Clear();
-  }
-
- private:
-  void DidFailInternal() {
-    if (failed_)
-      return;
-    failed_ = true;
-    link_web_bundle_->NotifyLoaded();
-  }
-
-  Member<LinkWebBundle> link_web_bundle_;
-  Member<ThreadableLoader> loader_;
-  bool failed_ = false;
-  KURL url_;
-  scoped_refptr<SecurityOrigin> security_origin_;
-  base::UnguessableToken web_bundle_token_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  // we need ReceiverSet here because WebBundleHandle is cloned when
-  // ResourceRequest is copied.
-  HeapMojoReceiverSet<network::mojom::blink::WebBundleHandle, WebBundleLoader>
-      receivers_;
-};
 
 // static
 bool LinkWebBundle::IsFeatureEnabled(const ExecutionContext* context) {
