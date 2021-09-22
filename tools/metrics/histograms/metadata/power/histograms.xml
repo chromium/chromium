@@ -1150,7 +1150,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.PowerScheduler.ThrottlingDuration" units="ms"
-    expires_after="2021-10-29">
+    expires_after="2022-10-04">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -1161,7 +1161,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.PowerScheduler.ThrottlingDurationPerCpuAffinityMode"
-    enum="CpuAffinityMode" expires_after="2021-10-29">
+    enum="CpuAffinityMode" expires_after="2022-10-04">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
