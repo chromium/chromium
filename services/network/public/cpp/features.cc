@@ -83,7 +83,7 @@ const base::Feature kProactivelyThrottleLowPriorityRequests{
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCrossOriginEmbedderPolicyCredentialless{
     "CrossOriginEmbedderPolicyCredentialless",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables Cross-Origin-Embedder-Policy credentialless origin trial. It will be
 // used as a kill switch during the experiment.
