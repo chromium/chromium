@@ -9,7 +9,8 @@
 
 #include "base/macros.h"
 #include "ipc/ipc_message.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace guest_view {
 

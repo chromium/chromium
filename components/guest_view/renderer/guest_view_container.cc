@@ -16,6 +16,10 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_view.h"
 #include "ui/gfx/geometry/size.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-primitive.h"
 
 namespace {
 
