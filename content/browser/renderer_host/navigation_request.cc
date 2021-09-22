@@ -3062,12 +3062,13 @@ void NavigationRequest::OnResponseStarted(
   if (IsServedFromBackForwardCache()) {
     // If the current navigation is being restarted, it should not try to make
     // any further progress.
-    DCHECK(!restarting_back_forward_cached_navigation_);
+    CHECK(!restarting_back_forward_cached_navigation_);
 
     NavigationControllerImpl* controller = GetNavigationController();
-    render_frame_host_ = controller->GetBackForwardCache()
-                             .GetEntry(nav_entry_id_)
-                             ->render_frame_host();
+    BackForwardCacheImpl::Entry* entry =
+        controller->GetBackForwardCache().GetEntry(nav_entry_id_);
+    CHECK(entry);
+    render_frame_host_ = entry->render_frame_host();
     // The only time GetEntry can return nullptr here, is if the document was
     // evicted from the BackForwardCache since this navigation started.
     //
