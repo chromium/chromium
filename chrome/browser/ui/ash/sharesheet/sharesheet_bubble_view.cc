@@ -708,9 +708,6 @@ void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
       base::TimeDelta::FromMilliseconds(80);
 
   is_bubble_closing_ = true;
-  if (close_callback_) {
-    std::move(close_callback_).Run(closed_reason);
-  }
   ui::Layer* layer = View::GetWidget()->GetLayer();
 
   auto scoped_settings =
@@ -733,6 +730,10 @@ void SharesheetBubbleView::CloseWidgetWithReason(
     views::Widget::ClosedReason closed_reason) {
   View::GetWidget()->CloseWithReason(closed_reason);
 
+  // Run |close_callback_| after the widget closes.
+  if (close_callback_) {
+    std::move(close_callback_).Run(closed_reason);
+  }
   // Bubble is deleted here.
   delegate_->OnBubbleClosed(active_target_);
 }
