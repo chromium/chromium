@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -256,6 +257,10 @@ class WaylandWindow : public PlatformWindow,
 
   // Returns bounds in DIP.
   gfx::Rect GetBoundsInDIP() const;
+
+  base::WeakPtr<WaylandWindow> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
