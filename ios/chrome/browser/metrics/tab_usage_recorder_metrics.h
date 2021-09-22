@@ -45,6 +45,10 @@ extern const char kRendererTerminationSawMemoryWarning[];
 // termination is received.
 extern const char kRendererTerminationAliveRenderers[];
 
+// Name of the histogram to record the total number of tabs when a renderer
+// termination is received.
+extern const char kRendererTerminationTotalTabCount[];
+
 // Name of histogram to record the number of renderers that were alive shortly
 // before a renderer termination. This metric is being recorded in case the OS
 // kills renderers in batches.
