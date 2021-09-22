@@ -15794,7 +15794,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="FETCH_SHARED_WORKER" label="FETCH_SHARED_WORKER"/>
   <suffix name="FETCH_SUB_FRAME" label="FETCH_SUB_FRAME"/>
   <suffix name="FETCH_SUB_RESOURCE" label="FETCH_SUB_RESOURCE"/>
-  <suffix name="FOREIGN_FETCH" label="FOREIGN_FETCH"/>
+  <suffix name="FOREIGN_FETCH" label="FOREIGN_FETCH">
+    <obsolete>
+      Has not been emitted since Foreign Fetch was removed ca. 2018.
+    </obsolete>
+  </suffix>
   <suffix name="GEOFENCING" label="GEOFENCING">
     <obsolete>
       Deprecated as of 5/2016 because geofencing got removed.
@@ -15828,7 +15832,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SYNC" label="SYNC"/>
   <suffix name="UNKNOWN" label="UNKNOWN"/>
   <affected-histogram name="ServiceWorker.EventDispatchingDelay"/>
-  <affected-histogram name="ServiceWorker.StartWorker.StatusByPurpose"/>
   <affected-histogram name="ServiceWorker.StartWorker.Time_DuringStartup"/>
   <affected-histogram
       name="ServiceWorker.StartWorker.Time_ExistingReadyProcess"/>

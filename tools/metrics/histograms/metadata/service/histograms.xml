@@ -21,6 +21,53 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="ServiceWorkerEventType">
+  <variant name="ACTIVATE"/>
+  <variant name="BACKGROUND_FETCH_ABORT"/>
+  <variant name="BACKGROUND_FETCH_CLICK"/>
+  <variant name="BACKGROUND_FETCH_FAIL"/>
+  <variant name="BACKGROUND_FETCH_SUCCESS"/>
+  <variant name="COOKIE_CHANGE"/>
+  <variant name="FETCH_MAIN_FRAME"/>
+  <variant name="FETCH_SHARED_WORKER"/>
+  <variant name="FETCH_SUB_FRAME"/>
+  <variant name="FETCH_SUB_RESOURCE"/>
+  <variant name="FOREIGN_FETCH">
+    <obsolete>
+      Has not been emitted since Foreign Fetch was removed ca. 2018.
+    </obsolete>
+  </variant>
+  <variant name="GEOFENCING">
+    <obsolete>
+      Deprecated as of 5/2016 because geofencing got removed.
+    </obsolete>
+  </variant>
+  <variant name="INSTALL"/>
+  <variant name="LONG_RUNNING_MESSAGE"/>
+  <variant name="MESSAGE"/>
+  <variant name="NAVIGATION_HINT"/>
+  <variant name="NAVIGATION_HINT_LINK_MOUSE_DOWN">
+    <obsolete>
+      This experiment was turned down, see https://crbug.com/616502.
+    </obsolete>
+  </variant>
+  <variant name="NAVIGATION_HINT_LINK_TAP_DOWN">
+    <obsolete>
+      This experiment was turned down, see https://crbug.com/616502.
+    </obsolete>
+  </variant>
+  <variant name="NAVIGATION_HINT_LINK_TAP_UNCONFIRMED">
+    <obsolete>
+      This experiment was turned down, see https://crbug.com/616502.
+    </obsolete>
+  </variant>
+  <variant name="NOTIFICATION_CLICK"/>
+  <variant name="NOTIFICATION_CLOSE"/>
+  <variant name="PUSH"/>
+  <variant name="SYNC"/>
+  <variant name="UNKNOWN"/>
+</variants>
+
 <histogram name="ServiceWorker.AbortPaymentEvent.Time" units="ms"
     expires_after="2021-12-31">
   <owner>rouslan@chromium.org</owner>
@@ -1072,14 +1119,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.StartWorker.StatusByPurpose"
-    enum="ServiceWorkerStatusCode" expires_after="2021-08-22">
-  <owner>falken@chromium.org</owner>
+<histogram
+    name="ServiceWorker.StartWorker.StatusByPurpose_{ServiceWorkerEventType}"
+    enum="ServiceWorkerStatusCode" expires_after="2022-09-01">
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
-    The result of trying to start a service worker for a particular event type
-    (see ServiceWorker.StartWorker.Status for the total). Only recorded for
-    installed workers. For event type:
+    The result of trying to start a service worker for the event type
+    {ServiceWorkerEventType} (see ServiceWorker.StartWorker.Status for all start
+    attempts). Only recorded for installed workers.
   </summary>
 </histogram>
 
