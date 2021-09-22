@@ -91,6 +91,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     private @Nullable Runnable mCurrentAutocompleteRequest;
     private @Nullable Runnable mDeferredLoadAction;
+    private @Nullable PropertyModel mDeleteDialogModel;
 
     private boolean mNativeInitialized;
     private AutocompleteController mAutocomplete;
@@ -293,6 +294,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     /** @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean) */
     void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) {
+            dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
             mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;
             mUrlFocusTime = System.currentTimeMillis();
@@ -526,7 +528,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             }
 
             @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {}
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                mDeleteDialogModel = null;
+            }
         };
 
         Resources resources = mContext.getResources();
@@ -536,7 +540,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             dialogMessageId = R.string.omnibox_confirm_delete_from_clipboard;
         }
 
-        PropertyModel model =
+        mDeleteDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, dialogController)
                         .with(ModalDialogProperties.TITLE, suggestion.getDisplayText())
@@ -549,7 +553,19 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
         // Prevent updates to the shown omnibox suggestions list while the dialog is open.
         stopAutocomplete(false);
-        manager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
+        manager.showDialog(mDeleteDialogModel, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    /**
+     * Dismiss the delete suggestion dialog if it is showing.
+     *
+     * @param cause The cause of dismiss.
+     */
+    private void dismissDeleteDialog(@DialogDismissalCause int cause) {
+        if (mDeleteDialogModel == null) return;
+
+        assert mModalDialogManagerSupplier.hasValue() : "Dialog shown with no registered manager";
+        mModalDialogManagerSupplier.get().dismissDialog(mDeleteDialogModel, cause);
     }
 
     /**
@@ -863,6 +879,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private void hideSuggestions() {
         if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(true);
+        dismissDeleteDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
         mDropdownViewInfoListManager.clear();
         mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;

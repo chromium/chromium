@@ -353,6 +353,12 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mSearchBox.focusTextBox();
+    }
+
+    @Override
     public SnackbarManager getSnackbarManager() {
         return mSnackbarManager;
     }

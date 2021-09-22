@@ -40,7 +40,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private boolean mPendingSearchPromoDecision;
     private boolean mPendingBeginQuery;
     private boolean mHasWindowFocus;
-    private boolean mUrlBarFocusRequested;
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar_base);
@@ -203,42 +202,15 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         // No need to focus, because the Text field should already be focused.
     }
 
-    // TODO(tedchoc): Investigate focusing regardless of the search promo state and just ensure
-    //                we don't start processing non-cached suggestion requests until that state
-    //                is finalized after native has been initialized.
-    private void focusTextBox() {
-        mUrlBarFocusRequested |= !mUrlBar.hasFocus();
-        ensureUrlBarFocusedAndTriggerZeroSuggest();
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        mHasWindowFocus = hasFocus;
-        if (hasFocus) {
-            ensureUrlBarFocusedAndTriggerZeroSuggest();
-        }
-    }
-
     /**
-     * Since there is a race condition between {@link #focusTextBox()} and {@link
-     * #onWindowFocusChanged(boolean)}, if call mUrlBar.requestFocus() before onWindowFocusChanged
-     * is called, clipboard data will not been received since receive clipboard data needs focus
-     * (https://developer.android.com/reference/android/content/ClipboardManager#getPrimaryClip()).
-     *
-     * Requesting focus ahead of window activation completion results with inability to call up
-     * soft keyboard on an early releases of Android S. The remedy is to defer the focus requests
-     * until after Window focus change completes. This is tracked by Android bug http://b/186331446.
+     * Focus the Omnibox and present the cached suggestions.
      */
-    private void ensureUrlBarFocusedAndTriggerZeroSuggest() {
-        if (mUrlBarFocusRequested && mHasWindowFocus) {
-            mUrlBar.post(() -> {
-                mUrlBar.requestFocus();
-                mUrlCoordinator.setKeyboardVisibility(true, false);
-                getAutocompleteCoordinator().startCachedZeroSuggest();
-            });
-            mUrlBarFocusRequested = false;
-        }
+    void focusTextBox() {
+        mUrlBar.post(() -> {
+            mUrlBar.requestFocus();
+            mUrlCoordinator.setKeyboardVisibility(true, false);
+            getAutocompleteCoordinator().startCachedZeroSuggest();
+        });
     }
 
     @Override
