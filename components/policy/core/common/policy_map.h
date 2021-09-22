@@ -315,14 +315,23 @@ class POLICY_EXPORT PolicyMap {
       const base::RepeatingCallback<bool(const const_iterator)>& filter,
       bool deletion_value);
 
-  // Updates the stored state of metapolicy CloudPolicyOverridesPlatformPolicy.
-  void UpdateCloudPolicyOverridesPlatformPolicy();
+  // Returns the value of a stored bool policy only if it is a machine platform
+  // policy. Otherwise, returns false. This is used to ensure that the set
+  // precedence metapolicies are platform machine policies.
+  bool GetPlatformMachinePolicyBool(const std::string& policy) const;
+
+  // Updates the stored state of computed metapolicies.
+  void UpdateStoredComputedMetapolicies();
+
+  // Updates the stored state of user affiliation.
+  void UpdateStoredUserAffiliation();
 
   PolicyMapType map_;
 
   // Affiliation
   bool is_user_affiliated_ = false;
   bool cloud_policy_overrides_platform_policy_ = false;
+  bool cloud_user_policy_overrides_cloud_machine_policy_ = false;
   base::flat_set<std::string> user_affiliation_ids_;
   base::flat_set<std::string> device_affiliation_ids_;
 };

@@ -18673,6 +18673,41 @@
       This mandatory policy affects machine scope cloud policies.''',
     },
     {
+      'name': 'CloudUserPolicyOverridesCloudMachinePolicy',
+      'owners': ['igorruvinov@chromium.org', 'zmin@chromium.org', 'pastarmovj@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:96-'],
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow user cloud policies to override machine cloud policies.',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent user cloud policies from overriding machine cloud policies.',
+        },
+      ],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'platform_only': True,
+        'metapolicy_type': 'precedence',
+      },
+      'example_value': False,
+      'default': False,
+      'id': 899,
+      'caption': '''Allow user cloud policies to override <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph> policies.''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled allows policies associated with a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph> account to take precedence if they conflict with <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph> policies.
+
+      Only policies originating from secure users can be merged. A secure user is affiliated with the organization that manages their browser using <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. All other user-level policies will have default precedence.
+
+      The policy can be combined with <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY">CloudPolicyOverridesPlatformPolicy</ph>. If both policies are enabled, user cloud policies will also take precedence over conflicting platform policies.
+
+      Leaving the policy unset or setting it to disabled causes user-level cloud policies to have default priority.''',
+    },
+    {
       'name': 'PromptForDownloadLocation',
       'owners': ['macourteau@chromium.org', 'zmin@chromium.org'],
       'type': 'main',
@@ -28781,6 +28816,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 898,
+  'highest_id_currently_used': 899,
   'highest_atomic_group_id_currently_used': 41
 }

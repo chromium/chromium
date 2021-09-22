@@ -26390,6 +26390,7 @@ Called by update_document_policy_enum.py.-->
   <int value="896" label="PrintPdfAsImageDefault"/>
   <int value="897" label="FullRestoreEnabled"/>
   <int value="898" label="GhostWindowEnabled"/>
+  <int value="899" label="CloudUserPolicyOverridesCloudMachinePolicy"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

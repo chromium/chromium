@@ -57,9 +57,12 @@ base::flat_set<std::string> CombineIds(
 // Returns the calculated priority of the policy entry based on the policy's
 // scope and source, in addition to external factors such as precedence
 // metapolicy values. Used for browser policies.
-PolicyPriorityBrowser GetPriority(PolicySource source,
-                                  PolicyScope scope,
-                                  bool cloud_policy_overrides_platform_policy) {
+PolicyPriorityBrowser GetPriority(
+    PolicySource source,
+    PolicyScope scope,
+    bool cloud_policy_overrides_platform_policy,
+    bool cloud_user_policy_overrides_cloud_machine_policy,
+    bool is_user_affiliated) {
   switch (source) {
     case POLICY_SOURCE_ENTERPRISE_DEFAULT:
       return POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT;
@@ -67,11 +70,21 @@ PolicyPriorityBrowser GetPriority(PolicySource source,
       return POLICY_PRIORITY_BROWSER_COMMAND_LINE;
     case POLICY_SOURCE_CLOUD:
       if (scope == POLICY_SCOPE_MACHINE) {
-        // Raise the priority for cloud machine policies when the metapolicy
+        // Raise the priority of cloud machine policies only when the metapolicy
         // CloudPolicyOverridesPlatformPolicy is set to true.
         return cloud_policy_overrides_platform_policy
                    ? POLICY_PRIORITY_BROWSER_CLOUD_MACHINE_RAISED
                    : POLICY_PRIORITY_BROWSER_CLOUD_MACHINE;
+      }
+      if (cloud_user_policy_overrides_cloud_machine_policy &&
+          is_user_affiliated) {
+        // Raise the priority of cloud user policies only when the metapolicy
+        // CloudUserPolicyOverridesCloudMachinePolicy is set to true and the
+        // user is affiliated. Its priority relative to cloud machine policies
+        // also depends on the value of CloudPolicyOverridesPlatformPolicy.
+        return cloud_policy_overrides_platform_policy
+                   ? POLICY_PRIORITY_BROWSER_CLOUD_USER_DOUBLE_RAISED
+                   : POLICY_PRIORITY_BROWSER_CLOUD_USER_RAISED;
       }
       return POLICY_PRIORITY_BROWSER_CLOUD_USER;
     case POLICY_SOURCE_PRIORITY_CLOUD:
@@ -391,6 +404,10 @@ PolicyMap PolicyMap::Clone() const {
   for (const auto& it : map_)
     clone.Set(it.first, it.second.DeepCopy());
 
+  clone.cloud_policy_overrides_platform_policy_ =
+      cloud_policy_overrides_platform_policy_;
+  clone.cloud_user_policy_overrides_cloud_machine_policy_ =
+      cloud_user_policy_overrides_cloud_machine_policy_;
   clone.SetUserAffiliationIds(user_affiliation_ids_);
   clone.SetDeviceAffiliationIds(device_affiliation_ids_);
 
@@ -399,9 +416,15 @@ PolicyMap PolicyMap::Clone() const {
 
 void PolicyMap::MergeFrom(const PolicyMap& other) {
   DCHECK_NE(this, &other);
+  // Set affiliation IDs before merging policy values because user affiliation
+  // affects the policy precedence check.
+  SetUserAffiliationIds(
+      CombineIds(GetUserAffiliationIds(), other.GetUserAffiliationIds()));
+  SetDeviceAffiliationIds(
+      CombineIds(GetDeviceAffiliationIds(), other.GetDeviceAffiliationIds()));
   // TODO(crbug.com/1234801): Extract the precedence and merging metapolicy
   // values from both |PolicyMap|s here to enable setting them through CBCM.
-  UpdateCloudPolicyOverridesPlatformPolicy();
+  UpdateStoredComputedMetapolicies();
 
   for (const auto& policy_and_entry : other) {
     Entry* current_policy = GetMutableUntrusted(policy_and_entry.first);
@@ -438,11 +461,6 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
     if (other_is_higher_priority)
       *current_policy = std::move(other_policy);
   }
-
-  SetUserAffiliationIds(
-      CombineIds(GetUserAffiliationIds(), other.GetUserAffiliationIds()));
-  SetDeviceAffiliationIds(
-      CombineIds(GetDeviceAffiliationIds(), other.GetDeviceAffiliationIds()));
 }
 
 void PolicyMap::MergeValues(const std::vector<PolicyMerger*>& mergers) {
@@ -520,20 +538,23 @@ bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
          std::tie(rhs.level, rhs.scope, rhs.source);
 #else   // defined(OS_CHROMEOS)
   PolicyPriorityBrowser lhs_priority = GetPriority(
-      lhs.source, lhs.scope, cloud_policy_overrides_platform_policy_);
+      lhs.source, lhs.scope, cloud_policy_overrides_platform_policy_,
+      cloud_user_policy_overrides_cloud_machine_policy_, is_user_affiliated_);
   PolicyPriorityBrowser rhs_priority = GetPriority(
-      rhs.source, rhs.scope, cloud_policy_overrides_platform_policy_);
+      rhs.source, rhs.scope, cloud_policy_overrides_platform_policy_,
+      cloud_user_policy_overrides_cloud_machine_policy_, is_user_affiliated_);
   return std::tie(lhs.level, lhs_priority) > std::tie(rhs.level, rhs_priority);
 #endif  // defined(OS_CHROMEOS)
 }
 
 bool PolicyMap::IsUserAffiliated() const {
-  return IsAffiliated(user_affiliation_ids_, device_affiliation_ids_);
+  return is_user_affiliated_;
 }
 
 void PolicyMap::SetUserAffiliationIds(
     const base::flat_set<std::string>& user_ids) {
   user_affiliation_ids_ = {user_ids.begin(), user_ids.end()};
+  UpdateStoredUserAffiliation();
 }
 
 const base::flat_set<std::string>& PolicyMap::GetUserAffiliationIds() const {
@@ -543,21 +564,31 @@ const base::flat_set<std::string>& PolicyMap::GetUserAffiliationIds() const {
 void PolicyMap::SetDeviceAffiliationIds(
     const base::flat_set<std::string>& device_ids) {
   device_affiliation_ids_ = {device_ids.begin(), device_ids.end()};
+  UpdateStoredUserAffiliation();
 }
 
 const base::flat_set<std::string>& PolicyMap::GetDeviceAffiliationIds() const {
   return device_affiliation_ids_;
 }
 
-void PolicyMap::UpdateCloudPolicyOverridesPlatformPolicy() {
-  // Ensure the set precedence metapolicy is a platform machine policy.
+bool PolicyMap::GetPlatformMachinePolicyBool(const std::string& policy) const {
+  return GetValue(policy) && GetValue(policy)->GetBool() &&
+         Get(policy)->source == POLICY_SOURCE_PLATFORM &&
+         Get(policy)->scope == POLICY_SCOPE_MACHINE;
+}
+
+void PolicyMap::UpdateStoredComputedMetapolicies() {
   cloud_policy_overrides_platform_policy_ =
-      GetValue(key::kCloudPolicyOverridesPlatformPolicy) &&
-      GetValue(key::kCloudPolicyOverridesPlatformPolicy)->GetBool() &&
-      Get(key::kCloudPolicyOverridesPlatformPolicy)->source ==
-          POLICY_SOURCE_PLATFORM &&
-      Get(key::kCloudPolicyOverridesPlatformPolicy)->scope ==
-          POLICY_SCOPE_MACHINE;
+      GetPlatformMachinePolicyBool(key::kCloudPolicyOverridesPlatformPolicy);
+
+  cloud_user_policy_overrides_cloud_machine_policy_ =
+      GetPlatformMachinePolicyBool(
+          key::kCloudUserPolicyOverridesCloudMachinePolicy);
+}
+
+void PolicyMap::UpdateStoredUserAffiliation() {
+  is_user_affiliated_ =
+      IsAffiliated(user_affiliation_ids_, device_affiliation_ids_);
 }
 
 }  // namespace policy
