@@ -890,13 +890,13 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
       }
 
       // Updates progress bar in limited frequency so that intervals between
-      // updates have at least 200ms.
+      // updates have at least one second.
       this.updateProgressRateLimiter_.run();
     };
     updateProgress = updateProgress.bind(this);
 
     this.updateProgressRateLimiter_ =
-        new AsyncUtil.RateLimiter(progressCallback);
+        new AsyncUtil.RateLimiter(progressCallback, 1000);
 
     this.numRemainingItems = this.calcNumRemainingItems_();
 
@@ -1496,16 +1496,30 @@ fileOperationUtil.Speedometer = class {
   }
 
   /**
-   * Adds a sample with the current timestamp and the given number of |bytes|.
+   * Adds a sample with the current timestamp and the given number of |bytes|
+   * if the previous sample was received more than a second ago.
+   * Does nothing if the previous sample was received less than a second ago.
    * @param {number} bytes Total number of bytes processed by the task so far.
    */
   update(bytes) {
     const time = Date.now();
     const sample = {time, bytes};
-    if (!this.first_) {
+
+    // Is this the first sample?
+    if (this.first_ == null) {
+      // Remember this sample as the first one.
       this.first_ = sample;
+    } else {
+      // Drop this sample if we already received one less than a second ago.
+      const last = this.samples_[this.samples_.length - 1];
+      if (sample.time - last.time < 1000) {
+        return;
+      }
     }
+
+    // Queue this sample.
     if (this.samples_.push(sample) > this.maxSamples_) {
+      // Remove old sample.
       this.samples_.shift();
     }
   }
@@ -1521,11 +1535,9 @@ fileOperationUtil.Speedometer = class {
    */
   interpolate_() {
     // Don't even try to compute the linear interpolation unless we have enough
-    // samples. Theoretically, we could compute the linear interpolation with as
-    // few as two samples, but for the sake of precision, we wait until we have
-    // at least five samples.
+    // samples.
     const n = this.samples_.length;
-    if (n < 5) {
+    if (n < 2) {
       return null;
     }
 

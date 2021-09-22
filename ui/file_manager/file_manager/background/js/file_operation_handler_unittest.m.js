@@ -280,6 +280,7 @@ export function testSpeedometerMovingAverage() {
   assertTrue(isNaN(speedometer.getCurrentSpeed()));
   assertTrue(isNaN(speedometer.getRemainingTime()));
 
+  // 1st sample, t=0s.
   mockDate.tick(1000);
   speedometer.update(100);
 
@@ -288,30 +289,45 @@ export function testSpeedometerMovingAverage() {
   assertTrue(isNaN(speedometer.getCurrentSpeed()));
   assertTrue(isNaN(speedometer.getRemainingTime()));
 
-  mockDate.tick(1000);
+  // Sample received less than a second after the previous one should be
+  // ignored.
+  mockDate.tick(999);
+  speedometer.update(300);
+
+  assertEquals(1, speedometer.getSampleCount());
+  assertTrue(isNaN(speedometer.getAverageSpeed()));
+  assertTrue(isNaN(speedometer.getCurrentSpeed()));
+  assertTrue(isNaN(speedometer.getRemainingTime()));
+
+  // From 2 samples, the average and the current speed can be computed.
+  // 2nd sample, t=1s.
+  mockDate.tick(1);
   speedometer.update(300);
 
   assertEquals(2, speedometer.getSampleCount());
   assertEquals(200, speedometer.getAverageSpeed());
-  assertTrue(isNaN(speedometer.getCurrentSpeed()));
-  assertTrue(isNaN(speedometer.getRemainingTime()));
+  assertEquals(200, Math.round(speedometer.getCurrentSpeed()));
+  assertEquals(9, Math.round(speedometer.getRemainingTime()));
 
+  // 3rd sample, t=2s.
   mockDate.tick(1000);
   speedometer.update(300);
 
   assertEquals(3, speedometer.getSampleCount());
   assertEquals(100, speedometer.getAverageSpeed());
-  assertTrue(isNaN(speedometer.getCurrentSpeed()));
-  assertTrue(isNaN(speedometer.getRemainingTime()));
+  assertEquals(100, Math.round(speedometer.getCurrentSpeed()));
+  assertEquals(17, Math.round(speedometer.getRemainingTime()));
 
+  // 4th sample, t=4s.
   mockDate.tick(2000);
   speedometer.update(300);
 
   assertEquals(4, speedometer.getSampleCount());
   assertEquals(50, speedometer.getAverageSpeed());
-  assertTrue(isNaN(speedometer.getCurrentSpeed()));
-  assertTrue(isNaN(speedometer.getRemainingTime()));
+  assertEquals(40, Math.round(speedometer.getCurrentSpeed()));
+  assertEquals(42, Math.round(speedometer.getRemainingTime()));
 
+  // 5th sample, t=5s.
   mockDate.tick(1000);
   speedometer.update(600);
 
