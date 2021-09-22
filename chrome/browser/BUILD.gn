@@ -4591,6 +4591,8 @@ static_library("browser") {
       "nearby_sharing/fast_initiation/fast_initiation_advertiser.h",
       "nearby_sharing/fast_initiation/fast_initiation_scanner.cc",
       "nearby_sharing/fast_initiation/fast_initiation_scanner.h",
+      "nearby_sharing/fast_initiation/fast_initiation_scanner_feature_usage_metrics.cc",
+      "nearby_sharing/fast_initiation/fast_initiation_scanner_feature_usage_metrics.h",
       "nearby_sharing/incoming_frames_reader.cc",
       "nearby_sharing/incoming_frames_reader.h",
       "nearby_sharing/incoming_share_target_info.cc",

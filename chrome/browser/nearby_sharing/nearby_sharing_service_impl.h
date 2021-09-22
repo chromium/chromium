@@ -26,6 +26,7 @@
 #include "chrome/browser/nearby_sharing/attachment_info.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
+#include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner_feature_usage_metrics.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
 #include "chrome/browser/nearby_sharing/incoming_share_target_info.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
@@ -430,6 +431,8 @@ class NearbySharingServiceImpl
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
   NearbyShareSettings settings_;
   NearbyShareFeatureUsageMetrics feature_usage_metrics_;
+  std::unique_ptr<FastInitiationScannerFeatureUsageMetrics>
+      fast_initiation_scanning_metrics_;
   NearbyFileHandler file_handler_;
   bool is_screen_locked_ = false;
   base::OneShotTimer rotate_background_advertisement_timer_;

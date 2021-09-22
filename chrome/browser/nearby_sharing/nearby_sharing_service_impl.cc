@@ -315,6 +315,11 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
 
+  if (IsBackgroundScanningFeatureEnabled()) {
+    fast_initiation_scanning_metrics_ =
+        std::make_unique<FastInitiationScannerFeatureUsageMetrics>(prefs_);
+  }
+
   RecordNearbyShareEnabledMetric(GetNearbyShareEnabledState(prefs_));
 
   auto* session_controller = ash::SessionController::Get();
@@ -1408,6 +1413,10 @@ void NearbySharingServiceImpl::OnGetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
   bluetooth_adapter_->AddObserver(this);
+
+  if (IsBackgroundScanningFeatureEnabled()) {
+    fast_initiation_scanning_metrics_->SetBluetoothAdapter(adapter);
+  }
 
   // TODO(crbug/1147652): The call to update the advertising interval is
   // removed to prevent a Bluez crash. We need to either reduce the global

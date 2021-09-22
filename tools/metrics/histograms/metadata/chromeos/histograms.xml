@@ -51,6 +51,12 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <owner>nohle@chromium.org</owner>
     <owner>nearby-share-chromeos-eng@google.com</owner>
   </variant>
+  <variant name="NearbyShareBackgroundScanning"
+      summary="Background scanning for Nearby Share to detect and notify the
+               user of devices nearby that are attempting to share">
+    <owner>hansenmichael@google.com</owner>
+    <owner>nearby-share-chromeos-eng@google.com</owner>
+  </variant>
   <variant name="StylusDetachedFromDockSession"
       summary="Time spent from stylus being undocked, to being re-docked">
     <owner>kenalba@google.com</owner>
