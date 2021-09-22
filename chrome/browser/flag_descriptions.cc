@@ -183,6 +183,15 @@ const char kEnableSignedExchangePrefetchCacheForNavigationsDescription[] =
     "a blob and the verification process of the signed exchange is skipped for "
     "the succeeding navigation.";
 
+const char kU2FPermissionPromptName[] =
+    "Enable a permission prompt for the U2F Security Key API";
+const char kU2FPermissionPromptDescription[] =
+    "Show a permission prompt when making requests to the legacy U2F Security "
+    "Key API (CryptoToken). The U2F Security "
+    "Key API has been deprecated and will be removed soon. For more "
+    "information, refer to the deprecation announcement at "
+    "https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A";
+
 const char kU2FSecurityKeyAPIName[] = "Enable the U2F Security Key API";
 const char kU2FSecurityKeyAPIDescription[] =
     "Enable the legacy U2F Security Key API (CryptoToken). The U2F Security "

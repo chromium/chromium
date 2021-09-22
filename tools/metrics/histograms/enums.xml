@@ -47630,6 +47630,7 @@ from previous Chrome versions.
       label="OmniboxKeywordSpaceTriggeringSetting:disabled"/>
   <int value="-1898386671" label="PasswordCheck:enabled"/>
   <int value="-1898229093" label="WebApkGenerator:enabled"/>
+  <int value="-1898129939" label="U2fPermissionPrompt:enabled"/>
   <int value="-1897800883" label="OpenscreenCastStreamingSession:enabled"/>
   <int value="-1896871201" label="CrossOriginOpenerPolicyReporting:enabled"/>
   <int value="-1896733769" label="CheckOfflineCapability:disabled"/>
@@ -47742,6 +47743,7 @@ from previous Chrome versions.
   <int value="-1827599944" label="QueryTilesLocalOrdering:enabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
+  <int value="-1824539611" label="U2fPermissionPrompt:disabled"/>
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
   <int value="-1823073826" label="TabGroupsSave:disabled"/>
   <int value="-1822825246" label="DragFromShelfToHomeOrOverview:enabled"/>

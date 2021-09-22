@@ -7723,6 +7723,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableOfferNotificationForPromoCodes)},
 
+    {"u2f-permission-prompt", flag_descriptions::kU2FPermissionPromptName,
+     flag_descriptions::kU2FPermissionPromptDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(device::kU2fPermissionPrompt)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

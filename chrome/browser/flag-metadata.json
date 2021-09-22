@@ -5466,6 +5466,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "u2f-permission-prompt",
+    "owners": [ "//device/fido/OWNERS" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "u2f-security-key-api",
     "owners": [ "//device/fido/OWNERS" ],
     "expiry_milestone": 104
