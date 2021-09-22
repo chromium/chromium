@@ -51,11 +51,9 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
                        const FloatPoint& page_pos,
                        const FloatSize& radius,
                        float rotation_angle,
-                       float force,
-                       String region) {
+                       float force) {
     return MakeGarbageCollected<Touch>(frame, target, identifier, screen_pos,
-                                       page_pos, radius, rotation_angle, force,
-                                       region);
+                                       page_pos, radius, rotation_angle, force);
   }
 
   static Touch* Create(const Document& document, const TouchInit* initializer) {
@@ -69,8 +67,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
         const FloatPoint& page_pos,
         const FloatSize& radius,
         float rotation_angle,
-        float force,
-        String region);
+        float force);
 
   Touch(EventTarget*,
         int identifier,
@@ -80,7 +77,6 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
         const FloatSize& radius,
         float rotation_angle,
         float force,
-        String region,
         LayoutPoint absolute_location);
 
   Touch(LocalFrame*, const TouchInit*);
@@ -98,7 +94,6 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
   float radiusY() const { return radius_.Height(); }
   float rotationAngle() const { return rotation_angle_; }
   float force() const { return force_; }
-  const String& region() const { return region_; }
 
   // Blink-internal methods
   const LayoutPoint& AbsoluteLocation() const { return absolute_location_; }
@@ -120,7 +115,6 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
   FloatSize radius_;
   float rotation_angle_;
   float force_;
-  String region_;
   // FIXME(rbyers): Shouldn't we be able to migrate callers to relying on
   // screenPos, pagePos or clientPos? absoluteLocation appears to be the same as
   // pagePos but without browser scale applied.

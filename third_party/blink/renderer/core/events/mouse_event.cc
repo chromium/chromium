@@ -153,7 +153,6 @@ MouseEvent::MouseEvent(const AtomicString& event_type,
       buttons_(initializer->buttons()),
       related_target_(initializer->relatedTarget()),
       synthetic_event_type_(synthetic_event_type),
-      region_(initializer->region()),
       menu_source_type_(menu_source_type) {
   InitCoordinates(initializer->clientX(), initializer->clientY());
   modifiers_ |= ButtonsToWebInputEventModifiers(buttons_);

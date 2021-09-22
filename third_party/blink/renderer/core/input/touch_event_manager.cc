@@ -172,7 +172,6 @@ Touch* TouchEventManager::CreateDomTouch(
     const TouchEventManager::TouchPointAttributes* point_attr,
     bool* known_target) {
   Node* touch_node = point_attr->target_;
-  String region_id = point_attr->region_;
   *known_target = false;
 
   LocalFrame* target_frame = nullptr;
@@ -221,7 +220,7 @@ Touch* TouchEventManager::CreateDomTouch(
       target_frame, touch_node, point_attr->event_.id,
       FloatPoint(transformed_event.PositionInScreen()), document_point,
       adjusted_radius, transformed_event.rotation_angle,
-      transformed_event.force, region_id);
+      transformed_event.force);
 }
 
 WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
@@ -520,7 +519,6 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
                            MakeGarbageCollected<TouchPointAttributes>(event));
 
   Node* touch_node = pointer_event_target.target_element;
-  String region = pointer_event_target.region;
 
   HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kTouchEvent |
                                                 HitTestRequest::kReadOnly |
@@ -564,7 +562,6 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
 
   TouchPointAttributes* attributes = touch_attribute_map_.at(event.id);
   attributes->target_ = touch_node;
-  attributes->region_ = region;
 
   TouchAction effective_touch_action =
       touch_action_util::ComputeEffectiveTouchAction(*touch_node);

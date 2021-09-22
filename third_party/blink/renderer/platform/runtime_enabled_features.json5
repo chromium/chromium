@@ -350,10 +350,6 @@
       status: "experimental",
     },
     {
-      name: "CanvasHitRegion",
-      status: "experimental",
-    },
-    {
       name: "CanvasImageSmoothing",
       status: "experimental",
     },

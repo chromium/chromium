@@ -5592,7 +5592,6 @@ interface MouseEvent : UIEvent
     getter offsetY
     getter pageX
     getter pageY
-    getter region
     getter relatedTarget
     getter screenX
     getter screenY
@@ -8723,7 +8722,6 @@ interface Touch
     getter pageY
     getter radiusX
     getter radiusY
-    getter region
     getter rotationAngle
     getter screenX
     getter screenY

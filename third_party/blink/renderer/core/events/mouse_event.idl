@@ -65,10 +65,6 @@
     [MeasureAs=MouseEventMovementX] readonly attribute long movementX;
     [MeasureAs=MouseEventMovementY] readonly attribute long movementY;
 
-    // Canvas Hit Regions
-    // https://html.spec.whatwg.org/C/#MouseEvent-partial
-    [RuntimeEnabled=CanvasHitRegion] readonly attribute DOMString? region;
-
     // Non-standard
     [MeasureAs=MouseEventFromElement] readonly attribute Node fromElement;
     [MeasureAs=MouseEventToElement] readonly attribute Node toElement;
