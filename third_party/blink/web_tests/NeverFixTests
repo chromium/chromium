@@ -1,5 +1,4 @@
-# tags: [ Android Fuchsia IOS IOS12.2 IOS13.0 Linux Mac Mac10.10 Mac10.11 Mac10.12
-#         Mac10.13 Win Win7 Win10.20h2 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Mac10.14 Mac10.15 Mac11.0 Mac11-arm64 Win Win7 Win10.20h2 ]
 # tags: [ Release Debug ]
 # results: [ Skip Pass ]
 
@@ -59,8 +58,6 @@ fast/harness/results.html [ Skip ]
 # Only maintain this for the latest macOS.
 [ Win ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
 [ Linux ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
-[ Mac10.10 ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
-[ Mac10.11 ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
 [ Mac10.12 ] virtual/text-antialias/mac-system-ui-trak.html [ Skip ]
 
 # Tests Mac system font specific weight variations.
@@ -118,8 +115,6 @@ fast/harness/results.html [ Skip ]
 # AAT Small Caps test not supported on platforms other than Mac 10.13.
 [ Linux ] virtual/text-antialias/small-caps-aat.html [ Skip ]
 [ Win ] virtual/text-antialias/small-caps-aat.html [ Skip ]
-[ Mac10.10 ] virtual/text-antialias/small-caps-aat.html [ Skip ]
-[ Mac10.11 ] virtual/text-antialias/small-caps-aat.html [ Skip ]
 [ Mac10.12 ] virtual/text-antialias/small-caps-aat.html [ Skip ]
 
 # Linux layout tests do not have a Myanmar fallback font.
@@ -257,8 +252,6 @@ crbug.com/551843 [ Win ] virtual/text-antialias/emoji-font-weight-mac.html [ Ski
 # Variable system font only supported on Mac 10.12 and newer atm.
 crbug.com/670246 [ Linux ] virtual/text-antialias/variable-fonts/variable-mac-system-font.html [ Skip ]
 crbug.com/670246 [ Win ] virtual/text-antialias/variable-fonts/variable-mac-system-font.html [ Skip ]
-crbug.com/670246 [ Mac10.10 ] virtual/text-antialias/variable-fonts/variable-mac-system-font.html [ Skip ]
-crbug.com/670246 [ Mac10.11 ] virtual/text-antialias/variable-fonts/variable-mac-system-font.html [ Skip ]
 
 # prefer_compositing_to_lcd_text causes things to get composited regardless of their opaqueness, causing the test to fail
 crbug.com/381840 virtual/prefer_compositing_to_lcd_text/compositing/overflow/overflow-scroll-background-opaque-to-transparent.html [ Skip ]
@@ -384,15 +377,6 @@ external/wpt/encrypted-media/clearkey-mp4-waiting-for-a-key.https.html [ Skip ]
 external/wpt/encrypted-media/clearkey-events-session-closed-event.https.html [ Skip ]
 external/wpt/encrypted-media/clearkey-update-non-ascii-input.https.html [ Skip ]
 external/wpt/media-source/mediasource-invalid-codec.html [ Skip ]
-
-# The hyphen character renders slightly differently from U+002D HYPHEN-MINUS.
-[ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-auto-inline-010.html [ Skip ]
-[ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-manual-011.html [ Skip ]
-[ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-manual-012.html [ Skip ]
-[ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-manual-013.html [ Skip ]
-[ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-manual-inline-011.html [ Skip ]
-[ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-manual-inline-012.html [ Skip ]
-[ Mac10.10 ] external/wpt/css/css-text/hyphens/hyphens-none-013.html [ Skip ]
 
 # No browsers implemented the spec behavior, not web compatible, no consensus.
 # https://github.com/w3c/csswg-drafts/issues/1518
