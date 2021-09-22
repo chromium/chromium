@@ -73,11 +73,6 @@ void BackgroundFetchRegistration::OnProgress(
   result_ = result;
   failure_reason_ = failure_reason;
 
-  ExecutionContext* context = GetExecutionContext();
-  if (!context || context->IsContextDestroyed())
-    return;
-
-  DCHECK(context->IsContextThread());
   DispatchEvent(*Event::Create(event_type_names::kProgress));
 }
 
