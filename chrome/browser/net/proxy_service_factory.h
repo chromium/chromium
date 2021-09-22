@@ -11,6 +11,7 @@
 
 class PrefProxyConfigTracker;
 class PrefService;
+class Profile;
 
 namespace net {
 class ProxyConfigService;
@@ -19,9 +20,10 @@ class ProxyConfigService;
 class ProxyServiceFactory {
  public:
   // Creates a ProxyConfigService that delivers the system preferences
-  // (or the respective ChromeOS equivalent).
+  // (or the respective Ash-Chrome equivalent).
   static std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
-      PrefProxyConfigTracker* tracker);
+      PrefProxyConfigTracker* tracker,
+      Profile* profile);
 
   // Creates a PrefProxyConfigTracker that tracks preferences of a
   // profile. On ChromeOS it additionaly tracks local state for shared proxy

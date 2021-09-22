@@ -418,6 +418,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_prefs.h"
+#include "chrome/browser/lacros/net/proxy_config_service_lacros.h"
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1356,6 +1357,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   lacros_prefs::RegisterProfilePrefs(registry);
+  chromeos::ProxyConfigServiceLacros::RegisterProfilePrefs(registry);
 #endif
 
 #if defined(OS_WIN)
