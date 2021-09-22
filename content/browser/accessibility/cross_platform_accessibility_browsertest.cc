@@ -807,6 +807,52 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
 
+// Select controls behave differently on Mac/Android, this test doesn't apply.
+#if !defined(OS_ANDROID) && !defined(OS_MAC)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       SelectListWithOptgroupActiveDescendant) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <select autofocus size="8" aria-label="Select">
+          <optgroup label="A">
+            <option>Option 1</option>
+          </optgroup>
+          <optgroup label="B">
+            <option selected>Option 2</option>
+            <option>Option 3</option>
+          </optgroup>
+        </select>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Select");
+
+  const BrowserAccessibility* root = GetManager()->GetRoot();
+  ASSERT_NE(root, nullptr);
+  const BrowserAccessibility* body = root->PlatformGetChild(0);
+  ASSERT_NE(body, nullptr);
+  BrowserAccessibility* select = body->PlatformGetChild(0);
+  ASSERT_NE(select, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kListBox, select->GetRole());
+
+  // Get "Option 2".
+  const BrowserAccessibility* option_2 = select->PlatformGetChild(3);
+  ASSERT_NE(option_2, nullptr);
+  EXPECT_EQ(ax::mojom::Role::kListBoxOption, option_2->GetRole());
+  EXPECT_EQ("Option 2",
+            option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+  // Ensure active descendant is "Option 2"
+  int active_descendant_id = -1;
+  EXPECT_TRUE(select->GetIntAttribute(
+      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
+  EXPECT_EQ(active_descendant_id, option_2->GetId());
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(

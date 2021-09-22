@@ -201,6 +201,7 @@ AXObject* AXMenuListPopup::ActiveDescendant() {
     return nullptr;
 
   HTMLOptionElement* option = select->item(active_index_);
+  DCHECK(option);
   return AXObjectCache().Get(option);
 }
 
