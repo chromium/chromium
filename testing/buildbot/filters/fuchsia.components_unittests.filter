@@ -513,7 +513,7 @@
 -URLBlocklistPolicyHandlerTest.ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitExceeded*
 -URLBlocklistPolicyHandlerTest.CheckPolicySettings_DisabledSchemesWrong*
 -URLBlocklistPolicyHandlerTest.CheckPolicySettings_URLBlocklistWrong*
--UserAgentUtilsTest.UserAgentStringOrdering
+-All/UserAgentUtilsTest.UserAgentStringOrdering/*
 -Voice*
 -WebAppOriginAssociationFetcher*
 -Zero*
