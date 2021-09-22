@@ -1419,6 +1419,7 @@
                         "unload_support": "opt_in_header_required"
                     },
                     "enable_features": [
+                        "BFCachePerformanceManagerPolicy",
                         "BackForwardCache",
                         "LoadingTasksUnfreezable"
                     ]
