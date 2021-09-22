@@ -35,6 +35,11 @@ class TestEffectiveConnectionTypeObserver
     tracker_->AddEffectiveConnectionTypeObserver(this);
   }
 
+  TestEffectiveConnectionTypeObserver(
+      const TestEffectiveConnectionTypeObserver&) = delete;
+  TestEffectiveConnectionTypeObserver& operator=(
+      const TestEffectiveConnectionTypeObserver&) = delete;
+
   ~TestEffectiveConnectionTypeObserver() override {
     tracker_->RemoveEffectiveConnectionTypeObserver(this);
   }
@@ -81,8 +86,6 @@ class TestEffectiveConnectionTypeObserver
   std::unique_ptr<base::RunLoop> run_loop_;
   net::EffectiveConnectionType expected_effective_connection_type_;
   net::EffectiveConnectionType effective_connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEffectiveConnectionTypeObserver);
 };
 
 class TestRTTAndThroughputEstimatesObserver
@@ -94,6 +97,11 @@ class TestRTTAndThroughputEstimatesObserver
         downstream_throughput_kbps_(std::numeric_limits<int32_t>::max()) {
     tracker_->AddRTTAndThroughputEstimatesObserver(this);
   }
+
+  TestRTTAndThroughputEstimatesObserver(
+      const TestRTTAndThroughputEstimatesObserver&) = delete;
+  TestRTTAndThroughputEstimatesObserver& operator=(
+      const TestRTTAndThroughputEstimatesObserver&) = delete;
 
   ~TestRTTAndThroughputEstimatesObserver() override {
     tracker_->RemoveRTTAndThroughputEstimatesObserver(this);
@@ -159,8 +167,6 @@ class TestRTTAndThroughputEstimatesObserver
   base::TimeDelta transport_rtt_;
   int32_t downstream_throughput_kbps_;
   base::TimeDelta http_rtt_notification_wait_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRTTAndThroughputEstimatesObserver);
 };
 
 }  // namespace
@@ -180,6 +186,10 @@ class NetworkQualityTrackerTest : public testing::Test {
     rtt_throughput_observer_ =
         std::make_unique<TestRTTAndThroughputEstimatesObserver>(tracker_.get());
   }
+
+  NetworkQualityTrackerTest(const NetworkQualityTrackerTest&) = delete;
+  NetworkQualityTrackerTest& operator=(const NetworkQualityTrackerTest&) =
+      delete;
 
   ~NetworkQualityTrackerTest() override {}
 
@@ -214,8 +224,6 @@ class NetworkQualityTrackerTest : public testing::Test {
   std::unique_ptr<TestEffectiveConnectionTypeObserver> ect_observer_;
   std::unique_ptr<TestRTTAndThroughputEstimatesObserver>
       rtt_throughput_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityTrackerTest);
 };
 
 TEST_F(NetworkQualityTrackerTest, ECTObserverNotified) {

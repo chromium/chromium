@@ -35,6 +35,10 @@ namespace cors {
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
  public:
   PreflightCache();
+
+  PreflightCache(const PreflightCache&) = delete;
+  PreflightCache& operator=(const PreflightCache&) = delete;
+
   ~PreflightCache();
 
   // Appends new |preflight_result| entry to the cache for a specified |origin|
@@ -73,8 +77,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
                       net::NetworkIsolationKey /* NIK */>,
            std::unique_ptr<PreflightResult>>
       cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreflightCache);
 };
 
 }  // namespace cors

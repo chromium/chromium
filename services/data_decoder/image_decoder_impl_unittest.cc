@@ -92,10 +92,10 @@ class BlinkInitializer : public blink::Platform {
     blink::CreateMainThreadAndInitialize(this, &binders);
   }
 
-  ~BlinkInitializer() override = default;
+  BlinkInitializer(const BlinkInitializer&) = delete;
+  BlinkInitializer& operator=(const BlinkInitializer&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlinkInitializer);
+  ~BlinkInitializer() override = default;
 };
 
 base::LazyInstance<BlinkInitializer>::Leaky g_blink_initializer =

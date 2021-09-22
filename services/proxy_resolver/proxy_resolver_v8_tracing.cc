@@ -313,6 +313,10 @@ class ProxyResolverV8TracingImpl : public ProxyResolverV8Tracing {
                              std::unique_ptr<ProxyResolverV8> resolver,
                              std::unique_ptr<Job::Params> job_params);
 
+  ProxyResolverV8TracingImpl(const ProxyResolverV8TracingImpl&) = delete;
+  ProxyResolverV8TracingImpl& operator=(const ProxyResolverV8TracingImpl&) =
+      delete;
+
   ~ProxyResolverV8TracingImpl() override;
 
   // ProxyResolverV8Tracing overrides.
@@ -344,8 +348,6 @@ class ProxyResolverV8TracingImpl : public ProxyResolverV8Tracing {
   int num_outstanding_callbacks_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverV8TracingImpl);
 };
 
 Job::Job(const Job::Params* params,
@@ -988,6 +990,12 @@ void ProxyResolverV8TracingImpl::GetProxyForURL(
 class ProxyResolverV8TracingFactoryImpl : public ProxyResolverV8TracingFactory {
  public:
   ProxyResolverV8TracingFactoryImpl();
+
+  ProxyResolverV8TracingFactoryImpl(const ProxyResolverV8TracingFactoryImpl&) =
+      delete;
+  ProxyResolverV8TracingFactoryImpl& operator=(
+      const ProxyResolverV8TracingFactoryImpl&) = delete;
+
   ~ProxyResolverV8TracingFactoryImpl() override;
 
   void CreateProxyResolverV8Tracing(
@@ -1003,8 +1011,6 @@ class ProxyResolverV8TracingFactoryImpl : public ProxyResolverV8TracingFactory {
   void RemoveJob(CreateJob* job);
 
   std::set<CreateJob*> jobs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverV8TracingFactoryImpl);
 };
 
 class ProxyResolverV8TracingFactoryImpl::CreateJob
@@ -1033,6 +1039,9 @@ class ProxyResolverV8TracingFactoryImpl::CreateJob
             &ProxyResolverV8TracingFactoryImpl::CreateJob::OnV8ResolverCreated,
             base::Unretained(this)));
   }
+
+  CreateJob(const CreateJob&) = delete;
+  CreateJob& operator=(const CreateJob&) = delete;
 
   ~CreateJob() override {
     if (factory_) {
@@ -1082,8 +1091,6 @@ class ProxyResolverV8TracingFactoryImpl::CreateJob
   std::unique_ptr<ProxyResolverV8Tracing>* resolver_out_;
   net::CompletionOnceCallback callback_;
   int num_outstanding_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreateJob);
 };
 
 ProxyResolverV8TracingFactoryImpl::ProxyResolverV8TracingFactoryImpl() =

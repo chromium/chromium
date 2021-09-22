@@ -127,6 +127,10 @@ class TimeSourceInputControllerTest : public ::testing::Test {
                 kSampleRate,
                 kSamplesPerPacket) {}
 
+  TimeSourceInputControllerTest(const TimeSourceInputControllerTest&) = delete;
+  TimeSourceInputControllerTest& operator=(
+      const TimeSourceInputControllerTest&) = delete;
+
   ~TimeSourceInputControllerTest() override {
     audio_manager_->Shutdown();
     task_environment_.RunUntilIdle();
@@ -152,9 +156,6 @@ class TimeSourceInputControllerTest : public ::testing::Test {
   media::AudioParameters params_;
   MockAudioInputStream stream_;
   base::test::ScopedFeatureList audio_processing_feature_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TimeSourceInputControllerTest);
 };
 
 using SystemTimeInputControllerTest = TimeSourceInputControllerTest<

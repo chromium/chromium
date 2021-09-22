@@ -25,14 +25,17 @@ class FakePositionChangedEventArgs
  public:
   explicit FakePositionChangedEventArgs(
       std::unique_ptr<FakeGeocoordinateData> position_data);
+
+  FakePositionChangedEventArgs(const FakePositionChangedEventArgs&) = delete;
+  FakePositionChangedEventArgs& operator=(const FakePositionChangedEventArgs&) =
+      delete;
+
   ~FakePositionChangedEventArgs() override;
   IFACEMETHODIMP get_Position(
       ABI::Windows::Devices::Geolocation::IGeoposition** value) override;
 
  private:
   std::unique_ptr<FakeGeocoordinateData> position_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePositionChangedEventArgs);
 };
 
 }  // namespace device

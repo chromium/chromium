@@ -82,6 +82,9 @@ class SynchronousCookieManager {
   explicit SynchronousCookieManager(mojom::CookieManager* cookie_service)
       : cookie_service_(cookie_service), callback_counter_(0) {}
 
+  SynchronousCookieManager(const SynchronousCookieManager&) = delete;
+  SynchronousCookieManager& operator=(const SynchronousCookieManager&) = delete;
+
   ~SynchronousCookieManager() = default;
 
   std::vector<net::CanonicalCookie> GetAllCookies() {
@@ -296,8 +299,6 @@ class SynchronousCookieManager {
  private:
   mojom::CookieManager* cookie_service_;
   uint32_t callback_counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousCookieManager);
 };
 
 class CookieManagerTest : public testing::Test {
@@ -306,6 +307,9 @@ class CookieManagerTest : public testing::Test {
     scoped_feature_list_.Init();
     InitializeCookieService(nullptr, nullptr);
   }
+
+  CookieManagerTest(const CookieManagerTest&) = delete;
+  CookieManagerTest& operator=(const CookieManagerTest&) = delete;
 
   ~CookieManagerTest() override = default;
 
@@ -426,8 +430,6 @@ class CookieManagerTest : public testing::Test {
   std::unique_ptr<CookieManager> cookie_service_;
   mojo::Remote<mojom::CookieManager> cookie_service_remote_;
   std::unique_ptr<SynchronousCookieManager> service_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieManagerTest);
 };
 
 bool CompareCanonicalCookies(const net::CanonicalCookie& c1,

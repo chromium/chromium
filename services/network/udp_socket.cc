@@ -39,6 +39,10 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
                     net::NetLog* net_log,
                     const net::NetLogSource& source)
       : socket_(bind_type, net_log, source) {}
+
+  SocketWrapperImpl(const SocketWrapperImpl&) = delete;
+  SocketWrapperImpl& operator=(const SocketWrapperImpl&) = delete;
+
   ~SocketWrapperImpl() override {}
 
   int Connect(const net::IPEndPoint& remote_addr,
@@ -142,8 +146,6 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
   }
 
   net::UDPSocket socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketWrapperImpl);
 };
 
 }  // namespace

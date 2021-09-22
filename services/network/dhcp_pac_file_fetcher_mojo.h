@@ -38,6 +38,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DhcpPacFileFetcherMojo
                          mojo::PendingRemote<network::mojom::DhcpWpadUrlClient>
                              dhcp_wpad_url_client);
 
+  DhcpPacFileFetcherMojo(const DhcpPacFileFetcherMojo&) = delete;
+  DhcpPacFileFetcherMojo& operator=(const DhcpPacFileFetcherMojo&) = delete;
+
   ~DhcpPacFileFetcherMojo() override;
 
   // DhcpPacFileFetcher implementation
@@ -68,8 +71,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DhcpPacFileFetcherMojo
   mojo::Remote<network::mojom::DhcpWpadUrlClient> dhcp_wpad_url_client_;
 
   base::WeakPtrFactory<DhcpPacFileFetcherMojo> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DhcpPacFileFetcherMojo);
 };
 
 }  // namespace network

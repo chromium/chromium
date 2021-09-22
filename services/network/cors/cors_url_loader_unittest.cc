@@ -65,6 +65,10 @@ constexpr char kTestCorsExemptHeader[] = "x-test-cors-exempt";
 class TestURLLoaderFactory : public mojom::URLLoaderFactory {
  public:
   TestURLLoaderFactory() {}
+
+  TestURLLoaderFactory(const TestURLLoaderFactory&) = delete;
+  TestURLLoaderFactory& operator=(const TestURLLoaderFactory&) = delete;
+
   ~TestURLLoaderFactory() override = default;
 
   base::WeakPtr<TestURLLoaderFactory> GetWeakPtr() {
@@ -159,8 +163,6 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
   base::RepeatingClosure on_create_loader_and_start_;
 
   base::WeakPtrFactory<TestURLLoaderFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLLoaderFactory);
 };
 
 class CorsURLLoaderTest : public testing::Test {
@@ -473,6 +475,9 @@ class BadMessageTestHelper {
         &BadMessageTestHelper::OnBadMessage, base::Unretained(this)));
   }
 
+  BadMessageTestHelper(const BadMessageTestHelper&) = delete;
+  BadMessageTestHelper& operator=(const BadMessageTestHelper&) = delete;
+
   ~BadMessageTestHelper() {
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
@@ -490,8 +495,6 @@ class BadMessageTestHelper {
 
   mojo::Message dummy_message_;
   mojo::internal::MessageDispatchContext context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BadMessageTestHelper);
 };
 
 TEST_F(CorsURLLoaderTest, NoCorsWithInvalidMethod) {

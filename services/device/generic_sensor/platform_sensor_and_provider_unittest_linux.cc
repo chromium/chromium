@@ -90,6 +90,9 @@ double RoundGyroscopeValue(double value) {
 // to SensorDeviceManager.
 class MockSensorDeviceManager : public SensorDeviceManager {
  public:
+  MockSensorDeviceManager(const MockSensorDeviceManager&) = delete;
+  MockSensorDeviceManager& operator=(const MockSensorDeviceManager&) = delete;
+
   ~MockSensorDeviceManager() override = default;
 
   // static
@@ -159,8 +162,6 @@ class MockSensorDeviceManager : public SensorDeviceManager {
 
  private:
   base::ScopedTempDir sensors_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSensorDeviceManager);
 };
 
 // Mock for PlatformSensor's client interface that is used to deliver
@@ -175,6 +176,10 @@ class LinuxMockPlatformSensorClient : public PlatformSensor::Client {
     ON_CALL(*this, IsSuspended()).WillByDefault(Return(false));
   }
 
+  LinuxMockPlatformSensorClient(const LinuxMockPlatformSensorClient&) = delete;
+  LinuxMockPlatformSensorClient& operator=(
+      const LinuxMockPlatformSensorClient&) = delete;
+
   ~LinuxMockPlatformSensorClient() override {
     if (sensor_)
       sensor_->RemoveClient(this);
@@ -187,8 +192,6 @@ class LinuxMockPlatformSensorClient : public PlatformSensor::Client {
 
  private:
   scoped_refptr<PlatformSensor> sensor_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinuxMockPlatformSensorClient);
 };
 
 class PlatformSensorAndProviderLinuxTest : public ::testing::Test {

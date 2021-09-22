@@ -162,6 +162,9 @@ class BatteryStatusObserver {
   explicit BatteryStatusObserver(const BatteryCallback& callback)
       : callback_(callback) {}
 
+  BatteryStatusObserver(const BatteryStatusObserver&) = delete;
+  BatteryStatusObserver& operator=(const BatteryStatusObserver&) = delete;
+
   ~BatteryStatusObserver() { DCHECK(!notifier_run_loop_source_); }
 
   void Start() {
@@ -198,14 +201,15 @@ class BatteryStatusObserver {
 
   BatteryCallback callback_;
   base::ScopedCFTypeRef<CFRunLoopSourceRef> notifier_run_loop_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusObserver);
 };
 
 class BatteryStatusManagerMac : public BatteryStatusManager {
  public:
   explicit BatteryStatusManagerMac(const BatteryCallback& callback)
       : notifier_(std::make_unique<BatteryStatusObserver>(callback)) {}
+
+  BatteryStatusManagerMac(const BatteryStatusManagerMac&) = delete;
+  BatteryStatusManagerMac& operator=(const BatteryStatusManagerMac&) = delete;
 
   ~BatteryStatusManagerMac() override { notifier_->Stop(); }
 
@@ -219,8 +223,6 @@ class BatteryStatusManagerMac : public BatteryStatusManager {
 
  private:
   std::unique_ptr<BatteryStatusObserver> notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusManagerMac);
 };
 
 }  // namespace

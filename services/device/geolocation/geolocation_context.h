@@ -24,6 +24,10 @@ class GeolocationImpl;
 class GeolocationContext : public mojom::GeolocationContext {
  public:
   GeolocationContext();
+
+  GeolocationContext(const GeolocationContext&) = delete;
+  GeolocationContext& operator=(const GeolocationContext&) = delete;
+
   ~GeolocationContext() override;
 
   // Creates GeolocationContext that is strongly bound to |receiver|.
@@ -43,8 +47,6 @@ class GeolocationContext : public mojom::GeolocationContext {
   std::vector<std::unique_ptr<GeolocationImpl>> impls_;
 
   mojom::GeopositionPtr geoposition_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationContext);
 };
 
 }  // namespace device

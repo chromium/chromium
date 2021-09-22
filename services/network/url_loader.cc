@@ -183,12 +183,13 @@ class BytesElementReader : public net::UploadBytesElementReader {
                                       element.AsStringPiece().size()),
         resource_request_body_(resource_request_body) {}
 
+  BytesElementReader(const BytesElementReader&) = delete;
+  BytesElementReader& operator=(const BytesElementReader&) = delete;
+
   ~BytesElementReader() override {}
 
  private:
   scoped_refptr<ResourceRequestBody> resource_request_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(BytesElementReader);
 };
 
 // A subclass of net::UploadFileElementReader which owns
@@ -209,12 +210,13 @@ class FileElementReader : public net::UploadFileElementReader {
                                      element.expected_modification_time()),
         resource_request_body_(resource_request_body) {}
 
+  FileElementReader(const FileElementReader&) = delete;
+  FileElementReader& operator=(const FileElementReader&) = delete;
+
   ~FileElementReader() override {}
 
  private:
   scoped_refptr<ResourceRequestBody> resource_request_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileElementReader);
 };
 
 std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
@@ -681,6 +683,9 @@ class URLLoader::FileOpenerForUpload {
     StartOpeningNextBatch();
   }
 
+  FileOpenerForUpload(const FileOpenerForUpload&) = delete;
+  FileOpenerForUpload& operator=(const FileOpenerForUpload&) = delete;
+
   ~FileOpenerForUpload() {
     if (!opened_files_.empty())
       PostCloseFiles(std::move(opened_files_));
@@ -759,8 +764,6 @@ class URLLoader::FileOpenerForUpload {
   std::vector<base::File> opened_files_;
 
   base::WeakPtrFactory<FileOpenerForUpload> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileOpenerForUpload);
 };
 
 void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {

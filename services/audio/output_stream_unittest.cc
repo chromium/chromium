@@ -126,6 +126,9 @@ class TestEnvironment {
     mojo::SetDefaultProcessErrorHandler(bad_message_callback_.Get());
   }
 
+  TestEnvironment(const TestEnvironment&) = delete;
+  TestEnvironment& operator=(const TestEnvironment&) = delete;
+
   ~TestEnvironment() {
     audio_manager_.Shutdown();
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
@@ -189,8 +192,6 @@ class TestEnvironment {
   NiceMock<MockLog> log_;
   StrictMock<MockCreatedCallback> created_callback_;
   StrictMock<MockBadMessageCallback> bad_message_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEnvironment);
 };
 
 TEST(AudioServiceOutputStreamTest, ConstructDestruct) {

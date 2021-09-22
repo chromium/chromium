@@ -26,6 +26,10 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       ProcessDump {
    public:
     ProcessDump(mojom::ProcessMemoryDumpPtr process_memory_dump);
+
+    ProcessDump(const ProcessDump&) = delete;
+    ProcessDump& operator=(const ProcessDump&) = delete;
+
     ~ProcessDump();
 
     // Returns the metric for the given dump name and metric name. For example,
@@ -44,8 +48,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
    private:
     mojom::ProcessMemoryDumpPtr raw_dump_;
-
-    DISALLOW_COPY_AND_ASSIGN(ProcessDump);
   };
 
  public:
@@ -53,6 +55,10 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
       AggregatedMetrics {
    public:
     explicit AggregatedMetrics(mojom::AggregatedMetricsPtr aggregated_metrics);
+
+    AggregatedMetrics(const AggregatedMetrics&) = delete;
+    AggregatedMetrics& operator=(const AggregatedMetrics&) = delete;
+
     ~AggregatedMetrics();
 
     int32_t native_library_resident_kb() const {
@@ -71,8 +77,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
    private:
     const mojom::AggregatedMetricsPtr aggregated_metrics_;
-
-    DISALLOW_COPY_AND_ASSIGN(AggregatedMetrics);
   };
 
   ~GlobalMemoryDump();

@@ -32,6 +32,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocketFactory {
   // pools by instantiating and owning a separate |network_session_|.
   explicit ProxyResolvingClientSocketFactory(
       net::URLRequestContext* request_context);
+
+  ProxyResolvingClientSocketFactory(const ProxyResolvingClientSocketFactory&) =
+      delete;
+  ProxyResolvingClientSocketFactory& operator=(
+      const ProxyResolvingClientSocketFactory&) = delete;
+
   ~ProxyResolvingClientSocketFactory();
 
   // Creates a socket. |url|'s host and port specify where a connection will be
@@ -60,8 +66,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocketFactory {
   net::URLRequestContext* request_context_;
   std::unique_ptr<net::ConnectJobFactory> connect_job_factory_ =
       std::make_unique<net::ConnectJobFactory>();
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingClientSocketFactory);
 };
 
 }  // namespace network

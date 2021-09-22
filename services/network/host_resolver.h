@@ -49,6 +49,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   // mojom::HostResolver pipe, eg because it is handling ResolveHost requests
   // made directly on NetworkContext.
   HostResolver(net::HostResolver* internal_resolver, net::NetLog* net_log);
+
+  HostResolver(const HostResolver&) = delete;
+  HostResolver& operator=(const HostResolver&) = delete;
+
   ~HostResolver() override;
 
   void ResolveHost(
@@ -86,8 +90,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   net::NetLog* const net_log_;
 
   base::WeakPtrFactory<HostResolver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolver);
 };
 
 }  // namespace network

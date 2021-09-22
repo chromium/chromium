@@ -92,6 +92,10 @@ class Annotator : public mojom::Annotator {
             double min_ocr_confidence,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
             std::unique_ptr<Client> client);
+
+  Annotator(const Annotator&) = delete;
+  Annotator& operator=(const Annotator&) = delete;
+
   ~Annotator() override;
 
   // Start providing behavior for the given Mojo receiver.
@@ -291,8 +295,6 @@ class Annotator : public mojom::Annotator {
 
   // Used for all callbacks.
   base::WeakPtrFactory<Annotator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Annotator);
 };
 
 }  // namespace image_annotation

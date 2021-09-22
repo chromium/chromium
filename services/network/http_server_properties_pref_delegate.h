@@ -20,6 +20,12 @@ class HttpServerPropertiesPrefDelegate
  public:
   // The created object must be destroyed before |pref_service|.
   explicit HttpServerPropertiesPrefDelegate(PrefService* pref_service);
+
+  HttpServerPropertiesPrefDelegate(const HttpServerPropertiesPrefDelegate&) =
+      delete;
+  HttpServerPropertiesPrefDelegate& operator=(
+      const HttpServerPropertiesPrefDelegate&) = delete;
+
   ~HttpServerPropertiesPrefDelegate() override;
 
   static void RegisterPrefs(PrefRegistrySimple* pref_registry);
@@ -33,8 +39,6 @@ class HttpServerPropertiesPrefDelegate
  private:
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpServerPropertiesPrefDelegate);
 };
 
 }  // namespace network

@@ -35,6 +35,11 @@ class ConditionalCacheDeletionHelper {
       const base::Time& end_time,
       base::OnceClosure completion_callback);
 
+  ConditionalCacheDeletionHelper(const ConditionalCacheDeletionHelper&) =
+      delete;
+  ConditionalCacheDeletionHelper& operator=(
+      const ConditionalCacheDeletionHelper&) = delete;
+
   ~ConditionalCacheDeletionHelper();
 
  private:
@@ -55,8 +60,6 @@ class ConditionalCacheDeletionHelper {
   disk_cache::Entry* previous_entry_ = nullptr;
 
   base::WeakPtrFactory<ConditionalCacheDeletionHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConditionalCacheDeletionHelper);
 };
 
 }  // namespace network

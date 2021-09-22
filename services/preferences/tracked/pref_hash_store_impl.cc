@@ -48,6 +48,11 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
   // members of its |outer| PrefHashStoreImpl.
   PrefHashStoreTransactionImpl(PrefHashStoreImpl* outer,
                                HashStoreContents* storage);
+
+  PrefHashStoreTransactionImpl(const PrefHashStoreTransactionImpl&) = delete;
+  PrefHashStoreTransactionImpl& operator=(const PrefHashStoreTransactionImpl&) =
+      delete;
+
   ~PrefHashStoreTransactionImpl() override;
 
   // PrefHashStoreTransaction implementation.
@@ -73,8 +78,6 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
 
   bool super_mac_valid_;
   bool super_mac_dirty_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefHashStoreTransactionImpl);
 };
 
 PrefHashStoreImpl::PrefHashStoreImpl(const std::string& seed,

@@ -144,6 +144,10 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
       base::ScopedFD lifeline_fd,
       scoped_refptr<UsbDeviceHandleUsbfs> device_handle,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
   ~BlockingTaskRunnerHelper();
 
   void Start();
@@ -168,8 +172,6 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> watch_controller_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
 };
 
 struct UsbDeviceHandleUsbfs::Transfer final {

@@ -28,6 +28,11 @@ class AudioSystemToServiceAdapterTestBase : public testing::Test {
  public:
   AudioSystemToServiceAdapterTestBase() {}
 
+  AudioSystemToServiceAdapterTestBase(
+      const AudioSystemToServiceAdapterTestBase&) = delete;
+  AudioSystemToServiceAdapterTestBase& operator=(
+      const AudioSystemToServiceAdapterTestBase&) = delete;
+
   ~AudioSystemToServiceAdapterTestBase() override {}
 
   void SetUp() override {
@@ -75,8 +80,6 @@ class AudioSystemToServiceAdapterTestBase : public testing::Test {
     system_info_bind_requested_.Call();
     system_info_receiver_->Bind(std::move(receiver));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSystemToServiceAdapterTestBase);
 };
 
 // Base fixture for connection loss tests.
@@ -84,6 +87,11 @@ class AudioSystemToServiceAdapterConnectionLossTest
     : public AudioSystemToServiceAdapterTestBase {
  public:
   AudioSystemToServiceAdapterConnectionLossTest() {}
+
+  AudioSystemToServiceAdapterConnectionLossTest(
+      const AudioSystemToServiceAdapterConnectionLossTest&) = delete;
+  AudioSystemToServiceAdapterConnectionLossTest& operator=(
+      const AudioSystemToServiceAdapterConnectionLossTest&) = delete;
 
   ~AudioSystemToServiceAdapterConnectionLossTest() override {}
 
@@ -209,8 +217,6 @@ class AudioSystemToServiceAdapterConnectionLossTest
   media::AudioParameters params_;
   media::AudioDeviceDescriptions device_descriptions_;
   media::AudioSystemCallbackExpectations expectations_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSystemToServiceAdapterConnectionLossTest);
 };
 
 // This test covers various scenarios of connection loss/restore, and the

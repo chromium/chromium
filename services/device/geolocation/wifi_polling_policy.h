@@ -15,6 +15,9 @@ namespace device {
 // Allows sharing and mocking of the update polling policy function.
 class WifiPollingPolicy {
  public:
+  WifiPollingPolicy(const WifiPollingPolicy&) = delete;
+  WifiPollingPolicy& operator=(const WifiPollingPolicy&) = delete;
+
   virtual ~WifiPollingPolicy() = default;
 
   // Methods for managing the single instance of WifiPollingPolicy. The WiFi
@@ -51,9 +54,6 @@ class WifiPollingPolicy {
 
  protected:
   WifiPollingPolicy() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiPollingPolicy);
 };
 
 // Generic polling policy, constants are compile-time parameterized to allow

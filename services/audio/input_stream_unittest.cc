@@ -126,6 +126,10 @@ class AudioServiceInputStreamTest : public testing::Test {
             &stream_factory_,
             remote_stream_factory_.BindNewPipeAndPassReceiver()) {}
 
+  AudioServiceInputStreamTest(const AudioServiceInputStreamTest&) = delete;
+  AudioServiceInputStreamTest& operator=(const AudioServiceInputStreamTest&) =
+      delete;
+
   ~AudioServiceInputStreamTest() override { audio_manager_.Shutdown(); }
 
   void SetUp() override {
@@ -205,8 +209,6 @@ class AudioServiceInputStreamTest : public testing::Test {
   StrictMock<MockStreamClient> client_;
   StrictMock<MockStreamObserver> observer_;
   NiceMock<MockLog> log_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioServiceInputStreamTest);
 };
 
 TEST_F(AudioServiceInputStreamTest, ConstructDestruct) {

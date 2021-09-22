@@ -118,6 +118,11 @@ class RestrictedCookieManagerSync {
   explicit RestrictedCookieManagerSync(
       mojom::RestrictedCookieManager* cookie_service)
       : cookie_service_(cookie_service) {}
+
+  RestrictedCookieManagerSync(const RestrictedCookieManagerSync&) = delete;
+  RestrictedCookieManagerSync& operator=(const RestrictedCookieManagerSync&) =
+      delete;
+
   ~RestrictedCookieManagerSync() = default;
 
   // Wraps GetAllForUrl() but discards CookieAccessResult from returned cookies.
@@ -181,8 +186,6 @@ class RestrictedCookieManagerSync {
 
  private:
   mojom::RestrictedCookieManager* cookie_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(RestrictedCookieManagerSync);
 };
 
 class RestrictedCookieManagerTest

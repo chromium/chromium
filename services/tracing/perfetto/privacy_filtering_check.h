@@ -25,6 +25,10 @@ class PrivacyFilteringCheck {
   };
 
   PrivacyFilteringCheck();
+
+  PrivacyFilteringCheck(const PrivacyFilteringCheck&) = delete;
+  PrivacyFilteringCheck& operator=(const PrivacyFilteringCheck&) = delete;
+
   ~PrivacyFilteringCheck();
 
   // Removes disallowed fields from the trace.
@@ -36,8 +40,6 @@ class PrivacyFilteringCheck {
 
  private:
   TraceStats stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrivacyFilteringCheck);
 };
 
 }  // namespace tracing

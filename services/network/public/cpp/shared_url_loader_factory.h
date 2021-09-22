@@ -58,6 +58,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) SharedURLLoaderFactory
 class COMPONENT_EXPORT(NETWORK_CPP) PendingSharedURLLoaderFactory {
  public:
   PendingSharedURLLoaderFactory();
+
+  PendingSharedURLLoaderFactory(const PendingSharedURLLoaderFactory&) = delete;
+  PendingSharedURLLoaderFactory& operator=(
+      const PendingSharedURLLoaderFactory&) = delete;
+
   virtual ~PendingSharedURLLoaderFactory();
 
  protected:
@@ -68,9 +73,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) PendingSharedURLLoaderFactory {
   // never called multiple times for each PendingSharedURLLoaderFactory
   // instance.
   virtual scoped_refptr<SharedURLLoaderFactory> CreateFactory() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PendingSharedURLLoaderFactory);
 };
 
 }  // namespace network

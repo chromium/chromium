@@ -24,6 +24,10 @@ namespace network {
 class HttpAuthCacheCopier {
  public:
   HttpAuthCacheCopier();
+
+  HttpAuthCacheCopier(const HttpAuthCacheCopier&) = delete;
+  HttpAuthCacheCopier& operator=(const HttpAuthCacheCopier&) = delete;
+
   ~HttpAuthCacheCopier();
 
   // Saves the proxy entries of the given HttpAuthCache in an intermediate
@@ -39,8 +43,6 @@ class HttpAuthCacheCopier {
 
  private:
   std::map<base::UnguessableToken, std::unique_ptr<net::HttpAuthCache>> caches_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthCacheCopier);
 };
 
 }  // namespace network

@@ -74,6 +74,9 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
       LoopbackCoordinator* coordinator,
       const base::UnguessableToken& group_id);
 
+  LoopbackStream(const LoopbackStream&) = delete;
+  LoopbackStream& operator=(const LoopbackStream&) = delete;
+
   ~LoopbackStream() final;
 
   bool is_recording() const { return network_ && network_->is_started(); }
@@ -241,8 +244,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<LoopbackStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackStream);
 };
 
 }  // namespace audio

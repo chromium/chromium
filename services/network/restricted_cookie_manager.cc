@@ -171,6 +171,9 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
                      base::Unretained(this)));
   }
 
+  Listener(const Listener&) = delete;
+  Listener& operator=(const Listener&) = delete;
+
   ~Listener() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   mojo::Remote<mojom::CookieChangeListener>& mojo_listener() {
@@ -241,8 +244,6 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
   mojo::Remote<mojom::CookieChangeListener> mojo_listener_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Listener);
 };
 
 RestrictedCookieManager::RestrictedCookieManager(

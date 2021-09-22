@@ -55,6 +55,9 @@ class AudioStreamHandler::AudioStreamContainer
     task_runner_ = base::SequencedTaskRunnerHandle::Get();
   }
 
+  AudioStreamContainer(const AudioStreamContainer&) = delete;
+  AudioStreamContainer& operator=(const AudioStreamContainer&) = delete;
+
   ~AudioStreamContainer() override {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
   }
@@ -166,8 +169,6 @@ class AudioStreamHandler::AudioStreamContainer
   bool delayed_stop_posted_;
   std::unique_ptr<media::WavAudioHandler> wav_audio_;
   base::CancelableRepeatingClosure stop_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioStreamContainer);
 };
 
 AudioStreamHandler::AudioStreamHandler(

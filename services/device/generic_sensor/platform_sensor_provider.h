@@ -20,6 +20,9 @@ class PlatformSensorProvider : public PlatformSensorProviderBase {
   // the current platform.
   static std::unique_ptr<PlatformSensorProvider> Create();
 
+  PlatformSensorProvider(const PlatformSensorProvider&) = delete;
+  PlatformSensorProvider& operator=(const PlatformSensorProvider&) = delete;
+
   ~PlatformSensorProvider() override = default;
 
  protected:
@@ -28,8 +31,6 @@ class PlatformSensorProvider : public PlatformSensorProviderBase {
   // Determines if the ISensor or Windows.Devices.Sensors implementation
   // should be used on Windows.
   static bool UseWindowsWinrt();
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProvider);
 };
 
 }  // namespace device

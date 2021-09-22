@@ -31,6 +31,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
   // This expects to live on the same thread as NetworkContext, e.g.
   // IO thread or NetworkService main thread.
   explicit NetLogExporter(NetworkContext* network_context);
+
+  NetLogExporter(const NetLogExporter&) = delete;
+  NetLogExporter& operator=(const NetLogExporter&) = delete;
+
   ~NetLogExporter() override;
 
   void Start(base::File destination,
@@ -80,8 +84,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
       scratch_dir_create_handler_for_tests_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetLogExporter);
 };
 
 }  // namespace network

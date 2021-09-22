@@ -56,6 +56,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
       mojo::ScopedDataPipeProducerHandle receive_pipe_handle,
       mojo::ScopedDataPipeConsumerHandle send_pipe_handle,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  TCPConnectedSocket(const TCPConnectedSocket&) = delete;
+  TCPConnectedSocket& operator=(const TCPConnectedSocket&) = delete;
+
   ~TCPConnectedSocket() override;
 
   void Connect(
@@ -117,8 +121,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
   std::unique_ptr<SocketDataPump> socket_data_pump_;
 
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPConnectedSocket);
 };
 
 }  // namespace network

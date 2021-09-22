@@ -41,6 +41,11 @@ void CheckBoolReturnValue(base::OnceClosure quit_closure,
 class GeolocationServiceUnitTest : public DeviceServiceTestBase {
  public:
   GeolocationServiceUnitTest() = default;
+
+  GeolocationServiceUnitTest(const GeolocationServiceUnitTest&) = delete;
+  GeolocationServiceUnitTest& operator=(const GeolocationServiceUnitTest&) =
+      delete;
+
   ~GeolocationServiceUnitTest() override = default;
 
  protected:
@@ -91,8 +96,6 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   mojo::Remote<mojom::GeolocationContext> geolocation_context_;
   mojo::Remote<mojom::Geolocation> geolocation_;
   mojo::Remote<mojom::GeolocationConfig> geolocation_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationServiceUnitTest);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)

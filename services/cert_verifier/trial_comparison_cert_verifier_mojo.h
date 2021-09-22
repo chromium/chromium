@@ -47,6 +47,12 @@ class TrialComparisonCertVerifierMojo
           report_client,
       scoped_refptr<net::CertVerifyProc> primary_verify_proc,
       scoped_refptr<net::CertVerifyProc> trial_verify_proc);
+
+  TrialComparisonCertVerifierMojo(const TrialComparisonCertVerifierMojo&) =
+      delete;
+  TrialComparisonCertVerifierMojo& operator=(
+      const TrialComparisonCertVerifierMojo&) = delete;
+
   ~TrialComparisonCertVerifierMojo() override;
 
   // CertVerifier implementation
@@ -82,8 +88,6 @@ class TrialComparisonCertVerifierMojo
 
   std::unique_ptr<net::TrialComparisonCertVerifier>
       trial_comparison_cert_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrialComparisonCertVerifierMojo);
 };
 
 }  // namespace cert_verifier

@@ -78,6 +78,10 @@ class TestService : public Service, public test::mojom::CreateInstanceTest {
     registry_.AddInterface<test::mojom::CreateInstanceTest>(
         base::BindRepeating(&TestService::Create, base::Unretained(this)));
   }
+
+  TestService(const TestService&) = delete;
+  TestService& operator=(const TestService&) = delete;
+
   ~TestService() override = default;
 
   const Identity& target_identity() const { return target_identity_; }
@@ -116,14 +120,16 @@ class TestService : public Service, public test::mojom::CreateInstanceTest {
 
   BinderRegistry registry_;
   mojo::Receiver<test::mojom::CreateInstanceTest> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestService);
 };
 
 class SimpleService : public Service {
  public:
   explicit SimpleService(mojo::PendingReceiver<mojom::Service> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  SimpleService(const SimpleService&) = delete;
+  SimpleService& operator=(const SimpleService&) = delete;
+
   ~SimpleService() override = default;
 
   Connector* connector() { return receiver_.GetConnector(); }
@@ -144,8 +150,6 @@ class SimpleService : public Service {
 
   ServiceReceiver receiver_;
   base::OnceClosure connection_lost_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleService);
 };
 
 }  // namespace
@@ -157,6 +161,10 @@ class ServiceManagerTest : public testing::Test,
       : test_service_manager_(GetTestManifests()),
         test_service_(
             test_service_manager_.RegisterTestInstance(kTestServiceName)) {}
+
+  ServiceManagerTest(const ServiceManagerTest&) = delete;
+  ServiceManagerTest& operator=(const ServiceManagerTest&) = delete;
+
   ~ServiceManagerTest() override = default;
 
  protected:
@@ -394,8 +402,6 @@ class ServiceManagerTest : public testing::Test,
   ServiceFailedToStartCallback service_failed_to_start_callback_;
   ServicePIDReceivedCallback service_pid_received_callback_;
   base::Process target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceManagerTest);
 };
 
 TEST_F(ServiceManagerTest, CreateInstance) {

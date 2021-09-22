@@ -46,6 +46,9 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
     has_report_id_ = device_info->has_report_id();
   }
 
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
   ~BlockingTaskRunnerHelper() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -177,8 +180,6 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
   base::WeakPtr<HidConnectionLinux> connection_;
   const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> file_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
 };
 
 HidConnectionLinux::HidConnectionLinux(

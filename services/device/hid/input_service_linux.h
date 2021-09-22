@@ -29,6 +29,10 @@ class InputServiceLinux : public mojom::InputDeviceManager {
   using DeviceMap = std::map<std::string, mojom::InputDeviceInfoPtr>;
 
   InputServiceLinux();
+
+  InputServiceLinux(const InputServiceLinux&) = delete;
+  InputServiceLinux& operator=(const InputServiceLinux&) = delete;
+
   ~InputServiceLinux() override;
 
   // Binds the |receiver| to an InputServiceLinux instance.
@@ -69,8 +73,6 @@ class InputServiceLinux : public mojom::InputDeviceManager {
   base::ThreadChecker thread_checker_;
   mojo::ReceiverSet<mojom::InputDeviceManager> receivers_;
   mojo::AssociatedRemoteSet<mojom::InputDeviceManagerClient> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputServiceLinux);
 };
 
 }  // namespace device

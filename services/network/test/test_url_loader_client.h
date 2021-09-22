@@ -32,6 +32,10 @@ namespace network {
 class TestURLLoaderClient final : public mojom::URLLoaderClient {
  public:
   TestURLLoaderClient();
+
+  TestURLLoaderClient(const TestURLLoaderClient&) = delete;
+  TestURLLoaderClient& operator=(const TestURLLoaderClient&) = delete;
+
   ~TestURLLoaderClient() override;
 
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -129,8 +133,6 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   int64_t total_upload_size_ = 0;
 
   std::vector<network::mojom::EarlyHintsPtr> early_hints_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLLoaderClient);
 };
 
 }  // namespace network

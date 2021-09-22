@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
   ExpectCTReporter(net::URLRequestContext* request_context,
                    const base::RepeatingClosure& success_callback,
                    const base::RepeatingClosure& failure_callback);
+
+  ExpectCTReporter(const ExpectCTReporter&) = delete;
+  ExpectCTReporter& operator=(const ExpectCTReporter&) = delete;
+
   ~ExpectCTReporter() override;
 
   // net::TransportSecurityState::ExpectCTReporter:
@@ -117,8 +121,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
   // preflight's OnResponseStarted() is called.
   std::map<net::URLRequest*, std::unique_ptr<PreflightInProgress>>
       inflight_preflights_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectCTReporter);
 };
 
 }  // namespace network

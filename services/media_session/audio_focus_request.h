@@ -34,6 +34,9 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
       const base::UnguessableToken& group_id,
       const base::UnguessableToken& identity);
 
+  AudioFocusRequest(const AudioFocusRequest&) = delete;
+  AudioFocusRequest& operator=(const AudioFocusRequest&) = delete;
+
   ~AudioFocusRequest() override;
 
   // mojom::AudioFocusRequestClient.
@@ -119,8 +122,6 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
 
   // Weak pointer to the owning |AudioFocusManager| instance.
   const base::WeakPtr<AudioFocusManager> owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusRequest);
 };
 
 }  // namespace media_session

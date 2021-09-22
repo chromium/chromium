@@ -39,6 +39,10 @@ namespace device {
 class MtpDeviceManager : public mojom::MtpManager {
  public:
   MtpDeviceManager();
+
+  MtpDeviceManager(const MtpDeviceManager&) = delete;
+  MtpDeviceManager& operator=(const MtpDeviceManager&) = delete;
+
   ~MtpDeviceManager() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::MtpManager> receiver);
@@ -204,8 +208,6 @@ class MtpDeviceManager : public mojom::MtpManager {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<MtpDeviceManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MtpDeviceManager);
 };
 
 }  // namespace device

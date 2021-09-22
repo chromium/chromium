@@ -43,6 +43,9 @@ class MediaPowerDelegate : public base::PowerSuspendObserver {
     base::PowerMonitor::AddPowerSuspendObserver(this);
   }
 
+  MediaPowerDelegate(const MediaPowerDelegate&) = delete;
+  MediaPowerDelegate& operator=(const MediaPowerDelegate&) = delete;
+
   ~MediaPowerDelegate() override {
     base::PowerMonitor::RemovePowerSuspendObserver(this);
   }
@@ -55,8 +58,6 @@ class MediaPowerDelegate : public base::PowerSuspendObserver {
 
  private:
   const base::WeakPtr<AudioFocusManager> owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPowerDelegate);
 };
 
 class AudioFocusManager::SourceObserverHolder {
@@ -70,6 +71,9 @@ class AudioFocusManager::SourceObserverHolder {
     observer_.set_disconnect_handler(base::BindOnce(
         &AudioFocusManager::CleanupSourceObservers, base::Unretained(owner)));
   }
+
+  SourceObserverHolder(const SourceObserverHolder&) = delete;
+  SourceObserverHolder& operator=(const SourceObserverHolder&) = delete;
 
   ~SourceObserverHolder() = default;
 
@@ -92,8 +96,6 @@ class AudioFocusManager::SourceObserverHolder {
  private:
   const base::UnguessableToken identity_;
   mojo::Remote<mojom::AudioFocusObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceObserverHolder);
 };
 
 void AudioFocusManager::RequestAudioFocus(

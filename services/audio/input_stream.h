@@ -57,6 +57,10 @@ class InputStream final : public media::mojom::AudioInputStream,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       bool enable_agc);
+
+  InputStream(const InputStream&) = delete;
+  InputStream& operator=(const InputStream&) = delete;
+
   ~InputStream() override;
 
   const base::UnguessableToken& id() const { return id_; }
@@ -101,8 +105,6 @@ class InputStream final : public media::mojom::AudioInputStream,
   SEQUENCE_CHECKER(owning_sequence_);
 
   base::WeakPtrFactory<InputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputStream);
 };
 
 }  // namespace audio

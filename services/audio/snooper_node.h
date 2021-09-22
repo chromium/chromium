@@ -65,6 +65,9 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
   SnooperNode(const media::AudioParameters& input_params,
               const media::AudioParameters& output_params);
 
+  SnooperNode(const SnooperNode&) = delete;
+  SnooperNode& operator=(const SnooperNode&) = delete;
+
   ~SnooperNode() final;
 
   // GroupMember::Snooper implementation. Inserts more data into the delay
@@ -170,8 +173,6 @@ class SnooperNode final : public LoopbackGroupMember::Snooper {
 
   // The frame position where recording into the delay buffer always starts.
   static constexpr FrameTicks kWriteStartPosition = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SnooperNode);
 };
 
 }  // namespace audio

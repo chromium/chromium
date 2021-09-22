@@ -31,6 +31,10 @@ class InputIPC : public media::AudioInputIPC,
   InputIPC(mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
            const std::string& device_id,
            mojo::PendingRemote<media::mojom::AudioLog> log);
+
+  InputIPC(const InputIPC&) = delete;
+  InputIPC& operator=(const InputIPC&) = delete;
+
   ~InputIPC() override;
 
   // AudioInputIPC implementation
@@ -71,8 +75,6 @@ class InputIPC : public media::AudioInputIPC,
   mojo::Remote<media::mojom::AudioLog> log_;
 
   base::WeakPtrFactory<InputIPC> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputIPC);
 };
 
 }  // namespace audio

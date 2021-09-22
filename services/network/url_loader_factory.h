@@ -49,6 +49,9 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
       cors::CorsURLLoaderFactory* cors_url_loader_factory);
 
+  URLLoaderFactory(const URLLoaderFactory&) = delete;
+  URLLoaderFactory& operator=(const URLLoaderFactory&) = delete;
+
   ~URLLoaderFactory() override;
 
   // mojom::URLLoaderFactory implementation.
@@ -106,8 +109,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
 
   base::OneShotTimer update_load_info_timer_;
   bool waiting_on_load_state_ack_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactory);
 };
 
 }  // namespace network

@@ -31,6 +31,10 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   VideoCaptureServiceImpl(
       mojo::PendingReceiver<mojom::VideoCaptureService> receiver,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  VideoCaptureServiceImpl(const VideoCaptureServiceImpl&) = delete;
+  VideoCaptureServiceImpl& operator=(const VideoCaptureServiceImpl&) = delete;
+
   ~VideoCaptureServiceImpl() override;
 
   // mojom::VideoCaptureService implementation.
@@ -64,8 +68,6 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   std::unique_ptr<GpuDependenciesContext> gpu_dependencies_context_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureServiceImpl);
 };
 
 }  // namespace video_capture

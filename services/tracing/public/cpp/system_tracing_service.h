@@ -36,6 +36,10 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTracingService
     : public mojom::SystemTracingService {
  public:
   SystemTracingService();
+
+  SystemTracingService(const SystemTracingService&) = delete;
+  SystemTracingService& operator=(const SystemTracingService&) = delete;
+
   ~SystemTracingService() override;
 
   void OpenProducerSocket(OpenProducerSocketCallback callback) override;
@@ -50,8 +54,6 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTracingService
 
  private:
   void OnConnectionError();
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTracingService);
 
   mojo::Receiver<mojom::SystemTracingService> receiver_{this};
 };

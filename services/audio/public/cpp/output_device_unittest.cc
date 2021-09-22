@@ -47,6 +47,10 @@ constexpr size_t kBitstreamDataSize = 512;
 class MockRenderCallback : public media::AudioRendererSink::RenderCallback {
  public:
   MockRenderCallback() = default;
+
+  MockRenderCallback(const MockRenderCallback&) = delete;
+  MockRenderCallback& operator=(const MockRenderCallback&) = delete;
+
   ~MockRenderCallback() override = default;
 
   MOCK_METHOD4(Render,
@@ -55,23 +59,21 @@ class MockRenderCallback : public media::AudioRendererSink::RenderCallback {
                    int prior_frames_skipped,
                    media::AudioBus* dest));
   void OnRenderError() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockRenderCallback);
 };
 
 class MockStream : public media::mojom::AudioOutputStream {
  public:
   MockStream() = default;
+
+  MockStream(const MockStream&) = delete;
+  MockStream& operator=(const MockStream&) = delete;
+
   ~MockStream() override = default;
 
   MOCK_METHOD0(Play, void());
   MOCK_METHOD0(Pause, void());
   MOCK_METHOD1(SetVolume, void(double));
   MOCK_METHOD0(Flush, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockStream);
 };
 
 class MockAudioOutputIPC : public media::AudioOutputIPC {
@@ -98,6 +100,10 @@ class MockAudioOutputIPC : public media::AudioOutputIPC {
 class FakeOutputStreamFactory final : public audio::FakeStreamFactory {
  public:
   FakeOutputStreamFactory() : stream_(), stream_receiver_(&stream_) {}
+
+  FakeOutputStreamFactory(const FakeOutputStreamFactory&) = delete;
+  FakeOutputStreamFactory& operator=(const FakeOutputStreamFactory&) = delete;
+
   ~FakeOutputStreamFactory() override {}
 
   void CreateOutputStream(
@@ -128,7 +134,6 @@ class FakeOutputStreamFactory final : public audio::FakeStreamFactory {
 
  private:
   mojo::Receiver<media::mojom::AudioOutputStream> stream_receiver_;
-  DISALLOW_COPY_AND_ASSIGN(FakeOutputStreamFactory);
 };
 
 struct DataFlowTestEnvironment {
@@ -170,6 +175,10 @@ class AudioServiceOutputDeviceTest : public testing::Test {
     stream_factory_ = std::make_unique<FakeOutputStreamFactory>();
   }
 
+  AudioServiceOutputDeviceTest(const AudioServiceOutputDeviceTest&) = delete;
+  AudioServiceOutputDeviceTest& operator=(const AudioServiceOutputDeviceTest&) =
+      delete;
+
   ~AudioServiceOutputDeviceTest() override {
     if (!stream_factory_->created_callback_)
       return;
@@ -183,9 +192,6 @@ class AudioServiceOutputDeviceTest : public testing::Test {
 
   base::test::TaskEnvironment task_env_;
   std::unique_ptr<FakeOutputStreamFactory> stream_factory_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioServiceOutputDeviceTest);
 };
 
 TEST_F(AudioServiceOutputDeviceTest, CreatePlayPause) {

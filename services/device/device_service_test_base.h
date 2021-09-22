@@ -25,6 +25,10 @@ const char kTestGeolocationApiKey[] = "FakeApiKeyForTest";
 class DeviceServiceTestBase : public testing::Test {
  public:
   DeviceServiceTestBase();
+
+  DeviceServiceTestBase(const DeviceServiceTestBase&) = delete;
+  DeviceServiceTestBase& operator=(const DeviceServiceTestBase&) = delete;
+
   ~DeviceServiceTestBase() override;
 
   // NOTE: It's important to do service instantiation within SetUp instead of
@@ -59,8 +63,6 @@ class DeviceServiceTestBase : public testing::Test {
       network_connection_tracker_;
   std::unique_ptr<DeviceService> service_;
   mojo::Remote<mojom::DeviceService> service_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceServiceTestBase);
 };
 
 }  // namespace device

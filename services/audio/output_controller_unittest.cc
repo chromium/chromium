@@ -239,6 +239,10 @@ class MockAudioOutputStream : public AudioOutputStream,
 class MockSnooper : public Snoopable::Snooper {
  public:
   MockSnooper() = default;
+
+  MockSnooper(const MockSnooper&) = delete;
+  MockSnooper& operator=(const MockSnooper&) = delete;
+
   ~MockSnooper() override = default;
 
   MOCK_METHOD0(DidProvideData, void());
@@ -263,8 +267,6 @@ class MockSnooper : public Snoopable::Snooper {
 
  private:
   base::TimeTicks last_reference_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSnooper);
 };
 
 // A FakeAudioManager that produces MockAudioOutputStreams, and tracks the last
@@ -329,6 +331,9 @@ ACTION(PopulateBuffer) {
 class OutputControllerTest : public ::testing::Test {
  public:
   OutputControllerTest() : group_id_(base::UnguessableToken::Create()) {}
+
+  OutputControllerTest(const OutputControllerTest&) = delete;
+  OutputControllerTest& operator=(const OutputControllerTest&) = delete;
 
   ~OutputControllerTest() override { audio_manager_.Shutdown(); }
 
@@ -492,8 +497,6 @@ class OutputControllerTest : public ::testing::Test {
   base::UnguessableToken group_id_;
   StrictMock<MockOutputControllerSyncReader> mock_sync_reader_;
   absl::optional<OutputController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputControllerTest);
 };
 
 TEST_F(OutputControllerTest, CreateAndClose) {

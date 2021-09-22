@@ -141,6 +141,10 @@ class CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader {
           factory_pending_remote,
       BindNewURLLoaderFactoryCallback bind_new_url_loader_factory_cb);
 
+  AsyncCertNetFetcherURLLoader(const AsyncCertNetFetcherURLLoader&) = delete;
+  AsyncCertNetFetcherURLLoader& operator=(const AsyncCertNetFetcherURLLoader&) =
+      delete;
+
   // The AsyncCertNetFetcherURLLoader is expected to be kept alive until all
   // requests have completed or Shutdown() is called.
   ~AsyncCertNetFetcherURLLoader();
@@ -187,8 +191,6 @@ class CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader {
   BindNewURLLoaderFactoryCallback bind_new_url_loader_factory_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncCertNetFetcherURLLoader);
 };
 
 namespace {
@@ -344,6 +346,10 @@ class Job {
  public:
   Job(std::unique_ptr<CertNetFetcherURLLoader::RequestParams> request_params,
       CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader* parent);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   const CertNetFetcherURLLoader::RequestParams& request_params() const {
@@ -406,8 +412,6 @@ class Job {
   // Non-owned pointer to the AsyncCertNetFetcherURLLoader that created this
   // job.
   CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 }  // namespace

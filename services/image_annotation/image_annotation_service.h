@@ -31,6 +31,10 @@ class ImageAnnotationService : public mojom::ImageAnnotationService {
       std::string api_key,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       std::unique_ptr<Annotator::Client> annotator_client);
+
+  ImageAnnotationService(const ImageAnnotationService&) = delete;
+  ImageAnnotationService& operator=(const ImageAnnotationService&) = delete;
+
   ~ImageAnnotationService() override;
 
  private:
@@ -60,8 +64,6 @@ class ImageAnnotationService : public mojom::ImageAnnotationService {
 
   mojo::Receiver<mojom::ImageAnnotationService> receiver_;
   Annotator annotator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageAnnotationService);
 };
 
 }  // namespace image_annotation

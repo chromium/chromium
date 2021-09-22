@@ -21,6 +21,10 @@ class GeolocationImpl : public mojom::Geolocation {
   // |context| must outlive this object.
   GeolocationImpl(mojo::PendingReceiver<mojom::Geolocation> receiver,
                   GeolocationContext* context);
+
+  GeolocationImpl(const GeolocationImpl&) = delete;
+  GeolocationImpl& operator=(const GeolocationImpl&) = delete;
+
   ~GeolocationImpl() override;
 
   // Starts listening for updates.
@@ -67,8 +71,6 @@ class GeolocationImpl : public mojom::Geolocation {
   bool high_accuracy_;
 
   bool has_position_to_report_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationImpl);
 };
 
 }  // namespace device

@@ -50,6 +50,10 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
         const perfetto::TraceConfig& trace_config,
         perfetto::base::ScopedFile output_file,
         mojom::TracingClientPriority priority);
+
+    TracingSession(const TracingSession&) = delete;
+    TracingSession& operator=(const TracingSession&) = delete;
+
     ~TracingSession() override;
 
     void OnPerfettoEvents(const perfetto::ObservableEvents&);
@@ -121,8 +125,6 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
 
     SEQUENCE_CHECKER(sequence_checker_);
     base::WeakPtrFactory<TracingSession> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(TracingSession);
   };
 
   // The owner of ConsumerHost should make sure to destroy

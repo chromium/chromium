@@ -58,6 +58,10 @@ HangAction GetAudioThreadHangAction() {
 class MainThread final : public media::AudioThread {
  public:
   MainThread();
+
+  MainThread(const MainThread&) = delete;
+  MainThread& operator=(const MainThread&) = delete;
+
   ~MainThread() final;
 
   // AudioThread implementation.
@@ -74,8 +78,6 @@ class MainThread final : public media::AudioThread {
   scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner_;
 
   media::AudioThreadHangMonitor::Ptr hang_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThread);
 };
 
 MainThread::MainThread()

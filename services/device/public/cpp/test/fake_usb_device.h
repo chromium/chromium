@@ -35,6 +35,10 @@ class FakeUsbDevice : public mojom::UsbDevice,
                      base::span<const uint8_t> blocked_interface_classes,
                      mojo::PendingReceiver<device::mojom::UsbDevice> receiver,
                      mojo::PendingRemote<mojom::UsbDeviceClient> client);
+
+  FakeUsbDevice(const FakeUsbDevice&) = delete;
+  FakeUsbDevice& operator=(const FakeUsbDevice&) = delete;
+
   ~FakeUsbDevice() override;
 
  protected:
@@ -106,8 +110,6 @@ class FakeUsbDevice : public mojom::UsbDevice,
   // Recording the claimed interface_number list.
   std::set<uint8_t> claimed_interfaces_;
   mojo::Remote<device::mojom::UsbDeviceClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbDevice);
 };
 
 }  // namespace device

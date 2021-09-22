@@ -648,6 +648,10 @@ class BluetoothSystemTest : public DeviceServiceTestBase,
                             public mojom::BluetoothSystemClient {
  public:
   BluetoothSystemTest() = default;
+
+  BluetoothSystemTest(const BluetoothSystemTest&) = delete;
+  BluetoothSystemTest& operator=(const BluetoothSystemTest&) = delete;
+
   ~BluetoothSystemTest() override = default;
 
   void SetUp() override {
@@ -768,9 +772,6 @@ class BluetoothSystemTest : public DeviceServiceTestBase,
   TestBluetoothDeviceClient* test_bluetooth_device_client_;
 
   mojo::Receiver<mojom::BluetoothSystemClient> system_client_receiver_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSystemTest);
 };
 
 // Tests that the Create method for BluetoothSystemFactory works.

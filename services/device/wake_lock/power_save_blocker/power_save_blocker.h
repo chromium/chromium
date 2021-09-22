@@ -35,6 +35,10 @@ class PowerSaveBlocker {
       const std::string& description,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
+
+  PowerSaveBlocker(const PowerSaveBlocker&) = delete;
+  PowerSaveBlocker& operator=(const PowerSaveBlocker&) = delete;
+
   virtual ~PowerSaveBlocker();
 
 #if defined(OS_ANDROID)
@@ -63,8 +67,6 @@ class PowerSaveBlocker {
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerSaveBlocker);
 };
 
 }  // namespace device

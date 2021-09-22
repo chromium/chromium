@@ -127,6 +127,10 @@ class BatteryStatusManagerChromeOS
       const BatteryStatusService::BatteryUpdateCallback& callback)
       : observer_(base::MakeRefCounted<PowerManagerObserver>(callback)) {}
 
+  BatteryStatusManagerChromeOS(const BatteryStatusManagerChromeOS&) = delete;
+  BatteryStatusManagerChromeOS& operator=(const BatteryStatusManagerChromeOS&) =
+      delete;
+
   ~BatteryStatusManagerChromeOS() override { observer_->Stop(); }
 
  private:
@@ -139,8 +143,6 @@ class BatteryStatusManagerChromeOS
   void StopListeningBatteryChange() override { observer_->Stop(); }
 
   scoped_refptr<PowerManagerObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusManagerChromeOS);
 };
 
 }  // namespace

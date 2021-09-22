@@ -185,6 +185,10 @@ class ProxyResolverMojo : public net::ProxyResolver {
       net::HostResolver* host_resolver,
       std::unique_ptr<net::ProxyResolverErrorObserver> error_observer,
       net::NetLog* net_log);
+
+  ProxyResolverMojo(const ProxyResolverMojo&) = delete;
+  ProxyResolverMojo& operator=(const ProxyResolverMojo&) = delete;
+
   ~ProxyResolverMojo() override;
 
   // ProxyResolver implementation:
@@ -212,8 +216,6 @@ class ProxyResolverMojo : public net::ProxyResolver {
   std::unique_ptr<net::ProxyResolverErrorObserver> error_observer_;
 
   net::NetLog* net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverMojo);
 };
 
 class ProxyResolverMojo::Job
@@ -226,6 +228,10 @@ class ProxyResolverMojo::Job
       net::ProxyInfo* results,
       net::CompletionOnceCallback callback,
       const net::NetLogWithSource& net_log);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job() override;
 
   // Returns the LoadState of this job.
@@ -248,8 +254,6 @@ class ProxyResolverMojo::Job
   SEQUENCE_CHECKER(sequence_checker_);
   mojo::Receiver<proxy_resolver::mojom::ProxyResolverRequestClient> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ProxyResolverMojo::Job::Job(

@@ -71,6 +71,11 @@ class LoaderLockEventAnalyzer {
 class TracingSampleProfilerTest : public TracingUnitTest {
  public:
   TracingSampleProfilerTest() = default;
+
+  TracingSampleProfilerTest(const TracingSampleProfilerTest&) = delete;
+  TracingSampleProfilerTest& operator=(const TracingSampleProfilerTest&) =
+      delete;
+
   ~TracingSampleProfilerTest() override = default;
 
   void SetUp() override {
@@ -161,9 +166,6 @@ class TracingSampleProfilerTest : public TracingUnitTest {
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
   MockLoaderLockSampler mock_loader_lock_sampler_;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TracingSampleProfilerTest);
 };
 
 // Stub module for testing.

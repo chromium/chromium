@@ -77,6 +77,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       base::TimeDelta delay,
       const absl::optional<base::UnguessableToken>& throttling_profile_id);
 
+  WebSocket(const WebSocket&) = delete;
+  WebSocket& operator=(const WebSocket&) = delete;
+
   ~WebSocket() override;
 
   // mojom::WebSocket methods:
@@ -254,8 +257,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   std::unique_ptr<WebSocketInterceptor> outgoing_frame_interceptor_;
 
   base::WeakPtrFactory<WebSocket> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocket);
 };
 
 }  // namespace network

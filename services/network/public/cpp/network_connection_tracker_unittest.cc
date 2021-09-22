@@ -37,6 +37,10 @@ class TestNetworkConnectionObserver
     tracker_->AddNetworkConnectionObserver(this);
   }
 
+  TestNetworkConnectionObserver(const TestNetworkConnectionObserver&) = delete;
+  TestNetworkConnectionObserver& operator=(
+      const TestNetworkConnectionObserver&) = delete;
+
   ~TestNetworkConnectionObserver() override {
     tracker_->RemoveNetworkConnectionObserver(this);
   }
@@ -96,8 +100,6 @@ class TestNetworkConnectionObserver
   std::unique_ptr<base::RunLoop> run_loop_;
   network::mojom::ConnectionType expected_connection_type_;
   network::mojom::ConnectionType connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkConnectionObserver);
 };
 
 class TestLeakyNetworkConnectionObserver
@@ -137,6 +139,10 @@ class ConnectionTypeGetter {
   explicit ConnectionTypeGetter(NetworkConnectionTracker* tracker)
       : tracker_(tracker),
         connection_type_(network::mojom::ConnectionType::CONNECTION_UNKNOWN) {}
+
+  ConnectionTypeGetter(const ConnectionTypeGetter&) = delete;
+  ConnectionTypeGetter& operator=(const ConnectionTypeGetter&) = delete;
+
   ~ConnectionTypeGetter() {}
 
   bool GetConnectionType() {
@@ -169,8 +175,6 @@ class ConnectionTypeGetter {
   NetworkConnectionTracker* tracker_;
   network::mojom::ConnectionType connection_type_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionTypeGetter);
 };
 
 }  // namespace
@@ -180,6 +184,10 @@ class NetworkConnectionTrackerTest : public testing::Test {
   NetworkConnectionTrackerTest()
       : mock_network_change_notifier_(
             net::test::MockNetworkChangeNotifier::Create()) {}
+
+  NetworkConnectionTrackerTest(const NetworkConnectionTrackerTest&) = delete;
+  NetworkConnectionTrackerTest& operator=(const NetworkConnectionTrackerTest&) =
+      delete;
 
   ~NetworkConnectionTrackerTest() override {}
 
@@ -223,8 +231,6 @@ class NetworkConnectionTrackerTest : public testing::Test {
   std::unique_ptr<NetworkService> network_service_;
   std::unique_ptr<NetworkConnectionTracker> tracker_;
   std::unique_ptr<TestNetworkConnectionObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionTrackerTest);
 };
 
 TEST_F(NetworkConnectionTrackerTest, ObserverNotified) {
@@ -353,6 +359,9 @@ class NetworkGetConnectionTest : public NetworkConnectionTrackerTest {
     Initialize();
   }
 
+  NetworkGetConnectionTest(const NetworkGetConnectionTest&) = delete;
+  NetworkGetConnectionTest& operator=(const NetworkGetConnectionTest&) = delete;
+
   ~NetworkGetConnectionTest() override {}
 
   void GetConnectionType() {
@@ -375,8 +384,6 @@ class NetworkGetConnectionTest : public NetworkConnectionTrackerTest {
 
   // Accessed on |getter_thread_|.
   std::unique_ptr<ConnectionTypeGetter> getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkGetConnectionTest);
 };
 
 TEST_F(NetworkGetConnectionTest, GetConnectionTypeOnDifferentThread) {

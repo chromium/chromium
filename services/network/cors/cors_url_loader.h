@@ -58,6 +58,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
 
+  CorsURLLoader(const CorsURLLoader&) = delete;
+  CorsURLLoader& operator=(const CorsURLLoader&) = delete;
+
   ~CorsURLLoader() override;
 
   // Starts processing the request. This is expected to be called right after
@@ -206,8 +209,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Used to run asynchronous class instance bound callbacks safely.
   base::WeakPtrFactory<CorsURLLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CorsURLLoader);
 };
 
 }  // namespace cors

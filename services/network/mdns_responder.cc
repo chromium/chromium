@@ -413,6 +413,10 @@ class MdnsResponderManager::SocketHandler {
         responder_manager_(responder_manager),
         io_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
             net::dns_protocol::kMaxMulticastSize + 1)) {}
+
+  SocketHandler(const SocketHandler&) = delete;
+  SocketHandler& operator=(const SocketHandler&) = delete;
+
   ~SocketHandler() = default;
 
   int Start() {
@@ -503,8 +507,6 @@ class MdnsResponderManager::SocketHandler {
   net::IPEndPoint multicast_addr_;
 
   base::WeakPtrFactory<SocketHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketHandler);
 };
 
 // Implements the rate limiting schemes for sending responses as defined by
@@ -548,6 +550,10 @@ class MdnsResponderManager::SocketHandler::ResponseScheduler {
         tick_clock_(base::DefaultTickClock::GetInstance()),
         dispatch_timer_(std::make_unique<base::OneShotTimer>(tick_clock_)),
         next_available_time_per_resp_sched_(tick_clock_->NowTicks()) {}
+
+  ResponseScheduler(const ResponseScheduler&) = delete;
+  ResponseScheduler& operator=(const ResponseScheduler&) = delete;
+
   ~ResponseScheduler() { dispatch_timer_->Stop(); }
 
   // Implements the rate limit scheme on the underlying interface managed by
@@ -640,8 +646,6 @@ class MdnsResponderManager::SocketHandler::ResponseScheduler {
   std::priority_queue<PendingPacket> send_queue_;
 
   base::WeakPtrFactory<ResponseScheduler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResponseScheduler);
 };
 
 bool MdnsResponderManager::SocketHandler::Send(

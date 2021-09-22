@@ -49,6 +49,11 @@ class FakePlatformSensor : public PlatformSensor {
 class FakePlatformSensorProvider : public PlatformSensorProvider {
  public:
   FakePlatformSensorProvider();
+
+  FakePlatformSensorProvider(const FakePlatformSensorProvider&) = delete;
+  FakePlatformSensorProvider& operator=(const FakePlatformSensorProvider&) =
+      delete;
+
   ~FakePlatformSensorProvider() override;
 
   MOCK_METHOD0(FreeResources, void());
@@ -63,8 +68,6 @@ class FakePlatformSensorProvider : public PlatformSensorProvider {
   void CreateSensorInternal(mojom::SensorType type,
                             SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePlatformSensorProvider);
 };
 
 // Mock for PlatformSensor's client interface that is used to deliver
@@ -75,6 +78,10 @@ class MockPlatformSensorClient : public PlatformSensor::Client {
   // For the given |sensor| this client will be automatically
   // added in the costructor and removed in the destructor.
   explicit MockPlatformSensorClient(scoped_refptr<PlatformSensor> sensor);
+
+  MockPlatformSensorClient(const MockPlatformSensorClient&) = delete;
+  MockPlatformSensorClient& operator=(const MockPlatformSensorClient&) = delete;
+
   ~MockPlatformSensorClient() override;
 
   // PlatformSensor::Client:
@@ -84,8 +91,6 @@ class MockPlatformSensorClient : public PlatformSensor::Client {
 
  private:
   scoped_refptr<PlatformSensor> sensor_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPlatformSensorClient);
 };
 
 }  // namespace device

@@ -57,14 +57,16 @@ class ServiceImpl : public Service {
  public:
   explicit ServiceImpl(mojo::PendingReceiver<mojom::Service> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  ServiceImpl(const ServiceImpl&) = delete;
+  ServiceImpl& operator=(const ServiceImpl&) = delete;
+
   ~ServiceImpl() override = default;
 
   Connector* connector() { return receiver_.GetConnector(); }
 
  private:
   ServiceReceiver receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceImpl);
 };
 
 void SetFlagAndRunClosure(bool* flag, base::OnceClosure closure) {

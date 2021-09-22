@@ -29,6 +29,10 @@ class SourceUrlRecorderWebStateObserver;
 class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
  public:
   DelegatingUkmRecorder();
+
+  DelegatingUkmRecorder(const DelegatingUkmRecorder&) = delete;
+  DelegatingUkmRecorder& operator=(const DelegatingUkmRecorder&) = delete;
+
   ~DelegatingUkmRecorder() override;
 
   // Lazy global instance getter.
@@ -85,8 +89,6 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
   mutable base::Lock lock_;
 
   std::unordered_map<UkmRecorder*, Delegate> delegates_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatingUkmRecorder);
 };
 
 }  // namespace ukm

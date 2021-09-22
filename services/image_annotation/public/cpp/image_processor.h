@@ -28,6 +28,10 @@ class ImageProcessor : public mojom::ImageProcessor {
   //                         pixels; this will be required for iOS, where pixel
   //                         access entails a full image redownload.
   explicit ImageProcessor(base::RepeatingCallback<SkBitmap()> get_pixels);
+
+  ImageProcessor(const ImageProcessor&) = delete;
+  ImageProcessor& operator=(const ImageProcessor&) = delete;
+
   ~ImageProcessor() override;
 
   // Reencodes the image data for transmission to the service. Will be called by
@@ -55,8 +59,6 @@ class ImageProcessor : public mojom::ImageProcessor {
   mojo::ReceiverSet<mojom::ImageProcessor> receivers_;
 
   FRIEND_TEST_ALL_PREFIXES(ImageProcessorTest, ImageContent);
-
-  DISALLOW_COPY_AND_ASSIGN(ImageProcessor);
 };
 
 }  // namespace image_annotation

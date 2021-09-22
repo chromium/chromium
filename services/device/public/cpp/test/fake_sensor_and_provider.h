@@ -19,6 +19,10 @@ namespace device {
 class FakeSensor : public mojom::Sensor {
  public:
   FakeSensor(mojom::SensorType sensor_type, SensorReadingSharedBuffer* buffer);
+
+  FakeSensor(const FakeSensor&) = delete;
+  FakeSensor& operator=(const FakeSensor&) = delete;
+
   ~FakeSensor() override;
 
   // mojom::Sensor:
@@ -49,13 +53,15 @@ class FakeSensor : public mojom::Sensor {
   bool reading_notification_enabled_ = true;
   mojo::Remote<mojom::SensorClient> client_;
   SensorReading reading_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSensor);
 };
 
 class FakeSensorProvider : public mojom::SensorProvider {
  public:
   FakeSensorProvider();
+
+  FakeSensorProvider(const FakeSensorProvider&) = delete;
+  FakeSensorProvider& operator=(const FakeSensorProvider&) = delete;
+
   ~FakeSensorProvider() override;
 
   // mojom::sensorProvider:
@@ -152,8 +158,6 @@ class FakeSensorProvider : public mojom::SensorProvider {
   mojo::ReceiverSet<mojom::SensorProvider> receivers_{};
   mojo::ScopedSharedBufferHandle shared_buffer_handle_;
   mojo::ScopedSharedBufferMapping shared_buffer_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSensorProvider);
 };
 
 }  // namespace device

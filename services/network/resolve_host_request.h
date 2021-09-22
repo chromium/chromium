@@ -38,6 +38,10 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
       const absl::optional<net::HostResolver::ResolveHostParameters>&
           optional_parameters,
       net::NetLog* net_log);
+
+  ResolveHostRequest(const ResolveHostRequest&) = delete;
+  ResolveHostRequest& operator=(const ResolveHostRequest&) = delete;
+
   ~ResolveHostRequest() override;
 
   int Start(
@@ -62,8 +66,6 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
   bool cancelled_ = false;
   // Error info for a cancelled request.
   net::ResolveErrorInfo resolve_error_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolveHostRequest);
 };
 
 }  // namespace network

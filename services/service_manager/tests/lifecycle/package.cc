@@ -34,6 +34,9 @@ class PackagedApp : public service_manager::Service,
         base::BindRepeating(&PackagedApp::Create, base::Unretained(this)));
   }
 
+  PackagedApp(const PackagedApp&) = delete;
+  PackagedApp& operator=(const PackagedApp&) = delete;
+
   ~PackagedApp() override = default;
 
  private:
@@ -94,8 +97,6 @@ class PackagedApp : public service_manager::Service,
   base::OnceClosure service_manager_connection_closed_callback_;
   // Run when this object is destructed.
   base::OnceClosure destruct_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PackagedApp);
 };
 
 class Package : public service_manager::Service {
@@ -107,6 +108,9 @@ class Package : public service_manager::Service {
     app_client_.set_termination_closure(
         base::BindOnce(&Package::Terminate, base::Unretained(this)));
   }
+
+  Package(const Package&) = delete;
+  Package& operator=(const Package&) = delete;
 
   ~Package() override = default;
 
@@ -152,8 +156,6 @@ class Package : public service_manager::Service {
 
   int next_id_ = 0;
   std::map<int, std::unique_ptr<PackagedApp>> app_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(Package);
 };
 
 }  // namespace

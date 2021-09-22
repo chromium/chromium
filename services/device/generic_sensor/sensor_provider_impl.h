@@ -24,6 +24,10 @@ class PlatformSensor;
 class SensorProviderImpl final : public mojom::SensorProvider {
  public:
   explicit SensorProviderImpl(std::unique_ptr<PlatformSensorProvider> provider);
+
+  SensorProviderImpl(const SensorProviderImpl&) = delete;
+  SensorProviderImpl& operator=(const SensorProviderImpl&) = delete;
+
   ~SensorProviderImpl() override;
 
   void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
@@ -43,8 +47,6 @@ class SensorProviderImpl final : public mojom::SensorProvider {
   mojo::ReceiverSet<mojom::SensorProvider> receivers_;
   mojo::UniqueReceiverSet<mojom::Sensor> sensor_receivers_;
   base::WeakPtrFactory<SensorProviderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SensorProviderImpl);
 };
 
 }  // namespace device

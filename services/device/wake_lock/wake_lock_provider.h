@@ -28,6 +28,10 @@ class WakeLockProvider : public mojom::WakeLockProvider,
  public:
   WakeLockProvider(scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
                    const WakeLockContextCallback& native_view_getter);
+
+  WakeLockProvider(const WakeLockProvider&) = delete;
+  WakeLockProvider& operator=(const WakeLockProvider&) = delete;
+
   ~WakeLockProvider() override;
 
   // Adds this receiver to |receiverss_|.
@@ -71,8 +75,6 @@ class WakeLockProvider : public mojom::WakeLockProvider,
   // Stores wake lock count and observers associated with each wake lock type.
   std::map<mojom::WakeLockType, std::unique_ptr<WakeLockDataPerType>>
       wake_lock_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockProvider);
 };  // namespace device
 
 }  // namespace device

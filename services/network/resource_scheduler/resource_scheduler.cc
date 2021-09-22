@@ -260,6 +260,10 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     request_->SetUserData(kUserDataKey, std::make_unique<UnownedPointer>(this));
   }
 
+  ScheduledResourceRequestImpl(const ScheduledResourceRequestImpl&) = delete;
+  ScheduledResourceRequestImpl& operator=(const ScheduledResourceRequestImpl&) =
+      delete;
+
   ~ScheduledResourceRequestImpl() override {
     if ((attributes_ & kAttributeLayoutBlocking) == kAttributeLayoutBlocking) {
       UMA_HISTOGRAM_COUNTS_100(
@@ -371,8 +375,6 @@ class ResourceScheduler::ScheduledResourceRequestImpl
 
   base::WeakPtrFactory<ResourceScheduler::ScheduledResourceRequestImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScheduledResourceRequestImpl);
 };
 
 const void* const

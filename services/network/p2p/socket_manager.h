@@ -67,6 +67,10 @@ class P2PSocketManager
       mojo::PendingReceiver<mojom::P2PSocketManager> socket_manager_receiver,
       DeleteCallback delete_callback,
       net::URLRequestContext* url_request_context);
+
+  P2PSocketManager(const P2PSocketManager&) = delete;
+  P2PSocketManager& operator=(const P2PSocketManager&) = delete;
+
   ~P2PSocketManager() override;
 
   // net::NetworkChangeNotifier::NetworkChangeObserver overrides.
@@ -151,8 +155,6 @@ class P2PSocketManager
       network_notification_client_;
 
   base::WeakPtrFactory<P2PSocketManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketManager);
 };
 
 }  // namespace network

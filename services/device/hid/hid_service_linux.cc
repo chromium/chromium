@@ -221,6 +221,9 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
   ~BlockingTaskRunnerHelper() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -347,8 +350,6 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
   // This weak pointer is only valid when checked on this task runner.
   base::WeakPtr<HidServiceLinux> service_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
 };
 
 HidServiceLinux::HidServiceLinux()

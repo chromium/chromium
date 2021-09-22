@@ -130,6 +130,10 @@ class WebSocket::WebSocketEventHandler final
     : public net::WebSocketEventInterface {
  public:
   explicit WebSocketEventHandler(WebSocket* impl);
+
+  WebSocketEventHandler(const WebSocketEventHandler&) = delete;
+  WebSocketEventHandler& operator=(const WebSocketEventHandler&) = delete;
+
   ~WebSocketEventHandler() override;
 
   // net::WebSocketEventInterface implementation
@@ -169,8 +173,6 @@ class WebSocket::WebSocketEventHandler final
 
  private:
   WebSocket* const impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketEventHandler);
 };
 
 WebSocket::WebSocketEventHandler::WebSocketEventHandler(WebSocket* impl)

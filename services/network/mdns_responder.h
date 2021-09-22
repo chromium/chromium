@@ -144,6 +144,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponderManager {
 
   MdnsResponderManager();
   explicit MdnsResponderManager(net::MDnsSocketFactory* socket_factory);
+
+  MdnsResponderManager(const MdnsResponderManager&) = delete;
+  MdnsResponderManager& operator=(const MdnsResponderManager&) = delete;
+
   ~MdnsResponderManager();
 
   // Creates an instance of MdnsResponder for the receiver.
@@ -265,8 +269,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponderManager {
   base::TimeTicks throttled_start_end_;
 
   base::WeakPtrFactory<MdnsResponderManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MdnsResponderManager);
 };
 
 // Implementation of the mDNS service that can provide utilities of an mDNS
@@ -276,6 +278,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponder
  public:
   MdnsResponder(mojo::PendingReceiver<mojom::MdnsResponder> receiver,
                 MdnsResponderManager* manager);
+
+  MdnsResponder(const MdnsResponder&) = delete;
+  MdnsResponder& operator=(const MdnsResponder&) = delete;
+
   // When destroyed, clears all existing name-address associations owned by this
   // responder in the local network by sending out goodbye packets. See
   // SendGoodbyePacketForNameAddressMap below.
@@ -333,8 +339,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponder
   std::map<std::string, net::IPAddress> name_addr_map_;
   std::map<std::string, uint16_t> name_refcount_map_;
   MdnsResponderManager::NameGenerator* name_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MdnsResponder);
 };
 
 }  // namespace network

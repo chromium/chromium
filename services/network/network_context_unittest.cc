@@ -252,6 +252,12 @@ class CapturingMojoProxyResolverFactory
       public proxy_resolver::mojom::ProxyResolver {
  public:
   CapturingMojoProxyResolverFactory() {}
+
+  CapturingMojoProxyResolverFactory(const CapturingMojoProxyResolverFactory&) =
+      delete;
+  CapturingMojoProxyResolverFactory& operator=(
+      const CapturingMojoProxyResolverFactory&) = delete;
+
   ~CapturingMojoProxyResolverFactory() override {}
 
   mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
@@ -307,8 +313,6 @@ class CapturingMojoProxyResolverFactory
 
   GURL url_;
   net::NetworkIsolationKey network_isolation_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturingMojoProxyResolverFactory);
 };
 
 // ProxyLookupClient that drives proxy lookups and can wait for the responses to
@@ -316,6 +320,10 @@ class CapturingMojoProxyResolverFactory
 class TestProxyLookupClient : public mojom::ProxyLookupClient {
  public:
   TestProxyLookupClient() = default;
+
+  TestProxyLookupClient(const TestProxyLookupClient&) = delete;
+  TestProxyLookupClient& operator=(const TestProxyLookupClient&) = delete;
+
   ~TestProxyLookupClient() override = default;
 
   void StartLookUpProxyForURL(
@@ -362,8 +370,6 @@ class TestProxyLookupClient : public mojom::ProxyLookupClient {
   int32_t net_error_ = net::ERR_UNEXPECTED;
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProxyLookupClient);
 };
 
 class MockP2PTrustedSocketManagerClient
@@ -4120,6 +4126,9 @@ class ConnectionListener
  public:
   ConnectionListener() = default;
 
+  ConnectionListener(const ConnectionListener&) = delete;
+  ConnectionListener& operator=(const ConnectionListener&) = delete;
+
   ~ConnectionListener() override = default;
 
   // Get called from the EmbeddedTestServer thread to be notified that
@@ -4225,8 +4234,6 @@ class ConnectionListener
   // before invoking |on_done_accepting_connections_|.
   size_t num_accepted_connections_needed_ = 0;
   base::OnceClosure on_done_accepting_connections_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionListener);
 };
 
 TEST_F(NetworkContextTest, PreconnectOne) {
@@ -5023,6 +5030,9 @@ class TestProxyErrorClient final : public mojom::ProxyErrorClient {
 
   TestProxyErrorClient() = default;
 
+  TestProxyErrorClient(const TestProxyErrorClient&) = delete;
+  TestProxyErrorClient& operator=(const TestProxyErrorClient&) = delete;
+
   ~TestProxyErrorClient() override {}
 
   void OnPACScriptError(int32_t line_number,
@@ -5075,8 +5085,6 @@ class TestProxyErrorClient final : public mojom::ProxyErrorClient {
   bool has_received_mojo_pipe_error_ = false;
   std::vector<int> on_request_maybe_failed_calls_;
   std::vector<PacScriptError> on_pac_script_error_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProxyErrorClient);
 };
 
 // While in scope, all host resolutions will fail with ERR_NAME_NOT_RESOLVED,

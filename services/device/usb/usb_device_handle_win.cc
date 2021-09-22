@@ -146,6 +146,9 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
     overlapped_.hEvent = event_.Get();
   }
 
+  Request(const Request&) = delete;
+  Request& operator=(const Request&) = delete;
+
   ~Request() override = default;
 
   // Starts watching for completion of the overlapped event.
@@ -193,8 +196,6 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
   base::win::ScopedHandle event_;
   base::win::ObjectWatcher watcher_;
   base::OnceCallback<void(Request*, DWORD, size_t)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Request);
 };
 
 UsbDeviceHandleWin::Interface::Interface() = default;

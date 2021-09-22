@@ -121,6 +121,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
                    const media::AudioParameters& params,
                    const std::string& output_device_id,
                    SyncReader* sync_reader);
+
+  OutputController(const OutputController&) = delete;
+  OutputController& operator=(const OutputController&) = delete;
+
   ~OutputController() override;
 
   // Indicates whether audio power level analysis will be performed.  If false,
@@ -333,8 +337,6 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // stream is closed.
   base::WeakPtr<OutputController> weak_this_for_stream_;
   base::WeakPtrFactory<OutputController> weak_factory_for_stream_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OutputController);
 };
 
 }  // namespace audio

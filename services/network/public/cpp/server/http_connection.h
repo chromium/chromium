@@ -30,6 +30,10 @@ class HttpConnection {
                  mojo::ScopedDataPipeConsumerHandle socket_receive_handle,
                  mojo::ScopedDataPipeProducerHandle socket_send_handle,
                  const net::IPEndPoint& peer_addr);
+
+  HttpConnection(const HttpConnection&) = delete;
+  HttpConnection& operator=(const HttpConnection&) = delete;
+
   ~HttpConnection();
 
   int id() const { return id_; }
@@ -77,8 +81,6 @@ class HttpConnection {
   const net::IPEndPoint peer_addr_;
 
   std::unique_ptr<WebSocket> web_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpConnection);
 };
 
 }  // namespace server

@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpServer : public P2PSocket {
                      mojo::PendingRemote<mojom::P2PSocketClient> client,
                      mojo::PendingReceiver<mojom::P2PSocket> socket,
                      P2PSocketType client_type);
+
+  P2PSocketTcpServer(const P2PSocketTcpServer&) = delete;
+  P2PSocketTcpServer& operator=(const P2PSocketTcpServer&) = delete;
+
   ~P2PSocketTcpServer() override;
 
   // P2PSocket overrides.
@@ -65,8 +69,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpServer : public P2PSocket {
   std::unique_ptr<net::StreamSocket> accept_socket_;
 
   const net::CompletionRepeatingCallback accept_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketTcpServer);
 };
 
 }  // namespace network

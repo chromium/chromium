@@ -31,6 +31,10 @@ class MediaController : public mojom::MediaController,
                         public mojom::MediaSessionObserver {
  public:
   MediaController();
+
+  MediaController(const MediaController&) = delete;
+  MediaController& operator=(const MediaController&) = delete;
+
   ~MediaController() override;
 
   // mojom::MediaController overrides.
@@ -121,8 +125,6 @@ class MediaController : public mojom::MediaController,
 
   // Protects |session_| as it is not thread safe.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaController);
 };
 
 }  // namespace media_session

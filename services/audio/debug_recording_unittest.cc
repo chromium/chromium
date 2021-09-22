@@ -60,6 +60,10 @@ class MockFileProvider : public mojom::DebugRecordingFileProvider {
 class DebugRecordingTest : public media::AudioDebugRecordingTest {
  public:
   DebugRecordingTest() = default;
+
+  DebugRecordingTest(const DebugRecordingTest&) = delete;
+  DebugRecordingTest& operator=(const DebugRecordingTest&) = delete;
+
   ~DebugRecordingTest() override = default;
 
   void SetUp() override {
@@ -93,9 +97,6 @@ class DebugRecordingTest : public media::AudioDebugRecordingTest {
 
   std::unique_ptr<DebugRecording> debug_recording_;
   mojo::Remote<mojom::DebugRecording> remote_debug_recording_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DebugRecordingTest);
 };
 
 TEST_F(DebugRecordingTest, EnableResetEnablesDisablesDebugRecording) {

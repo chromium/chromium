@@ -19,6 +19,10 @@ class Catalog {
  public:
   // Constructs a catalog over a set of Manifests to use for lookup.
   explicit Catalog(const std::vector<Manifest>& manifests);
+
+  Catalog(const Catalog&) = delete;
+  Catalog& operator=(const Catalog&) = delete;
+
   ~Catalog();
 
   // Returns manifest data for the service named by |service_name|. If no
@@ -43,8 +47,6 @@ class Catalog {
   // reverse-lookup of packaged service relationships. The values in this map
   // refer to objects owned by |manifests_| above.
   const std::map<Manifest::ServiceName, const Manifest*> parent_manifest_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(Catalog);
 };
 
 }  // namespace service_manager

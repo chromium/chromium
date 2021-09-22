@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ScopedThrottlingToken {
       uint32_t net_log_source_id,
       const absl::optional<base::UnguessableToken>& throttling_profile_id);
 
+  ScopedThrottlingToken(const ScopedThrottlingToken&) = delete;
+  ScopedThrottlingToken& operator=(const ScopedThrottlingToken&) = delete;
+
   ~ScopedThrottlingToken();
 
  private:
@@ -39,8 +42,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ScopedThrottlingToken {
                         const base::UnguessableToken& throttling_profile_id);
 
   const uint32_t net_log_source_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedThrottlingToken);
 };
 
 }  // namespace network

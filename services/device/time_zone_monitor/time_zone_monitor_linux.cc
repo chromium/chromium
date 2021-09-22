@@ -32,6 +32,10 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
  public:
   TimeZoneMonitorLinux(
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
+
+  TimeZoneMonitorLinux(const TimeZoneMonitorLinux&) = delete;
+  TimeZoneMonitorLinux& operator=(const TimeZoneMonitorLinux&) = delete;
+
   ~TimeZoneMonitorLinux() override;
 
   void NotifyClientsFromImpl() {
@@ -59,8 +63,6 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
 
  private:
   scoped_refptr<TimeZoneMonitorLinuxImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitorLinux);
 };
 
 namespace {

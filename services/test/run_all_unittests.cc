@@ -28,6 +28,10 @@ namespace {
 class ServiceTestSuite : public base::TestSuite {
  public:
   ServiceTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+  ServiceTestSuite(const ServiceTestSuite&) = delete;
+  ServiceTestSuite& operator=(const ServiceTestSuite&) = delete;
+
   ~ServiceTestSuite() override = default;
 
  protected:
@@ -64,9 +68,6 @@ class ServiceTestSuite : public base::TestSuite {
 
     base::TestSuite::Shutdown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceTestSuite);
 };
 
 }  // namespace

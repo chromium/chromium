@@ -23,6 +23,11 @@ class SensorReadingSharedBufferReader {
       mojo::ScopedSharedBufferHandle reading_buffer_handle,
       uint64_t reading_buffer_offset);
 
+  SensorReadingSharedBufferReader(const SensorReadingSharedBufferReader&) =
+      delete;
+  SensorReadingSharedBufferReader& operator=(
+      const SensorReadingSharedBufferReader&) = delete;
+
   ~SensorReadingSharedBufferReader();
 
   // Get sensor reading from shared buffer.
@@ -40,8 +45,6 @@ class SensorReadingSharedBufferReader {
 
   mojo::ScopedSharedBufferHandle shared_buffer_handle_;
   mojo::ScopedSharedBufferMapping shared_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorReadingSharedBufferReader);
 };
 
 }  // namespace device

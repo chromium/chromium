@@ -62,6 +62,10 @@ class ProxyResolvingSocketTestBase {
         fake_tls_handshake_(false),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
+  ProxyResolvingSocketTestBase(const ProxyResolvingSocketTestBase&) = delete;
+  ProxyResolvingSocketTestBase& operator=(const ProxyResolvingSocketTestBase&) =
+      delete;
+
   ~ProxyResolvingSocketTestBase() {}
 
   void Init(const std::string& pac_result) {
@@ -166,8 +170,6 @@ class ProxyResolvingSocketTestBase {
   std::unique_ptr<mojo::Receiver<mojom::ProxyResolvingSocketFactory>>
       factory_receiver_;
   std::unique_ptr<ProxyResolvingSocketFactoryMojo> factory_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketTestBase);
 };
 
 class ProxyResolvingSocketTest : public ProxyResolvingSocketTestBase,
@@ -175,10 +177,10 @@ class ProxyResolvingSocketTest : public ProxyResolvingSocketTestBase,
  public:
   ProxyResolvingSocketTest() : ProxyResolvingSocketTestBase(GetParam()) {}
 
-  ~ProxyResolvingSocketTest() override {}
+  ProxyResolvingSocketTest(const ProxyResolvingSocketTest&) = delete;
+  ProxyResolvingSocketTest& operator=(const ProxyResolvingSocketTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketTest);
+  ~ProxyResolvingSocketTest() override {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -342,10 +344,11 @@ class ProxyResolvingSocketMojoTest : public ProxyResolvingSocketTestBase,
  public:
   ProxyResolvingSocketMojoTest() : ProxyResolvingSocketTestBase(false) {}
 
-  ~ProxyResolvingSocketMojoTest() override {}
+  ProxyResolvingSocketMojoTest(const ProxyResolvingSocketMojoTest&) = delete;
+  ProxyResolvingSocketMojoTest& operator=(const ProxyResolvingSocketMojoTest&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketMojoTest);
+  ~ProxyResolvingSocketMojoTest() override {}
 };
 
 TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {

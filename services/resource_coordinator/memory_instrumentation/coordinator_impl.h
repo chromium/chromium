@@ -37,6 +37,10 @@ class CoordinatorImpl : public Registry,
                         public mojom::HeapProfilerHelper {
  public:
   CoordinatorImpl();
+
+  CoordinatorImpl(const CoordinatorImpl&) = delete;
+  CoordinatorImpl& operator=(const CoordinatorImpl&) = delete;
+
   ~CoordinatorImpl() override;
 
   // The getter of the unique instance.
@@ -194,8 +198,6 @@ class CoordinatorImpl : public Registry,
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<CoordinatorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CoordinatorImpl);
 };
 
 }  // namespace memory_instrumentation

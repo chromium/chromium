@@ -75,6 +75,10 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
   {
   }
 
+  DefaultServiceProcessHost(const DefaultServiceProcessHost&) = delete;
+  DefaultServiceProcessHost& operator=(const DefaultServiceProcessHost&) =
+      delete;
+
   ~DefaultServiceProcessHost() override = default;
 
   mojo::PendingRemote<mojom::Service> Launch(
@@ -96,8 +100,6 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
 #if !defined(OS_IOS)
   ServiceProcessLauncher launcher_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultServiceProcessHost);
 };
 
 // Default ServiceManager::Delegate implementation. This supports launching only
@@ -110,6 +112,11 @@ class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
   explicit DefaultServiceManagerDelegate(
       ServiceManager::ServiceExecutablePolicy service_executable_policy)
       : service_executable_policy_(service_executable_policy) {}
+
+  DefaultServiceManagerDelegate(const DefaultServiceManagerDelegate&) = delete;
+  DefaultServiceManagerDelegate& operator=(
+      const DefaultServiceManagerDelegate&) = delete;
+
   ~DefaultServiceManagerDelegate() override = default;
 
   bool RunBuiltinServiceInstanceInCurrentProcess(
@@ -138,8 +145,6 @@ class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
 
  private:
   const ServiceManager::ServiceExecutablePolicy service_executable_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultServiceManagerDelegate);
 };
 
 }  // namespace

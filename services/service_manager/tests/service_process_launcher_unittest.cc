@@ -43,6 +43,12 @@ class ServiceProcessLauncherDelegateImpl
     : public ServiceProcessLauncherDelegate {
  public:
   ServiceProcessLauncherDelegateImpl() {}
+
+  ServiceProcessLauncherDelegateImpl(
+      const ServiceProcessLauncherDelegateImpl&) = delete;
+  ServiceProcessLauncherDelegateImpl& operator=(
+      const ServiceProcessLauncherDelegateImpl&) = delete;
+
   ~ServiceProcessLauncherDelegateImpl() override {}
 
   size_t get_and_clear_adjust_count() {
@@ -60,8 +66,6 @@ class ServiceProcessLauncherDelegateImpl
   }
 
   size_t adjust_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessLauncherDelegateImpl);
 };
 
 #if defined(OS_ANDROID)

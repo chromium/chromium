@@ -37,6 +37,9 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
       mojo::PendingRemote<mojom::Gpu> remote,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
+  Gpu(const Gpu&) = delete;
+  Gpu& operator=(const Gpu&) = delete;
+
   ~Gpu() override;
 
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager() const {
@@ -86,8 +89,6 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
   scoped_refptr<EstablishRequest> pending_request_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
   std::vector<gpu::GpuChannelEstablishedCallback> establish_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(Gpu);
 };
 
 }  // namespace viz

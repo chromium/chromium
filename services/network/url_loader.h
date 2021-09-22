@@ -142,6 +142,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer);
+
+  URLLoader(const URLLoader&) = delete;
+  URLLoader& operator=(const URLLoader&) = delete;
+
   ~URLLoader() override;
 
   // mojom::URLLoader implementation:
@@ -585,8 +589,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoader);
 };
 
 }  // namespace network

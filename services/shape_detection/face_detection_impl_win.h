@@ -32,6 +32,10 @@ class FaceDetectionImplWin : public mojom::FaceDetection {
           ABI::Windows::Graphics::Imaging::ISoftwareBitmapStatics>
           bitmap_factory,
       ABI::Windows::Graphics::Imaging::BitmapPixelFormat pixel_format);
+
+  FaceDetectionImplWin(const FaceDetectionImplWin&) = delete;
+  FaceDetectionImplWin& operator=(const FaceDetectionImplWin&) = delete;
+
   ~FaceDetectionImplWin() override;
 
   void SetReceiver(mojo::SelfOwnedReceiverRef<mojom::FaceDetection> receiver) {
@@ -65,8 +69,6 @@ class FaceDetectionImplWin : public mojom::FaceDetection {
   mojo::SelfOwnedReceiverRef<mojom::FaceDetection> receiver_;
 
   base::WeakPtrFactory<FaceDetectionImplWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FaceDetectionImplWin);
 };
 
 }  // namespace shape_detection

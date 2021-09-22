@@ -33,6 +33,10 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
       std::unordered_map<std::string, scoped_refptr<FakeUsbDeviceInfo>>;
 
   FakeUsbDeviceManager();
+
+  FakeUsbDeviceManager(const FakeUsbDeviceManager&) = delete;
+  FakeUsbDeviceManager& operator=(const FakeUsbDeviceManager&) = delete;
+
   ~FakeUsbDeviceManager() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::UsbDeviceManager> receiver);
@@ -104,8 +108,6 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
   DeviceMap devices_;
 
   base::WeakPtrFactory<FakeUsbDeviceManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbDeviceManager);
 };
 
 }  // namespace device

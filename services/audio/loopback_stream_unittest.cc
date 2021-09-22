@@ -129,6 +129,9 @@ class LoopbackStreamTest : public testing::Test {
  public:
   LoopbackStreamTest() : group_id_(base::UnguessableToken::Create()) {}
 
+  LoopbackStreamTest(const LoopbackStreamTest&) = delete;
+  LoopbackStreamTest& operator=(const LoopbackStreamTest&) = delete;
+
   ~LoopbackStreamTest() override = default;
 
   void TearDown() override {
@@ -260,8 +263,6 @@ class LoopbackStreamTest : public testing::Test {
   FakeSyncWriter* consumer_ = nullptr;  // Owned by |stream_|.
 
   mojo::Remote<media::mojom::AudioInputStream> remote_input_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackStreamTest);
 };
 
 TEST_F(LoopbackStreamTest, ShutsDownStreamWhenInterfacePtrIsClosed) {

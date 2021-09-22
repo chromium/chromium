@@ -29,6 +29,11 @@ class ResourceSchedulerParamsManagerTest : public testing::Test {
  public:
   ResourceSchedulerParamsManagerTest() {}
 
+  ResourceSchedulerParamsManagerTest(
+      const ResourceSchedulerParamsManagerTest&) = delete;
+  ResourceSchedulerParamsManagerTest& operator=(
+      const ResourceSchedulerParamsManagerTest&) = delete;
+
   ~ResourceSchedulerParamsManagerTest() override {}
 
   void ReadConfigTestHelper(size_t num_ranges) {
@@ -157,9 +162,6 @@ class ResourceSchedulerParamsManagerTest : public testing::Test {
         return;
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceSchedulerParamsManagerTest);
 };
 
 TEST_F(ResourceSchedulerParamsManagerTest, VerifyAllDefaultParams) {

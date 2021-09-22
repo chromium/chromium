@@ -45,6 +45,9 @@ class DelayBuffer {
   // recorded.
   explicit DelayBuffer(int history_size);
 
+  DelayBuffer(const DelayBuffer&) = delete;
+  DelayBuffer& operator=(const DelayBuffer&) = delete;
+
   ~DelayBuffer();
 
   // Inserts a copy of the given audio into the buffer. |position| must be
@@ -100,8 +103,6 @@ class DelayBuffer {
   // always in-order, chronologically increasing by InputChunk::position, and do
   // not overlap.
   base::circular_deque<InputChunk> chunks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayBuffer);
 };
 
 }  // namespace audio

@@ -29,6 +29,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) WebSocketEncoder final {
  public:
   static const char kClientExtensions[];
 
+  WebSocketEncoder(const WebSocketEncoder&) = delete;
+  WebSocketEncoder& operator=(const WebSocketEncoder&) = delete;
+
   ~WebSocketEncoder();
 
   // Creates and returns an encoder for a server without extensions.
@@ -73,8 +76,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) WebSocketEncoder final {
   Type type_;
   std::unique_ptr<net::WebSocketDeflater> deflater_;
   std::unique_ptr<net::WebSocketInflater> inflater_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketEncoder);
 };
 
 }  // namespace server

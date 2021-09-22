@@ -38,6 +38,10 @@ const size_t kDatagramSize = 255;
 class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
  public:
   SocketWrapperTestImpl() {}
+
+  SocketWrapperTestImpl(const SocketWrapperTestImpl&) = delete;
+  SocketWrapperTestImpl& operator=(const SocketWrapperTestImpl&) = delete;
+
   ~SocketWrapperTestImpl() override {}
 
   int Connect(const net::IPEndPoint& remote_addr,
@@ -96,9 +100,6 @@ class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
     NOTREACHED();
     return net::ERR_NOT_IMPLEMENTED;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SocketWrapperTestImpl);
 };
 
 net::IPEndPoint GetLocalHostWithAnyPort() {
@@ -193,6 +194,10 @@ class UDPSocketTest : public testing::Test {
   UDPSocketTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         factory_(nullptr /*netlog*/, &url_request_context_) {}
+
+  UDPSocketTest(const UDPSocketTest&) = delete;
+  UDPSocketTest& operator=(const UDPSocketTest&) = delete;
+
   ~UDPSocketTest() override {}
 
   void SetWrappedSocket(
@@ -211,8 +216,6 @@ class UDPSocketTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   net::TestURLRequestContext url_request_context_;
   SocketFactory factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketTest);
 };
 
 TEST_F(UDPSocketTest, Settings) {

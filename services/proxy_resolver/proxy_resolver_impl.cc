@@ -23,6 +23,10 @@ class ProxyResolverImpl::Job {
   Job(mojo::PendingRemote<mojom::ProxyResolverRequestClient> client,
       ProxyResolverImpl* resolver,
       const GURL& url);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   void Start(const net::NetworkIsolationKey& network_isolation_key);
@@ -41,8 +45,6 @@ class ProxyResolverImpl::Job {
   GURL url_;
   std::unique_ptr<net::ProxyResolver::Request> request_;
   bool done_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ProxyResolverImpl::ProxyResolverImpl(

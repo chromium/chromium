@@ -30,6 +30,10 @@ class PrefDelegateImpl
       : pref_service_(pref_service), path_(net::nqe::kNetworkQualities) {
     DCHECK(pref_service_);
   }
+
+  PrefDelegateImpl(const PrefDelegateImpl&) = delete;
+  PrefDelegateImpl& operator=(const PrefDelegateImpl&) = delete;
+
   ~PrefDelegateImpl() override {}
 
   void SetDictionaryValue(const base::DictionaryValue& value) override {
@@ -51,8 +55,6 @@ class PrefDelegateImpl
   const std::string path_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrefDelegateImpl);
 };
 
 // Returns true if |pref_service| has been initialized.

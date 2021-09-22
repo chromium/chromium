@@ -25,6 +25,10 @@ class UsbServiceWin final : public DeviceMonitorWin::Observer,
                             public UsbService {
  public:
   UsbServiceWin();
+
+  UsbServiceWin(const UsbServiceWin&) = delete;
+  UsbServiceWin& operator=(const UsbServiceWin&) = delete;
+
   ~UsbServiceWin() override;
 
  private:
@@ -75,8 +79,6 @@ class UsbServiceWin final : public DeviceMonitorWin::Observer,
       device_observation_{this};
 
   base::WeakPtrFactory<UsbServiceWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbServiceWin);
 };
 
 }  // namespace device

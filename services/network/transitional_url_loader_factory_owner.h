@@ -39,6 +39,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TransitionalURLLoaderFactoryOwner {
   // |url_request_context_getter|.
   explicit TransitionalURLLoaderFactoryOwner(
       scoped_refptr<net::URLRequestContextGetter> url_request_context_getter);
+
+  TransitionalURLLoaderFactoryOwner(const TransitionalURLLoaderFactoryOwner&) =
+      delete;
+  TransitionalURLLoaderFactoryOwner& operator=(
+      const TransitionalURLLoaderFactoryOwner&) = delete;
+
   ~TransitionalURLLoaderFactoryOwner();
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
@@ -60,8 +66,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TransitionalURLLoaderFactoryOwner {
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TransitionalURLLoaderFactoryOwner);
 };
 
 }  // namespace network

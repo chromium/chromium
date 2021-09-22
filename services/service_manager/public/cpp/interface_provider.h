@@ -29,6 +29,10 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   class TestApi {
    public:
     explicit TestApi(InterfaceProvider* provider) : provider_(provider) {}
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi() {}
 
     void SetBinderForName(
@@ -51,7 +55,6 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
 
    private:
     InterfaceProvider* provider_;
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   // Constructs an InterfaceProvider which is usable immediately despite not

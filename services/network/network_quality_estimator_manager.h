@@ -39,6 +39,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualityEstimatorManager
  public:
   explicit NetworkQualityEstimatorManager(net::NetLog* net_log);
 
+  NetworkQualityEstimatorManager(const NetworkQualityEstimatorManager&) =
+      delete;
+  NetworkQualityEstimatorManager& operator=(
+      const NetworkQualityEstimatorManager&) = delete;
+
   ~NetworkQualityEstimatorManager() override;
 
   // Binds a NetworkQualityEstimatorManager receiver to this object. Mojo
@@ -72,8 +77,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualityEstimatorManager
   int32_t downstream_throughput_kbps_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorManager);
 };
 
 }  // namespace network

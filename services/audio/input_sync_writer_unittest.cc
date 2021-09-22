@@ -124,6 +124,9 @@ class InputSyncWriterTest : public testing::Test {
     audio_bus_ = media::AudioBus::Create(audio_params);
   }
 
+  InputSyncWriterTest(const InputSyncWriterTest&) = delete;
+  InputSyncWriterTest& operator=(const InputSyncWriterTest&) = delete;
+
   ~InputSyncWriterTest() override {}
 
   // Get total number of expected log calls. On non-Android we expect one log
@@ -160,9 +163,6 @@ class InputSyncWriterTest : public testing::Test {
   std::unique_ptr<InputSyncWriter> writer_;
   MockCancelableSyncSocket* socket_;
   std::unique_ptr<media::AudioBus> audio_bus_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputSyncWriterTest);
 };
 
 TEST_F(InputSyncWriterTest, SingleWriteAndRead) {

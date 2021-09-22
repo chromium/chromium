@@ -41,6 +41,10 @@ class ServiceProcessLauncher {
   // the service executable we wish to start.
   ServiceProcessLauncher(ServiceProcessLauncherDelegate* delegate,
                          const base::FilePath& service_path);
+
+  ServiceProcessLauncher(const ServiceProcessLauncher&) = delete;
+  ServiceProcessLauncher& operator=(const ServiceProcessLauncher&) = delete;
+
   ~ServiceProcessLauncher();
 
   // |Start()|s the child process; calls |DidStart()| (on the thread on which
@@ -67,8 +71,6 @@ class ServiceProcessLauncher {
   const base::FilePath service_path_;
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   scoped_refptr<ProcessState> state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessLauncher);
 };
 
 }  // namespace service_manager

@@ -26,6 +26,10 @@ class PollingSensorReader : public SensorReader {
  public:
   PollingSensorReader(const SensorInfoLinux& sensor_info,
                       base::WeakPtr<PlatformSensorLinux> sensor);
+
+  PollingSensorReader(const PollingSensorReader&) = delete;
+  PollingSensorReader& operator=(const PollingSensorReader&) = delete;
+
   ~PollingSensorReader() override;
 
   // SensorReader overrides
@@ -42,6 +46,11 @@ class PollingSensorReader : public SensorReader {
     BlockingTaskRunnerHelper(
         base::WeakPtr<PollingSensorReader> polling_sensor_reader,
         const SensorInfoLinux& sensor_info);
+
+    BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+    BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) =
+        delete;
+
     ~BlockingTaskRunnerHelper();
 
     // Starts polling for data at a given |frequency|, and stops if there is an
@@ -72,8 +81,6 @@ class PollingSensorReader : public SensorReader {
     const SensorInfoLinux sensor_info_;
 
     SEQUENCE_CHECKER(sequence_checker_);
-
-    DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
   };
 
   // Receives a reading from the platform sensor and forwards it to |sensor_|.
@@ -95,8 +102,6 @@ class PollingSensorReader : public SensorReader {
       blocking_task_helper_;
 
   base::WeakPtrFactory<PollingSensorReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PollingSensorReader);
 };
 
 PollingSensorReader::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper(

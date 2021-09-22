@@ -51,6 +51,10 @@ class ServiceInstance : public mojom::Connector,
   ServiceInstance(service_manager::ServiceManager* service_manager,
                   const Identity& identity,
                   const Manifest& manifest);
+
+  ServiceInstance(const ServiceInstance&) = delete;
+  ServiceInstance& operator=(const ServiceInstance&) = delete;
+
   ~ServiceInstance() override;
 
   const Identity& identity() const { return identity_; }
@@ -200,8 +204,6 @@ class ServiceInstance : public mojom::Connector,
   int pending_service_connections_ = 0;
 
   base::WeakPtrFactory<ServiceInstance> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceInstance);
 };
 
 }  // namespace service_manager

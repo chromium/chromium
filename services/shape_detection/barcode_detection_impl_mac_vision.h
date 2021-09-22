@@ -34,6 +34,11 @@ class API_AVAILABLE(macos(10.13)) BarcodeDetectionImplMacVision
 
   explicit BarcodeDetectionImplMacVision(
       mojom::BarcodeDetectorOptionsPtr options);
+
+  BarcodeDetectionImplMacVision(const BarcodeDetectionImplMacVision&) = delete;
+  BarcodeDetectionImplMacVision& operator=(
+      const BarcodeDetectionImplMacVision&) = delete;
+
   ~BarcodeDetectionImplMacVision() override;
 
   void Detect(const SkBitmap& bitmap,
@@ -58,8 +63,6 @@ class API_AVAILABLE(macos(10.13)) BarcodeDetectionImplMacVision
   DetectCallback detected_callback_;
   mojo::SelfOwnedReceiverRef<mojom::BarcodeDetection> receiver_;
   base::WeakPtrFactory<BarcodeDetectionImplMacVision> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BarcodeDetectionImplMacVision);
 };
 
 }  // namespace shape_detection

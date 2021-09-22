@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
   // |this|.
   SocketFactory(net::NetLog* net_log,
                 net::URLRequestContext* url_request_context);
+
+  SocketFactory(const SocketFactory&) = delete;
+  SocketFactory& operator=(const SocketFactory&) = delete;
+
   virtual ~SocketFactory();
 
   // These all correspond to the NetworkContext methods of the same name.
@@ -104,8 +108,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
   mojo::UniqueReceiverSet<mojom::TCPConnectedSocket>
       tcp_connected_socket_receiver_;
   mojo::UniqueReceiverSet<mojom::TCPBoundSocket> tcp_bound_socket_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketFactory);
 };
 
 }  // namespace network

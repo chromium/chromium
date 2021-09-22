@@ -27,6 +27,10 @@ class WakeLockContext : public mojom::WakeLockContext,
   WakeLockContext(int context_id,
                   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
                   const WakeLockContextCallback& native_view_getter);
+
+  WakeLockContext(const WakeLockContext&) = delete;
+  WakeLockContext& operator=(const WakeLockContext&) = delete;
+
   ~WakeLockContext() override;
 
   // mojom::WakeLockContext:
@@ -52,8 +56,6 @@ class WakeLockContext : public mojom::WakeLockContext,
 
   // All wake locks acquired via this class are managed here.
   std::vector<std::unique_ptr<WakeLock>> wake_locks_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockContext);
 };
 
 }  // namespace device

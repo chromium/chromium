@@ -55,6 +55,9 @@ class COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaImageManager {
   // |ideal_size| is the ideal size of the images to select in px.
   MediaImageManager(int min_size, int ideal_size);
 
+  MediaImageManager(const MediaImageManager&) = delete;
+  MediaImageManager& operator=(const MediaImageManager&) = delete;
+
   ~MediaImageManager();
 
   // Select the best image from the |images|. If an image could not be selected
@@ -74,8 +77,6 @@ class COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaImageManager {
 
   const int min_size_;
   const int ideal_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaImageManager);
 };
 
 }  // namespace media_session

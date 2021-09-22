@@ -82,6 +82,9 @@ class MockPrefHashStore : public PrefHashStore {
         transactions_performed_(0),
         transaction_active_(false) {}
 
+  MockPrefHashStore(const MockPrefHashStore&) = delete;
+  MockPrefHashStore& operator=(const MockPrefHashStore&) = delete;
+
   ~MockPrefHashStore() override { EXPECT_FALSE(transaction_active_); }
 
   // Set the result that will be returned when |path| is passed to
@@ -159,6 +162,10 @@ class MockPrefHashStore : public PrefHashStore {
     explicit MockPrefHashStoreTransaction(MockPrefHashStore* outer)
         : outer_(outer) {}
 
+    MockPrefHashStoreTransaction(const MockPrefHashStoreTransaction&) = delete;
+    MockPrefHashStoreTransaction& operator=(
+        const MockPrefHashStoreTransaction&) = delete;
+
     ~MockPrefHashStoreTransaction() override {
       outer_->transaction_active_ = false;
       ++outer_->transactions_performed_;
@@ -184,8 +191,6 @@ class MockPrefHashStore : public PrefHashStore {
 
    private:
     MockPrefHashStore* outer_;
-
-    DISALLOW_COPY_AND_ASSIGN(MockPrefHashStoreTransaction);
   };
 
   // Records a call to this mock's CheckValue/CheckSplitValue methods.
@@ -213,8 +218,6 @@ class MockPrefHashStore : public PrefHashStore {
   // Whether a transaction is currently active (only one transaction should be
   // active at a time).
   bool transaction_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPrefHashStore);
 };
 
 void MockPrefHashStore::SetCheckResult(const std::string& path,

@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HttpCacheDataRemover {
       base::Time delete_end,
       HttpCacheDataRemoverCallback done_callback);
 
+  HttpCacheDataRemover(const HttpCacheDataRemover&) = delete;
+  HttpCacheDataRemover& operator=(const HttpCacheDataRemover&) = delete;
+
   ~HttpCacheDataRemover();
 
  private:
@@ -67,8 +70,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HttpCacheDataRemover {
   std::unique_ptr<ConditionalCacheDeletionHelper> deletion_helper_;
 
   base::WeakPtrFactory<HttpCacheDataRemover> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpCacheDataRemover);
 };
 
 }  // namespace network

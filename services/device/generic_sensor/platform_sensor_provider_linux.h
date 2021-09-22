@@ -19,6 +19,11 @@ class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
                                     public SensorDeviceManager::Delegate {
  public:
   PlatformSensorProviderLinux();
+
+  PlatformSensorProviderLinux(const PlatformSensorProviderLinux&) = delete;
+  PlatformSensorProviderLinux& operator=(const PlatformSensorProviderLinux&) =
+      delete;
+
   ~PlatformSensorProviderLinux() override;
 
   // Sets another service provided by tests.
@@ -82,8 +87,6 @@ class PlatformSensorProviderLinux : public PlatformSensorProviderLinuxBase,
       sensor_device_manager_;
 
   base::WeakPtrFactory<PlatformSensorProviderLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderLinux);
 };
 
 }  // namespace device

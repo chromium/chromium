@@ -21,6 +21,10 @@ class FakeLocationProvider : public LocationProvider {
   enum State { STOPPED, LOW_ACCURACY, HIGH_ACCURACY } state_ = STOPPED;
 
   FakeLocationProvider();
+
+  FakeLocationProvider(const FakeLocationProvider&) = delete;
+  FakeLocationProvider& operator=(const FakeLocationProvider&) = delete;
+
   ~FakeLocationProvider() override;
 
   // Updates listeners with the new position.
@@ -43,8 +47,6 @@ class FakeLocationProvider : public LocationProvider {
   bool is_permission_granted_ = false;
   mojom::Geoposition position_;
   LocationProviderUpdateCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLocationProvider);
 };
 
 }  // namespace device

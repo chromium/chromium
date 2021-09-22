@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     : public content_settings::CookieSettingsBase {
  public:
   CookieSettings();
+
+  CookieSettings(const CookieSettings&) = delete;
+  CookieSettings& operator=(const CookieSettings&) = delete;
+
   ~CookieSettings() override;
 
   void set_content_settings(const ContentSettingsForOneType& content_settings) {
@@ -200,8 +204,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   const bool sameparty_cookies_considered_first_party_ =
       base::FeatureList::IsEnabled(
           net::features::kSamePartyCookiesConsideredFirstParty);
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettings);
 };
 
 }  // namespace network

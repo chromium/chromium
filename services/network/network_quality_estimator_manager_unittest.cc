@@ -42,6 +42,11 @@ class TestNetworkQualityEstimatorManagerClient
     manager->RequestNotifications(receiver_.BindNewPipeAndPassRemote());
   }
 
+  TestNetworkQualityEstimatorManagerClient(
+      const TestNetworkQualityEstimatorManagerClient&) = delete;
+  TestNetworkQualityEstimatorManagerClient& operator=(
+      const TestNetworkQualityEstimatorManagerClient&) = delete;
+
   ~TestNetworkQualityEstimatorManagerClient() override {}
 
   void OnNetworkQualityChanged(net::EffectiveConnectionType type,
@@ -89,8 +94,6 @@ class TestNetworkQualityEstimatorManagerClient
   base::TimeDelta transport_rtt_;
   int32_t downlink_bandwidth_kbps_;
   mojo::Receiver<mojom::NetworkQualityEstimatorManagerClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityEstimatorManagerClient);
 };
 
 }  // namespace
@@ -109,6 +112,11 @@ class NetworkQualityEstimatorManagerTest : public testing::Test {
         std::make_unique<TestNetworkQualityEstimatorManagerClient>(
             network_quality_estimator_manager_.get());
   }
+
+  NetworkQualityEstimatorManagerTest(
+      const NetworkQualityEstimatorManagerTest&) = delete;
+  NetworkQualityEstimatorManagerTest& operator=(
+      const NetworkQualityEstimatorManagerTest&) = delete;
 
   ~NetworkQualityEstimatorManagerTest() override {}
 
@@ -133,8 +141,6 @@ class NetworkQualityEstimatorManagerTest : public testing::Test {
       network_quality_estimator_manager_;
   std::unique_ptr<TestNetworkQualityEstimatorManagerClient>
       network_quality_estimator_manager_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorManagerTest);
 };
 
 TEST_F(NetworkQualityEstimatorManagerTest, ClientNotified) {

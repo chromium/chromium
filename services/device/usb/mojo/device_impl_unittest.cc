@@ -167,6 +167,9 @@ class USBDeviceImplTest : public testing::Test {
  public:
   USBDeviceImplTest() : is_device_open_(false), allow_reset_(false) {}
 
+  USBDeviceImplTest(const USBDeviceImplTest&) = delete;
+  USBDeviceImplTest& operator=(const USBDeviceImplTest&) = delete;
+
   ~USBDeviceImplTest() override = default;
 
   void TearDown() override { base::RunLoop().RunUntilIdle(); }
@@ -467,8 +470,6 @@ class USBDeviceImplTest : public testing::Test {
   base::queue<std::vector<UsbIsochronousPacketPtr>> mock_outbound_packets_;
 
   std::set<uint8_t> claimed_interfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(USBDeviceImplTest);
 };
 
 }  // namespace

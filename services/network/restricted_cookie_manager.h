@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer);
 
+  RestrictedCookieManager(const RestrictedCookieManager&) = delete;
+  RestrictedCookieManager& operator=(const RestrictedCookieManager&) = delete;
+
   ~RestrictedCookieManager() override;
 
   void OverrideOriginForTesting(const url::Origin& new_origin) {
@@ -175,8 +178,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RestrictedCookieManager);
 };
 
 }  // namespace network

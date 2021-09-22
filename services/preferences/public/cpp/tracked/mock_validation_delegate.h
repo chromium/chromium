@@ -89,6 +89,10 @@ class MockValidationDelegate
  public:
   explicit MockValidationDelegate(
       scoped_refptr<MockValidationDelegateRecord> record);
+
+  MockValidationDelegate(const MockValidationDelegate&) = delete;
+  MockValidationDelegate& operator=(const MockValidationDelegate&) = delete;
+
   ~MockValidationDelegate() override;
 
   // TrackedPreferenceValidationDelegate implementation.
@@ -119,8 +123,6 @@ class MockValidationDelegate
       prefs::mojom::TrackedPreferenceMetadata::PrefTrackingStrategy strategy);
 
   scoped_refptr<MockValidationDelegateRecord> record_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockValidationDelegate);
 };
 
 #endif  // SERVICES_PREFERENCES_PUBLIC_CPP_TRACKED_MOCK_VALIDATION_DELEGATE_H_

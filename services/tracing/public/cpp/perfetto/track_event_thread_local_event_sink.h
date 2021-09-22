@@ -40,6 +40,12 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
       uint32_t session_id,
       bool disable_interning,
       bool proto_writer_filtering_enabled);
+
+  TrackEventThreadLocalEventSink(const TrackEventThreadLocalEventSink&) =
+      delete;
+  TrackEventThreadLocalEventSink& operator=(
+      const TrackEventThreadLocalEventSink&) = delete;
+
   ~TrackEventThreadLocalEventSink() override;
 
   // Resets emitted incremental state on all threads and causes incremental data
@@ -150,8 +156,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
   // Stores the trace packet handle for a typed TrackEvent until the TrackEvent
   // was finalized after the code in //base filled its typed argument fields.
   perfetto::TraceWriter::TracePacketHandle pending_trace_packet_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackEventThreadLocalEventSink);
 };
 
 }  // namespace tracing

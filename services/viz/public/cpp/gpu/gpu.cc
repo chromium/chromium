@@ -30,6 +30,10 @@ namespace viz {
 class Gpu::GpuPtrIO {
  public:
   GpuPtrIO() { DETACH_FROM_THREAD(thread_checker_); }
+
+  GpuPtrIO(const GpuPtrIO&) = delete;
+  GpuPtrIO& operator=(const GpuPtrIO&) = delete;
+
   ~GpuPtrIO() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
   void Initialize(mojo::PendingRemote<mojom::Gpu> gpu_remote,
@@ -87,8 +91,6 @@ class Gpu::GpuPtrIO {
   // callback fires or if an interface connection error occurs.
   scoped_refptr<EstablishRequest> establish_request_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuPtrIO);
 };
 
 // Encapsulates a single request to establish a GPU channel.

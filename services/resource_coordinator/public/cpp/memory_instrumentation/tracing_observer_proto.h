@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
  public:
   TracingObserverProto(base::trace_event::TraceLog*,
                        base::trace_event::MemoryDumpManager*);
+
+  TracingObserverProto(const TracingObserverProto&) = delete;
+  TracingObserverProto& operator=(const TracingObserverProto&) = delete;
+
   ~TracingObserverProto() override;
 
   static void RegisterForTesting();
@@ -79,8 +83,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   static tracing::PerfettoTracedProcess::DataSourceBase* instance_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(TracingObserverProto);
 };
 
 }  // namespace memory_instrumentation

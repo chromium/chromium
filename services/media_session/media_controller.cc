@@ -41,6 +41,9 @@ class MediaController::ImageObserverHolder {
     ImagesChanged(current_images);
   }
 
+  ImageObserverHolder(const ImageObserverHolder&) = delete;
+  ImageObserverHolder& operator=(const ImageObserverHolder&) = delete;
+
   ~ImageObserverHolder() = default;
 
   bool is_valid() const { return observer_.is_connected(); }
@@ -93,8 +96,6 @@ class MediaController::ImageObserverHolder {
   bool did_send_image_last_ = false;
 
   base::WeakPtrFactory<ImageObserverHolder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageObserverHolder);
 };
 
 MediaController::MediaController() {

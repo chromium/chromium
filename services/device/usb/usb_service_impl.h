@@ -44,6 +44,10 @@ class UsbServiceImpl final :
     public UsbService {
  public:
   UsbServiceImpl();
+
+  UsbServiceImpl(const UsbServiceImpl&) = delete;
+  UsbServiceImpl& operator=(const UsbServiceImpl&) = delete;
+
   ~UsbServiceImpl() override;
 
  private:
@@ -129,8 +133,6 @@ class UsbServiceImpl final :
   base::WeakPtr<UsbServiceImpl> weak_self_;
 
   base::WeakPtrFactory<UsbServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbServiceImpl);
 };
 
 }  // namespace device

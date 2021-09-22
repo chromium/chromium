@@ -12,15 +12,17 @@ namespace device {
 class PlatformSensorProviderMac : public PlatformSensorProvider {
  public:
   PlatformSensorProviderMac();
+
+  PlatformSensorProviderMac(const PlatformSensorProviderMac&) = delete;
+  PlatformSensorProviderMac& operator=(const PlatformSensorProviderMac&) =
+      delete;
+
   ~PlatformSensorProviderMac() override;
 
  protected:
   void CreateSensorInternal(mojom::SensorType type,
                             SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderMac);
 };
 
 }  // namespace device

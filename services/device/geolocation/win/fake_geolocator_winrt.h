@@ -26,6 +26,10 @@ class FakeGeolocatorWinrt
   FakeGeolocatorWinrt(
       std::unique_ptr<FakeGeocoordinateData> position_data,
       ABI::Windows::Devices::Geolocation::PositionStatus position_status);
+
+  FakeGeolocatorWinrt(const FakeGeolocatorWinrt&) = delete;
+  FakeGeolocatorWinrt& operator=(const FakeGeolocatorWinrt&) = delete;
+
   ~FakeGeolocatorWinrt() override;
 
   // IGeolocator:
@@ -81,8 +85,6 @@ class FakeGeolocatorWinrt
   const ABI::Windows::Devices::Geolocation::PositionStatus position_status_;
 
   base::WeakPtrFactory<FakeGeolocatorWinrt> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGeolocatorWinrt);
 };
 
 }  // namespace device

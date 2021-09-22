@@ -26,6 +26,10 @@ class AppClient : public Service,
  public:
   explicit AppClient(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver);
+
+  AppClient(const AppClient&) = delete;
+  AppClient& operator=(const AppClient&) = delete;
+
   ~AppClient() override;
 
   // Service:
@@ -48,8 +52,6 @@ class AppClient : public Service,
   ServiceReceiver service_receiver_;
   BinderRegistry registry_;
   mojo::ReceiverSet<mojom::LifecycleControl> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppClient);
 };
 
 }  // namespace test

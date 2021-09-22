@@ -37,14 +37,16 @@ class UPowerProperties : public dbus::PropertySet {
  public:
   UPowerProperties(dbus::ObjectProxy* object_proxy,
                    const PropertyChangedCallback callback);
+
+  UPowerProperties(const UPowerProperties&) = delete;
+  UPowerProperties& operator=(const UPowerProperties&) = delete;
+
   ~UPowerProperties() override;
 
   base::Version daemon_version();
 
  private:
   dbus::Property<std::string> daemon_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(UPowerProperties);
 };
 
 UPowerProperties::UPowerProperties(dbus::ObjectProxy* object_proxy,
@@ -67,6 +69,10 @@ class UPowerObject {
 
   UPowerObject(dbus::Bus* dbus,
                const PropertyChangedCallback property_changed_callback);
+
+  UPowerObject(const UPowerObject&) = delete;
+  UPowerObject& operator=(const UPowerObject&) = delete;
+
   ~UPowerObject();
 
   std::vector<dbus::ObjectPath> EnumerateDevices();
@@ -79,8 +85,6 @@ class UPowerObject {
   dbus::Bus* dbus_;           // Owned by the BatteryStatusNotificationThread.
   dbus::ObjectProxy* proxy_;  // Owned by the dbus.
   std::unique_ptr<UPowerProperties> properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(UPowerObject);
 };
 
 UPowerObject::UPowerObject(
@@ -134,6 +138,10 @@ class BatteryProperties : public dbus::PropertySet {
  public:
   BatteryProperties(dbus::ObjectProxy* object_proxy,
                     const PropertyChangedCallback callback);
+
+  BatteryProperties(const BatteryProperties&) = delete;
+  BatteryProperties& operator=(const BatteryProperties&) = delete;
+
   ~BatteryProperties() override;
 
   void ConnectSignals() override;
@@ -155,8 +163,6 @@ class BatteryProperties : public dbus::PropertySet {
   dbus::Property<int64_t> time_to_empty_;
   dbus::Property<int64_t> time_to_full_;
   dbus::Property<uint32_t> type_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryProperties);
 };
 
 BatteryProperties::BatteryProperties(dbus::ObjectProxy* object_proxy,
@@ -229,6 +235,10 @@ class BatteryObject {
   BatteryObject(dbus::Bus* dbus,
                 const dbus::ObjectPath& device_path,
                 const PropertyChangedCallback& property_changed_callback);
+
+  BatteryObject(const BatteryObject&) = delete;
+  BatteryObject& operator=(const BatteryObject&) = delete;
+
   ~BatteryObject();
 
   bool IsValid() const;
@@ -240,8 +250,6 @@ class BatteryObject {
   dbus::Bus* dbus_;           // Owned by the BatteryStatusNotificationThread,
   dbus::ObjectProxy* proxy_;  // Owned by the dbus.
   std::unique_ptr<BatteryProperties> properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryObject);
 };
 
 BatteryObject::BatteryObject(
@@ -315,6 +323,11 @@ class BatteryStatusManagerLinux::BatteryStatusNotificationThread
   explicit BatteryStatusNotificationThread(
       const BatteryStatusService::BatteryUpdateCallback& callback)
       : base::Thread(kBatteryNotifierThreadName), callback_(callback) {}
+
+  BatteryStatusNotificationThread(const BatteryStatusNotificationThread&) =
+      delete;
+  BatteryStatusNotificationThread& operator=(
+      const BatteryStatusNotificationThread&) = delete;
 
   ~BatteryStatusNotificationThread() override {
     // Make sure to shutdown the dbus connection if it is still open in the very
@@ -564,8 +577,6 @@ class BatteryStatusManagerLinux::BatteryStatusNotificationThread
   std::unique_ptr<UPowerObject> upower_;
   std::unique_ptr<BatteryObject> battery_;
   bool notifying_battery_status_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusNotificationThread);
 };
 
 BatteryStatusManagerLinux::BatteryStatusManagerLinux(

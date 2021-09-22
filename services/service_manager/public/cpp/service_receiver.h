@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ServiceReceiver
   ServiceReceiver(service_manager::Service* service,
                   mojo::PendingReceiver<mojom::Service> receiver);
 
+  ServiceReceiver(const ServiceReceiver&) = delete;
+  ServiceReceiver& operator=(const ServiceReceiver&) = delete;
+
   ~ServiceReceiver() override;
 
   bool is_bound() const { return receiver_.is_bound(); }
@@ -140,8 +143,6 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_CPP) ServiceReceiver
   // receiving |OnStart()| on a bound ServiceReceiver. This ensures that the
   // closure request is actually issued once |OnStart()| is invoked.
   bool request_closure_on_start_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceReceiver);
 };
 
 }  // namespace service_manager

@@ -23,6 +23,10 @@ namespace test {
 class InProcessDataDecoder : public ServiceProvider {
  public:
   InProcessDataDecoder();
+
+  InProcessDataDecoder(const InProcessDataDecoder&) = delete;
+  InProcessDataDecoder& operator=(const InProcessDataDecoder&) = delete;
+
   ~InProcessDataDecoder() override;
 
   DataDecoderService& service() { return service_; }
@@ -40,8 +44,6 @@ class InProcessDataDecoder : public ServiceProvider {
   DataDecoderService service_;
   mojo::ReceiverSet<mojom::DataDecoderService> receivers_;
   base::WeakPtrFactory<InProcessDataDecoder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessDataDecoder);
 };
 
 }  // namespace test

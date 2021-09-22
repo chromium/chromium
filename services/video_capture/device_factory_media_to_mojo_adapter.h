@@ -39,6 +39,12 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
   DeviceFactoryMediaToMojoAdapter(
       std::unique_ptr<media::VideoCaptureSystem> capture_system);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  DeviceFactoryMediaToMojoAdapter(const DeviceFactoryMediaToMojoAdapter&) =
+      delete;
+  DeviceFactoryMediaToMojoAdapter& operator=(
+      const DeviceFactoryMediaToMojoAdapter&) = delete;
+
   ~DeviceFactoryMediaToMojoAdapter() override;
 
   // DeviceFactory implementation.
@@ -95,8 +101,6 @@ class DeviceFactoryMediaToMojoAdapter : public DeviceFactory {
 
   bool has_called_get_device_infos_;
   base::WeakPtrFactory<DeviceFactoryMediaToMojoAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceFactoryMediaToMojoAdapter);
 };
 
 }  // namespace video_capture

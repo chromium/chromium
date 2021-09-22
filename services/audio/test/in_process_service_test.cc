@@ -98,6 +98,10 @@ class InProcessServiceTest : public testing::Test {
         audio_system_(std::make_unique<AudioSystemToServiceAdapter>(
             base::BindRepeating(&InProcessServiceTest::BindSystemInfo,
                                 base::Unretained(this)))) {}
+
+  InProcessServiceTest(const InProcessServiceTest&) = delete;
+  InProcessServiceTest& operator=(const InProcessServiceTest&) = delete;
+
   ~InProcessServiceTest() override = default;
 
  protected:
@@ -126,8 +130,6 @@ class InProcessServiceTest : public testing::Test {
   media::MockAudioManager audio_manager_;
   std::unique_ptr<ServiceTestHelper> helper_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessServiceTest);
 };
 
 // Tests for FakeSystemInfo overriding the global binder.
@@ -135,6 +137,10 @@ class FakeSystemInfoTest : public InProcessServiceTest<false>,
                            public FakeSystemInfo {
  public:
   FakeSystemInfoTest() = default;
+
+  FakeSystemInfoTest(const FakeSystemInfoTest&) = delete;
+  FakeSystemInfoTest& operator=(const FakeSystemInfoTest&) = delete;
+
   ~FakeSystemInfoTest() override = default;
 
  protected:
@@ -145,8 +151,6 @@ class FakeSystemInfoTest : public InProcessServiceTest<false>,
     std::move(callback).Run(true);
     MethodCalled();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSystemInfoTest);
 };
 
 TEST_F(FakeSystemInfoTest, HasInputDevicesCalledOnGlobalBinderOverride) {

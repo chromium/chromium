@@ -44,6 +44,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
       scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
       mojom::CookieManagerParamsPtr params);
 
+  CookieManager(const CookieManager&) = delete;
+  CookieManager& operator=(const CookieManager&) = delete;
+
   ~CookieManager() override;
 
   const CookieSettings& cookie_settings() const { return cookie_settings_; }
@@ -136,8 +139,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // Note: RestrictedCookieManager and CookieAccessDelegate store pointers to
   // |cookie_settings_|.
   CookieSettings cookie_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieManager);
 };
 
 COMPONENT_EXPORT(NETWORK_SERVICE)

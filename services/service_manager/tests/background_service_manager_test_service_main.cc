@@ -25,6 +25,9 @@ class TestClient : public Service, public mojom::TestService {
         &TestClient::BindTestServiceReceiver, base::Unretained(this)));
   }
 
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
+
   ~TestClient() override = default;
 
  private:
@@ -48,8 +51,6 @@ class TestClient : public Service, public mojom::TestService {
   ServiceReceiver service_receiver_;
   BinderRegistry registry_;
   mojo::ReceiverSet<mojom::TestService> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 }  // namespace service_manager

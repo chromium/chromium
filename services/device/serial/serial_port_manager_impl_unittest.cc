@@ -84,6 +84,10 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
     manager_->SetSerialEnumeratorForTesting(std::move(enumerator));
   }
 
+  SerialPortManagerImplTest(const SerialPortManagerImplTest&) = delete;
+  SerialPortManagerImplTest& operator=(const SerialPortManagerImplTest&) =
+      delete;
+
   ~SerialPortManagerImplTest() override = default;
 
   // Since not all functions need to use a MockBluetoothAdapter, this function
@@ -154,8 +158,6 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
 
  private:
   std::unique_ptr<SerialPortManagerImpl> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialPortManagerImplTest);
 };
 
 // This is to simply test that we can enumerate devices on the platform without
