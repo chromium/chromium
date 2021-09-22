@@ -193,7 +193,7 @@ void BootTimesRecorder::OnChromeProcessStart() {
   // Write /tmp/uptime-logout-started as well.
   constexpr char kLogoutStarted[] = "logout-started";
   logout_started_last_stats.RecordStatsWithCallback(
-      kLogoutStarted,
+      kLogoutStarted, /*write_flag_file=*/true,
       base::BindOnce(&BootTimesRecorder::ClearLogoutStartedLastPreference));
 }
 
@@ -213,7 +213,7 @@ void BootTimesRecorder::SaveChromeMainStats() {
 }
 
 void BootTimesRecorder::RecordChromeMainStats() {
-  chrome_main_stats_.RecordStats(kChromeMain);
+  chrome_main_stats_.RecordStats(kChromeMain, /*write_flag_file=*/false);
 }
 
 void BootTimesRecorder::RecordLoginAttempted() {

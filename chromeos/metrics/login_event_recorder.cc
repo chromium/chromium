@@ -50,6 +50,10 @@ constexpr base::FilePath::CharType kUptimePrefix[] = FPL("uptime-");
 // Prefix for the disk usage files.
 constexpr base::FilePath::CharType kDiskPrefix[] = FPL("disk-");
 
+// Prefix and suffix for the "stats saved" flags file.
+constexpr base::FilePath::CharType kStatsPrefix[] = FPL("stats-");
+constexpr base::FilePath::CharType kWrittenSuffix[] = FPL(".written");
+
 // Names of login stats files.
 constexpr base::FilePath::CharType kLoginSuccess[] = FPL("login-success");
 
@@ -247,25 +251,28 @@ bool LoginEventRecorder::Stats::UptimeDouble(double* result) const {
   return false;
 }
 
-void LoginEventRecorder::Stats::RecordStats(const std::string& name) const {
+void LoginEventRecorder::Stats::RecordStats(const std::string& name,
+                                            bool write_flag_file) const {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoginEventRecorder::Stats::RecordStatsAsync,
-                     base::Owned(new Stats(*this)), name));
+                     base::Owned(new Stats(*this)), name, write_flag_file));
 }
 
 void LoginEventRecorder::Stats::RecordStatsWithCallback(
     const std::string& name,
+    bool write_flag_file,
     base::OnceClosure callback) const {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoginEventRecorder::Stats::RecordStatsAsync,
-                     base::Owned(new Stats(*this)), name),
+                     base::Owned(new Stats(*this)), name, write_flag_file),
       std::move(callback));
 }
 
 void LoginEventRecorder::Stats::RecordStatsAsync(
-    const base::FilePath::StringType& name) const {
+    const base::FilePath::StringType& name,
+    bool write_flag_file) const {
   const base::FilePath log_path(kLogPath);
   const base::FilePath uptime_output =
       log_path.Append(base::FilePath(kUptimePrefix + name));
@@ -275,6 +282,11 @@ void LoginEventRecorder::Stats::RecordStatsAsync(
   // Append numbers to the files.
   AppendFile(uptime_output, uptime_.data(), uptime_.size());
   AppendFile(disk_output, disk_.data(), disk_.size());
+  if (write_flag_file) {
+    const base::FilePath flag_path =
+        log_path.Append(base::FilePath(kStatsPrefix + name + kWrittenSuffix));
+    AppendFile(flag_path, "", 0);
+  }
 }
 
 static base::LazyInstance<LoginEventRecorder>::DestructorAtExit
@@ -327,7 +339,7 @@ void LoginEventRecorder::RecordAuthenticationFailure() {
 }
 
 void LoginEventRecorder::RecordCurrentStats(const std::string& name) {
-  Stats::GetCurrentStats().RecordStats(name);
+  Stats::GetCurrentStats().RecordStats(name, /*write_flag_file=*/false);
 }
 
 void LoginEventRecorder::ClearLoginTimeMarkers() {

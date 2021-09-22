@@ -69,13 +69,21 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
     // Returns true on successful conversion.
     bool UptimeDouble(double* result) const;
 
-    void RecordStats(const std::string& name) const;
+    // Stores stats to 'type-name' file with the given |name|.
+    // I.e. '/tmp/uptime-logout-started' and '/tmp/disk-logout-started' for
+    // name='logout-started'.
+    //
+    // When |write_flag_file| is true, also creates 'stats-name.written' flag
+    // file to signal that stats were appended.
+    // I.e. '/tmp/stats-logout-started.written' for name='logout-started'.
+    void RecordStats(const std::string& name, bool write_flag_file) const;
     void RecordStatsWithCallback(const std::string& name,
+                                 bool write_flag_file,
                                  base::OnceClosure callback) const;
 
    private:
     // Runs asynchronously when RecordStats(WithCallback) is called.
-    void RecordStatsAsync(const std::string& name) const;
+    void RecordStatsAsync(const std::string& name, bool write_flag_file) const;
 
     std::string uptime_;
     std::string disk_;
