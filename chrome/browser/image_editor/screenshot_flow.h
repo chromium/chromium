@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
@@ -16,6 +17,10 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+
+#if defined(OS_MAC)
+#include "chrome/browser/image_editor/event_capture_mac.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -136,6 +141,11 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
 
   // Callback provided to Start().
   ScreenshotCaptureCallback flow_callback_;
+
+  // Mac-specific
+#if defined(OS_MAC)
+  std::unique_ptr<EventCaptureMac> event_capture_mac_;
+#endif
 
   // Selection rectangle coordinates.
   gfx::Point drag_start_;
