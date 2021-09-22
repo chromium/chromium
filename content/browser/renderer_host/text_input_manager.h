@@ -164,6 +164,10 @@ class CONTENT_EXPORT TextInputManager {
   absl::optional<ui::GrammarFragment> GetGrammarFragment(
       gfx::Range range) const;
 
+  // Returns if the given |range| is overlapping with any existing spellcheck
+  // markers.
+  bool OverlapsWithSpellCheckMarker(const gfx::Range range) const;
+
   // Returns the selection bounds information for |view|. If |view| == nullptr,
   // it will return the corresponding information for |active_view_| or nullptr
   // if there are no active views.

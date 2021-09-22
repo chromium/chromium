@@ -110,6 +110,25 @@ absl::optional<ui::GrammarFragment> TextInputManager::GetGrammarFragment(
   return absl::nullopt;
 }
 
+bool TextInputManager::OverlapsWithSpellCheckMarker(
+    const gfx::Range range) const {
+  if (!active_view_)
+    return false;
+
+  for (const auto& ime_text_span_info :
+       text_input_state_map_.at(active_view_)->ime_text_spans_info) {
+    if (ime_text_span_info->span.type ==
+        ui::ImeTextSpan::Type::kMisspellingSuggestion) {
+      auto span_range = gfx::Range(ime_text_span_info->span.start_offset,
+                                   ime_text_span_info->span.end_offset);
+      if (span_range.Intersects(range)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 const TextInputManager::SelectionRegion* TextInputManager::GetSelectionRegion(
     RenderWidgetHostViewBase* view) const {
   DCHECK(!view || IsRegistered(view));

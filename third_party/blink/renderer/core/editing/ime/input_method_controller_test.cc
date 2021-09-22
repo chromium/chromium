@@ -208,8 +208,8 @@ TEST_F(InputMethodControllerTest, AddImeTextSpansToExistingText) {
 }
 
 TEST_F(InputMethodControllerTest, GetImeTextSpans) {
-  InsertHTMLElement("<div id='sample' contenteditable>hello world</div>",
-                    "sample");
+  Element* div = InsertHTMLElement(
+      "<div id='sample' contenteditable>hello world</div>", "sample");
   ImeTextSpan span1 = ImeTextSpan(ImeTextSpan::Type::kAutocorrect, 0, 5,
                                   Color(255, 0, 0), ImeTextSpanThickness::kThin,
                                   ImeTextSpanUnderlineStyle::kSolid, 0, 0);
@@ -226,22 +226,31 @@ TEST_F(InputMethodControllerTest, GetImeTextSpans) {
 
   Controller().AddImeTextSpansToExistingText({span1, span2, span3, span4}, 0,
                                              10);
+  GetFrame().GetDocument()->Markers().AddSpellingMarker(
+      PlainTextRange(4, 6).CreateRange(*div));
   Controller().SetEditableSelectionOffsets(PlainTextRange(1, 1));
 
   const WebVector<ui::ImeTextSpan>& ime_text_spans =
       Controller().TextInputInfo().ime_text_spans;
 
-  EXPECT_EQ(2u, ime_text_spans.size());
-  EXPECT_EQ(0u, ime_text_spans[0].start_offset);
-  EXPECT_EQ(5u, ime_text_spans[0].end_offset);
-  EXPECT_EQ(ui::ImeTextSpan::Type::kAutocorrect, ime_text_spans[0].type);
+  EXPECT_EQ(3u, ime_text_spans.size());
+
+  EXPECT_EQ(4u, ime_text_spans[0].start_offset);
+  EXPECT_EQ(6u, ime_text_spans[0].end_offset);
+  EXPECT_EQ(ui::ImeTextSpan::Type::kMisspellingSuggestion,
+            ime_text_spans[0].type);
   EXPECT_EQ(0u, ime_text_spans[0].suggestions.size());
 
-  EXPECT_EQ(6u, ime_text_spans[1].start_offset);
-  EXPECT_EQ(8u, ime_text_spans[1].end_offset);
-  EXPECT_EQ(ui::ImeTextSpan::Type::kGrammarSuggestion, ime_text_spans[1].type);
-  EXPECT_EQ(1u, ime_text_spans[1].suggestions.size());
-  EXPECT_EQ("fake_suggestion", ime_text_spans[1].suggestions[0]);
+  EXPECT_EQ(0u, ime_text_spans[1].start_offset);
+  EXPECT_EQ(5u, ime_text_spans[1].end_offset);
+  EXPECT_EQ(ui::ImeTextSpan::Type::kAutocorrect, ime_text_spans[1].type);
+  EXPECT_EQ(0u, ime_text_spans[1].suggestions.size());
+
+  EXPECT_EQ(6u, ime_text_spans[2].start_offset);
+  EXPECT_EQ(8u, ime_text_spans[2].end_offset);
+  EXPECT_EQ(ui::ImeTextSpan::Type::kGrammarSuggestion, ime_text_spans[2].type);
+  EXPECT_EQ(1u, ime_text_spans[2].suggestions.size());
+  EXPECT_EQ("fake_suggestion", ime_text_spans[2].suggestions[0]);
 }
 
 TEST_F(InputMethodControllerTest, SetCompositionAfterEmoji) {
