@@ -1616,12 +1616,16 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
-  for (size_t i = initial_op_count;
-       i <= CanvasResourceProvider::kMaxRecordedOpsPerCanvas; i++) {
+
+  while (CanvasElement().ResourceProvider()->TotalOpBytesUsed() <=
+         CanvasResourceProvider::kMaxRecordedOpBytes) {
     Context2D()->fillRect(0, 0, 1, 1);
-    ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(), i + 1);
+    // Verify that auto-flush did not happen
+    ASSERT_GT(CanvasElement().ResourceProvider()->TotalOpCount(),
+              initial_op_count);
   }
   Context2D()->fillRect(0, 0, 1, 1);
+  // Verify that auto-flush happened
   ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(),
             initial_op_count);
 }
@@ -1640,16 +1644,15 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
   constexpr unsigned int kImageSize = 1024;
   constexpr unsigned int kBytesPerImage = 4 * kImageSize * kImageSize;
 
-  size_t initial_op_count = CanvasElement().ResourceProvider()->TotalOpCount();
+  const size_t initial_op_count =
+      CanvasElement().ResourceProvider()->TotalOpCount();
 
   // We repeat the test twice to verify that the state was properly
   // reset by the Flush.
   for (int repeat = 0; repeat < 2; ++repeat) {
     size_t expected_op_count = initial_op_count;
-    // The for loop below uses "<" rather than "<=" to account for the bytes
-    // used By the paint ops, which also count against pinned memory budget.
     for (size_t pinned_bytes = 0;
-         pinned_bytes < CanvasResourceProvider::kMaxPinnedMemoryPerCanvas;
+         pinned_bytes <= CanvasResourceProvider::kMaxPinnedImageBytes;
          pinned_bytes += kBytesPerImage) {
       FakeImageSource unique_image(IntSize(kImageSize, kImageSize),
                                    kOpaqueBitmap);
@@ -1710,10 +1713,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
 
   FakeImageSource image(IntSize(kImageSize, kImageSize), kOpaqueBitmap);
 
-  // The for loop below uses "<" rather than "<=" to account for the bytes used
-  // By the paint ops, which also count against pinned memory budget.
   for (size_t pinned_bytes = 0;
-       pinned_bytes < 2 * CanvasResourceProvider::kMaxPinnedMemoryPerCanvas;
+       pinned_bytes <= 2 * CanvasResourceProvider::kMaxPinnedImageBytes;
        pinned_bytes += kBytesPerImage) {
     NonThrowableExceptionState exception_state;
     Context2D()->drawImage(GetScriptState(), &image, 0, 0, 1, 1, 0, 0, 1, 1,
@@ -1736,10 +1737,11 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
   Context2D()->beginLayer();
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
-  for (size_t i = initial_op_count;
-       i <= CanvasResourceProvider::kMaxRecordedOpsPerCanvas + 10; i++) {
+  while (CanvasElement().ResourceProvider()->TotalOpBytesUsed() <=
+         CanvasResourceProvider::kMaxRecordedOpBytes + 1024) {
     Context2D()->fillRect(0, 0, 1, 1);
-    ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(), i + 1);
+    ASSERT_GT(CanvasElement().ResourceProvider()->TotalOpCount(),
+              initial_op_count);
   }
   // Closing the layer means next op can trigger auto flush
   Context2D()->endLayer();

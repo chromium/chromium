@@ -89,9 +89,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // long-running RasterCHROMIUM calls that monopolize the main thread
   // of the GPU process.  By flushing periodically, we allow the rasterization
   // of canvas contents to be interleaved with other compositing and UI work.
-  static constexpr size_t kMaxRecordedOpsPerCanvas = 1024;
+  static constexpr size_t kMaxRecordedOpBytes = 1024 * 1024;
   // The same value as is used in content::WebGraphicsConext3DProviderImpl.
-  static constexpr uint64_t kMaxPinnedMemoryPerCanvas = 64 * 1024 * 1024;
+  static constexpr uint64_t kMaxPinnedImageBytes = 64 * 1024 * 1024;
 
   using RestoreMatrixClipStackCb =
       base::RepeatingCallback<void(cc::PaintCanvas*)>;
@@ -258,6 +258,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   size_t TotalOpCount() const {
     return recorder_ ? recorder_->TotalOpCount() : 0;
   }
+  size_t TotalOpBytesUsed() const {
+    return recorder_ ? recorder_->BytesUsed() : 0;
+  }
   size_t TotalPinnedImageBytes() const { return total_pinned_image_bytes_; }
 
   void DidPinImage(size_t bytes) override;
@@ -363,7 +366,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // The maximum number of draw ops executed on the canvas, after which the
   // underlying GrContext is flushed.
   // Note: This parameter does not affect the flushing of recorded PaintOps.
-  // See kMaxRecordedOpsPerCanvas above
+  // See kMaxRecordedOpBytes above.
   static constexpr int kMaxDrawsBeforeContextFlush = 50;
 
   int num_inflight_resources_ = 0;
@@ -375,9 +378,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 };
 
 ALWAYS_INLINE void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
-  if (recorder_ && (recorder_->TotalOpCount() > kMaxRecordedOpsPerCanvas ||
-                    recorder_->BytesUsed() + total_pinned_image_bytes_ >
-                        kMaxPinnedMemoryPerCanvas)) {
+  if (recorder_ && ((recorder_->BytesUsed() > kMaxRecordedOpBytes) ||
+                    total_pinned_image_bytes_ > kMaxPinnedImageBytes)) {
     FlushCanvas();
   }
 }
