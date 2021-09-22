@@ -625,6 +625,8 @@ void NewTabPageUI::OnLoad() {
   }
   profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName,
                                 navigation_start_time_);
+
+  base::UmaHistogramBoolean("NewTabPage.HasCredentials", has_credentials);
 }
 
 // static
