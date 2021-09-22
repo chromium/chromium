@@ -81,7 +81,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                 UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(mShareUrl);
         mDialog = new NoteCreationDialog();
         mDialog.initDialog(this::onViewCreated, urlDomain, title, selectedText,
-                noteService.isPublishAvailable());
+                noteService.isPublishAvailable(), this::executeAction);
     }
 
     @Override

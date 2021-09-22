@@ -48,6 +48,7 @@ public class NoteCreationDialog extends DialogFragment {
     private boolean mIsPublishAvailable;
     private int mNbTemplateSwitches;
     private boolean mInitialized;
+    private Runnable mExecuteActionForAccessibility;
 
     interface NoteDialogObserver {
         void onViewCreated(View view);
@@ -55,13 +56,15 @@ public class NoteCreationDialog extends DialogFragment {
     private NoteDialogObserver mNoteDialogObserver;
 
     public void initDialog(NoteDialogObserver noteDialogObserver, String urlDomain, String title,
-            String selectedText, boolean isPublishAvailable) {
+            String selectedText, boolean isPublishAvailable,
+            Runnable executeActionForAccessibility) {
         mNoteDialogObserver = noteDialogObserver;
         mUrlDomain = urlDomain;
         mTitle = title;
         mSelectedText = selectedText;
         mIsPublishAvailable = isPublishAvailable;
         mInitialized = true;
+        mExecuteActionForAccessibility = executeActionForAccessibility;
     }
 
     @Override
@@ -224,8 +227,12 @@ public class NoteCreationDialog extends DialogFragment {
                 int position;
                 switch (event.getEventType()) {
                     case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+                        host.setClickable(true);
                         mSelectedItemIndex = (Integer) host.getTag();
                         centerCurrentNote();
+                        break;
+                    case AccessibilityEvent.TYPE_VIEW_CLICKED:
+                        mExecuteActionForAccessibility.run();
                         break;
                 }
 
