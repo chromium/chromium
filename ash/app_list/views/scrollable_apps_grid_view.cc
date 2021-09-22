@@ -82,7 +82,7 @@ void ScrollableAppsGridView::Layout() {
   // TODO(crbug.com/1211608): Use FillLayout on the items container.
   items_container()->SetBoundsRect(GetContentsBounds());
 
-  CalculateIdealBoundsForFolder();
+  CalculateIdealBounds();
   for (int i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* view = GetItemViewAt(i);
     view->SetBoundsRect(view_model()->ideal_bounds(i));
@@ -138,14 +138,14 @@ bool ScrollableAppsGridView::IsScrollAxisVertical() const {
   return true;
 }
 
-void ScrollableAppsGridView::CalculateIdealBounds() {
+void ScrollableAppsGridView::CalculateIdealBoundsForNonFolder() {
   DCHECK(!IsInFolder());
 
   int grid_index = 0;
   int model_index = 0;
   for (const auto& entry : view_model()->entries()) {
     views::View* view = entry.view;
-    if (grid_index == reorder_placeholder_slot()) {
+    if (grid_index == reorder_placeholder().slot) {
       // Create space by incrementing the grid index.
       ++grid_index;
     }

@@ -104,6 +104,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void HandleScrollFromAppListView(const gfx::Vector2d& offset,
                                    ui::EventType type) override;
   void SetFocusAfterEndDrag() override;
+  void CalculateIdealBoundsForNonFolder() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
   int TilesPerPage(int page) const override;
   void UpdatePaging() override;

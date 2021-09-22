@@ -394,10 +394,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   virtual void SetFocusAfterEndDrag() = 0;
 
   // Calculates the item views' bounds for non-folder.
-  virtual void CalculateIdealBounds();
+  virtual void CalculateIdealBoundsForNonFolder() = 0;
 
-  // Calculates the item views' bounds for folder.
-  void CalculateIdealBoundsForFolder();
+  // Calculates the item views' bounds for both folder and non-folder.
+  void CalculateIdealBounds();
 
   // Whether the provided view is hidden to facilitate drag operation (for
   // example, the drag view for which a drag icon proxy has been created).
@@ -433,10 +433,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool ignore_layout() const { return ignore_layout_; }
   views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
   views::View* items_container() { return items_container_; }
-  const views::ViewModelT<PulsingBlockView>& pulsing_blocks_model() {
+  views::ViewModelT<PulsingBlockView>& pulsing_blocks_model() {
     return pulsing_blocks_model_;
   }
-  int reorder_placeholder_slot() const { return reorder_placeholder_.slot; }
+  GridIndex reorder_placeholder() const { return reorder_placeholder_; }
   const gfx::Point& last_drag_point() const { return last_drag_point_; }
   void set_last_drag_point(const gfx::Point& p) { last_drag_point_ = p; }
   bool handling_keyboard_move() const { return handling_keyboard_move_; }

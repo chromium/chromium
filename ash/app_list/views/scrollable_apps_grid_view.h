@@ -50,7 +50,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   int GetTotalPages() const override;
   int GetSelectedPage() const override;
   bool IsScrollAxisVertical() const override;
-  void CalculateIdealBounds() override;
+  void CalculateIdealBoundsForNonFolder() override;
   bool MaybeAutoScroll() override;
   void StopAutoScroll() override;
   void HandleScrollFromAppListView(const gfx::Vector2d& offset,
