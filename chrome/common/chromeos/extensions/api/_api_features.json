@@ -13,13 +13,13 @@
     "contexts": [
       "blessed_extension"
     ],
-    "channel": "dev"
+    "channel": "stable"
   },
   "os.telemetry": {
     "dependencies": [ "permission:os.telemetry" ],
     "contexts": [
       "blessed_extension"
     ],
-    "channel": "dev"
+    "channel": "stable"
   }
 }
