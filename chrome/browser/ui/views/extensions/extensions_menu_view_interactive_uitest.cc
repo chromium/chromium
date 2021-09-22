@@ -713,10 +713,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
+#if defined(OS_LINUX)
+// TODO(crbug.com/1251961): Flaky on Linux (CFI)
+#define MAYBE_ClickingContextMenuButton DISABLED_ClickingContextMenuButton
+#else
+#define MAYBE_ClickingContextMenuButton ClickingContextMenuButton
+#endif
+
 // Tests that clicking on the context menu button of an extension item opens the
 // context menu.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       ClickingContextMenuButton) {
+                       MAYBE_ClickingContextMenuButton) {
   LoadTestExtension("extensions/uitest/window_open");
   ClickExtensionsMenuButton();
 
