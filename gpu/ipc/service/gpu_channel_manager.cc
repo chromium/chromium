@@ -935,8 +935,8 @@ void GpuChannelManager::OnContextLost(bool synthetic_loss) {
   }
 
   context_lost_time_ = lost_time;
-
-  if (synthetic_loss && shared_context_state_->GrContextIsGL())
+  bool is_gl = gpu_preferences_.gr_context_type == GrContextType::kGL;
+  if (synthetic_loss && is_gl)
     return;
 
   // Lose all other contexts.
