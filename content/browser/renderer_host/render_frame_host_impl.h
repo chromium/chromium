@@ -2339,6 +2339,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void MaybeDispatchDOMContentLoadedOnPrerenderActivation();
   void MaybeDispatchDidFinishLoadOnPrerenderActivation();
 
+  static const char* LifecycleStateImplToString(LifecycleStateImpl state);
+
  protected:
   friend class RenderFrameHostFactory;
 

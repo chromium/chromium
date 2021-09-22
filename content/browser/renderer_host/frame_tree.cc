@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/optional_trace_event.h"
@@ -33,6 +34,7 @@
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/debug_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
@@ -71,6 +73,93 @@ FrameTreeNode* GetInnerTreeMainFrameNode(FrameTreeNode* node) {
 
   return inner_tree_main_frame ? inner_tree_main_frame->frame_tree_node()
                                : nullptr;
+}
+
+void PrintCrashKeysForBug1250218(FrameTreeNode* ftn,
+                                 SiteInstanceImpl* focused_site_instance,
+                                 SiteInstanceImpl* proxy_site_instance) {
+  // We tried to call SetFocusedFrame on a non-existent RenderFrameProxyHost.
+  // This shouldn't happen but it does. Log crash keys to figure out what's
+  // going on for https://crbug.com/1250218.
+
+  // Log info about the RenderFrameHost that got the focus, and its main frame.
+  RenderFrameHostImpl* rfh = ftn->current_frame_host();
+  SCOPED_CRASH_KEY_BOOL("NoProxy", "focused_is_main_frame", ftn->IsMainFrame());
+  SCOPED_CRASH_KEY_BOOL("NoProxy", "focused_is_render_frame_live",
+                        rfh->IsRenderFrameLive());
+  SCOPED_CRASH_KEY_STRING32(
+      "NoProxy", "focused_lifecycle_state",
+      RenderFrameHostImpl::LifecycleStateImplToString(rfh->lifecycle_state()));
+  SCOPED_CRASH_KEY_BOOL(
+      "NoProxy", "focused_was_bfcache_restored",
+      rfh->was_restored_from_back_forward_cache_for_debugging());
+  SCOPED_CRASH_KEY_STRING32("NoProxy", "main_rfh_lifecycle_state",
+                            RenderFrameHostImpl::LifecycleStateImplToString(
+                                rfh->GetMainFrame()->lifecycle_state()));
+  SCOPED_CRASH_KEY_BOOL(
+      "NoProxy", "main_rfh_was_bfcache_restored",
+      rfh->GetMainFrame()
+          ->was_restored_from_back_forward_cache_for_debugging());
+
+  // Log info about the SiteInstance of the RenderFrameHost that got the focus.
+  SCOPED_CRASH_KEY_NUMBER("NoProxy", "focused_site_instance",
+                          focused_site_instance->GetId().value());
+  SCOPED_CRASH_KEY_NUMBER(
+      "NoProxy", "focused_browsing_instance",
+      focused_site_instance->GetBrowsingInstanceId().value());
+  SCOPED_CRASH_KEY_BOOL("NoProxy", "focused_site_instance_default",
+                        focused_site_instance->IsDefaultSiteInstance());
+  SCOPED_CRASH_KEY_STRING256(
+      "NoProxy", "focused_site_info",
+      focused_site_instance->GetSiteInfo().GetDebugString());
+  SCOPED_CRASH_KEY_BOOL(
+      "NoProxy", "focused_si_has_rvh",
+      !!ftn->frame_tree()->GetRenderViewHost(focused_site_instance));
+
+  // Log info about the problematic proxy's SiteInstance.
+  SCOPED_CRASH_KEY_NUMBER("NoProxy", "proxy_site_instance",
+                          proxy_site_instance->GetId().value());
+  SCOPED_CRASH_KEY_NUMBER("NoProxy", "proxy_browsing_instance",
+                          proxy_site_instance->GetBrowsingInstanceId().value());
+  SCOPED_CRASH_KEY_BOOL("NoProxy", "proxy_site_instance_default",
+                        proxy_site_instance->IsDefaultSiteInstance());
+  SCOPED_CRASH_KEY_STRING256(
+      "NoProxy", "proxy_site_info",
+      proxy_site_instance->GetSiteInfo().GetDebugString());
+  SCOPED_CRASH_KEY_BOOL(
+      "NoProxy", "proxy_si_has_rvh",
+      !!ftn->frame_tree()->GetRenderViewHost(proxy_site_instance));
+
+  // Log info about BFCache's relation wih the focused RenderFrameHost and the
+  // problematic proxy.
+  BackForwardCacheImpl& back_forward_cache =
+      ftn->navigator().controller().GetBackForwardCache();
+  SCOPED_CRASH_KEY_NUMBER("NoProxy", "bfcache_entries_size",
+                          back_forward_cache.GetEntries().size());
+  SCOPED_CRASH_KEY_BOOL(
+      "NoProxy", "focused_bi_in_bfcache",
+      back_forward_cache.IsBrowsingInstanceInBackForwardCacheForDebugging(
+          focused_site_instance->GetBrowsingInstanceId()));
+  SCOPED_CRASH_KEY_BOOL(
+      "NoProxy", "focused_si_in_bfcache",
+      back_forward_cache.IsSiteInstanceInBackForwardCacheForDebugging(
+          focused_site_instance->GetId()));
+  SCOPED_CRASH_KEY_BOOL(
+      "NoProxy", "proxy_bi_in_bfcache",
+      back_forward_cache.IsBrowsingInstanceInBackForwardCacheForDebugging(
+          proxy_site_instance->GetBrowsingInstanceId()));
+  SCOPED_CRASH_KEY_BOOL(
+      "NoProxy", "proxy_si_in_bfcache",
+      back_forward_cache.IsSiteInstanceInBackForwardCacheForDebugging(
+          proxy_site_instance->GetId()));
+
+  base::debug::DumpWithoutCrashing();
+
+  TRACE_EVENT_INSTANT("navigation", "FrameTree::PrintCrashKeysForBug1250218",
+                      ChromeTrackEvent::kFrameTreeNodeInfo, *ftn,
+                      ChromeTrackEvent::kSiteInstance, *proxy_site_instance);
+  CaptureTraceForNavigationDebugScenario(
+      DebugScenario::kDebugNoRenderFrameProxyHostOnSetFocusedFrame);
 }
 
 }  // namespace
@@ -475,6 +564,16 @@ FrameTreeNode* FrameTree::GetFocusedFrame() {
 }
 
 void FrameTree::SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) {
+  TRACE_EVENT("navigation", "FrameTree::SetFocusedFrame",
+              ChromeTrackEvent::kFrameTreeNodeInfo, *node,
+              [&](perfetto::EventContext ctx) {
+                if (!source)
+                  return;
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                static_cast<SiteInstanceImpl*>(source)->WriteIntoTrace(
+                    ctx.Wrap(event->set_site_instance()));
+              });
   if (node == GetFocusedFrame())
     return;
 
@@ -483,6 +582,10 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) {
 
   SiteInstance* current_instance =
       node->current_frame_host()->GetSiteInstance();
+
+  TRACE_EVENT_INSTANT("navigation", "FrameTree::SetFocusedFrame_Current",
+                      ChromeTrackEvent::kSiteInstance,
+                      *static_cast<SiteInstanceImpl*>(current_instance));
 
   // Update the focused frame in all other SiteInstances.  If focus changes to
   // a cross-process frame, this allows the old focused frame's renderer
@@ -498,7 +601,13 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) {
     if (instance != source && instance != current_instance) {
       RenderFrameProxyHost* proxy =
           node->render_manager()->GetRenderFrameProxyHost(instance);
-      proxy->SetFocusedFrame();
+      if (proxy) {
+        proxy->SetFocusedFrame();
+      } else {
+        PrintCrashKeysForBug1250218(
+            node, static_cast<SiteInstanceImpl*>(current_instance),
+            static_cast<SiteInstanceImpl*>(instance));
+      }
     }
   }
 

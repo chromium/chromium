@@ -48,9 +48,16 @@ enum class DebugScenario {
   // RenderFrameProxyHost.
   kDebugSubframeProxyCreationWithNoRVH = 7,
 
+  // BackForwardCacheEntry exists for a subframe history navigation.
+  kDebugBackForwardCacheEntryExistsOnSubframeHistoryNav = 8,
+
+  // RenderFrameProxyHost does not exist when trying to call
+  // RenderFrameProxyHost::SetFocusedFrame().
+  kDebugNoRenderFrameProxyHostOnSetFocusedFrame = 9,
+
   // After making changes, you MUST update the histograms xml by running:
   // "python tools/metrics/histograms/update_debug_scenarios.py"
-  kMaxValue = kDebugSubframeProxyCreationWithNoRVH,
+  kMaxValue = kDebugNoRenderFrameProxyHostOnSetFocusedFrame,
 };
 
 // The tracing categories enabled for debugging navigation scenarios can be

@@ -19121,6 +19121,8 @@ Called by update_debug_scenarios.py.-->
   <int value="5" label="kDebugBackForwardCacheEvictRestoreRace"/>
   <int value="6" label="kDebugNoResponseHeadForHttpOrHttps"/>
   <int value="7" label="kDebugSubframeProxyCreationWithNoRVH"/>
+  <int value="8" label="kDebugBackForwardCacheEntryExistsOnSubframeHistoryNav"/>
+  <int value="9" label="kDebugNoRenderFrameProxyHostOnSetFocusedFrame"/>
 </enum>
 
 <enum name="DeclarativeAPIFunctionType">

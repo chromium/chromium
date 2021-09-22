@@ -50,6 +50,7 @@
 namespace content {
 
 namespace {
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 RenderFrameProxyHost::TestObserver* g_observer_for_testing = nullptr;
 
@@ -461,6 +462,10 @@ void RenderFrameProxyHost::ChildProcessGone() {
 }
 
 void RenderFrameProxyHost::DidFocusFrame() {
+  TRACE_EVENT("navigation", "RenderFrameProxyHost::DidFocusFrame",
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
+              ChromeTrackEvent::kSiteInstance,
+              *static_cast<SiteInstanceImpl*>(GetSiteInstance()));
   RenderFrameHostImpl* render_frame_host =
       frame_tree_node_->current_frame_host();
 

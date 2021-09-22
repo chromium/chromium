@@ -747,29 +747,6 @@ DetermineAfterCommitWhetherToForbidTrustTokenRedemption(
              : network::mojom::TrustTokenRedemptionPolicy::kForbid;
 }
 
-// Returns the string corresponding to LifecycleStateImpl, used for logging
-// crash keys.
-const char* LifecycleStateImplToString(
-    RenderFrameHostImpl::LifecycleStateImpl state) {
-  using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
-  switch (state) {
-    case LifecycleStateImpl::kSpeculative:
-      return "Speculative";
-    case LifecycleStateImpl::kPrerendering:
-      return "Prerendering";
-    case LifecycleStateImpl::kPendingCommit:
-      return "PendingCommit";
-    case LifecycleStateImpl::kActive:
-      return "Active";
-    case LifecycleStateImpl::kInBackForwardCache:
-      return "InBackForwardCache";
-    case LifecycleStateImpl::kRunningUnloadHandlers:
-      return "RunningUnloadHandlers";
-    case LifecycleStateImpl::kReadyToBeDeleted:
-      return "ReadyToBeDeleted";
-  }
-}
-
 // Verify that |browser_side_origin| and |renderer_side_origin| match.  See also
 // https://crbug.com/888079.
 void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
@@ -3509,7 +3486,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
         "NoRVH", "proxy_bi_in_bfcache",
         back_forward_cache.IsBrowsingInstanceInBackForwardCacheForDebugging(
             proxy_si->GetBrowsingInstanceId()));
-
     SCOPED_CRASH_KEY_BOOL(
         "NoRVH", "proxy_si_in_bfcache",
         back_forward_cache.IsSiteInstanceInBackForwardCacheForDebugging(
@@ -4057,6 +4033,10 @@ void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
 }
 
 void RenderFrameHostImpl::DidFocusFrame() {
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::DidFocusFrame",
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
+              ChromeTrackEvent::kSiteInstance,
+              *static_cast<SiteInstanceImpl*>(GetSiteInstance()));
   // We don't handle this IPC signal for non-active RenderFrameHost.
   //
   // For RenderFrameHost in BackForwardCache, it is safe to ignore this IPC as
@@ -12695,6 +12675,29 @@ bool RenderFrameHostImpl::IsInPrimaryMainFrame() {
   return !GetParent() && GetPage().IsPrimary();
 }
 
+// Returns the string corresponding to LifecycleStateImpl, used for logging
+// crash keys.
+const char* RenderFrameHostImpl::LifecycleStateImplToString(
+    RenderFrameHostImpl::LifecycleStateImpl state) {
+  using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
+  switch (state) {
+    case LifecycleStateImpl::kSpeculative:
+      return "Speculative";
+    case LifecycleStateImpl::kPrerendering:
+      return "Prerendering";
+    case LifecycleStateImpl::kPendingCommit:
+      return "PendingCommit";
+    case LifecycleStateImpl::kActive:
+      return "Active";
+    case LifecycleStateImpl::kInBackForwardCache:
+      return "InBackForwardCache";
+    case LifecycleStateImpl::kRunningUnloadHandlers:
+      return "RunningUnloadHandlers";
+    case LifecycleStateImpl::kReadyToBeDeleted:
+      return "ReadyToBeDeleted";
+  }
+}
+
 RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
     RenderFrameHostImpl& document) {
   // Only create page object for the main document as the PageImpl is 1:1 with
@@ -12711,7 +12714,7 @@ RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() =
 
 std::ostream& operator<<(std::ostream& o,
                          const RenderFrameHostImpl::LifecycleStateImpl& s) {
-  return o << LifecycleStateImplToString(s);
+  return o << RenderFrameHostImpl::LifecycleStateImplToString(s);
 }
 
 }  // namespace content
