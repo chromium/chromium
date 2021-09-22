@@ -14,7 +14,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/android_sms/fake_android_sms_app_manager.h"
+#include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #endif
 
