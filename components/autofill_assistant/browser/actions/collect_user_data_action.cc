@@ -624,8 +624,9 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
   // Gather info for UMA histograms.
   if (!shown_to_user_) {
     shown_to_user_ = true;
-    initially_prefilled_ =
-        CheckInitialAutofillDataComplete(delegate_->GetPersonalDataManager());
+    initially_prefilled_ = CheckInitialAutofillDataComplete(
+        user_data->available_profiles_,
+        user_data->available_payment_instruments_);
   }
 
   if (collect_user_data.has_prompt()) {
@@ -970,58 +971,52 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
 }
 
 bool CollectUserDataAction::CheckInitialAutofillDataComplete(
-    autofill::PersonalDataManager* personal_data_manager) {
+    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles,
+    const std::vector<std::unique_ptr<PaymentInstrument>>&
+        payment_instruments) {
   DCHECK(collect_user_data_options_ != nullptr);
   bool request_contact = RequiresContact(*collect_user_data_options_);
   if (request_contact || collect_user_data_options_->request_shipping) {
-    auto profiles = personal_data_manager->GetProfiles();
     if (request_contact) {
-      auto completeContactIter = std::find_if(
+      auto complete_contact_iter = std::find_if(
           profiles.begin(), profiles.end(), [this](const auto& profile) {
             return user_data::GetContactValidationErrors(
-                       profile, *this->collect_user_data_options_.get())
+                       profile.get(), *collect_user_data_options_)
                 .empty();
           });
-      if (completeContactIter == profiles.end()) {
+      if (complete_contact_iter == profiles.end()) {
         return false;
       }
     }
 
     if (collect_user_data_options_->request_shipping) {
-      auto completeAddressIter = std::find_if(
-          profiles.begin(), profiles.end(), [this](const auto* profile) {
+      auto complete_address_iter = std::find_if(
+          profiles.begin(), profiles.end(), [this](const auto& profile) {
             return user_data::GetShippingAddressValidationErrors(
-                       profile, *this->collect_user_data_options_.get())
+                       profile.get(), *collect_user_data_options_)
                 .empty();
           });
-      if (completeAddressIter == profiles.end()) {
+      if (complete_address_iter == profiles.end()) {
         return false;
       }
     }
   }
 
   if (collect_user_data_options_->request_payment_method) {
-    auto credit_cards = personal_data_manager->GetCreditCards();
-    auto complete_card_iter = std::find_if(
-        credit_cards.begin(), credit_cards.end(),
-        [this, personal_data_manager](const auto* credit_card) {
-          // TODO(b/142630213): Figure out how to retrieve billing
-          // profile if user has turned off addresses in Chrome
-          // settings.
-          return user_data::GetPaymentInstrumentValidationErrors(
-                     credit_card,
-                     credit_card != nullptr &&
-                             !credit_card->billing_address_id().empty()
-                         ? personal_data_manager->GetProfileByGUID(
-                               credit_card->billing_address_id())
-                         : nullptr,
-                     *this->collect_user_data_options_.get())
-              .empty();
-        });
-    if (complete_card_iter == credit_cards.end()) {
+    auto complete_payment_instrument_iter =
+        std::find_if(payment_instruments.begin(), payment_instruments.end(),
+                     [this](const auto& payment_instrument) {
+                       return user_data::GetPaymentInstrumentValidationErrors(
+                                  payment_instrument->card.get(),
+                                  payment_instrument->billing_address.get(),
+                                  *collect_user_data_options_)
+                           .empty();
+                     });
+    if (complete_payment_instrument_iter == payment_instruments.end()) {
       return false;
     }
   }
+
   return true;
 }
 

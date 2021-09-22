@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
@@ -94,9 +95,10 @@ class CollectUserDataAction : public Action,
   // Creates a new instance of |CollectUserDataOptions| from |proto_|.
   bool CreateOptionsFromProto();
 
-  // Will update |initial_card_has_billing_postal_code_|.
   bool CheckInitialAutofillDataComplete(
-      autofill::PersonalDataManager* personal_data_manager);
+      const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles,
+      const std::vector<std::unique_ptr<PaymentInstrument>>&
+          payment_instruments);
 
   void WriteProcessedAction(UserData* user_data, const UserModel* user_model);
   void UpdateProfileAndCardUse(UserData* user_data);
