@@ -60,11 +60,14 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   class NativesEnabledScope {
    public:
     explicit NativesEnabledScope(ModuleSystem* module_system);
+
+    NativesEnabledScope(const NativesEnabledScope&) = delete;
+    NativesEnabledScope& operator=(const NativesEnabledScope&) = delete;
+
     ~NativesEnabledScope();
 
    private:
     ModuleSystem* module_system_;
-    DISALLOW_COPY_AND_ASSIGN(NativesEnabledScope);
   };
 
   // |source_map| is a weak pointer.

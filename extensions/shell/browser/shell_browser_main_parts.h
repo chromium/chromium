@@ -41,6 +41,10 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
  public:
   ShellBrowserMainParts(const content::MainFunctionParams& parameters,
                         ShellBrowserMainDelegate* browser_main_delegate);
+
+  ShellBrowserMainParts(const ShellBrowserMainParts&) = delete;
+  ShellBrowserMainParts& operator=(const ShellBrowserMainParts&) = delete;
+
   ~ShellBrowserMainParts() override;
 
   ShellBrowserContext* browser_context() { return browser_context_.get(); }
@@ -92,8 +96,6 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
   bool run_message_loop_;
 
   std::unique_ptr<ShellBrowserMainDelegate> browser_main_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellBrowserMainParts);
 };
 
 }  // namespace extensions

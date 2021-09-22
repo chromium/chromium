@@ -45,6 +45,11 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
  public:
   explicit ShellContentBrowserClient(
       ShellBrowserMainDelegate* browser_main_delegate);
+
+  ShellContentBrowserClient(const ShellContentBrowserClient&) = delete;
+  ShellContentBrowserClient& operator=(const ShellContentBrowserClient&) =
+      delete;
+
   ~ShellContentBrowserClient() override;
 
   // Returns the single instance.
@@ -151,8 +156,6 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
 
   // Owned by ShellBrowserMainParts.
   ShellBrowserMainDelegate* browser_main_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellContentBrowserClient);
 };
 
 }  // namespace extensions

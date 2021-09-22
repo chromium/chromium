@@ -37,6 +37,9 @@ class StorageFrontend : public BrowserContextKeyedAPI {
       scoped_refptr<value_store::ValueStoreFactory> storage_factory,
       content::BrowserContext* context);
 
+  StorageFrontend(const StorageFrontend&) = delete;
+  StorageFrontend& operator=(const StorageFrontend&) = delete;
+
   // Public so tests can create and delete their own instances.
   ~StorageFrontend() override;
 
@@ -96,8 +99,6 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   // Maps a known namespace to its corresponding ValueStoreCache. The caches
   // are owned by this object.
   CacheMap caches_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageFrontend);
 };
 
 }  // namespace extensions

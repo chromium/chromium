@@ -34,6 +34,11 @@ using storage_monitor::TestStorageMonitor;
 class SystemStorageEjectApiTest : public extensions::ShellApiTest {
  public:
   SystemStorageEjectApiTest() : monitor_(nullptr) {}
+
+  SystemStorageEjectApiTest(const SystemStorageEjectApiTest&) = delete;
+  SystemStorageEjectApiTest& operator=(const SystemStorageEjectApiTest&) =
+      delete;
+
   ~SystemStorageEjectApiTest() override {}
 
  protected:
@@ -81,9 +86,6 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
 
  protected:
   TestStorageMonitor* monitor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemStorageEjectApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SystemStorageEjectApiTest, EjectTest) {

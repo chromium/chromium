@@ -23,6 +23,10 @@ namespace extensions {
 class AutomationPosition final : public gin::Wrappable<AutomationPosition> {
  public:
   AutomationPosition(const ui::AXNode& node, int offset, bool is_upstream);
+
+  AutomationPosition(const AutomationPosition&) = delete;
+  AutomationPosition& operator=(const AutomationPosition&) = delete;
+
   ~AutomationPosition() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -97,8 +101,6 @@ class AutomationPosition final : public gin::Wrappable<AutomationPosition> {
   std::u16string GetText(gin::Arguments* arguments);
 
   ui::AXNodePosition::AXPositionInstance position_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationPosition);
 };
 
 }  // namespace extensions

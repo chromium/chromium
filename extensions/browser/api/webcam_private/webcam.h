@@ -85,6 +85,10 @@ class WebcamResource : public ApiResource {
   WebcamResource(const std::string& owner_extension_id,
                  Webcam* webcam,
                  const std::string& webcam_id);
+
+  WebcamResource(const WebcamResource&) = delete;
+  WebcamResource& operator=(const WebcamResource&) = delete;
+
   ~WebcamResource() override;
 
   static const content::BrowserThread::ID kThreadId =
@@ -99,8 +103,6 @@ class WebcamResource : public ApiResource {
  private:
   scoped_refptr<Webcam> webcam_;
   std::string webcam_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamResource);
 };
 
 }  // namespace extensions

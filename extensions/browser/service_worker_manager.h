@@ -22,6 +22,10 @@ namespace extensions {
 class ServiceWorkerManager : public ExtensionRegistryObserver {
  public:
   explicit ServiceWorkerManager(content::BrowserContext* browser_context);
+
+  ServiceWorkerManager(const ServiceWorkerManager&) = delete;
+  ServiceWorkerManager& operator=(const ServiceWorkerManager&) = delete;
+
   ~ServiceWorkerManager() override;
 
  private:
@@ -37,8 +41,6 @@ class ServiceWorkerManager : public ExtensionRegistryObserver {
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerManager);
 };
 
 }  // namespace extensions

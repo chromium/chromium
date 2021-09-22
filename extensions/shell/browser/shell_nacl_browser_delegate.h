@@ -22,6 +22,10 @@ class ShellNaClBrowserDelegate : public NaClBrowserDelegate {
  public:
   // Uses |context| to look up extensions via InfoMap on the IO thread.
   explicit ShellNaClBrowserDelegate(content::BrowserContext* context);
+
+  ShellNaClBrowserDelegate(const ShellNaClBrowserDelegate&) = delete;
+  ShellNaClBrowserDelegate& operator=(const ShellNaClBrowserDelegate&) = delete;
+
   ~ShellNaClBrowserDelegate() override;
 
   // NaClBrowserDelegate overrides:
@@ -44,8 +48,6 @@ class ShellNaClBrowserDelegate : public NaClBrowserDelegate {
 
  private:
   content::BrowserContext* browser_context_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(ShellNaClBrowserDelegate);
 };
 
 }  // namespace extensions

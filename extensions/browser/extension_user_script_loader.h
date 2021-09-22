@@ -45,6 +45,11 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
                             const Extension& extension,
                             bool listen_for_extension_system_loaded,
                             scoped_refptr<ContentVerifier> content_verifier);
+
+  ExtensionUserScriptLoader(const ExtensionUserScriptLoader&) = delete;
+  ExtensionUserScriptLoader& operator=(const ExtensionUserScriptLoader&) =
+      delete;
+
   ~ExtensionUserScriptLoader() override;
 
   // Adds `script_ids` into `pending_dynamic_script_ids_` This is called before
@@ -131,8 +136,6 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   scoped_refptr<ContentVerifier> content_verifier_;
 
   base::WeakPtrFactory<ExtensionUserScriptLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUserScriptLoader);
 };
 
 }  // namespace extensions

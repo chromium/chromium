@@ -58,6 +58,10 @@ class APISignature {
   APISignature(std::vector<std::unique_ptr<ArgumentSpec>> signature,
                std::unique_ptr<APISignature::ReturnsAsync> returns_async,
                BindingAccessChecker* access_checker);
+
+  APISignature(const APISignature&) = delete;
+  APISignature& operator=(const APISignature&) = delete;
+
   ~APISignature();
 
   // Creates an APISignature object from the raw Value representations of an
@@ -170,8 +174,6 @@ class APISignature {
 
   // A developer-readable method signature string, lazily set.
   mutable std::string expected_signature_;
-
-  DISALLOW_COPY_AND_ASSIGN(APISignature);
 };
 
 }  // namespace extensions

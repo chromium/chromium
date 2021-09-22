@@ -106,6 +106,9 @@ class DevicePermissionEntry : public base::RefCounted<DevicePermissionEntry> {
 // Stores device permissions associated with a particular extension.
 class DevicePermissions {
  public:
+  DevicePermissions(const DevicePermissions&) = delete;
+  DevicePermissions& operator=(const DevicePermissions&) = delete;
+
   virtual ~DevicePermissions();
 
   // Attempts to find a permission entry matching the given device.
@@ -132,8 +135,6 @@ class DevicePermissions {
       ephemeral_usb_devices_;
   std::map<std::string, scoped_refptr<DevicePermissionEntry>>
       ephemeral_hid_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePermissions);
 };
 
 // Manages saved device permissions for all extensions.

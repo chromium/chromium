@@ -24,6 +24,10 @@ class TestExtensionRegistryObserver : public ExtensionRegistryObserver {
   TestExtensionRegistryObserver(ExtensionRegistry* registry,
                                 const std::string& extension_id);
 
+  TestExtensionRegistryObserver(const TestExtensionRegistryObserver&) = delete;
+  TestExtensionRegistryObserver& operator=(
+      const TestExtensionRegistryObserver&) = delete;
+
   ~TestExtensionRegistryObserver() override;
 
   // Waits for the notification, and returns the extension that caused it.
@@ -73,8 +77,6 @@ class TestExtensionRegistryObserver : public ExtensionRegistryObserver {
       extension_registry_observation_{this};
 
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionRegistryObserver);
 };
 
 }  // namespace extensions

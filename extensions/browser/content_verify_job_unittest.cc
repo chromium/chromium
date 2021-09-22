@@ -89,6 +89,10 @@ void WriteComputedHashes(
 class ContentVerifyJobUnittest : public ExtensionsTest {
  public:
   ContentVerifyJobUnittest() {}
+
+  ContentVerifyJobUnittest(const ContentVerifyJobUnittest&) = delete;
+  ContentVerifyJobUnittest& operator=(const ContentVerifyJobUnittest&) = delete;
+
   ~ContentVerifyJobUnittest() override {}
 
   // Helper to get files from our subdirectory in the general extensions test
@@ -251,8 +255,6 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   MockContentVerifierDelegate* content_verifier_delegate_ =
       nullptr;  // Owned by |content_verifier_|.
   content::TestBrowserContext testing_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifyJobUnittest);
 };
 
 // Tests that deleted legitimate files trigger content verification failure.

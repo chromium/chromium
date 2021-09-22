@@ -95,6 +95,11 @@ class MediaPerceptionAPIManager::MediaPerceptionControllerClient
     DCHECK(delegate_) << "Delegate not set.";
   }
 
+  MediaPerceptionControllerClient(const MediaPerceptionControllerClient&) =
+      delete;
+  MediaPerceptionControllerClient& operator=(
+      const MediaPerceptionControllerClient&) = delete;
+
   ~MediaPerceptionControllerClient() override = default;
 
   // media_perception::mojom::MediaPerceptionControllerClient:
@@ -113,8 +118,6 @@ class MediaPerceptionAPIManager::MediaPerceptionControllerClient
   mojo::Receiver<
       chromeos::media_perception::mojom::MediaPerceptionControllerClient>
       receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPerceptionControllerClient);
 };
 
 // static

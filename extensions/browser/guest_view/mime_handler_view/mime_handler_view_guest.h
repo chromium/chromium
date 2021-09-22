@@ -35,6 +35,10 @@ class StreamContainer {
                   const std::string& extension_id,
                   blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
                   const GURL& original_url);
+
+  StreamContainer(const StreamContainer&) = delete;
+  StreamContainer& operator=(const StreamContainer&) = delete;
+
   ~StreamContainer();
 
   base::WeakPtr<StreamContainer> GetWeakPtr();
@@ -75,8 +79,6 @@ class StreamContainer {
   mime_handler::PdfPluginAttributesPtr pdf_plugin_attributes_;
 
   base::WeakPtrFactory<StreamContainer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StreamContainer);
 };
 
 class MimeHandlerViewGuest

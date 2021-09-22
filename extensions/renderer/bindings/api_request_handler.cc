@@ -31,6 +31,10 @@ class APIRequestHandler::ArgumentAdapter {
   explicit ArgumentAdapter(const base::Value* base_argumements);
   explicit ArgumentAdapter(
       const std::vector<v8::Local<v8::Value>>& v8_arguments);
+
+  ArgumentAdapter(const ArgumentAdapter&) = delete;
+  ArgumentAdapter& operator=(const ArgumentAdapter&) = delete;
+
   ~ArgumentAdapter();
 
   const std::vector<v8::Local<v8::Value>>& GetArguments(
@@ -39,8 +43,6 @@ class APIRequestHandler::ArgumentAdapter {
  private:
   const base::Value* base_arguments_ = nullptr;
   mutable std::vector<v8::Local<v8::Value>> v8_arguments_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArgumentAdapter);
 };
 
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
@@ -82,6 +84,9 @@ class APIRequestHandler::AsyncResultHandler {
   AsyncResultHandler(v8::Isolate* isolate,
                      v8::Local<v8::Promise::Resolver> promise_resolver,
                      v8::Local<v8::Function> custom_callback);
+
+  AsyncResultHandler(const AsyncResultHandler&) = delete;
+  AsyncResultHandler& operator=(const AsyncResultHandler&) = delete;
 
   ~AsyncResultHandler();
 
@@ -136,8 +141,6 @@ class APIRequestHandler::AsyncResultHandler {
 
   // Custom callback handlers.
   v8::Global<v8::Function> custom_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncResultHandler);
 };
 
 APIRequestHandler::AsyncResultHandler::AsyncResultHandler(

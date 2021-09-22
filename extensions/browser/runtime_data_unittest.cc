@@ -30,14 +30,15 @@ scoped_refptr<const Extension> CreateExtensionWithBackgroundPage() {
 class RuntimeDataTest : public testing::Test {
  public:
   RuntimeDataTest() : registry_(nullptr), runtime_data_(&registry_) {}
+
+  RuntimeDataTest(const RuntimeDataTest&) = delete;
+  RuntimeDataTest& operator=(const RuntimeDataTest&) = delete;
+
   ~RuntimeDataTest() override {}
 
  protected:
   ExtensionRegistry registry_;
   RuntimeData runtime_data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RuntimeDataTest);
 };
 
 TEST_F(RuntimeDataTest, IsBackgroundPageReady) {

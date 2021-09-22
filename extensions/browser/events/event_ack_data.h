@@ -18,6 +18,10 @@ namespace extensions {
 class EventAckData {
  public:
   EventAckData();
+
+  EventAckData(const EventAckData&) = delete;
+  EventAckData& operator=(const EventAckData&) = delete;
+
   ~EventAckData();
 
   // Records the fact that an event with |event_id| was dispatched to an
@@ -61,8 +65,6 @@ class EventAckData {
   scoped_refptr<CoreThreadEventInfo> unacked_events_;
 
   base::WeakPtrFactory<EventAckData> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventAckData);
 };
 
 }  // namespace extensions

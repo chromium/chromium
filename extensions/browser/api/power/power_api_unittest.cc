@@ -55,6 +55,9 @@ class FakeWakeLockManager {
                                 base::Unretained(this)));
   }
 
+  FakeWakeLockManager(const FakeWakeLockManager&) = delete;
+  FakeWakeLockManager& operator=(const FakeWakeLockManager&) = delete;
+
   ~FakeWakeLockManager() {
     PowerAPI::Get(browser_context_)
         ->SetWakeLockFunctionsForTesting(PowerAPI::ActivateWakeLockFunction(),
@@ -141,8 +144,6 @@ class FakeWakeLockManager {
 
   // Requests in chronological order.
   base::circular_deque<Request> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWakeLockManager);
 };
 
 }  // namespace

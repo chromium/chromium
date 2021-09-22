@@ -26,6 +26,9 @@ class WorkerScriptContextSet : public ScriptContextSetIterable,
  public:
   WorkerScriptContextSet();
 
+  WorkerScriptContextSet(const WorkerScriptContextSet&) = delete;
+  WorkerScriptContextSet& operator=(const WorkerScriptContextSet&) = delete;
+
   ~WorkerScriptContextSet() override;
 
   // Returns the ScriptContext for a Service Worker |v8_context|, or nullptr if
@@ -51,8 +54,6 @@ class WorkerScriptContextSet : public ScriptContextSetIterable,
   // Implement thread safety by storing each ScriptContext in TLS.
   base::ThreadLocalPointer<std::vector<std::unique_ptr<ScriptContext>>>
       contexts_tls_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerScriptContextSet);
 };
 
 }  // namespace extensions

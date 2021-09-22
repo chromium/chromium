@@ -2532,6 +2532,10 @@ class ClearCacheQuotaHeuristic : public QuotaLimitHeuristic {
             std::move(map),
             "MAX_HANDLER_BEHAVIOR_CHANGED_CALLS_PER_10_MINUTES"),
         callback_registered_(false) {}
+
+  ClearCacheQuotaHeuristic(const ClearCacheQuotaHeuristic&) = delete;
+  ClearCacheQuotaHeuristic& operator=(const ClearCacheQuotaHeuristic&) = delete;
+
   ~ClearCacheQuotaHeuristic() override {}
   bool Apply(Bucket* bucket, const base::TimeTicks& event_time) override;
 
@@ -2550,8 +2554,6 @@ class ClearCacheQuotaHeuristic : public QuotaLimitHeuristic {
   bool callback_registered_;
 
   base::WeakPtrFactory<ClearCacheQuotaHeuristic> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClearCacheQuotaHeuristic);
 };
 
 bool ClearCacheQuotaHeuristic::Apply(Bucket* bucket,

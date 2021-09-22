@@ -45,29 +45,35 @@ class IdleManager : public ExtensionRegistryObserver,
   class IdleTimeProvider {
    public:
     IdleTimeProvider() {}
+
+    IdleTimeProvider(const IdleTimeProvider&) = delete;
+    IdleTimeProvider& operator=(const IdleTimeProvider&) = delete;
+
     virtual ~IdleTimeProvider() {}
     virtual ui::IdleState CalculateIdleState(int idle_threshold) = 0;
     virtual int CalculateIdleTime() = 0;
     virtual bool CheckIdleStateIsLocked() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(IdleTimeProvider);
   };
 
   class EventDelegate {
    public:
     EventDelegate() {}
+
+    EventDelegate(const EventDelegate&) = delete;
+    EventDelegate& operator=(const EventDelegate&) = delete;
+
     virtual ~EventDelegate() {}
     virtual void OnStateChanged(const std::string& extension_id,
                                 ui::IdleState new_state) = 0;
     virtual void RegisterObserver(EventRouter::Observer* observer) = 0;
     virtual void UnregisterObserver(EventRouter::Observer* observer) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(EventDelegate);
   };
 
   explicit IdleManager(content::BrowserContext* context);
+
+  IdleManager(const IdleManager&) = delete;
+  IdleManager& operator=(const IdleManager&) = delete;
+
   ~IdleManager() override;
 
   void Init();
@@ -139,8 +145,6 @@ class IdleManager : public ExtensionRegistryObserver,
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IdleManager);
 };
 
 }  // namespace extensions

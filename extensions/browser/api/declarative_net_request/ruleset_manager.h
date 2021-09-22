@@ -42,6 +42,10 @@ struct RequestParams;
 class RulesetManager {
  public:
   explicit RulesetManager(content::BrowserContext* browser_context);
+
+  RulesetManager(const RulesetManager&) = delete;
+  RulesetManager& operator=(const RulesetManager&) = delete;
+
   ~RulesetManager();
 
   // An observer used for testing purposes.
@@ -170,8 +174,6 @@ class RulesetManager {
   TestObserver* test_observer_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetManager);
 };
 
 }  // namespace declarative_net_request

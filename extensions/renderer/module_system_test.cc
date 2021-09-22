@@ -53,6 +53,10 @@ class GetAPINatives : public ObjectBackedNativeHandler {
       : ObjectBackedNativeHandler(context), bindings_system_(bindings_system) {
     DCHECK(bindings_system_);
   }
+
+  GetAPINatives(const GetAPINatives&) = delete;
+  GetAPINatives& operator=(const GetAPINatives&) = delete;
+
   ~GetAPINatives() override {}
 
   // ObjectBackedNativeHandler:
@@ -89,8 +93,6 @@ class GetAPINatives : public ObjectBackedNativeHandler {
 
  private:
   NativeExtensionBindingsSystem* bindings_system_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GetAPINatives);
 };
 
 }  // namespace

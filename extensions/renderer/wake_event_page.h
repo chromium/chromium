@@ -33,6 +33,10 @@ class ScriptContext;
 class WakeEventPage : public content::RenderThreadObserver {
  public:
   WakeEventPage();
+
+  WakeEventPage(const WakeEventPage&) = delete;
+  WakeEventPage& operator=(const WakeEventPage&) = delete;
+
   ~WakeEventPage() override;
 
   // Returns the single instance of the WakeEventPage object.
@@ -107,8 +111,6 @@ class WakeEventPage : public content::RenderThreadObserver {
 
   // Lock for |requests_|.
   base::Lock requests_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeEventPage);
 };
 
 }  //  namespace extensions

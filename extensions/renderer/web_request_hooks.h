@@ -17,6 +17,10 @@ namespace extensions {
 class WebRequestHooks : public APIBindingHooksDelegate {
  public:
   WebRequestHooks();
+
+  WebRequestHooks(const WebRequestHooks&) = delete;
+  WebRequestHooks& operator=(const WebRequestHooks&) = delete;
+
   ~WebRequestHooks() override;
 
   // APIBindingHooksDelegate:
@@ -28,9 +32,6 @@ class WebRequestHooks : public APIBindingHooksDelegate {
   bool CreateCustomEvent(v8::Local<v8::Context> context,
                          const std::string& event_name,
                          v8::Local<v8::Value>* event_out) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRequestHooks);
 };
 
 }  // namespace extensions

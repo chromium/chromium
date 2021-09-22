@@ -79,6 +79,10 @@ class ServiceWorkerTaskQueue : public KeyedService,
                                public content::ServiceWorkerContextObserver {
  public:
   explicit ServiceWorkerTaskQueue(content::BrowserContext* browser_context);
+
+  ServiceWorkerTaskQueue(const ServiceWorkerTaskQueue&) = delete;
+  ServiceWorkerTaskQueue& operator=(const ServiceWorkerTaskQueue&) = delete;
+
   ~ServiceWorkerTaskQueue() override;
 
   // Convenience method to return the ServiceWorkerTaskQueue for a given
@@ -139,6 +143,10 @@ class ServiceWorkerTaskQueue : public KeyedService,
   class TestObserver {
    public:
     TestObserver();
+
+    TestObserver(const TestObserver&) = delete;
+    TestObserver& operator=(const TestObserver&) = delete;
+
     virtual ~TestObserver();
 
     // Called when an extension with id |extension_id| is going to be activated.
@@ -150,9 +158,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
         const ExtensionId& extension_id,
         size_t num_pending_tasks,
         blink::ServiceWorkerStatusCode status_code) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestObserver);
   };
 
   static void SetObserverForTest(TestObserver* observer);
@@ -238,8 +243,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
   std::map<ExtensionId, ActivationSequence> activation_sequences_;
 
   base::WeakPtrFactory<ServiceWorkerTaskQueue> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerTaskQueue);
 };
 
 }  // namespace extensions

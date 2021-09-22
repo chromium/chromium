@@ -48,11 +48,14 @@ class FeatureSwitch {
   class ScopedOverride {
    public:
     ScopedOverride(FeatureSwitch* feature, bool override_value);
+
+    ScopedOverride(const ScopedOverride&) = delete;
+    ScopedOverride& operator=(const ScopedOverride&) = delete;
+
     ~ScopedOverride();
    private:
     FeatureSwitch* feature_;
     FeatureSwitch::OverrideValue previous_value_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedOverride);
   };
 
   // |switch_name| can be null, in which case the feature is controlled solely

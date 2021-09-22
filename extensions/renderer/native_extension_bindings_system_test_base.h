@@ -47,6 +47,10 @@ class ScriptContextSet;
 class TestIPCMessageSender : public IPCMessageSender {
  public:
   TestIPCMessageSender();
+
+  TestIPCMessageSender(const TestIPCMessageSender&) = delete;
+  TestIPCMessageSender& operator=(const TestIPCMessageSender&) = delete;
+
   ~TestIPCMessageSender() override;
 
   // IPCMessageSender:
@@ -98,8 +102,6 @@ class TestIPCMessageSender : public IPCMessageSender {
 
  private:
   mojom::RequestParamsPtr last_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIPCMessageSender);
 };
 
 // A test harness to instantiate the NativeExtensionBindingsSystem (along with
@@ -108,6 +110,12 @@ class TestIPCMessageSender : public IPCMessageSender {
 class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
  public:
   NativeExtensionBindingsSystemUnittest();
+
+  NativeExtensionBindingsSystemUnittest(
+      const NativeExtensionBindingsSystemUnittest&) = delete;
+  NativeExtensionBindingsSystemUnittest& operator=(
+      const NativeExtensionBindingsSystemUnittest&) = delete;
+
   ~NativeExtensionBindingsSystemUnittest() override;
 
  protected:
@@ -157,8 +165,6 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
   // True if we allow some v8::Contexts to avoid registration as a
   // ScriptContext.
   bool allow_unregistered_contexts_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeExtensionBindingsSystemUnittest);
 };
 
 }  // namespace extensions

@@ -42,6 +42,9 @@ class TLSSocket : public ResumableTCPSocket {
             mojo::ScopedDataPipeProducerHandle send_stream,
             const std::string& owner_extension_id);
 
+  TLSSocket(const TLSSocket&) = delete;
+  TLSSocket& operator=(const TLSSocket&) = delete;
+
   ~TLSSocket() override;
 
   // Fails.
@@ -82,8 +85,6 @@ class TLSSocket : public ResumableTCPSocket {
   absl::optional<net::IPEndPoint> peer_addr_;
   std::unique_ptr<MojoDataPump> mojo_data_pump_;
   ReadCompletionCallback read_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TLSSocket);
 };
 
 }  // namespace extensions

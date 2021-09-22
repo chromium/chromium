@@ -20,6 +20,11 @@ namespace extensions {
 class MimeHandlerViewGuestDelegate {
  public:
   MimeHandlerViewGuestDelegate() {}
+
+  MimeHandlerViewGuestDelegate(const MimeHandlerViewGuestDelegate&) = delete;
+  MimeHandlerViewGuestDelegate& operator=(const MimeHandlerViewGuestDelegate&) =
+      delete;
+
   virtual ~MimeHandlerViewGuestDelegate() {}
 
   // Handles context menu, or returns false if unhandled.
@@ -28,9 +33,6 @@ class MimeHandlerViewGuestDelegate {
   // Called when MimeHandlerViewGuest has an associated embedder frame.
   virtual void RecordLoadMetric(bool in_main_frame,
                                 const std::string& mime_type);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewGuestDelegate);
 };
 
 }  // namespace extensions

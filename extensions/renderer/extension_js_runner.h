@@ -16,6 +16,10 @@ class ScriptContext;
 class ExtensionJSRunner : public JSRunner {
  public:
   explicit ExtensionJSRunner(ScriptContext* script_context);
+
+  ExtensionJSRunner(const ExtensionJSRunner&) = delete;
+  ExtensionJSRunner& operator=(const ExtensionJSRunner&) = delete;
+
   ~ExtensionJSRunner() override;
 
   // JSRunner:
@@ -39,8 +43,6 @@ class ExtensionJSRunner : public JSRunner {
   ScriptContext* const script_context_;
 
   base::WeakPtrFactory<ExtensionJSRunner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionJSRunner);
 };
 
 }  // namespace extensions

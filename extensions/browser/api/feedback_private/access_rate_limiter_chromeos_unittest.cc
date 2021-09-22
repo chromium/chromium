@@ -18,6 +18,9 @@ class AccessRateLimiterTest : public ::testing::Test {
     test_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
   }
 
+  AccessRateLimiterTest(const AccessRateLimiterTest&) = delete;
+  AccessRateLimiterTest& operator=(const AccessRateLimiterTest&) = delete;
+
   ~AccessRateLimiterTest() override = default;
 
  protected:
@@ -26,9 +29,6 @@ class AccessRateLimiterTest : public ::testing::Test {
 
   // Unit under test.
   std::unique_ptr<extensions::AccessRateLimiter> limiter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessRateLimiterTest);
 };
 
 TEST_F(AccessRateLimiterTest, MaxAccessCountOfZero) {

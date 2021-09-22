@@ -58,6 +58,10 @@ class BlankImageSource : public gfx::CanvasImageSource {
  public:
   explicit BlankImageSource(const gfx::Size& size_in_dip)
       : CanvasImageSource(size_in_dip) {}
+
+  BlankImageSource(const BlankImageSource&) = delete;
+  BlankImageSource& operator=(const BlankImageSource&) = delete;
+
   ~BlankImageSource() override {}
 
  private:
@@ -65,8 +69,6 @@ class BlankImageSource : public gfx::CanvasImageSource {
   void Draw(gfx::Canvas* canvas) override {
     canvas->DrawColor(SkColorSetARGB(0, 0, 0, 0));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BlankImageSource);
 };
 
 }  // namespace
@@ -79,6 +81,10 @@ namespace extensions {
 class IconImage::Source : public gfx::ImageSkiaSource {
  public:
   Source(IconImage* host, const gfx::Size& size_in_dip);
+
+  Source(const Source&) = delete;
+  Source& operator=(const Source&) = delete;
+
   ~Source() override;
 
   void ResetHost();
@@ -94,8 +100,6 @@ class IconImage::Source : public gfx::ImageSkiaSource {
   // Image whose representations will be used until |host_| loads the real
   // representations for the image.
   gfx::ImageSkia blank_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(Source);
 };
 
 IconImage::Source::Source(IconImage* host, const gfx::Size& size_in_dip)

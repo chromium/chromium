@@ -77,6 +77,10 @@ class ExtensionDownloaderTestHelper {
  public:
   ExtensionDownloaderTestHelper();
 
+  ExtensionDownloaderTestHelper(const ExtensionDownloaderTestHelper&) = delete;
+  ExtensionDownloaderTestHelper& operator=(
+      const ExtensionDownloaderTestHelper&) = delete;
+
   ~ExtensionDownloaderTestHelper();
 
   MockExtensionDownloaderDelegate& delegate() { return delegate_; }
@@ -107,8 +111,6 @@ class ExtensionDownloaderTestHelper {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   MockExtensionDownloaderDelegate delegate_;
   ExtensionDownloader downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDownloaderTestHelper);
 };
 
 }  // namespace extensions

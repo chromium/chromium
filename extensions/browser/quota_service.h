@@ -49,6 +49,10 @@ class QuotaService {
   class TimedLimit;
 
   QuotaService();
+
+  QuotaService(const QuotaService&) = delete;
+  QuotaService& operator=(const QuotaService&) = delete;
+
   virtual ~QuotaService();
 
   // Decide whether the invocation of |function| with argument |args| by the
@@ -66,10 +70,12 @@ class QuotaService {
   class ScopedDisablePurgeForTesting {
    public:
     ScopedDisablePurgeForTesting();
-    ~ScopedDisablePurgeForTesting();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedDisablePurgeForTesting);
+    ScopedDisablePurgeForTesting(const ScopedDisablePurgeForTesting&) = delete;
+    ScopedDisablePurgeForTesting& operator=(
+        const ScopedDisablePurgeForTesting&) = delete;
+
+    ~ScopedDisablePurgeForTesting();
   };
 
  private:
@@ -91,8 +97,6 @@ class QuotaService {
   std::map<ExtensionId, FunctionHeuristicsMap> function_heuristics_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaService);
 };
 
 // A QuotaLimitHeuristic is two things: 1, A heuristic to map extension
@@ -166,13 +170,16 @@ class QuotaLimitHeuristic {
   class SingletonBucketMapper : public BucketMapper {
    public:
     SingletonBucketMapper() {}
+
+    SingletonBucketMapper(const SingletonBucketMapper&) = delete;
+    SingletonBucketMapper& operator=(const SingletonBucketMapper&) = delete;
+
     ~SingletonBucketMapper() override {}
     void GetBucketsForArgs(const base::Value* args,
                            BucketList* buckets) override;
 
    private:
     Bucket bucket_;
-    DISALLOW_COPY_AND_ASSIGN(SingletonBucketMapper);
   };
 
   QuotaLimitHeuristic(const Config& config,

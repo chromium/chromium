@@ -57,6 +57,10 @@ class OneTimeMessageHandler {
  public:
   explicit OneTimeMessageHandler(
       NativeExtensionBindingsSystem* bindings_system);
+
+  OneTimeMessageHandler(const OneTimeMessageHandler&) = delete;
+  OneTimeMessageHandler& operator=(const OneTimeMessageHandler&) = delete;
+
   ~OneTimeMessageHandler();
 
   // Returns true if the given context has a port with the specified id.
@@ -125,8 +129,6 @@ class OneTimeMessageHandler {
   NativeExtensionBindingsSystem* const bindings_system_;
 
   base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OneTimeMessageHandler);
 };
 
 }  // namespace extensions

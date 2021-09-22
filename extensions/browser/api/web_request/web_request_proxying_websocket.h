@@ -56,6 +56,11 @@ class WebRequestProxyingWebSocket
       content::BrowserContext* browser_context,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       WebRequestAPI::ProxySet* proxies);
+
+  WebRequestProxyingWebSocket(const WebRequestProxyingWebSocket&) = delete;
+  WebRequestProxyingWebSocket& operator=(const WebRequestProxyingWebSocket&) =
+      delete;
+
   ~WebRequestProxyingWebSocket() override;
 
   void Start();
@@ -164,7 +169,6 @@ class WebRequestProxyingWebSocket
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
   base::WeakPtrFactory<WebRequestProxyingWebSocket> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebRequestProxyingWebSocket);
 };
 
 }  // namespace extensions

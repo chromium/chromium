@@ -134,14 +134,15 @@ class IncognitoProcessManager : public ProcessManager {
   IncognitoProcessManager(BrowserContext* incognito_context,
                           BrowserContext* original_context,
                           ExtensionRegistry* extension_registry);
+
+  IncognitoProcessManager(const IncognitoProcessManager&) = delete;
+  IncognitoProcessManager& operator=(const IncognitoProcessManager&) = delete;
+
   ~IncognitoProcessManager() override {}
   bool CreateBackgroundHost(const Extension* extension,
                             const GURL& url) override;
   scoped_refptr<content::SiteInstance> GetSiteInstanceForURL(const GURL& url)
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IncognitoProcessManager);
 };
 
 static void CreateBackgroundHostForExtensionLoad(

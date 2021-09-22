@@ -24,6 +24,10 @@ class WeakUnlimitedSettingsStorage : public value_store::ValueStore {
   // Ownership of |delegate| NOT taken.
   explicit WeakUnlimitedSettingsStorage(value_store::ValueStore* delegate);
 
+  WeakUnlimitedSettingsStorage(const WeakUnlimitedSettingsStorage&) = delete;
+  WeakUnlimitedSettingsStorage& operator=(const WeakUnlimitedSettingsStorage&) =
+      delete;
+
   ~WeakUnlimitedSettingsStorage() override;
 
   // ValueStore implementation.
@@ -45,8 +49,6 @@ class WeakUnlimitedSettingsStorage : public value_store::ValueStore {
  private:
   // The delegate storage area, NOT OWNED.
   value_store::ValueStore* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakUnlimitedSettingsStorage);
 };
 
 }  // namespace extensions

@@ -31,6 +31,10 @@ class UninstallPingSender : public ExtensionRegistryObserver {
                                            UninstallReason reason)>;
 
   UninstallPingSender(ExtensionRegistry* registry, Filter filter);
+
+  UninstallPingSender(const UninstallPingSender&) = delete;
+  UninstallPingSender& operator=(const UninstallPingSender&) = delete;
+
   ~UninstallPingSender() override;
 
  protected:
@@ -45,8 +49,6 @@ class UninstallPingSender : public ExtensionRegistryObserver {
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UninstallPingSender);
 };
 
 }  // namespace extensions

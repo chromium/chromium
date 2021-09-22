@@ -110,6 +110,10 @@ class ExtensionPrefs : public KeyedService {
     ScopedDictionaryUpdate(ExtensionPrefs* prefs,
                            const std::string& extension_id,
                            const std::string& key);
+
+    ScopedDictionaryUpdate(const ScopedDictionaryUpdate&) = delete;
+    ScopedDictionaryUpdate& operator=(const ScopedDictionaryUpdate&) = delete;
+
     ~ScopedDictionaryUpdate();
 
     // Returns a mutable value for the key, if one exists. Otherwise, returns
@@ -123,8 +127,6 @@ class ExtensionPrefs : public KeyedService {
    private:
     std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update_;
     const std::string key_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedDictionaryUpdate);
   };
 
   class ScopedListUpdate {
@@ -132,6 +134,10 @@ class ExtensionPrefs : public KeyedService {
     ScopedListUpdate(ExtensionPrefs* prefs,
                      const std::string& extension_id,
                      const std::string& key);
+
+    ScopedListUpdate(const ScopedListUpdate&) = delete;
+    ScopedListUpdate& operator=(const ScopedListUpdate&) = delete;
+
     ~ScopedListUpdate();
 
     // Returns a mutable value for the key (ownership remains with the prefs),
@@ -146,8 +152,6 @@ class ExtensionPrefs : public KeyedService {
    private:
     std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update_;
     const std::string key_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedListUpdate);
   };
 
   // Creates an ExtensionPrefs object.

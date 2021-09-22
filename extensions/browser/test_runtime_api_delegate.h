@@ -13,6 +13,10 @@ namespace extensions {
 class TestRuntimeAPIDelegate : public RuntimeAPIDelegate {
  public:
   TestRuntimeAPIDelegate();
+
+  TestRuntimeAPIDelegate(const TestRuntimeAPIDelegate&) = delete;
+  TestRuntimeAPIDelegate& operator=(const TestRuntimeAPIDelegate&) = delete;
+
   ~TestRuntimeAPIDelegate() override;
 
   // RuntimeAPIDelegate implementation.
@@ -24,9 +28,6 @@ class TestRuntimeAPIDelegate : public RuntimeAPIDelegate {
   void OpenURL(const GURL& uninstall_url) override;
   bool GetPlatformInfo(api::runtime::PlatformInfo* info) override;
   bool RestartDevice(std::string* error_message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestRuntimeAPIDelegate);
 };
 
 }  // namespace extensions

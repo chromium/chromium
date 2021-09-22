@@ -30,6 +30,10 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
  public:
   static const int kMainWorldId = 0;
   explicit DOMActivityLogger(const std::string& extension_id);
+
+  DOMActivityLogger(const DOMActivityLogger&) = delete;
+  DOMActivityLogger& operator=(const DOMActivityLogger&) = delete;
+
   ~DOMActivityLogger() override;
 
   // Check (using the WebKit API) if there is no logger attached to the world
@@ -76,8 +80,6 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
 
   // The id of the extension with which this logger is associated.
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMActivityLogger);
 };
 
 }  // namespace extensions

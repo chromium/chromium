@@ -24,14 +24,16 @@ class ScriptInjectionCallback : public blink::WebScriptExecutionCallback {
 
   explicit ScriptInjectionCallback(
       CompleteCallback injection_completed_callback);
+
+  ScriptInjectionCallback(const ScriptInjectionCallback&) = delete;
+  ScriptInjectionCallback& operator=(const ScriptInjectionCallback&) = delete;
+
   ~ScriptInjectionCallback() override;
 
   void Completed(const blink::WebVector<v8::Local<v8::Value>>& result) override;
 
  private:
   CompleteCallback injection_completed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptInjectionCallback);
 };
 
 }  // namespace extensions

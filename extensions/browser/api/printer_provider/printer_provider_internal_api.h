@@ -38,6 +38,11 @@ class PrinterProviderInternalAPI : public BrowserContextKeyedAPI {
   GetFactoryInstance();
 
   explicit PrinterProviderInternalAPI(content::BrowserContext* browser_context);
+
+  PrinterProviderInternalAPI(const PrinterProviderInternalAPI&) = delete;
+  PrinterProviderInternalAPI& operator=(const PrinterProviderInternalAPI&) =
+      delete;
+
   ~PrinterProviderInternalAPI() override;
 
   void AddObserver(PrinterProviderInternalAPIObserver* observer);
@@ -85,8 +90,6 @@ class PrinterProviderInternalAPI : public BrowserContextKeyedAPI {
       const api::printer_provider::PrinterInfo* printer_info);
 
   base::ObserverList<PrinterProviderInternalAPIObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderInternalAPI);
 };
 
 class PrinterProviderInternalReportPrintResultFunction

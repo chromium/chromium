@@ -36,6 +36,10 @@ class CompositeMatcher {
 
     ActionInfo(absl::optional<RequestAction> action,
                bool notify_request_withheld);
+
+    ActionInfo(const ActionInfo&) = delete;
+    ActionInfo& operator=(const ActionInfo&) = delete;
+
     ~ActionInfo();
     ActionInfo(ActionInfo&& other);
     ActionInfo& operator=(ActionInfo&& other);
@@ -47,14 +51,16 @@ class CompositeMatcher {
     // be redirected as the extension lacks the appropriate host permission for
     // the request. Can only be true for redirect actions.
     bool notify_request_withheld = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ActionInfo);
   };
 
   using MatcherList = std::vector<std::unique_ptr<RulesetMatcher>>;
 
   // Each RulesetMatcher should have a distinct RulesetID.
   CompositeMatcher(MatcherList matchers, HostPermissionsAlwaysRequired mode);
+
+  CompositeMatcher(const CompositeMatcher&) = delete;
+  CompositeMatcher& operator=(const CompositeMatcher&) = delete;
+
   ~CompositeMatcher();
 
   const MatcherList& matchers() const { return matchers_; }
@@ -113,8 +119,6 @@ class CompositeMatcher {
   mutable absl::optional<bool> has_any_extra_headers_matcher_;
 
   const HostPermissionsAlwaysRequired host_permissions_always_required_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositeMatcher);
 };
 
 }  // namespace declarative_net_request

@@ -34,6 +34,10 @@ class LogSourceAccessManager {
       std::unique_ptr<api::feedback_private::ReadLogSourceResult>)>;
 
   explicit LogSourceAccessManager(content::BrowserContext* context);
+
+  LogSourceAccessManager(const LogSourceAccessManager&) = delete;
+  LogSourceAccessManager& operator=(const LogSourceAccessManager&) = delete;
+
   ~LogSourceAccessManager();
 
   // Call this to override the maximum burst access count of the rate limiter.
@@ -160,8 +164,6 @@ class LogSourceAccessManager {
   scoped_refptr<feedback::RedactionToolContainer> redactor_container_;
 
   base::WeakPtrFactory<LogSourceAccessManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LogSourceAccessManager);
 };
 
 }  // namespace extensions

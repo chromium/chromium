@@ -82,6 +82,10 @@ void GetRegisteredItemsCallback(
 class DataItemTest : public testing::Test {
  public:
   DataItemTest() {}
+
+  DataItemTest(const DataItemTest&) = delete;
+  DataItemTest& operator=(const DataItemTest&) = delete;
+
   ~DataItemTest() override = default;
 
   void SetUp() override {
@@ -310,8 +314,6 @@ class DataItemTest : public testing::Test {
   std::unique_ptr<ValueStoreCache> value_store_cache_;
 
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataItemTest);
 };
 
 TEST_F(DataItemTest, OperationsOnUnregisteredItem) {

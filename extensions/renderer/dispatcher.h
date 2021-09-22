@@ -79,6 +79,10 @@ class Dispatcher : public content::RenderThreadObserver,
                    public mojom::Renderer {
  public:
   explicit Dispatcher(std::unique_ptr<DispatcherDelegate> delegate);
+
+  Dispatcher(const Dispatcher&) = delete;
+  Dispatcher& operator=(const Dispatcher&) = delete;
+
   ~Dispatcher() override;
 
   // Returns Service Worker ScriptContexts belonging to current worker thread.
@@ -385,8 +389,6 @@ class Dispatcher : public content::RenderThreadObserver,
   std::map<ExtensionId, std::unique_ptr<PendingServiceWorker>>
       service_workers_paused_for_on_loaded_message_;
   base::Lock service_workers_paused_for_on_loaded_message_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(Dispatcher);
 };
 
 }  // namespace extensions

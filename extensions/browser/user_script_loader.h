@@ -62,6 +62,10 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   UserScriptLoader(content::BrowserContext* browser_context,
                    const mojom::HostID& host_id);
+
+  UserScriptLoader(const UserScriptLoader&) = delete;
+  UserScriptLoader& operator=(const UserScriptLoader&) = delete;
+
   ~UserScriptLoader() override;
 
   // Add |scripts| to the set of scripts managed by this loader. If provided,
@@ -196,8 +200,6 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   std::list<ScriptsLoadedCallback> loading_callbacks_;
 
   base::WeakPtrFactory<UserScriptLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptLoader);
 };
 
 }  // namespace extensions

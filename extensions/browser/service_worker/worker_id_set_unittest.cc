@@ -29,6 +29,10 @@ class VectorWorkerIdListImpl {
  public:
   explicit VectorWorkerIdListImpl(const std::vector<WorkerId> worker_ids)
       : workers_(worker_ids) {}
+
+  VectorWorkerIdListImpl(const VectorWorkerIdListImpl&) = delete;
+  VectorWorkerIdListImpl& operator=(const VectorWorkerIdListImpl&) = delete;
+
   ~VectorWorkerIdListImpl() = default;
 
   std::vector<WorkerId> GetAllForExtension(const ExtensionId& extension_id,
@@ -50,8 +54,6 @@ class VectorWorkerIdListImpl {
 
  private:
   std::vector<WorkerId> workers_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorWorkerIdListImpl);
 };
 
 std::vector<WorkerId> GenerateWorkerIds(

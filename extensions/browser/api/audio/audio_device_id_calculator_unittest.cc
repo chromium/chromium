@@ -23,6 +23,12 @@ class TestExtensionsBrowserClientWithPrefService
   explicit TestExtensionsBrowserClientWithPrefService(
       content::BrowserContext* main_context)
       : TestExtensionsBrowserClient(main_context) {}
+
+  TestExtensionsBrowserClientWithPrefService(
+      const TestExtensionsBrowserClientWithPrefService&) = delete;
+  TestExtensionsBrowserClientWithPrefService& operator=(
+      const TestExtensionsBrowserClientWithPrefService&) = delete;
+
   ~TestExtensionsBrowserClientWithPrefService() override {}
 
   // ExtensionsBrowserClient override:
@@ -35,13 +41,16 @@ class TestExtensionsBrowserClientWithPrefService
 
  private:
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionsBrowserClientWithPrefService);
 };
 
 class AudioDeviceIdCalculatorTest : public testing::Test {
  public:
   AudioDeviceIdCalculatorTest() : test_browser_client_(&browser_context_) {}
+
+  AudioDeviceIdCalculatorTest(const AudioDeviceIdCalculatorTest&) = delete;
+  AudioDeviceIdCalculatorTest& operator=(const AudioDeviceIdCalculatorTest&) =
+      delete;
+
   ~AudioDeviceIdCalculatorTest() override {}
 
   void SetUp() override {
@@ -58,8 +67,6 @@ class AudioDeviceIdCalculatorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   TestExtensionsBrowserClientWithPrefService test_browser_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceIdCalculatorTest);
 };
 
 }  // namespace

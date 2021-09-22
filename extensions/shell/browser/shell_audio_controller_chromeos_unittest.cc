@@ -35,6 +35,9 @@ class ShellAudioControllerTest : public testing::Test {
     controller_ = std::make_unique<ShellAudioController>();
   }
 
+  ShellAudioControllerTest(const ShellAudioControllerTest&) = delete;
+  ShellAudioControllerTest& operator=(const ShellAudioControllerTest&) = delete;
+
   ~ShellAudioControllerTest() override {
     controller_.reset();
     CrasAudioHandler::Shutdown();
@@ -75,9 +78,6 @@ class ShellAudioControllerTest : public testing::Test {
 
   // Next audio node ID to be returned by CreateNode().
   uint64_t next_node_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellAudioControllerTest);
 };
 
 // Tests that higher-priority devices are activated as soon as they're

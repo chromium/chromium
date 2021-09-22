@@ -25,6 +25,10 @@ class AudioAPI : public BrowserContextKeyedAPI, public AudioService::Observer {
   static void RegisterUserPrefs(PrefRegistrySimple* registry);
 
   explicit AudioAPI(content::BrowserContext* context);
+
+  AudioAPI(const AudioAPI&) = delete;
+  AudioAPI& operator=(const AudioAPI&) = delete;
+
   ~AudioAPI() override;
 
   AudioService* GetService() const;
@@ -53,8 +57,6 @@ class AudioAPI : public BrowserContextKeyedAPI, public AudioService::Observer {
 
   base::ScopedObservation<AudioService, AudioService::Observer>
       audio_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioAPI);
 };
 
 class AudioGetInfoFunction : public ExtensionFunction {

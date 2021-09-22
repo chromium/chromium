@@ -37,6 +37,10 @@ const TimeTicks k1MinuteAfterStart = kStartTime + TimeDelta::FromMinutes(1);
 class Mapper : public QuotaLimitHeuristic::BucketMapper {
  public:
   Mapper() {}
+
+  Mapper(const Mapper&) = delete;
+  Mapper& operator=(const Mapper&) = delete;
+
   ~Mapper() override {}
   void GetBucketsForArgs(const base::Value* args,
                          BucketList* buckets) override {
@@ -52,7 +56,6 @@ class Mapper : public QuotaLimitHeuristic::BucketMapper {
 
  private:
   std::map<int, std::unique_ptr<Bucket>> buckets_;
-  DISALLOW_COPY_AND_ASSIGN(Mapper);
 };
 
 class MockMapper : public QuotaLimitHeuristic::BucketMapper {

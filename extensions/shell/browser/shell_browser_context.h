@@ -17,6 +17,10 @@ namespace extensions {
 class ShellBrowserContext final : public content::ShellBrowserContext {
  public:
   explicit ShellBrowserContext();
+
+  ShellBrowserContext(const ShellBrowserContext&) = delete;
+  ShellBrowserContext& operator=(const ShellBrowserContext&) = delete;
+
   ~ShellBrowserContext() override;
 
   // content::BrowserContext implementation.
@@ -25,8 +29,6 @@ class ShellBrowserContext final : public content::ShellBrowserContext {
 
  private:
   scoped_refptr<storage::SpecialStoragePolicy> storage_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellBrowserContext);
 };
 
 }  // namespace extensions

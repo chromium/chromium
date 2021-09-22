@@ -69,6 +69,9 @@ class ImageSanitizer {
       SanitizationDoneCallback done_callback,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
+  ImageSanitizer(const ImageSanitizer&) = delete;
+  ImageSanitizer& operator=(const ImageSanitizer&) = delete;
+
   ~ImageSanitizer();
 
  private:
@@ -108,8 +111,6 @@ class ImageSanitizer {
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   mojo::Remote<data_decoder::mojom::ImageDecoder> image_decoder_;
   base::WeakPtrFactory<ImageSanitizer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageSanitizer);
 };
 
 }  // namespace extensions

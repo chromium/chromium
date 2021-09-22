@@ -33,6 +33,10 @@ class UserScriptInjector : public ScriptInjector,
   UserScriptInjector(const UserScript* user_script,
                      UserScriptSet* user_script_set,
                      bool is_declarative);
+
+  UserScriptInjector(const UserScriptInjector&) = delete;
+  UserScriptInjector& operator=(const UserScriptInjector&) = delete;
+
   ~UserScriptInjector() override;
 
  private:
@@ -92,8 +96,6 @@ class UserScriptInjector : public ScriptInjector,
 
   base::ScopedObservation<UserScriptSet, UserScriptSet::Observer>
       user_script_set_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptInjector);
 };
 
 }  // namespace extensions

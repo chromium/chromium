@@ -84,6 +84,12 @@ void GetRegisteredItemsCallback(
 class LockScreenValueStoreMigratorImplTest : public testing::Test {
  public:
   LockScreenValueStoreMigratorImplTest() = default;
+
+  LockScreenValueStoreMigratorImplTest(
+      const LockScreenValueStoreMigratorImplTest&) = delete;
+  LockScreenValueStoreMigratorImplTest& operator=(
+      const LockScreenValueStoreMigratorImplTest&) = delete;
+
   ~LockScreenValueStoreMigratorImplTest() override = default;
 
   void SetUp() override {
@@ -390,8 +396,6 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
   std::unique_ptr<LockScreenValueStoreMigratorImpl> migrator_;
 
   std::map<ExtensionId, base::RunLoop> extension_waiters_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenValueStoreMigratorImplTest);
 };
 
 TEST_F(LockScreenValueStoreMigratorImplTest, Basic) {

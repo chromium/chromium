@@ -36,6 +36,10 @@ struct EventFilteringInfo;
 class ListenerTracker {
  public:
   ListenerTracker();
+
+  ListenerTracker(const ListenerTracker&) = delete;
+  ListenerTracker& operator=(const ListenerTracker&) = delete;
+
   ~ListenerTracker();
 
   // Adds a record of an unfiltered listener for the given |event_name|,
@@ -107,8 +111,6 @@ class ListenerTracker {
 
   // The event filter.
   EventFilter event_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListenerTracker);
 };
 
 }  // namespace extensions

@@ -50,6 +50,10 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
 class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  public:
   RuntimeHooksDelegateTest() {}
+
+  RuntimeHooksDelegateTest(const RuntimeHooksDelegateTest&) = delete;
+  RuntimeHooksDelegateTest& operator=(const RuntimeHooksDelegateTest&) = delete;
+
   ~RuntimeHooksDelegateTest() override {}
 
   // NativeExtensionBindingsSystemUnittest:
@@ -95,8 +99,6 @@ class RuntimeHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
 
   ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeHooksDelegateTest);
 };
 
 TEST_F(RuntimeHooksDelegateTest, RuntimeId) {

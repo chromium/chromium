@@ -61,6 +61,10 @@ const char kCellularName[] = "cellular";
 class NetworkingPrivateApiTest : public ApiUnitTest {
  public:
   NetworkingPrivateApiTest() {}
+
+  NetworkingPrivateApiTest(const NetworkingPrivateApiTest&) = delete;
+  NetworkingPrivateApiTest& operator=(const NetworkingPrivateApiTest&) = delete;
+
   ~NetworkingPrivateApiTest() override {}
 
   void SetUp() override {
@@ -353,8 +357,6 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
 
  private:
   chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateApiTest);
 };
 
 TEST_F(NetworkingPrivateApiTest, SetSharedNetworkProperties) {

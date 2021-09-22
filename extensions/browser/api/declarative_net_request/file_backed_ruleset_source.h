@@ -58,6 +58,12 @@ struct IndexAndPersistJSONRulesetResult {
   static IndexAndPersistJSONRulesetResult CreateIgnoreResult(
       std::vector<InstallWarning> warnings);
   static IndexAndPersistJSONRulesetResult CreateErrorResult(std::string error);
+
+  IndexAndPersistJSONRulesetResult(const IndexAndPersistJSONRulesetResult&) =
+      delete;
+  IndexAndPersistJSONRulesetResult& operator=(
+      const IndexAndPersistJSONRulesetResult&) = delete;
+
   ~IndexAndPersistJSONRulesetResult();
   IndexAndPersistJSONRulesetResult(IndexAndPersistJSONRulesetResult&&);
   IndexAndPersistJSONRulesetResult& operator=(
@@ -89,7 +95,6 @@ struct IndexAndPersistJSONRulesetResult {
 
  private:
   IndexAndPersistJSONRulesetResult();
-  DISALLOW_COPY_AND_ASSIGN(IndexAndPersistJSONRulesetResult);
 };
 
 struct ReadJSONRulesResult {

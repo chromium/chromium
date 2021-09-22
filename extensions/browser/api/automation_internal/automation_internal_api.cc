@@ -144,6 +144,10 @@ class AutomationWebContentsObserver
       public content::WebContentsUserData<AutomationWebContentsObserver>,
       public AutomationEventRouterObserver {
  public:
+  AutomationWebContentsObserver(const AutomationWebContentsObserver&) = delete;
+  AutomationWebContentsObserver& operator=(
+      const AutomationWebContentsObserver&) = delete;
+
   ~AutomationWebContentsObserver() override {
     automation_event_router_observer_.Reset();
   }
@@ -292,8 +296,6 @@ class AutomationWebContentsObserver
       automation_event_router_observer_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationWebContentsObserver);
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver)

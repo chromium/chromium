@@ -54,6 +54,10 @@ struct DraggableRegion;
 class AppWindowContents {
  public:
   AppWindowContents() {}
+
+  AppWindowContents(const AppWindowContents&) = delete;
+  AppWindowContents& operator=(const AppWindowContents&) = delete;
+
   virtual ~AppWindowContents() {}
 
   // Called to initialize the WebContents, before the app window is created.
@@ -75,9 +79,6 @@ class AppWindowContents {
   virtual content::WebContents* GetWebContents() const = 0;
 
   virtual extensions::WindowController* GetWindowController() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppWindowContents);
 };
 
 // AppWindow is the type of window used by platform apps. App windows

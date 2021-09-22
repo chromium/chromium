@@ -31,6 +31,10 @@ const char kDefaultPortName[] = "port name";
 class TestPortDelegate : public GinPort::Delegate {
  public:
   TestPortDelegate() {}
+
+  TestPortDelegate(const TestPortDelegate&) = delete;
+  TestPortDelegate& operator=(const TestPortDelegate&) = delete;
+
   ~TestPortDelegate() override {}
 
   void PostMessageToPort(v8::Local<v8::Context> context,
@@ -56,13 +60,15 @@ class TestPortDelegate : public GinPort::Delegate {
  private:
   absl::optional<PortId> last_port_id_;
   std::unique_ptr<Message> last_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPortDelegate);
 };
 
 class GinPortTest : public APIBindingTest {
  public:
   GinPortTest() {}
+
+  GinPortTest(const GinPortTest&) = delete;
+  GinPortTest& operator=(const GinPortTest&) = delete;
+
   ~GinPortTest() override {}
 
   void SetUp() override {
@@ -100,8 +106,6 @@ class GinPortTest : public APIBindingTest {
  private:
   std::unique_ptr<APIEventHandler> event_handler_;
   std::unique_ptr<testing::StrictMock<TestPortDelegate>> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinPortTest);
 };
 
 }  // namespace

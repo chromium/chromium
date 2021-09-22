@@ -19,6 +19,12 @@
 class ExtensionWebRequestTimeTracker {
  public:
   ExtensionWebRequestTimeTracker();
+
+  ExtensionWebRequestTimeTracker(const ExtensionWebRequestTimeTracker&) =
+      delete;
+  ExtensionWebRequestTimeTracker& operator=(
+      const ExtensionWebRequestTimeTracker&) = delete;
+
   ~ExtensionWebRequestTimeTracker();
 
   // Records the time that a request was created.  |has_listener| will be true
@@ -67,8 +73,6 @@ class ExtensionWebRequestTimeTracker {
 
   // A map of current request IDs to timing info for each request.
   std::map<int64_t, RequestTimeLog> request_time_logs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebRequestTimeTracker);
 };
 
 #endif  // EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_TIME_TRACKER_H_

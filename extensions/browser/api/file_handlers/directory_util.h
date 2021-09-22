@@ -31,6 +31,10 @@ class IsDirectoryCollector {
       base::OnceCallback<void(std::unique_ptr<std::set<base::FilePath>>)>;
 
   explicit IsDirectoryCollector(content::BrowserContext* context);
+
+  IsDirectoryCollector(const IsDirectoryCollector&) = delete;
+  IsDirectoryCollector& operator=(const IsDirectoryCollector&) = delete;
+
   virtual ~IsDirectoryCollector();
 
   // For the given paths obtains a set with which of them are directories.
@@ -47,8 +51,6 @@ class IsDirectoryCollector {
   size_t left_;
   CompletionCallback callback_;
   base::WeakPtrFactory<IsDirectoryCollector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IsDirectoryCollector);
 };
 
 }  // namespace app_file_handler_util

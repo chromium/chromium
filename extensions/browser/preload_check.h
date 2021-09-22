@@ -34,6 +34,10 @@ class PreloadCheck {
   using ResultCallback = base::OnceCallback<void(const Errors&)>;
 
   explicit PreloadCheck(scoped_refptr<const Extension> extension);
+
+  PreloadCheck(const PreloadCheck&) = delete;
+  PreloadCheck& operator=(const PreloadCheck&) = delete;
+
   virtual ~PreloadCheck();
 
   // This function must be called on the UI thread. The callback also occurs on
@@ -48,8 +52,6 @@ class PreloadCheck {
  private:
   // The extension to check.
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreloadCheck);
 };
 
 }  // namespace extensions

@@ -86,6 +86,9 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
         dispatcher_(dispatcher),
         render_frame_host_(render_frame_host) {}
 
+  ResponseCallbackWrapper(const ResponseCallbackWrapper&) = delete;
+  ResponseCallbackWrapper& operator=(const ResponseCallbackWrapper&) = delete;
+
   ~ResponseCallbackWrapper() override = default;
 
   // content::WebContentsObserver overrides.
@@ -125,8 +128,6 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
   content::RenderFrameHost* render_frame_host_;
   base::WeakPtrFactory<ResponseCallbackWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResponseCallbackWrapper);
 };
 
 class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
@@ -140,6 +141,10 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
         render_process_host_(render_process_host) {
     observation_.Observe(render_process_host_);
   }
+
+  WorkerResponseCallbackWrapper(const WorkerResponseCallbackWrapper&) = delete;
+  WorkerResponseCallbackWrapper& operator=(
+      const WorkerResponseCallbackWrapper&) = delete;
 
   ~WorkerResponseCallbackWrapper() override = default;
 
@@ -191,8 +196,6 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
       observation_{this};
   content::RenderProcessHost* const render_process_host_;
   base::WeakPtrFactory<WorkerResponseCallbackWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerResponseCallbackWrapper);
 };
 
 struct ExtensionFunctionDispatcher::WorkerResponseCallbackMapKey {

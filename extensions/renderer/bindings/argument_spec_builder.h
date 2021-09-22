@@ -23,6 +23,9 @@ class ArgumentSpecBuilder {
   explicit ArgumentSpecBuilder(ArgumentType type);
   ArgumentSpecBuilder(ArgumentType type, base::StringPiece name);
 
+  ArgumentSpecBuilder(const ArgumentSpecBuilder&) = delete;
+  ArgumentSpecBuilder& operator=(const ArgumentSpecBuilder&) = delete;
+
   ~ArgumentSpecBuilder();
 
   ArgumentSpecBuilder& MakeOptional();
@@ -43,8 +46,6 @@ class ArgumentSpecBuilder {
  private:
   std::unique_ptr<ArgumentSpec> spec_;
   ArgumentSpec::PropertiesMap properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArgumentSpecBuilder);
 };
 
 }  // namespace extensions

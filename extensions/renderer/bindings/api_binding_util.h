@@ -40,6 +40,11 @@ class ContextInvalidationListener {
  public:
   ContextInvalidationListener(v8::Local<v8::Context> context,
                               base::OnceClosure on_invalidated);
+
+  ContextInvalidationListener(const ContextInvalidationListener&) = delete;
+  ContextInvalidationListener& operator=(const ContextInvalidationListener&) =
+      delete;
+
   ~ContextInvalidationListener();
 
   void OnInvalidated();
@@ -48,8 +53,6 @@ class ContextInvalidationListener {
   base::OnceClosure on_invalidated_;
 
   ContextInvalidationData* context_invalidation_data_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextInvalidationListener);
 };
 
 // Returns the string version of the current platform, one of "chromeos",

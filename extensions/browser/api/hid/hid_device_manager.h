@@ -44,6 +44,10 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
   using ConnectCallback = device::mojom::HidManager::ConnectCallback;
 
   explicit HidDeviceManager(content::BrowserContext* context);
+
+  HidDeviceManager(const HidDeviceManager&) = delete;
+  HidDeviceManager& operator=(const HidDeviceManager&) = delete;
+
   ~HidDeviceManager() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -136,8 +140,6 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
   ResourceIdToDeviceInfoMap devices_;
   DeviceIdToResourceIdMap resource_ids_;
   base::WeakPtrFactory<HidDeviceManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HidDeviceManager);
 };
 
 }  // namespace extensions

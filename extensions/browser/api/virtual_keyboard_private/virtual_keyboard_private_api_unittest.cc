@@ -17,6 +17,11 @@ namespace {
 class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
  public:
   MockVirtualKeyboardDelegate() {}
+
+  MockVirtualKeyboardDelegate(const MockVirtualKeyboardDelegate&) = delete;
+  MockVirtualKeyboardDelegate& operator=(const MockVirtualKeyboardDelegate&) =
+      delete;
+
   ~MockVirtualKeyboardDelegate() override = default;
 
   // VirtualKeyboardDelegate impl:
@@ -95,13 +100,17 @@ class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
   std::vector<gfx::Rect> hit_test_bounds_;
   gfx::Rect area_to_remain_on_screen_;
   gfx::Rect window_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockVirtualKeyboardDelegate);
 };
 
 class TestVirtualKeyboardExtensionsAPIClient : public ExtensionsAPIClient {
  public:
   TestVirtualKeyboardExtensionsAPIClient() {}
+
+  TestVirtualKeyboardExtensionsAPIClient(
+      const TestVirtualKeyboardExtensionsAPIClient&) = delete;
+  TestVirtualKeyboardExtensionsAPIClient& operator=(
+      const TestVirtualKeyboardExtensionsAPIClient&) = delete;
+
   ~TestVirtualKeyboardExtensionsAPIClient() override {}
 
   // ExtensionsAPIClient implementation.
@@ -122,8 +131,6 @@ class TestVirtualKeyboardExtensionsAPIClient : public ExtensionsAPIClient {
   // own the delegates.
   mutable std::map<content::BrowserContext*, MockVirtualKeyboardDelegate*>
       delegates_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVirtualKeyboardExtensionsAPIClient);
 };
 
 }  // namespace

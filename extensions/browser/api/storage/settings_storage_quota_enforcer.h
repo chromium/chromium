@@ -38,6 +38,10 @@ class SettingsStorageQuotaEnforcer : public value_store::ValueStore {
       const Limits& limits,
       std::unique_ptr<value_store::ValueStore> delegate);
 
+  SettingsStorageQuotaEnforcer(const SettingsStorageQuotaEnforcer&) = delete;
+  SettingsStorageQuotaEnforcer& operator=(const SettingsStorageQuotaEnforcer&) =
+      delete;
+
   ~SettingsStorageQuotaEnforcer() override;
 
   // ValueStore implementation.
@@ -84,8 +88,6 @@ class SettingsStorageQuotaEnforcer : public value_store::ValueStore {
 
   // Map of item key to its size, including the key itself.
   std::map<std::string, size_t> used_per_setting_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsStorageQuotaEnforcer);
 };
 
 }  // namespace extensions

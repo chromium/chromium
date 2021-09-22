@@ -18,6 +18,10 @@ struct WebRequestInfo;
 class PermissionHelper : public BrowserContextKeyedAPI {
  public:
   explicit PermissionHelper(content::BrowserContext* context);
+
+  PermissionHelper(const PermissionHelper&) = delete;
+  PermissionHelper& operator=(const PermissionHelper&) = delete;
+
   ~PermissionHelper() override;
 
   // Convenience method to get the PermissionHelper for a profile.
@@ -45,8 +49,6 @@ class PermissionHelper : public BrowserContextKeyedAPI {
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "PermissionHelper"; }
   static const bool kServiceRedirectedInIncognito = true;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionHelper);
 };
 
 template <>

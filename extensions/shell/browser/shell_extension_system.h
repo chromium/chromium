@@ -37,6 +37,10 @@ class ShellExtensionSystem : public ExtensionSystem {
  public:
   using InstallUpdateCallback = ExtensionSystem::InstallUpdateCallback;
   explicit ShellExtensionSystem(content::BrowserContext* browser_context);
+
+  ShellExtensionSystem(const ShellExtensionSystem&) = delete;
+  ShellExtensionSystem& operator=(const ShellExtensionSystem&) = delete;
+
   ~ShellExtensionSystem() override;
 
   // Loads an unpacked extension from a directory. Returns the extension on
@@ -118,8 +122,6 @@ class ShellExtensionSystem : public ExtensionSystem {
   base::OneShotEvent ready_;
 
   base::WeakPtrFactory<ShellExtensionSystem> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionSystem);
 };
 
 }  // namespace extensions

@@ -29,6 +29,9 @@ class BindingAccessChecker;
 // The custom implementation of the ChromeSetting type exposed to APIs.
 class ChromeSetting final : public gin::Wrappable<ChromeSetting> {
  public:
+  ChromeSetting(const ChromeSetting&) = delete;
+  ChromeSetting& operator=(const ChromeSetting&) = delete;
+
   ~ChromeSetting() override;
 
   // Creates a ChromeSetting object for the given property.
@@ -82,8 +85,6 @@ class ChromeSetting final : public gin::Wrappable<ChromeSetting> {
   // different settings can take a different type of argument depending on the
   // preference it manages).
   ArgumentSpec argument_spec_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSetting);
 };
 
 }  // namespace extensions

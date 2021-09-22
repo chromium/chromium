@@ -27,12 +27,14 @@ class APIResponseValidator {
         base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
     explicit TestHandler(HandlerMethod method);
+
+    TestHandler(const TestHandler&) = delete;
+    TestHandler& operator=(const TestHandler&) = delete;
+
     ~TestHandler();
 
    private:
     HandlerMethod method_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestHandler);
   };
 
   // The origin of the callback passed to the response.

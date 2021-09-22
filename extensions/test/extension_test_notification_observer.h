@@ -34,6 +34,12 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
                                           ExtensionRegistryObserver {
  public:
   explicit ExtensionTestNotificationObserver(content::BrowserContext* context);
+
+  ExtensionTestNotificationObserver(const ExtensionTestNotificationObserver&) =
+      delete;
+  ExtensionTestNotificationObserver& operator=(
+      const ExtensionTestNotificationObserver&) = delete;
+
   ~ExtensionTestNotificationObserver() override;
 
   // Wait for the specified extension to crash. Returns true if it really
@@ -76,6 +82,10 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
                           public extensions::ProcessManagerObserver {
    public:
     NotificationSet();
+
+    NotificationSet(const NotificationSet&) = delete;
+    NotificationSet& operator=(const NotificationSet&) = delete;
+
     ~NotificationSet() override;
 
     void Add(int type, const content::NotificationSource& source);
@@ -111,8 +121,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
     std::map<content::WebContents*,
              std::unique_ptr<ForwardingWebContentsObserver>>
         web_contents_observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(NotificationSet);
   };
 
   // Wait for |condition_| to be met. |notification_set| is the set of
@@ -146,8 +154,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   // Listens to extension loaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTestNotificationObserver);
 };
 
 }  // namespace extensions

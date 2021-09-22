@@ -68,6 +68,10 @@ class WebRequestProxyingURLLoaderFactory
                       uint64_t request_id,
                       int32_t frame_routing_id,
                       const network::ResourceRequest& request);
+
+    InProgressRequest(const InProgressRequest&) = delete;
+    InProgressRequest& operator=(const InProgressRequest&) = delete;
+
     ~InProgressRequest() override;
 
     void Restart();
@@ -247,8 +251,6 @@ class WebRequestProxyingURLLoaderFactory
     State state_ = State::kInProgress;
 
     base::WeakPtrFactory<InProgressRequest> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(InProgressRequest);
   };
 
   WebRequestProxyingURLLoaderFactory(

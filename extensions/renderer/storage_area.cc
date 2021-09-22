@@ -60,6 +60,10 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
                       type_refs,
                       "local",
                       access_checker) {}
+
+  LocalStorageArea(const LocalStorageArea&) = delete;
+  LocalStorageArea& operator=(const LocalStorageArea&) = delete;
+
   ~LocalStorageArea() override = default;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -80,8 +84,6 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
   DEFINE_STORAGE_AREA_HANDLERS()
 
   StorageArea storage_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalStorageArea);
 };
 
 gin::WrapperInfo LocalStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -97,6 +99,10 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
                       type_refs,
                       "sync",
                       access_checker) {}
+
+  SyncStorageArea(const SyncStorageArea&) = delete;
+  SyncStorageArea& operator=(const SyncStorageArea&) = delete;
+
   ~SyncStorageArea() override = default;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -127,8 +133,6 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
   DEFINE_STORAGE_AREA_HANDLERS()
 
   StorageArea storage_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncStorageArea);
 };
 
 gin::WrapperInfo SyncStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -144,6 +148,10 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
                       type_refs,
                       "managed",
                       access_checker) {}
+
+  ManagedStorageArea(const ManagedStorageArea&) = delete;
+  ManagedStorageArea& operator=(const ManagedStorageArea&) = delete;
+
   ~ManagedStorageArea() override = default;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -163,8 +171,6 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
   DEFINE_STORAGE_AREA_HANDLERS()
 
   StorageArea storage_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedStorageArea);
 };
 
 gin::WrapperInfo ManagedStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -180,6 +186,10 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
                       type_refs,
                       "session",
                       access_checker) {}
+
+  SessionStorageArea(const SessionStorageArea&) = delete;
+  SessionStorageArea& operator=(const SessionStorageArea&) = delete;
+
   ~SessionStorageArea() override = default;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -207,8 +217,6 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
   }
 
   StorageArea storage_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageArea);
 };
 
 gin::WrapperInfo SessionStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};

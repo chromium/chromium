@@ -12,6 +12,10 @@ namespace extensions {
 class ShellFileSystemDelegate : public FileSystemDelegate {
  public:
   ShellFileSystemDelegate();
+
+  ShellFileSystemDelegate(const ShellFileSystemDelegate&) = delete;
+  ShellFileSystemDelegate& operator=(const ShellFileSystemDelegate&) = delete;
+
   ~ShellFileSystemDelegate() override;
 
   // FileSystemDelegate:
@@ -31,9 +35,6 @@ class ShellFileSystemDelegate : public FileSystemDelegate {
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
   SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellFileSystemDelegate);
 };
 
 }  // namespace extensions

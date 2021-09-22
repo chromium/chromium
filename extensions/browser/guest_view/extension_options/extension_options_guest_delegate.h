@@ -22,6 +22,11 @@ class ExtensionOptionsGuest;
 class ExtensionOptionsGuestDelegate {
  public:
   explicit ExtensionOptionsGuestDelegate(ExtensionOptionsGuest* guest);
+
+  ExtensionOptionsGuestDelegate(const ExtensionOptionsGuestDelegate&) = delete;
+  ExtensionOptionsGuestDelegate& operator=(
+      const ExtensionOptionsGuestDelegate&) = delete;
+
   virtual ~ExtensionOptionsGuestDelegate();
 
   // Shows the context menu for the guest.
@@ -35,8 +40,6 @@ class ExtensionOptionsGuestDelegate {
 
  private:
   ExtensionOptionsGuest* const guest_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionOptionsGuestDelegate);
 };
 
 }  // namespace extensions

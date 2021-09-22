@@ -36,6 +36,10 @@ class MockEventRouterObserver : public EventRouter::Observer {
   MockEventRouterObserver()
       : listener_added_count_(0),
         listener_removed_count_(0) {}
+
+  MockEventRouterObserver(const MockEventRouterObserver&) = delete;
+  MockEventRouterObserver& operator=(const MockEventRouterObserver&) = delete;
+
   ~MockEventRouterObserver() override {}
 
   int listener_added_count() const { return listener_added_count_; }
@@ -63,8 +67,6 @@ class MockEventRouterObserver : public EventRouter::Observer {
   int listener_added_count_;
   int listener_removed_count_;
   std::string last_event_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockEventRouterObserver);
 };
 
 using EventListenerConstructor =

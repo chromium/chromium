@@ -25,6 +25,10 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
   static WebcamPrivateAPI* Get(content::BrowserContext* context);
 
   explicit WebcamPrivateAPI(content::BrowserContext* context);
+
+  WebcamPrivateAPI(const WebcamPrivateAPI&) = delete;
+  WebcamPrivateAPI& operator=(const WebcamPrivateAPI&) = delete;
+
   ~WebcamPrivateAPI() override;
 
   Webcam* GetWebcam(const std::string& extension_id,
@@ -71,8 +75,6 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
   std::unique_ptr<ApiResourceManager<WebcamResource>> webcam_resource_manager_;
 
   base::WeakPtrFactory<WebcamPrivateAPI> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebcamPrivateAPI);
 };
 
 template <>

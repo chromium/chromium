@@ -59,6 +59,10 @@ class DeclarativeEventTest : public APIBindingTest {
  public:
   DeclarativeEventTest()
       : type_refs_(APITypeReferenceMap::InitializeTypeCallback()) {}
+
+  DeclarativeEventTest(const DeclarativeEventTest&) = delete;
+  DeclarativeEventTest& operator=(const DeclarativeEventTest&) = delete;
+
   ~DeclarativeEventTest() override {}
 
   void OnRequest(std::unique_ptr<APIRequestHandler::Request> request,
@@ -111,8 +115,6 @@ class DeclarativeEventTest : public APIBindingTest {
   std::unique_ptr<TestInteractionProvider> interaction_provider_;
   std::unique_ptr<APIRequestHandler> request_handler_;
   std::unique_ptr<APIRequestHandler::Request> last_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeEventTest);
 };
 
 // Test that the rules schema behaves properly. This is designed to be more of

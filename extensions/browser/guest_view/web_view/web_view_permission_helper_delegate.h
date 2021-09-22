@@ -19,6 +19,12 @@ class WebViewPermissionHelperDelegate : public content::WebContentsObserver {
  public:
   explicit WebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper);
+
+  WebViewPermissionHelperDelegate(const WebViewPermissionHelperDelegate&) =
+      delete;
+  WebViewPermissionHelperDelegate& operator=(
+      const WebViewPermissionHelperDelegate&) = delete;
+
   ~WebViewPermissionHelperDelegate() override;
 
   virtual void CanDownload(const GURL& url,
@@ -64,8 +70,6 @@ class WebViewPermissionHelperDelegate : public content::WebContentsObserver {
 
  private:
   WebViewPermissionHelper* const web_view_permission_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPermissionHelperDelegate);
 };
 
 }  // namespace extensions

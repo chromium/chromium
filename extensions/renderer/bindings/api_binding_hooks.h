@@ -51,6 +51,10 @@ class APIBindingHooks {
   };
 
   explicit APIBindingHooks(const std::string& api_name);
+
+  APIBindingHooks(const APIBindingHooks&) = delete;
+  APIBindingHooks& operator=(const APIBindingHooks&) = delete;
+
   ~APIBindingHooks();
 
   // Looks for any custom hooks associated with the given request, and, if any
@@ -96,8 +100,6 @@ class APIBindingHooks {
   std::string api_name_;
 
   std::unique_ptr<APIBindingHooksDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingHooks);
 };
 
 }  // namespace extensions

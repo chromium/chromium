@@ -72,6 +72,9 @@ class ExtensionIconImageTest : public ExtensionsTest,
   ExtensionIconImageTest()
       : image_loaded_count_(0), quit_in_image_loaded_(false) {}
 
+  ExtensionIconImageTest(const ExtensionIconImageTest&) = delete;
+  ExtensionIconImageTest& operator=(const ExtensionIconImageTest&) = delete;
+
   ~ExtensionIconImageTest() override {}
 
   void WaitForImageLoad() {
@@ -128,8 +131,6 @@ class ExtensionIconImageTest : public ExtensionsTest,
  private:
   int image_loaded_count_;
   bool quit_in_image_loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIconImageTest);
 };
 
 }  // namespace

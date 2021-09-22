@@ -57,6 +57,10 @@ class WakeEventPage::WakeEventPageNativeHandler
                             base::Unretained(this)));
   }
 
+  WakeEventPageNativeHandler(const WakeEventPageNativeHandler&) = delete;
+  WakeEventPageNativeHandler& operator=(const WakeEventPageNativeHandler&) =
+      delete;
+
   ~WakeEventPageNativeHandler() override {}
 
  private:
@@ -94,8 +98,6 @@ class WakeEventPage::WakeEventPageNativeHandler
 
   MakeRequestCallback make_request_;
   base::WeakPtrFactory<WakeEventPageNativeHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WakeEventPageNativeHandler);
 };
 
 // static

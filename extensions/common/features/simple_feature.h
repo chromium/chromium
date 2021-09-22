@@ -38,12 +38,16 @@ class SimpleFeature : public Feature {
   class ScopedThreadUnsafeAllowlistForTest {
    public:
     explicit ScopedThreadUnsafeAllowlistForTest(const std::string& id);
+
+    ScopedThreadUnsafeAllowlistForTest(
+        const ScopedThreadUnsafeAllowlistForTest&) = delete;
+    ScopedThreadUnsafeAllowlistForTest& operator=(
+        const ScopedThreadUnsafeAllowlistForTest&) = delete;
+
     ~ScopedThreadUnsafeAllowlistForTest();
 
    private:
     std::string previous_id_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedThreadUnsafeAllowlistForTest);
   };
 
   SimpleFeature();

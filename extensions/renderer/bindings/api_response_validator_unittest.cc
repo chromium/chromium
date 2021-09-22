@@ -60,6 +60,10 @@ class APIResponseValidatorTest : public APIBindingTest {
             base::BindRepeating(&APIResponseValidatorTest::OnValidationFailure,
                                 base::Unretained(this))),
         validator_(&type_refs_) {}
+
+  APIResponseValidatorTest(const APIResponseValidatorTest&) = delete;
+  APIResponseValidatorTest& operator=(const APIResponseValidatorTest&) = delete;
+
   ~APIResponseValidatorTest() override = default;
 
   void SetUp() override {
@@ -102,8 +106,6 @@ class APIResponseValidatorTest : public APIBindingTest {
 
   absl::optional<std::string> failure_method_;
   absl::optional<std::string> failure_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIResponseValidatorTest);
 };
 
 TEST_F(APIResponseValidatorTest, TestValidation) {

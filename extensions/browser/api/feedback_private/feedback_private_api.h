@@ -25,6 +25,10 @@ class LogSourceAccessManager;
 class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
  public:
   explicit FeedbackPrivateAPI(content::BrowserContext* context);
+
+  FeedbackPrivateAPI(const FeedbackPrivateAPI&) = delete;
+  FeedbackPrivateAPI& operator=(const FeedbackPrivateAPI&) = delete;
+
   ~FeedbackPrivateAPI() override;
 
   scoped_refptr<FeedbackService> GetService() const;
@@ -80,8 +84,6 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<LogSourceAccessManager> log_source_access_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackPrivateAPI);
 };
 
 // Feedback strings.

@@ -24,6 +24,10 @@ class PolicyCheck : public PreloadCheck {
  public:
   PolicyCheck(content::BrowserContext* context,
               scoped_refptr<const Extension> extension);
+
+  PolicyCheck(const PolicyCheck&) = delete;
+  PolicyCheck& operator=(const PolicyCheck&) = delete;
+
   ~PolicyCheck() override;
 
   // PreloadCheck:
@@ -33,8 +37,6 @@ class PolicyCheck : public PreloadCheck {
  private:
   content::BrowserContext* context_;
   std::u16string error_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyCheck);
 };
 
 }  // namespace extensions

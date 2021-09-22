@@ -41,6 +41,10 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
                              public ExtensionHostRegistry::Observer {
  public:
   explicit BluetoothEventRouter(content::BrowserContext* context);
+
+  BluetoothEventRouter(const BluetoothEventRouter&) = delete;
+  BluetoothEventRouter& operator=(const BluetoothEventRouter&) = delete;
+
   ~BluetoothEventRouter() override;
 
   // Returns true if adapter_ has been initialized for testing or bluetooth
@@ -183,8 +187,6 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
       extension_host_registry_observation_{this};
 
   base::WeakPtrFactory<BluetoothEventRouter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothEventRouter);
 };
 
 }  // namespace extensions

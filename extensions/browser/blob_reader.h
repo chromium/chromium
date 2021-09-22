@@ -43,6 +43,9 @@ class BlobReader : public blink::mojom::BlobReaderClient,
                    const std::string& blob_uuid,
                    BlobReadCallback callback);
 
+  BlobReader(const BlobReader&) = delete;
+  BlobReader& operator=(const BlobReader&) = delete;
+
   ~BlobReader() override;
 
  private:
@@ -82,8 +85,6 @@ class BlobReader : public blink::mojom::BlobReaderClient,
   absl::optional<uint64_t> blob_length_;
   std::unique_ptr<std::string> blob_data_;
   bool data_complete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BlobReader);
 };
 
 #endif  // EXTENSIONS_BROWSER_BLOB_READER_H_

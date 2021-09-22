@@ -25,6 +25,10 @@ class LocalValueStoreCache : public ValueStoreCache {
  public:
   explicit LocalValueStoreCache(
       scoped_refptr<value_store::ValueStoreFactory> factory);
+
+  LocalValueStoreCache(const LocalValueStoreCache&) = delete;
+  LocalValueStoreCache& operator=(const LocalValueStoreCache&) = delete;
+
   ~LocalValueStoreCache() override;
 
   // ValueStoreCache implementation:
@@ -47,8 +51,6 @@ class LocalValueStoreCache : public ValueStoreCache {
 
   // The collection of ValueStores for local storage.
   StorageMap storage_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalValueStoreCache);
 };
 
 }  // namespace extensions

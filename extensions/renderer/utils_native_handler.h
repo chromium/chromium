@@ -14,6 +14,10 @@ class ScriptContext;
 class UtilsNativeHandler : public ObjectBackedNativeHandler {
  public:
   explicit UtilsNativeHandler(ScriptContext* context);
+
+  UtilsNativeHandler(const UtilsNativeHandler&) = delete;
+  UtilsNativeHandler& operator=(const UtilsNativeHandler&) = delete;
+
   ~UtilsNativeHandler() override;
 
   // ObjectBackedNativeHandler:
@@ -24,8 +28,6 @@ class UtilsNativeHandler : public ObjectBackedNativeHandler {
   // that value. The copy will have no references to nested values of the
   // argument.
   void DeepCopy(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(UtilsNativeHandler);
 };
 
 }  // namespace extensions

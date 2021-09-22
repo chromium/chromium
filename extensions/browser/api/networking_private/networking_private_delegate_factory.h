@@ -31,13 +31,14 @@ class NetworkingPrivateDelegateFactory
   class UIDelegateFactory {
    public:
     UIDelegateFactory();
+
+    UIDelegateFactory(const UIDelegateFactory&) = delete;
+    UIDelegateFactory& operator=(const UIDelegateFactory&) = delete;
+
     virtual ~UIDelegateFactory();
 
     virtual std::unique_ptr<NetworkingPrivateDelegate::UIDelegate>
     CreateDelegate() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UIDelegateFactory);
   };
 
   // Provide optional factories for creating delegate instances.

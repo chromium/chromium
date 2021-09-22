@@ -20,6 +20,10 @@ namespace extensions {
 struct ReplacementAppsInfo : public Extension::ManifestData {
  public:
   ReplacementAppsInfo();
+
+  ReplacementAppsInfo(const ReplacementAppsInfo&) = delete;
+  ReplacementAppsInfo& operator=(const ReplacementAppsInfo&) = delete;
+
   ~ReplacementAppsInfo() override;
 
   // Returns true if the |extension| has a replacement web app.
@@ -46,22 +50,22 @@ struct ReplacementAppsInfo : public Extension::ManifestData {
 
   // Optional package name of an Android app.
   std::string replacement_android_app;
-
-  DISALLOW_COPY_AND_ASSIGN(ReplacementAppsInfo);
 };
 
 // Parses the "replacement_web_app" and "replacement_android_app" manifest keys.
 class ReplacementAppsHandler : public ManifestHandler {
  public:
   ReplacementAppsHandler();
+
+  ReplacementAppsHandler(const ReplacementAppsHandler&) = delete;
+  ReplacementAppsHandler& operator=(const ReplacementAppsHandler&) = delete;
+
   ~ReplacementAppsHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ReplacementAppsHandler);
 };
 
 }  // namespace extensions

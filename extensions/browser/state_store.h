@@ -53,6 +53,10 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
   // This variant is useful for testing (using a mock ValueStore).
   StateStore(content::BrowserContext* context,
              std::unique_ptr<value_store::ValueStore> store);
+
+  StateStore(const StateStore&) = delete;
+  StateStore& operator=(const StateStore&) = delete;
+
   ~StateStore() override;
 
   // Register a key for removal upon extension install/uninstall. We remove
@@ -115,8 +119,6 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StateStore);
 };
 
 }  // namespace extensions

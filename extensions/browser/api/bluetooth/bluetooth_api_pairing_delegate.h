@@ -26,6 +26,11 @@ class BluetoothApiPairingDelegate
  public:
   explicit BluetoothApiPairingDelegate(
       content::BrowserContext* browser_context);
+
+  BluetoothApiPairingDelegate(const BluetoothApiPairingDelegate&) = delete;
+  BluetoothApiPairingDelegate& operator=(const BluetoothApiPairingDelegate&) =
+      delete;
+
   ~BluetoothApiPairingDelegate() override;
 
   // device::PairingDelegate overrides:
@@ -46,8 +51,6 @@ class BluetoothApiPairingDelegate
       const api::bluetooth_private::PairingEvent& pairing_event);
 
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothApiPairingDelegate);
 };
 
 }  // namespace extensions

@@ -49,6 +49,11 @@ std::string ParamsToJSON(const T& params) {
 class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
  public:
   FeedbackPrivateApiUnittest() = default;
+
+  FeedbackPrivateApiUnittest(const FeedbackPrivateApiUnittest&) = delete;
+  FeedbackPrivateApiUnittest& operator=(const FeedbackPrivateApiUnittest&) =
+      delete;
+
   ~FeedbackPrivateApiUnittest() override = default;
 
   // FeedbackPrivateApiUnittestBase:
@@ -171,9 +176,6 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
         ->SetFeedbackServiceForTesting(
             static_cast<scoped_refptr<FeedbackService>>(std::move(mock)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FeedbackPrivateApiUnittest);
 };
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceInvalidId) {

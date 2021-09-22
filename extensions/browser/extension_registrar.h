@@ -52,6 +52,10 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   class Delegate {
    public:
     Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() = default;
 
     // Called before |extension| is added. |old_extension| is the extension
@@ -82,14 +86,15 @@ class ExtensionRegistrar : public ProcessManagerObserver {
 
     // Returns true if the extension should be blocked.
     virtual bool ShouldBlockExtension(const Extension* extension) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // The provided Delegate should outlive this object.
   ExtensionRegistrar(content::BrowserContext* browser_context,
                      Delegate* delegate);
+
+  ExtensionRegistrar(const ExtensionRegistrar&) = delete;
+  ExtensionRegistrar& operator=(const ExtensionRegistrar&) = delete;
+
   ~ExtensionRegistrar() override;
 
   // Adds the extension to the ExtensionRegistry. The extension will be added to
@@ -210,8 +215,6 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};
   base::WeakPtrFactory<ExtensionRegistrar> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionRegistrar);
 };
 
 }  // namespace extensions

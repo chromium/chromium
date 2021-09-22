@@ -31,6 +31,10 @@ class FrameContentWatcher
  public:
   FrameContentWatcher(content::RenderFrame* render_frame,
                       const blink::WebVector<blink::WebString>& css_selectors);
+
+  FrameContentWatcher(const FrameContentWatcher&) = delete;
+  FrameContentWatcher& operator=(const FrameContentWatcher&) = delete;
+
   ~FrameContentWatcher() override;
 
   // content::RenderFrameObserver:
@@ -59,8 +63,6 @@ class FrameContentWatcher
   blink::WebVector<blink::WebString> css_selectors_;
   std::set<std::string> matching_selectors_;
   bool document_created_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameContentWatcher);
 };
 
 FrameContentWatcher::FrameContentWatcher(

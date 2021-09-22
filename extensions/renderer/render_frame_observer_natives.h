@@ -16,6 +16,11 @@ class ScriptContext;
 class RenderFrameObserverNatives : public ObjectBackedNativeHandler {
  public:
   explicit RenderFrameObserverNatives(ScriptContext* context);
+
+  RenderFrameObserverNatives(const RenderFrameObserverNatives&) = delete;
+  RenderFrameObserverNatives& operator=(const RenderFrameObserverNatives&) =
+      delete;
+
   ~RenderFrameObserverNatives() override;
 
   // ObjectBackedNativeHandler:
@@ -32,8 +37,6 @@ class RenderFrameObserverNatives : public ObjectBackedNativeHandler {
   void InvokeCallback(v8::Global<v8::Function> callback, bool succeeded);
 
   base::WeakPtrFactory<RenderFrameObserverNatives> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameObserverNatives);
 };
 
 }  // namespace extensions

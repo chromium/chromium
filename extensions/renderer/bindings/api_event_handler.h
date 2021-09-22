@@ -38,6 +38,10 @@ class APIEventHandler {
   APIEventHandler(const APIEventListeners::ListenersUpdated& listeners_changed,
                   const ContextOwnerIdGetter& context_owner_id_getter,
                   ExceptionHandler* exception_handler);
+
+  APIEventHandler(const APIEventHandler&) = delete;
+  APIEventHandler& operator=(const APIEventHandler&) = delete;
+
   ~APIEventHandler();
 
   // Returns a new v8::Object for an event with the given |event_name|. If
@@ -112,8 +116,6 @@ class APIEventHandler {
   // The exception handler associated with the bindings system; guaranteed to
   // outlive this object.
   ExceptionHandler* const exception_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIEventHandler);
 };
 
 }  // namespace extensions

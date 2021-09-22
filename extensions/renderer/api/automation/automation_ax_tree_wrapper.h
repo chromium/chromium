@@ -24,6 +24,10 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
  public:
   AutomationAXTreeWrapper(ui::AXTreeID tree_id,
                           AutomationInternalCustomBindings* owner);
+
+  AutomationAXTreeWrapper(const AutomationAXTreeWrapper&) = delete;
+  AutomationAXTreeWrapper& operator=(const AutomationAXTreeWrapper&) = delete;
+
   ~AutomationAXTreeWrapper() override;
 
   // Returns the AutomationAXTreeWrapper that lists |tree_id| as one of its
@@ -145,8 +149,6 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
   // A collection of all app ids in this tree nodes'
   // ax::mojom::StringAttribute::kParentTreeNodeAppId.
   std::set<std::string> all_parent_tree_node_app_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationAXTreeWrapper);
 };
 
 }  // namespace extensions

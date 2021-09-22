@@ -43,6 +43,10 @@ class RendererStartupHelper : public KeyedService,
  public:
   // This class sends messages to all renderers started for |browser_context|.
   explicit RendererStartupHelper(content::BrowserContext* browser_context);
+
+  RendererStartupHelper(const RendererStartupHelper&) = delete;
+  RendererStartupHelper& operator=(const RendererStartupHelper&) = delete;
+
   ~RendererStartupHelper() override;
 
   // content::RenderProcessHostCreationObserver:
@@ -109,8 +113,6 @@ class RendererStartupHelper : public KeyedService,
   // happens.
   std::map<content::RenderProcessHost*, mojo::AssociatedRemote<mojom::Renderer>>
       process_mojo_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererStartupHelper);
 };
 
 // Factory for RendererStartupHelpers. Declared here because this header is

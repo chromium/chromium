@@ -41,6 +41,10 @@ class SerialPortManager : public BrowserContextKeyedAPI {
   static BrowserContextKeyedAPIFactory<SerialPortManager>* GetFactoryInstance();
 
   explicit SerialPortManager(content::BrowserContext* context);
+
+  SerialPortManager(const SerialPortManager&) = delete;
+  SerialPortManager& operator=(const SerialPortManager&) = delete;
+
   ~SerialPortManager() override;
 
   void GetDevices(
@@ -101,8 +105,6 @@ class SerialPortManager : public BrowserContextKeyedAPI {
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<SerialPortManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SerialPortManager);
 };
 
 }  // namespace api

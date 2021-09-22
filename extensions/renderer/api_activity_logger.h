@@ -26,6 +26,10 @@ namespace extensions {
 class APIActivityLogger : public ObjectBackedNativeHandler {
  public:
   APIActivityLogger(IPCMessageSender* ipc_sender, ScriptContext* context);
+
+  APIActivityLogger(const APIActivityLogger&) = delete;
+  APIActivityLogger& operator=(const APIActivityLogger&) = delete;
+
   ~APIActivityLogger() override;
 
   // ObjectBackedNativeHandler:
@@ -74,8 +78,6 @@ class APIActivityLogger : public ObjectBackedNativeHandler {
   // Valid to use so long as there's a valid ScriptContext associated with the
   // call-site.
   IPCMessageSender* ipc_sender_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(APIActivityLogger);
 };
 
 }  // namespace extensions

@@ -40,6 +40,9 @@ class TestExtensionSystem : public MockExtensionSystem {
       : MockExtensionSystem(context),
         runtime_data_(ExtensionRegistry::Get(context)) {}
 
+  TestExtensionSystem(const TestExtensionSystem&) = delete;
+  TestExtensionSystem& operator=(const TestExtensionSystem&) = delete;
+
   ~TestExtensionSystem() override {}
 
   // MockExtensionSystem:
@@ -53,12 +56,17 @@ class TestExtensionSystem : public MockExtensionSystem {
 
  private:
   RuntimeData runtime_data_;
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionSystem);
 };
 
 class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
  public:
   TestExtensionRegistrarDelegate() = default;
+
+  TestExtensionRegistrarDelegate(const TestExtensionRegistrarDelegate&) =
+      delete;
+  TestExtensionRegistrarDelegate& operator=(
+      const TestExtensionRegistrarDelegate&) = delete;
+
   ~TestExtensionRegistrarDelegate() override = default;
 
   // ExtensionRegistrar::Delegate:
@@ -76,9 +84,6 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   MOCK_METHOD1(CanEnableExtension, bool(const Extension* extension));
   MOCK_METHOD1(CanDisableExtension, bool(const Extension* extension));
   MOCK_METHOD1(ShouldBlockExtension, bool(const Extension* extension));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionRegistrarDelegate);
 };
 
 }  // namespace
@@ -86,6 +91,10 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
 class ExtensionRegistrarTest : public ExtensionsTest {
  public:
   ExtensionRegistrarTest() = default;
+
+  ExtensionRegistrarTest(const ExtensionRegistrarTest&) = delete;
+  ExtensionRegistrarTest& operator=(const ExtensionRegistrarTest&) = delete;
+
   ~ExtensionRegistrarTest() override = default;
 
   void SetUp() override {
@@ -395,8 +404,6 @@ class ExtensionRegistrarTest : public ExtensionsTest {
 
   // Initialized in SetUp().
   absl::optional<ExtensionRegistrar> registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionRegistrarTest);
 };
 
 TEST_F(ExtensionRegistrarTest, Basic) {

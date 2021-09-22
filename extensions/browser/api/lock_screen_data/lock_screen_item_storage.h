@@ -89,6 +89,10 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
                         const std::string& crypto_key,
                         const base::FilePath& deprecated_storage_root,
                         const base::FilePath& storage_root);
+
+  LockScreenItemStorage(const LockScreenItemStorage&) = delete;
+  LockScreenItemStorage& operator=(const LockScreenItemStorage&) = delete;
+
   ~LockScreenItemStorage() override;
 
   // Updates the LockScreenItemStorage's view of whether the user session is
@@ -329,8 +333,6 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<LockScreenItemStorage> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenItemStorage);
 };
 
 }  // namespace lock_screen_data

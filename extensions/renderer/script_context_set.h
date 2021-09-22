@@ -48,6 +48,9 @@ class ScriptContextSet : public ScriptContextSetIterable {
       // Must outlive this. TODO(kalman): Combine this and |extensions|.
       ExtensionIdSet* active_extension_ids);
 
+  ScriptContextSet(const ScriptContextSet&) = delete;
+  ScriptContextSet& operator=(const ScriptContextSet&) = delete;
+
   ~ScriptContextSet() override;
 
   // Returns the number of contexts being tracked by this set.
@@ -133,8 +136,6 @@ class ScriptContextSet : public ScriptContextSetIterable {
   // Whether the script context set is associated with the renderer active on
   // the Chrome OS lock screen.
   bool is_lock_screen_context_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptContextSet);
 };
 
 }  // namespace extensions

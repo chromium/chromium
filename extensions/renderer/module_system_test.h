@@ -30,6 +30,11 @@ class ModuleSystemTestEnvironment {
   ModuleSystemTestEnvironment(v8::Isolate* isolate,
                               ScriptContextSet* context_set,
                               scoped_refptr<const Extension> extension);
+
+  ModuleSystemTestEnvironment(const ModuleSystemTestEnvironment&) = delete;
+  ModuleSystemTestEnvironment& operator=(const ModuleSystemTestEnvironment&) =
+      delete;
+
   ~ModuleSystemTestEnvironment();
 
   // Register a named JS module in the module system.
@@ -79,8 +84,6 @@ class ModuleSystemTestEnvironment {
   std::unique_ptr<StringSourceMap> source_map_;
 
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSystemTestEnvironment);
 };
 
 // Test fixture for testing JS that makes use of the module system.
@@ -98,6 +101,10 @@ class ModuleSystemTestEnvironment {
 class ModuleSystemTest : public testing::Test {
  public:
   ModuleSystemTest();
+
+  ModuleSystemTest(const ModuleSystemTest&) = delete;
+  ModuleSystemTest& operator=(const ModuleSystemTest&) = delete;
+
   ~ModuleSystemTest() override;
 
   void SetUp() override;
@@ -132,9 +139,6 @@ class ModuleSystemTest : public testing::Test {
 
   std::unique_ptr<ModuleSystemTestEnvironment> env_;
   bool should_assertions_be_made_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModuleSystemTest);
 };
 
 }  // namespace extensions

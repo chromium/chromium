@@ -50,6 +50,10 @@ class OverscanTracker {
   static void RemoveObserver(content::WebContents* web_contents);
 
   OverscanTracker() {}
+
+  OverscanTracker(const OverscanTracker&) = delete;
+  OverscanTracker& operator=(const OverscanTracker&) = delete;
+
   ~OverscanTracker() {}
 
  private:
@@ -62,8 +66,6 @@ class OverscanTracker {
   using ObserverMap =
       std::map<content::WebContents*, std::unique_ptr<OverscanWebObserver>>;
   ObserverMap observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscanTracker);
 };
 
 class OverscanTracker::OverscanWebObserver
@@ -71,6 +73,10 @@ class OverscanTracker::OverscanWebObserver
  public:
   explicit OverscanWebObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
+
+  OverscanWebObserver(const OverscanWebObserver&) = delete;
+  OverscanWebObserver& operator=(const OverscanWebObserver&) = delete;
+
   ~OverscanWebObserver() override {}
 
   // WebContentsObserver
@@ -95,8 +101,6 @@ class OverscanTracker::OverscanWebObserver
 
  private:
   std::set<std::string> display_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscanWebObserver);
 };
 
 static OverscanTracker* g_overscan_tracker = nullptr;

@@ -282,6 +282,10 @@ class ScopedExtensionPrefUpdate : public prefs::ScopedDictionaryPrefUpdate {
     DCHECK(crx_file::id_util::IdIsValid(extension_id_));
   }
 
+  ScopedExtensionPrefUpdate(const ScopedExtensionPrefUpdate&) = delete;
+  ScopedExtensionPrefUpdate& operator=(const ScopedExtensionPrefUpdate&) =
+      delete;
+
   ~ScopedExtensionPrefUpdate() override {}
 
   // ScopedDictionaryPrefUpdate overrides:
@@ -299,8 +303,6 @@ class ScopedExtensionPrefUpdate : public prefs::ScopedDictionaryPrefUpdate {
 
  private:
   const std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedExtensionPrefUpdate);
 };
 
 std::string JoinPrefs(const std::vector<base::StringPiece>& parts) {

@@ -73,6 +73,10 @@ class AlarmManager : public BrowserContextKeyedAPI,
   };
 
   explicit AlarmManager(content::BrowserContext* context);
+
+  AlarmManager(const AlarmManager&) = delete;
+  AlarmManager& operator=(const AlarmManager&) = delete;
+
   ~AlarmManager() override;
 
   // Override the default delegate. Callee assumes onwership. Used for testing.
@@ -243,8 +247,6 @@ class AlarmManager : public BrowserContextKeyedAPI,
 
   // Next poll's time.
   base::Time next_poll_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlarmManager);
 };
 
 }  //  namespace extensions

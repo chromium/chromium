@@ -39,6 +39,11 @@ namespace {
 class MainThreadIPCMessageSender : public IPCMessageSender {
  public:
   MainThreadIPCMessageSender() : render_thread_(content::RenderThread::Get()) {}
+
+  MainThreadIPCMessageSender(const MainThreadIPCMessageSender&) = delete;
+  MainThreadIPCMessageSender& operator=(const MainThreadIPCMessageSender&) =
+      delete;
+
   ~MainThreadIPCMessageSender() override {}
 
   void SendRequestIPC(ScriptContext* context,
@@ -239,8 +244,6 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
 
   base::WeakPtrFactory<MainThreadIPCMessageSender> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadIPCMessageSender);
 };
 
 class WorkerThreadIPCMessageSender : public IPCMessageSender {
@@ -249,6 +252,11 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
                                int64_t service_worker_version_id)
       : dispatcher_(dispatcher),
         service_worker_version_id_(service_worker_version_id) {}
+
+  WorkerThreadIPCMessageSender(const WorkerThreadIPCMessageSender&) = delete;
+  WorkerThreadIPCMessageSender& operator=(const WorkerThreadIPCMessageSender&) =
+      delete;
+
   ~WorkerThreadIPCMessageSender() override {}
 
   void SendRequestIPC(ScriptContext* context,
@@ -453,8 +461,6 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 
   // request id -> GUID map for each outstanding requests.
   std::map<int, std::string> request_id_to_guid_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadIPCMessageSender);
 };
 
 }  // namespace

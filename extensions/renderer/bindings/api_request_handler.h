@@ -31,6 +31,10 @@ class APIRequestHandler {
   // ExtensionHostMsg_Request_Params IPC struct.
   struct Request {
     Request();
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request();
 
     int request_id = -1;
@@ -38,9 +42,6 @@ class APIRequestHandler {
     bool has_async_response_handler = false;
     bool has_user_gesture = false;
     std::unique_ptr<base::Value> arguments_list;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   using SendRequestMethod =
@@ -51,6 +52,10 @@ class APIRequestHandler {
                     APILastError last_error,
                     ExceptionHandler* exception_handler,
                     const InteractionProvider* interaction_provider);
+
+  APIRequestHandler(const APIRequestHandler&) = delete;
+  APIRequestHandler& operator=(const APIRequestHandler&) = delete;
+
   ~APIRequestHandler();
 
   // Begins the process of processing the request. If this is a promise based
@@ -155,8 +160,6 @@ class APIRequestHandler {
 
   // Outlives |this|.
   const InteractionProvider* const interaction_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIRequestHandler);
 };
 
 }  // namespace extensions

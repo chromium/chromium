@@ -56,6 +56,10 @@ class APIBindingsSystem {
       APIBinding::OnSilentRequest on_silent_request,
       binding::AddConsoleError add_console_error,
       APILastError last_error);
+
+  APIBindingsSystem(const APIBindingsSystem&) = delete;
+  APIBindingsSystem& operator=(const APIBindingsSystem&) = delete;
+
   ~APIBindingsSystem();
 
   // Returns a new v8::Object representing the api specified by |api_name|.
@@ -154,8 +158,6 @@ class APIBindingsSystem {
   // The method to call when the system silently handles an API request without
   // notifying the browser.
   APIBinding::OnSilentRequest on_silent_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingsSystem);
 };
 
 }  // namespace

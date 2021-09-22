@@ -57,6 +57,10 @@ class VpnService::VpnConfiguration : public ShillThirdPartyVpnObserver {
                    const std::string& configuration_name,
                    const std::string& key,
                    base::WeakPtr<VpnService> vpn_service);
+
+  VpnConfiguration(const VpnConfiguration&) = delete;
+  VpnConfiguration& operator=(const VpnConfiguration&) = delete;
+
   ~VpnConfiguration() override;
 
   const std::string& extension_id() const { return extension_id_; }
@@ -89,8 +93,6 @@ class VpnService::VpnConfiguration : public ShillThirdPartyVpnObserver {
   std::string service_path_;
 
   base::WeakPtr<VpnService> vpn_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnConfiguration);
 };
 
 VpnService::VpnConfiguration::VpnConfiguration(

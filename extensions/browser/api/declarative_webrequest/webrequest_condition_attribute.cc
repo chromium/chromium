@@ -287,6 +287,9 @@ bool WebRequestConditionAttributeContentType::Equals(
 // set of test groups iff it passes at least one test group.
 class HeaderMatcher {
  public:
+  HeaderMatcher(const HeaderMatcher&) = delete;
+  HeaderMatcher& operator=(const HeaderMatcher&) = delete;
+
   ~HeaderMatcher();
 
   // Creates an instance based on a list |tests| of test groups, encoded as
@@ -309,6 +312,10 @@ class HeaderMatcher {
     static std::unique_ptr<StringMatchTest> Create(const base::Value& data,
                                                    MatchType type,
                                                    bool case_sensitive);
+
+    StringMatchTest(const StringMatchTest&) = delete;
+    StringMatchTest& operator=(const StringMatchTest&) = delete;
+
     ~StringMatchTest();
 
     // Does |str| pass |this| StringMatchTest?
@@ -322,13 +329,15 @@ class HeaderMatcher {
     const std::string data_;
     const MatchType type_;
     const base::CompareCase case_sensitive_;
-    DISALLOW_COPY_AND_ASSIGN(StringMatchTest);
   };
 
   // Represents a test group -- a set of string matching tests to be applied to
   // both the header name and value.
   class HeaderMatchTest {
    public:
+    HeaderMatchTest(const HeaderMatchTest&) = delete;
+    HeaderMatchTest& operator=(const HeaderMatchTest&) = delete;
+
     ~HeaderMatchTest();
 
     // Gets the test group description in |tests| and creates the corresponding
@@ -349,16 +358,12 @@ class HeaderMatcher {
     const std::vector<std::unique_ptr<const StringMatchTest>> name_match_;
     // Tests to be passed by a header's value.
     const std::vector<std::unique_ptr<const StringMatchTest>> value_match_;
-
-    DISALLOW_COPY_AND_ASSIGN(HeaderMatchTest);
   };
 
   explicit HeaderMatcher(
       std::vector<std::unique_ptr<const HeaderMatchTest>> tests);
 
   const std::vector<std::unique_ptr<const HeaderMatchTest>> tests_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeaderMatcher);
 };
 
 // HeaderMatcher implementation.

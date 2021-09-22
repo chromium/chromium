@@ -49,6 +49,10 @@ class TestExtensionSystem : public MockExtensionSystem {
   explicit TestExtensionSystem(content::BrowserContext* context)
       : MockExtensionSystem(context),
         runtime_data_(ExtensionRegistry::Get(context)) {}
+
+  TestExtensionSystem(const TestExtensionSystem&) = delete;
+  TestExtensionSystem& operator=(const TestExtensionSystem&) = delete;
+
   ~TestExtensionSystem() override = default;
 
   RuntimeData* runtime_data() override { return &runtime_data_; }
@@ -57,8 +61,6 @@ class TestExtensionSystem : public MockExtensionSystem {
  private:
   RuntimeData runtime_data_;
   NullAppSorting app_sorting_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionSystem);
 };
 
 #if defined(USE_AURA)
@@ -66,6 +68,10 @@ class TestExtensionSystem : public MockExtensionSystem {
 class TestAppWindowClient : public ShellAppWindowClient {
  public:
   TestAppWindowClient() = default;
+
+  TestAppWindowClient(const TestAppWindowClient&) = delete;
+  TestAppWindowClient& operator=(const TestAppWindowClient&) = delete;
+
   ~TestAppWindowClient() override = default;
 
   // ShellAppWindowClient:
@@ -74,9 +80,6 @@ class TestAppWindowClient : public ShellAppWindowClient {
       AppWindow::CreateParams* params) override {
     return new ShellNativeAppWindowAura(window, *params);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAppWindowClient);
 };
 #endif
 

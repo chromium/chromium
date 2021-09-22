@@ -34,6 +34,11 @@ class NativeExtensionBindingsSystem {
  public:
   explicit NativeExtensionBindingsSystem(
       std::unique_ptr<IPCMessageSender> ipc_message_sender);
+
+  NativeExtensionBindingsSystem(const NativeExtensionBindingsSystem&) = delete;
+  NativeExtensionBindingsSystem& operator=(
+      const NativeExtensionBindingsSystem&) = delete;
+
   ~NativeExtensionBindingsSystem();
 
   // Called when a new ScriptContext is created.
@@ -147,8 +152,6 @@ class NativeExtensionBindingsSystem {
   v8::Eternal<v8::FunctionTemplate> get_internal_api_;
 
   base::WeakPtrFactory<NativeExtensionBindingsSystem> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeExtensionBindingsSystem);
 };
 
 }  // namespace extensions

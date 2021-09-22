@@ -60,6 +60,10 @@ namespace extensions {
 class LoggingTimer {
  public:
   explicit LoggingTimer(const char* key);
+
+  LoggingTimer(const LoggingTimer&) = delete;
+  LoggingTimer& operator=(const LoggingTimer&) = delete;
+
   ~LoggingTimer();
 
   // Returns the tracked time for the given |key|.
@@ -79,8 +83,6 @@ class LoggingTimer {
 
   // The key for this timer.
   const char* const key_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingTimer);
 };
 
 }  // namespace extensions

@@ -190,6 +190,10 @@ class ContentVerifier::HashHelper {
  public:
   explicit HashHelper(ContentVerifier* content_verifier)
       : content_verifier_(content_verifier) {}
+
+  HashHelper(const HashHelper&) = delete;
+  HashHelper& operator=(const HashHelper&) = delete;
+
   ~HashHelper() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     // TODO(lazyboy): Do we need to Cancel() the callacks?
@@ -412,8 +416,6 @@ class ContentVerifier::HashHelper {
   ContentVerifier* const content_verifier_ = nullptr;
 
   base::WeakPtrFactory<HashHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HashHelper);
 };
 
 // static

@@ -20,6 +20,11 @@ class ExtensionNavigationThrottle : public content::NavigationThrottle {
  public:
   explicit ExtensionNavigationThrottle(
       content::NavigationHandle* navigation_handle);
+
+  ExtensionNavigationThrottle(const ExtensionNavigationThrottle&) = delete;
+  ExtensionNavigationThrottle& operator=(const ExtensionNavigationThrottle&) =
+      delete;
+
   ~ExtensionNavigationThrottle() override;
 
   // content::NavigationThrottle implementation:
@@ -31,8 +36,6 @@ class ExtensionNavigationThrottle : public content::NavigationThrottle {
  private:
   // Shared throttle handler.
   ThrottleCheckResult WillStartOrRedirectRequest();
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNavigationThrottle);
 };
 
 }  // namespace extensions

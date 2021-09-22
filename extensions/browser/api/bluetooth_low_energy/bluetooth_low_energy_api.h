@@ -63,6 +63,10 @@ class BluetoothLowEnergyAPI : public BrowserContextKeyedAPI {
   static BluetoothLowEnergyAPI* Get(content::BrowserContext* context);
 
   explicit BluetoothLowEnergyAPI(content::BrowserContext* context);
+
+  BluetoothLowEnergyAPI(const BluetoothLowEnergyAPI&) = delete;
+  BluetoothLowEnergyAPI& operator=(const BluetoothLowEnergyAPI&) = delete;
+
   ~BluetoothLowEnergyAPI() override;
 
   // KeyedService implementation..
@@ -81,8 +85,6 @@ class BluetoothLowEnergyAPI : public BrowserContextKeyedAPI {
   friend class BrowserContextKeyedAPIFactory<BluetoothLowEnergyAPI>;
 
   std::unique_ptr<BluetoothLowEnergyEventRouter> event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyAPI);
 };
 
 namespace api {

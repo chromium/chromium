@@ -53,6 +53,10 @@ class GinPort final : public gin::Wrappable<GinPort> {
           const std::string& name,
           APIEventHandler* event_handler,
           Delegate* delegate);
+
+  GinPort(const GinPort&) = delete;
+  GinPort& operator=(const GinPort&) = delete;
+
   ~GinPort() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -155,8 +159,6 @@ class GinPort final : public gin::Wrappable<GinPort> {
       context_invalidation_listener_;
 
   base::WeakPtrFactory<GinPort> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GinPort);
 };
 
 }  // namespace extensions

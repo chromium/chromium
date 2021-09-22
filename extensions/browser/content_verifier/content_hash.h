@@ -76,12 +76,14 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
                  url_loader_factory_remote,
              const GURL& fetch_url,
              ContentVerifierKey verifier_key);
+
+    FetchKey(const FetchKey&) = delete;
+    FetchKey& operator=(const FetchKey&) = delete;
+
     ~FetchKey();
 
     FetchKey(FetchKey&& other);
     FetchKey& operator=(FetchKey&& other);
-
-    DISALLOW_COPY_AND_ASSIGN(FetchKey);
   };
 
   // Result of checking tree hash root (typically calculated from block hashes

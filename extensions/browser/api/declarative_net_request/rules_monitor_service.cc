@@ -172,6 +172,9 @@ class RulesMonitorService::FileSequenceBridge {
       : file_task_runner_(GetExtensionFileTaskRunner()),
         file_sequence_helper_(std::make_unique<FileSequenceHelper>()) {}
 
+  FileSequenceBridge(const FileSequenceBridge&) = delete;
+  FileSequenceBridge& operator=(const FileSequenceBridge&) = delete;
+
   ~FileSequenceBridge() {
     file_task_runner_->DeleteSoon(FROM_HERE, std::move(file_sequence_helper_));
   }
@@ -213,8 +216,6 @@ class RulesMonitorService::FileSequenceBridge {
   // Created on the UI thread. Accessed and destroyed on |file_task_runner_|.
   // Maintains state needed on |file_task_runner_|.
   std::unique_ptr<FileSequenceHelper> file_sequence_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSequenceBridge);
 };
 
 // Helps to ensure FIFO ordering of api calls and that only a single api call

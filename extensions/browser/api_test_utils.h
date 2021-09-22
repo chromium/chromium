@@ -36,6 +36,10 @@ namespace api_test_utils {
 class SendResponseHelper {
  public:
   explicit SendResponseHelper(ExtensionFunction* function);
+
+  SendResponseHelper(const SendResponseHelper&) = delete;
+  SendResponseHelper& operator=(const SendResponseHelper&) = delete;
+
   ~SendResponseHelper();
 
   bool has_response() { return response_.get() != nullptr; }
@@ -54,8 +58,6 @@ class SendResponseHelper {
 
   base::RunLoop run_loop_;
   std::unique_ptr<bool> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendResponseHelper);
 };
 
 enum RunFunctionFlags { NONE = 0, INCLUDE_INCOGNITO = 1 << 0 };

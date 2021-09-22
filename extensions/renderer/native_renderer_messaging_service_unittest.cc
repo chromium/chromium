@@ -30,6 +30,12 @@ class NativeRendererMessagingServiceTest
     : public NativeExtensionBindingsSystemUnittest {
  public:
   NativeRendererMessagingServiceTest() {}
+
+  NativeRendererMessagingServiceTest(
+      const NativeRendererMessagingServiceTest&) = delete;
+  NativeRendererMessagingServiceTest& operator=(
+      const NativeRendererMessagingServiceTest&) = delete;
+
   ~NativeRendererMessagingServiceTest() override {}
 
   // NativeExtensionBindingsSystemUnittest:
@@ -68,8 +74,6 @@ class NativeRendererMessagingServiceTest
 
   ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeRendererMessagingServiceTest);
 };
 
 TEST_F(NativeRendererMessagingServiceTest, ValidateMessagePort) {

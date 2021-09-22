@@ -114,6 +114,10 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   };
 
   AutomationEventRouter();
+
+  AutomationEventRouter(const AutomationEventRouter&) = delete;
+  AutomationEventRouter& operator=(const AutomationEventRouter&) = delete;
+
   ~AutomationEventRouter() override;
 
   void Register(const ExtensionId& extension_id,
@@ -162,8 +166,6 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   base::ObserverList<AutomationEventRouterObserver>::Unchecked observers_;
 
   friend struct base::DefaultSingletonTraits<AutomationEventRouter>;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationEventRouter);
 };
 
 }  // namespace extensions

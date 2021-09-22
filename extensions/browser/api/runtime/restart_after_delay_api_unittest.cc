@@ -25,6 +25,11 @@ namespace {
 class DelayedRestartTestApiDelegate : public TestRuntimeAPIDelegate {
  public:
   DelayedRestartTestApiDelegate() {}
+
+  DelayedRestartTestApiDelegate(const DelayedRestartTestApiDelegate&) = delete;
+  DelayedRestartTestApiDelegate& operator=(
+      const DelayedRestartTestApiDelegate&) = delete;
+
   ~DelayedRestartTestApiDelegate() override {}
 
   // TestRuntimeAPIDelegate:
@@ -52,8 +57,6 @@ class DelayedRestartTestApiDelegate : public TestRuntimeAPIDelegate {
   base::OnceClosure quit_closure_;
 
   bool restart_done_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedRestartTestApiDelegate);
 };
 
 class DelayedRestartExtensionsBrowserClient
@@ -61,6 +64,12 @@ class DelayedRestartExtensionsBrowserClient
  public:
   DelayedRestartExtensionsBrowserClient(content::BrowserContext* context)
       : TestExtensionsBrowserClient(context) {}
+
+  DelayedRestartExtensionsBrowserClient(
+      const DelayedRestartExtensionsBrowserClient&) = delete;
+  DelayedRestartExtensionsBrowserClient& operator=(
+      const DelayedRestartExtensionsBrowserClient&) = delete;
+
   ~DelayedRestartExtensionsBrowserClient() override {}
 
   // TestExtensionsBrowserClient:
@@ -89,8 +98,6 @@ class DelayedRestartExtensionsBrowserClient
   DelayedRestartTestApiDelegate* api_delegate_ = nullptr;  // Not owned.
 
   sync_preferences::TestingPrefServiceSyncable testing_pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedRestartExtensionsBrowserClient);
 };
 
 }  // namespace
@@ -98,6 +105,10 @@ class DelayedRestartExtensionsBrowserClient
 class RestartAfterDelayApiTest : public ApiUnitTest {
  public:
   RestartAfterDelayApiTest() {}
+
+  RestartAfterDelayApiTest(const RestartAfterDelayApiTest&) = delete;
+  RestartAfterDelayApiTest& operator=(const RestartAfterDelayApiTest&) = delete;
+
   ~RestartAfterDelayApiTest() override {}
 
   void SetUp() override {
@@ -175,8 +186,6 @@ class RestartAfterDelayApiTest : public ApiUnitTest {
     api_test_utils::RunFunction(function, args, browser_context());
     return function->GetError();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RestartAfterDelayApiTest);
 };
 
 TEST_F(RestartAfterDelayApiTest, RestartAfterDelayTest) {

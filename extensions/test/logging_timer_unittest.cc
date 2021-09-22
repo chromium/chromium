@@ -20,6 +20,10 @@ const auto& GetMS = base::TimeDelta::FromMilliseconds;
 class LoggingTimerTest : public testing::Test {
  public:
   LoggingTimerTest() {}
+
+  LoggingTimerTest(const LoggingTimerTest&) = delete;
+  LoggingTimerTest& operator=(const LoggingTimerTest&) = delete;
+
   ~LoggingTimerTest() override {}
 
   void SetUp() override { LoggingTimer::set_clock_for_testing(&tick_clock_); }
@@ -34,8 +38,6 @@ class LoggingTimerTest : public testing::Test {
 
  private:
   base::SimpleTestTickClock tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingTimerTest);
 };
 
 TEST_F(LoggingTimerTest, TestIncrements) {

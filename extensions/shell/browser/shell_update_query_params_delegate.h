@@ -16,12 +16,15 @@ class ShellUpdateQueryParamsDelegate
     : public update_client::UpdateQueryParamsDelegate {
  public:
   ShellUpdateQueryParamsDelegate();
+
+  ShellUpdateQueryParamsDelegate(const ShellUpdateQueryParamsDelegate&) =
+      delete;
+  ShellUpdateQueryParamsDelegate& operator=(
+      const ShellUpdateQueryParamsDelegate&) = delete;
+
   ~ShellUpdateQueryParamsDelegate() override;
 
   std::string GetExtraParams() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellUpdateQueryParamsDelegate);
 };
 
 }  // namespace extensions

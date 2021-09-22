@@ -50,6 +50,10 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
                                            public ProcessManagerObserver {
  public:
   explicit FrameTracker(ExtensionMessagePort* port) : port_(port) {}
+
+  FrameTracker(const FrameTracker&) = delete;
+  FrameTracker& operator=(const FrameTracker&) = delete;
+
   ~FrameTracker() override = default;
 
   void TrackExtensionProcessFrames() {
@@ -118,8 +122,6 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       pm_observation_{this};
   ExtensionMessagePort* port_;  // Owns this FrameTracker.
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTracker);
 };
 
 // Represents target of an IPC (render frame, ServiceWorker or render process).

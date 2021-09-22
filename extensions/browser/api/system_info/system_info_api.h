@@ -20,6 +20,10 @@ class SystemInfoAPI : public BrowserContextKeyedAPI,
   static BrowserContextKeyedAPIFactory<SystemInfoAPI>* GetFactoryInstance();
 
   explicit SystemInfoAPI(content::BrowserContext* context);
+
+  SystemInfoAPI(const SystemInfoAPI&) = delete;
+  SystemInfoAPI& operator=(const SystemInfoAPI&) = delete;
+
   ~SystemInfoAPI() override;
 
   // KeyedService implementation.
@@ -37,8 +41,6 @@ class SystemInfoAPI : public BrowserContextKeyedAPI,
   static const bool kServiceIsNULLWhileTesting = true;
 
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemInfoAPI);
 };
 
 }  // namespace extensions

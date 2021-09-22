@@ -24,6 +24,11 @@ class ScriptContext;
 class ObjectBackedNativeHandler : public NativeHandler {
  public:
   explicit ObjectBackedNativeHandler(ScriptContext* context);
+
+  ObjectBackedNativeHandler(const ObjectBackedNativeHandler&) = delete;
+  ObjectBackedNativeHandler& operator=(const ObjectBackedNativeHandler&) =
+      delete;
+
   ~ObjectBackedNativeHandler() override;
 
   // NativeHandler:
@@ -126,8 +131,6 @@ class ObjectBackedNativeHandler : public NativeHandler {
   ScriptContext* context_;
 
   v8::Global<v8::ObjectTemplate> object_template_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectBackedNativeHandler);
 };
 
 }  // namespace extensions

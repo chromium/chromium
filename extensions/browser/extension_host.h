@@ -53,6 +53,10 @@ class ExtensionHost : public DeferredStartRenderHost,
                 content::SiteInstance* site_instance,
                 const GURL& url,
                 mojom::ViewType host_type);
+
+  ExtensionHost(const ExtensionHost&) = delete;
+  ExtensionHost& operator=(const ExtensionHost&) = delete;
+
   ~ExtensionHost() override;
 
   // This may be null if the extension has been or is being unloaded.
@@ -233,8 +237,6 @@ class ExtensionHost : public DeferredStartRenderHost,
   base::ObserverList<ExtensionHostObserver>::Unchecked observer_list_;
 
   base::WeakPtrFactory<ExtensionHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionHost);
 };
 
 }  // namespace extensions

@@ -67,6 +67,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
  public:
   explicit NativeRendererMessagingService(
       NativeExtensionBindingsSystem* bindings_system);
+
+  NativeRendererMessagingService(const NativeRendererMessagingService&) =
+      delete;
+  NativeRendererMessagingService& operator=(
+      const NativeRendererMessagingService&) = delete;
+
   ~NativeRendererMessagingService() override;
 
   // Checks whether the port exists in the given frame. If it does not, a reply
@@ -190,8 +196,6 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   NativeExtensionBindingsSystem* const bindings_system_;
 
   OneTimeMessageHandler one_time_message_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeRendererMessagingService);
 };
 
 }  // namespace extensions

@@ -44,6 +44,12 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   AutomationInternalCustomBindings(
       ScriptContext* context,
       NativeExtensionBindingsSystem* bindings_system);
+
+  AutomationInternalCustomBindings(const AutomationInternalCustomBindings&) =
+      delete;
+  AutomationInternalCustomBindings& operator=(
+      const AutomationInternalCustomBindings&) = delete;
+
   ~AutomationInternalCustomBindings() override;
 
   // ObjectBackedNativeHandler:
@@ -278,8 +284,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   // Keeps track  of the single desktop tree, if it exists.
   ui::AXTreeID desktop_tree_id_ = ui::AXTreeIDUnknown();
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationInternalCustomBindings);
 };
 
 }  // namespace extensions

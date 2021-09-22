@@ -29,6 +29,10 @@ class FormDataParser {
   class Result {
    public:
     Result();
+
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+
     ~Result();
 
     const std::string& name() const { return name_; }
@@ -43,8 +47,6 @@ class FormDataParser {
    private:
     std::string name_;
     base::Value value_;
-
-    DISALLOW_COPY_AND_ASSIGN(Result);
   };
 
   virtual ~FormDataParser();

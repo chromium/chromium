@@ -379,6 +379,10 @@ class CSPEnforcer {
       : manifest_key_(std::move(manifest_key)),
         show_missing_csp_warnings_(show_missing_csp_warnings),
         secure_function_(secure_function) {}
+
+  CSPEnforcer(const CSPEnforcer&) = delete;
+  CSPEnforcer& operator=(const CSPEnforcer&) = delete;
+
   virtual ~CSPEnforcer() {}
 
   // Returns the enforced CSP.
@@ -400,8 +404,6 @@ class CSPEnforcer {
   const std::string manifest_key_;
   const bool show_missing_csp_warnings_;
   const SecureDirectiveValueFunction secure_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPEnforcer);
 };
 
 std::string CSPEnforcer::Enforce(const DirectiveList& directives,

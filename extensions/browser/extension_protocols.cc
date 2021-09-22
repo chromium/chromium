@@ -469,6 +469,10 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
  public:
   explicit FileLoaderObserver(scoped_refptr<ContentVerifyJob> verify_job)
       : verify_job_(std::move(verify_job)) {}
+
+  FileLoaderObserver(const FileLoaderObserver&) = delete;
+  FileLoaderObserver& operator=(const FileLoaderObserver&) = delete;
+
   ~FileLoaderObserver() override {
     base::AutoLock auto_lock(lock_);
     UMA_HISTOGRAM_COUNTS_1M("ExtensionUrlRequest.TotalKbRead",
@@ -524,8 +528,6 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
   scoped_refptr<ContentVerifyJob> verify_job_;
   // To synchronize access to all members.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileLoaderObserver);
 };
 
 class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {

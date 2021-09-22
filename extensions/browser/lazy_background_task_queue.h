@@ -42,6 +42,10 @@ class LazyBackgroundTaskQueue : public KeyedService,
                                 public ExtensionHostRegistry::Observer {
  public:
   explicit LazyBackgroundTaskQueue(content::BrowserContext* browser_context);
+
+  LazyBackgroundTaskQueue(const LazyBackgroundTaskQueue&) = delete;
+  LazyBackgroundTaskQueue& operator=(const LazyBackgroundTaskQueue&) = delete;
+
   ~LazyBackgroundTaskQueue() override;
 
   // Convenience method to return the LazyBackgroundTaskQueue for a given
@@ -117,8 +121,6 @@ class LazyBackgroundTaskQueue : public KeyedService,
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>
       extension_host_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LazyBackgroundTaskQueue);
 };
 
 }  // namespace extensions

@@ -63,6 +63,10 @@ struct CSPInfo : public Extension::ManifestData {
 class CSPHandler : public ManifestHandler {
  public:
   CSPHandler();
+
+  CSPHandler(const CSPHandler&) = delete;
+  CSPHandler& operator=(const CSPHandler&) = delete;
+
   ~CSPHandler() override;
 
   // ManifestHandler override:
@@ -97,8 +101,6 @@ class CSPHandler : public ManifestHandler {
   // ManifestHandler overrides:
   bool AlwaysParseForType(Manifest::Type type) const override;
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPHandler);
 };
 
 }  // namespace extensions

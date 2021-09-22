@@ -36,14 +36,17 @@ struct ContentCapabilitiesInfo : public Extension::ManifestData {
 class ContentCapabilitiesHandler : public ManifestHandler {
  public:
   ContentCapabilitiesHandler();
+
+  ContentCapabilitiesHandler(const ContentCapabilitiesHandler&) = delete;
+  ContentCapabilitiesHandler& operator=(const ContentCapabilitiesHandler&) =
+      delete;
+
   ~ContentCapabilitiesHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentCapabilitiesHandler);
 };
 
 }  // namespace extensions

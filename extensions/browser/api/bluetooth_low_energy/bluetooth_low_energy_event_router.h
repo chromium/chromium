@@ -68,18 +68,24 @@ class BluetoothLowEnergyEventRouter
                           Delegate::ErrorCallback error_callback);
     AttributeValueRequest(base::OnceClosure success_callback,
                           Delegate::ErrorCallback error_callback);
+
+    AttributeValueRequest(const AttributeValueRequest&) = delete;
+    AttributeValueRequest& operator=(const AttributeValueRequest&) = delete;
+
     ~AttributeValueRequest();
 
     RequestType type;
     Delegate::ValueCallback value_callback;
     base::OnceClosure success_callback;
     Delegate::ErrorCallback error_callback;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(AttributeValueRequest);
   };
 
   explicit BluetoothLowEnergyEventRouter(content::BrowserContext* context);
+
+  BluetoothLowEnergyEventRouter(const BluetoothLowEnergyEventRouter&) = delete;
+  BluetoothLowEnergyEventRouter& operator=(
+      const BluetoothLowEnergyEventRouter&) = delete;
+
   ~BluetoothLowEnergyEventRouter() override;
 
   // Possible ways that an API method can fail or succeed.
@@ -581,8 +587,6 @@ class BluetoothLowEnergyEventRouter
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothLowEnergyEventRouter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyEventRouter);
 };
 
 }  // namespace extensions

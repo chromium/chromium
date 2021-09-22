@@ -199,6 +199,10 @@ class APISignatureTest : public APIBindingTest {
  public:
   APISignatureTest()
       : type_refs_(APITypeReferenceMap::InitializeTypeCallback()) {}
+
+  APISignatureTest(const APISignatureTest&) = delete;
+  APISignatureTest& operator=(const APISignatureTest&) = delete;
+
   ~APISignatureTest() override = default;
 
   void SetUp() override {
@@ -299,8 +303,6 @@ class APISignatureTest : public APIBindingTest {
   }
 
   APITypeReferenceMap type_refs_;
-
-  DISALLOW_COPY_AND_ASSIGN(APISignatureTest);
 };
 
 TEST_F(APISignatureTest, BasicSignatureParsing) {

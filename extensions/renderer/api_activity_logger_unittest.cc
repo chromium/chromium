@@ -25,12 +25,13 @@ class ScopedAllowActivityLogging {
  public:
   ScopedAllowActivityLogging() { APIActivityLogger::set_log_for_testing(true); }
 
+  ScopedAllowActivityLogging(const ScopedAllowActivityLogging&) = delete;
+  ScopedAllowActivityLogging& operator=(const ScopedAllowActivityLogging&) =
+      delete;
+
   ~ScopedAllowActivityLogging() {
     APIActivityLogger::set_log_for_testing(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowActivityLogging);
 };
 
 }  // namespace

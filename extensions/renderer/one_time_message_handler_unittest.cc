@@ -42,6 +42,11 @@ constexpr char kEchoArgsAndError[] =
 class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
  public:
   OneTimeMessageHandlerTest() {}
+
+  OneTimeMessageHandlerTest(const OneTimeMessageHandlerTest&) = delete;
+  OneTimeMessageHandlerTest& operator=(const OneTimeMessageHandlerTest&) =
+      delete;
+
   ~OneTimeMessageHandlerTest() override {}
 
   void SetUp() override {
@@ -82,8 +87,6 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
 
   ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneTimeMessageHandlerTest);
 };
 
 // Tests sending a message without expecting a reply, as in

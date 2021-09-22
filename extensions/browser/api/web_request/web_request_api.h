@@ -108,6 +108,10 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   class ProxySet {
    public:
     ProxySet();
+
+    ProxySet(const ProxySet&) = delete;
+    ProxySet& operator=(const ProxySet&) = delete;
+
     ~ProxySet();
 
     // Add a Proxy.
@@ -146,13 +150,15 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
     std::map<content::GlobalRequestID, Proxy*> request_id_to_proxy_map_;
     std::map<Proxy*, std::set<content::GlobalRequestID>>
         proxy_to_request_id_map_;
-
-    DISALLOW_COPY_AND_ASSIGN(ProxySet);
   };
 
   class RequestIDGenerator {
    public:
     RequestIDGenerator();
+
+    RequestIDGenerator(const RequestIDGenerator&) = delete;
+    RequestIDGenerator& operator=(const RequestIDGenerator&) = delete;
+
     ~RequestIDGenerator();
 
     // Generates a WebRequest ID. If the same (routing_id,
@@ -171,7 +177,6 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
    private:
     int64_t id_ = 0;
     std::map<std::pair<int32_t, int32_t>, uint64_t> saved_id_map_;
-    DISALLOW_COPY_AND_ASSIGN(RequestIDGenerator);
   };
 
   explicit WebRequestAPI(content::BrowserContext* context);
@@ -325,6 +330,10 @@ class ExtensionWebRequestEventRouter {
   struct EventResponse {
     EventResponse(const std::string& extension_id,
                   const base::Time& extension_install_time);
+
+    EventResponse(const EventResponse&) = delete;
+    EventResponse& operator=(const EventResponse&) = delete;
+
     ~EventResponse();
 
     // ID of the extension that sent this response.
@@ -343,9 +352,6 @@ class ExtensionWebRequestEventRouter {
         response_headers;
 
     absl::optional<net::AuthCredentials> auth_credentials;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(EventResponse);
   };
 
   // AuthRequiredResponse indicates how an OnAuthRequired call is handled.

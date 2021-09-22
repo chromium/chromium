@@ -62,6 +62,9 @@ class JsonFileSanitizer {
       Callback callback,
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner);
 
+  JsonFileSanitizer(const JsonFileSanitizer&) = delete;
+  JsonFileSanitizer& operator=(const JsonFileSanitizer&) = delete;
+
   ~JsonFileSanitizer();
 
  private:
@@ -92,8 +95,6 @@ class JsonFileSanitizer {
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
   base::WeakPtrFactory<JsonFileSanitizer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JsonFileSanitizer);
 };
 
 }  // namespace extensions

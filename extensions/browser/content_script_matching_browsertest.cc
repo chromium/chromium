@@ -35,6 +35,12 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
                                          public content::WebContentsDelegate {
  public:
   ContentScriptMatchingBrowserTest() = default;
+
+  ContentScriptMatchingBrowserTest(const ContentScriptMatchingBrowserTest&) =
+      delete;
+  ContentScriptMatchingBrowserTest& operator=(
+      const ContentScriptMatchingBrowserTest&) = delete;
+
   ~ContentScriptMatchingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -241,8 +247,6 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
   // Populated by InstallContentScriptsExtension (called by individual tests).
   TestExtensionDir dir_;
   const Extension* extension_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentScriptMatchingBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,

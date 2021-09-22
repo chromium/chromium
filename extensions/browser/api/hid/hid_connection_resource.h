@@ -25,6 +25,10 @@ class HidConnectionResource : public ApiResource {
   HidConnectionResource(
       const std::string& owner_extension_id,
       mojo::PendingRemote<device::mojom::HidConnection> connection);
+
+  HidConnectionResource(const HidConnectionResource&) = delete;
+  HidConnectionResource& operator=(const HidConnectionResource&) = delete;
+
   ~HidConnectionResource() override;
 
   device::mojom::HidConnection* connection() const { return connection_.get(); }
@@ -35,8 +39,6 @@ class HidConnectionResource : public ApiResource {
 
  private:
   mojo::Remote<device::mojom::HidConnection> connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidConnectionResource);
 };
 
 }  // namespace extensions

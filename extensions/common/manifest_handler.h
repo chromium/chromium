@@ -27,6 +27,10 @@ class ManifestPermissionSet;
 class ManifestHandler {
  public:
   ManifestHandler();
+
+  ManifestHandler(const ManifestHandler&) = delete;
+  ManifestHandler& operator=(const ManifestHandler&) = delete;
+
   virtual ~ManifestHandler();
 
   // Attempts to parse the extension's manifest.
@@ -113,9 +117,6 @@ class ManifestHandler {
   // A convenience method for handlers that only register for 1 key,
   // so that they can define keys() { return SingleKey(kKey); }
   static const std::vector<std::string> SingleKey(const std::string& key);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManifestHandler);
 };
 
 // The global registry for manifest handlers.

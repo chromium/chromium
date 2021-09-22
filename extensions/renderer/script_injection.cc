@@ -135,6 +135,10 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
                ScriptInjection* injection)
       : content::RenderFrameObserver(render_frame),
         injection_(injection) {}
+
+  FrameWatcher(const FrameWatcher&) = delete;
+  FrameWatcher& operator=(const FrameWatcher&) = delete;
+
   ~FrameWatcher() override {}
 
  private:
@@ -142,8 +146,6 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
   void OnDestruct() override { injection_->invalidate_render_frame(); }
 
   ScriptInjection* injection_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameWatcher);
 };
 
 // static

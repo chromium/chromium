@@ -53,6 +53,9 @@ class TCPSocket : public Socket {
             const absl::optional<net::IPEndPoint>& remote_addr,
             const std::string& owner_extension_id);
 
+  TCPSocket(const TCPSocket&) = delete;
+  TCPSocket& operator=(const TCPSocket&) = delete;
+
   ~TCPSocket() override;
 
   void Connect(const net::AddressList& address,
@@ -161,8 +164,6 @@ class TCPSocket : public Socket {
   // WeakPtr is used when posting tasks to |task_runner_| which might outlive
   // |this|.
   base::WeakPtrFactory<TCPSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocket);
 };
 
 // TCP Socket instances from the "sockets.tcp" namespace. These are regular

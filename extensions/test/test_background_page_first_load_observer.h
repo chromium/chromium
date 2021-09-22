@@ -27,6 +27,12 @@ class TestBackgroundPageFirstLoadObserver : public ProcessManagerObserver,
  public:
   TestBackgroundPageFirstLoadObserver(content::BrowserContext* browser_context,
                                       const ExtensionId& extension_id);
+
+  TestBackgroundPageFirstLoadObserver(
+      const TestBackgroundPageFirstLoadObserver&) = delete;
+  TestBackgroundPageFirstLoadObserver& operator=(
+      const TestBackgroundPageFirstLoadObserver&) = delete;
+
   ~TestBackgroundPageFirstLoadObserver() override;
 
   void Wait();
@@ -49,8 +55,6 @@ class TestBackgroundPageFirstLoadObserver : public ProcessManagerObserver,
       process_manager_observation_{this};
   base::ScopedObservation<ExtensionHost, ExtensionHostObserver>
       extension_host_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestBackgroundPageFirstLoadObserver);
 };
 
 }  // namespace extensions
