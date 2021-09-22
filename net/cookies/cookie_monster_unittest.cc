@@ -2263,6 +2263,48 @@ TEST_F(CookieMonsterTest, DontImportDuplicateCookies) {
   EXPECT_EQ(CookieStoreCommand::REMOVE, store->commands()[3].type);
 }
 
+TEST_F(CookieMonsterTest, DontImportDuplicateCookies_PartitionedCookies) {
+  std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
+
+  auto cookie_partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"));
+  GURL cookie_url("https://www.bar.com");
+
+  // Insert 3 partitioned cookies with same name, partition key, and path.
+
+  // ===> This one is the WINNER (biggest creation time).  <====
+  auto cc = CanonicalCookie::Create(
+      cookie_url, "__Host-Z=a; Secure; Path=/; Partitioned; Max-Age=3456000",
+      Time::Now() + TimeDelta::FromDays(2), absl::nullopt,
+      cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+
+  cc = CanonicalCookie::Create(
+      cookie_url, "__Host-Z=b; Secure; Path=/; Partitioned; Max-Age=3456000",
+      Time::Now(), absl::nullopt, cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+
+  cc = CanonicalCookie::Create(
+      cookie_url, "__Host-Z=c; Secure; Path=/; Partitioned; Max-Age=3456000",
+      Time::Now() + TimeDelta::FromDays(1), absl::nullopt,
+      cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
+
+  store->SetLoadExpectation(true, std::move(initial_cookies));
+
+  EXPECT_EQ("__Host-Z=a", GetCookies(cm.get(), GURL("https://www.bar.com/"),
+                                     cookie_partition_key));
+
+  // Verify that the PersistentCookieStore was told to kill the 2
+  // duplicates.
+  ASSERT_EQ(2u, store->commands().size());
+  EXPECT_EQ(CookieStoreCommand::REMOVE, store->commands()[0].type);
+  EXPECT_EQ(CookieStoreCommand::REMOVE, store->commands()[1].type);
+}
+
 // Tests importing from a persistent cookie store that contains cookies
 // with duplicate creation times.  This is OK now, but it still interacts
 // with the de-duplication algorithm.
@@ -2309,6 +2351,63 @@ TEST_F(CookieMonsterTest, ImportDuplicateCreationTimes) {
   std::string name2(list[1].Name());
   EXPECT_TRUE(name1 == "X" || name2 == "X");
   EXPECT_TRUE(name1 == "Y" || name2 == "Y");
+  EXPECT_NE(name1, name2);
+}
+
+TEST_F(CookieMonsterTest, ImportDuplicateCreationTimes_PartitionedCookies) {
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+
+  Time now(Time::Now());
+  Time earlier(now - TimeDelta::FromDays(1));
+
+  GURL cookie_url("https://www.foo.com");
+  auto cookie_partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"));
+
+  // Insert 6 cookies, four with the current time as creation times, and
+  // four with the earlier time as creation times.  We should only get
+  // two cookies remaining, but which two (other than that there should
+  // be one from each set) will be random.
+
+  std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
+  auto cc = CanonicalCookie::Create(
+      cookie_url, "__Host-X=1; Secure; Path=/; Partitioned; Max-Age=3456000",
+      now, absl::nullopt, cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+  cc = CanonicalCookie::Create(
+      cookie_url, "__Host-X=2; Secure; Path=/; Partitioned; Max-Age=3456000",
+      now, absl::nullopt, cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+  cc = CanonicalCookie::Create(
+      cookie_url, "__Host-X=3; Secure; Path=/; Partitioned; Max-Age=3456000",
+      now, absl::nullopt, cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+
+  cc = CanonicalCookie::Create(
+      cookie_url, "__Host-Y=1; Secure; Path=/; Partitioned; Max-Age=3456000",
+      earlier, absl::nullopt, cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+  cc = CanonicalCookie::Create(
+      cookie_url, "__Host-Y=2; Secure; Path=/; Partitioned; Max-Age=3456000",
+      earlier, absl::nullopt, cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+  cc = CanonicalCookie::Create(
+      cookie_url, "__Host-Y=3; Secure; Path=/; Partitioned; Max-Age=3456000",
+      earlier, absl::nullopt, cookie_partition_key);
+  initial_cookies.push_back(std::move(cc));
+
+  // Inject our initial cookies into the mock PersistentCookieStore.
+  store->SetLoadExpectation(true, std::move(initial_cookies));
+
+  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
+
+  CookieList list(GetAllCookies(cm.get()));
+  EXPECT_EQ(2U, list.size());
+  // Confirm that we have one of each.
+  std::string name1(list[0].Name());
+  std::string name2(list[1].Name());
+  EXPECT_TRUE(name1 == "__Host-X" || name2 == "__Host-X");
+  EXPECT_TRUE(name1 == "__Host-Y" || name2 == "__Host-Y");
   EXPECT_NE(name1, name2);
 }
 
@@ -3461,6 +3560,47 @@ TEST_F(CookieMonsterTest, MaybeDeleteEquivalentCookieAndUpdateStatus) {
       NetLogEventPhase::NONE);
   EXPECT_FALSE(LogContainsEntryWithTypeAfter(
       entries, 0, NetLogEventType::COOKIE_STORE_COOKIE_REJECTED_SECURE));
+}
+
+TEST_F(CookieMonsterTest,
+       MaybeDeleteEquivalentCookieAndUpdateStatus_PartitionedCookies) {
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
+
+  // Test adding two cookies with the same name, domain, and path but different
+  // partition keys.
+  auto cookie_partition_key1 =
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite1.com"));
+
+  auto preexisting_cookie = CanonicalCookie::Create(
+      https_www_foo_.url(), "__Host-A=B; Secure; Path=/; Partitioned; HttpOnly",
+      base::Time::Now(), absl::nullopt /* server_time */,
+      cookie_partition_key1 /* cookie_partition_key */);
+  CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
+      cm.get(), std::move(preexisting_cookie), https_www_foo_.url(),
+      true /* can_modify_httponly */);
+  ASSERT_TRUE(access_result.status.IsInclude());
+
+  // Should be able to set a cookie with a different partition key.
+  EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(),
+                        "__Host-A=C; Secure; Path=/; Partitioned",
+                        CookiePartitionKey::FromURLForTesting(
+                            GURL("https://toplevelsite2.com"))));
+
+  // Should not overwrite HttpOnly cookie.
+  auto bad_cookie = CanonicalCookie::Create(
+      https_www_foo_.url(), "__Host-A=D; Secure; Path=/; Partitioned",
+      base::Time::Now(), absl::nullopt /* server_time */,
+      cookie_partition_key1);
+  access_result = SetCanonicalCookieReturnAccessResult(
+      cm.get(), std::move(bad_cookie), https_www_foo_.url(),
+      false /* can_modify_httponly */);
+  EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY}));
+  EXPECT_THAT(GetCookiesWithOptions(cm.get(), https_www_foo_.url(),
+                                    CookieOptions::MakeAllInclusive(),
+                                    cookie_partition_key1),
+              ::testing::HasSubstr("A=B"));
 }
 
 // Test skipping a cookie in MaybeDeleteEquivalentCookieAndUpdateStatus for
@@ -5097,173 +5237,6 @@ TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
   EXPECT_THAT(histogram_tester.GetAllSamples("Cookie.PerFirstPartySetCount"),
               testing::ElementsAre(base::Bucket(2 /* min */, 1 /* samples */),
                                    base::Bucket(3 /* min */, 1 /* samples */)));
-}
-
-class PartitionedCookiesCookieMonsterTest : public CookieMonsterTest {
- public:
-  PartitionedCookiesCookieMonsterTest()
-      : cm_(nullptr /* store */, nullptr /* netlog */) {
-    std::unique_ptr<TestCookieAccessDelegate> access_delegate =
-        std::make_unique<TestCookieAccessDelegate>();
-    cm_.SetCookieAccessDelegate(std::move(access_delegate));
-
-    feature_list_.InitAndEnableFeature(features::kPartitionedCookies);
-  }
-
-  ~PartitionedCookiesCookieMonsterTest() override = default;
-
-  CookieMonster* cm() { return &cm_; }
-
- protected:
-  // The FeatureList must be before the CookieMonster because the CookieMonster
-  // destructor expects the state of the features to be the same as when it's in
-  // use.
-  base::test::ScopedFeatureList feature_list_;
-  CookieMonster cm_;
-};
-
-// Since CanonicalCookie::UniqueKey needs the partitioned cookies feature flag
-// to be enabled in order to include the partition key, we need to extend the
-// CookieMonsterTest class to enable that flag for testing how we handle
-// duplicates.
-TEST_F(PartitionedCookiesCookieMonsterTest,
-       MaybeDeleteEquivalentCookieAndUpdateStatus) {
-  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
-  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
-
-  // Test adding two cookies with the same name, domain, and path but different
-  // partition keys.
-  auto cookie_partition_key1 =
-      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite1.com"));
-
-  auto preexisting_cookie = CanonicalCookie::Create(
-      https_www_foo_.url(), "__Host-A=B; Secure; Path=/; Partitioned; HttpOnly",
-      base::Time::Now(), absl::nullopt /* server_time */,
-      cookie_partition_key1 /* cookie_partition_key */);
-  CookieAccessResult access_result = SetCanonicalCookieReturnAccessResult(
-      cm.get(), std::move(preexisting_cookie), https_www_foo_.url(),
-      true /* can_modify_httponly */);
-  ASSERT_TRUE(access_result.status.IsInclude());
-
-  // Should be able to set a cookie with a different partition key.
-  EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(),
-                        "__Host-A=C; Secure; Path=/; Partitioned",
-                        CookiePartitionKey::FromURLForTesting(
-                            GURL("https://toplevelsite2.com"))));
-
-  // Should not overwrite HttpOnly cookie.
-  auto bad_cookie = CanonicalCookie::Create(
-      https_www_foo_.url(), "__Host-A=D; Secure; Path=/; Partitioned",
-      base::Time::Now(), absl::nullopt /* server_time */,
-      cookie_partition_key1);
-  access_result = SetCanonicalCookieReturnAccessResult(
-      cm.get(), std::move(bad_cookie), https_www_foo_.url(),
-      false /* can_modify_httponly */);
-  EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY}));
-  EXPECT_THAT(GetCookiesWithOptions(cm.get(), https_www_foo_.url(),
-                                    CookieOptions::MakeAllInclusive(),
-                                    cookie_partition_key1),
-              ::testing::HasSubstr("A=B"));
-}
-
-TEST_F(PartitionedCookiesCookieMonsterTest, DontImportDuplicateCookies) {
-  std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
-
-  auto cookie_partition_key =
-      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"));
-  GURL cookie_url("https://www.bar.com");
-
-  // Insert 3 partitioned cookies with same name, partition key, and path.
-
-  // ===> This one is the WINNER (biggest creation time).  <====
-  auto cc = CanonicalCookie::Create(
-      cookie_url, "__Host-Z=a; Secure; Path=/; Partitioned; Max-Age=3456000",
-      Time::Now() + TimeDelta::FromDays(2), absl::nullopt,
-      cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-
-  cc = CanonicalCookie::Create(
-      cookie_url, "__Host-Z=b; Secure; Path=/; Partitioned; Max-Age=3456000",
-      Time::Now(), absl::nullopt, cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-
-  cc = CanonicalCookie::Create(
-      cookie_url, "__Host-Z=c; Secure; Path=/; Partitioned; Max-Age=3456000",
-      Time::Now() + TimeDelta::FromDays(1), absl::nullopt,
-      cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-
-  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
-  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
-
-  store->SetLoadExpectation(true, std::move(initial_cookies));
-
-  EXPECT_EQ("__Host-Z=a", GetCookies(cm.get(), GURL("https://www.bar.com/"),
-                                     cookie_partition_key));
-
-  // TODO(crbug.com/1225444): Uncomment when we support persistent Partitioned
-  // cookies. Verify that the PersistentCookieStore was told to kill the 2
-  // duplicates. ASSERT_EQ(2u, store->commands().size());
-  // EXPECT_EQ(CookieStoreCommand::REMOVE, store->commands()[0].type);
-  // EXPECT_EQ(CookieStoreCommand::REMOVE, store->commands()[1].type);
-}
-
-TEST_F(PartitionedCookiesCookieMonsterTest, ImportDuplicateCreationTimes) {
-  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
-
-  Time now(Time::Now());
-  Time earlier(now - TimeDelta::FromDays(1));
-
-  GURL cookie_url("https://www.foo.com");
-  auto cookie_partition_key =
-      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"));
-
-  // Insert 6 cookies, four with the current time as creation times, and
-  // four with the earlier time as creation times.  We should only get
-  // two cookies remaining, but which two (other than that there should
-  // be one from each set) will be random.
-
-  std::vector<std::unique_ptr<CanonicalCookie>> initial_cookies;
-  auto cc = CanonicalCookie::Create(
-      cookie_url, "__Host-X=1; Secure; Path=/; Partitioned; Max-Age=3456000",
-      now, absl::nullopt, cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-  cc = CanonicalCookie::Create(
-      cookie_url, "__Host-X=2; Secure; Path=/; Partitioned; Max-Age=3456000",
-      now, absl::nullopt, cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-  cc = CanonicalCookie::Create(
-      cookie_url, "__Host-X=3; Secure; Path=/; Partitioned; Max-Age=3456000",
-      now, absl::nullopt, cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-
-  cc = CanonicalCookie::Create(
-      cookie_url, "__Host-Y=1; Secure; Path=/; Partitioned; Max-Age=3456000",
-      earlier, absl::nullopt, cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-  cc = CanonicalCookie::Create(
-      cookie_url, "__Host-Y=2; Secure; Path=/; Partitioned; Max-Age=3456000",
-      earlier, absl::nullopt, cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-  cc = CanonicalCookie::Create(
-      cookie_url, "__Host-Y=3; Secure; Path=/; Partitioned; Max-Age=3456000",
-      earlier, absl::nullopt, cookie_partition_key);
-  initial_cookies.push_back(std::move(cc));
-
-  // Inject our initial cookies into the mock PersistentCookieStore.
-  store->SetLoadExpectation(true, std::move(initial_cookies));
-
-  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
-
-  CookieList list(GetAllCookies(cm.get()));
-  EXPECT_EQ(2U, list.size());
-  // Confirm that we have one of each.
-  std::string name1(list[0].Name());
-  std::string name2(list[1].Name());
-  EXPECT_TRUE(name1 == "__Host-X" || name2 == "__Host-X");
-  EXPECT_TRUE(name1 == "__Host-Y" || name2 == "__Host-Y");
-  EXPECT_NE(name1, name2);
 }
 
 }  // namespace net

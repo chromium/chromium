@@ -227,10 +227,10 @@ class NET_EXPORT CanonicalCookie {
 
   // Returns a key such that two cookies with the same UniqueKey() are
   // guaranteed to be equivalent in the sense of IsEquivalent().
+  // The `partition_key_` field will always be nullopt when partitioned cookies
+  // are not enabled.
   UniqueCookieKey UniqueKey() const {
-    if (base::FeatureList::IsEnabled(features::kPartitionedCookies))
-      return std::make_tuple(partition_key_, name_, domain_, path_);
-    return std::make_tuple(absl::nullopt, name_, domain_, path_);
+    return std::make_tuple(partition_key_, name_, domain_, path_);
   }
 
   // Checks a looser set of equivalency rules than 'IsEquivalent()' in order

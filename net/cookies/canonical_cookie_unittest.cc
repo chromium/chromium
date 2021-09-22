@@ -767,95 +767,38 @@ TEST(CanonicalCookieTest, IsEquivalent) {
   EXPECT_FALSE(cookie->IsEquivalent(*other_cookie));
   EXPECT_TRUE(cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
   EXPECT_FALSE(other_cookie->IsEquivalentForSecureCookieMatching(*cookie));
-}
 
-class PartitionedCanonicalCookieTest : public testing::TestWithParam<bool> {
- protected:
-  void SetUp() override {
-    if (PartitionedCookiesEnabled())
-      scoped_feature_list_.InitAndEnableFeature(features::kPartitionedCookies);
-    testing::TestWithParam<bool>::SetUp();
-  }
-
-  bool PartitionedCookiesEnabled() { return GetParam(); }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<CanonicalCookie> CreateCookieWithPartitionKey(
-      absl::optional<CookiePartitionKey> cookie_partition_key) {
-    return CanonicalCookie::CreateUnsafeCookieForTesting(
-        "__Host-foo" /* name */, "bar" /* value */, "" /* domain */,
-        "/" /* path */, base::Time() /* creation_time */,
-        base::Time() /* expiration_time */,
-        base::Time() /* last_accessed_time */, true /* secure */,
-        false /* http_only */, CookieSameSite::NO_RESTRICTION,
-        COOKIE_PRIORITY_DEFAULT, false /* same_party */, cookie_partition_key);
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(/* no label */,
-                         PartitionedCanonicalCookieTest,
-                         testing::Bool());
-
-TEST_P(PartitionedCanonicalCookieTest, IsEquivalent) {
-  const absl::optional<CookiePartitionKey> cookie_partition_key =
+  // Partitioned cookies are not equivalent to unpartitioned cookies.
+  other_cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+      cookie_name, cookie_value, cookie_domain, cookie_path, creation_time,
+      expiration_time, base::Time(), secure, httponly, same_site,
+      COOKIE_PRIORITY_MEDIUM, same_party,
       absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")));
-  const absl::optional<CookiePartitionKey> other_cookie_partition_key =
+          CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"))));
+  EXPECT_FALSE(cookie->IsEquivalent(*other_cookie));
+  EXPECT_FALSE(cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
+
+  // Partitioned cookies are equal if they have the same partition key.
+  auto paritioned_cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+      cookie_name, cookie_value, cookie_domain, cookie_path, creation_time,
+      expiration_time, base::Time(), secure, httponly, same_site,
+      COOKIE_PRIORITY_MEDIUM, same_party,
       absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")));
-
-  auto unpartitioned_cookie = CreateCookieWithPartitionKey(absl::nullopt);
-  auto partitioned_cookie = CreateCookieWithPartitionKey(cookie_partition_key);
-
-  // Check that a cookie without a partition key is not equivalent to a cookie
-  // with one when partitioned cookie are enabled. If they are disabled the
-  // cookies should be equivalent.
-  EXPECT_NE(PartitionedCookiesEnabled(),
-            unpartitioned_cookie->IsEquivalent(*partitioned_cookie));
-
-  // Check that cookies with the same partition key are equivalent. This should
-  // be true regardless of the partitioned cookies setting.
-  auto other_cookie = CreateCookieWithPartitionKey(cookie_partition_key);
-  EXPECT_TRUE(partitioned_cookie->IsEquivalent(*other_cookie));
-
-  // Check that cookies with different partition keys are not equivalent only
-  // when partitioned cookies are enabled.
-  other_cookie = CreateCookieWithPartitionKey(other_cookie_partition_key);
-  EXPECT_NE(PartitionedCookiesEnabled(),
-            partitioned_cookie->IsEquivalent(*other_cookie));
-}
-
-TEST_P(PartitionedCanonicalCookieTest, IsEquivalentForSecureCookieMatching) {
-  const absl::optional<CookiePartitionKey> cookie_partition_key =
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")));
-  const absl::optional<CookiePartitionKey> other_cookie_partition_key =
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")));
-
-  auto unpartitioned_cookie = CreateCookieWithPartitionKey(absl::nullopt);
-  auto partitioned_cookie = CreateCookieWithPartitionKey(cookie_partition_key);
-
-  // Check that a cookie without a partition key is not equivalent to a cookie
-  // with one when partitioned cookie are enabled. If they are disabled the
-  // cookies should be equivalent.
-  EXPECT_NE(PartitionedCookiesEnabled(),
-            unpartitioned_cookie->IsEquivalentForSecureCookieMatching(
-                *partitioned_cookie));
-
-  // Check that cookies with the same partition key are equivalent. This should
-  // be true regardless of the partitioned cookies setting.
-  auto other_cookie = CreateCookieWithPartitionKey(cookie_partition_key);
+          CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"))));
+  EXPECT_TRUE(paritioned_cookie->IsEquivalent(*other_cookie));
   EXPECT_TRUE(
-      partitioned_cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
+      paritioned_cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
 
-  // Check that cookies with different partition keys are not equivalent only
-  // when partitioned cookies are enabled.
-  other_cookie = CreateCookieWithPartitionKey(other_cookie_partition_key);
-  EXPECT_NE(
-      PartitionedCookiesEnabled(),
-      partitioned_cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
+  // Partitioned cookies with different partition keys are not equal
+  other_cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+      cookie_name, cookie_value, cookie_domain, cookie_path, creation_time,
+      expiration_time, base::Time(), secure, httponly, same_site,
+      COOKIE_PRIORITY_MEDIUM, same_party,
+      absl::make_optional(
+          CookiePartitionKey::FromURLForTesting(GURL("https://bar.com"))));
+  EXPECT_FALSE(paritioned_cookie->IsEquivalent(*other_cookie));
+  EXPECT_FALSE(
+      paritioned_cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
 }
 
 TEST(CanonicalCookieTest, IsEquivalentForSecureCookieMatching) {
@@ -864,6 +807,7 @@ TEST(CanonicalCookieTest, IsEquivalentForSecureCookieMatching) {
       const char* name;
       const char* domain;
       const char* path;
+      absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt;
     } cookie, secure_cookie;
     bool equivalent;
     bool is_symmetric;  // Whether the reverse comparison has the same result.
@@ -888,18 +832,46 @@ TEST(CanonicalCookieTest, IsEquivalentForSecureCookieMatching) {
       // Different paths don't match
       {{"A", "a.foo.com", "/sub"}, {"A", "a.foo.com", "/other"}, false, true},
       {{"A", "a.foo.com", "/a/b"}, {"A", "a.foo.com", "/a/c"}, false, true},
+      // Partitioned cookies are not equivalent to unpartitioned cookies.
+      {{"A", ".a.foo.com", "/"},
+       {"A", ".a.foo.com", "/",
+        absl::make_optional(
+            CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")))},
+       false,
+       true},
+      // Partitioned cookies are equivalent if they have the same partition key.
+      {{"A", "a.foo.com", "/",
+        absl::make_optional(
+            CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")))},
+       {"A", "a.foo.com", "/",
+        absl::make_optional(
+            CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")))},
+       true,
+       true},
+      // Partitioned cookies are *not* equivalent if they have the different
+      // partition keys.
+      {{"A", "a.foo.com", "/",
+        absl::make_optional(
+            CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")))},
+       {"A", "a.foo.com", "/",
+        absl::make_optional(
+            CookiePartitionKey::FromURLForTesting(GURL("https://baz.com")))},
+       false,
+       true},
   };
 
   for (auto test : kTests) {
     auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
         test.cookie.name, "value1", test.cookie.domain, test.cookie.path,
-        base::Time(), base::Time(), base::Time(), false /* secure */, false,
-        CookieSameSite::LAX_MODE, COOKIE_PRIORITY_MEDIUM, false);
+        base::Time(), base::Time(), base::Time(), false /* secure */,
+        false /* httponly */, CookieSameSite::LAX_MODE, COOKIE_PRIORITY_MEDIUM,
+        false /* sameparty */, test.cookie.cookie_partition_key);
     auto secure_cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
         test.secure_cookie.name, "value2", test.secure_cookie.domain,
         test.secure_cookie.path, base::Time(), base::Time(), base::Time(),
-        true /* secure */, false, CookieSameSite::LAX_MODE,
-        COOKIE_PRIORITY_MEDIUM, false);
+        true /* secure */, false /* httponly */, CookieSameSite::LAX_MODE,
+        COOKIE_PRIORITY_MEDIUM, false /* sameparty */,
+        test.secure_cookie.cookie_partition_key);
 
     EXPECT_EQ(test.equivalent,
               cookie->IsEquivalentForSecureCookieMatching(*secure_cookie));

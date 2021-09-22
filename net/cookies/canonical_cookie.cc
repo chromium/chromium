@@ -808,9 +808,8 @@ void CanonicalCookie::SetSourcePort(int port) {
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
     const CanonicalCookie& secure_cookie) const {
-  bool same_partition_key =
-      !base::FeatureList::IsEnabled(features::kPartitionedCookies) ||
-      PartitionKey() == secure_cookie.PartitionKey();
+  // Partition keys must both be equivalent.
+  bool same_partition_key = PartitionKey() == secure_cookie.PartitionKey();
 
   // Names must be the same
   bool same_name = name_ == secure_cookie.Name();
