@@ -339,16 +339,6 @@ void StabilityMetricsHelper::RecordStabilityEvent(
     StabilityEventType stability_event_type) {
   UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.Counts2",
                                       stability_event_type);
-  // TODO(crbug.com/1176977): Remove temporary debugging histograms below.
-  // Like UmaHistogramSparse(), but with kUmaStabilityHistogramFlag.
-  base::SparseHistogram::FactoryGet(
-      "Stability.Experimental.Counts2",
-      base::HistogramBase::kUmaStabilityHistogramFlag)
-      ->Add(static_cast<int>(stability_event_type));
-  if (stability_event_type == StabilityEventType::kBrowserCrash) {
-    UMA_STABILITY_HISTOGRAM_BOOLEAN("Stability.Experimental.BrowserCrash",
-                                    true);
-  }
 }
 
 }  // namespace metrics

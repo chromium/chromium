@@ -228,8 +228,7 @@ MetricsService::~MetricsService() {
 }
 
 void MetricsService::InitializeMetricsRecordingState() {
-  // TODO(crbug.com/1176977): Downgrade to a DCHECK once bug is fixed.
-  CHECK_EQ(CONSTRUCTED, state_);
+  DCHECK_EQ(CONSTRUCTED, state_);
 
   // The FieldTrialsProvider should be registered last. This ensures that
   // studies whose features are checked when providers add their information to
@@ -568,22 +567,8 @@ void MetricsService::InitializeMetricsState() {
   // Update session ID.
   ++session_id_;
   local_state_->SetInteger(prefs::kMetricsSessionID, session_id_);
-  // Log the session id to diagnose crbug.com/1176977.
-  // Mod the value with 1000 to limit the number of unique values reported.
-  base::UmaHistogramSparse("Stability.Experimental.SessionId",
-                           session_id_ % 1000);
-
-  // Log a random number to diagnose crbug.com/1176977.
-  base::UmaHistogramSparse("Stability.Experimental.RandInt",
-                           base::RandInt(0, 999));
-
-  // Log the process id to diagnose crbug.com/1176977.
-  // Mod the value with 1000 to limit the number of unique values reported.
-  base::UmaHistogramSparse("Stability.Experimental.ProcessId",
-                           base::GetCurrentProcId() % 1000);
 
   // Notify stability metrics providers about the launch.
-  UMA_HISTOGRAM_BOOLEAN("UMA.MetricsService.Initialize", true);
   provider.LogLaunch();
   provider.CheckLastSessionEndCompleted();
 
@@ -642,8 +627,7 @@ void MetricsService::OpenNewLog() {
   log_manager_.BeginLoggingWithLog(CreateLog(MetricsLog::ONGOING_LOG));
   delegating_provider_.OnDidCreateMetricsLog();
 
-  // TODO(crbug.com/1176977): Downgrade to a DCHECK once bug is fixed.
-  CHECK_NE(CONSTRUCTED, state_);
+  DCHECK_NE(CONSTRUCTED, state_);
   if (state_ == INITIALIZED) {
     // We only need to schedule that run once.
     state_ = INIT_TASK_SCHEDULED;

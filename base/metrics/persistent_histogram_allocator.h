@@ -18,6 +18,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -365,7 +366,7 @@ class BASE_EXPORT GlobalHistogramAllocator
   // exist, the allocator will use and add to its contents, ignoring the passed
   // size in favor of the existing size. Returns whether the global allocator
   // was set. If |exclusive_write| is true, the file will be opened in a mode
-  // that disallows multiple concurrent writers.
+  // that disallows multiple concurrent writers (no effect on non-Windows).
   static bool CreateWithFile(const FilePath& file_path,
                              size_t size,
                              uint64_t id,

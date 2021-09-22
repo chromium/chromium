@@ -284,6 +284,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="UMA.FileMetricsProvider.MergeHistogram.{Type}"
     enum="HistogramNameHash" expires_after="2021-10-31">
+  <obsolete>
+    Removed 2021/09
+  </obsolete>
   <owner>asvitkine@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -500,6 +503,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="UMA.MetricsService.Initialize" enum="Boolean"
     expires_after="2021-10-31">
+  <obsolete>
+    Removed 2021/09
+  </obsolete>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -577,6 +583,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="UMA.PersistentHistograms.DriveType" enum="WindowsDriveType"
     expires_after="2021-10-31">
+  <obsolete>
+    Removed 2021/09
+  </obsolete>
   <owner>asvitkine@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -588,6 +597,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="UMA.PersistentHistograms.HistogramsInStartupFile"
     enum="HistogramNameHash" expires_after="2021-10-31">
+  <obsolete>
+    Removed 2021/09
+  </obsolete>
   <owner>asvitkine@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>

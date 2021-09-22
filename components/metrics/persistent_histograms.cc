@@ -21,10 +21,6 @@
 #include "components/metrics/persistent_system_profile.h"
 #include "components/variations/variations_associated_data.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
 namespace {
 
 // Creating a "spare" file for persistent metrics involves a lot of I/O and
@@ -126,18 +122,12 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
     // "active" filename is supposed to be unique so this shouldn't happen.
     result = kMappedFileExists;
   } else {
-#if defined(OS_WIN)
-    // Disallow multiple writers on Windows. Needed to ensure multiple instances
-    // of Chrome aren't writing to the same file, which could happen in some
-    // rare circumstances observed in the wild (e.g. on FAT FS where the file
-    // name ends up not being unique due to truncation and two processes racing
-    // on base::PathExists(active_file) above).
-    // TODO(crbug.com/1176977): If this resolves the bug, consider making
-    // consistent on all platforms.
-    bool exclusive_write = true;
-#else
-    bool exclusive_write = false;
-#endif
+    // Disallow multiple writers (Windows only). Needed to ensure multiple
+    // instances of Chrome aren't writing to the same file, which could happen
+    // in some rare circumstances observed in the wild (e.g. on FAT FS where the
+    // file name ends up not being unique due to truncation and two processes
+    // racing on base::PathExists(active_file) above).
+    const bool exclusive_write = true;
     // Move any spare file into the active position.
     base::ReplaceFile(spare_file, active_file, nullptr);
     // Create global allocator using the |active_file|.
@@ -146,28 +136,6 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
     } else if (base::GlobalHistogramAllocator::CreateWithFile(
                    active_file, kAllocSize, kAllocId, kBrowserMetricsName,
                    exclusive_write)) {
-      // TODO(crbug.com/1176977): Remove this instrumentation when bug is fixed.
-      // Log the drive type on Windows.
-#if defined(OS_WIN)
-      std::vector<std::wstring> path_components;
-      base::MakeAbsoluteFilePath(active_file).GetComponents(&path_components);
-      // Get the drive path with a backslash at the end as required by the API.
-      // https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getdrivetypew
-      path_components[0] += L"\\";
-      auto drive_type = GetDriveTypeW(path_components[0].c_str());
-      // Note: 6 is the max enum per the docs.
-      base::UmaHistogramExactLinear("UMA.PersistentHistograms.DriveType",
-                                    drive_type, 7);
-#endif  // defined(OS_WIN)
-      // We don't expect there to be any histograms in the file just opened. But
-      // if there are, log their hashes here to diagnose crbug.com/1176977.
-      base::PersistentHistogramAllocator::Iterator it(
-          base::GlobalHistogramAllocator::Get());
-      while (std::unique_ptr<base::HistogramBase> histogram = it.GetNext()) {
-        base::UmaHistogramSparse(
-            "UMA.PersistentHistograms.HistogramsInStartupFile",
-            static_cast<base::HistogramBase::Sample>(histogram->name_hash()));
-      }
       result = kMappedFileSuccess;
     } else {
       result = kMappedFileFailed;
