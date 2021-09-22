@@ -1547,4 +1547,29 @@ TEST_F(ConversionStorageTest, NoIDReuse_Conversion) {
   EXPECT_NE(id1, id2);
 }
 
+TEST_F(ConversionStorageTest, UpdateReportForSendFailure) {
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreConversionReport(DefaultConversion()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(0, actual_reports[0].failed_send_attempts);
+
+  const base::TimeDelta delay = base::TimeDelta::FromDays(2);
+  const base::Time new_report_time = actual_reports[0].report_time + delay;
+  EXPECT_TRUE(storage()->UpdateReportForSendFailure(
+      *actual_reports[0].conversion_id, new_report_time));
+
+  clock()->Advance(delay);
+
+  actual_reports = storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(1, actual_reports[0].failed_send_attempts);
+  EXPECT_EQ(new_report_time, actual_reports[0].report_time);
+}
+
 }  // namespace content

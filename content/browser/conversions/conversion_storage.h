@@ -182,6 +182,12 @@ class ConversionStorage {
   // false if an error occurred.
   virtual bool DeleteConversion(ConversionReport::Id conversion_id) = 0;
 
+  // Updates the number of failures associated with the given report, and sets
+  // its report time to the given value. Should be called after a transient
+  // failure to send the report so that it is retried later.
+  virtual bool UpdateReportForSendFailure(ConversionReport::Id conversion_id,
+                                          base::Time new_report_time) = 0;
+
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time. More specifically, this:
   // 1. Deletes all impressions within the time range. If any conversion is

@@ -89,6 +89,8 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
                                                        int limit = -1) override;
   std::vector<StorableImpression> GetActiveImpressions(int limit = -1) override;
   bool DeleteConversion(ConversionReport::Id conversion_id) override;
+  bool UpdateReportForSendFailure(ConversionReport::Id conversion_id,
+                                  base::Time new_report_time) override;
   void ClearData(
       base::Time delete_begin,
       base::Time delete_end,

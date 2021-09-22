@@ -81,8 +81,10 @@ class TestConversionReporter
     for (auto& info : deferred_callbacks_) {
       report_sent_callback_.Run(std::move(info));
     }
-    deferred_callbacks_.clear();
+    ClearDeferredCallbacks();
   }
+
+  void ClearDeferredCallbacks() { deferred_callbacks_.clear(); }
 
   void ShouldRunReportSentCallbacks(bool should_run_report_sent_callbacks) {
     should_run_report_sent_callbacks_ = should_run_report_sent_callbacks;
@@ -288,7 +290,8 @@ TEST_F(ConversionManagerImplTest, QueuedReportNotSent_QueuedAgain) {
 TEST_F(ConversionManagerImplTest,
        QueuedReportFailedWithShouldRetry_QueuedAgain) {
   test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kShouldRetry);
+  test_reporter_->SetSentReportInfoStatus(
+      SentReportInfo::Status::kTransientFailure);
 
   conversion_manager_->HandleImpression(
       ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
@@ -296,11 +299,9 @@ TEST_F(ConversionManagerImplTest,
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
-
-  // If the report indicated retry, it should be added to the queue again.
-  task_environment_.FastForwardBy(kConversionManagerQueueReportsInterval);
-  EXPECT_EQ(2u, test_reporter_->num_reports());
+  // This is 3 instead of 1 because the failed report is directly added back
+  // into the queue 2 times.
+  EXPECT_EQ(3u, test_reporter_->num_reports());
 }
 
 TEST_F(ConversionManagerImplTest,
@@ -322,23 +323,81 @@ TEST_F(ConversionManagerImplTest,
 }
 
 TEST_F(ConversionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
-  test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kShouldRetry);
+  test_reporter_->ShouldRunReportSentCallbacks(false);
+  test_reporter_->SetSentReportInfoStatus(
+      SentReportInfo::Status::kTransientFailure);
 
   conversion_manager_->HandleImpression(
       ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   conversion_manager_->HandleConversion(DefaultConversion());
 
-  task_environment_.FastForwardBy(kFirstReportingWindow);
+  base::Time expected_report_time = clock().Now() + kFirstReportingWindow;
 
-  // Verify that the report is eventually expired and further attempts to send
-  // are not made.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(14));
-  size_t reports = test_reporter_->num_reports();
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval -
+                                  base::TimeDelta::FromMilliseconds(1));
+  EXPECT_EQ(base::Time(), test_reporter_->last_report_time());
 
-  // Reports are attempted to be delivered once upon expiry.
-  EXPECT_EQ(reports + 1, test_reporter_->num_reports());
+  // The report is first in the queuing window.
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+
+  // Simulate the reporter sending the report only once the actual report time
+  // has been reached. We clear the deferred callbacks first, because the test
+  // reporter does not deduplication, so we would get two callbacks for the
+  // report instead of one.
+  test_reporter_->ClearDeferredCallbacks();
+  task_environment_.FastForwardBy(kConversionManagerQueueReportsInterval);
+  test_reporter_->RunDeferredCallbacks();
+
+  // This is 3 because the reporter counts reports without deduplication.
+  test_reporter_->WaitForNumReports(3);
+  // At this point, the report has been added directly to the reporter with the
+  // updated report time of +5 minutes.
+  expected_report_time += base::TimeDelta::FromMinutes(5);
+  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+  test_reporter_->RunDeferredCallbacks();
+
+  // This is 4 because the reporter counts reports without deduplication.
+  test_reporter_->WaitForNumReports(4);
+  // At this point, the report has been added directly to the reporter with the
+  // updated report time of +15 minutes.
+  expected_report_time += base::TimeDelta::FromMinutes(15);
+  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(15));
+  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+  test_reporter_->RunDeferredCallbacks();
+
+  // At this point, the report has reached the maximum number of attempts and it
+  // should no longer be present in the DB.
+  ExpectNumStoredReports(0);
+}
+
+TEST_F(ConversionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
+  test_reporter_->ShouldRunReportSentCallbacks(true);
+  test_reporter_->SetSentReportInfoStatus(
+      SentReportInfo::Status::kTransientFailure);
+
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  conversion_manager_->HandleConversion(DefaultConversion());
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+  // This is 3 instead of 1 because the failed report is directly added back
+  // into the queue 2 times.
+  EXPECT_EQ(3u, test_reporter_->num_reports());
+
+  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kOffline);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  EXPECT_EQ(3u, test_reporter_->num_reports());
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(30));
+  EXPECT_EQ(3u, test_reporter_->num_reports());
 }
 
 TEST_F(ConversionManagerImplTest, ReportExpiredAtStartup_Sent) {
@@ -406,7 +465,8 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
                                   kConversionManagerQueueReportsInterval);
 
   // This one shouldn't be stored, as it will be retried.
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kShouldRetry);
+  test_reporter_->SetSentReportInfoStatus(
+      SentReportInfo::Status::kTransientFailure);
   conversion_manager_->HandleImpression(ImpressionBuilder(clock().Now())
                                             .SetData(4)
                                             .SetExpiry(kImpressionExpiry)

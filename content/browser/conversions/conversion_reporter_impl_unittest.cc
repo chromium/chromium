@@ -321,15 +321,13 @@ TEST_F(ConversionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
   EXPECT_EQ(0u, sender_->num_reports_sent());
   EXPECT_EQ(ConversionReport::Id(1),
             *last_sent_report_info()->report.conversion_id);
-  EXPECT_EQ(SentReportInfo::Status::kShouldRetry,
-            last_sent_report_info()->status);
+  EXPECT_EQ(SentReportInfo::Status::kOffline, last_sent_report_info()->status);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
   EXPECT_EQ(0u, sender_->num_reports_sent());
   EXPECT_EQ(ConversionReport::Id(2),
             *last_sent_report_info()->report.conversion_id);
-  EXPECT_EQ(SentReportInfo::Status::kShouldRetry,
-            last_sent_report_info()->status);
+  EXPECT_EQ(SentReportInfo::Status::kOffline, last_sent_report_info()->status);
 
   reporter_->AddReportsToQueue({
       GetReport(clock().Now(), clock().Now() + base::TimeDelta::FromMinutes(1),
@@ -352,8 +350,7 @@ TEST_F(ConversionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
   EXPECT_EQ(1u, sender_->num_reports_sent());
   EXPECT_EQ(ConversionReport::Id(2),
             *last_sent_report_info()->report.conversion_id);
-  EXPECT_EQ(SentReportInfo::Status::kShouldRetry,
-            last_sent_report_info()->status);
+  EXPECT_EQ(SentReportInfo::Status::kOffline, last_sent_report_info()->status);
 }
 
 }  // namespace content

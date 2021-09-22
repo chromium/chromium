@@ -365,8 +365,8 @@ bool operator==(const ConversionReport& a, const ConversionReport& b) {
   const auto tie = [](const ConversionReport& conversion) {
     return std::make_tuple(conversion.impression, conversion.conversion_data,
                            conversion.conversion_time, conversion.report_time,
-                           conversion.original_report_time,
-                           conversion.priority);
+                           conversion.priority,
+                           conversion.failed_send_attempts);
   };
   return tie(a) == tie(b);
 }
@@ -500,13 +500,11 @@ std::ostream& operator<<(std::ostream& out, const ConversionReport& report) {
              << ",conversion_data=" << report.conversion_data
              << ",conversion_time=" << report.conversion_time
              << ",report_time=" << report.report_time
-             << ",priority=" << report.priority
-             << ",original_report_time=" << report.original_report_time
-             << ",conversion_id="
+             << ",priority=" << report.priority << ",conversion_id="
              << (report.conversion_id
                      ? base::NumberToString(**report.conversion_id)
                      : "null")
-             << "}";
+             << ",failed_send_attempts=" << report.failed_send_attempts << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status) {
@@ -514,11 +512,14 @@ std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status) {
     case SentReportInfo::Status::kSent:
       out << "kSent";
       break;
-    case SentReportInfo::Status::kShouldRetry:
-      out << "kShouldRetry";
+    case SentReportInfo::Status::kTransientFailure:
+      out << "kTransientFailure";
       break;
     case SentReportInfo::Status::kDropped:
       out << "kDropped";
+      break;
+    case SentReportInfo::Status::kOffline:
+      out << "kOffline";
       break;
   }
   return out;

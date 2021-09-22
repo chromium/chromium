@@ -60,15 +60,6 @@ bool IsOriginSessionOnly(
   return false;
 }
 
-bool ShouldRetryReport(const ConversionPolicy& policy,
-                       base::Time now,
-                       const SentReportInfo& info) {
-  bool past_max_allowed_age =
-      (now - info.report.original_report_time) > policy.GetMaxReportAge();
-  return info.status == SentReportInfo::Status::kShouldRetry &&
-         !past_max_allowed_age;
-}
-
 void RecordCreateReportStatus(
     ConversionStorage::CreateReportResult::Status status) {
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus", status);
@@ -280,11 +271,8 @@ void ConversionManagerImpl::QueueReports(
     if (report.report_time >= current_time)
       continue;
 
-    base::Time updated_report_time =
+    report.report_time =
         conversion_policy_->GetReportTimeForReportPastSendTime(current_time);
-
-    report.original_report_time = report.report_time;
-    report.report_time = updated_report_time;
   }
 
   reporter_->AddReportsToQueue(std::move(reports));
@@ -322,10 +310,39 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
 void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   DCHECK(info.report.conversion_id.has_value());
 
-  // Reports that should be retried are not deleted.
-  const bool should_retry =
-      ShouldRetryReport(*conversion_policy_, clock_->Now(), info);
-  if (!should_retry) {
+  // If there was a transient failure, and another attempt is allowed,
+  // update the report's DB state to reflect that. Otherwise, delete the report
+  // from storage if it wasn't skipped due to the browser being offline.
+
+  bool should_retry = false;
+  if (info.status == SentReportInfo::Status::kTransientFailure) {
+    info.report.failed_send_attempts++;
+    const absl::optional<base::TimeDelta> delay =
+        conversion_policy_->GetFailedReportDelay(
+            info.report.failed_send_attempts);
+    if (delay.has_value()) {
+      should_retry = true;
+      info.report.report_time += *delay;
+    }
+  }
+
+  if (should_retry) {
+    // After updating the report's failure count and new report time in the DB,
+    // add it directly to the queue so that the retry is attempted as the new
+    // report time is reached, rather than wait for the next DB-polling to
+    // occur.
+    conversion_storage_
+        .AsyncCall(&ConversionStorage::UpdateReportForSendFailure)
+        .WithArgs(*info.report.conversion_id, info.report.report_time)
+        .Then(base::BindOnce(
+            [](base::WeakPtr<ConversionManagerImpl> manager,
+               ConversionReport report, bool success) {
+              if (!manager || !success)
+                return;
+              manager->reporter_->AddReportsToQueue({std::move(report)});
+            },
+            weak_factory_.GetWeakPtr(), info.report));
+  } else if (info.status != SentReportInfo::Status::kOffline) {
     RecordDeleteEvent(DeleteEvent::kStarted);
     conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
         .WithArgs(*info.report.conversion_id)

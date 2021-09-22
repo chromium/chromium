@@ -98,7 +98,7 @@ void ConversionReporterImpl::SendNextReport() {
     // retry it later.
     if (offline_) {
       OnReportSent(SentReportInfo(std::move(report),
-                                  SentReportInfo::Status::kShouldRetry,
+                                  SentReportInfo::Status::kOffline,
                                   /*http_response_code=*/0));
     } else {
       network_sender_->SendReport(

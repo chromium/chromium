@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_report.h"
+#include "content/browser/conversions/conversion_utils.h"
 #include "content/browser/conversions/sent_report_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
@@ -53,8 +54,9 @@ void LogMetricsOnReportSend(const ConversionReport& report) {
   // a long time while a conversion report is pending. Revisit this range if it
   // is non-ideal for real world data.
   base::Time now = base::Time::Now();
-  base::TimeDelta time_since_original_report_time =
-      (now - report.original_report_time);
+  base::Time original_report_time =
+      ComputeReportTime(report.impression, report.conversion_time);
+  base::TimeDelta time_since_original_report_time = now - original_report_time;
   base::UmaHistogramCustomTimes("Conversions.ExtraReportDelay2",
                                 time_since_original_report_time,
                                 base::TimeDelta::FromSeconds(1),
@@ -204,8 +206,9 @@ void ConversionNetworkSenderImpl::OnReportSent(
 
   std::move(sent_callback)
       .Run(SentReportInfo(std::move(report),
-                          should_retry ? SentReportInfo::Status::kShouldRetry
-                                       : SentReportInfo::Status::kSent,
+                          should_retry
+                              ? SentReportInfo::Status::kTransientFailure
+                              : SentReportInfo::Status::kSent,
                           headers ? headers->response_code() : 0));
 }
 

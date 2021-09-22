@@ -1037,6 +1037,64 @@ bool MigrateToVersion13(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion14(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Create the new conversions table with failed_send_attempts.
+  static constexpr char kNewConversionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_conversions"
+      "(conversion_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "impression_id INTEGER NOT NULL,"
+      "conversion_data INTEGER NOT NULL,"
+      "conversion_time INTEGER NOT NULL,"
+      "report_time INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "failed_send_attempts INTEGER NOT NULL)";
+  if (!db->Execute(kNewConversionTableSql))
+    return false;
+
+  // Transfer the existing conversions rows to the new table, using 0 for
+  // failed_send_attempts since we have no basis to say otherwise.
+  static constexpr char kPopulateNewConversionsSql[] =
+      "INSERT INTO new_conversions SELECT "
+      "conversion_id,impression_id,conversion_data,conversion_time,report_time,"
+      "priority,0 FROM conversions";
+  sql::Statement populate_new_conversions_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kPopulateNewConversionsSql));
+  if (!populate_new_conversions_statement.Run())
+    return false;
+
+  static constexpr char kDropOldConversionTableSql[] = "DROP TABLE conversions";
+  if (!db->Execute(kDropOldConversionTableSql))
+    return false;
+
+  static constexpr char kRenameConversionTableSql[] =
+      "ALTER TABLE new_conversions RENAME TO conversions";
+  if (!db->Execute(kRenameConversionTableSql))
+    return false;
+
+  // Create the pre-existing conversion table indices on the new table.
+
+  static constexpr char kConversionReportTimeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_report_idx "
+      "ON conversions(report_time)";
+  if (!db->Execute(kConversionReportTimeIndexSql))
+    return false;
+
+  static constexpr char kConversionImpressionIdIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
+      "ON conversions(impression_id)";
+  if (!db->Execute(kConversionImpressionIdIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(14);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeConversionStorageSqlSchema(sql::Database* db,
@@ -1089,6 +1147,10 @@ bool UpgradeConversionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 12) {
     if (!MigrateToVersion13(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 13) {
+    if (!MigrateToVersion14(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

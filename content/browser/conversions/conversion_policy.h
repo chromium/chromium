@@ -58,9 +58,13 @@ class CONTENT_EXPORT ConversionPolicy {
   virtual base::Time GetReportTimeForReportPastSendTime(base::Time now) const
       WARN_UNUSED_RESULT;
 
-  // Gets the maximum time a report can be held in storage after its report
-  // time.
-  virtual base::TimeDelta GetMaxReportAge() const WARN_UNUSED_RESULT;
+  // Gets the delay for a report that has failed to be sent
+  // `failed_send_attempts` times.
+  // Returns `absl::nullopt` to indicate that no more attempts should be made.
+  // Otherwise, the return value must be positive. `failed_send_attempts` is
+  // guaranteed to be positive.
+  virtual absl::optional<base::TimeDelta> GetFailedReportDelay(
+      int failed_send_attempts) const WARN_UNUSED_RESULT;
 
   // Selects how to handle the given impression; may involve RNG or other
   // dynamic criteria.

@@ -167,7 +167,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
 
   const base::Clock* clock_;
 
-  // Timer which administers calls to GetAndQueueReportsForNextInterval().
+  // Timer which administers calls to `GetAndQueueReportsForNextInterval()`.
   base::RepeatingTimer get_and_queue_reports_timer_;
 
   // Handle keeping track of conversion reports to send. Reports are fetched

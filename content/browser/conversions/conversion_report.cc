@@ -24,7 +24,6 @@ ConversionReport::ConversionReport(StorableImpression impression,
       conversion_time(conversion_time),
       report_time(report_time),
       priority(priority),
-      original_report_time(report_time),
       conversion_id(conversion_id) {}
 
 ConversionReport::ConversionReport(const ConversionReport& other) = default;

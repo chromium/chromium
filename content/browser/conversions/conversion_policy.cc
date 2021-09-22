@@ -4,6 +4,9 @@
 
 #include "content/browser/conversions/conversion_policy.h"
 
+#include <math.h>
+
+#include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -103,9 +106,18 @@ base::Time ConversionPolicy::GetReportTimeForReportPastSendTime(
          base::TimeDelta::FromMilliseconds(base::RandInt(0, 5 * 60 * 1000));
 }
 
-base::TimeDelta ConversionPolicy::GetMaxReportAge() const {
-  // Chosen from looking at "Conversions.ExtraReportDelay" histogram.
-  return base::TimeDelta::FromDays(14);
+absl::optional<base::TimeDelta> ConversionPolicy::GetFailedReportDelay(
+    int failed_send_attempts) const {
+  DCHECK_GT(failed_send_attempts, 0);
+
+  const int kMaxFailedSendAttempts = 2;
+  const base::TimeDelta kInitialReportDelay = base::TimeDelta::FromMinutes(5);
+  const int kDelayFactor = 3;
+
+  if (failed_send_attempts > kMaxFailedSendAttempts)
+    return absl::nullopt;
+
+  return kInitialReportDelay * pow(kDelayFactor, failed_send_attempts - 1);
 }
 
 StorableImpression::AttributionLogic

@@ -103,11 +103,15 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 13 makes the impressions.impression_id and conversions.conversion_id
 // columns NOT NULL and AUTOINCREMENT, the latter to prevent ID reuse, which is
 // prone to race conditions with the queuing logic vs deletions.
-const int kCurrentVersionNumber = 13;
+//
+// Version 14 - 2021/09/22 - https://crrev.com/c/3138353
+//
+// Version 14 adds the conversions.failed_send_attempts column.
+const int kCurrentVersionNumber = 14;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 13;
+const int kCompatibleVersionNumber = 14;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -716,7 +720,7 @@ bool ConversionStorageSql::StoreConversionReport(
   static constexpr char kStoreConversionSql[] =
       "INSERT INTO conversions"
       "(impression_id,conversion_data,conversion_time,report_time,"
-      "priority)VALUES(?,?,?,?,?)";
+      "priority,failed_send_attempts)VALUES(?,?,?,?,?,0)";
   sql::Statement store_conversion_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kStoreConversionSql));
   store_conversion_statement.BindInt64(0, *impression_id);
@@ -740,19 +744,20 @@ absl::optional<ConversionReport> ReadConversionFromStatement(
   base::Time report_time = statement.ColumnTime(2);
   ConversionReport::Id conversion_id(statement.ColumnInt64(3));
   int64_t conversion_priority = statement.ColumnInt64(4);
-  url::Origin impression_origin = DeserializeOrigin(statement.ColumnString(5));
-  url::Origin conversion_origin = DeserializeOrigin(statement.ColumnString(6));
-  url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(7));
+  int failed_send_attempts = statement.ColumnInt(5);
+  url::Origin impression_origin = DeserializeOrigin(statement.ColumnString(6));
+  url::Origin conversion_origin = DeserializeOrigin(statement.ColumnString(7));
+  url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(8));
   uint64_t impression_data =
-      DeserializeImpressionOrConversionData(statement.ColumnInt64(8));
-  base::Time impression_time = statement.ColumnTime(9);
-  base::Time expiry_time = statement.ColumnTime(10);
-  StorableImpression::Id impression_id(statement.ColumnInt64(11));
+      DeserializeImpressionOrConversionData(statement.ColumnInt64(9));
+  base::Time impression_time = statement.ColumnTime(10);
+  base::Time expiry_time = statement.ColumnTime(11);
+  StorableImpression::Id impression_id(statement.ColumnInt64(12));
   absl::optional<StorableImpression::SourceType> source_type =
-      DeserializeSourceType(statement.ColumnInt(12));
-  int64_t attribution_source_priority = statement.ColumnInt64(13);
+      DeserializeSourceType(statement.ColumnInt(13));
+  int64_t attribution_source_priority = statement.ColumnInt64(14);
   absl::optional<StorableImpression::AttributionLogic> attribution_logic =
-      DeserializeAttributionLogic(statement.ColumnInt(14));
+      DeserializeAttributionLogic(statement.ColumnInt(15));
 
   // Ensure origins are valid before continuing. This could happen if there is
   // database corruption.
@@ -762,7 +767,7 @@ absl::optional<ConversionReport> ReadConversionFromStatement(
   // TODO(apaseltiner): Should we raze the DB if we've detected corruption?
   if (impression_origin.opaque() || conversion_origin.opaque() ||
       reporting_origin.opaque() || !source_type.has_value() ||
-      !attribution_logic.has_value()) {
+      !attribution_logic.has_value() || failed_send_attempts < 0) {
     return absl::nullopt;
   }
 
@@ -774,9 +779,11 @@ absl::optional<ConversionReport> ReadConversionFromStatement(
       impression_time, expiry_time, *source_type, attribution_source_priority,
       *attribution_logic, impression_id);
 
-  return ConversionReport(std::move(impression), conversion_data,
+  ConversionReport report(std::move(impression), conversion_data,
                           conversion_time, report_time, conversion_priority,
                           conversion_id);
+  report.failed_send_attempts = failed_send_attempts;
+  return report;
 }
 
 }  // namespace
@@ -794,10 +801,10 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   // (https://sqlite.org/lang_select.html#limitoffset).
   static constexpr char kGetExpiredConversionsSql[] =
       "SELECT C.conversion_data,C.conversion_time,C.report_time,"
-      "C.conversion_id,C.priority,I.impression_origin,I.conversion_origin,"
-      "I.reporting_origin,I.impression_data,I.impression_time,"
-      "I.expiry_time,I.impression_id,I.source_type,I.priority,"
-      "I.attributed_truthfully "
+      "C.conversion_id,C.priority,C.failed_send_attempts,"
+      "I.impression_origin,I.conversion_origin,I.reporting_origin,"
+      "I.impression_data,I.impression_time,I.expiry_time,I.impression_id,"
+      "I.source_type,I.priority,I.attributed_truthfully "
       "FROM conversions C JOIN impressions I ON "
       "C.impression_id = I.impression_id WHERE C.report_time <= ? "
       "LIMIT ?";
@@ -823,10 +830,10 @@ absl::optional<ConversionReport> ConversionStorageSql::GetConversion(
     ConversionReport::Id conversion_id) {
   static constexpr char kGetConversionSql[] =
       "SELECT C.conversion_data,C.conversion_time,C.report_time,"
-      "C.conversion_id,C.priority,I.impression_origin,I.conversion_origin,"
-      "I.reporting_origin,I.impression_data,I.impression_time,"
-      "I.expiry_time,I.impression_id,I.source_type,I.priority,"
-      "I.attributed_truthfully "
+      "C.conversion_id,C.priority,C.failed_send_attempts,"
+      "I.impression_origin,I.conversion_origin,I.reporting_origin,"
+      "I.impression_data,I.impression_time,I.expiry_time,I.impression_id,"
+      "I.source_type,I.priority,I.attributed_truthfully "
       "FROM conversions C JOIN impressions I ON "
       "C.impression_id = I.impression_id WHERE C.conversion_id = ?";
   sql::Statement statement(
@@ -914,6 +921,24 @@ bool ConversionStorageSql::DeleteConversionInternal(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSentConversionSql));
   statement.BindInt64(0, *conversion_id);
   return statement.Run();
+}
+
+bool ConversionStorageSql::UpdateReportForSendFailure(
+    ConversionReport::Id conversion_id,
+    base::Time new_report_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
+    return false;
+
+  static constexpr char kUpdateFailedReportSql[] =
+      "UPDATE conversions SET report_time = ?,"
+      "failed_send_attempts = failed_send_attempts + 1 "
+      "WHERE conversion_id = ?";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFailedReportSql));
+  statement.BindTime(0, new_report_time);
+  statement.BindInt64(1, *conversion_id);
+  return statement.Run() && db_->GetLastChangeCount() == 1;
 }
 
 void ConversionStorageSql::ClearData(
@@ -1479,12 +1504,14 @@ bool ConversionStorageSql::CreateSchema() {
   if (!db_->Execute(kEventSourceImpressionSiteIndexSql))
     return false;
 
-  // All columns in this table are const. |impression_id| is the primary key of
-  // a row in the [impressions] table, [impressions.impression_id].
-  // |conversion_time| is the time at which the conversion was registered, and
-  // should be used for clearing site data. |report_time| is the time a
-  // <conversion, impression> pair should be reported, and is specified by
-  // |delegate_|.
+  // All columns in this table are const except |report_time| and
+  // |failed_send_attempts|,
+  // which are updated when a report fails to send, as part of retries.
+  // |impression_id| is the primary key of a row in the [impressions] table,
+  // [impressions.impression_id]. |conversion_time| is the time at which the
+  // conversion was registered, and should be used for clearing site data.
+  // |report_time| is the time a <conversion, impression> pair should be
+  // reported, and is specified by |delegate_|.
   //
   // |conversion_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
@@ -1495,7 +1522,8 @@ bool ConversionStorageSql::CreateSchema() {
       "conversion_data INTEGER NOT NULL,"
       "conversion_time INTEGER NOT NULL,"
       "report_time INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL)";
+      "priority INTEGER NOT NULL,"
+      "failed_send_attempts INTEGER NOT NULL)";
   if (!db_->Execute(kConversionTableSql))
     return false;
 

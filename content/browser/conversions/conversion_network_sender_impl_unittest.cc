@@ -232,9 +232,9 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
   // TODO(apaseltiner): Should we propagate the timeout via the SentReportInfo
   // instead of just setting |http_response_code = 0|?
   EXPECT_THAT(sent_reports_,
-              ElementsAre(SentReportInfo(std::move(report),
-                                         SentReportInfo::Status::kShouldRetry,
-                                         /*http_response_code=*/0)));
+              ElementsAre(SentReportInfo(
+                  std::move(report), SentReportInfo::Status::kTransientFailure,
+                  /*http_response_code=*/0)));
 }
 
 TEST_F(ConversionNetworkSenderTest,
@@ -243,10 +243,12 @@ TEST_F(ConversionNetworkSenderTest,
     int net_error;
     SentReportInfo::Status expected_status;
   } kTestCases[] = {
-      {net::ERR_INTERNET_DISCONNECTED, SentReportInfo::Status::kShouldRetry},
-      {net::ERR_TIMED_OUT, SentReportInfo::Status::kShouldRetry},
-      {net::ERR_CONNECTION_ABORTED, SentReportInfo::Status::kShouldRetry},
-      {net::ERR_CONNECTION_TIMED_OUT, SentReportInfo::Status::kShouldRetry},
+      {net::ERR_INTERNET_DISCONNECTED,
+       SentReportInfo::Status::kTransientFailure},
+      {net::ERR_TIMED_OUT, SentReportInfo::Status::kTransientFailure},
+      {net::ERR_CONNECTION_ABORTED, SentReportInfo::Status::kTransientFailure},
+      {net::ERR_CONNECTION_TIMED_OUT,
+       SentReportInfo::Status::kTransientFailure},
       {net::ERR_CONNECTION_REFUSED, SentReportInfo::Status::kSent},
       {net::ERR_CERT_DATE_INVALID, SentReportInfo::Status::kSent},
       {net::OK, SentReportInfo::Status::kSent},

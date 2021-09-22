@@ -61,14 +61,12 @@ struct CONTENT_EXPORT ConversionReport {
   // Priority specified in conversion redirect.
   int64_t priority;
 
-  // The original report time assigned to this report when it was created,
-  // ignoring any ephemeral increases to |report_time| for this conversion
-  // report.
-  base::Time original_report_time;
-
   // Id assigned by storage to uniquely identify a completed conversion. If
   // null, an ID has not been assigned yet.
   absl::optional<Id> conversion_id;
+
+  // Number of times the browser has tried and failed to send this report.
+  int failed_send_attempts = 0;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `conversion_test_utils.h` should also be updated.

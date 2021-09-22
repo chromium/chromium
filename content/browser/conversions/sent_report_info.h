@@ -17,10 +17,13 @@ struct CONTENT_EXPORT SentReportInfo {
   enum class Status {
     kSent,
     // The report failed without receiving response headers.
-    kShouldRetry,
+    kTransientFailure,
     // The report was dropped without ever being sent, e.g. due to embedder
     // disabling the API.
     kDropped,
+    // The report should be retried because the browser is offline. This
+    // shouldn't contribute to the number of report failures.
+    kOffline,
   };
 
   SentReportInfo(ConversionReport report,

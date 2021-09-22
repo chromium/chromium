@@ -187,4 +187,21 @@ TEST_F(ConversionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
   }
 }
 
+TEST_F(ConversionPolicyTest, GetFailedReportDelay) {
+  const struct {
+    int failed_send_attempts;
+    absl::optional<base::TimeDelta> expected;
+  } kTestCases[] = {
+      {1, base::TimeDelta::FromMinutes(5)},
+      {2, base::TimeDelta::FromMinutes(15)},
+      {3, absl::nullopt},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.expected, ConversionPolicy().GetFailedReportDelay(
+                                      test_case.failed_send_attempts))
+        << "failed_send_attempts=" << test_case.failed_send_attempts;
+  }
+}
+
 }  // namespace content
