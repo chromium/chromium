@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -247,12 +246,6 @@ std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
   const extensions::FileHandlersInfo* file_handlers =
       extensions::FileHandlers::GetFileHandlers(extension);
   if (!file_handlers)
-    return {};
-  // Check that the extension can be launched with files. This includes all
-  // platform apps and allowlisted extensions.
-  if (!CanLaunchViaEvent(extension))
-    return {};
-  if (extension->from_bookmark())
     return {};
 
   std::vector<apps::mojom::IntentFilterPtr> filters;
