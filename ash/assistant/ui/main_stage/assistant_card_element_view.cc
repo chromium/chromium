@@ -29,6 +29,9 @@ namespace {
 using assistant::util::DeepLinkParam;
 using assistant::util::DeepLinkType;
 
+constexpr char kAssistantCardElementHistogram[] =
+    "Ash.Assistant.AnimationSmoothness.CardElement";
+
 // Helpers ---------------------------------------------------------------------
 
 void CreateAndSendMouseClick(aura::WindowTreeHost* host,
@@ -198,7 +201,7 @@ void AssistantCardElementView::InitLayout() {
 
 std::unique_ptr<ElementAnimator> AssistantCardElementView::CreateAnimator() {
   return std::make_unique<AssistantUiElementViewAnimator>(
-      this, assistant::ui::kAssistantCardElementHistogram);
+      this, kAssistantCardElementHistogram);
 }
 
 }  // namespace ash

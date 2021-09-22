@@ -19,6 +19,13 @@
 
 namespace ash {
 
+namespace {
+
+constexpr char kAssistantTextElementHistogram[] =
+    "Ash.Assistant.AnimationSmoothness.TextElement";
+
+}  // namespace
+
 // AssistantTextElementView ----------------------------------------------------
 
 AssistantTextElementView::AssistantTextElementView(
@@ -69,7 +76,7 @@ void AssistantTextElementView::InitLayout(const std::string& text) {
 
 std::unique_ptr<ElementAnimator> AssistantTextElementView::CreateAnimator() {
   return std::make_unique<AssistantUiElementViewAnimator>(
-      this, assistant::ui::kAssistantTextElementHistogram);
+      this, kAssistantTextElementHistogram);
 }
 
 void AssistantTextElementView::OnThemeChanged() {

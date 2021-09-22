@@ -291,7 +291,8 @@ void AssistantPageView::OnAnimationStarted(AppListState from_state,
         settings->GetAnimator(),
         metrics_util::ForSmoothness(base::BindRepeating([](int value) {
           base::UmaHistogramPercentageObsoleteDoNotUse(
-              assistant::ui::kAssistantResizePageViewHistogram, value);
+              "Ash.Assistant.AnimationSmoothness.ResizeAssistantPageView",
+              value);
         })));
 
     layer()->SetClipRect(gfx::Rect(to_rect.size()));
