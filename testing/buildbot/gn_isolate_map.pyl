@@ -473,6 +473,10 @@
     "label": "//:chrome_official_builder_no_unittests",
     "type": "additional_compile_target",
   },
+  "chrome_pkg": {
+    "label": "//chrome/app:chrome_pkg",
+    "type": "additional_compile_target",
+  },
   "chrome_public_apk": {
     "label": "//chrome/android:chrome_public_apk",
     "type": "additional_compile_target",
