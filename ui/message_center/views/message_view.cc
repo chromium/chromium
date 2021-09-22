@@ -4,6 +4,7 @@
 
 #include "ui/message_center/views/message_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -480,6 +481,11 @@ void MessageView::UpdateBackgroundPainter() {
       is_active_ ? ui::NativeTheme::kColorId_NotificationBackgroundActive
                  : ui::NativeTheme::kColorId_NotificationBackground);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsNotificationsRefreshEnabled())
+    background_color = SK_ColorTRANSPARENT;
+#endif
+
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
           top_radius_, bottom_radius_, background_color)));
@@ -488,8 +494,15 @@ void MessageView::UpdateBackgroundPainter() {
 void MessageView::UpdateNestedBorder() {
   if (!is_nested_ || !GetWidget())
     return;
+
   SkColor border_color = GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_UnfocusedBorderColor);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsNotificationsRefreshEnabled())
+    border_color = SK_ColorTRANSPARENT;
+#endif
+
   SetBorder(views::CreateRoundedRectBorder(
       kNotificationBorderThickness, kNotificationCornerRadius, border_color));
 }
