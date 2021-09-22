@@ -26,7 +26,7 @@ class IMEEngineHandlerInterface;
 class VirtualKeyboardController;
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
 class ComponentExtensionIMEManager;
 namespace input_method {
 class InputMethodUtil;
@@ -370,14 +370,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::InputMethodManager;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::InputMethodManager;
+}
+}  // namespace chromeos
 
 #endif  // UI_BASE_IME_ASH_INPUT_METHOD_MANAGER_H_

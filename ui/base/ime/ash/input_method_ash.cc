@@ -74,10 +74,9 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   // For OS_CHROMEOS build of Chrome running on Linux, the IME keyboard cannot
   // track the Caps Lock state by itself, so need to call SetCapsLockEnabled()
   // method to reflect the Caps Lock state by the key event.
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* manager = ash::input_method::InputMethodManager::Get();
   if (manager) {
-    chromeos::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
+    ash::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
     if (keyboard && event->type() == ET_KEY_PRESSED &&
         event->key_code() != ui::VKEY_CAPITAL &&
         keyboard->CapsLockIsEnabled() != event->IsCapsLockOn()) {
@@ -92,7 +91,7 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
     // VKEY_CONVERT: Henkan key
     // VKEY_NONCONVERT: Muhenkan key
     // VKEY_DBE_SBCSCHAR/VKEY_DBE_DBCSCHAR: ZenkakuHankaku key
-    chromeos::input_method::InputMethodManager::State* state =
+    ash::input_method::InputMethodManager::State* state =
         manager->GetActiveIMEState().get();
     if (event->type() == ET_KEY_PRESSED && state) {
       bool language_input_key = true;
@@ -208,9 +207,9 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   if (GetEngine())
     GetEngine()->SetCompositionBounds(GetCompositionBounds(client));
 
-  chromeos::IMECandidateWindowHandlerInterface* candidate_window =
+  ash::IMECandidateWindowHandlerInterface* candidate_window =
       ui::IMEBridge::Get()->GetCandidateWindowHandler();
-  chromeos::IMEAssistiveWindowHandlerInterface* assistive_window =
+  ash::IMEAssistiveWindowHandlerInterface* assistive_window =
       ui::IMEBridge::Get()->GetAssistiveWindowHandler();
   if (!candidate_window && !assistive_window)
     return;
@@ -229,7 +228,7 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
     candidate_window->SetCursorBounds(caret_rect, composition_head);
 
   if (assistive_window) {
-    chromeos::Bounds bounds;
+    ash::Bounds bounds;
     bounds.caret = caret_rect;
     bounds.autocorrect = client->GetAutocorrectCharacterBounds();
     client->GetCompositionCharacterBounds(0, &bounds.composition_text);
@@ -282,8 +281,7 @@ bool InputMethodAsh::IsCandidatePopupOpen() const {
 }
 
 VirtualKeyboardController* InputMethodAsh::GetVirtualKeyboardController() {
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* manager = ash::input_method::InputMethodManager::Get();
   if (manager) {
     if (auto* controller = manager->GetVirtualKeyboardController())
       return controller;
@@ -486,13 +484,13 @@ void InputMethodAsh::UpdateContextFocusState() {
 
   // Propagate the focus event to the candidate window handler which also
   // manages the input method mode indicator.
-  chromeos::IMECandidateWindowHandlerInterface* candidate_window =
+  ash::IMECandidateWindowHandlerInterface* candidate_window =
       ui::IMEBridge::Get()->GetCandidateWindowHandler();
   if (candidate_window)
     candidate_window->FocusStateChanged(!IsPasswordOrNoneInputFieldFocused());
 
   // Propagate focus event to assistive window handler.
-  chromeos::IMEAssistiveWindowHandlerInterface* assistive_window =
+  ash::IMEAssistiveWindowHandlerInterface* assistive_window =
       ui::IMEBridge::Get()->GetAssistiveWindowHandler();
   if (assistive_window)
     assistive_window->FocusStateChanged();
@@ -715,7 +713,7 @@ void InputMethodAsh::UpdateCompositionText(const CompositionText& text,
     return;
 
   if (!CanComposeInline()) {
-    chromeos::IMECandidateWindowHandlerInterface* candidate_window =
+    ash::IMECandidateWindowHandlerInterface* candidate_window =
         ui::IMEBridge::Get()->GetCandidateWindowHandler();
     if (candidate_window)
       candidate_window->UpdatePreeditText(text.text, cursor_pos, visible);

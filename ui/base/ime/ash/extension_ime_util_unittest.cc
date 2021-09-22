@@ -10,7 +10,7 @@
 #include "build/branding_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 TEST(ExtensionIMEUtilTest, GetInputMethodIDTest) {
   EXPECT_EQ("_ext_ime_ABCDE12345",
@@ -110,4 +110,4 @@ TEST(ExtensionIMEUtilTest, IsExperimentalMultilingualTest) {
                         "experimental_hello_world"})));
 }
 
-}  // namespace chromeos
+}  // namespace ash

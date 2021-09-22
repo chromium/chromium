@@ -37,7 +37,7 @@ class LanguageSettingsPrivateDelegate
       public EventRouter::Observer,
       public content::NotificationObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      public chromeos::input_method::InputMethodManager::Observer,
+      public ash::input_method::InputMethodManager::Observer,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       public SpellcheckHunspellDictionary::Observer,
       public SpellcheckCustomDictionary::Observer {
@@ -76,8 +76,8 @@ class LanguageSettingsPrivateDelegate
   void OnListenerRemoved(const EventListenerInfo& details) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // chromeos::input_method::InputMethodManager::Observer implementation.
-  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+  // ash::input_method::InputMethodManager::Observer implementation.
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
   void OnInputMethodExtensionAdded(const std::string& extension_id) override;

@@ -11,8 +11,7 @@
 
 class Profile;
 
-namespace chromeos {
-
+namespace ash {
 struct ComponentExtensionIME;
 
 // Provides an interface to list/load/unload for component extension IME.
@@ -33,11 +32,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManagerDelegate {
   virtual bool IsInLoginLayoutAllowlist(const std::string& layout) = 0;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ComponentExtensionIMEManagerDelegate;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ComponentExtensionIMEManagerDelegate;
+}
 
 #endif  // UI_BASE_IME_ASH_COMPONENT_EXTENSION_IME_MANAGER_DELEGATE_H_

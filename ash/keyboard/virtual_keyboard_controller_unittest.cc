@@ -102,11 +102,11 @@ TEST_F(VirtualKeyboardControllerTest,
 
   // Should show the keyboard without messing with accessibility prefs.
   GetVirtualKeyboardController()->ForceShowKeyboardWithKeyset(
-      chromeos::input_method::ImeKeyset::kEmoji);
+      input_method::ImeKeyset::kEmoji);
   EXPECT_TRUE(accessibility_controller->virtual_keyboard().enabled());
 
   // Keyset should be emoji.
-  EXPECT_EQ(chromeos::input_method::ImeKeyset::kEmoji, client.last_keyset_);
+  EXPECT_EQ(input_method::ImeKeyset::kEmoji, client.last_keyset_);
 
   // Simulate the keyboard hiding.
   if (keyboard_ui_controller()->HasObserver(GetVirtualKeyboardController())) {
@@ -122,7 +122,7 @@ TEST_F(VirtualKeyboardControllerTest,
   accessibility_controller->virtual_keyboard().SetEnabled(false);
 
   // Keyset should be reset to none.
-  EXPECT_EQ(chromeos::input_method::ImeKeyset::kNone, client.last_keyset_);
+  EXPECT_EQ(input_method::ImeKeyset::kNone, client.last_keyset_);
 
   Shell::Get()->ime_controller()->SetClient(nullptr);
 }
@@ -139,14 +139,14 @@ TEST_F(VirtualKeyboardControllerTest,
       KeyboardEnableFlag::kShelfEnabled));
 
   GetVirtualKeyboardController()->ForceShowKeyboardWithKeyset(
-      chromeos::input_method::ImeKeyset::kEmoji);
+      input_method::ImeKeyset::kEmoji);
 
   EXPECT_TRUE(keyboard_ui_controller()->IsEnableFlagSet(
       KeyboardEnableFlag::kShelfEnabled));
   EXPECT_TRUE(keyboard_ui_controller()->IsEnabled());
 
   // Keyset should be emoji.
-  EXPECT_EQ(chromeos::input_method::ImeKeyset::kEmoji, client.last_keyset_);
+  EXPECT_EQ(input_method::ImeKeyset::kEmoji, client.last_keyset_);
 
   // Simulate the keyboard hiding.
   if (keyboard_ui_controller()->HasObserver(GetVirtualKeyboardController())) {
@@ -161,7 +161,7 @@ TEST_F(VirtualKeyboardControllerTest,
       KeyboardEnableFlag::kShelfEnabled));
 
   // Keyset should be reset to none.
-  EXPECT_EQ(chromeos::input_method::ImeKeyset::kNone, client.last_keyset_);
+  EXPECT_EQ(input_method::ImeKeyset::kNone, client.last_keyset_);
 }
 
 TEST_F(VirtualKeyboardControllerTest,
@@ -172,14 +172,14 @@ TEST_F(VirtualKeyboardControllerTest,
 
   // Should show the keyboard by enabling it temporarily.
   GetVirtualKeyboardController()->ForceShowKeyboardWithKeyset(
-      chromeos::input_method::ImeKeyset::kEmoji);
+      input_method::ImeKeyset::kEmoji);
 
   EXPECT_TRUE(keyboard_ui_controller()->IsEnableFlagSet(
       KeyboardEnableFlag::kShelfEnabled));
   EXPECT_TRUE(keyboard_ui_controller()->IsEnabled());
 
   // Keyset should be emoji.
-  EXPECT_EQ(chromeos::input_method::ImeKeyset::kEmoji, client.last_keyset_);
+  EXPECT_EQ(input_method::ImeKeyset::kEmoji, client.last_keyset_);
 
   // Simulate the keyboard hiding temporarily.
   if (keyboard_ui_controller()->HasObserver(GetVirtualKeyboardController())) {
@@ -194,7 +194,7 @@ TEST_F(VirtualKeyboardControllerTest,
   EXPECT_TRUE(keyboard_ui_controller()->IsEnabled());
 
   // Keyset should still be emoji.
-  EXPECT_EQ(chromeos::input_method::ImeKeyset::kEmoji, client.last_keyset_);
+  EXPECT_EQ(input_method::ImeKeyset::kEmoji, client.last_keyset_);
 }
 
 class VirtualKeyboardControllerAutoTest : public VirtualKeyboardControllerTest,

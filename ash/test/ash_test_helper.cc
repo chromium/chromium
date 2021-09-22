@@ -187,7 +187,7 @@ void AshTestHelper::TearDown() {
   // their own override, and in that case we shouldn't call Shutdown
   // otherwise the global state will be deleted twice.
   if (input_method_manager_) {
-    chromeos::input_method::InputMethodManager::Shutdown();
+    input_method::InputMethodManager::Shutdown();
     input_method_manager_ = nullptr;
   }
 }
@@ -228,8 +228,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   if (!input_method::InputMethodManager::Get()) {
     // |input_method_manager_| is not owned and is cleaned up in TearDown()
     // by calling InputMethodManager::Shutdown().
-    input_method_manager_ =
-        new chromeos::input_method::MockInputMethodManager();
+    input_method_manager_ = new input_method::MockInputMethodManager();
     input_method::InputMethodManager::Initialize(input_method_manager_);
   }
 

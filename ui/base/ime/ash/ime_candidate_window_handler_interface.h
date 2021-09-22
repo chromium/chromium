@@ -19,7 +19,7 @@ namespace ui {
 class CandidateWindow;
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
 
 // A interface to handle the candidate window related method call.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMECandidateWindowHandlerInterface {
@@ -51,11 +51,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMECandidateWindowHandlerInterface {
   IMECandidateWindowHandlerInterface() = default;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::IMECandidateWindowHandlerInterface;
 }  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_IME_CANDIDATE_WINDOW_HANDLER_INTERFACE_H_

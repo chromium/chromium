@@ -18,10 +18,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::ASCIIToUTF16;
-
-namespace chromeos {
-
+namespace ash {
 namespace input_method {
 
 namespace {
@@ -377,4 +374,4 @@ TEST_F(InputMethodUtilTest, TestHardwareInputMethodIDs) {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

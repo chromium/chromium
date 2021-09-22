@@ -12,15 +12,14 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Gets the input method category according to the given input method id.
 // This is used for sorting a list of input methods.
 int GetInputMethodCategory(const std::string& id) {
   const std::string engine_id =
-      chromeos::extension_ime_util::GetComponentIDByInputMethodID(id);
+      extension_ime_util::GetComponentIDByInputMethodID(id);
   if (base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE))
     return 0;
   if (base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE))
@@ -161,4 +160,4 @@ bool ComponentExtensionIMEManager::FindEngineEntry(
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

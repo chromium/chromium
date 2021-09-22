@@ -26,6 +26,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
+namespace ash {
+namespace input_method {
+
 namespace {
 
 // A mapping from an input method id to a resource id for a
@@ -37,20 +40,20 @@ const struct {
   const char* engine_id;
   const int resource_id;
 } kMappingImeIdToMediumLenNameResourceId[] = {
-  { "hangul_2set", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN },
-  { "hangul_3set390", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN },
-  { "hangul_3setfinal", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN },
-  { "hangul_3setnoshift", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN },
-  { "hangul_3setromaja", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN },
-  { "zh-t-i0-pinyin", IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_SIMPLIFIED},
-  { "zh-t-i0-wubi-1986", IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_SIMPLIFIED },
-  { "zh-hant-t-i0-und", IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_TRADITIONAL },
-  { "zh-hant-t-i0-cangjie-1987",
-    IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_TRADITIONAL },
-  { "zh-hant-t-i0-cangjie-1987-x-m0-simplified",
-    IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_TRADITIONAL },
-  { chromeos::extension_ime_util::kBrailleImeEngineId,
-    IDS_LANGUAGES_MEDIUM_LEN_NAME_BRAILLE },
+    {"hangul_2set", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN},
+    {"hangul_3set390", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN},
+    {"hangul_3setfinal", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN},
+    {"hangul_3setnoshift", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN},
+    {"hangul_3setromaja", IDS_LANGUAGES_MEDIUM_LEN_NAME_KOREAN},
+    {"zh-t-i0-pinyin", IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_SIMPLIFIED},
+    {"zh-t-i0-wubi-1986", IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_SIMPLIFIED},
+    {"zh-hant-t-i0-und", IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_TRADITIONAL},
+    {"zh-hant-t-i0-cangjie-1987",
+     IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_TRADITIONAL},
+    {"zh-hant-t-i0-cangjie-1987-x-m0-simplified",
+     IDS_LANGUAGES_MEDIUM_LEN_NAME_CHINESE_TRADITIONAL},
+    {extension_ime_util::kBrailleImeEngineId,
+     IDS_LANGUAGES_MEDIUM_LEN_NAME_BRAILLE},
 };
 
 // Due to asynchronous initialization of component extension manager,
@@ -381,10 +384,6 @@ const struct InputMethodNameMap {
 };
 
 }  // namespace
-
-namespace chromeos {
-
-namespace input_method {
 
 InputMethodUtil::InputMethodUtil(InputMethodDelegate* delegate)
     : delegate_(delegate) {
@@ -800,4 +799,4 @@ InputMethodDescriptor InputMethodUtil::GetFallbackInputMethodDescriptor() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

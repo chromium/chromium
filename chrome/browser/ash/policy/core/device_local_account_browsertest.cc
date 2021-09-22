@@ -397,7 +397,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
   DeviceLocalAccountTest()
       : public_session_input_method_id_(
             base::StringPrintf(kPublicSessionInputMethodIDTemplate,
-                               chromeos::extension_ime_util::kXkbExtensionId)),
+                               ash::extension_ime_util::kXkbExtensionId)),
         contents_(NULL),
         verifier_format_override_(crx_file::VerifierFormat::CRX3) {
     set_exit_when_last_browser_closes(false);
@@ -678,12 +678,11 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
 
   static std::string GetDefaultKeyboardIdFromLanguageCode(
       const std::string& language_code) {
-    chromeos::input_method::InputMethodManager* input_method_manager =
-        chromeos::input_method::InputMethodManager::Get();
+    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
     std::vector<std::string> layouts_from_locale;
     input_method_manager->GetInputMethodUtil()
         ->GetInputMethodIdsFromLanguageCode(
-            language_code, chromeos::input_method::kKeyboardLayoutsOnly,
+            language_code, ash::input_method::kKeyboardLayoutsOnly,
             &layouts_from_locale);
     EXPECT_FALSE(layouts_from_locale.empty());
     if (layouts_from_locale.empty())
@@ -691,8 +690,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     return layouts_from_locale.front();
   }
   void VerifyKeyboardLayoutMatchesLocale() {
-    chromeos::input_method::InputMethodManager* input_method_manager =
-        chromeos::input_method::InputMethodManager::Get();
+    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
     EXPECT_EQ(GetDefaultKeyboardIdFromLanguageCode(
                   g_browser_process->GetApplicationLocale()),
               input_method_manager->GetActiveIMEState()
@@ -1704,7 +1702,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, NoRecommendedLocaleSwitch) {
   EXPECT_EQ(l10n_util::GetLanguage(kPublicSessionLocale),
             icu::Locale::getDefault().getLanguage());
   EXPECT_EQ(public_session_input_method_id_,
-            chromeos::input_method::InputMethodManager::Get()
+            ash::input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()
                 ->GetCurrentInputMethod()
                 .id());
@@ -1916,7 +1914,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   EXPECT_EQ(l10n_util::GetLanguage(kPublicSessionLocale),
             icu::Locale::getDefault().getLanguage());
   EXPECT_EQ(public_session_input_method_id_,
-            chromeos::input_method::InputMethodManager::Get()
+            ash::input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()
                 ->GetCurrentInputMethod()
                 .id());
@@ -1952,7 +1950,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LocaleWithIME) {
   RunWithRecommendedLocale(kSingleLocaleWithIME,
                            base::size(kSingleLocaleWithIME));
 
-  EXPECT_GT(chromeos::input_method::InputMethodManager::Get()
+  EXPECT_GT(ash::input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()
                 ->GetNumActiveInputMethods(),
             1u);
@@ -1964,7 +1962,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LocaleWithNoIME) {
   RunWithRecommendedLocale(kSingleLocaleWithNoIME,
                            base::size(kSingleLocaleWithNoIME));
 
-  EXPECT_EQ(1u, chromeos::input_method::InputMethodManager::Get()
+  EXPECT_EQ(1u, ash::input_method::InputMethodManager::Get()
                     ->GetActiveIMEState()
                     ->GetNumActiveInputMethods());
 }
@@ -2052,7 +2050,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
   EXPECT_EQ(l10n_util::GetLanguage(kPublicSessionLocale),
             icu::Locale::getDefault().getLanguage());
   EXPECT_EQ(public_session_input_method_id_,
-            chromeos::input_method::InputMethodManager::Get()
+            ash::input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()
                 ->GetCurrentInputMethod()
                 .id());
@@ -2072,7 +2070,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
   EXPECT_EQ(l10n_util::GetLanguage(kPublicSessionLocale),
             icu::Locale::getDefault().getLanguage());
   EXPECT_EQ(public_session_input_method_id_,
-            chromeos::input_method::InputMethodManager::Get()
+            ash::input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()
                 ->GetCurrentInputMethod()
                 .id());

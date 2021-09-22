@@ -125,9 +125,9 @@ const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 
 namespace {
 
-using base::UserMetricsAction;
-using chromeos::WindowStateType;
-using chromeos::input_method::InputMethodManager;
+using ::base::UserMetricsAction;
+using ::chromeos::WindowStateType;
+using input_method::InputMethodManager;
 
 // Toast id and duration for Assistant shortcuts.
 constexpr char kAssistantErrorToastId[] = "assistant_error";

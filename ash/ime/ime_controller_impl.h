@@ -87,9 +87,9 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   void SwitchImeById(const std::string& ime_id, bool show_message);
   void ActivateImeMenuItem(const std::string& key);
   void SetCapsLockEnabled(bool caps_enabled);
-  void OverrideKeyboardKeyset(chromeos::input_method::ImeKeyset keyset);
+  void OverrideKeyboardKeyset(input_method::ImeKeyset keyset);
   void OverrideKeyboardKeyset(
-      chromeos::input_method::ImeKeyset keyset,
+      input_method::ImeKeyset keyset,
       ImeControllerClient::OverrideKeyboardKeysetCallback callback);
 
   // Returns true if the switch is allowed and the keystroke should be

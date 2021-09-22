@@ -175,7 +175,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
 
   ime_controller_client_ = std::make_unique<ImeControllerClientImpl>(
-      chromeos::input_method::InputMethodManager::Get());
+      ash::input_method::InputMethodManager::Get());
   ime_controller_client_->Init();
 
   in_session_auth_dialog_client_ =

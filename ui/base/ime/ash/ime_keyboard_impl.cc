@@ -6,7 +6,7 @@
 
 #include "ui/ozone/public/input_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 ImeKeyboardImpl::ImeKeyboardImpl(ui::InputController* input_controller)
@@ -60,4 +60,4 @@ bool ImeKeyboardImpl::CapsLockIsEnabled() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

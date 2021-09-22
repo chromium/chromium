@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // A structure which represents an input method.
@@ -80,15 +80,14 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodDescriptor {
 using InputMethodDescriptors = std::vector<InputMethodDescriptor>;
 
 }  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::InputMethodDescriptor;
-using ::chromeos::input_method::InputMethodDescriptors;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::InputMethodDescriptor;
+using ::ash::input_method::InputMethodDescriptors;
+}  // namespace input_method
+}  // namespace chromeos
 
 #endif  // UI_BASE_IME_ASH_INPUT_METHOD_DESCRIPTOR_H_

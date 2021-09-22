@@ -27,12 +27,6 @@ namespace aura {
 class Window;
 }
 
-namespace chromeos {
-namespace input_method {
-class MockInputMethodManager;
-}  // namespace input_method
-}  // namespace chromeos
-
 namespace display {
 class Display;
 }
@@ -52,6 +46,10 @@ class AmbientAshTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
 class TestWallpaperControllerClient;
+
+namespace input_method {
+class MockInputMethodManager;
+}
 
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
@@ -166,8 +164,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().
-  chromeos::input_method::MockInputMethodManager* input_method_manager_ =
-      nullptr;
+  input_method::MockInputMethodManager* input_method_manager_ = nullptr;
 };
 
 }  // namespace ash

@@ -12,7 +12,7 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 class ImeKeyboard;
 
@@ -145,13 +145,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
   DISALLOW_COPY_AND_ASSIGN(MockInputMethodManager);
 };
 
-}  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::MockInputMethodManager;
 }  // namespace input_method
 }  // namespace ash
 

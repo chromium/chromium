@@ -110,7 +110,7 @@ class AccessibilityManager
       public extensions::api::braille_display_private::BrailleObserver,
       public extensions::ExtensionRegistryObserver,
       public user_manager::UserManager::UserSessionStateObserver,
-      public chromeos::input_method::InputMethodManager::Observer,
+      public input_method::InputMethodManager::Observer,
       public CrasAudioHandler::AudioObserver,
       public ProfileObserver,
       public speech::SodaInstaller::Observer {
@@ -466,7 +466,7 @@ class AccessibilityManager
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
   // InputMethodManager::Observer
-  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+  void InputMethodChanged(input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 

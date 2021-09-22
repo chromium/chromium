@@ -6,7 +6,7 @@
 
 #include "ui/base/ime/ash/ime_keyboard.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 namespace {
 
@@ -111,4 +111,4 @@ bool ImeKeyboard::IsAltGrAvailable() const {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

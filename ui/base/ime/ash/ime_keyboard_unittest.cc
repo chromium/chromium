@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 namespace {
@@ -54,4 +54,4 @@ TEST_F(ImeKeyboardTest, TestObserver) {
 }  // namespace
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

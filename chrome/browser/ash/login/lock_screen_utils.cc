@@ -26,7 +26,7 @@ namespace {
 bool SetUserInputMethodImpl(
     const std::string& user_input_method,
     input_method::InputMethodManager::State* ime_state) {
-  if (!chromeos::input_method::InputMethodManager::Get()->IsLoginKeyboard(
+  if (!input_method::InputMethodManager::Get()->IsLoginKeyboard(
           user_input_method)) {
     LOG(WARNING) << "SetUserInputMethod: stored user last input method '"
                  << user_input_method
@@ -133,8 +133,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method) {
     if (input_method_entry.is_string())
       allowed_input_methods.push_back(input_method_entry.GetString());
   }
-  chromeos::input_method::InputMethodManager* imm =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* imm = input_method::InputMethodManager::Get();
   imm->GetActiveIMEState()->SetAllowedInputMethods(allowed_input_methods, true);
   if (ImeControllerClientImpl::Get())  // Can be null in tests.
     ImeControllerClientImpl::Get()->SetImesManagedByPolicy(true);
@@ -143,8 +142,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method) {
 void StopEnforcingPolicyInputMethods() {
   // Empty means all input methods are allowed
   std::vector<std::string> allowed_input_methods;
-  chromeos::input_method::InputMethodManager* imm =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* imm = input_method::InputMethodManager::Get();
   imm->GetActiveIMEState()->SetAllowedInputMethods(allowed_input_methods, true);
   if (ImeControllerClientImpl::Get())  // Can be null in tests.
     ImeControllerClientImpl::Get()->SetImesManagedByPolicy(false);

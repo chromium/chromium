@@ -17,8 +17,8 @@
 
 namespace arc {
 
-using InputMethodDescriptor = ::chromeos::input_method::InputMethodDescriptor;
-using InputMethodDescriptors = ::chromeos::input_method::InputMethodDescriptors;
+using InputMethodDescriptor = ::ash::input_method::InputMethodDescriptor;
+using InputMethodDescriptors = ::ash::input_method::InputMethodDescriptors;
 
 ArcInputMethodState::ArcInputMethodState(const Delegate* const delegate)
     : delegate_(delegate) {}

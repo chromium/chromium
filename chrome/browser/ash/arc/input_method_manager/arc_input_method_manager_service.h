@@ -35,8 +35,8 @@ class ArcBridgeService;
 class ArcInputMethodManagerService
     : public KeyedService,
       public ArcInputMethodManagerBridge::Delegate,
-      public chromeos::input_method::InputMethodManager::ImeMenuObserver,
-      public chromeos::input_method::InputMethodManager::Observer,
+      public ash::input_method::InputMethodManager::ImeMenuObserver,
+      public ash::input_method::InputMethodManager::Observer,
       public ui::IMEBridgeObserver {
  public:
   class Observer : public base::CheckedObserver {
@@ -79,16 +79,16 @@ class ArcInputMethodManagerService
   void OnImeInfoChanged(std::vector<mojom::ImeInfoPtr> ime_info_array) override;
   void OnConnectionClosed() override;
 
-  // chromeos::input_method::InputMethodManager::ImeMenuObserver overrides:
+  // ash::input_method::InputMethodManager::ImeMenuObserver overrides:
   void ImeMenuListChanged() override;
   void ImeMenuActivationChanged(bool is_active) override {}
   void ImeMenuItemsChanged(
       const std::string& engine_id,
-      const std::vector<chromeos::input_method::InputMethodManager::MenuItem>&
-          items) override {}
+      const std::vector<ash::input_method::InputMethodManager::MenuItem>& items)
+      override {}
 
-  // chromeos::input_method::InputMethodManager::Observer overrides:
-  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+  // ash::input_method::InputMethodManager::Observer overrides:
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 
@@ -113,7 +113,7 @@ class ArcInputMethodManagerService
 
   void EnableIme(const std::string& ime_id, bool enable);
   void SwitchImeTo(const std::string& ime_id);
-  chromeos::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
+  ash::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
       const mojom::ImeInfo* info);
   void Focus(int input_context_id);
   void Blur();

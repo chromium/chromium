@@ -17,11 +17,10 @@
 
 namespace arc {
 
-using ::chromeos::extension_ime_util::GetArcInputMethodID;
-using ::chromeos::input_method::InputMethodDescriptor;
-using ::chromeos::input_method::InputMethodDescriptors;
-
 namespace {
+
+using ::ash::input_method::InputMethodDescriptor;
+using ::ash::input_method::InputMethodDescriptors;
 
 mojom::ImeInfoPtr GenerateImeInfo(const std::string& id,
                                   bool enabled,

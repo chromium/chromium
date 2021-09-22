@@ -38,7 +38,7 @@ class ASH_EXPORT VirtualKeyboardController
 
   // Force enable the keyboard and show it with the given keyset: none, emoji,
   // handwriting or voice. Works even in laptop mode.
-  void ForceShowKeyboardWithKeyset(chromeos::input_method::ImeKeyset keyset);
+  void ForceShowKeyboardWithKeyset(input_method::ImeKeyset keyset);
 
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;

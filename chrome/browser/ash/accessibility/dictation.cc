@@ -55,7 +55,7 @@ std::string GetUserLangOrLocaleFromSystem(Profile* profile) {
   input_method_ids.push_back(
       profile->GetPrefs()->GetString(::prefs::kLanguageCurrentInputMethod));
   std::vector<std::string> languages;
-  chromeos::input_method::InputMethodManager::Get()
+  input_method::InputMethodManager::Get()
       ->GetInputMethodUtil()
       ->GetLanguageCodesFromInputMethodIds(input_method_ids, &languages);
 

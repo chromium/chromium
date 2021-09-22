@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeImeKeyboard : public ImeKeyboard {
@@ -42,13 +42,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeImeKeyboard : public ImeKeyboard {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::FakeImeKeyboard;
-}  // namespace input_method
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::FakeImeKeyboard;
+}
+}  // namespace chromeos
 
 #endif  // UI_BASE_IME_ASH_FAKE_IME_KEYBOARD_H_

@@ -3657,7 +3657,8 @@ class DesksAcceleratorsTest : public DesksTest,
     session->Move(/*reverse=*/false);
   }
 
-  chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
+ private:
+  input_method::FakeImeKeyboard fake_ime_keyboard_;
 };
 
 namespace {

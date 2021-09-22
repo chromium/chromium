@@ -5,7 +5,7 @@
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
 #include "ui/base/ime/text_input_flags.h"
 
-namespace chromeos {
+namespace ash {
 
 MockIMEEngineHandler::MockIMEEngineHandler()
     : focus_in_call_count_(0),
@@ -84,4 +84,4 @@ const std::string& MockIMEEngineHandler::GetActiveComponentId() const {
   return active_component_id_;
 }
 
-} // namespace chromeos
+}  // namespace ash

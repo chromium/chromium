@@ -93,10 +93,9 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
 
   Profile* const profile = GetProfileForActiveUser();
 
-  chromeos::input_method::InputMethodManager* imm =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* imm = ash::input_method::InputMethodManager::Get();
   ASSERT_TRUE(imm);
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       imm->GetActiveIMEState();
   ASSERT_TRUE(ime_state.get());
 

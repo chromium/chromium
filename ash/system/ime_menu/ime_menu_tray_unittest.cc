@@ -324,7 +324,7 @@ TEST_F(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
 
   TestImeControllerClient client;
   Shell::Get()->ime_controller()->SetClient(&client);
-  GetTray()->ShowKeyboardWithKeyset(chromeos::input_method::ImeKeyset::kEmoji);
+  GetTray()->ShowKeyboardWithKeyset(input_method::ImeKeyset::kEmoji);
 
   // The menu should be hidden.
   EXPECT_FALSE(IsBubbleShown());

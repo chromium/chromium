@@ -135,7 +135,7 @@ class SetSurroundingTextVerifier {
 };
 
 class TestInputMethodManager
-    : public chromeos::input_method::MockInputMethodManager {
+    : public ash::input_method::MockInputMethodManager {
   class TestState : public MockInputMethodManager::State {
    public:
     TestState() { Reset(); }
@@ -192,7 +192,7 @@ class TestInputMethodManager
   DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };
 
-class NiceMockIMEEngine : public chromeos::MockIMEEngineHandler {
+class NiceMockIMEEngine : public ash::MockIMEEngineHandler {
  public:
   MOCK_METHOD1(FocusIn, void(const InputContext&));
   MOCK_METHOD0(FocusOut, void());
@@ -218,12 +218,11 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
   void SetUp() override {
     IMEBridge::Initialize();
 
-    mock_ime_engine_handler_ =
-        std::make_unique<chromeos::MockIMEEngineHandler>();
+    mock_ime_engine_handler_ = std::make_unique<ash::MockIMEEngineHandler>();
     IMEBridge::Get()->SetCurrentEngineHandler(mock_ime_engine_handler_.get());
 
     mock_ime_candidate_window_handler_ =
-        std::make_unique<chromeos::MockIMECandidateWindowHandler>();
+        std::make_unique<ash::MockIMECandidateWindowHandler>();
     IMEBridge::Get()->SetCandidateWindowHandler(
         mock_ime_candidate_window_handler_.get());
 
@@ -232,8 +231,7 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
 
     // InputMethodManager owns and delete it in InputMethodManager::Shutdown().
     input_method_manager_ = new TestInputMethodManager();
-    chromeos::input_method::InputMethodManager::Initialize(
-        input_method_manager_);
+    ash::input_method::InputMethodManager::Initialize(input_method_manager_);
   }
 
   void TearDown() override {
@@ -245,7 +243,7 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
     mock_ime_engine_handler_.reset();
     mock_ime_candidate_window_handler_.reset();
     IMEBridge::Shutdown();
-    chromeos::input_method::InputMethodManager::Shutdown();
+    ash::input_method::InputMethodManager::Shutdown();
 
     ResetFlags();
   }
@@ -369,8 +367,8 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
   gfx::Range selection_range_;
   std::u16string surrounding_text_;
 
-  std::unique_ptr<chromeos::MockIMEEngineHandler> mock_ime_engine_handler_;
-  std::unique_ptr<chromeos::MockIMECandidateWindowHandler>
+  std::unique_ptr<ash::MockIMEEngineHandler> mock_ime_engine_handler_;
+  std::unique_ptr<ash::MockIMECandidateWindowHandler>
       mock_ime_candidate_window_handler_;
 
   bool stop_propagation_post_ime_;
@@ -570,11 +568,11 @@ TEST_F(InputMethodAshTest, ExtractCompositionTextTest_NoAttribute) {
   const std::u16string kSampleAsciiText = u"Sample Text";
   const uint32_t kCursorPos = 2UL;
 
-  CompositionText chromeos_composition_text;
-  chromeos_composition_text.text = kSampleAsciiText;
+  CompositionText ash_composition_text;
+  ash_composition_text.text = kSampleAsciiText;
 
   CompositionText composition_text =
-      ime_->ExtractCompositionText(chromeos_composition_text, kCursorPos);
+      ime_->ExtractCompositionText(ash_composition_text, kCursorPos);
   EXPECT_EQ(kSampleAsciiText, composition_text.text);
   // If there is no selection, |selection| represents cursor position.
   EXPECT_EQ(kCursorPos, composition_text.selection.start());
@@ -592,7 +590,7 @@ TEST_F(InputMethodAshTest, ExtractCompositionTextTest_NoAttribute) {
 TEST_F(InputMethodAshTest, ExtractCompositionTextTest_SingleUnderline) {
   const uint32_t kCursorPos = 2UL;
 
-  // Set up chromeos composition text with one underline attribute.
+  // Set up Ash composition text with one underline attribute.
   CompositionText composition_text;
   composition_text.text = kSampleText;
   ImeTextSpan underline(ImeTextSpan::Type::kComposition, 1UL, 4UL,
@@ -624,7 +622,7 @@ TEST_F(InputMethodAshTest, ExtractCompositionTextTest_SingleUnderline) {
 TEST_F(InputMethodAshTest, ExtractCompositionTextTest_DoubleUnderline) {
   const uint32_t kCursorPos = 2UL;
 
-  // Set up chromeos composition text with one underline attribute.
+  // Set up Ash composition text with one underline attribute.
   CompositionText composition_text;
   composition_text.text = kSampleText;
   ImeTextSpan underline(ImeTextSpan::Type::kComposition, 1UL, 4UL,
@@ -656,7 +654,7 @@ TEST_F(InputMethodAshTest, ExtractCompositionTextTest_DoubleUnderline) {
 TEST_F(InputMethodAshTest, ExtractCompositionTextTest_ErrorUnderline) {
   const uint32_t kCursorPos = 2UL;
 
-  // Set up chromeos composition text with one underline attribute.
+  // Set up Ash composition text with one underline attribute.
   CompositionText composition_text;
   composition_text.text = kSampleText;
   ImeTextSpan underline(ImeTextSpan::Type::kComposition, 1UL, 4UL,
@@ -685,7 +683,7 @@ TEST_F(InputMethodAshTest, ExtractCompositionTextTest_ErrorUnderline) {
 TEST_F(InputMethodAshTest, ExtractCompositionTextTest_Selection) {
   const uint32_t kCursorPos = 2UL;
 
-  // Set up chromeos composition text with one underline attribute.
+  // Set up Ash composition text with one underline attribute.
   CompositionText composition_text;
   composition_text.text = kSampleText;
   composition_text.selection.set_start(1UL);
@@ -713,7 +711,7 @@ TEST_F(InputMethodAshTest,
        ExtractCompositionTextTest_SelectionStartWithCursor) {
   const uint32_t kCursorPos = 1UL;
 
-  // Set up chromeos composition text with one underline attribute.
+  // Set up Ash composition text with one underline attribute.
   CompositionText composition_text;
   composition_text.text = kSampleText;
   composition_text.selection.set_start(kCursorPos);
@@ -744,7 +742,7 @@ TEST_F(InputMethodAshTest,
 TEST_F(InputMethodAshTest, ExtractCompositionTextTest_SelectionEndWithCursor) {
   const uint32_t kCursorPos = 4UL;
 
-  // Set up chromeos composition text with one underline attribute.
+  // Set up Ash composition text with one underline attribute.
   CompositionText composition_text;
   composition_text.text = kSampleText;
   composition_text.selection.set_start(1UL);

@@ -11,11 +11,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
-using base::ASCIIToUTF16;
-
-namespace chromeos {
+namespace ash {
 namespace input_method {
 namespace {
+
+using ::base::ASCIIToUTF16;
 
 InputMethodDescriptor CreateDesc(const std::string& id,
                                  const std::string& layout,
@@ -82,4 +82,4 @@ TEST(InputMethodDescriptorTest, GetIndicatorTest) {
 
 }  // namespace
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

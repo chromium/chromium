@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockComponentExtensionIMEManager
     : public ComponentExtensionIMEManager {
@@ -17,6 +17,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockComponentExtensionIMEManager
       override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_MOCK_COMPONENT_EXTENSION_IME_MANAGER_H_

@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
@@ -63,13 +63,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
   GetLocalizedStringCallback get_localized_string_callback_;
 };
 
-}  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::FakeInputMethodDelegate;
 }  // namespace input_method
 }  // namespace ash
 

@@ -15,17 +15,15 @@
 // Connects the ImeController in ash to the InputMethodManagerImpl in chrome.
 class ImeControllerClientImpl
     : public ash::ImeControllerClient,
-      public chromeos::input_method::InputMethodManager::Observer,
-      public chromeos::input_method::InputMethodManager::ImeMenuObserver,
-      public chromeos::input_method::ImeKeyboard::Observer,
+      public ash::input_method::InputMethodManager::Observer,
+      public ash::input_method::InputMethodManager::ImeMenuObserver,
+      public ash::input_method::ImeKeyboard::Observer,
       public ui::ime::InputMethodMenuManager::Observer {
  public:
   explicit ImeControllerClientImpl(
-      chromeos::input_method::InputMethodManager* manager);
-
+      ash::input_method::InputMethodManager* manager);
   ImeControllerClientImpl(const ImeControllerClientImpl&) = delete;
   ImeControllerClientImpl& operator=(const ImeControllerClientImpl&) = delete;
-
   ~ImeControllerClientImpl() override;
 
   // Initializes and connects to ash.
@@ -47,32 +45,32 @@ class ImeControllerClientImpl
   void SetCapsLockEnabled(bool caps_enabled) override;
   void UpdateMirroringState(bool mirroring_enabled) override;
   void UpdateCastingState(bool casting_enabled) override;
-  void OverrideKeyboardKeyset(chromeos::input_method::ImeKeyset keyset,
+  void OverrideKeyboardKeyset(ash::input_method::ImeKeyset keyset,
                               OverrideKeyboardKeysetCallback callback) override;
   void ShowModeIndicator() override;
 
-  // chromeos::input_method::InputMethodManager::Observer:
-  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+  // ash::input_method::InputMethodManager::Observer:
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 
-  // chromeos::input_method::InputMethodManager::ImeMenuObserver:
+  // ash::input_method::InputMethodManager::ImeMenuObserver:
   void ImeMenuActivationChanged(bool is_active) override;
   void ImeMenuListChanged() override;
   void ImeMenuItemsChanged(
       const std::string& engine_id,
-      const std::vector<chromeos::input_method::InputMethodManager::MenuItem>&
-          items) override;
+      const std::vector<ash::input_method::InputMethodManager::MenuItem>& items)
+      override;
 
   // ui::ime::InputMethodMenuManager::Observer:
   void InputMethodMenuItemChanged(
       ui::ime::InputMethodMenuManager* manager) override;
 
-  // chromeos::input_method::ImeKeyboard::Observer:
+  // ash::input_method::ImeKeyboard::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnLayoutChanging(const std::string& layout_name) override;
 
-  // chromeos::input_method::InputMethodManager::Observer
+  // ash::input_method::InputMethodManager::Observer
   void OnExtraInputEnabledStateChange(bool is_extra_input_options_enabled,
                                       bool is_emoji_enabled,
                                       bool is_handwriting_enabled,
@@ -83,12 +81,12 @@ class ImeControllerClientImpl
 
   // Converts IME information from |descriptor| into the ash format.
   ash::ImeInfo GetAshImeInfo(
-      const chromeos::input_method::InputMethodDescriptor& descriptor) const;
+      const ash::input_method::InputMethodDescriptor& descriptor) const;
 
   // Sends information about current and available IMEs to ash.
   void RefreshIme();
 
-  chromeos::input_method::InputMethodManager* const input_method_manager_;
+  ash::input_method::InputMethodManager* const input_method_manager_;
 
   // ImeController in ash.
   ash::ImeController* ime_controller_ = nullptr;

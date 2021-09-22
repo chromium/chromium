@@ -5,7 +5,7 @@
 #ifndef UI_BASE_IME_ASH_IME_KEYSET_H_
 #define UI_BASE_IME_ASH_IME_KEYSET_H_
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // Used by the virtual keyboard to represent different key layouts for
@@ -18,13 +18,6 @@ enum class ImeKeyset {
   kVoice = 3,
 };
 
-}  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::ImeKeyset;
 }  // namespace input_method
 }  // namespace ash
 

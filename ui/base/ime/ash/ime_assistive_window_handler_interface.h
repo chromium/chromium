@@ -12,12 +12,6 @@
 #include "base/component_export.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ash {
-namespace input_method {
-struct AssistiveWindowProperties;
-}  // namespace input_method
-}  // namespace ash
-
 namespace ui {
 namespace ime {
 struct AssistiveWindowButton;
@@ -25,7 +19,10 @@ struct SuggestionDetails;
 }  // namespace ime
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
+namespace input_method {
+struct AssistiveWindowProperties;
+}
 
 // Contains bounds for windows controlled by handler.
 struct Bounds {
@@ -44,7 +41,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEAssistiveWindowHandlerInterface {
 
   // Called when showing/hiding assistive window.
   virtual void SetAssistiveWindowProperties(
-      const ash::input_method::AssistiveWindowProperties& window) {}
+      const input_method::AssistiveWindowProperties& window) {}
 
   virtual void ShowSuggestion(const ui::ime::SuggestionDetails& details) {}
 
@@ -77,12 +74,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEAssistiveWindowHandlerInterface {
   IMEAssistiveWindowHandlerInterface() = default;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::Bounds;
-using ::chromeos::IMEAssistiveWindowHandlerInterface;
 }  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_IME_ASSISTIVE_WINDOW_HANDLER_INTERFACE_H_

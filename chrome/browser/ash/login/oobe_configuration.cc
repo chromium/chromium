@@ -102,8 +102,7 @@ void OobeConfiguration::UpdateConfigurationValues() {
   auto* ime_value = configuration_->FindKeyOfType(configuration::kInputMethod,
                                                   base::Value::Type::STRING);
   if (ime_value) {
-    chromeos::input_method::InputMethodManager* imm =
-        chromeos::input_method::InputMethodManager::Get();
+    auto* imm = input_method::InputMethodManager::Get();
     configuration_->SetKey(
         configuration::kInputMethod,
         base::Value(imm->GetInputMethodUtil()->MigrateInputMethod(

@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 struct AutoRepeatRate {
@@ -99,14 +99,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboard {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::AutoRepeatRate;
-using ::chromeos::input_method::ImeKeyboard;
-}  // namespace input_method
 }  // namespace ash
+
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::AutoRepeatRate;
+}
+}  // namespace chromeos
 
 #endif  // UI_BASE_IME_ASH_IME_KEYBOARD_H_

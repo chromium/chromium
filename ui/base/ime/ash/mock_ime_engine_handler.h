@@ -13,7 +13,7 @@
 #include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/events/event.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
     : public ui::IMEEngineHandlerInterface {
@@ -96,6 +96,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
   std::string active_component_id_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_MOCK_IME_ENGINE_HANDLER_H_

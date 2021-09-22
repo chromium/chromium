@@ -114,8 +114,7 @@ void LanguageSettingsPrivateDelegate::Shutdown() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (listening_input_method_) {
-    auto* input_method_manager =
-        chromeos::input_method::InputMethodManager::Get();
+    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
     if (input_method_manager)
       input_method_manager->RemoveObserver(this);
     listening_input_method_ = false;
@@ -163,7 +162,7 @@ void LanguageSettingsPrivateDelegate::Observe(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void LanguageSettingsPrivateDelegate::InputMethodChanged(
-    chromeos::input_method::InputMethodManager* manager,
+    ash::input_method::InputMethodManager* manager,
     Profile* profile,
     bool show_message) {
   // Nothing to do.
@@ -302,8 +301,7 @@ void LanguageSettingsPrivateDelegate::
       event_router->HasEventListener(
           language_settings_private::OnInputMethodRemoved::kEventName);
 
-  auto* input_method_manager =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* input_method_manager = ash::input_method::InputMethodManager::Get();
   if (input_method_manager) {
     if (should_listen && !listening_input_method_)
       input_method_manager->AddObserver(this);

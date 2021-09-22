@@ -5,7 +5,7 @@
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 MockComponentExtensionIMEManagerDelegate::
@@ -31,4 +31,4 @@ bool MockComponentExtensionIMEManagerDelegate::IsInLoginLayoutAllowlist(
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

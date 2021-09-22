@@ -12,7 +12,7 @@
 #include "ui/base/ime/candidate_window.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMECandidateWindowHandler
     : public IMECandidateWindowHandlerInterface {
@@ -60,11 +60,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMECandidateWindowHandler
   UpdateLookupTableArg last_update_lookup_table_arg_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::MockIMECandidateWindowHandler;
 }  // namespace ash
 
 #endif  // UI_BASE_IME_ASH_MOCK_IME_CANDIDATE_WINDOW_HANDLER_H_

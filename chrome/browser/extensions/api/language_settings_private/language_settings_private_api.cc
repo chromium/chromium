@@ -64,10 +64,10 @@ namespace language_settings_private = api::language_settings_private;
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-using chromeos::input_method::InputMethodDescriptor;
-using chromeos::input_method::InputMethodDescriptors;
-using chromeos::input_method::InputMethodManager;
-using chromeos::input_method::InputMethodUtil;
+using ::ash::input_method::InputMethodDescriptor;
+using ::ash::input_method::InputMethodDescriptors;
+using ::ash::input_method::InputMethodManager;
+using ::ash::input_method::InputMethodUtil;
 
 // Number of IMEs that are needed to automatically enable the IME menu option.
 const size_t kNumImesToAutoEnableImeMenu = 2;
@@ -131,8 +131,7 @@ std::vector<std::string> GetSortedComponentIMEs(
     // Get all input methods for this language.
     std::vector<std::string> input_method_ids;
     manager->GetInputMethodUtil()->GetInputMethodIdsFromLanguageCode(
-        language_code, chromeos::input_method::kAllInputMethods,
-        &input_method_ids);
+        language_code, ash::input_method::kAllInputMethods, &input_method_ids);
     // Append the enabled ones to the new list. Also remove them from the set
     // so they aren't duplicated for other languages.
     for (const auto& input_method_id : input_method_ids) {
@@ -163,7 +162,7 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
 
   // Add the fake language for ARC IMEs at the very last of the list. Unlike
   // Chrome OS IMEs, these ARC ones are not associated with any (real) language.
-  enabled_languages.push_back(chromeos::extension_ime_util::kArcImeLanguage);
+  enabled_languages.push_back(ash::extension_ime_util::kArcImeLanguage);
 
   InputMethodDescriptors descriptors;
   ime_state->GetInputMethodExtensions(&descriptors);
@@ -289,7 +288,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
   // drop-down menu doesn't list the fake language.
   {
     language_settings_private::Language language;
-    language.code = chromeos::extension_ime_util::kArcImeLanguage;
+    language.code = ash::extension_ime_util::kArcImeLanguage;
     language.display_name =
         l10n_util::GetStringUTF8(IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS);
     language_list_->Append(language.ToValue());
@@ -784,7 +783,7 @@ LanguageSettingsPrivateGetInputMethodListsFunction::Run() {
   language_settings_private::InputMethodLists input_method_lists;
   InputMethodManager* manager = InputMethodManager::Get();
 
-  chromeos::ComponentExtensionIMEManager* component_extension_manager =
+  ash::ComponentExtensionIMEManager* component_extension_manager =
       manager->GetComponentExtensionIMEManager();
   PopulateInputMethodListFromDescriptors(
       component_extension_manager->GetAllIMEAsInputMethodDescriptor(),
@@ -827,8 +826,7 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
 
   std::string new_input_method_id = params->input_method_id;
   bool is_component_extension_ime =
-      chromeos::extension_ime_util::IsComponentExtensionIME(
-          new_input_method_id);
+      ash::extension_ime_util::IsComponentExtensionIME(new_input_method_id);
 
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
@@ -902,7 +900,7 @@ LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
 
   std::string input_method_id = params->input_method_id;
   bool is_component_extension_ime =
-      chromeos::extension_ime_util::IsComponentExtensionIME(input_method_id);
+      ash::extension_ime_util::IsComponentExtensionIME(input_method_id);
 
   // Use the pref for the corresponding input method type.
   PrefService* prefs =

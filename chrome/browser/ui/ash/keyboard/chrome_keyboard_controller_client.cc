@@ -248,8 +248,7 @@ GURL ChromeKeyboardControllerClient::GetVirtualKeyboardUrl() {
   if (!virtual_keyboard_url_for_test_.is_empty())
     return virtual_keyboard_url_for_test_;
 
-  chromeos::input_method::InputMethodManager* ime_manager =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* ime_manager = ash::input_method::InputMethodManager::Get();
   if (!ime_manager || !ime_manager->GetActiveIMEState())
     return GURL(keyboard::kKeyboardURL);
 

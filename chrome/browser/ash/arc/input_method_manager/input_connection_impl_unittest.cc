@@ -65,15 +65,13 @@ class DummyInputMethodEngineObserver
 };
 
 class TestInputMethodManager
-    : public chromeos::input_method::MockInputMethodManager {
+    : public ash::input_method::MockInputMethodManager {
  public:
   TestInputMethodManager()
       : state_(base::MakeRefCounted<
-               chromeos::input_method::MockInputMethodManager::State>()) {}
-
+               ash::input_method::MockInputMethodManager::State>()) {}
   TestInputMethodManager(const TestInputMethodManager&) = delete;
   TestInputMethodManager& operator=(const TestInputMethodManager&) = delete;
-
   ~TestInputMethodManager() override = default;
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
@@ -198,7 +196,7 @@ class InputConnectionImplTest : public testing::Test {
 
   void SetUp() override {
     ui::IMEBridge::Initialize();
-    chromeos::input_method::InputMethodManager::Initialize(
+    ash::input_method::InputMethodManager::Initialize(
         new TestInputMethodManager);
     bridge_ = std::make_unique<TestInputMethodManagerBridge>();
     engine_ = std::make_unique<ash::input_method::InputMethodEngine>();
@@ -218,7 +216,7 @@ class InputConnectionImplTest : public testing::Test {
     ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
     engine_.reset();
     bridge_.reset();
-    chromeos::input_method::InputMethodManager::Shutdown();
+    ash::input_method::InputMethodManager::Shutdown();
     ui::IMEBridge::Shutdown();
   }
 

@@ -72,9 +72,8 @@ const char kErrorUpdateMenuItemsFail[] = "Could not update menu items.";
 const char kErrorEngineNotActive[] = "The engine is not active.";
 const char kErrorRouterNotAvailable[] = "The router is not available.";
 
-void SetMenuItemToMenu(
-    const input_ime::MenuItem& input,
-    chromeos::input_method::InputMethodManager::MenuItem* out) {
+void SetMenuItemToMenu(const input_ime::MenuItem& input,
+                       ash::input_method::InputMethodManager::MenuItem* out) {
   out->modified = 0;
   out->id = input.id;
   if (input.label) {
@@ -85,7 +84,7 @@ void SetMenuItemToMenu(
   if (input.style != input_ime::MENU_ITEM_STYLE_NONE) {
     out->modified |= InputMethodEngine::MENU_ITEM_MODIFIED_STYLE;
     out->style =
-        static_cast<chromeos::input_method::InputMethodManager::MenuItemStyle>(
+        static_cast<ash::input_method::InputMethodManager::MenuItemStyle>(
             input.style);
   }
 
@@ -163,7 +162,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
 
   ~ImeObserverChromeOS() override = default;
 
-  // chromeos::InputMethodEngineBase::Observer overrides.
+  // ash::InputMethodEngineBase::Observer overrides.
   void OnCandidateClicked(
       const std::string& component_id,
       int candidate_id,
@@ -379,16 +378,16 @@ class ImeObserverChromeOS : public ui::ImeObserver {
   // lock screen, login screen, etc.) so that its on-screen keyboard page
   // won't open new windows/pages. See crbug.com/395621.
   std::string GetCurrentScreenType() override {
-    switch (chromeos::input_method::InputMethodManager::Get()
+    switch (ash::input_method::InputMethodManager::Get()
                 ->GetActiveIMEState()
                 ->GetUIStyle()) {
-      case chromeos::input_method::InputMethodManager::UIStyle::kLogin:
+      case ash::input_method::InputMethodManager::UIStyle::kLogin:
         return "login";
-      case chromeos::input_method::InputMethodManager::UIStyle::kSecondaryLogin:
+      case ash::input_method::InputMethodManager::UIStyle::kSecondaryLogin:
         return "secondary-login";
-      case chromeos::input_method::InputMethodManager::UIStyle::kLock:
+      case ash::input_method::InputMethodManager::UIStyle::kLock:
         return "lock";
-      case chromeos::input_method::InputMethodManager::UIStyle::kNormal:
+      case ash::input_method::InputMethodManager::UIStyle::kNormal:
         return "normal";
     }
   }
@@ -535,12 +534,11 @@ bool InputImeEventRouter::RegisterImeExtension(
   if (engine_map_[extension_id])
     return false;
 
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
-  chromeos::ComponentExtensionIMEManager* comp_ext_ime_manager =
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  ash::ComponentExtensionIMEManager* comp_ext_ime_manager =
       manager->GetComponentExtensionIMEManager();
 
-  chromeos::input_method::InputMethodDescriptors descriptors;
+  ash::input_method::InputMethodDescriptors descriptors;
   // Only creates descriptors for 3rd party IME extension, because the
   // descriptors for component IME extensions are managed by InputMethodUtil.
   if (!comp_ext_ime_manager->IsAllowlistedExtension(extension_id)) {
@@ -560,9 +558,8 @@ bool InputImeEventRouter::RegisterImeExtension(
       languages.assign(component.languages.begin(), component.languages.end());
 
       const std::string& input_method_id =
-          chromeos::extension_ime_util::GetInputMethodID(extension_id,
-                                                         component.id);
-      descriptors.push_back(chromeos::input_method::InputMethodDescriptor(
+          ash::extension_ime_util::GetInputMethodID(extension_id, component.id);
+      descriptors.push_back(ash::input_method::InputMethodDescriptor(
           input_method_id, component.name,
           std::string(),  // TODO(uekawa): Set short name.
           layout, languages,
@@ -577,12 +574,11 @@ bool InputImeEventRouter::RegisterImeExtension(
   bool is_login = false;
   // When Chrome starts with the Login screen, sometimes active IME State was
   // not set yet. It's asynchronous process. So we need a fallback for that.
-  scoped_refptr<chromeos::input_method::InputMethodManager::State>
-      active_state = chromeos::input_method::InputMethodManager::Get()
-                         ->GetActiveIMEState();
+  scoped_refptr<ash::input_method::InputMethodManager::State> active_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   if (active_state) {
     is_login = active_state->GetUIStyle() ==
-               chromeos::input_method::InputMethodManager::UIStyle::kLogin;
+               ash::input_method::InputMethodManager::UIStyle::kLogin;
   } else {
     is_login = chromeos::ProfileHelper::IsSigninProfile(profile);
   }
@@ -610,7 +606,7 @@ bool InputImeEventRouter::RegisterImeExtension(
 void InputImeEventRouter::UnregisterAllImes(const std::string& extension_id) {
   auto it = engine_map_.find(extension_id);
   if (it != engine_map_.end()) {
-    chromeos::input_method::InputMethodManager::Get()
+    ash::input_method::InputMethodManager::Get()
         ->GetActiveIMEState()
         ->RemoveInputMethodExtension(extension_id);
     engine_map_.erase(it);
@@ -893,7 +889,7 @@ ExtensionFunction::ResponseAction InputImeSetMenuItemsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
-  std::vector<chromeos::input_method::InputMethodManager::MenuItem> items_out;
+  std::vector<ash::input_method::InputMethodManager::MenuItem> items_out;
   for (const input_ime::MenuItem& item_in : params.items) {
     items_out.emplace_back();
     SetMenuItemToMenu(item_in, &items_out.back());
@@ -919,7 +915,7 @@ ExtensionFunction::ResponseAction InputImeUpdateMenuItemsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
-  std::vector<chromeos::input_method::InputMethodManager::MenuItem> items_out;
+  std::vector<ash::input_method::InputMethodManager::MenuItem> items_out;
   for (const input_ime::MenuItem& item_in : params.items) {
     items_out.emplace_back();
     SetMenuItemToMenu(item_in, &items_out.back());
@@ -972,12 +968,12 @@ InputMethodPrivateFinishComposingTextFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateNotifyImeMenuItemActivatedFunction::Run() {
-  chromeos::input_method::InputMethodDescriptor current_input_method =
-      chromeos::input_method::InputMethodManager::Get()
+  ash::input_method::InputMethodDescriptor current_input_method =
+      ash::input_method::InputMethodManager::Get()
           ->GetActiveIMEState()
           ->GetCurrentInputMethod();
   std::string active_extension_id =
-      chromeos::extension_ime_util::GetExtensionIDFromInputMethodID(
+      ash::extension_ime_util::GetExtensionIDFromInputMethodID(
           current_input_method.id());
   std::string error;
   InputMethodEngine* engine =
@@ -1057,9 +1053,8 @@ void InputImeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
       GetInputImeEventRouter(Profile::FromBrowserContext(browser_context));
   if (!event_router)
     return;
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
-  chromeos::ComponentExtensionIMEManager* comp_ext_ime_manager =
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  ash::ComponentExtensionIMEManager* comp_ext_ime_manager =
       manager->GetComponentExtensionIMEManager();
 
   if (comp_ext_ime_manager->IsAllowlistedExtension(extension->id())) {

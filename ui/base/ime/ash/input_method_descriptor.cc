@@ -13,7 +13,7 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 InputMethodDescriptor::InputMethodDescriptor(
@@ -61,4 +61,4 @@ InputMethodDescriptor::InputMethodDescriptor() = default;
 InputMethodDescriptor::~InputMethodDescriptor() = default;
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

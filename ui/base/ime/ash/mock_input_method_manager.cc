@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 MockInputMethodManager::State::State() = default;
@@ -253,4 +253,4 @@ bool MockInputMethodManager::IsKeyboardVisible() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

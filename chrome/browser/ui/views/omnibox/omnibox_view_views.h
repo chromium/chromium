@@ -53,15 +53,15 @@ class OSExchangeData;
 }  // namespace ui
 
 // Views-implementation of OmniboxView.
-class OmniboxViewViews : public OmniboxView,
-                         public views::Textfield,
+class OmniboxViewViews
+    : public OmniboxView,
+      public views::Textfield,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                         public chromeos::input_method::InputMethodManager::
-                             CandidateWindowObserver,
+      public ash::input_method::InputMethodManager::CandidateWindowObserver,
 #endif
-                         public views::TextfieldController,
-                         public ui::CompositorObserver,
-                         public TemplateURLServiceObserver {
+      public views::TextfieldController,
+      public ui::CompositorObserver,
+      public TemplateURLServiceObserver {
  public:
   METADATA_HEADER(OmniboxViewViews);
 
@@ -270,12 +270,12 @@ class OmniboxViewViews : public OmniboxView,
   void ExecuteTextEditCommand(ui::TextEditCommand command) override;
   bool ShouldShowPlaceholderText() const override;
 
-  // chromeos::input_method::InputMethodManager::CandidateWindowObserver:
+  // ash::input_method::InputMethodManager::CandidateWindowObserver:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void CandidateWindowOpened(
-      chromeos::input_method::InputMethodManager* manager) override;
+      ash::input_method::InputMethodManager* manager) override;
   void CandidateWindowClosed(
-      chromeos::input_method::InputMethodManager* manager) override;
+      ash::input_method::InputMethodManager* manager) override;
 #endif
 
   // views::TextfieldController:

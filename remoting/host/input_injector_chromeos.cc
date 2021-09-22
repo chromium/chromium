@@ -79,8 +79,7 @@ bool IsLockKey(ui::DomCode dom_code) {
 
 // If caps_lock is specified, sets local keyboard state to match.
 void SetCapsLockState(bool caps_lock) {
-  chromeos::input_method::InputMethodManager* ime =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* ime = ash::input_method::InputMethodManager::Get();
   ime->GetImeKeyboard()->SetCapsLockEnabled(caps_lock);
 }
 

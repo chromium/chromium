@@ -17,7 +17,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // Represents an engine in component extension IME.
 struct COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionEngine {
@@ -103,14 +103,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManager {
   std::set<std::string> input_method_id_set_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ComponentExtensionEngine;
-using ::chromeos::ComponentExtensionIME;
-using ::chromeos::ComponentExtensionIMEManager;
-using ::chromeos::ComponentExtensionIMEManagerDelegate;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ComponentExtensionEngine;
+using ::ash::ComponentExtensionIME;
+using ::ash::ComponentExtensionIMEManager;
+}  // namespace chromeos
 
 #endif  // UI_BASE_IME_ASH_COMPONENT_EXTENSION_IME_MANAGER_H_

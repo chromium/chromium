@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "ui/base/ime/ash/component_extension_ime_manager_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockComponentExtensionIMEManagerDelegate
@@ -46,13 +46,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockComponentExtensionIMEManagerDelegate
 };
 
 }  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::MockComponentExtensionIMEManagerDelegate;
-}  // namespace input_method
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::MockComponentExtensionIMEManagerDelegate;
+}
+}  // namespace chromeos
 
 #endif  // UI_BASE_IME_ASH_MOCK_COMPONENT_EXTENSION_IME_MANAGER_DELEGATE_H_

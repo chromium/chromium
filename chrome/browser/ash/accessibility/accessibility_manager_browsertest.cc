@@ -46,20 +46,18 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 
-namespace extension_ime_util = chromeos::extension_ime_util;
-using chromeos::input_method::InputMethodDescriptors;
-using chromeos::input_method::InputMethodManager;
-using chromeos::input_method::InputMethodUtil;
-using content::BrowserThread;
-using extensions::api::braille_display_private::BrailleObserver;
-using extensions::api::braille_display_private::DisplayState;
-using extensions::api::braille_display_private::KeyEvent;
-using extensions::api::braille_display_private::MockBrailleController;
-using testing::WithParamInterface;
-
 namespace ash {
 
 namespace {
+
+using ::content::BrowserThread;
+using ::extensions::api::braille_display_private::BrailleObserver;
+using ::extensions::api::braille_display_private::DisplayState;
+using ::extensions::api::braille_display_private::KeyEvent;
+using ::extensions::api::braille_display_private::MockBrailleController;
+using input_method::InputMethodDescriptors;
+using input_method::InputMethodManager;
+using ::testing::WithParamInterface;
 
 // Use a real domain to avoid policy loading problems.
 constexpr char kTestUserName[] = "owner@gmail.com";

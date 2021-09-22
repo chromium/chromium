@@ -188,7 +188,7 @@ class ImeButtonsView : public views::View {
 
   ~ImeButtonsView() override = default;
 
-  void KeysetButtonPressed(chromeos::input_method::ImeKeyset keyset) {
+  void KeysetButtonPressed(input_method::ImeKeyset keyset) {
     // TODO(dcheng): When https://crbug.com/742517 is fixed, Mojo will generate
     // a constant for the number of values in the enum. For now, we just define
     // it here and keep it in sync with the enum.
@@ -227,7 +227,7 @@ class ImeButtonsView : public views::View {
       handwriting_button_ = new SystemMenuButton(
           base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
                               base::Unretained(this),
-                              chromeos::input_method::ImeKeyset::kHandwriting),
+                              input_method::ImeKeyset::kHandwriting),
           kImeMenuWriteIcon, IDS_ASH_STATUS_TRAY_IME_HANDWRITING);
       AddChildView(handwriting_button_);
     }
@@ -236,7 +236,7 @@ class ImeButtonsView : public views::View {
       voice_button_ = new SystemMenuButton(
           base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
                               base::Unretained(this),
-                              chromeos::input_method::ImeKeyset::kVoice),
+                              input_method::ImeKeyset::kVoice),
           kImeMenuMicrophoneIcon, IDS_ASH_STATUS_TRAY_IME_VOICE);
       AddChildView(voice_button_);
     }
@@ -379,8 +379,7 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
   SetIsActive(true);
 }
 
-void ImeMenuTray::ShowKeyboardWithKeyset(
-    chromeos::input_method::ImeKeyset keyset) {
+void ImeMenuTray::ShowKeyboardWithKeyset(input_method::ImeKeyset keyset) {
   CloseBubble();
 
   Shell::Get()
@@ -534,7 +533,7 @@ void ImeMenuTray::UpdateTrayLabel() {
 
   // For ARC IMEs, we use the globe icon instead of the short name of the active
   // IME.
-  if (chromeos::extension_ime_util::IsArcIME(current_ime.id)) {
+  if (extension_ime_util::IsArcIME(current_ime.id)) {
     CreateImageView();
     image_view_->SetImage(gfx::CreateVectorIcon(
         kShelfGlobeIcon,

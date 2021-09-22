@@ -100,12 +100,10 @@
 
 namespace ash {
 
-using ::chromeos::WindowStateType;
-using ::chromeos::input_method::InputMethodManager;
-using ::chromeos::input_method::MockInputMethodManager;
-using media_session::mojom::MediaSessionAction;
-
 namespace {
+
+using ::chromeos::WindowStateType;
+using ::media_session::mojom::MediaSessionAction;
 
 struct PrefToAcceleratorEntry {
   const char* pref_name;

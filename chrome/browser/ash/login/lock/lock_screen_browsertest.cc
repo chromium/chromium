@@ -30,7 +30,7 @@ class LockScreenBaseTest : public LoginManagerTest {
 
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
-    chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->MigrateInputMethods(
         &user_input_methods_);
   }
 
@@ -195,7 +195,7 @@ class LockScreenDevicePolicyInputsTest : public LockScreenBaseTest {
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
         {chromeos::kDeviceLoginScreenInputMethods});
 
-    chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->MigrateInputMethods(
         &allowed_input_method);
   }
 

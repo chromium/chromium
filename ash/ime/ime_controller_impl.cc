@@ -245,13 +245,12 @@ void ImeControllerImpl::SetCapsLockEnabled(bool caps_enabled) {
     client_->SetCapsLockEnabled(caps_enabled);
 }
 
-void ImeControllerImpl::OverrideKeyboardKeyset(
-    chromeos::input_method::ImeKeyset keyset) {
+void ImeControllerImpl::OverrideKeyboardKeyset(input_method::ImeKeyset keyset) {
   OverrideKeyboardKeyset(keyset, base::DoNothing());
 }
 
 void ImeControllerImpl::OverrideKeyboardKeyset(
-    chromeos::input_method::ImeKeyset keyset,
+    input_method::ImeKeyset keyset,
     ImeControllerClient::OverrideKeyboardKeysetCallback callback) {
   if (client_)
     client_->OverrideKeyboardKeyset(keyset, std::move(callback));
@@ -265,7 +264,7 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
     const ui::Accelerator& accelerator) const {
   std::vector<std::string> candidate_ids;
 
-  using chromeos::extension_ime_util::GetInputMethodIDByEngineID;
+  using extension_ime_util::GetInputMethodIDByEngineID;
   std::vector<std::string> input_method_ids_to_switch;
   switch (accelerator.key_code()) {
     case ui::VKEY_CONVERT:  // Henkan key on JP106 keyboard

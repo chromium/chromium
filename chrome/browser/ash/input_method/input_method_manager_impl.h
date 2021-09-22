@@ -147,7 +147,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     bool menu_activated = false;
 
    protected:
-    friend base::RefCounted<chromeos::input_method::InputMethodManager::State>;
+    friend base::RefCounted<input_method::InputMethodManager::State>;
     ~StateImpl() override;
 
    private:

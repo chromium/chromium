@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 namespace {
@@ -41,4 +41,4 @@ void InputMethodManager::Shutdown() {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

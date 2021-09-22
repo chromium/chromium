@@ -4,7 +4,7 @@
 
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 FakeInputMethodDelegate::FakeInputMethodDelegate()
@@ -37,4 +37,4 @@ void FakeInputMethodDelegate::SetHardwareKeyboardLayoutForTesting(
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

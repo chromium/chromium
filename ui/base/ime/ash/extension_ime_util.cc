@@ -8,8 +8,7 @@
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kExtensionIMEPrefix[] = "_ext_ime_";
@@ -179,4 +178,4 @@ bool IsExperimentalMultilingual(const std::string& input_method_id) {
 }
 
 }  // namespace extension_ime_util
-}  // namespace chromeos
+}  // namespace ash

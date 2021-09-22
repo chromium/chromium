@@ -13,7 +13,7 @@
 #include "base/test/simple_test_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 class TypingSessionManagerTest : public testing::Test {
@@ -183,5 +183,4 @@ TEST_F(TypingSessionManagerTest, DoNotRecordTooShortTypingSession) {
 }
 
 }  // namespace
-
-}  // namespace chromeos
+}  // namespace ash

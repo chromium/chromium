@@ -431,26 +431,26 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
-namespace input_method = chromeos::input_method;
+namespace input_method = ::ash::input_method;
 using input_method::InputMethodDescriptor;
 using input_method::InputMethodManager;
 using input_method::MockComponentExtensionIMEManagerDelegate;
 
 std::string GetExtensionImeId() {
-  std::string kExtensionImeId = chromeos::extension_ime_util::GetInputMethodID(
+  std::string kExtensionImeId = ash::extension_ime_util::GetInputMethodID(
       crx_file::id_util::GenerateId("test.extension.ime"), "us");
   return kExtensionImeId;
 }
 
 std::string GetComponentExtensionImeId() {
   std::string kComponentExtensionImeId =
-      chromeos::extension_ime_util::GetComponentInputMethodID(
+      ash::extension_ime_util::GetComponentInputMethodID(
           crx_file::id_util::GenerateId("test.component.extension.ime"), "us");
   return kComponentExtensionImeId;
 }
 
 std::string GetArcImeId() {
-  std::string kArcImeId = chromeos::extension_ime_util::GetArcInputMethodID(
+  std::string kArcImeId = ash::extension_ime_util::GetArcInputMethodID(
       crx_file::id_util::GenerateId("test.arc.ime"), "us");
   return kArcImeId;
 }
@@ -468,10 +468,10 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
       InputMethodDescriptor component_extension_ime(
           GetComponentExtensionImeId(), "ComponentExtensionIme", "", layout,
           {"en-US", "en"}, false /* is_login_keyboard */, GURL(), GURL());
-      InputMethodDescriptor arc_ime(
-          GetArcImeId(), "ArcIme", "", layout,
-          {chromeos::extension_ime_util::kArcImeLanguage},
-          false /* is_login_keyboard */, GURL(), GURL());
+      InputMethodDescriptor arc_ime(GetArcImeId(), "ArcIme", "", layout,
+                                    {ash::extension_ime_util::kArcImeLanguage},
+                                    false /* is_login_keyboard */, GURL(),
+                                    GURL());
       input_methods_ = {extension_ime, component_extension_ime, arc_ime};
     }
 
@@ -492,9 +492,8 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
 
   TestInputMethodManager() : state_(new TestState), util_(&delegate_) {
     util_.AppendInputMethods(state_->input_methods_);
-    component_ext_mgr_ =
-        std::make_unique<chromeos::ComponentExtensionIMEManager>(
-            std::make_unique<MockComponentExtensionIMEManagerDelegate>());
+    component_ext_mgr_ = std::make_unique<ash::ComponentExtensionIMEManager>(
+        std::make_unique<MockComponentExtensionIMEManagerDelegate>());
   }
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
@@ -505,7 +504,7 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
     return &util_;
   }
 
-  chromeos::ComponentExtensionIMEManager* GetComponentExtensionIMEManager()
+  ash::ComponentExtensionIMEManager* GetComponentExtensionIMEManager()
       override {
     return component_ext_mgr_.get();
   }
@@ -514,7 +513,7 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
   scoped_refptr<TestState> state_;
   input_method::FakeInputMethodDelegate delegate_;
   input_method::InputMethodUtil util_;
-  std::unique_ptr<chromeos::ComponentExtensionIMEManager> component_ext_mgr_;
+  std::unique_ptr<ash::ComponentExtensionIMEManager> component_ext_mgr_;
 
   DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };

@@ -363,7 +363,7 @@ class EventRewriterTest : public ChromeAshTestBase {
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
-  chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
+  input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
   DeprecationNotificationController* deprecation_controller_;  // Not owned.
   message_center::FakeMessageCenter message_center_;
@@ -3836,7 +3836,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
 
  private:
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
-  chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
+  input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterChromeOS> rewriter_;
 
   EventBuffer buffer_;
@@ -4635,7 +4635,7 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
 
  protected:
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
+  input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
 
  private:

@@ -32,7 +32,7 @@ constexpr int kShiftLevelFlags[] = {0, ui::EF_SHIFT_DOWN, ui::EF_ALTGR_DOWN,
 
 class KeyboardLayoutMonitorChromeOs
     : public KeyboardLayoutMonitor,
-      public chromeos::input_method::ImeKeyboard::Observer {
+      public ash::input_method::ImeKeyboard::Observer {
  public:
   explicit KeyboardLayoutMonitorChromeOs(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
@@ -41,7 +41,7 @@ class KeyboardLayoutMonitorChromeOs
   // KeyboardLayoutMonitor implementation.
   void Start() override;
 
-  // chromeos::input_method::ImeKeyboard::Observer implementation.
+  // ash::input_method::ImeKeyboard::Observer implementation.
   void OnCapsLockChanged(bool enabled) override;
   void OnLayoutChanging(const std::string& layout_name) override;
 
@@ -59,7 +59,7 @@ KeyboardLayoutMonitorChromeOs::KeyboardLayoutMonitorChromeOs(
     : callback_(callback) {}
 
 KeyboardLayoutMonitorChromeOs::~KeyboardLayoutMonitorChromeOs() {
-  chromeos::input_method::InputMethodManager::Get()
+  ash::input_method::InputMethodManager::Get()
       ->GetImeKeyboard()
       ->RemoveObserver(this);
 }
@@ -67,9 +67,8 @@ KeyboardLayoutMonitorChromeOs::~KeyboardLayoutMonitorChromeOs() {
 void KeyboardLayoutMonitorChromeOs::Start() {
   QueryLayout();
 
-  chromeos::input_method::InputMethodManager::Get()
-      ->GetImeKeyboard()
-      ->AddObserver(this);
+  ash::input_method::InputMethodManager::Get()->GetImeKeyboard()->AddObserver(
+      this);
 }
 
 void KeyboardLayoutMonitorChromeOs::OnCapsLockChanged(bool enabled) {}
@@ -97,7 +96,7 @@ void KeyboardLayoutMonitorChromeOs::QueryLayout() {
   ui::KeyboardLayoutEngine* keyboard_layout_engine =
       ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
 
-  bool has_alt_gr = chromeos::input_method::InputMethodManager::Get()
+  bool has_alt_gr = ash::input_method::InputMethodManager::Get()
                         ->GetImeKeyboard()
                         ->IsAltGrAvailable();
   int shift_levels = has_alt_gr ? 4 : 2;

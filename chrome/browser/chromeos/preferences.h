@@ -38,10 +38,6 @@ namespace chromeos {
 
 class User;
 
-namespace input_method {
-class InputMethodManager;
-}  // namespace input_method
-
 // The Preferences class handles Chrome OS preferences. When the class
 // is first initialized, it will initialize the OS settings to what's stored in
 // the preferences. These include touchpad settings, etc.

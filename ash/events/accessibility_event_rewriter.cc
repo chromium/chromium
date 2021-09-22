@@ -329,7 +329,7 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
 }
 
 void AccessibilityEventRewriter::InputMethodChanged(
-    chromeos::input_method::InputMethodManager* manager,
+    input_method::InputMethodManager* manager,
     Profile* profile,
     bool show_message) {
   try_rewriting_positional_keys_for_chromevox_ =

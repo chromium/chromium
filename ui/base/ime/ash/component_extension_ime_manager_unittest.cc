@@ -12,9 +12,8 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
-
 namespace {
 
 class ComponentExtensionIMEManagerTest : public testing::Test {
@@ -203,6 +202,5 @@ TEST_F(ComponentExtensionIMEManagerTest, GetAllIMEAsInputMethodDescriptor) {
 }
 
 }  // namespace
-
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

@@ -197,7 +197,7 @@ void InputDataProvider::GetKeyboardVisualLayout(
   } else {
     // External keyboards generally don't tell us what layout they have, so
     // assume the layout the user has currently selected.
-    layout_name = chromeos::input_method::InputMethodManager::Get()
+    layout_name = input_method::InputMethodManager::Get()
                       ->GetActiveIMEState()
                       ->GetCurrentInputMethod()
                       .keyboard_layout();

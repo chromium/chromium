@@ -83,24 +83,24 @@ class IMEBridgeImpl : public IMEBridge {
 
   // IMEBridge override.
   void SetCandidateWindowHandler(
-      chromeos::IMECandidateWindowHandlerInterface* handler) override {
+      ash::IMECandidateWindowHandlerInterface* handler) override {
     candidate_window_handler_ = handler;
   }
 
   // IMEBridge override.
-  chromeos::IMECandidateWindowHandlerInterface* GetCandidateWindowHandler()
+  ash::IMECandidateWindowHandlerInterface* GetCandidateWindowHandler()
       const override {
     return candidate_window_handler_;
   }
 
   // IMEBridge override.
   void SetAssistiveWindowHandler(
-      chromeos::IMEAssistiveWindowHandlerInterface* handler) override {
+      ash::IMEAssistiveWindowHandlerInterface* handler) override {
     assistive_window_handler_ = handler;
   }
 
   // IMEBridge override.
-  chromeos::IMEAssistiveWindowHandlerInterface* GetAssistiveWindowHandler()
+  ash::IMEAssistiveWindowHandlerInterface* GetAssistiveWindowHandler()
       const override {
     return assistive_window_handler_;
   }
@@ -111,10 +111,8 @@ class IMEBridgeImpl : public IMEBridge {
   base::ObserverList<IMEBridgeObserver> observers_;
   IMEEngineHandlerInterface::InputContext current_input_context_;
 
-  chromeos::IMECandidateWindowHandlerInterface* candidate_window_handler_ =
-      nullptr;
-  chromeos::IMEAssistiveWindowHandlerInterface* assistive_window_handler_ =
-      nullptr;
+  ash::IMECandidateWindowHandlerInterface* candidate_window_handler_ = nullptr;
+  ash::IMEAssistiveWindowHandlerInterface* assistive_window_handler_ = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

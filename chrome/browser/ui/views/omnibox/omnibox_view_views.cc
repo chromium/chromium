@@ -192,8 +192,8 @@ OmniboxViewViews::OmniboxViewViews(OmniboxEditController* controller,
 
 OmniboxViewViews::~OmniboxViewViews() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::input_method::InputMethodManager::Get()->
-      RemoveCandidateWindowObserver(this);
+  ash::input_method::InputMethodManager::Get()->RemoveCandidateWindowObserver(
+      this);
 #endif
 
   // Explicitly teardown members which have a reference to us.  Just to be safe
@@ -228,8 +228,8 @@ void OmniboxViewViews::Init() {
   SetBorder(views::CreateEmptyBorder(kTextfieldInsets));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::input_method::InputMethodManager::Get()->
-      AddCandidateWindowObserver(this);
+  ash::input_method::InputMethodManager::Get()->AddCandidateWindowObserver(
+      this);
 #endif
 }
 
@@ -1525,12 +1525,12 @@ bool OmniboxViewViews::ShouldShowPlaceholderText() const {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void OmniboxViewViews::CandidateWindowOpened(
-      chromeos::input_method::InputMethodManager* manager) {
+    ash::input_method::InputMethodManager* manager) {
   ime_candidate_window_open_ = true;
 }
 
 void OmniboxViewViews::CandidateWindowClosed(
-      chromeos::input_method::InputMethodManager* manager) {
+    ash::input_method::InputMethodManager* manager) {
   ime_candidate_window_open_ = false;
 }
 #endif

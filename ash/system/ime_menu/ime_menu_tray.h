@@ -43,7 +43,7 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
 
   // Shows the virtual keyboard with the given keyset: emoji, handwriting or
   // voice.
-  void ShowKeyboardWithKeyset(chromeos::input_method::ImeKeyset keyset);
+  void ShowKeyboardWithKeyset(input_method::ImeKeyset keyset);
 
   // Returns true if the menu should show emoji, handwriting and voice buttons
   // on the bottom. Otherwise, the menu will show a 'Customize...' bottom row

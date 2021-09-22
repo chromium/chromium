@@ -73,18 +73,18 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
 
   // Returns current CandidateWindowHandler. This function returns nullptr if
   // current candidate window is not ready to use.
-  virtual chromeos::IMECandidateWindowHandlerInterface*
-  GetCandidateWindowHandler() const = 0;
+  virtual ash::IMECandidateWindowHandlerInterface* GetCandidateWindowHandler()
+      const = 0;
 
   // Updates current CandidatWindowHandler. If there is no active candidate
   // window service, pass nullptr for |handler|. Caller must release |handler|.
   virtual void SetCandidateWindowHandler(
-      chromeos::IMECandidateWindowHandlerInterface* handler) = 0;
+      ash::IMECandidateWindowHandlerInterface* handler) = 0;
 
-  virtual chromeos::IMEAssistiveWindowHandlerInterface*
-  GetAssistiveWindowHandler() const = 0;
+  virtual ash::IMEAssistiveWindowHandlerInterface* GetAssistiveWindowHandler()
+      const = 0;
   virtual void SetAssistiveWindowHandler(
-      chromeos::IMEAssistiveWindowHandlerInterface* handler) = 0;
+      ash::IMEAssistiveWindowHandlerInterface* handler) = 0;
 
  protected:
   IMEBridge();

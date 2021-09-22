@@ -13,7 +13,7 @@ namespace ui {
 class InputController;
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // Version of ImeKeyboard used when chrome is run on device.
@@ -41,13 +41,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
   ui::InputController* const input_controller_;
 };
 
-}  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::ImeKeyboardImpl;
 }  // namespace input_method
 }  // namespace ash
 

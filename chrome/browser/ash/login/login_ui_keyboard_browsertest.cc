@@ -53,7 +53,7 @@ constexpr char kTestUser3GaiaId[] = "3333333333";
 
 void Append_en_US_InputMethod(std::vector<std::string>* out) {
   out->push_back("xkb:us::eng");
-  chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(out);
+  input_method::InputMethodManager::Get()->MigrateInputMethods(out);
 }
 
 void Append_en_US_InputMethods(std::vector<std::string>* out) {
@@ -68,7 +68,7 @@ void Append_en_US_InputMethods(std::vector<std::string>* out) {
   out->push_back("xkb:us:colemak:eng");
   out->push_back("xkb:us:workman:eng");
   out->push_back("xkb:us:workman-intl:eng");
-  chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(out);
+  input_method::InputMethodManager::Get()->MigrateInputMethods(out);
 }
 
 }  // anonymous namespace
@@ -87,7 +87,7 @@ class LoginUIKeyboardTest : public LoginManagerTest {
     user_input_methods.push_back("xkb:fr::fra");
     user_input_methods.push_back("xkb:de::ger");
 
-    chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->MigrateInputMethods(
         &user_input_methods);
 
     LoginManagerTest::SetUpOnMainThread();
@@ -241,7 +241,7 @@ class LoginUIKeyboardTestWithUsersAndOwner : public LoginManagerTest {
     user_input_methods.push_back("xkb:de::ger");
     user_input_methods.push_back("xkb:pl::pol");
 
-    chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->MigrateInputMethods(
         &user_input_methods);
 
     scoped_testing_cros_settings_.device_settings()->Set(
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
   ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethods().size(), 1U);
   ASSERT_EQ(imm->GetActiveIMEState()->GetNumActiveInputMethods(), 1U);
 
-  chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+  input_method::InputMethodManager::Get()->MigrateInputMethods(
       &allowed_input_method);
   ASSERT_EQ(imm->GetActiveIMEState()->GetCurrentInputMethod().id(),
             allowed_input_method.front());
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIDevicePolicyUserAdding, PolicyNotHonored) {
 
   std::vector<std::string> allowed_input_method{"xkb:de::ger"};
   SetAllowedInputMethod(allowed_input_method.front());
-  chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+  input_method::InputMethodManager::Get()->MigrateInputMethods(
       &allowed_input_method);
 
   test::ShowUserAddingScreen();

@@ -168,8 +168,7 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
   LoadConfiguration();
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 
-  chromeos::input_method::InputMethodManager* imm =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* imm = input_method::InputMethodManager::Get();
 
   // Configuration specified in TestSwitchLanguageIME.json sets non-default
   // input method fo German (xkb:de:neo:ger) to ensure that input method value

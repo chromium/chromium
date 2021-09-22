@@ -4,7 +4,7 @@
 
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 FakeImeKeyboard::FakeImeKeyboard()
@@ -55,4 +55,4 @@ bool FakeImeKeyboard::IsAltGrAvailable() const {
 }
 
 }  // namespace input_method
-}  // namespace chromeos
+}  // namespace ash

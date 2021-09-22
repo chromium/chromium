@@ -247,7 +247,7 @@ TEST_F(ImeControllerImplTest, SwitchImeWithAccelerator) {
   EXPECT_FALSE(controller->CanSwitchImeWithAccelerator(wide_half_2));
 
   // Install both a test IME and Japanese IMEs.
-  using chromeos::extension_ime_util::GetInputMethodIDByEngineID;
+  using extension_ime_util::GetInputMethodIDByEngineID;
   const std::string nacl_mozc_jp = GetInputMethodIDByEngineID("nacl_mozc_jp");
   const std::string xkb_jp_jpn = GetInputMethodIDByEngineID("xkb:jp::jpn");
   RefreshImes("ime1", {"ime1", nacl_mozc_jp, xkb_jp_jpn});

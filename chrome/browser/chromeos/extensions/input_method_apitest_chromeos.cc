@@ -26,11 +26,11 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
-using chromeos::extension_ime_util::GetInputMethodIDByEngineID;
-using chromeos::input_method::InputMethodDescriptor;
-using chromeos::input_method::InputMethodManager;
-
 namespace {
+
+using ::ash::extension_ime_util::GetInputMethodIDByEngineID;
+using ::ash::input_method::InputMethodDescriptor;
+using ::ash::input_method::InputMethodManager;
 
 const char kLoginScreenUILanguage[] = "fr";
 const char kInitialInputMethodOnLoginScreen[] = "xkb:us::eng";
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
   extension_ime_ids.push_back(kTestIMEID2);
   InputMethodManager::Get()->GetActiveIMEState()->SetEnabledExtensionImes(
       &extension_ime_ids);
-  chromeos::input_method::InputMethodDescriptors extension_imes;
+  ash::input_method::InputMethodDescriptors extension_imes;
   InputMethodManager::Get()->GetActiveIMEState()->GetInputMethodExtensions(
       &extension_imes);
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(

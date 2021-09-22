@@ -17,7 +17,7 @@
 #include "base/threading/thread_checker.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 class InputMethodDelegate;
@@ -199,14 +199,14 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
 };
 
 }  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::InputMethodUtil;
-using ::chromeos::input_method::kKeyboardLayoutsOnly;
-}  // namespace input_method
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace input_method {
+using ::ash::input_method::InputMethodUtil;
+using ::ash::input_method::kKeyboardLayoutsOnly;
+}  // namespace input_method
+}  // namespace chromeos
 
 #endif  // UI_BASE_IME_ASH_INPUT_METHOD_UTIL_H_

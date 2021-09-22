@@ -19,11 +19,11 @@
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 class ImeKeyboard;
-}  // namespace input_method
-}  // namespace chromeos
+}
+}  // namespace ash
 
 namespace ui {
 
@@ -161,11 +161,9 @@ class EventRewriterChromeOS : public EventRewriter {
   EventRewriterChromeOS(Delegate* delegate,
                         EventRewriter* sticky_keys_controller,
                         bool privacy_screen_supported,
-                        ::chromeos::input_method::ImeKeyboard* ime_keyboard);
-
+                        ash::input_method::ImeKeyboard* ime_keyboard);
   EventRewriterChromeOS(const EventRewriterChromeOS&) = delete;
   EventRewriterChromeOS& operator=(const EventRewriterChromeOS&) = delete;
-
   ~EventRewriterChromeOS() override;
 
   // Calls KeyboardDeviceAdded.
@@ -375,7 +373,7 @@ class EventRewriterChromeOS : public EventRewriter {
   int latched_modifier_latches_;
   int used_modifier_latches_;
 
-  ::chromeos::input_method::ImeKeyboard* const ime_keyboard_;
+  ash::input_method::ImeKeyboard* const ime_keyboard_;
 
   // True if alt + key and mouse event remapping is allowed. In some scenario,
   // such as clicking a button in the Alt-Tab UI, this remapping undesirably

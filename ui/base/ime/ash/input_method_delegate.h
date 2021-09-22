@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 
 // Provides access to read/persist Input Method-related properties.
@@ -40,13 +40,6 @@ class InputMethodDelegate {
       const std::string& language_code) const = 0;
 };
 
-}  // namespace input_method
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace input_method {
-using ::chromeos::input_method::InputMethodDelegate;
 }  // namespace input_method
 }  // namespace ash
 

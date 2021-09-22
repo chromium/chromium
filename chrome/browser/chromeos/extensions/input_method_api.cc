@@ -139,8 +139,7 @@ InputMethodPrivateGetInputMethodConfigFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetCurrentInputMethodFunction::Run() {
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* manager = ash::input_method::InputMethodManager::Get();
   return RespondNow(OneArgument(
       base::Value(manager->GetActiveIMEState()->GetCurrentInputMethod().id())));
 }
@@ -150,8 +149,8 @@ InputMethodPrivateSetCurrentInputMethodFunction::Run() {
   std::unique_ptr<SetCurrentInputMethod::Params> params(
       SetCurrentInputMethod::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
-      chromeos::input_method::InputMethodManager::Get()->GetActiveIMEState();
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   const std::vector<std::string>& input_methods =
       ime_state->GetActiveInputMethodIds();
   for (size_t i = 0; i < input_methods.size(); ++i) {
@@ -171,15 +170,14 @@ InputMethodPrivateSetCurrentInputMethodFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetInputMethodsFunction::Run() {
   std::unique_ptr<base::ListValue> output(new base::ListValue());
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
-  chromeos::input_method::InputMethodUtil* util = manager->GetInputMethodUtil();
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  ash::input_method::InputMethodUtil* util = manager->GetInputMethodUtil();
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       manager->GetActiveIMEState();
-  std::unique_ptr<chromeos::input_method::InputMethodDescriptors>
-      input_methods = ime_state->GetActiveInputMethods();
+  std::unique_ptr<ash::input_method::InputMethodDescriptors> input_methods =
+      ime_state->GetActiveInputMethods();
   for (size_t i = 0; i < input_methods->size(); ++i) {
-    const chromeos::input_method::InputMethodDescriptor& input_method =
+    const ash::input_method::InputMethodDescriptor& input_method =
         (*input_methods)[i];
     auto val = std::make_unique<base::DictionaryValue>();
     val->SetString("id", input_method.id());
@@ -263,9 +261,8 @@ InputMethodPrivateSetXkbLayoutFunction::Run() {
   std::unique_ptr<SetXkbLayout::Params> params(
       SetXkbLayout::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  chromeos::input_method::InputMethodManager* manager =
-      chromeos::input_method::InputMethodManager::Get();
-  chromeos::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  ash::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
   keyboard->SetCurrentKeyboardLayoutByName(params->xkb_name);
   return RespondNow(NoArguments());
 }
@@ -297,9 +294,9 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
   std::unique_ptr<OpenOptionsPage::Params> params(
       OpenOptionsPage::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> ime_state =
-      chromeos::input_method::InputMethodManager::Get()->GetActiveIMEState();
-  const chromeos::input_method::InputMethodDescriptor* ime =
+  scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
+  const ash::input_method::InputMethodDescriptor* ime =
       ime_state->GetInputMethodFromId(params->input_method_id);
   if (!ime)
     return RespondNow(Error(InformativeError(
@@ -659,7 +656,7 @@ InputMethodAPI::~InputMethodAPI() {
 // static
 std::string InputMethodAPI::GetInputMethodForXkb(const std::string& xkb_id) {
   std::string xkb_prefix =
-      chromeos::extension_ime_util::GetInputMethodIDByEngineID(kXkbPrefix);
+      ash::extension_ime_util::GetInputMethodIDByEngineID(kXkbPrefix);
   size_t prefix_length = xkb_prefix.length();
   DCHECK(xkb_id.substr(0, prefix_length) == xkb_prefix);
   return xkb_id.substr(prefix_length);

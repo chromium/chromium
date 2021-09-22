@@ -4,7 +4,7 @@
 
 #include "ui/base/ime/ash/mock_ime_candidate_window_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 MockIMECandidateWindowHandler::MockIMECandidateWindowHandler()
     : set_cursor_bounds_call_count_(0),
@@ -41,4 +41,4 @@ void MockIMECandidateWindowHandler::Reset() {
   update_lookup_table_call_count_ = 0;
 }
 
-}  // namespace chromeos
+}  // namespace ash

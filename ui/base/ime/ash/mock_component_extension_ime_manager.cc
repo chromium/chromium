@@ -4,11 +4,11 @@
 
 #include "ui/base/ime/ash/mock_component_extension_ime_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 input_method::InputMethodDescriptors
 MockComponentExtensionIMEManager::GetXkbIMEAsInputMethodDescriptor() {
   return input_method::InputMethodDescriptors();
 }
 
-}  // namespace chromeos
+}  // namespace ash
