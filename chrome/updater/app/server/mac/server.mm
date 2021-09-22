@@ -56,7 +56,9 @@ void AppServerMac::ActiveDutyInternal(
                                 appServer:scoped_refptr<AppServerMac>(this)]);
 
     update_service_internal_listener_.reset([[NSXPCListener alloc]
-        initWithMachServiceName:GetUpdateServiceInternalMachName().get()]);
+        initWithMachServiceName:GetUpdateServiceInternalMachName(
+                                    updater_scope())
+                                    .get()]);
     update_service_internal_listener_.get().delegate =
         update_service_internal_delegate_.get();
 
@@ -74,7 +76,8 @@ void AppServerMac::ActiveDuty(scoped_refptr<UpdateService> update_service) {
                     appServer:scoped_refptr<AppServerMac>(this)]);
 
     update_check_listener_.reset([[NSXPCListener alloc]
-        initWithMachServiceName:GetUpdateServiceMachName().get()]);
+        initWithMachServiceName:GetUpdateServiceMachName(updater_scope())
+                                    .get()]);
     update_check_listener_.get().delegate = update_check_delegate_.get();
 
     [update_check_listener_ resume];

@@ -27,7 +27,8 @@ void SetupDone(base::OnceCallback<void(int)> callback,
     return;
   }
   PollLaunchctlList(
-      scope, GetUpdateServiceInternalLaunchdName(), LaunchctlPresence::kPresent,
+      scope, GetUpdateServiceInternalLaunchdName(scope),
+      LaunchctlPresence::kPresent,
       base::TimeDelta::FromSeconds(kWaitForLaunchctlUpdateSec),
       base::BindOnce(
           [](base::OnceCallback<void(int)> callback, bool service_exists) {

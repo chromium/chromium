@@ -30,7 +30,7 @@ using base::SysUTF8ToNSString;
 // Interface to communicate with the XPC Updater Service.
 @interface CRUUpdateServiceProxyImpl : NSObject <CRUUpdateServicing>
 
-- (instancetype)initPrivileged;
+- (instancetype)initWithScope:(updater::UpdaterScope)scope;
 
 @end
 
@@ -38,18 +38,22 @@ using base::SysUTF8ToNSString;
   base::scoped_nsobject<NSXPCConnection> _updateCheckXPCConnection;
 }
 
-- (instancetype)init {
-  return [self initWithConnectionOptions:0];
+- (instancetype)initWithScope:(updater::UpdaterScope)scope {
+  switch (scope) {
+    case updater::UpdaterScope::kUser:
+      return [self initWithConnectionOptions:0 withScope:scope];
+    case updater::UpdaterScope::kSystem:
+      return [self initWithConnectionOptions:NSXPCConnectionPrivileged
+                                   withScope:scope];
+  }
+  return nil;
 }
 
-- (instancetype)initPrivileged {
-  return [self initWithConnectionOptions:NSXPCConnectionPrivileged];
-}
-
-- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options {
+- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options
+                                withScope:(updater::UpdaterScope)scope {
   if ((self = [super init])) {
     _updateCheckXPCConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:updater::GetUpdateServiceMachName().get()
+        initWithMachServiceName:updater::GetUpdateServiceMachName(scope).get()
                         options:options]);
 
     _updateCheckXPCConnection.get().remoteObjectInterface =
@@ -155,14 +159,7 @@ using base::SysUTF8ToNSString;
 namespace updater {
 
 UpdateServiceProxy::UpdateServiceProxy(UpdaterScope scope) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      client_.reset([[CRUUpdateServiceProxyImpl alloc] initPrivileged]);
-      break;
-    case UpdaterScope::kUser:
-      client_.reset([[CRUUpdateServiceProxyImpl alloc] init]);
-      break;
-  }
+  client_.reset([[CRUUpdateServiceProxyImpl alloc] initWithScope:scope]);
   callback_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
 

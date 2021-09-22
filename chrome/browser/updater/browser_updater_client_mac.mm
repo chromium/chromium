@@ -52,13 +52,14 @@ NSString* GetAppIdForUpdaterAsNSString() {
   if (scope == updater::UpdaterScope::kSystem) {
     options = NSXPCConnectionPrivileged;
   }
-  return [self initWithConnectionOptions:options];
+  return [self initWithConnectionOptions:options withScope:scope];
 }
 
-- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options {
+- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options
+                                withScope:(updater::UpdaterScope)scope {
   if (self = [super init]) {
     _xpcConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:updater::GetUpdateServiceMachName()
+        initWithMachServiceName:updater::GetUpdateServiceMachName(scope)
                         options:options]);
 
     _xpcConnection.get().remoteObjectInterface =
