@@ -152,6 +152,7 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
 // where label is one of the following:
 //   ethernet_adapter
 //   wireless_adapter
+//   gpu
 void PopulateBusDevicesInfo(std::string* log,
                             const base::StringPiece prefix,
                             const std::vector<healthd::BusDevicePtr>& devices) {
@@ -206,6 +207,7 @@ void PopulateBusDevicesInfo(std::string* log, const TelemetryInfoPtr& info) {
 
   std::vector<healthd::BusDevicePtr> ethernet_devices;
   std::vector<healthd::BusDevicePtr> wireless_devices;
+  std::vector<healthd::BusDevicePtr> gpu_devices;
   for (auto& device : bus_devices) {
     switch (device->device_class) {
       case healthd::BusDeviceClass::kEthernetController:
@@ -214,12 +216,16 @@ void PopulateBusDevicesInfo(std::string* log, const TelemetryInfoPtr& info) {
       case healthd::BusDeviceClass::kWirelessController:
         wireless_devices.push_back(std::move(device));
         break;
+      case healthd::BusDeviceClass::kDisplayController:
+        gpu_devices.push_back(std::move(device));
+        break;
       default:
         break;
     }
   }
   PopulateBusDevicesInfo(log, "ethernet_adapter", ethernet_devices);
   PopulateBusDevicesInfo(log, "wireless_adapter", wireless_devices);
+  PopulateBusDevicesInfo(log, "gpu", gpu_devices);
 }
 
 void PopulateTpmInfo(std::string* log, const TelemetryInfoPtr& info) {

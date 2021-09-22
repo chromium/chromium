@@ -176,6 +176,16 @@ void SetPciWirelessDevices(healthd::TelemetryInfoPtr& telemetry_info) {
       healthd::BusResult::NewBusDevices(std::move(bus_devices));
 }
 
+void SetPciDisplayDevices(healthd::TelemetryInfoPtr& telemetry_info) {
+  std::vector<healthd::BusDevicePtr> bus_devices;
+  bus_devices.push_back(
+      CreatePciDevice(healthd::BusDeviceClass::kDisplayController, "intel",
+                      "945GM", "driver1", 0x12ab, 0x34cd));
+
+  telemetry_info->bus_result =
+      healthd::BusResult::NewBusDevices(std::move(bus_devices));
+}
+
 healthd::BusDevicePtr CreateUsbDevice(healthd::BusDeviceClass device_class,
                                       const std::string& vendor_name,
                                       const std::string& product_name,
@@ -221,6 +231,15 @@ void SetUsbWirelessDevices(healthd::TelemetryInfoPtr& telemetry_info) {
       CreateUsbDevice(healthd::BusDeviceClass::kWirelessController, "broadcom",
                       "wireless_product2", "", 0x56ab, 0x78cd));
 
+  telemetry_info->bus_result =
+      healthd::BusResult::NewBusDevices(std::move(bus_devices));
+}
+
+void SetUsbDisplayDevices(healthd::TelemetryInfoPtr& telemetry_info) {
+  std::vector<healthd::BusDevicePtr> bus_devices;
+  bus_devices.push_back(
+      CreateUsbDevice(healthd::BusDeviceClass::kDisplayController, "intel",
+                      "product1", "driver1", 0x12ab, 0x34cd));
   telemetry_info->bus_result =
       healthd::BusResult::NewBusDevices(std::move(bus_devices));
 }
@@ -579,6 +598,24 @@ TEST_F(RevenLogSourceTest, PciWirelessDevices) {
               HasSubstr("\n  wireless_adapter_driver: \n"));
 }
 
+TEST_F(RevenLogSourceTest, PciGpuInfo) {
+  auto info = healthd::TelemetryInfo::New();
+  SetPciDisplayDevices(info);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("gpu_info:"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  gpu_name: intel 945GM"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  gpu_id: 12ab:34cd"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  gpu_bus: pci"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  gpu_driver: driver1"));
+}
+
 TEST_F(RevenLogSourceTest, UsbEthernetDevices) {
   auto info = healthd::TelemetryInfo::New();
   SetUsbEthernetDevices(info);
@@ -640,6 +677,24 @@ TEST_F(RevenLogSourceTest, UsbWirelessDevices) {
               HasSubstr("\n  wireless_adapter_bus: usb"));
   EXPECT_THAT(revenlog_iter->second,
               HasSubstr("\n  wireless_adapter_driver: \n"));
+}
+
+TEST_F(RevenLogSourceTest, UsbGpuInfo) {
+  auto info = healthd::TelemetryInfo::New();
+  SetUsbDisplayDevices(info);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("gpu_info:"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  gpu_name: intel product1"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  gpu_id: 12ab:34cd"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  gpu_bus: usb"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  gpu_driver: driver1"));
 }
 
 TEST_F(RevenLogSourceTest, TpmInfoVersion_1_2WithDidVid_Owned_Allowed) {
