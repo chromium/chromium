@@ -67,7 +67,7 @@ suite(system_dialog_browsertest.suiteName, function() {
           assertEquals('FooDevice', page.destination_.id);
           link = isWindows ? linkContainer.$.systemDialogLink :
                              linkContainer.$.openPdfInPreviewLink;
-          printTicketKey = isWindows ? 'showSystemDialog' : 'OpenPDFInPreview';
+          printTicketKey = isWindows ? 'showSystemDialog' : 'openPDFInPreview';
         });
   });
 

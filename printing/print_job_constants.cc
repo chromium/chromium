@@ -209,7 +209,7 @@ const int FIRST_PAGE_INDEX = 0;
 const int COMPLETE_PREVIEW_DOCUMENT_INDEX = -1;
 
 // Whether to show PDF in view provided by OS. Implemented for MacOS only.
-const char kSettingOpenPDFInPreview[] = "OpenPDFInPreview";
+const char kSettingOpenPDFInPreview[] = "openPDFInPreview";
 
 const uint32_t kInvalidPageIndex = std::numeric_limits<int>::max();
 const uint32_t kMaxPageCount = std::numeric_limits<int>::max();

@@ -114,6 +114,41 @@ type CloudJobTicket = {
   print: CloudJobTicketPrint,
 };
 
+type PrintTicket = {
+  collate: boolean,
+  color: number,
+  copies: number,
+  deviceName: string,
+  dpiDefault: boolean,
+  dpiHorizontal: number,
+  dpiVertical: number,
+  duplex: DuplexMode,
+  headerFooterEnabled: boolean,
+  landscape: boolean,
+  marginsType: MarginsType,
+  mediaSize: object,
+  pageCount: number,
+  pagesPerSheet: number,
+  pageHeight: number,
+  pageWidth: number,
+  previewModifiable: boolean,
+  printerType: PrinterType,
+  printToGoogleDrive: boolean,
+  rasterizePDF: boolean,
+  scaleFactor: number,
+  scalingType: ScalingType,
+  shouldPrintBackgrounds: boolean,
+  shouldPrintSelectionOnly: boolean,
+  showSystemDialog: boolean,
+  advancedSettings?: object,
+  capabilities?: string,
+  cloudPrintID?: string,
+  marginsCustom?: MarginsSetting,
+  openPDFInPreview?: boolean,
+  pinValue?: string,
+  ticket?: string,
+};
+
 /**
  * Constant values matching printing::DuplexMode enum.
  */
@@ -1488,7 +1523,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     const scalingSettingKey = this.getSetting('scalingTypePdf').available ?
         'scalingTypePdf' :
         'scalingType';
-    const ticket = {
+    const ticket: PrintTicket = {
       mediaSize: this.getSettingValue('mediaSize'),
       pageCount: this.getSettingValue('pages').length,
       landscape: this.getSettingValue('layout'),
@@ -1518,7 +1553,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       pageWidth: this.pageSize.width,
       pageHeight: this.pageSize.height,
       showSystemDialog: showSystemDialog,
-    } as {[key: string]: any};
+    };
     // <if expr="chromeos or lacros">
     ticket['printToGoogleDrive'] = ticket['printToGoogleDrive'] ||
         destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS;
@@ -1530,7 +1565,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
 
     if (openPdfInPreview) {
-      ticket['OpenPDFInPreview'] = openPdfInPreview;
+      ticket['openPDFInPreview'] = openPdfInPreview;
     }
 
     if (this.getSettingValue('margins') === MarginsType.CUSTOM) {
