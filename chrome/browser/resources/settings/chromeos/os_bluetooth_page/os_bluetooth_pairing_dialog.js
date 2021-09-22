@@ -24,7 +24,7 @@ class SettingsBluetoothPairingDialogElement extends PolymerElement {
    * @param {!Event} e
    * @private
    */
-  onCancel_(e) {
+  closeDialog_(e) {
     this.$.dialog.close();
     e.stopPropagation();
   }

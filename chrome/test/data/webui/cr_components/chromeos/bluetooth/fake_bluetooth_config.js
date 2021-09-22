@@ -11,6 +11,7 @@ import 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/
 
 import {stringToMojoString16} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {assertFalse, assertTrue} from '../../../chai_assert.js';
+import {FakeDevicePairingHandler} from './fake_device_pairing_handler.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
@@ -68,10 +69,9 @@ export class FakeBluetoothConfig {
     this.observers_ = [];
 
     /**
-     * @private {!Array<
-     *     !chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface>}
+     * @private {?chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface}
      */
-    this.discoveryDelegates_ = [];
+    this.lastDiscoveryDelegate_ = null;
 
     /**
      * Object containing the device ID and callback for the current connect
@@ -93,6 +93,11 @@ export class FakeBluetoothConfig {
      * @private {?{deviceId: string, callback: function(boolean)}}
      */
     this.pendingForgetRequest_ = null;
+
+    /**
+     * @private {?FakeDevicePairingHandler}
+     */
+    this.lastPairingHandler_ = null;
   }
 
   /**
@@ -112,8 +117,9 @@ export class FakeBluetoothConfig {
    *     delegate
    */
   startDiscovery(delegate) {
-    this.discoveryDelegates_.push(delegate);
+    this.lastDiscoveryDelegate_ = delegate;
     this.notifyDelegatesPropertiesUpdated_();
+    this.notifyDiscoveryStarted_();
   }
 
   /**
@@ -362,7 +368,27 @@ export class FakeBluetoothConfig {
    * Notifies the delegates list that discoveredDevices_ has changed.
    */
   notifyDelegatesPropertiesUpdated_() {
-    this.discoveryDelegates_.forEach(
-        d => d.onDiscoveredDevicesListChanged([...this.discoveredDevices_]));
+    this.lastDiscoveryDelegate_.onDiscoveredDevicesListChanged(
+        [...this.discoveredDevices_]);
+  }
+
+  /**
+   * @private
+   * Notifies the delegates list that device discovery has started.
+   */
+  notifyDiscoveryStarted_() {
+    this.lastPairingHandler_ = new FakeDevicePairingHandler();
+    const devicePairingHandlerReciever =
+        new chromeos.bluetoothConfig.mojom.DevicePairingHandlerReceiver(
+            this.lastPairingHandler_);
+    this.lastDiscoveryDelegate_.onBluetoothDiscoveryStarted(
+        devicePairingHandlerReciever.$.bindNewPipeAndPassRemote());
+  }
+
+  /**
+   * @return {?FakeDevicePairingHandler}
+   */
+  getLastCreatedPairingHandler() {
+    return this.lastPairingHandler_;
   }
 }

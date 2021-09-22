@@ -6,12 +6,14 @@
   }
 </style>
 <template is="dom-if" if="[[!isBluetoothRevampEnabled_]]" restamp>
-  <bluetooth-dialog id="deviceDialog" no-cancel on-close="onDialogClose_"
+  <bluetooth-dialog id="deviceDialog" no-cancel on-close="closeDialog_"
       pairing-device="[[pairingDevice_]]"
       dialog-title="$i18n{bluetoothPairDeviceTitle}">
   </bluetooth-dialog>
 </template>
 <template is="dom-if" if="[[isBluetoothRevampEnabled_]]" restamp>
-  <bluetooth-pairing-ui on-cancel="onDialogClose_">
+  <!-- TODO(crbug.com/1010321): Unify on-cancel and on-finished flows
+    into on-finished. -->
+  <bluetooth-pairing-ui on-cancel="closeDialog_" on-finished="closeDialog_">
   </bluetooth-pairing-ui>
 </template>

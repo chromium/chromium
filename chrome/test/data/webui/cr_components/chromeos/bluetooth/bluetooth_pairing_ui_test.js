@@ -9,6 +9,7 @@ import {SettingsBluetoothPairingUiElement} from 'chrome://resources/cr_component
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
+import {eventToPromise} from '../../../test_util.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from './fake_bluetooth_config.js';
 // clang-format on
 
@@ -56,5 +57,80 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await flushAsync();
     assertTrue(!!deviceSelectionPage.devices);
     assertEquals(1, deviceSelectionPage.devices.length);
+  });
+
+  test('finished event fired on succesful device pair', async function() {
+    const id = '12//345&6789';
+    const deviceSelectionPage =
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
+    assertTrue(!!deviceSelectionPage);
+    let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+
+    const device = createDefaultBluetoothDevice(
+        id,
+        /*publicName=*/ 'BeatsX',
+        /*connected=*/ true,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
+
+    await flushAsync();
+    const event = new CustomEvent('pair-device', {detail: {deviceId: id}});
+    deviceSelectionPage.dispatchEvent(event);
+    await flushAsync();
+
+    const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    deviceHandler.completePairDevice(/*success=*/ true);
+    await finishedPromise;
+  });
+
+  test('Only one device is paired at a time', async function() {
+    const deviceSelectionPage =
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '123456',
+        /*publicName=*/ 'BeatsX',
+        /*connected=*/ true,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    const device1 = createDefaultBluetoothDevice(
+        /*id=*/ '12345654321',
+        /*publicName=*/ 'Head phones',
+        /*connected=*/ true,
+        /*opt_nickname=*/ 'device 2',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    bluetoothConfig.appendToDiscoveredDeviceList(
+        [device.deviceProperties, device1.deviceProperties]);
+    await flushAsync();
+    const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+
+    assertEquals(deviceHandler.getPairDeviceCalledCount(), 0);
+
+    let event = new CustomEvent(
+        'pair-device', {detail: {deviceId: device.deviceProperties.id}});
+    deviceSelectionPage.dispatchEvent(event);
+    await flushAsync();
+
+    // Complete pairing to |device|.
+    deviceHandler.completePairDevice(/*success=*/ false);
+    await flushAsync();
+
+    await flushAsync();
+    event = new CustomEvent(
+        'pair-device', {detail: {deviceId: device.deviceProperties.id}});
+    deviceSelectionPage.dispatchEvent(event);
+    await flushAsync();
+
+    // pairDevice() should be called twice.
+    assertEquals(deviceHandler.getPairDeviceCalledCount(), 2);
   });
 });

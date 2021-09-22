@@ -88,7 +88,7 @@ Polymer({
   },
 
   /** @private */
-  onDialogClose_() {
+  closeDialog_() {
     chrome.send('dialogClose');
   },
 });

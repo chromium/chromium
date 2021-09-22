@@ -12,6 +12,7 @@ import './bluetooth_base_page.js';
 import './bluetooth_pairing_device_selection_page.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '../../../js/assert.m.js';
 import {getBluetoothConfig} from './cros_bluetooth_config.js';
 
 /** @enum {string} */
@@ -22,6 +23,7 @@ const BluetoothPairingSubpageId = {
 
 /**
  * @implements {chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface}
+ * @implements {chromeos.bluetoothConfig.mojom.DevicePairingDelegateInterface}
  * @polymer
  */
 export class SettingsBluetoothPairingUiElement extends PolymerElement {
@@ -50,7 +52,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       discoveredDevices_: {
         type: Array,
         value: [],
-      }
+      },
     };
   }
 
@@ -62,6 +64,16 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.bluetoothDiscoveryDelegateReceiver_ =
         new chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateReceiver(
             this);
+
+    /**
+     * @private {?chromeos.bluetoothConfig.mojom.DevicePairingHandlerInterface}
+     */
+    this.devicePairingHandler_;
+
+    /**
+     * @private {?chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver}
+     */
+    this.pairingDelegateReceiver_ = null;
   }
 
   ready() {
@@ -70,18 +82,14 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
         this.bluetoothDiscoveryDelegateReceiver_.$.bindNewPipeAndPassRemote());
   }
 
-  /**
-   * @override
-   * @param {Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
-   *     discoveredDevices
-   */
+  /** @override */
   onDiscoveredDevicesListChanged(discoveredDevices) {
     this.discoveredDevices_ = discoveredDevices;
   }
 
   /** @override */
-  onBluetoothDiscoveryStarted() {
-    // TODO(crbug.com/1010321): Implement this function.
+  onBluetoothDiscoveryStarted(handler) {
+    this.devicePairingHandler_ = handler;
   }
 
   /** @override */
@@ -94,7 +102,73 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    * @private
    */
   onPairDevice_(event) {
-    // TODO(crbug.com/1010321): Implement this function and add test.
+    // Pairing delegate should only be available after call to pair device
+    // is made. This delegate is set to null after pair request is made and
+    // returned, allowing for multiple pairing events in the same discovery
+    // session, but only one pairing event at a time.
+    assert(!this.pairingDelegateReceiver_);
+
+    this.pairingDelegateReceiver_ =
+        new chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver(this);
+    this.devicePairingHandler_
+        .pairDevice(
+            event.detail.deviceId,
+            this.pairingDelegateReceiver_.$.bindNewPipeAndPassRemote())
+        .then(result => {
+          this.handlePairDeviceResult_(result.result);
+        });
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.PairingResult} result
+   * @private
+   */
+  handlePairDeviceResult_(result) {
+    this.pairingDelegateReceiver_ = null;
+
+    if (result === chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
+      this.dispatchEvent(new CustomEvent('finished', {
+        bubbles: true,
+        composed: true,
+      }));
+      return;
+    }
+    // TODO(crbug.com/1010321): Pass pairing result to child elements and add
+    // test for pairing failure.
+  }
+
+  /** @override */
+  async requestPinCode() {
+    // TODO(crbug.com/1010321): Implement this function.
+    return {pinCode: ''};
+  }
+
+  /** @override */
+  async requestPasskey() {
+    // TODO(crbug.com/1010321): Implement this function.
+    return {passkey: ''};
+  }
+
+  /** @override */
+  displayPinCode(pinCode, handler) {
+    // TODO(crbug.com/1010321): Create keyEnterHandler and implement this
+    // function.
+  }
+
+  /** @override */
+  displayPasskey(passkey, handler) {
+    // TODO(crbug.com/1010321): Create keyEnterHandler and implement this
+    // function.
+  }
+
+  /** @override */
+  confirmPasskey(passkey) {
+    // TODO(crbug.com/1010321): Implement this function.
+  }
+
+  /** @override */
+  authorizePairing() {
+    // TODO(crbug.com/1010321): Implement this function.
   }
 }
 
