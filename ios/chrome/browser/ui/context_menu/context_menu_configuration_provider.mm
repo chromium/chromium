@@ -214,9 +214,8 @@ const CGFloat kFaviconWidthHeight = 24;
                 if (!strongSelf)
                   return;
 
-                id<BrowserCommands> handler = HandlerForProtocol(
-                    strongSelf.browser->GetCommandDispatcher(),
-                    BrowserCommands);
+                id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
+                    strongSelf.browser->GetCommandDispatcher());
                 [handler addToReadingList:[[ReadingListAddCommand alloc]
                                               initWithURL:link
                                                     title:innerText]];
@@ -307,10 +306,9 @@ const CGFloat kFaviconWidthHeight = 24;
                                                     inNewTab:YES];
 
                                        id<BrowserCommands> handler =
-                                           HandlerForProtocol(
+                                           static_cast<id<BrowserCommands>>(
                                                strongSelf.browser
-                                                   ->GetCommandDispatcher(),
-                                               BrowserCommands);
+                                                   ->GetCommandDispatcher());
                                        [handler searchByImage:command];
                                      });
                                }];
@@ -552,8 +550,8 @@ const CGFloat kFaviconWidthHeight = 24;
           base::RecordAction(
               base::UserMetricsAction("MobileWebContextMenuReadLater"));
           Record(ACTION_READ_LATER, isImage, isLink);
-          id<BrowserCommands> handler = HandlerForProtocol(
-              strongSelf.browser->GetCommandDispatcher(), BrowserCommands);
+          id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
+              strongSelf.browser->GetCommandDispatcher());
           [handler addToReadingList:[[ReadingListAddCommand alloc]
                                         initWithURL:link
                                               title:innerText]];
@@ -684,8 +682,8 @@ const CGFloat kFaviconWidthHeight = 24;
                         URL:imageUrl
                    inNewTab:YES];
 
-          id<BrowserCommands> handler = HandlerForProtocol(
-              strongSelf.browser->GetCommandDispatcher(), BrowserCommands);
+          id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
+              strongSelf.browser->GetCommandDispatcher());
           [handler searchByImage:command];
         });
       };
