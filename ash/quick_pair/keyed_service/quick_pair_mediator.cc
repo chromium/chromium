@@ -10,6 +10,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
+#include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
@@ -58,6 +59,9 @@ Mediator::Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
       ui_broker_(std::move(ui_broker)),
       fast_pair_repository_(std::move(fast_pair_repository)),
       process_manager_(std::move(process_manager)) {
+  metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
+      scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get());
+
   feature_status_tracker_observation_.Observe(feature_status_tracker_.get());
   scanner_broker_observation_.Observe(scanner_broker_.get());
   pairer_broker_observation_.Observe(pairer_broker_.get());
@@ -67,7 +71,11 @@ Mediator::Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
   quick_pair_process::SetProcessManager(process_manager_.get());
 }
 
-Mediator::~Mediator() = default;
+Mediator::~Mediator() {
+  // The metrics logger must be deleted first because it depends on other
+  // members.
+  metrics_logger_.reset();
+}
 
 void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
   SetFastPairState(is_enabled);

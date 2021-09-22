@@ -187,6 +187,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps"
+    enum="FastPairEngagementFlowEvent" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each step in the Fast Pair flow. Emitted when the discovery UI is
+    shown, the discovery UI is dismissed, pairing progress begins, pairing
+    fails, pairing suceeded, the error UI is dismissed, and/or when the setting
+    button on the error UI is pressed.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.Forget.Result" enum="ForgetResult"
     expires_after="2022-07-21">
   <owner>khorimoto@chromium.org</owner>
