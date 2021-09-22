@@ -91,6 +91,10 @@ interface ServiceWorkerRegistration : EventTarget
     method getNotifications
     method showNotification
 
+# EyeDropper API should not be exposed in WebView because it is not supported
+# on Android, crbug.com/1249967
+interface EyeDropper
+
 # File System API disabled in WebView, crbug.com/589504, crbug.com/589843, b/6930981
 interface HTMLInputElement : HTMLElement
     getter webkitEntries
