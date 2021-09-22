@@ -24,32 +24,56 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
+import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {Debouncer, html, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, DomIf, html, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility, pageVisibility} from '../page_visibility.js';
 import {SettingsPrefsElement} from '../prefs/prefs.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {SettingsMainElement} from '../settings_main/settings_main.js';
+import {SettingsMenuElement} from '../settings_menu/settings_menu.js';
 
+declare global {
+  interface HTMLElementEventMap {
+    'scroll-to-top': CustomEvent<{top: number, callback: () => void}>;
+    'scroll-to-bottom': CustomEvent<{bottom: number, callback: () => void}>;
+    'refresh-pref': CustomEvent<string>;
+  }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrContainerShadowMixinInterface}
- */
-const SettingsUiElementBase = mixinBehaviors(
-    [FindShortcutBehavior],
-    RouteObserverMixin(CrContainerShadowMixin(PolymerElement)));
+  interface Window {
+    CrPolicyStrings: {[key: string]: string},
+  }
+}
 
-/** @polymer */
+export interface SettingsUiElement {
+  $: {
+    container: HTMLElement,
+    drawer: CrDrawerElement,
+    drawerTemplate: DomIf,
+    leftMenu: SettingsMenuElement,
+    main: SettingsMainElement,
+    toolbar: CrToolbarElement,
+    prefs: SettingsPrefsElement,
+  };
+}
+
+const SettingsUiElementBase =
+    mixinBehaviors(
+        [FindShortcutBehavior],
+        RouteObserverMixin(CrContainerShadowMixin(PolymerElement))) as {
+      new (): PolymerElement & RouteObserverMixinInterface &
+      CrContainerShadowMixinInterface
+    };
+
 export class SettingsUiElement extends SettingsUiElementBase {
   static get is() {
     return 'settings-ui';
@@ -66,7 +90,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
        */
       prefs: Object,
 
-      /** @private */
       advancedOpenedInMain_: {
         type: Boolean,
         value: false,
@@ -74,7 +97,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
         observer: 'onAdvancedOpenedInMainChanged_',
       },
 
-      /** @private */
       advancedOpenedInMenu_: {
         type: Boolean,
         value: false,
@@ -82,24 +104,18 @@ export class SettingsUiElement extends SettingsUiElementBase {
         observer: 'onAdvancedOpenedInMenuChanged_',
       },
 
-      /** @private {boolean} */
       toolbarSpinnerActive_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       narrow_: {
         type: Boolean,
         observer: 'onNarrowChanged_',
       },
 
-      /**
-       * @private {!PageVisibility}
-       */
       pageVisibility_: {type: Object, value: pageVisibility},
 
-      /** @private */
       lastSearchQuery_: {
         type: String,
         value: '',
@@ -107,21 +123,20 @@ export class SettingsUiElement extends SettingsUiElementBase {
     };
   }
 
-  /** @override */
+  private advancedOpenedInMain_: boolean;
+  private advancedOpenedInMenu_: boolean;
+  private toolbarSpinnerActive_: boolean;
+  private narrow_: boolean;
+  private pageVisibility_: PageVisibility;
+  private lastSearchQuery_: string;
+  private debouncer_: Debouncer|null = null;
+
   constructor() {
     super();
-
-    /* @private {?Debouncer} */
-    this.debouncer_ = null;
 
     Router.getInstance().initializeRouteFromUrl();
   }
 
-  /**
-   * @override
-   * @suppress {es5Strict} Object literals cannot contain duplicate keys in
-   * ES5 strict mode.
-   */
   ready() {
     super.ready();
 
@@ -130,7 +145,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
       this.$.drawerTemplate.if = true;
     });
 
-    window.addEventListener('popstate', e => {
+    window.addEventListener('popstate', () => {
       this.$.drawer.cancel();
     });
 
@@ -167,12 +182,9 @@ export class SettingsUiElement extends SettingsUiElementBase {
       this.$.container.style.visibility = 'hidden';
     });
 
-    this.addEventListener(
-        'refresh-pref',
-        e => this.onRefreshPref_(/** @type {!CustomEvent<string>} */ (e)));
+    this.addEventListener('refresh-pref', this.onRefreshPref_.bind(this));
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -185,11 +197,11 @@ export class SettingsUiElement extends SettingsUiElementBase {
     });
 
     // Preload bold Roboto so it doesn't load and flicker the first time used.
-    document.fonts.load('bold 12px Roboto');
-    setGlobalScrollTarget(
-        /** @type {HTMLElement} */ (this.$.container));
+    // https://github.com/microsoft/TypeScript/issues/13569
+    (document as any).fonts.load('bold 12px Roboto');
+    setGlobalScrollTarget(this.$.container);
 
-    const scrollToTop = top => new Promise(resolve => {
+    const scrollToTop = (top: number) => new Promise<void>(resolve => {
       if (this.$.container.scrollTop === top) {
         resolve();
         return;
@@ -210,16 +222,19 @@ export class SettingsUiElement extends SettingsUiElementBase {
       };
       this.$.container.addEventListener('scroll', onScroll);
     });
-    this.addEventListener('scroll-to-top', e => {
-      scrollToTop(e.detail.top).then(e.detail.callback);
-    });
-    this.addEventListener('scroll-to-bottom', e => {
-      scrollToTop(e.detail.bottom - this.$.container.clientHeight)
-          .then(e.detail.callback);
-    });
+    this.addEventListener(
+        'scroll-to-top',
+        (e: CustomEvent<{top: number, callback: () => void}>) => {
+          scrollToTop(e.detail.top).then(e.detail.callback);
+        });
+    this.addEventListener(
+        'scroll-to-bottom',
+        (e: CustomEvent<{bottom: number, callback: () => void}>) => {
+          scrollToTop(e.detail.bottom - this.$.container.clientHeight)
+              .then(e.detail.callback);
+        });
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -227,8 +242,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
     resetGlobalScrollTargetForTesting();
   }
 
-  /** @param {!Route} route */
-  currentRouteChanged(route) {
+  currentRouteChanged(route: Route) {
     if (document.documentElement.hasAttribute('enable-branding-update')) {
       if (route.depth <= 1) {
         // Main page uses scroll position to determine whether a shadow should
@@ -249,10 +263,9 @@ export class SettingsUiElement extends SettingsUiElementBase {
 
     this.lastSearchQuery_ = urlSearchQuery;
 
-    const toolbar = /** @type {!CrToolbarElement} */ (
-        this.shadowRoot.querySelector('cr-toolbar'));
-    const searchField =
-        /** @type {CrToolbarSearchFieldElement} */ (toolbar.getSearchField());
+    const toolbar =
+        this.shadowRoot!.querySelector<CrToolbarElement>('cr-toolbar')!;
+    const searchField = toolbar.getSearchField();
 
     // If the search was initiated by directly entering a search URL, need to
     // sync the URL parameter to the textbox.
@@ -266,35 +279,31 @@ export class SettingsUiElement extends SettingsUiElementBase {
   }
 
   // Override FindShortcutBehavior methods.
-  handleFindShortcut(modalContextOpen) {
+  handleFindShortcut(modalContextOpen: boolean) {
     if (modalContextOpen) {
       return false;
     }
-    this.shadowRoot.querySelector('cr-toolbar').getSearchField().showAndFocus();
+    this.shadowRoot!.querySelector<CrToolbarElement>('cr-toolbar')!
+        .getSearchField()
+        .showAndFocus();
     return true;
   }
 
   // Override FindShortcutBehavior methods.
   searchInputHasFocus() {
-    return this.shadowRoot.querySelector('cr-toolbar')
+    return this.shadowRoot!.querySelector<CrToolbarElement>('cr-toolbar')!
         .getSearchField()
         .isSearchFocused();
   }
 
-  /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onRefreshPref_(e) {
-    return /** @type {SettingsPrefsElement} */ (this.$.prefs).refresh(e.detail);
+  private onRefreshPref_(e: CustomEvent<string>) {
+    return this.$.prefs.refresh(e.detail);
   }
 
   /**
    * Handles the 'search-changed' event fired from the toolbar.
-   * @param {!Event} e
-   * @private
    */
-  onSearchChanged_(e) {
+  private onSearchChanged_(e: CustomEvent<string>) {
     const query = e.detail;
     Router.getInstance().navigateTo(
         routes.BASIC,
@@ -306,14 +315,12 @@ export class SettingsUiElement extends SettingsUiElementBase {
 
   /**
    * Called when a section is selected.
-   * @private
    */
-  onIronActivate_() {
+  private onIronActivate_() {
     this.$.drawer.close();
   }
 
-  /** @private */
-  onMenuButtonTap_() {
+  private onMenuButtonTap_() {
     this.$.drawer.toggle();
   }
 
@@ -324,9 +331,8 @@ export class SettingsUiElement extends SettingsUiElementBase {
    * main settings container is given focus. That way the arrow keys can be
    * used to scroll the container, and pressing tab focuses a component in
    * settings.
-   * @private
    */
-  onMenuClose_() {
+  private onMenuClose_() {
     if (!this.$.drawer.wasCanceled()) {
       // If a navigation happened, MainPageMixin#currentRouteChanged
       // handles focusing the corresponding section.
@@ -342,27 +348,24 @@ export class SettingsUiElement extends SettingsUiElementBase {
     });
   }
 
-  /** @private */
-  onAdvancedOpenedInMainChanged_() {
+  private onAdvancedOpenedInMainChanged_() {
     if (this.advancedOpenedInMain_) {
       this.advancedOpenedInMenu_ = true;
     }
   }
 
-  /** @private */
-  onAdvancedOpenedInMenuChanged_() {
+  private onAdvancedOpenedInMenuChanged_() {
     if (this.advancedOpenedInMenu_) {
       this.advancedOpenedInMain_ = true;
     }
   }
 
-  /** @private */
-  onNarrowChanged_() {
+  private onNarrowChanged_() {
     if (this.$.drawer.open && !this.narrow_) {
       this.$.drawer.close();
     }
 
-    const focusedElement = this.shadowRoot.activeElement;
+    const focusedElement = this.shadowRoot!.activeElement;
     if (this.narrow_ && focusedElement === this.$.leftMenu) {
       // If changed from non-narrow to narrow and the focus was on the left
       // menu, move focus to the button that opens the drawer menu.
@@ -373,7 +376,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
       this.$.leftMenu.focusFirstItem();
     } else if (
         !this.narrow_ &&
-        focusedElement === this.shadowRoot.querySelector('#drawerMenu')) {
+        focusedElement === this.shadowRoot!.querySelector('#drawerMenu')) {
       // If changed from narrow to non-narrow and the focus was in the drawer
       // menu, wait for the drawer to close and then move focus on the left
       // menu. The drawer has a dialog element in it so moving focus to an
@@ -388,17 +391,15 @@ export class SettingsUiElement extends SettingsUiElementBase {
 
   /**
    * Only used in tests.
-   * @return {boolean}
    */
-  getAdvancedOpenedInMainForTest() {
+  getAdvancedOpenedInMainForTest(): boolean {
     return this.advancedOpenedInMain_;
   }
 
   /**
    * Only used in tests.
-   * @return {boolean}
    */
-  getAdvancedOpenedInMenuForTest() {
+  getAdvancedOpenedInMenuForTest(): boolean {
     return this.advancedOpenedInMenu_;
   }
 }

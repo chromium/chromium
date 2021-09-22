@@ -80,4 +80,10 @@ export class SettingsSectionElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-section': SettingsSectionElement;
+  }
+}
+
 customElements.define(SettingsSectionElement.is, SettingsSectionElement);

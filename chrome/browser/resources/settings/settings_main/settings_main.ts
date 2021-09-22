@@ -30,20 +30,20 @@ import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-/**
- * @typedef {{about: boolean, settings: boolean}}
- */
-let MainPageVisibility;
+type MainPageVisibility = {
+  about: boolean,
+  settings: boolean,
+};
 
+export interface SettingsMainElement {
+  $: {
+    overscroll: HTMLElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverMixinInterface}
- */
-const SettingsMainElementBase = RouteObserverMixin(PolymerElement);
+const SettingsMainElementBase = RouteObserverMixin(PolymerElement) as
+    {new (): PolymerElement & RouteObserverMixinInterface};
 
-/** @polymer */
 export class SettingsMainElement extends SettingsMainElementBase {
   static get is() {
     return 'settings-main';
@@ -68,7 +68,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
         notify: true,
       },
 
-      /** @private */
       overscroll_: {
         type: Number,
         observer: 'overscrollChanged_',
@@ -77,7 +76,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
       /**
        * Controls which main pages are displayed via dom-ifs, based on the
        * current route.
-       * @private {!MainPageVisibility}
        */
       showPages_: {
         type: Object,
@@ -89,20 +87,17 @@ export class SettingsMainElement extends SettingsMainElementBase {
       /**
        * Whether a search operation is in progress or previous search results
        * are being displayed.
-       * @private {boolean}
        */
       inSearchMode_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showNoResultsFound_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showingSubpage_: Boolean,
 
       toolbarSpinnerActive: {
@@ -113,24 +108,25 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
       /**
        * Dictionary defining page visibility.
-       * @type {!PageVisibility}
        */
       pageVisibility: Object,
     };
   }
 
-  constructor() {
-    super();
+  advancedToggleExpanded: boolean;
+  private overscroll_: number;
+  private showPages_: MainPageVisibility;
+  private inSearchMode_: boolean;
+  private showNoResultsFound_: boolean;
+  private showingSubpage_: boolean;
+  toolbarSpinnerActive: boolean;
+  pageVisibility: PageVisibility;
+  private boundScroll_: (() => void)|null = null;
 
-    /** @private {?Function} */
-    this.boundScroll_ = null;
-  }
-
-  /** @private */
-  overscrollChanged_() {
+  private overscrollChanged_() {
     assert(!loadTimeData.getBoolean('enableLandingPageRedesign'));
     if (!this.overscroll_ && this.boundScroll_) {
-      this.offsetParent.removeEventListener('scroll', this.boundScroll_);
+      this.offsetParent!.removeEventListener('scroll', this.boundScroll_);
       window.removeEventListener('resize', this.boundScroll_);
       this.boundScroll_ = null;
     } else if (this.overscroll_ && !this.boundScroll_) {
@@ -139,7 +135,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
           this.setOverscroll_(0);
         }
       };
-      this.offsetParent.addEventListener('scroll', this.boundScroll_);
+      this.offsetParent!.addEventListener('scroll', this.boundScroll_);
       window.addEventListener('resize', this.boundScroll_);
     }
   }
@@ -147,10 +143,9 @@ export class SettingsMainElement extends SettingsMainElementBase {
   /**
    * Sets the overscroll padding. Never forces a scroll, i.e., always leaves
    * any currently visible overflow as-is.
-   * @param {number=} opt_minHeight The minimum overscroll height needed.
-   * @private
+   * @param opt_minHeight The minimum overscroll height needed.
    */
-  setOverscroll_(opt_minHeight) {
+  private setOverscroll_(opt_minHeight?: number) {
     const scroller = this.offsetParent;
     if (!scroller) {
       return;
@@ -168,9 +163,8 @@ export class SettingsMainElement extends SettingsMainElementBase {
   /**
    * Updates the hidden state of the about and settings pages based on the
    * current route.
-   * @param {!Route} newRoute
    */
-  currentRouteChanged(newRoute) {
+  currentRouteChanged(newRoute: Route) {
     const inAbout =
         routes.ABOUT.contains(Router.getInstance().getCurrentRoute());
     this.showPages_ = {about: inAbout, settings: !inAbout};
@@ -183,13 +177,11 @@ export class SettingsMainElement extends SettingsMainElementBase {
     }
   }
 
-  /** @private */
-  onShowingSubpage_() {
+  private onShowingSubpage_() {
     this.showingSubpage_ = true;
   }
 
-  /** @private */
-  onShowingMainPage_() {
+  private onShowingMainPage_() {
     this.showingSubpage_ = false;
   }
 
@@ -197,37 +189,34 @@ export class SettingsMainElement extends SettingsMainElementBase {
    * A handler for the 'showing-section' event fired from settings-basic-page,
    * indicating that a section should be scrolled into view as a result of a
    * navigation.
-   * @param {!CustomEvent<!HTMLElement>} e
-   * @private
    */
-  onShowingSection_(e) {
+  private onShowingSection_(e: CustomEvent<HTMLElement>) {
     assert(!loadTimeData.getBoolean('enableLandingPageRedesign'));
 
     const section = e.detail;
     // Calculate the height that the overscroll padding should be set to, so
     // that the given section is displayed at the top of the viewport.
     // Find the distance from the section's top to the overscroll.
-    const sectionTop = section.offsetParent.offsetTop + section.offsetTop;
+    const sectionTop =
+        (section.offsetParent as HTMLElement).offsetTop + section.offsetTop;
     const distance = this.$.overscroll.offsetTop - sectionTop;
-    const overscroll = Math.max(0, this.offsetParent.clientHeight - distance);
+    const overscroll = Math.max(0, this.offsetParent!.clientHeight - distance);
     this.setOverscroll_(overscroll);
     section.scrollIntoView();
     section.focus();
   }
 
   /**
-   * @param {string} query
-   * @return {!Promise} A promise indicating that searching finished.
+   * @return A promise indicating that searching finished.
    */
-  searchContents(query) {
+  searchContents(query: string): Promise<void> {
     // Trigger rendering of the basic and advanced pages and search once ready.
     this.inSearchMode_ = true;
     this.toolbarSpinnerActive = true;
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       setTimeout(() => {
-        const page = /** @type {!SettingsBasicPageElement} */ (
-            this.shadowRoot.querySelector('settings-basic-page'));
+        const page = this.shadowRoot!.querySelector('settings-basic-page')!;
         page.searchContents(query).then(result => {
           resolve();
           if (result.canceled) {
@@ -259,11 +248,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
     });
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showManagedHeader_() {
+  private showManagedHeader_(): boolean {
     return !this.inSearchMode_ && !this.showingSubpage_ &&
         !this.showPages_.about;
   }

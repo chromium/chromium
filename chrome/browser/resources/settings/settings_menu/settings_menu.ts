@@ -17,20 +17,23 @@ import '../icons.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
+export interface SettingsMenuElement {
+  $: {
+    topMenu: IronSelectorElement,
+    subMenu: IronSelectorElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverMixinInterface}
- */
-const SettingsMenuElementBase = RouteObserverMixin(PolymerElement);
+const SettingsMenuElementBase = RouteObserverMixin(PolymerElement) as
+    {new (): PolymerElement & RouteObserverMixinInterface};
 
-/** @polymer */
 export class SettingsMenuElement extends SettingsMenuElementBase {
   static get is() {
     return 'settings-menu';
@@ -50,11 +53,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
       /**
        * Dictionary defining page visibility.
-       * @type {!PageVisibility}
        */
       pageVisibility: Object,
 
-      /** @private */
       enableLandingPageRedesign_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableLandingPageRedesign'),
@@ -63,15 +64,16 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     };
   }
 
+  advancedOpened: boolean;
+  pageVisibility: PageVisibility;
+  private enableLandingPageRedesign_: boolean;
 
-
-  /** @param {!Route} newRoute */
-  currentRouteChanged(newRoute) {
+  currentRouteChanged(newRoute: Route) {
     // Focus the initially selected path.
-    const anchors = this.root.querySelectorAll('a');
+    const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {
-      const anchorRoute =
-          Router.getInstance().getRouteForPath(anchors[i].getAttribute('href'));
+      const anchorRoute = Router.getInstance().getRouteForPath(
+          anchors[i].getAttribute('href')!);
       if (anchorRoute && anchorRoute.contains(newRoute)) {
         this.setSelectedUrl_(anchors[i].href);
         return;
@@ -82,26 +84,23 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   focusFirstItem() {
-    const firstFocusableItem =
-        this.shadowRoot.querySelector('[role=menuitem]:not([hidden])');
+    const firstFocusableItem = this.shadowRoot!.querySelector<HTMLElement>(
+        '[role=menuitem]:not([hidden])');
     if (firstFocusableItem) {
       firstFocusableItem.focus();
     }
   }
 
-  /** @private */
-  onAdvancedButtonToggle_() {
+  private onAdvancedButtonToggle_() {
     this.advancedOpened = !this.advancedOpened;
   }
 
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
    * accessibility purposes, taps are handled separately by <iron-selector>.
-   * @param {!Event} event
-   * @private
    */
-  onLinkClick_(event) {
-    if (event.target.matches('a:not(#extensionsLink)')) {
+  private onLinkClick_(event: Event) {
+    if ((event.target as HTMLElement).matches('a:not(#extensionsLink)')) {
       event.preventDefault();
     }
   }
@@ -109,47 +108,35 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   /**
    * Keeps both menus in sync. |url| needs to come from |element.href| because
    * |iron-list| uses the entire url. Using |getAttribute| will not work.
-   * @param {string} url
    */
-  setSelectedUrl_(url) {
+  private setSelectedUrl_(url: string) {
     this.$.topMenu.selected = this.$.subMenu.selected = url;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelectorActivate_(event) {
+  private onSelectorActivate_(event: CustomEvent<{selected: string}>) {
     this.setSelectedUrl_(event.detail.selected);
 
     const path = new URL(event.detail.selected).pathname;
     const route = Router.getInstance().getRouteForPath(path);
     assert(route, 'settings-menu has an entry with an invalid route.');
     Router.getInstance().navigateTo(
-        route, /* dynamicParams */ null, /* removeSearch */ true);
+        route!, /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
   /**
-   * @param {boolean} opened Whether the menu is expanded.
-   * @return {string} Which icon to use.
-   * @private
-   * */
-  arrowState_(opened) {
+   * @param opened Whether the menu is expanded.
+   * @return Which icon to use.
+   */
+  private arrowState_(opened: boolean): string {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   }
 
-  /** @private */
-  onExtensionsLinkClick_() {
+  private onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
   }
 
-  /**
-   * @param {boolean} bool
-   * @return {string}
-   * @private
-   */
-  boolToString_(bool) {
+  private boolToString_(bool: boolean): string {
     return bool.toString();
   }
 }

@@ -148,7 +148,7 @@ preprocess_if_expr("preprocess") {
     "router.js",
     "safety_check_page/safety_check_browser_proxy.ts",
     "search_engines_page/search_engines_browser_proxy.ts",
-    "search_settings.js",
+    "search_settings.ts",
     "setting_id_param_util.ts",
     "settings.ts",
     "settings_page/main_page_mixin.js",
@@ -233,7 +233,7 @@ preprocess_if_expr("preprocess_generated") {
     "autofill_page/password_remove_dialog.ts",
     "autofill_page/passwords_export_dialog.ts",
     "autofill_page/payments_section.ts",
-    "basic_page/basic_page.js",
+    "basic_page/basic_page.ts",
     "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
     "clear_browsing_data_dialog/history_deletion_dialog.ts",
     "clear_browsing_data_dialog/installed_app_checkbox.ts",
@@ -250,7 +250,7 @@ preprocess_if_expr("preprocess_generated") {
     "controls/settings_toggle_button.js",
     "downloads_page/downloads_page.ts",
     "icons.ts",
-    "settings_menu/settings_menu.js",
+    "settings_menu/settings_menu.ts",
     "on_startup_page/on_startup_page.ts",
     "on_startup_page/startup_url_dialog.ts",
     "on_startup_page/startup_url_entry.ts",
@@ -300,11 +300,11 @@ preprocess_if_expr("preprocess_generated") {
     "search_engines_page/search_engines_list.ts",
     "search_engines_page/search_engines_page.ts",
     "search_page/search_page.ts",
-    "settings_main/settings_main.js",
+    "settings_main/settings_main.ts",
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.ts",
     "settings_page/settings_subpage.ts",
-    "settings_ui/settings_ui.js",
+    "settings_ui/settings_ui.ts",
     "settings_page_css.ts",
     "settings_shared_css.ts",
     "settings_vars_css.ts",
@@ -388,15 +388,11 @@ grit("resources") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
-    "basic_page:closure_compile",
     "controls:closure_compile",
     "people_page:closure_compile",
     "prefs:closure_compile",
     "privacy_sandbox:closure_compile",
-    "settings_main:closure_compile",
-    "settings_menu:closure_compile",
     "settings_page:closure_compile",
-    "settings_ui:closure_compile",
   ]
 
   if (!is_chromeos_ash) {
@@ -421,7 +417,6 @@ js_type_check("closure_compile_local") {
     ":page_visibility",
     ":route",
     ":router",
-    ":search_settings",
     ":setting_id_param_util",
     ":settings",
     ":settings_routes",
@@ -433,10 +428,13 @@ js_library("settings") {
   sources =
       [ "$root_gen_dir/chrome/browser/resources/settings/tsc/settings.js" ]
   deps = [
+    ":i18n_setup",
     ":lifetime_browser_proxy",
     ":open_window_proxy",
     "people_page:sync_browser_proxy",
-    "settings_ui:settings_ui",
+    "prefs:prefs",
+    "prefs:prefs_behavior",
+    "prefs:prefs_types",
   ]
   extra_deps = [ ":build_ts" ]
 }
@@ -510,17 +508,6 @@ js_library("router") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("search_settings") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:search_highlight_utils",
-    "//ui/webui/resources/js:util.m",
-  ]
 }
 
 js_library("setting_id_param_util") {
@@ -652,7 +639,7 @@ ts_library("build_ts") {
     "autofill_page/show_password_mixin.ts",
     "autofill_page/upi_id_list_entry.ts",
     "base_mixin.js",
-    "basic_page/basic_page.js",
+    "basic_page/basic_page.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
     "clear_browsing_data_dialog/history_deletion_dialog.ts",
@@ -748,11 +735,11 @@ ts_library("build_ts") {
     "search_engines_page/search_engines_list.ts",
     "search_engines_page/search_engines_page.ts",
     "search_page/search_page.ts",
-    "search_settings.js",
+    "search_settings.ts",
     "setting_id_param_util.ts",
     "settings.ts",
-    "settings_main/settings_main.js",
-    "settings_menu/settings_menu.js",
+    "settings_main/settings_main.ts",
+    "settings_menu/settings_menu.ts",
     "settings_page_css.ts",
     "settings_page/main_page_mixin.js",
     "settings_page/settings_animated_pages.js",
@@ -760,7 +747,7 @@ ts_library("build_ts") {
     "settings_page/settings_subpage.ts",
     "settings_routes.js",
     "settings_shared_css.ts",
-    "settings_ui/settings_ui.js",
+    "settings_ui/settings_ui.ts",
     "settings_vars_css.ts",
     "site_favicon.js",
     "site_settings/add_site_dialog.ts",

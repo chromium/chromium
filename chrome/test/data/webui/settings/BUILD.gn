@@ -30,7 +30,6 @@ js_type_check("closure_compile") {
   # TODO(crbug.com/1000989): Add JS type checking for all commented out targets.
   deps = [
     #":about_page_tests",
-    ":advanced_page_test",
 
     #":all_sites_tests",
     #":appearance_fonts_page_test",
@@ -107,7 +106,6 @@ js_type_check("closure_compile") {
 
     #":settings_main_test",
     #":settings_menu_test",
-    ":settings_menu_interactive_ui_test",
     ":settings_page_test_util",
 
     #":settings_slider_tests",
@@ -158,16 +156,6 @@ js_type_check("closure_compile") {
   }
 }
 
-js_library("advanced_page_test") {
-  deps = [
-    ":settings_page_test_util",
-    "..:chai_assert",
-    "//chrome/browser/resources/settings:settings",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 js_library("fake_language_settings_private") {
   deps = [
     "..:chai_assert",
@@ -208,14 +196,6 @@ js_library("test_open_window_proxy") {
 js_library("search_page_test") {
   deps = [
     ":test_search_engines_browser_proxy",
-    "..:chai_assert",
-    "//chrome/browser/resources/settings:settings",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("settings_menu_interactive_ui_test") {
-  deps = [
     "..:chai_assert",
     "//chrome/browser/resources/settings:settings",
   ]

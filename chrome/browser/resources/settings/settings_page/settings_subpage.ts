@@ -29,7 +29,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 
-interface SettingsSubpageElement {
+export interface SettingsSubpageElement {
   $: {
     closeButton: HTMLElement,
   };
@@ -41,8 +41,7 @@ const SettingsSubpageElementBase =
         RouteObserverMixin(PolymerElement)) as
     {new (): PolymerElement & FindShortcutBehavior & I18nBehavior};
 
-/** @polymer */
-class SettingsSubpageElement extends SettingsSubpageElementBase {
+export class SettingsSubpageElement extends SettingsSubpageElementBase {
   static get is() {
     return 'settings-subpage';
   }

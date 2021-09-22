@@ -14,7 +14,7 @@ import {html, PolymerElement, TemplateInstanceBase, templatize} from '//resource
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 
 /** @polymer */
-class SettingsIdleLoadElement extends PolymerElement {
+export class SettingsIdleLoadElement extends PolymerElement {
   static get is() {
     return 'settings-idle-load';
   }

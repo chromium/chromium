@@ -9,33 +9,40 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {findAncestor} from 'chrome://resources/js/util.m.js';
 import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SettingsSectionElement} from './settings_page/settings_section.js';
+import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
+
 // clang-format on
+
+  declare global {
+    interface Window {
+      // https://github.com/microsoft/TypeScript/issues/40807
+      requestIdleCallback(callback: () => void): void;
+    }
+  }
 
   /**
    * A data structure used by callers to combine the results of multiple search
    * requests.
-   *
-   * @typedef {{
-   *   canceled: Boolean,
-   *   didFindMatches: Boolean,
-   *   wasClearSearch: Boolean,
-   * }}
    */
-  export let SearchResult;
+  export type SearchResult = {
+    canceled: boolean,
+    didFindMatches: boolean,
+    wasClearSearch: boolean,
+  };
 
   /**
    * A CSS attribute indicating that a node should be ignored during searching.
-   * @type {string}
    */
-  const SKIP_SEARCH_CSS_ATTRIBUTE = 'no-search';
+  const SKIP_SEARCH_CSS_ATTRIBUTE: string = 'no-search';
 
   /**
    * List of elements types that should not be searched at all.
    * The only DOM-MODULE node is in <body> which is not searched, therefore
    * DOM-MODULE is not needed in this set.
-   * @type {!Set<string>}
    */
-  const IGNORED_ELEMENTS = new Set([
+  const IGNORED_ELEMENTS: Set<string> = new Set([
     'CONTENT',
     'CR-ACTION-MENU',
     'CR-DIALOG',
@@ -58,16 +65,14 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
    * ensures that <settings-section> instances become visible if any matches
    * occurred under their subtree.
    *
-   * @param {!SearchRequest} request
-   * @param {!Node} root The root of the sub-tree to be searched
-   * @return {boolean} Whether or not matches were found.
-   * @private
+   * @param root The root of the sub-tree to be searched
+   * @return Whether or not matches were found.
    */
-  function findAndHighlightMatches_(request, root) {
+  function findAndHighlightMatches_(request: SearchRequest, root: Node): boolean {
     let foundMatches = false;
-    const highlights = [];
+    const highlights: Array<HTMLElement> = [];
 
-    function doSearch(node) {
+    function doSearch(node: Node) {
       // NOTE: For subpage wrappers <template route-path="..."> when |no-search|
       // participates in a data binding:
       //
@@ -77,10 +82,11 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
       //
       // The latter throws an error during the automatic Polymer 2 conversion to
       // <dom-if><template...></dom-if> syntax.
-      if (node.nodeName === 'DOM-IF' && node.hasAttribute('route-path') &&
-          !node.if && !node['noSearch'] &&
-          !node.hasAttribute(SKIP_SEARCH_CSS_ATTRIBUTE)) {
-        request.queue_.addRenderTask(new RenderTask(request, node));
+      if (node.nodeName === 'DOM-IF' &&
+          (node as DomIf).hasAttribute('route-path') && !(node as DomIf).if &&
+          !(node as any)['noSearch'] &&
+          !(node as DomIf).hasAttribute(SKIP_SEARCH_CSS_ATTRIBUTE)) {
+        request.queue.addRenderTask(new RenderTask(request, node));
         return;
       }
 
@@ -89,24 +95,22 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
       }
 
       if (node instanceof HTMLElement) {
-        const element = /** @type {HTMLElement} */ (node);
+        const element = node as HTMLElement;
         if (element.hasAttribute(SKIP_SEARCH_CSS_ATTRIBUTE) ||
-            element.hasAttribute('hidden') ||
-            element.style.display === 'none') {
+            element.hasAttribute('hidden') || element.style.display === 'none') {
           return;
         }
       }
 
       if (node.nodeType === Node.TEXT_NODE) {
         const textContent = node.nodeValue;
-        if (textContent.trim().length === 0) {
+        if (textContent!.trim().length === 0) {
           return;
         }
 
-        const strippedText =
-            stripDiacritics(textContent);
+        const strippedText = stripDiacritics(textContent!);
         const ranges = [];
-        for (let match; match = request.regExp.exec(strippedText);) {
+        for (let match; match = request.regExp!.exec(strippedText);) {
           ranges.push({start: match.index, length: match[0].length});
         }
 
@@ -115,15 +119,15 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
           revealParentSection_(
               node, /*numResults=*/ ranges.length, request.bubbles);
 
-          if (node.parentNode.nodeName === 'OPTION') {
-            const select = node.parentNode.parentNode;
+          if (node.parentNode!.nodeName === 'OPTION') {
+            const select = node.parentNode!.parentNode!;
             assert(select.nodeName === 'SELECT');
 
             // TODO(crbug.com/355446): support showing bubbles inside subpages.
             // Currently, they're incorrectly positioned and there's no great
             // signal at which to know when to reposition them (because every
             // page asynchronously loads/renders things differently).
-            const isSubpage = n => n.nodeName === 'SETTINGS-SUBPAGE';
+            const isSubpage = (n: Node) => n.nodeName === 'SETTINGS-SUBPAGE';
             if (findAncestor(select, isSubpage, true)) {
               return;
             }
@@ -150,7 +154,7 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
         child = nextSibling;
       }
 
-      const shadowRoot = node.shadowRoot;
+      const shadowRoot = (node as HTMLElement).shadowRoot;
       if (shadowRoot) {
         doSearch(shadowRoot);
       }
@@ -163,33 +167,31 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
 
   /**
    * Finds and makes visible the <settings-section> parent of |node|.
-   * @param {!Node} node
-   * @param {number} numResults
-   * @param {!Map<!Node, number>} bubbles A map of bubbles created so far.
-   * @private
+   * @param bubbles A map of bubbles created so far.
    */
-  function revealParentSection_(node, numResults, bubbles) {
+  function revealParentSection_(
+      node: Node, numResults: number, bubbles: Map<Node, number>) {
     let associatedControl = null;
 
     // Find corresponding SETTINGS-SECTION parent and make it visible.
     let parent = node;
     while (parent.nodeName !== 'SETTINGS-SECTION') {
       parent = parent.nodeType === Node.DOCUMENT_FRAGMENT_NODE ?
-          parent.host :
-          parent.parentNode;
+          (parent as ShadowRoot).host :
+          parent.parentNode as Node;
       if (!parent) {
         // |node| wasn't inside a SETTINGS-SECTION.
         return;
       }
       if (parent.nodeName === 'SETTINGS-SUBPAGE') {
-        // TODO(dpapad): Cast to SettingsSubpageElement here.
+        const subpage = parent as SettingsSubpageElement;
         associatedControl = assert(
-            parent.associatedControl,
+            subpage.associatedControl,
             'An associated control was expected for SETTINGS-SUBPAGE ' +
-                parent.pageTitle + ', but was not found.');
+                subpage.pageTitle + ', but was not found.');
       }
     }
-    parent.hiddenBySearch = false;
+    (parent as SettingsSectionElement).hiddenBySearch = false;
 
     // Need to add the search bubble after the parent SETTINGS-SECTION has
     // become visible, otherwise |offsetWidth| returns zero.
@@ -200,84 +202,57 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
     }
   }
 
-  /**
-   * @param {!Node} control
-   * @param {number} numResults
-   * @param {!Map<!Node, number>} bubbles
-   * @param {boolean} horizontallyCenter
-   */
-  function showBubble_(control, numResults, bubbles, horizontallyCenter) {
-    const bubble = createEmptySearchBubble(
-        control, horizontallyCenter);
+  function showBubble_(
+      control: Node, numResults: number, bubbles: Map<Node, number>,
+      horizontallyCenter: boolean) {
+    const bubble = createEmptySearchBubble(control, horizontallyCenter);
     const numHits = numResults + (bubbles.get(bubble) || 0);
     bubbles.set(bubble, numHits);
     const msgName =
         numHits === 1 ? 'searchResultBubbleText' : 'searchResultsBubbleText';
-    bubble.firstChild.textContent = loadTimeData.getStringF(msgName, numHits);
+    bubble.firstChild!.textContent = loadTimeData.getStringF(msgName, numHits);
   }
 
-  /** @abstract */
-  class Task {
-    /**
-     * @param {!SearchRequest} request
-     * @param {!Node} node
-     */
-    constructor(request, node) {
-      /** @protected {!SearchRequest} */
-      this.request = request;
+  abstract class Task {
+    protected request: SearchRequest;
+    protected node: Node;
 
-      /** @protected {!Node} */
+    constructor(request: SearchRequest, node: Node) {
+      this.request = request;
       this.node = node;
     }
 
-    /**
-     * @abstract
-     * @return {!Promise}
-     */
-    exec() {}
+    abstract exec(): Promise<void>;
   }
 
+  /**
+   * A task that takes a <template is="dom-if">...</template> node
+   * corresponding to a setting subpage and renders it. A
+   * SearchAndHighlightTask is posted for the newly rendered subtree, once
+   * rendering is done.
+   */
   class RenderTask extends Task {
-    /**
-     * A task that takes a <template is="dom-if">...</template> node
-     * corresponding to a setting subpage and renders it. A
-     * SearchAndHighlightTask is posted for the newly rendered subtree, once
-     * rendering is done.
-     *
-     * @param {!SearchRequest} request
-     * @param {!Node} node
-     */
-    constructor(request, node) {
-      super(request, node);
-    }
+    protected node: DomIf;
 
-    /** @override */
     exec() {
-      const routePath = this.node.getAttribute('route-path');
+      const routePath = this.node.getAttribute('route-path')!;
 
-      const content =
-          /**
-            @type {!{_contentForTemplate:
-                function(!HTMLTemplateElement):!HTMLElement}}
-          */
-          (DomIf)
-              ._contentForTemplate(
-                  /** @type {!HTMLTemplateElement} */ (
-                      this.node.firstElementChild));
-      const subpageTemplate = content.querySelector('settings-subpage');
+      const content = DomIf._contentForTemplate(
+          this.node.firstElementChild as HTMLTemplateElement);
+      const subpageTemplate = content!.querySelector('settings-subpage')!;
       subpageTemplate.setAttribute('route-path', routePath);
       assert(!this.node.if);
       this.node.if = true;
 
-      return new Promise((resolve, reject) => {
-        const parent = this.node.parentNode;
+      return new Promise<void>(resolve => {
+        const parent = this.node.parentNode!;
         microTask.run(() => {
           const renderedNode =
               parent.querySelector('[route-path="' + routePath + '"]');
           // Register a SearchAndHighlightTask for the part of the DOM that was
           // just rendered.
-          this.request.queue_.addSearchAndHighlightTask(
-              new SearchAndHighlightTask(this.request, assert(renderedNode)));
+          this.request.queue.addSearchAndHighlightTask(
+              new SearchAndHighlightTask(this.request, assert(renderedNode!)));
           resolve();
         });
       });
@@ -285,15 +260,6 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
   }
 
   class SearchAndHighlightTask extends Task {
-    /**
-     * @param {!SearchRequest} request
-     * @param {!Node} node
-     */
-    constructor(request, node) {
-      super(request, node);
-    }
-
-    /** @override */
     exec() {
       const foundMatches = findAndHighlightMatches_(this.request, this.node);
       this.request.updateMatches(foundMatches);
@@ -302,15 +268,8 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
   }
 
   class TopLevelSearchTask extends Task {
-    /**
-     * @param {!SearchRequest} request
-     * @param {!Node} page
-     */
-    constructor(request, page) {
-      super(request, page);
-    }
+    protected node: HTMLElement;
 
-    /** @override */
     exec() {
       const shouldSearch = this.request.regExp !== null;
       this.setSectionsVisibility_(!shouldSearch);
@@ -322,11 +281,7 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
       return Promise.resolve();
     }
 
-    /**
-     * @param {boolean} visible
-     * @private
-     */
-    setSectionsVisibility_(visible) {
+    private setSectionsVisibility_(visible: boolean) {
       const sections = this.node.querySelectorAll('settings-section');
 
       for (let i = 0; i < sections.length; i++) {
@@ -335,28 +290,23 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
     }
   }
 
+  type Queues = {
+    high: Array<Task>; middle: Array<Task>; low: Array<Task>;
+  };
+
   class TaskQueue {
-    /** @param {!SearchRequest} request */
-    constructor(request) {
-      /** @private {!SearchRequest} */
+    private request_: SearchRequest;
+    private queues_: Queues;
+    private running_: boolean;
+    private onEmptyCallback_: (() => void)|null = null;
+
+    constructor(request: SearchRequest) {
       this.request_ = request;
 
-      /**
-       * @private {{
-       *   high: !Array<!Task>,
-       *   middle: !Array<!Task>,
-       *   low: !Array<!Task>
-       * }}
-       */
-      this.queues_;
       this.reset();
-
-      /** @private {?Function} */
-      this.onEmptyCallback_ = null;
 
       /**
        * Whether a task is currently running.
-       * @private {boolean}
        */
       this.running_ = false;
     }
@@ -366,43 +316,34 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
       this.queues_ = {high: [], middle: [], low: []};
     }
 
-    /** @param {!TopLevelSearchTask} task */
-    addTopLevelSearchTask(task) {
+    addTopLevelSearchTask(task: TopLevelSearchTask) {
       this.queues_.high.push(task);
       this.consumePending_();
     }
 
-    /** @param {!SearchAndHighlightTask} task */
-    addSearchAndHighlightTask(task) {
+    addSearchAndHighlightTask(task: SearchAndHighlightTask) {
       this.queues_.middle.push(task);
       this.consumePending_();
     }
 
-    /** @param {!RenderTask} task */
-    addRenderTask(task) {
+    addRenderTask(task: RenderTask) {
       this.queues_.low.push(task);
       this.consumePending_();
     }
 
     /**
      * Registers a callback to be called every time the queue becomes empty.
-     * @param {function():void} onEmptyCallback
      */
-    onEmpty(onEmptyCallback) {
+    onEmpty(onEmptyCallback: () => void) {
       this.onEmptyCallback_ = onEmptyCallback;
     }
 
-    /**
-     * @return {!Task|undefined}
-     * @private
-     */
-    popNextTask_() {
+    private popNextTask_(): Task|undefined {
       return this.queues_.high.shift() || this.queues_.middle.shift() ||
           this.queues_.low.shift();
     }
 
-    /** @private */
-    consumePending_() {
+    private consumePending_() {
       if (this.running_) {
         return;
       }
@@ -431,50 +372,42 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
   }
 
   export class SearchRequest {
-    /**
-     * @param {string} rawQuery
-     * @param {!Element} root
-     */
-    constructor(rawQuery, root) {
-      /** @private {string} */
+    private rawQuery_: string;
+    private root_: Element;
+    regExp: RegExp|null;
+    canceled: boolean;
+    private foundMatches_: boolean;
+    resolver: PromiseResolver<SearchRequest>;
+    queue: TaskQueue;
+    private textObservers_: Set<MutationObserver>;
+    private highlights_: Array<HTMLElement>;
+    bubbles: Map<HTMLElement, number>;
+
+    constructor(rawQuery: string, root: Element) {
       this.rawQuery_ = rawQuery;
-
-      /** @private {!Element} */
       this.root_ = root;
-
-      /** @type {?RegExp} */
       this.regExp = this.generateRegExp_();
 
       /**
        * Whether this request was canceled before completing.
-       * @type {boolean}
        */
       this.canceled = false;
 
-      /** @private {boolean} */
       this.foundMatches_ = false;
-
-      /** @type {!PromiseResolver} */
       this.resolver = new PromiseResolver();
 
-      /** @private {!TaskQueue} */
-      this.queue_ = new TaskQueue(this);
-      this.queue_.onEmpty(() => {
+      this.queue = new TaskQueue(this);
+      this.queue.onEmpty(() => {
         this.resolver.resolve(this);
       });
 
-      /** @private {!Set<!MutationObserver>} */
       this.textObservers_ = new Set();
-
-      /** @private {!Array<!Node>} */
       this.highlights_ = [];
-
-      /** @type {!Map<!Node, number>} */
-      this.bubbles = new Map;
+      this.bubbles = new Map();
     }
 
-    /** @param {!Array<!Node>} highlights The highlight wrappers to add */
-    addHighlights(highlights) {
+    /** @param highlights The highlight wrappers to add */
+    addHighlights(highlights: Array<HTMLElement>) {
       this.highlights_.push(...highlights);
     }
 
@@ -487,17 +420,16 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
 
     removeAllHighlightsAndBubbles() {
       removeHighlights(this.highlights_);
-      this.bubbles.forEach((count, bubble) => bubble.remove());
+      this.bubbles.forEach((_count, bubble) => bubble.remove());
       this.highlights_ = [];
       this.bubbles.clear();
     }
 
-    /** @param {!Node} textNode */
-    addTextObserver(textNode) {
-      const originalParentNode = /** @type {!Node} */ (textNode.parentNode);
+    addTextObserver(textNode: Node) {
+      const originalParentNode = textNode.parentNode as Node;
       const observer = new MutationObserver(mutations => {
-        const oldValue = mutations[0].oldValue.trim();
-        const newValue = textNode.nodeValue.trim();
+        const oldValue = mutations[0].oldValue!.trim();
+        const newValue = textNode.nodeValue!.trim();
         if (oldValue !== newValue) {
           observer.disconnect();
           this.textObservers_.delete(observer);
@@ -513,20 +445,14 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
      * Fires this search request.
      */
     start() {
-      this.queue_.addTopLevelSearchTask(
-          new TopLevelSearchTask(this, this.root_));
+      this.queue.addTopLevelSearchTask(new TopLevelSearchTask(this, this.root_));
     }
 
-    /**
-     * @return {?RegExp}
-     * @private
-     */
-    generateRegExp_() {
+    private generateRegExp_(): RegExp|null {
       let regExp = null;
       // Generate search text by escaping any characters that would be
       // problematic for regular expressions.
-      const strippedQuery =
-          stripDiacritics(this.rawQuery_.trim());
+      const strippedQuery = stripDiacritics(this.rawQuery_.trim());
       const sanitizedQuery = strippedQuery.replace(SANITIZE_REGEX, '\\$&');
       if (sanitizedQuery.length > 0) {
         regExp = new RegExp(`(${sanitizedQuery})`, 'ig');
@@ -535,57 +461,42 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
     }
 
     /**
-     * @param {string} rawQuery
-     * @return {boolean} Whether this SearchRequest refers to an identical
-     *     query.
+     * @return Whether this SearchRequest refers to an identical query.
      */
-    isSame(rawQuery) {
+    isSame(rawQuery: string): boolean {
       return this.rawQuery_ === rawQuery;
     }
 
     /**
      * Updates the result for this search request.
-     * @param {boolean} found
      */
-    updateMatches(found) {
+    updateMatches(found: boolean) {
       this.foundMatches_ = this.foundMatches_ || found;
     }
 
-    /** @return {boolean} Whether any matches were found. */
-    didFindMatches() {
+    /** @return Whether any matches were found. */
+    didFindMatches(): boolean {
       return this.foundMatches_;
     }
   }
 
-  /** @type {!RegExp} */
-  const SANITIZE_REGEX = /[-[\]{}()*+?.,\\^$|#\s]/g;
+  const SANITIZE_REGEX: RegExp = /[-[\]{}()*+?.,\\^$|#\s]/g;
 
-  /** @interface */
-  class SearchManager {
+  interface SearchManager {
     /**
-     * @param {string} text The text to search for.
-     * @param {!Element} page
-     * @return {!Promise<!SearchRequest>} A signal indicating that
-     *     searching finished.
+     * @param text The text to search for.
+     * @param page
+     * @return A signal indicating that searching finished.
      */
-    search(text, page) {}
+    search(text: string, page: Element): Promise<SearchRequest>;
   }
 
-  /** @implements {SearchManager} */
-  class SearchManagerImpl {
-    constructor() {
-      /** @private {!Set<!SearchRequest>} */
-      this.activeRequests_ = new Set();
+  class SearchManagerImpl implements SearchManager {
+    private activeRequests_: Set<SearchRequest> = new Set();
+    private completedRequests_: Set<SearchRequest> = new Set();
+    private lastSearchedText_: string|null = null;
 
-      /** @private {!Set<!SearchRequest>} */
-      this.completedRequests_ = new Set();
-
-      /** @private {?string} */
-      this.lastSearchedText_ = null;
-    }
-
-    /** @override */
-    search(text, page) {
+    search(text: string, page: Element) {
       // Cancel any pending requests if a request with different text is
       // submitted.
       if (text !== this.lastSearchedText_) {
@@ -615,11 +526,9 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
     }
   }
 
-  /** @type {?SearchManager} */
-  let instance = null;
+  let instance: SearchManager|null = null;
 
-  /** @return {!SearchManager} */
-  export function getSearchManager() {
+  export function getSearchManager(): SearchManager {
     if (instance === null) {
       instance = new SearchManagerImpl();
     }
@@ -628,9 +537,7 @@ import {DomIf, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_
 
   /**
    * Sets the SearchManager singleton instance, useful for testing.
-   * @param {!SearchManager} searchManager
    */
-  export function setSearchManagerForTesting(searchManager) {
+  export function setSearchManagerForTesting(searchManager: SearchManager) {
     instance = searchManager;
   }
-

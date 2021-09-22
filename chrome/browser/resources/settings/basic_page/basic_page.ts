@@ -29,11 +29,13 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
 // <if expr="not chromeos and not lacros">
 import '../default_browser_page/default_browser_page.js';
+
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {beforeNextRender, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 // <if expr="chromeos or lacros">
@@ -62,22 +64,21 @@ const CrosSettingsOsBannerInteraction = {
 // </if>
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {MainPageMixinInterface}
- * @implements {RouteObserverMixinInterface}
- * @implements {PrefsBehaviorInterface}
- */
-const SettingsBasicPageElementBase = mixinBehaviors(
-    [
+const SettingsBasicPageElementBase =
+    mixinBehaviors(
+        [
+          // <if expr="chromeos or lacros">
+          PrefsBehavior,
+          // </if>
+        ],
+        MainPageMixin(RouteObserverMixin(PolymerElement))) as {
+      new (): PolymerElement &
       // <if expr="chromeos or lacros">
-      PrefsBehavior,
+      PrefsBehaviorInterface &
       // </if>
-    ],
-    MainPageMixin(RouteObserverMixin(PolymerElement)));
+      RouteObserverMixinInterface
+    };
 
-/** @polymer */
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   static get is() {
     return 'settings-basic-page';
@@ -97,7 +98,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
       /**
        * Dictionary defining page visibility.
-       * @type {!PageVisibility}
        */
       pageVisibility: {
         type: Object,
@@ -116,7 +116,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       /**
        * True if a section is fully expanded to hide other sections beneath it.
        * False otherwise (even while animating a section open/closed).
-       * @private {boolean}
        */
       hasExpandedSection_: {
         type: Boolean,
@@ -126,7 +125,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       /**
        * True if the basic page should currently display the reset profile
        * banner.
-       * @private {boolean}
        */
       showResetProfileBanner_: {
         type: Boolean,
@@ -136,7 +134,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       },
 
       // <if expr="chromeos or lacros">
-      /** @private */
       showOSSettingsBanner_: {
         type: Boolean,
         computed: 'computeShowOSSettingsBanner_(' +
@@ -144,12 +141,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       },
       // </if>
 
-      /** @private {!Route|undefined} */
       currentRoute_: Object,
 
       /**
        * Used to avoid handling a new toggle while currently toggling.
-       * @private
        */
       advancedTogglingInProgress_: {
         type: Boolean,
@@ -159,16 +154,19 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     };
   }
 
-  // <if expr="chromeos or lacros">
-  constructor() {
-    super();
+  pageVisibility: PageVisibility;
+  advancedToggleExpanded: boolean;
+  private hasExpandedSection_: boolean;
+  private showResetProfileBanner_: boolean;
 
-    /** @private {boolean} */
-    this.osBannerShowMetricRecorded_ = false;
-  }
+  // <if expr="chromeos or lacros">
+  private showOSSettingsBanner_: boolean;
+  private osBannerShowMetricRecorded_: boolean = false;
   // </if>
 
-  /** @override */
+  private currentRoute_: Route;
+  private advancedTogglingInProgress_: boolean;
+
   ready() {
     super.ready();
 
@@ -177,15 +175,13 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
   }
 
-  /** @override */
-  currentRouteChanged(newRoute, oldRoute) {
+  currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     this.currentRoute_ = newRoute;
 
     if (routes.ADVANCED && routes.ADVANCED.contains(newRoute)) {
@@ -207,28 +203,23 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   /**
    * Override MainPageMixin method.
-   * @override
    */
-  containsRoute(route) {
+  containsRoute(route?: Route): boolean {
     return !route || routes.BASIC.contains(route) ||
         routes.ADVANCED.contains(route);
   }
 
-  /**
-   * @param {boolean|undefined} visibility
-   * @return {boolean}
-   * @private
-   */
-  showPage_(visibility) {
+  private showPage_(visibility?: boolean): boolean {
     return visibility !== false;
   }
 
-  /**
-   * @param {boolean|undefined} visibility
-   * @return {boolean}
-   * @private
-   */
-  showPrivacyReviewPromo_(visibility) {
+  private getIdleLoad_(): Promise<Element> {
+    return (this.shadowRoot!.querySelector('#advancedPageTemplate') as
+            SettingsIdleLoadElement)
+        .get();
+  }
+
+  private showPrivacyReviewPromo_(visibility: boolean|undefined): boolean {
     // TODO(crbug/1215630): Only show on the first look at the privacy page.
     return this.showPage_(visibility) &&
         loadTimeData.getBoolean('privacyReviewEnabled');
@@ -237,23 +228,20 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   /**
    * Queues a task to search the basic sections, then another for the advanced
    * sections.
-   * @param {string} query The text to search for.
-   * @return {!Promise<!SearchResult>} A signal indicating that
-   *     searching finished.
+   * @param query The text to search for.
+   * @return A signal indicating that searching finished.
    */
-  searchContents(query) {
+  searchContents(query: string): Promise<SearchResult> {
     const whenSearchDone = [
       getSearchManager().search(
-          query, assert(this.shadowRoot.querySelector('#basicPage'))),
+          query,
+          assert(this.shadowRoot!.querySelector('#basicPage') as HTMLElement)),
     ];
 
     if (this.pageVisibility.advancedSettings !== false) {
-      whenSearchDone.push(this.shadowRoot.querySelector('#advancedPageTemplate')
-                              .get()
-                              .then(function(advancedPage) {
-                                return getSearchManager().search(
-                                    query, advancedPage);
-                              }));
+      whenSearchDone.push(this.getIdleLoad_().then(function(advancedPage) {
+        return getSearchManager().search(query, advancedPage);
+      }));
     }
 
     return Promise.all(whenSearchDone).then(function(requests) {
@@ -273,17 +261,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   // <if expr="chromeos or lacros">
-  /**
-   * @return {boolean|undefined}
-   * @private
-   */
-  computeShowOSSettingsBanner_() {
+  private computeShowOSSettingsBanner_(): boolean|undefined {
     // this.prefs is implicitly used by this.getPref() below.
     if (!this.prefs || !this.currentRoute_) {
       return;
     }
-    const showPref = /** @type {boolean} */ (
-        this.getPref('settings.cros.show_os_banner').value);
+    const showPref = this.getPref('settings.cros.show_os_banner').value;
 
     // Banner only shows on the main page because direct navigations to a
     // sub-page are unlikely to be due to a user looking for an OS setting.
@@ -302,8 +285,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     return show;
   }
 
-  /** @private */
-  onOSSettingsBannerClick_() {
+  private onOSSettingsBannerClick_() {
     // The label has a link that opens the page, so just record the metric.
     chrome.metricsPrivate.recordEnumerationValue(
         OS_BANNER_INTERACTION_METRIC_NAME,
@@ -311,8 +293,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         Object.keys(CrosSettingsOsBannerInteraction).length);
   }
 
-  /** @private */
-  onOSSettingsBannerClosed_() {
+  private onOSSettingsBannerClosed_() {
     this.setPrefValue('settings.cros.show_os_banner', false);
     chrome.metricsPrivate.recordEnumerationValue(
         OS_BANNER_INTERACTION_METRIC_NAME,
@@ -322,8 +303,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   // </if>
 
   // <if expr="chromeos">
-  /** @private */
-  onOpenChromeOSLanguagesSettingsClick_() {
+  private onOpenChromeOSLanguagesSettingsClick_() {
     const chromeOSLanguagesSettingsPath =
         loadTimeData.getString('chromeOSLanguagesSettingsPath');
     window.location.href =
@@ -331,24 +311,21 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
   // </if>
 
-  /** @private */
-  onResetProfileBannerClosed_() {
+  private onResetProfileBannerClosed_() {
     this.showResetProfileBanner_ = false;
   }
 
   /**
    * Hides everything but the newly expanded subpage.
-   * @private
    */
-  onSubpageExpanded_() {
+  private onSubpageExpanded_() {
     this.hasExpandedSection_ = true;
   }
 
   /**
    * Render the advanced page now (don't wait for idle).
-   * @private
    */
-  advancedToggleExpandedChanged_() {
+  private advancedToggleExpandedChanged_() {
     if (!this.advancedToggleExpanded) {
       return;
     }
@@ -356,41 +333,34 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     // In Polymer2, async() does not wait long enough for layout to complete.
     // beforeNextRender() must be used instead.
     beforeNextRender(this, () => {
-      this.shadowRoot.querySelector('#advancedPageTemplate').get();
+      this.getIdleLoad_();
     });
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  /** @private */
-  advancedToggleClicked_() {
+  private advancedToggleClicked_() {
     if (this.advancedTogglingInProgress_) {
       return;
     }
 
     this.advancedTogglingInProgress_ = true;
-    const toggle = this.shadowRoot.querySelector('#toggleContainer');
+    const toggle =
+        this.shadowRoot!.querySelector('#toggleContainer') as HTMLElement;
     if (!this.advancedToggleExpanded) {
       this.advancedToggleExpanded = true;
       microTask.run(() => {
-        this.shadowRoot.querySelector('#advancedPageTemplate')
-            .get()
-            .then(() => {
-              this.fire_('scroll-to-top', {
-                top: toggle.offsetTop,
-                callback: () => {
-                  this.advancedTogglingInProgress_ = false;
-                }
-              });
-            });
+        this.getIdleLoad_().then(() => {
+          this.fire_('scroll-to-top', {
+            top: toggle.offsetTop,
+            callback: () => {
+              this.advancedTogglingInProgress_ = false;
+            }
+          });
+        });
       });
     } else {
       this.fire_('scroll-to-bottom', {
@@ -403,70 +373,50 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     }
   }
 
-  /**
-   * @param {boolean} inSearchMode
-   * @param {boolean} hasExpandedSection
-   * @return {boolean}
-   * @private
-   */
-  showAdvancedToggle_(inSearchMode, hasExpandedSection) {
+  private showAdvancedToggle_(
+      inSearchMode: boolean, hasExpandedSection: boolean): boolean {
     return !inSearchMode && !hasExpandedSection &&
         !loadTimeData.getBoolean('enableLandingPageRedesign');
   }
 
   /**
-   * @param {!Route} currentRoute
-   * @param {boolean} inSearchMode
-   * @param {boolean} hasExpandedSection
-   * @return {boolean} Whether to show the basic page, taking into account
-   *     both routing and search state.
-   * @private
+   * @return Whether to show the basic page, taking into account both routing
+   *     and search state.
    */
-  showBasicPage_(currentRoute, inSearchMode, hasExpandedSection) {
+  private showBasicPage_(
+      currentRoute: Route, _inSearchMode: boolean,
+      hasExpandedSection: boolean): boolean {
     return !hasExpandedSection || routes.BASIC.contains(currentRoute);
   }
 
   /**
-   * @param {!Route} currentRoute
-   * @param {boolean} inSearchMode
-   * @param {boolean} hasExpandedSection
-   * @param {boolean} advancedToggleExpanded
-   * @return {boolean} Whether to show the advanced page, taking into account
-   *     both routing and search state.
-   * @private
+   * @return Whether to show the advanced page, taking into account both routing
+   *     and search state.
    */
-  showAdvancedPage_(
-      currentRoute, inSearchMode, hasExpandedSection, advancedToggleExpanded) {
+  private showAdvancedPage_(
+      currentRoute: Route, inSearchMode: boolean, hasExpandedSection: boolean,
+      advancedToggleExpanded: boolean): boolean {
     return hasExpandedSection ?
         (routes.ADVANCED && routes.ADVANCED.contains(currentRoute)) :
         advancedToggleExpanded || inSearchMode;
   }
 
-  /**
-   * @param {(boolean|undefined)} visibility
-   * @return {boolean} True unless visibility is false.
-   * @private
-   */
-  showAdvancedSettings_(visibility) {
+  private showAdvancedSettings_(visibility?: boolean): boolean {
     return visibility !== false;
   }
 
-  /**
-   * @param {boolean} opened Whether the menu is expanded.
-   * @return {string} Icon name.
-   * @private
-   */
-  getArrowIcon_(opened) {
+  private getArrowIcon_(opened: boolean): string {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   }
 
-  /**
-   * @param {boolean} bool
-   * @return {string}
-   * @private
-   */
-  boolToString_(bool) {
+  private boolToString_(bool: boolean): string {
     return bool.toString();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-basic-page': SettingsBasicPageElement;
   }
 }
 
