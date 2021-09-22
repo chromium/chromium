@@ -269,14 +269,8 @@ class StartSurfaceMediator
             mUrlFocusChangeListener = new UrlFocusChangeListener() {
                 @Override
                 public void onUrlFocusChange(boolean hasFocus) {
-                    if (hasFakeSearchBox()) {
-                        if (mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE)) {
-                            mSecondaryTasksSurfacePropertyModel.set(
-                                    IS_FAKE_SEARCH_BOX_VISIBLE, !hasFocus);
-                        } else {
-                            setFakeBoxVisibility(!hasFocus);
-                        }
-                    }
+                    assert !mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE);
+                    if (hasFakeSearchBox()) setFakeBoxVisibility(!hasFocus);
                     notifyStateChange();
                 }
             };
@@ -781,7 +775,7 @@ class StartSurfaceMediator
 
     /**
      * Set the visibility of secondary tasks surface. Secondary tasks surface is used for showing
-     * normal grid tab switcher, incognito gird tab switcher and incognito homepage.
+     * normal grid tab switcher and incognito gird tab switcher.
      * @param isVisible Whether secondary tasks surface is visible.
      * @param skipUpdateController Whether to skip mSecondaryTasksSurfaceController#showOverview and
      *         mSecondaryTasksSurfaceController#hideOverview.
@@ -795,8 +789,7 @@ class StartSurfaceMediator
                 mSecondaryTasksSurfaceController = mSecondaryTasksSurfaceInitializer.initialize();
             }
             if (mSecondaryTasksSurfacePropertyModel != null) {
-                mSecondaryTasksSurfacePropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE,
-                        mIsIncognito && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE);
+                mSecondaryTasksSurfacePropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, false);
                 mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
             }
             if (mSecondaryTasksSurfaceController != null && !skipUpdateController) {
@@ -829,14 +822,9 @@ class StartSurfaceMediator
     @VisibleForTesting
     public boolean shouldShowTabSwitcherToolbar() {
         // Always show in TABSWITCHER
-        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) return true;
-
-        if (mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE)) {
-            // Always show on the stack tab switcher secondary surface.
-            if (mSecondaryTasksSurfacePropertyModel == null) return true;
-
-            // Hide when focusing the Omnibox on the secondary surface.
-            return mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE);
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
+                || mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE)) {
+            return true;
         }
 
         // Hide when focusing the Omnibox on the primary surface.

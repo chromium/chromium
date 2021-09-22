@@ -558,22 +558,8 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
 
         doReturn(2).when(mNormalTabModel).getCount();
-        mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mediator.showOverview(false);
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(true));
-        assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
-        assertThat(
-                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE),
-                equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
-
         mediator.setOverviewState(StartSurfaceState.SHOWN_TABSWITCHER);
+        mediator.showOverview(false);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(true));
@@ -582,20 +568,6 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
-                equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
-
-        mediator.setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(true));
-        assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
-        assertThat(
-                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE),
                 equalTo(false));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
 
@@ -632,19 +604,6 @@ public class StartSurfaceMediatorUnitTest {
         mTabModelSelector.selectModel(true);
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
                 mIncognitoTabModel, mNormalTabModel);
-
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(true));
-        assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
-        assertThat(
-                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE),
-                equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(false);
@@ -740,8 +699,8 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
-        assertThat(
-                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
+        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+                equalTo(false));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE),
                 equalTo(false));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
@@ -897,18 +856,8 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
                 mIncognitoTabModel, mNormalTabModel);
-        assertThat(
-                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
-        assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
-
-        mUrlFocusChangeListenerCaptor.getValue().onUrlFocusChange(true);
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
-        assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(false));
-
-        mUrlFocusChangeListenerCaptor.getValue().onUrlFocusChange(false);
-        assertThat(
-                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
     }
 

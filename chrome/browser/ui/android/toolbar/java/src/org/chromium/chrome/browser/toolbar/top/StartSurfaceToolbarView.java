@@ -395,7 +395,8 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
-     * Start animation to show or hide toolbar.
+     * If transition animations shouldn't show, update the visibility of toolbar; Otherwise if
+     * toolbar is already showing and transition animations should show, show transition animations.
      */
     private void updateToolbarVisibility() {
         boolean shouldShowStartSurfaceToolbar = mInStartSurfaceMode && mShouldShow;
@@ -409,8 +410,10 @@ class StartSurfaceToolbarView extends RelativeLayout {
                 finishFadeAnimation(this, shouldShowStartSurfaceToolbar);
                 return;
             }
-
-            addFadeAnimator(this, shouldShowStartSurfaceToolbar);
+            // TODO(1139024): If transition animations of sub components shouldn't show, the fade
+            // animator of toolbar view should always show by default. Not showing fade animator is
+            // a temporary solution for crbug.com/1249377.
+            setVisibility(getVisibility(shouldShowStartSurfaceToolbar));
         }
 
         mLayoutChangeAnimator = new AnimatorSet();

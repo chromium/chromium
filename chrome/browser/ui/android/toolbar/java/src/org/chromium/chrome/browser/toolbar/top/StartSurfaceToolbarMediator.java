@@ -415,7 +415,8 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateNewTabButtonVisibility() {
-        boolean isShownTabSwitcherState = mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER;
+        boolean isShownTabSwitcherState = mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
+                || mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER;
 
         // This button is only shown for homepage when accessibility is enabled and
         // OverviewListLayout is shown as the tab switcher instead of the start surface.
@@ -426,7 +427,8 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateHomeButtonVisibility() {
-        boolean isShownTabSwitcherState = mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER;
+        boolean isShownTabSwitcherState = mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
+                || mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER;
         boolean shouldShow = mHomepageEnabled && isShownTabSwitcherState
                 && !mPropertyModel.get(IS_INCOGNITO) && mShowHomeButtonOnTabSwitcher
                 && mShouldShowStartSurfaceAsHomepage;
