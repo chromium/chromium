@@ -41,6 +41,7 @@
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
+#include "components/variations/variations_test_utils.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -60,7 +61,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 // Constants used to create the test seeds.
-const char kTestSeedStudyName[] = "test";
 const char kTestSeedExperimentName[] = "abc";
 const char kTestSafeSeedExperimentName[] = "abc.safe";
 const int kTestSeedExperimentProbability = 100;
@@ -113,13 +113,6 @@ VariationsSeed CreateTestSafeSeed() {
   study->set_default_experiment_name(kTestSafeSeedExperimentName);
   study->mutable_experiment(0)->set_name(kTestSafeSeedExperimentName);
   return seed;
-}
-
-void DisableTestingConfig() {
-  // If the testing config is in use, the seed will not be used to set up field
-  // trials. Disable the testing config to exercise CreateTrialsFromSeed().
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableFieldTrialTestingConfig);
 }
 
 #if defined(OS_ANDROID)
