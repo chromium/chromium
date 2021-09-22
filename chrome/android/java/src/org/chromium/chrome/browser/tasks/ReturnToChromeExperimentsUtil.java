@@ -467,8 +467,11 @@ public final class ReturnToChromeExperimentsUtil {
         // If user launches Chrome by tapping the app icon, the intentUrl is NULL;
         // If user taps the "New Tab" item from the app icon, the intentUrl will be chrome://newtab,
         // and UrlUtilities.isCanonicalizedNTPUrl(intentUrl) returns true.
+        // If user taps the "New Incognito Tab" item from the app icon, skip here and continue the
+        // following checks.
         if (UrlUtilities.isCanonicalizedNTPUrl(intentUrl)
-                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(context)) {
+                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(context)
+                && !intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return true;
         }
         if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs(context)

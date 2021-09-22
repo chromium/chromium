@@ -1179,6 +1179,34 @@ public class InstantStartTest {
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
         "/start_surface_variation/single"})
+    public void testNewIncognitoTabFromLauncher() throws IOException {
+        // clang-format on
+        testNewIncognitoTabFromLauncherImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single"})
+    public void testNewIncognitoTabFromLauncher_NoInstant() throws IOException {
+        // clang-format on
+        Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
+        testNewIncognitoTabFromLauncherImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", IMMEDIATE_RETURN_PARAMS +
+        "/start_surface_variation/single"})
     public void testShowTabSwitcherWhenHomepageDisabled() throws IOException {
         // clang-format on
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
@@ -1239,7 +1267,7 @@ public class InstantStartTest {
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
         TabAttributeCache.setTitleForTesting(0, "Google");
 
-        startNewTabFromLauncherIcon();
+        startNewTabFromLauncherIcon(false);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
@@ -1263,6 +1291,21 @@ public class InstantStartTest {
         });
     }
 
+    private void testNewIncognitoTabFromLauncherImpl() throws IOException {
+        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
+        TabAttributeCache.setTitleForTesting(0, "Google");
+
+        startNewTabFromLauncherIcon(true);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
+
+        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Assert.assertTrue(UrlUtilities.isNTPUrl(cta.getActivityTab().getUrl())); });
+    }
+
     private void testNewTabFromLauncherWithHomepageDisabledImpl() throws IOException {
         StartSurfaceTestUtils.createTabStateFile(new int[] {0});
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
@@ -1273,7 +1316,7 @@ public class InstantStartTest {
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
 
         // Launches new Tab from the launcher icon and verifies that a NTP is created and showing.
-        startNewTabFromLauncherIcon();
+        startNewTabFromLauncherIcon(false);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
@@ -1332,9 +1375,9 @@ public class InstantStartTest {
         });
     }
 
-    private void startNewTabFromLauncherIcon() {
+    private void startNewTabFromLauncherIcon(boolean incognito) {
         Intent intent = IntentHandler.createTrustedOpenNewTabIntent(
-                ContextUtils.getApplicationContext(), false);
+                ContextUtils.getApplicationContext(), incognito);
         intent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, true);
         mActivityTestRule.prepareUrlIntent(intent, null);
         mActivityTestRule.launchActivity(intent);
