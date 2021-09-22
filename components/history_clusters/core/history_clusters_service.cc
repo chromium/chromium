@@ -144,6 +144,18 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
         continue;
       }
 
+      // Discard any incomplete visits that were already fetched from History.
+      // This can happen when History finishes writing the rows after we
+      // snapshot the incomplete visits at the beginning of this task.
+      // https://crbug.com/1252047.
+      history::VisitID visit_id =
+          incomplete_visit_context_annotations.visit_row.visit_id;
+      if (base::Contains(annotated_visits_, visit_id, [](const auto& visit) {
+            return visit.visit_row.visit_id;
+          })) {
+        continue;
+      }
+
       // Compute `referring_visit_of_redirect_chain_start` for each incomplete
       // visit.
       const auto& first_redirect = backend->GetRedirectChainStart(
