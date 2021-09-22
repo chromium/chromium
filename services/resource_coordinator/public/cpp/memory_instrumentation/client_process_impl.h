@@ -96,6 +96,9 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   mojo::Remote<mojom::Coordinator> coordinator_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
+  // Only browser process is allowed to request memory dumps.
+  const bool is_browser_process_;
+
   // TODO(crbug.com/728199): The observer is only used to setup and tear down
   // MemoryDumpManager in each process. Setting up MemoryDumpManager should
   // be moved away from TracingObserver.
