@@ -111,7 +111,7 @@
 <translation id="4407044323746248786">မည်သို့ပင်ဖြစ်စေ Chromium မှ ထွက်လိုပါသလား။</translation>
 <translation id="4415566066719264597">Chromium ကို နောက်ခံတွင် ဖွင့်ခွင့်ပေးပါ</translation>
 <translation id="4423735387467980091">Chromium ကို စိတ်ကြိုက် ပြုပြင်ရန် နှင့် ထိန်းချုပ်ရန်</translation>
-<translation id="452711251841752011">Chromium မှ ကြိုဆိုပါသည်၊ ဘရောင်ဇာဝင်းဒိုးအသစ် ဖွင့်လိုက်ပါပြီ</translation>
+<translation id="452711251841752011">Chromium က ကြိုဆိုပါသည်၊ ဘရောင်ဇာဝင်းဒိုးအသစ် ဖွင့်လိုက်ပါပြီ</translation>
 <translation id="4544142686420020088">Chromium အပ်ဒိတ်လုပ်၍ မရပါ၊ တစ်ခုခု မှားသွားသည်။ <ph name="BEGIN_LINK" />Chromium အပ်ဒိတ်ပြဿနာများနှင့် လုပ်၍မရသော အပ်ဒိတ်များကို ပြင်ဆင်ပါ။<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Chromium ပရိုဖိုင်အသစ်တွင် ဆက်လုပ်မလား။</translation>
 <translation id="4567424176335768812">သင်သည် <ph name="USER_EMAIL_ADDRESS" /> အဖြစ် လက်မှတ်ထိုး ဝင်ထားသည်။ သင်သည် ယခုတော့ သင် လက်မှတ်ထိုး ဝင်ထားသည့် ကိရိယာ အားလုံးတို့မှာ သင်၏ စာညှပ်များ၊ မှတ်တမ်း၊ နှင့် အခြား ဆက်တင်များကို ရယူသုံးနိုင်ပါပြီ။</translation>
@@ -152,7 +152,7 @@
 <translation id="5698481217667032250">Chromium ကို ဤဘာသာစကားဖြင့် ပြသပါ</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ ရင်းမြစ်ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် Chromium OS ကို ရေးဆွဲထားသည်။</translation>
-<translation id="5862307444128926510">Chromium မှ ကြိုဆိုပါ၏</translation>
+<translation id="5862307444128926510">Chromium က ကြိုဆိုပါ၏</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း</translation>
 <translation id="5987687638152509985">စင့်ခ်လုပ်ခြင်းစတင်ရန် Chromium ကို အပ်ဒိတ်လုပ်ပါ</translation>
