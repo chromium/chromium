@@ -6681,11 +6681,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharesheetDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kSharesheet)},
 
-    {"enable-sharesheet-content-previews",
-     flag_descriptions::kSharesheetContentPreviewsName,
-     flag_descriptions::kSharesheetContentPreviewsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kSharesheetContentPreviews)},
-
     {"chromeos-sharing-hub", flag_descriptions::kChromeOSSharingHubName,
      flag_descriptions::kChromeOSSharingHubDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kChromeOSSharingHub)},

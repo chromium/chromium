@@ -4998,10 +4998,6 @@ const char kSelectToSpeakNavigationControlName[] =
 const char kSelectToSpeakNavigationControlDescription[] =
     "Enables enhanced Select-to-speak navigation features.";
 
-const char kSharesheetContentPreviewsName[] = "Sharesheet Content Previews";
-const char kSharesheetContentPreviewsDescription[] =
-    "Chrome OS content previews for sharesheet.";
-
 const char kSharesheetName[] = "Sharesheet";
 const char kSharesheetDescription[] = "Chrome OS sharesheet.";
 

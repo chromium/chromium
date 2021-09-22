@@ -180,11 +180,8 @@ void SharesheetBubbleView::ShowBubble(
 
   main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  // When there are no targets, don't show any previews. Otherwise, show
-  // previews if the flag is enabled.
-  bool show_content_previews =
-      !targets.empty() &&
-      base::FeatureList::IsEnabled(features::kSharesheetContentPreviews);
+  // When there are no targets, don't show any previews.
+  bool show_content_previews = !targets.empty();
   header_view_ =
       main_view_->AddChildView(std::make_unique<SharesheetHeaderView>(
           intent_->Clone(), delegate_->GetProfile(), show_content_previews));
