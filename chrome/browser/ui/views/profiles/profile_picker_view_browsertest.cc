@@ -1363,10 +1363,18 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
   EXPECT_TRUE(OriginalProfileExists());
 }
 
+// Flaky on Windows: https://crbug.com/1247530.
+#if defined(OS_WIN)
+#define MAYBE_PRE_ExitDuringSignin DISABLED_PRE_ExitDuringSignin
+#define MAYBE_ExitDuringSignin DISABLED_ExitDuringSignin
+#else
+#define MAYBE_PRE_ExitDuringSignin PRE_ExitDuringSignin
+#define MAYBE_ExitDuringSignin ExitDuringSignin
+#endif
 // Checks that the new profile is deleted on next startup if Chrome exits during
 // the signin flow.
 IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
-                       PRE_ExitDuringSignin) {
+                       MAYBE_PRE_ExitDuringSignin) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(1u, profile_manager()->GetNumberOfProfiles());
   ASSERT_TRUE(OriginalProfileExists());
@@ -1384,7 +1392,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
-                       ExitDuringSignin) {
+                       MAYBE_ExitDuringSignin) {
   // The profile was deleted, regardless of the policy.
   EXPECT_EQ(1u, profile_manager()->GetNumberOfProfiles());
   // The other profile still exists.
