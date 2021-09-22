@@ -316,36 +316,39 @@ message ClientSettingsProto {
 
   // Strings that are needed for Chrome Client UI.
   enum DisplayStringId {
+    // Unspecified value
+    UNSPECIFIED = 0;
+
     // Text label that is shown when autofill assistant cannot help anymore,
     // because of a user action.
-    GIVE_UP = 0;
+    GIVE_UP = 1;
 
     // Text label shown next to an UNDO button when user action indicate they
     // want to continue on their own.
-    MAYBE_GIVE_UP = 1;
+    MAYBE_GIVE_UP = 2;
 
     // Text label that is shown when autofill assistant cannot help anymore,
     // because something went wrong.
-    DEFAULT_ERROR = 2;
+    DEFAULT_ERROR = 3;
 
     // Text on the payment request primary button to confirm payment information
-    PAYMENT_INFO_CONFIRM = 3;
+    PAYMENT_INFO_CONFIRM = 4;
 
     // Generic label for a button to continue to the next screen.
-    CONTINUE_BUTTON = 4;
+    CONTINUE_BUTTON = 5;
 
     // Text label that is shown when stopping the Autofill Assistant.
-    STOPPED = 5;
+    STOPPED = 6;
 
     // Option shown in the menu when clicking the Autofill Assistant profile
     // icon. Clicking this option will open a feedback sharing dialog.
-    SEND_FEEDBACK = 6;
+    SEND_FEEDBACK = 7;
 
     // A generic term for Close on buttons and menus.
-    CLOSE = 7;
+    CLOSE = 8;
 
     // Title for Chrome's Settings.
-    SETTINGS = 8;
+    SETTINGS = 9;
   }
 
   // A Chrome display string along with its ID. This is used to create a map of

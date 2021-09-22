@@ -12,6 +12,9 @@ namespace {
 int MapDisplayStringIdToChromeMessage(
     ClientSettingsProto::DisplayStringId display_string_id) {
   switch (display_string_id) {
+    case ClientSettingsProto::UNSPECIFIED:
+      // Shouldn't happen. Returning default error.
+      return IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR;
     case ClientSettingsProto::GIVE_UP:
       return IDS_AUTOFILL_ASSISTANT_GIVE_UP;
     case ClientSettingsProto::MAYBE_GIVE_UP:
