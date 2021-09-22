@@ -24,8 +24,7 @@ class CookieManager;
 }  // namespace mojom
 }  // namespace network
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 // Concrete AndroidSmsAppSetupController implementation.
@@ -125,7 +124,6 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_SETUP_CONTROLLER_IMPL_H_

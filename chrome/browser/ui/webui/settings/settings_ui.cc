@@ -407,8 +407,8 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
   // under the notification permission that is auto-granted for Android Messages
   // integration in ChromeOS.
   if (!profile->IsGuestSession()) {
-    chromeos::android_sms::AndroidSmsService* android_sms_service =
-        chromeos::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
+    auto* android_sms_service =
+        ash::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
             profile);
     chromeos::phonehub::PhoneHubManager* phone_hub_manager =
         chromeos::phonehub::PhoneHubManagerFactory::GetForProfile(profile);

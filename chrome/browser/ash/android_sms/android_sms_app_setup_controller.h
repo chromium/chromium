@@ -11,8 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 // Manages the setup and uninstallation process of the Android SMS PWA.
@@ -67,7 +66,6 @@ class AndroidSmsAppSetupController {
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_SETUP_CONTROLLER_H_

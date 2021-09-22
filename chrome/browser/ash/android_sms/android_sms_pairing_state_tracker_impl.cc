@@ -23,8 +23,7 @@ const char kMessagesPairStateCookieName[] = "pair_state_cookie";
 const char kPairedCookieValue[] = "true";
 }  // namespace
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 AndroidSmsPairingStateTrackerImpl::AndroidSmsPairingStateTrackerImpl(
@@ -125,5 +124,4 @@ void AndroidSmsPairingStateTrackerImpl::AddCookieChangeListener() {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

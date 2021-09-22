@@ -48,8 +48,7 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
         user->GetAccountId() != primary_user->GetAccountId();
 
     android_sms::AndroidSmsService* android_sms_service =
-        chromeos::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
-            context);
+        android_sms::AndroidSmsServiceFactory::GetForBrowserContext(context);
     multidevice_setup_service_ = std::make_unique<MultiDeviceSetupService>(
         profile_->GetPrefs(),
         device_sync::DeviceSyncClientFactory::GetForProfile(profile_),

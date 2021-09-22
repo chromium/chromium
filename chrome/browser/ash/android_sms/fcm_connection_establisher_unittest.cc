@@ -17,8 +17,7 @@
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 class FcmConnectionEstablisherTest : public testing::Test {
@@ -178,5 +177,4 @@ TEST_F(FcmConnectionEstablisherTest, TestTearDownConnection) {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

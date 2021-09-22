@@ -31,8 +31,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 namespace {
@@ -380,5 +379,4 @@ void AndroidSmsAppSetupControllerImpl::SetPwaDelegateForTesting(
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

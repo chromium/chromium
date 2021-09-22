@@ -12,8 +12,7 @@
 #include "chrome/browser/ash/android_sms/android_sms_switches.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 namespace {
@@ -92,5 +91,4 @@ GURL GetAndroidMessagesURL(bool use_install_url, PwaDomain pwa_domain) {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

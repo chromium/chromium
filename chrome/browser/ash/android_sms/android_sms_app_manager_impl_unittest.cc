@@ -23,8 +23,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 const char kNewAppId[] = "newAppId";
@@ -385,5 +384,4 @@ TEST_F(AndroidSmsAppManagerImplTest, TestGetCurrentAppUrl) {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

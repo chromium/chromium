@@ -6,8 +6,7 @@
 
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 AndroidSmsAppManager::AndroidSmsAppManager() = default;
@@ -28,5 +27,4 @@ void AndroidSmsAppManager::NotifyInstalledAppUrlChanged() {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

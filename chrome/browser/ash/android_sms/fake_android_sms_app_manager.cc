@@ -6,8 +6,7 @@
 
 #include "base/macros.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 FakeAndroidSmsAppManager::FakeAndroidSmsAppManager() = default;
@@ -28,5 +27,4 @@ absl::optional<GURL> FakeAndroidSmsAppManager::GetCurrentAppUrl() {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

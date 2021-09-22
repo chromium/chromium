@@ -34,8 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 namespace {
@@ -538,5 +537,4 @@ TEST_F(AndroidSmsAppSetupControllerImplTest, RemoveApp_NoInstalledApp) {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

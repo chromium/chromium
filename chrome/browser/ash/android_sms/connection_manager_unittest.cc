@@ -16,7 +16,13 @@
 #include "content/public/test/fake_service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): remove when chromeos/multidevice_setup is
+// migrated.
+namespace multidevice_setup {
+namespace mojom = ::chromeos::multidevice_setup::mojom;
+}
 
 namespace android_sms {
 
@@ -341,5 +347,4 @@ TEST_F(ConnectionManagerTest, AppUrlMigration) {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

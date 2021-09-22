@@ -14,8 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/android_sms/connection_establisher.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 // ConnectionEstablisher implementation that initiates an FCM web push
@@ -107,7 +106,6 @@ class FcmConnectionEstablisher : public ConnectionEstablisher {
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_FCM_CONNECTION_ESTABLISHER_H_

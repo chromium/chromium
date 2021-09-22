@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/android_sms/fake_connection_establisher.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 FakeConnectionEstablisher::FakeConnectionEstablisher() = default;
@@ -26,5 +25,4 @@ void FakeConnectionEstablisher::TearDownConnection(
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

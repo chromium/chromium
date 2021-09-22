@@ -8,6 +8,10 @@
 #include <memory>
 #include "chrome/browser/ash/android_sms/android_sms_app_manager_impl.h"
 #include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -22,13 +26,7 @@ namespace web_app {
 class WebAppProvider;
 }  // namespace web_app
 
-namespace chromeos {
-
-namespace multidevice_setup {
-class AndroidSmsPairingStateTracker;
-class MultiDeviceSetupClient;
-}  // namespace multidevice_setup
-
+namespace ash {
 namespace android_sms {
 
 class AndroidSmsAppManager;
@@ -86,7 +84,13 @@ class AndroidSmsService : public KeyedService,
 };
 
 }  // namespace android_sms
+}  // namespace ash
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace android_sms {
+using ::ash::android_sms::AndroidSmsService;
+}
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_SERVICE_H_

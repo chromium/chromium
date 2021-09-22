@@ -18,8 +18,7 @@ namespace content {
 class ServiceWorkerContext;
 }  // namespace content
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 class ConnectionEstablisher;
@@ -126,7 +125,6 @@ class ConnectionManager
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_CONNECTION_MANAGER_H_

@@ -21,8 +21,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 namespace {
@@ -315,5 +314,4 @@ void AndroidSmsAppManagerImpl::HandleAppSetupFinished() {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

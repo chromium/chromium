@@ -8,8 +8,7 @@
 #include "base/check_op.h"
 #include "base/path_service.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 FakeAndroidSmsAppSetupController::AppMetadata::AppMetadata() = default;
@@ -133,5 +132,4 @@ void FakeAndroidSmsAppSetupController::RemoveApp(
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

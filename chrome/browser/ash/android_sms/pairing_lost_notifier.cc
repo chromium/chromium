@@ -18,7 +18,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): remove when chromeos/multidevice_setup is
+// migrated.
+namespace multidevice_setup {
+namespace mojom = ::chromeos::multidevice_setup::mojom;
+}
 
 namespace android_sms {
 
@@ -124,7 +130,7 @@ void PairingLostNotifier::ShowPairingLostNotification() {
 
   NotificationDisplayService::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT,
-      *ash::CreateSystemNotification(
+      *CreateSystemNotification(
           message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
           kPairingLostNotificationId,
           l10n_util::GetStringUTF16(
@@ -164,5 +170,4 @@ void PairingLostNotifier::OnPairingLostNotificationClick(
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

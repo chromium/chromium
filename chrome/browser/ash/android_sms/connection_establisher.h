@@ -9,8 +9,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 // Establishes a background connection from the Android Messages for Web
@@ -38,7 +37,6 @@ class ConnectionEstablisher {
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_CONNECTION_ESTABLISHER_H_

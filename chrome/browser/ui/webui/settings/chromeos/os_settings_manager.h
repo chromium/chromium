@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/android_sms/android_sms_service.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,10 +38,6 @@ class SyncService;
 namespace chromeos {
 
 class CupsPrintersManager;
-
-namespace android_sms {
-class AndroidSmsService;
-}  // namespace android_sms
 
 namespace local_search_service {
 class LocalSearchServiceProxy;

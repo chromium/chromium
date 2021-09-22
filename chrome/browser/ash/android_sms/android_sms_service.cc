@@ -18,8 +18,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 AndroidSmsService::AndroidSmsService(
@@ -87,5 +86,4 @@ void AndroidSmsService::OnSessionStateChanged() {
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

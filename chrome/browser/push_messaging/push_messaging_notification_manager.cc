@@ -316,12 +316,12 @@ bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
     return false;
   }
 
-  chromeos::android_sms::AndroidSmsAppManager* android_sms_app_manager;
+  ash::android_sms::AndroidSmsAppManager* android_sms_app_manager;
   if (test_android_sms_app_manager_) {
     android_sms_app_manager = test_android_sms_app_manager_;
   } else {
-    chromeos::android_sms::AndroidSmsService* android_sms_service =
-        chromeos::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
+    auto* android_sms_service =
+        ash::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
             profile_);
     if (!android_sms_service)
       return false;
@@ -331,7 +331,7 @@ bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
   // Check if origin matches current messages url
   absl::optional<GURL> app_url = android_sms_app_manager->GetCurrentAppUrl();
   if (!app_url)
-    app_url = chromeos::android_sms::GetAndroidMessagesURL();
+    app_url = ash::android_sms::GetAndroidMessagesURL();
 
   if (!origin.EqualsIgnoringRef(app_url->GetOrigin()))
     return false;
@@ -346,7 +346,7 @@ void PushMessagingNotificationManager::SetTestMultiDeviceSetupClient(
 }
 
 void PushMessagingNotificationManager::SetTestAndroidSmsAppManager(
-    chromeos::android_sms::AndroidSmsAppManager* android_sms_app_manager) {
+    ash::android_sms::AndroidSmsAppManager* android_sms_app_manager) {
   test_android_sms_app_manager_ = android_sms_app_manager;
 }
 #endif

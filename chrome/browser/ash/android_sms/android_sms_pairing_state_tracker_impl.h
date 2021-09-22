@@ -14,8 +14,7 @@
 
 class Profile;
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 // Concrete AndroidSmsPairingStateTracker implementation.
@@ -65,7 +64,6 @@ class AndroidSmsPairingStateTrackerImpl
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_PAIRING_STATE_TRACKER_IMPL_H_

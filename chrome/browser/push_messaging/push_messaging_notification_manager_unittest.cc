@@ -58,9 +58,8 @@ TEST_F(PushMessagingNotificationManagerTest, IsTabVisibleViewSource) {
 TEST_F(PushMessagingNotificationManagerTest,
        SkipEnforceUserVisibleOnlyRequirementsForAndroidMessages) {
   GURL app_url("https://example.com/test/");
-  chromeos::android_sms::FakeAndroidSmsAppManager*
-      fake_android_sms_app_manager =
-          new chromeos::android_sms::FakeAndroidSmsAppManager();
+  auto* fake_android_sms_app_manager =
+      new ash::android_sms::FakeAndroidSmsAppManager();
   fake_android_sms_app_manager->SetInstalledAppUrl(app_url);
 
   chromeos::multidevice_setup::FakeMultiDeviceSetupClient*

@@ -7,6 +7,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/android_sms/android_sms_service.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -17,10 +19,6 @@ class WebUIDataSource;
 }  // namespace content
 
 namespace chromeos {
-
-namespace android_sms {
-class AndroidSmsService;
-}  // namespace android_sms
 
 namespace phonehub {
 class PhoneHubManager;

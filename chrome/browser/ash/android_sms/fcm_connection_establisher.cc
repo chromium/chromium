@@ -16,8 +16,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 const int FcmConnectionEstablisher::kMaxRetryCount = 7;
@@ -203,5 +202,4 @@ std::ostream& operator<<(
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash

@@ -6,18 +6,15 @@
 #define CHROME_BROWSER_ASH_ANDROID_SMS_PAIRING_LOST_NOTIFIER_H_
 
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
-namespace chromeos {
-
-namespace multidevice_setup {
-class AndroidSmsAppHelperDelegate;
-}  // namespace multidevice_setup
-
+namespace ash {
 namespace android_sms {
 
 // Displays a notification when a user loses pairing between their phone and
@@ -62,7 +59,6 @@ class PairingLostNotifier
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_PAIRING_LOST_NOTIFIER_H_

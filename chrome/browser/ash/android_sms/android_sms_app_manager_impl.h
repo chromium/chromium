@@ -26,8 +26,7 @@ namespace app_list {
 class AppListSyncableService;
 }  // namespace app_list
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 class AndroidSmsAppSetupController;
@@ -111,7 +110,6 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_MANAGER_IMPL_H_

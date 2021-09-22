@@ -10,8 +10,7 @@
 
 #include "chrome/browser/ash/android_sms/connection_establisher.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 // Test ConnectionEstablisher implementation.
@@ -54,7 +53,6 @@ class FakeConnectionEstablisher : public ConnectionEstablisher {
 };
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_FAKE_CONNECTION_ESTABLISHER_H_

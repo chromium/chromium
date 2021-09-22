@@ -19,15 +19,15 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace android_sms {
 
 namespace {
 
 bool ShouldStartAndroidSmsService(Profile* profile) {
   const bool multidevice_feature_allowed = multidevice_setup::IsFeatureAllowed(
-      multidevice_setup::mojom::Feature::kMessages, profile->GetPrefs());
+      chromeos::multidevice_setup::mojom::Feature::kMessages,
+      profile->GetPrefs());
 
   const bool has_user_for_profile =
       !!ProfileHelper::Get()->GetUserByProfile(profile);
@@ -107,5 +107,4 @@ void AndroidSmsServiceFactory::RegisterProfilePrefs(
 }
 
 }  // namespace android_sms
-
-}  // namespace chromeos
+}  // namespace ash
