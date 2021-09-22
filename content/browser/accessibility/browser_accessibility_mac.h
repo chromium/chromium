@@ -10,14 +10,6 @@
 #include "content/common/content_export.h"
 
 @class BrowserAccessibilityCocoa;
-@class AXPlatformNodeCocoa;
-
-namespace base {
-
-template <typename NST>
-class scoped_nsobject;
-
-}  // namespace base
 
 namespace ui {
 
@@ -51,9 +43,7 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   BrowserAccessibility* PlatformGetPreviousSibling() const override;
 
   // The BrowserAccessibilityCocoa associated with us.
-  BrowserAccessibilityCocoa* native_view() const {
-    return browser_accessibility_cocoa_;
-  }
+  BrowserAccessibilityCocoa* GetNativeWrapper() const;
 
   // Refresh the native object associated with this.
   // Useful for re-announcing the current focus when properties have changed.
@@ -69,14 +59,7 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   void CreatePlatformNodes();
 
   // Creates a new cocoa node. Returns an old node in the swap_node.
-  void CreatePlatformCocoaNode(
-      base::scoped_nsobject<AXPlatformNodeCocoa>& swap_node);
-
-  // Allows access to the BrowserAccessibilityCocoa which wraps this.
-  // BrowserAccessibility.
-  // We own this object until our manager calls ReleaseReference;
-  // thereafter, the cocoa object owns us.
-  BrowserAccessibilityCocoa* browser_accessibility_cocoa_;
+  BrowserAccessibilityCocoa* CreateNativeWrapper();
 
   // Manager of the native cocoa node. We own this object.
   ui::AXPlatformNodeMac* platform_node_;

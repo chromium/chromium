@@ -29,10 +29,10 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
   void Destroy() override;
   bool IsPlatformCheckable() const override;
 
-  // Sets node cooca to the platform node, which takes ownership on it. Returns
-  // unowned old node, the caller must take the ownership.
-  void SwapNodeCocoa(base::scoped_nsobject<AXPlatformNodeCocoa>& node) {
-    native_node_.swap(node);
+  AXPlatformNodeCocoa* GetNativeWrapper() const { return native_node_.get(); }
+
+  void SetNativeWrapper(AXPlatformNodeCocoa* native_node) {
+    return native_node_.reset(native_node);
   }
 
  protected:
