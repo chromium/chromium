@@ -222,6 +222,9 @@ class DesktopNativeWidgetAuraWindowParentingClient
   // Overridden from client::WindowParentingClient:
   aura::Window* GetDefaultParent(aura::Window* window,
                                  const gfx::Rect& bounds) override {
+    // TODO(crbug.com/1236997): Re-enable this logic once Fuchsia's windowing
+    // APIs provide the required functionality.
+#if !defined(OS_FUCHSIA)
     bool is_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
                          ui::SHOW_STATE_FULLSCREEN;
     bool is_menu = window->GetType() == aura::client::WINDOW_TYPE_MENU;
@@ -237,6 +240,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
           window, root_window_ /* context */, bounds, is_fullscreen, is_menu,
           root_z_order);
     }
+#endif  // !defined(OS_FUCHSIA)
     return root_window_;
   }
 

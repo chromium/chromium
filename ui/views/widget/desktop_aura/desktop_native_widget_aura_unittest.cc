@@ -370,6 +370,12 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetCanBeDestroyedFromNestedLoop) {
   run_loop.Run();
 }
 
+using DesktopAuraWidgetTest = DesktopWidgetTest;
+
+#if !defined(OS_FUCHSIA)
+// TODO(crbug.com/1236997): Under Fuchsia pop-up and fullscreen windows are not
+// reparented to be top-level, so the following tests are not valid.
+
 // This class provides functionality to create fullscreen and top level popup
 // windows. It additionally tests whether the destruction of these windows
 // occurs correctly in desktop AURA without crashing.
@@ -472,8 +478,6 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   bool use_async_mode_ = true;
 };
 
-using DesktopAuraWidgetTest = DesktopWidgetTest;
-
 TEST_F(DesktopAuraWidgetTest, FullscreenWindowDestroyedBeforeOwnerTest) {
   DesktopAuraTopLevelWindowTest fullscreen_window;
   ASSERT_NO_FATAL_FAILURE(
@@ -543,6 +547,8 @@ TEST_F(DesktopAuraWidgetTest, TopLevelOwnedPopupRepositionTest) {
 
   ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
 }
+
+#endif  // !defined(OS_FUCHSIA)
 
 // The following code verifies we can correctly destroy a Widget from a mouse
 // enter/exit. We could test move/drag/enter/exit but in general we don't run
