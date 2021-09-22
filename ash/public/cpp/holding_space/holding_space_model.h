@@ -51,6 +51,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetBackingFile(const base::FilePath& file_path,
                                      const GURL& file_system_url);
 
+    // Sets whether the image for the item should be forcibly invalidated and
+    // returns a reference to `this`.
+    ScopedItemUpdate& SetInvalidateImage(bool invalidate_image);
+
     // Sets if progress of the item is `paused` and returns a ref to `this`.
     // NOTE: Only in-progress holding space items can be paused.
     ScopedItemUpdate& SetPaused(bool paused);
@@ -82,6 +86,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     absl::optional<HoldingSpaceProgress> progress_;
     absl::optional<absl::optional<std::u16string>> secondary_text_;
     absl::optional<absl::optional<std::u16string>> text_;
+    bool invalidate_image_ = false;
   };
 
   HoldingSpaceModel();

@@ -2235,12 +2235,16 @@ class HoldingSpaceKeyedServiceAddItemTest
                const base::FilePath& file_path) {
     auto* const holding_space_service = GetService(profile);
     ASSERT_TRUE(holding_space_service);
+    const auto* holding_space_model =
+        holding_space_service->model_for_testing();
+    ASSERT_TRUE(holding_space_model);
 
     switch (type) {
       case HoldingSpaceItem::Type::kArcDownload:
       case HoldingSpaceItem::Type::kDownload:
       case HoldingSpaceItem::Type::kLacrosDownload:
-        holding_space_service->AddDownload(type, file_path);
+        EXPECT_EQ(holding_space_model->ContainsItem(type, file_path),
+                  holding_space_service->AddDownload(type, file_path).empty());
         break;
       case HoldingSpaceItem::Type::kDiagnosticsLog:
         holding_space_service->AddDiagnosticsLog(file_path);
@@ -2269,7 +2273,9 @@ class HoldingSpaceKeyedServiceAddItemTest
         holding_space_service->AddScreenshot(file_path);
         break;
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
-        holding_space_service->AddPhoneHubCameraRollItem(file_path);
+        EXPECT_EQ(holding_space_model->ContainsItem(type, file_path),
+                  holding_space_service->AddPhoneHubCameraRollItem(file_path)
+                      .empty());
         break;
     }
   }
@@ -2322,6 +2328,57 @@ TEST_P(HoldingSpaceKeyedServiceAddItemTest, AddItem) {
 
   // Attempt to add a holding space item of the same type and `file_path`.
   AddItem(profile, GetType(), file_path);
+
+  // Attempts to add already represented items should be ignored.
+  ASSERT_EQ(model->items().size(), 1u);
+  EXPECT_EQ(model->items()[0].get(), item);
+}
+
+TEST_P(HoldingSpaceKeyedServiceAddItemTest, AddItemOfType) {
+  // Wait for the holding space model to attach.
+  TestingProfile* profile = GetProfile();
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+
+  // Verify the holding space `model` is empty.
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  // Create a test mount point.
+  std::unique_ptr<ScopedTestMountPoint> mount_point =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(mount_point->IsValid());
+
+  // Create a file on the file system.
+  const base::FilePath file_path = mount_point->CreateFile(
+      /*relative_path=*/base::FilePath("foo"), /*content=*/"foo");
+
+  // Add a holding space item of the type under test.
+  const auto& id = GetService(profile)->AddItemOfType(GetType(), file_path);
+  EXPECT_FALSE(id.empty());
+
+  // Verify a holding space item has been added to the model.
+  ASSERT_EQ(model->items().size(), 1u);
+
+  // Verify holding space `item` metadata.
+  HoldingSpaceItem* const item = model->items()[0].get();
+  EXPECT_EQ(item->id(), id);
+  EXPECT_EQ(item->type(), GetType());
+  EXPECT_EQ(item->GetText(), file_path.BaseName().LossyDisplayName());
+  EXPECT_EQ(item->file_path(), file_path);
+  EXPECT_EQ(item->file_system_url(),
+            holding_space_util::ResolveFileSystemUrl(profile, file_path));
+
+  // Verify holding space `item` image.
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *holding_space_util::ResolveImage(
+           GetService(profile)->thumbnail_loader_for_testing(), GetType(),
+           file_path)
+           ->GetImageSkia()
+           .bitmap(),
+      *item->image().GetImageSkia().bitmap()));
+
+  // Attempt to add a holding space item of the same type and `file_path`.
+  EXPECT_TRUE(GetService(profile)->AddItemOfType(GetType(), file_path).empty());
 
   // Attempts to add already represented items should be ignored.
   ASSERT_EQ(model->items().size(), 1u);

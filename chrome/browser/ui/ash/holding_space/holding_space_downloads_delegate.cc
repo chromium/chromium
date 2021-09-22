@@ -810,12 +810,11 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
         type = HoldingSpaceItem::Type::kLacrosDownload;
         break;
     }
-    service()->AddDownload(
+    const std::string& id = service()->AddDownload(
         type, in_progress_download->GetFilePath(),
         in_progress_download->GetProgress(),
         in_progress_download->GetPlaceholderImageSkiaResolver());
-    in_progress_download->SetHoldingSpaceItem(
-        item = model()->GetItem(type, in_progress_download->GetFilePath()));
+    in_progress_download->SetHoldingSpaceItem(item = model()->GetItem(id));
     // NOTE: This code intentionally falls through so as to update metadata for
     // the newly created holding space item.
   }
@@ -825,24 +824,16 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
     return;
 
   // Update.
-  model()
+  service()
       ->UpdateItem(item->id())
       ->SetBackingFile(in_progress_download->GetFilePath(),
                        holding_space_util::ResolveFileSystemUrl(
                            profile(), in_progress_download->GetFilePath()))
+      .SetInvalidateImage(invalidate_image)
       .SetText(in_progress_download->GetText())
       .SetSecondaryText(in_progress_download->GetSecondaryText())
       .SetPaused(in_progress_download->IsPaused())
       .SetProgress(in_progress_download->GetProgress());
-
-  if (!invalidate_image)
-    return;
-
-  model()->InvalidateItemImageIf(base::BindRepeating(
-      [](const std::string& item_id, const HoldingSpaceItem* item) {
-        return item->id() == item_id;
-      },
-      std::cref(item->id())));
 }
 
 }  // namespace ash

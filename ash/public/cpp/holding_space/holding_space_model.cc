@@ -49,6 +49,11 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
       updated_fields |= HoldingSpaceModelObserver::UpdatedField::kText;
   }
 
+  // Invalidate image if necessary. Note that this does not trigger an observer
+  // event as the image itself can be subscribed to independently for updates.
+  if (invalidate_image_)
+    item_->InvalidateImage();
+
   // Notify observers if and only if an update occurred.
   if (updated_fields != 0u) {
     for (auto& observer : model_->observers_)
@@ -62,6 +67,12 @@ HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
     const GURL& file_system_url) {
   file_path_ = file_path;
   file_system_url_ = file_system_url;
+  return *this;
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetInvalidateImage(bool invalidate_image) {
+  invalidate_image_ = invalidate_image;
   return *this;
 }
 
