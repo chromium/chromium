@@ -147,7 +147,7 @@ scoped_refptr<InputMethodManager::State>
 InputMethodManagerImpl::StateImpl::Clone() const {
   scoped_refptr<StateImpl> new_state(new StateImpl(this->manager_, profile));
 
-  new_state->last_used_input_method = last_used_input_method;
+  new_state->last_used_input_method_id = last_used_input_method_id;
   new_state->current_input_method = current_input_method;
 
   new_state->active_input_method_ids = active_input_method_ids;
@@ -491,7 +491,7 @@ void InputMethodManagerImpl::StateImpl::ChangeInputMethod(
     pending_input_method_id = input_method_id;
 
   if (descriptor->id() != current_input_method.id()) {
-    last_used_input_method = current_input_method;
+    last_used_input_method_id = current_input_method.id();
     current_input_method = *descriptor;
     notify_menu = true;
   }
@@ -776,17 +776,17 @@ void InputMethodManagerImpl::StateImpl::SwitchToLastUsedInputMethod() {
   if (!CanCycleInputMethod())
     return;
 
-  if (last_used_input_method.id().empty() ||
-      last_used_input_method.id() == current_input_method.id()) {
+  if (last_used_input_method_id.empty() ||
+      last_used_input_method_id == current_input_method.id()) {
     SwitchToNextInputMethod();
     return;
   }
 
   const auto iter =
       std::find(active_input_method_ids.begin(), active_input_method_ids.end(),
-                last_used_input_method.id());
+                last_used_input_method_id);
   if (iter == active_input_method_ids.end()) {
-    // last_used_input_method is not supported.
+    // last_used_input_method_id is not supported.
     SwitchToNextInputMethod();
     return;
   }

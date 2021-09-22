@@ -122,8 +122,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     // ------------------------- Data members.
     Profile* const profile;
 
-    // The input method which was/is selected.
-    InputMethodDescriptor last_used_input_method;
+    std::string last_used_input_method_id;
     InputMethodDescriptor current_input_method;
 
     // The active input method ids cache.
