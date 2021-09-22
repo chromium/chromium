@@ -9,7 +9,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -63,21 +62,6 @@ void ChromeLabsButton::Layout() {
   dot_rect.set_origin(image()->GetImageBounds().bottom_right() -
                       dot_rect.bottom_right().OffsetFromOrigin());
   new_experiments_indicator_->SetBoundsRect(dot_rect);
-}
-
-void ChromeLabsButton::OnThemeChanged() {
-  ToolbarButton::OnThemeChanged();
-
-  // We don't always have a theme provider (ui tests, for example).
-  const ui::ThemeProvider* theme_provider = GetThemeProvider();
-  if (!theme_provider)
-    return;
-
-  new_experiments_indicator_->SetColor(
-      /*dot_color=*/GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_ProminentButtonColor),
-      /*border_color=*/theme_provider->GetColor(
-          ThemeProperties::COLOR_TOOLBAR));
 }
 
 void ChromeLabsButton::HideDotIndicator() {

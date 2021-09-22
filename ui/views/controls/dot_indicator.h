@@ -34,9 +34,10 @@ class VIEWS_EXPORT DotIndicator : public View {
 
   // View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
-  SkColor dot_color_ = gfx::kPlaceholderColor;
-  SkColor border_color_ = gfx::kPlaceholderColor;
+  absl::optional<SkColor> dot_color_;
+  absl::optional<SkColor> border_color_;
 };
 
 }  // namespace views
