@@ -58,10 +58,6 @@ ContentSuggestionsSectionInformation* MostVisitedSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionMostVisited);
 }
 
-ContentSuggestionsSectionInformation* LearnMoreSectionInformation() {
-  return EmptySectionInfo(ContentSuggestionsSectionLearnMore);
-}
-
 ContentSuggestionsSectionInformation* DiscoverSectionInformation(
     BOOL isGoogleDefaultSearchProvider) {
   ContentSuggestionsSectionInformation* sectionInfo =

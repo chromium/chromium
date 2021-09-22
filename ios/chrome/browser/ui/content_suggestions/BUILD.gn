@@ -4,12 +4,10 @@
 
 source_set("content_suggestions") {
   sources = [
-    "content_suggestions_action_handler.h",
     "content_suggestions_alert_factory.h",
     "content_suggestions_alert_factory.mm",
     "content_suggestions_category_wrapper.h",
     "content_suggestions_category_wrapper.mm",
-    "content_suggestions_consumer.h",
     "content_suggestions_coordinator.h",
     "content_suggestions_coordinator.mm",
     "content_suggestions_favicon_mediator.h",
@@ -116,13 +114,11 @@ source_set("constants") {
 
 source_set("content_suggestions_ui") {
   sources = [
-    "content_suggestions_action_handler.h",
     "content_suggestions_collection_controlling.h",
     "content_suggestions_collection_synchronizing.h",
     "content_suggestions_collection_updater.h",
     "content_suggestions_collection_updater.mm",
     "content_suggestions_commands.h",
-    "content_suggestions_consumer.h",
     "content_suggestions_data_sink.h",
     "content_suggestions_data_source.h",
     "content_suggestions_header_commands.h",

@@ -12,27 +12,22 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_header_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_action_handler.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_updater.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -57,9 +52,6 @@ const CGFloat kDiscoverFeedContentWith = 430;
 const CGFloat kPaginationOffset = 800;
 // Height for the Discover Feed section header.
 const CGFloat kDiscoverFeedFeaderHeight = 30;
-// Minimum height of the Discover feed content to indicate that the articles
-// have loaded.
-const CGFloat kDiscoverFeedLoadedHeight = 1000;
 }
 
 @interface ContentSuggestionsViewController ()<UIGestureRecognizerDelegate> {
@@ -73,21 +65,9 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 @property(nonatomic, strong)
     OverscrollActionsController* overscrollActionsController;
 
-// The DiscoverFeedVC that might be displayed by this VC.
-@property(nonatomic, weak) UIViewController* discoverFeedVC;
-// The FeedView CollectionView contained by discoverFeedVC.
-@property(nonatomic, strong) UICollectionView* feedView;
-
 // Navigation offset applied to the layout height to maintain the scroll
 // position, since the feed height is dynamic.
 @property(nonatomic) CGFloat offset;
-
-// Represents the last recorded height of the Discover feed for tracking when to
-// trigger the infinite feed.
-@property(nonatomic, assign) CGFloat discoverFeedHeight;
-
-// Whether this VC is observing the discoverFeedHeight using KVO or not.
-@property(nonatomic, assign) BOOL observingDiscoverFeedHeight;
 
 // The CollectionViewController scroll position when an scrolling event starts.
 @property(nonatomic, assign) int scrollStartPosition;
@@ -111,10 +91,8 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 #pragma mark - Lifecycle
 
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
-                       offset:(CGFloat)offset
-                  feedVisible:(BOOL)visible {
+                       offset:(CGFloat)offset {
   _offset = offset;
-  _feedVisible = visible;
   _layout = [[ContentSuggestionsLayout alloc] initWithOffset:offset];
   self = [super initWithLayout:_layout style:style];
   if (self) {
@@ -126,12 +104,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 }
 
 - (void)dealloc {
-  [self removeContentSizeKVO];
-  if (self.discoverFeedVC.parentViewController) {
-    [self.discoverFeedVC willMoveToParentViewController:nil];
-    [self.discoverFeedVC.view removeFromSuperview];
-    [self.discoverFeedVC removeFromParentViewController];
-  }
   [self.overscrollActionsController invalidate];
 }
 
@@ -398,11 +370,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
       [self.suggestionCommandHandler handlePromoTapped];
       [self.collectionViewLayout invalidateLayout];
       break;
-    case ContentSuggestionTypeLearnMore:
-    case ContentSuggestionTypeReadingList:
-    case ContentSuggestionTypeArticle:
-      // TODO(crbug.com/1200303): Remove these three types.
-      break;
     case ContentSuggestionTypeDiscover:
     case ContentSuggestionTypeEmpty:
       break;
@@ -411,46 +378,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView
                  cellForItemAtIndexPath:(NSIndexPath*)indexPath {
-  CSCollectionViewItem* item =
-      [self.collectionViewModel itemAtIndexPath:indexPath];
-
-  if ([self.collectionUpdater
-          isDiscoverItem:[self.collectionViewModel
-                             itemTypeForIndexPath:indexPath]]) {
-    // TODO(crbug.com/1114792): Remove DiscoverItem logic once we stop
-    // containing the DiscoverFeed inside a cell.
-    ContentSuggestionsDiscoverItem* discoverFeedItem =
-        static_cast<ContentSuggestionsDiscoverItem*>(item);
-    UIViewController* newFeedViewController = discoverFeedItem.discoverFeed;
-
-    if (newFeedViewController != self.discoverFeedVC) {
-      // If previous VC is not nil, remove it from the view hierarchy.
-      if (self.discoverFeedVC) {
-        self.feedView = nil;
-        [self.discoverFeedVC willMoveToParentViewController:nil];
-        [self.discoverFeedVC.view removeFromSuperview];
-        [self.discoverFeedVC removeFromParentViewController];
-      }
-
-      // If new VC is not nil, add it to the view hierarchy.
-      if (newFeedViewController) {
-        [self addChildViewController:newFeedViewController];
-        UICollectionViewCell* cell = [super collectionView:collectionView
-                                    cellForItemAtIndexPath:indexPath];
-        [newFeedViewController didMoveToParentViewController:self];
-
-        // Observe its CollectionView for contentSize changes.
-        for (UIView* view in newFeedViewController.view.subviews) {
-          if ([view isKindOfClass:[UICollectionView class]]) {
-            self.feedView = static_cast<UICollectionView*>(view);
-          }
-        }
-        self.discoverFeedVC = newFeedViewController;
-        return cell;
-      }
-    }
-  }
-
   UICollectionViewCell* cell = [super collectionView:collectionView
                               cellForItemAtIndexPath:indexPath];
   if ([self.collectionUpdater isMostVisitedSection:indexPath.section]) {
@@ -675,16 +602,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
   [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   self.scrolledToTop =
       scrollView.contentOffset.y >= [self.headerSynchronizer pinnedOffsetY];
-
-  if (IsDiscoverFeedEnabled() && self.contentSuggestionsEnabled) {
-    if ([self shouldTriggerInfiniteFeed:scrollView]) {
-      CGFloat currentHeight = self.feedView.contentSize.height;
-      if (currentHeight != self.discoverFeedHeight) {
-        self.discoverFeedHeight = currentHeight;
-        [self.handler loadMoreFeedArticles];
-      }
-    }
-  }
   scrollView.showsHorizontalScrollIndicator = NO;
 }
 
@@ -711,13 +628,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
                                               willDecelerate:decelerate];
   [self.panGestureHandler scrollViewDidEndDragging:scrollView
                                     willDecelerate:decelerate];
-
-  // Track scrolling for the legacy NTP with visible Discover feed.
-  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP() && [self isFeedVisible]) {
-    [self.discoverFeedMetricsRecorder
-        recordFeedScrolled:scrollView.contentOffset.y -
-                           self.scrollStartPosition];
-  }
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
@@ -774,66 +684,7 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
   return YES;
 }
 
-#pragma mark - ContentSuggestionsConsumer
-
-- (void)setContentSuggestionsEnabled:(BOOL)enabled {
-  _contentSuggestionsEnabled = enabled;
-}
-
-- (void)setContentSuggestionsVisible:(BOOL)visible {
-  [self.collectionUpdater changeDiscoverFeedHeaderVisibility:visible];
-}
-
-#pragma mark - NSKeyValueObserving
-
-// TODO(crbug.com/1114792): Remove once we stop containing the DiscoverFeed
-// inside a cell.
-- (void)observeValueForKeyPath:(NSString*)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary*)change
-                       context:(void*)context {
-  if (object == self.feedView && [keyPath isEqualToString:@"contentSize"]) {
-    // Reload the CollectionView data to adjust to the new Feed height.
-    [self.collectionView reloadData];
-    // Indicates that the feed articles have been loaded by checking its height.
-    // TODO(crbug.com/1126940): Use a callback from Mulder to determine this
-    // more reliably.
-    if (self.feedView.contentSize.height > kDiscoverFeedLoadedHeight) {
-      [self.discoverFeedMenuHandler notifyFeedLoadedForHeaderMenu];
-      [self.audience discoverFeedShown];
-    }
-  }
-}
-
 #pragma mark - Private
-
-// |self.feedView| setter.
-- (void)setFeedView:(UICollectionView*)feedView {
-  if (feedView != _feedView) {
-    [self removeContentSizeKVO];
-    _feedView = feedView;
-    [self addContentSizeKVO];
-  }
-}
-
-// Adds KVO observing for the feedView contentSize if there is not one already.
-- (void)addContentSizeKVO {
-  if (!self.observingDiscoverFeedHeight) {
-    [self.feedView addObserver:self
-                    forKeyPath:@"contentSize"
-                       options:0
-                       context:nil];
-    self.observingDiscoverFeedHeight = YES;
-  }
-}
-
-// Removes KVO observing for the feedView contentSize if one exists.
-- (void)removeContentSizeKVO {
-  if (self.observingDiscoverFeedHeight) {
-    [self.feedView removeObserver:self forKeyPath:@"contentSize"];
-    self.observingDiscoverFeedHeight = NO;
-  }
-}
 
 - (void)handleLongPress:(UILongPressGestureRecognizer*)gestureRecognizer {
   if (self.editor.editing ||

@@ -14,15 +14,12 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "components/prefs/ios/pref_observer_bridge.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/pref_names.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
@@ -30,7 +27,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_category_wrapper.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_sink.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -63,18 +59,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 }  // namespace
 
-@interface ContentSuggestionsMediator () <BooleanObserver,
-                                          MostVisitedSitesObserving,
-                                          PrefObserverDelegate,
+@interface ContentSuggestionsMediator () <MostVisitedSitesObserving,
                                           ReadingListModelBridgeObserver> {
   std::unique_ptr<ntp_tiles::MostVisitedSites> _mostVisitedSites;
   std::unique_ptr<ntp_tiles::MostVisitedSitesObserverBridge> _mostVisitedBridge;
   std::unique_ptr<NotificationPromoWhatsNew> _notificationPromo;
   std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
-  // Pref observer to track changes to prefs.
-  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // Registrar for pref changes notifications.
-  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
 }
 
 // Whether the contents section should be hidden completely.
@@ -131,8 +121,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // reading list count.
 @property(nonatomic, strong)
     ContentSuggestionsMostVisitedActionItem* readingListItem;
-// Item for the Discover feed.
-@property(nonatomic, strong) ContentSuggestionsDiscoverItem* discoverItem;
 // Number of unread items in reading list model.
 @property(nonatomic, assign) NSInteger readingListUnreadCount;
 // YES if the Return to Recent Tab tile is being shown.
@@ -156,7 +144,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
                                       mostVisitedSites
                  readingListModel:(ReadingListModel*)readingListModel
                       prefService:(PrefService*)prefService
-                     discoverFeed:(UIViewController*)discoverFeed
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider {
   self = [super init];
   if (self) {
@@ -176,11 +163,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     _promoSectionInfo = PromoSectionInformation();
     _mostVisitedSectionInfo = MostVisitedSectionInformation();
 
-    _discoverFeed = discoverFeed;
     _discoverSectionInfo =
         DiscoverSectionInformation(isGoogleDefaultSearchProvider);
-    _discoverItem = [[ContentSuggestionsDiscoverItem alloc] init];
-    _discoverItem.discoverFeed = _discoverFeed;
 
     _notificationPromo = std::make_unique<NotificationPromoWhatsNew>(
         GetApplicationContext()->GetLocalState());
@@ -191,14 +175,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
         std::make_unique<ntp_tiles::MostVisitedSitesObserverBridge>(self);
     _mostVisitedSites->AddMostVisitedURLsObserver(_mostVisitedBridge.get(),
                                                   kMaxNumMostVisitedTiles);
-
-    _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-    _prefChangeRegistrar->Init(prefService);
-    _prefObserverBridge.reset(new PrefObserverBridge(self));
-    _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
-    _prefObserverBridge->ObserveChangesForPreference(
-        prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
 
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
@@ -211,20 +187,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)disconnect {
-  _prefChangeRegistrar.reset();
-  _prefObserverBridge.reset();
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
-  _contentArticlesExpanded = nil;
 }
 
 - (void)reloadAllData {
   [self.dataSink reloadAllData];
-}
-
-- (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {
-  _consumer = consumer;
-  [self.consumer setContentSuggestionsEnabled:self.contentSuggestionsEnabled];
 }
 
 - (void)blockMostVisitedURL:(GURL)URL {
@@ -359,10 +327,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     if (!ShouldHideShortcutsForStartSurface()) {
       [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
     }
-  } else if (sectionInfo == self.discoverSectionInfo) {
-    if ([self.contentArticlesExpanded value] && !IsRefactoredNTP()) {
-      [convertedSuggestions addObject:self.discoverItem];
-    }
   }
 
   return convertedSuggestions;
@@ -372,12 +336,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return [self.headerProvider
       headerForWidth:width
       safeAreaInsets:[self.discoverFeedDelegate safeAreaInsetsForDiscoverFeed]];
-}
-
-#pragma mark - BooleanObserver
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  [self reloadArticleSectionOrAllData:YES];
 }
 
 #pragma mark - MostVisitedSitesObserving
@@ -438,42 +396,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 #pragma mark - Private
 
-// Reloads article section (for the page that trigers the request) or all
-// for other tabs/windows observing the pref. It avoids issues with scroll
-// changes, in hidden tabs/windows which leads to crashes.
-- (void)reloadArticleSectionOrAllData:(BOOL)allData {
-  // Update the section information for new collapsed state.
-  ntp_snippets::Category category = ntp_snippets::Category::FromKnownCategory(
-      ntp_snippets::KnownCategories::ARTICLES);
-  ContentSuggestionsCategoryWrapper* wrapper =
-      [ContentSuggestionsCategoryWrapper wrapperWithCategory:category];
-  ContentSuggestionsSectionInformation* sectionInfo =
-      self.sectionInformationByCategory[wrapper];
-  sectionInfo.expanded = [self.contentArticlesExpanded value];
-  [self.consumer
-      setContentSuggestionsVisible:[self.contentArticlesExpanded value]];
-
-  if (allData) {
-    [self reloadAllData];
-  } else {
-    // Reloading the section with animations looks bad because the section
-    // border with the new collapsed height draws before the elements collapse.
-    BOOL animationsWereEnabled = [UIView areAnimationsEnabled];
-    [UIView setAnimationsEnabled:NO];
-    [self.dataSink reloadSection:sectionInfo];
-    [UIView setAnimationsEnabled:animationsWereEnabled];
-  }
-}
-
-
-// Returns whether the |sectionInfo| is associated with a category from the
-// content suggestions service.
-- (BOOL)isRelatedToContentSuggestionsService:
-    (ContentSuggestionsSectionInformation*)sectionInfo {
-  return sectionInfo != self.mostVisitedSectionInfo &&
-         sectionInfo != self.logoSectionInfo;
-}
-
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
   self.mostVisitedItems = self.freshMostVisitedItems;
@@ -488,15 +410,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   } else {
     [self.dataSink reloadSection:self.mostVisitedSectionInfo];
   }
-}
-
-// Returns whether the Articles category pref indicates it should be expanded,
-// otherwise returns YES.
-- (BOOL)isCategoryExpanded:(ntp_snippets::Category)category {
-  if (category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES))
-    return [self.contentArticlesExpanded value];
-  else
-    return YES;
 }
 
 #pragma mark - Properties
@@ -529,41 +442,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   }
 }
 
-- (void)setContentArticlesExpanded:(PrefBackedBoolean*)contentArticlesExpanded {
-  if (_contentArticlesExpanded == contentArticlesExpanded)
-    return;
-  _contentArticlesExpanded = contentArticlesExpanded;
-  [contentArticlesExpanded setObserver:self];
-}
-
-- (void)setDiscoverFeed:(UIViewController*)discoverFeed {
-  _discoverFeed = discoverFeed;
-  _discoverItem.discoverFeed = _discoverFeed;
-  // The UICollectionView -reloadData method is a no-op if it is called at the
-  // same time as other collection updates. This full refresh command can come
-  // at the same time as other collection update commands. To make sure that it
-  // is taken into account, dispatch it with a delay. See
-  // http://crbug.com/945726.
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)),
-      dispatch_get_main_queue(), ^{
-        [self reloadAllData];
-      });
-}
-
 - (BOOL)contentSuggestionsEnabled {
   return self.articleForYouEnabled->GetValue()->GetBool() &&
          self.contentSuggestionsPolicyEnabled->GetValue()->GetBool();
-}
-
-#pragma mark - PrefObserverDelegate
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if ((preferenceName == prefs::kArticlesForYouEnabled ||
-       preferenceName == prefs::kNTPContentSuggestionsEnabled) &&
-      !IsRefactoredNTP()) {
-    [self reloadAllData];
-  }
 }
 
 #pragma mark - ReadingListModelBridgeObserver

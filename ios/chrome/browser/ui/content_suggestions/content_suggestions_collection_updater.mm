@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_updater.h"
 
-#import <MaterialComponents/MaterialPalettes.h>
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -15,7 +12,6 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_articles_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_text_item.h"
@@ -43,14 +39,11 @@ using CSCollectionViewModel = CollectionViewModel<CSCollectionViewItem*>;
 
 // Enum defining the ItemType of this ContentSuggestionsCollectionUpdater.
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeArticle = kItemTypeEnumZero,
-  ItemTypeFooter,
+  ItemTypeFooter = kItemTypeEnumZero,
   ItemTypeHeader,
   ItemTypeEmpty,
-  ItemTypeReadingList,
   ItemTypeMostVisited,
   ItemTypePromo,
-  ItemTypeLearnMore,
   ItemTypeDiscover,
   ItemTypeReturnToRecentTab,
   ItemTypeUnknown,
@@ -59,33 +52,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Enum defining the SectionIdentifier of this
 // ContentSuggestionsCollectionUpdater.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierArticles = kSectionIdentifierEnumZero,
-  SectionIdentifierReadingList,
-  SectionIdentifierMostVisited,
+  SectionIdentifierMostVisited = kSectionIdentifierEnumZero,
   SectionIdentifierLogo,
   SectionIdentifierReturnToRecentTab,
   SectionIdentifierPromo,
-  SectionIdentifierLearnMore,
   SectionIdentifierDiscover,
   SectionIdentifierDefault,
 };
 
 // Returns the ContentSuggestionType associated with an ItemType |type|.
 ContentSuggestionType ContentSuggestionTypeForItemType(NSInteger type) {
-  if (type == ItemTypeArticle)
-    return ContentSuggestionTypeArticle;
   if (type == ItemTypeEmpty)
     return ContentSuggestionTypeEmpty;
-  if (type == ItemTypeReadingList)
-    return ContentSuggestionTypeReadingList;
   if (type == ItemTypeReturnToRecentTab)
     return ContentSuggestionTypeReturnToRecentTab;
   if (type == ItemTypeMostVisited)
     return ContentSuggestionTypeMostVisited;
   if (type == ItemTypePromo)
     return ContentSuggestionTypePromo;
-  if (type == ItemTypeLearnMore)
-    return ContentSuggestionTypeLearnMore;
   if (type == ItemTypeDiscover)
     return ContentSuggestionTypeDiscover;
   // Add new type here
@@ -97,18 +81,12 @@ ContentSuggestionType ContentSuggestionTypeForItemType(NSInteger type) {
 // Returns the item type corresponding to the section |info|.
 ItemType ItemTypeForInfo(ContentSuggestionsSectionInformation* info) {
   switch (info.sectionID) {
-    case ContentSuggestionsSectionArticles:
-      return ItemTypeArticle;
-    case ContentSuggestionsSectionReadingList:
-      return ItemTypeReadingList;
     case ContentSuggestionsSectionReturnToRecentTab:
       return ItemTypeReturnToRecentTab;
     case ContentSuggestionsSectionMostVisited:
       return ItemTypeMostVisited;
     case ContentSuggestionsSectionPromo:
       return ItemTypePromo;
-    case ContentSuggestionsSectionLearnMore:
-      return ItemTypeLearnMore;
     case ContentSuggestionsSectionDiscover:
       return ItemTypeDiscover;
     case ContentSuggestionsSectionLogo:
@@ -121,10 +99,6 @@ ItemType ItemTypeForInfo(ContentSuggestionsSectionInformation* info) {
 SectionIdentifier SectionIdentifierForInfo(
     ContentSuggestionsSectionInformation* info) {
   switch (info.sectionID) {
-    case ContentSuggestionsSectionArticles:
-      return SectionIdentifierArticles;
-    case ContentSuggestionsSectionReadingList:
-      return SectionIdentifierReadingList;
     case ContentSuggestionsSectionMostVisited:
       return SectionIdentifierMostVisited;
     case ContentSuggestionsSectionLogo:
@@ -133,19 +107,11 @@ SectionIdentifier SectionIdentifierForInfo(
       return SectionIdentifierReturnToRecentTab;
     case ContentSuggestionsSectionPromo:
       return SectionIdentifierPromo;
-    case ContentSuggestionsSectionLearnMore:
-      return SectionIdentifierLearnMore;
     case ContentSuggestionsSectionDiscover:
       return SectionIdentifierDiscover;
     case ContentSuggestionsSectionUnknown:
       return SectionIdentifierDefault;
   }
-}
-
-// Returns whether this |sectionIdentifier| comes from ContentSuggestions.
-BOOL IsFromContentSuggestionsService(NSInteger sectionIdentifier) {
-  return sectionIdentifier == SectionIdentifierArticles ||
-         sectionIdentifier == SectionIdentifierReadingList;
 }
 
 NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
@@ -472,34 +438,6 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
     return indexPaths;
   }
 
-  if (sectionIdentifier == SectionIdentifierLearnMore) {
-    // The "Learn more" items should only be displayed if there is at least one
-    // ContentSuggestions section.
-    if ((![model hasSectionForSectionIdentifier:SectionIdentifierArticles] &&
-         !
-         [model hasSectionForSectionIdentifier:SectionIdentifierReadingList]) ||
-        [model itemsInSectionWithIdentifier:sectionIdentifier].count > 0) {
-      return @[];
-    }
-  } else if (IsFromContentSuggestionsService(sectionIdentifier)) {
-    // If the section is a ContentSuggestions section, add the "Learn more"
-    // items if they are not already present.
-    if ([model hasSectionForSectionIdentifier:SectionIdentifierLearnMore] &&
-        [model itemsInSectionWithIdentifier:SectionIdentifierLearnMore].count ==
-            0) {
-      ContentSuggestionsSectionInformation* learnMoreSectionInfo =
-          self.sectionInfoBySectionIdentifier[@(SectionIdentifierLearnMore)];
-      for (CSCollectionViewItem* item in
-           [self.dataSource itemsForSectionInfo:learnMoreSectionInfo]) {
-        item.type = ItemTypeForInfo(learnMoreSectionInfo);
-        NSIndexPath* addedIndexPath = [self addItem:item
-                            toSectionWithIdentifier:SectionIdentifierLearnMore];
-
-        [indexPaths addObject:addedIndexPath];
-      }
-    }
-  }
-
   // Add the items from this section.
   [suggestions enumerateObjectsUsingBlock:^(CSCollectionViewItem* item,
                                             NSUInteger index, BOOL* stop) {
@@ -531,9 +469,7 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
 
     if ([model hasSectionForSectionIdentifier:sectionIdentifier] ||
         (!sectionInfo.showIfEmpty &&
-         [self.dataSource itemsForSectionInfo:sectionInfo].count == 0) ||
-        (IsFromContentSuggestionsService(sectionIdentifier) &&
-         IsDiscoverFeedEnabled())) {
+         [self.dataSource itemsForSectionInfo:sectionInfo].count == 0)) {
       continue;
     }
 
@@ -609,16 +545,6 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
 - (BOOL)isPromoSection:(NSInteger)section {
   return [self.collectionViewController.collectionViewModel
              sectionIdentifierForSection:section] == SectionIdentifierPromo;
-}
-
-- (BOOL)isContentSuggestionsSection:(NSInteger)section {
-  return IsFromContentSuggestionsService(
-      [self.collectionViewController.collectionViewModel
-          sectionIdentifierForSection:section]);
-}
-
-- (BOOL)isDiscoverItem:(NSInteger)itemType {
-  return itemType == ItemTypeDiscover;
 }
 
 #pragma mark - Private methods

@@ -40,7 +40,6 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_action_handler.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_sink.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -93,7 +92,6 @@
 
 @interface ContentSuggestionsCoordinator () <
     AppStateObserver,
-    ContentSuggestionsActionHandler,
     ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
@@ -112,7 +110,6 @@
     ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
-@property(nonatomic, strong) UIViewController* discoverFeedViewController;
 @property(nonatomic, strong) UIView* discoverFeedHeaderMenuButton;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 @property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
@@ -217,8 +214,6 @@
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  self.discoverFeedViewController = [self discoverFeed];
-
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -235,14 +230,9 @@
                     mostVisitedSite:std::move(mostVisitedFactory)
                    readingListModel:readingListModel
                         prefService:prefs
-                       discoverFeed:self.discoverFeedViewController
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider];
   self.contentSuggestionsMediator.commandHandler = self.ntpMediator;
   self.contentSuggestionsMediator.headerProvider = self.headerController;
-  if (!IsRefactoredNTP()) {
-    self.contentSuggestionsMediator.contentArticlesExpanded =
-        self.contentSuggestionsExpanded;
-  }
   self.contentSuggestionsMediator.discoverFeedDelegate =
       self.discoverFeedDelegate;
   self.contentSuggestionsMediator.webStateList =
@@ -267,8 +257,7 @@
 
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
       initWithStyle:CollectionViewControllerStyleDefault
-             offset:offset
-        feedVisible:[self isFeedVisible]];
+             offset:offset];
   [self.suggestionsViewController
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
@@ -279,8 +268,6 @@
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.suggestionsViewController.dispatcher = dispatcher;
   self.suggestionsViewController.discoverFeedMenuHandler = self;
-  self.suggestionsViewController.discoverFeedMetricsRecorder =
-      self.discoverFeedMetricsRecorder;
   self.suggestionsViewController.panGestureHandler = self.panGestureHandler;
   self.suggestionsViewController.bubblePresenter = self.bubblePresenter;
 
@@ -291,8 +278,6 @@
                                                  value]];
   self.suggestionsViewController.contentSuggestionsEnabled =
       self.contentSuggestionsEnabled;
-  self.suggestionsViewController.handler = self;
-  self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
 
   if (@available(iOS 13.0, *)) {
     self.suggestionsViewController.menuProvider = self;
@@ -346,11 +331,6 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   self.headerController = nil;
-  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
-    ios::GetChromeBrowserProvider()
-        .GetDiscoverFeedProvider()
-        ->RemoveFeedViewController(self.discoverFeedViewController);
-  }
   self.contentSuggestionsExpanded = nil;
   _started = NO;
 }
@@ -561,15 +541,6 @@
   [self.ntpMediator dismissModals];
 }
 
-#pragma mark - ContentSuggestionsActionHandler
-
-- (void)loadMoreFeedArticles {
-  ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->LoadMoreFeedArticles();
-  [self.discoverFeedMetricsRecorder recordInfiniteFeedTriggered];
-}
-
 #pragma mark - Public methods
 
 - (UIView*)view {
@@ -602,9 +573,6 @@
 }
 
 - (void)reload {
-  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP() && [self isFeedVisible]) {
-    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
-  }
   [self.contentSuggestionsMediator.dataSink reloadAllData];
 }
 
@@ -735,29 +703,6 @@
   scene.modifytVisibleNTPForStartSurface = NO;
 }
 
-// Creates, configures and returns a DiscoverFeed ViewController.
-- (UIViewController*)discoverFeed {
-  if (!IsDiscoverFeedEnabled() || IsRefactoredNTP() ||
-      tests_hook::DisableContentSuggestions() ||
-      tests_hook::DisableDiscoverFeed())
-    return nil;
-
-  UIViewController* discoverFeed = ios::GetChromeBrowserProvider()
-                                       .GetDiscoverFeedProvider()
-                                       ->NewFeedViewController(self.browser);
-  // TODO(crbug.com/1085419): Once the CollectionView is cleanly exposed, remove
-  // this loop.
-  for (UIView* view in discoverFeed.view.subviews) {
-    if ([view isKindOfClass:[UICollectionView class]]) {
-      UICollectionView* feedView = static_cast<UICollectionView*>(view);
-      feedView.bounces = NO;
-      feedView.alwaysBounceVertical = NO;
-      feedView.scrollEnabled = NO;
-    }
-  }
-  return discoverFeed;
-}
-
 // Triggers the URL sharing flow for the given |URL| and |title|, with the
 // origin |view| representing the UI component for that URL.
 - (void)shareURL:(const GURL&)URL
@@ -782,7 +727,6 @@
   [self.contentSuggestionsMediator reloadAllData];
   [self.discoverFeedMetricsRecorder
       recordDiscoverFeedVisibilityChanged:visible];
-  self.suggestionsViewController.feedVisible = [self isFeedVisible];
 }
 
 #pragma mark - AppStateObserver

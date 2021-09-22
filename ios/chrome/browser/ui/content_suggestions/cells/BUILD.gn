@@ -31,12 +31,8 @@ source_set("cells") {
 
 source_set("cells_ui") {
   sources = [
-    "content_suggestions_articles_header_item.h",
-    "content_suggestions_articles_header_item.mm",
     "content_suggestions_discover_header_item.h",
     "content_suggestions_discover_header_item.mm",
-    "content_suggestions_discover_item.h",
-    "content_suggestions_discover_item.mm",
     "content_suggestions_header_item.h",
     "content_suggestions_header_item.mm",
     "content_suggestions_most_visited_action_cell.h",

@@ -254,7 +254,6 @@
     self.discoverFeedViewController = [self discoverFeed];
   }
 
-  self.contentSuggestionsCoordinator.feedVisible = [self isFeedVisible];
   [self.contentSuggestionsCoordinator start];
   [self configureNTPAsMainViewController];
   self.ntpViewController.discoverFeedMetricsRecorder =

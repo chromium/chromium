@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @class BubblePresenter;
@@ -18,12 +17,10 @@
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsDataSource;
 @protocol ContentSuggestionsHeaderControlling;
-@protocol ContentSuggestionsHeaderSynchronizing;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol DiscoverFeedHeaderChanging;
 @protocol DiscoverFeedMenuCommands;
-@class DiscoverFeedMetricsRecorder;
 @protocol OverscrollActionsControllerDelegate;
 @protocol SnackbarCommands;
 @protocol SuggestedContent;
@@ -33,15 +30,12 @@
 // CollectionViewController to display the suggestions items.
 @interface ContentSuggestionsViewController
     : CollectionViewController <ContentSuggestionsCollectionControlling,
-                                ContentSuggestionsConsumer,
                                 ThumbStripSupporting>
 
 // Inits view controller with |offset| to maintain scroll position if needed.
 // Offset is only required if Discover feed is visible.
-// |feedVisible| is YES if feed is enabled and visible.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
                        offset:(CGFloat)offset
-                  feedVisible:(BOOL)visible
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout
@@ -77,9 +71,6 @@
 @property(nonatomic, weak) id<ContentSuggestionsActionHandler> handler;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
-// Discover Feed metrics recorder.
-@property(nonatomic, strong)
-    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 
 // The pan gesture handler to notify of scroll events happening in this view
 // controller.
@@ -87,9 +78,6 @@
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
-
-// |YES| the NTP feed is collapsed and enabled.
-@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
 
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
 - (void)setDispatcher:(id<SnackbarCommands>)dispatcher;
