@@ -16,11 +16,8 @@ class AssistantClient;
 // Observer informed when the |AssistantClient| is created or destroyed.
 // This is used internally in our mojom service implementation, to allow our
 // different components to know when they can use the Libassistant objects.
-class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AssistantClientObserver
-    : public base::CheckedObserver {
+class AssistantClientObserver : public base::CheckedObserver {
  public:
-  ~AssistantClientObserver() override = default;
-
   // Called when the |AssistantClient| has been created, but not started yet.
   // The pointers are guaranteed to remain valid until after
   // OnDestroyingAssistantClient() is called.
@@ -46,6 +43,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AssistantClientObserver
 
   // Called when the |AssistantClient| has been destroyed.
   virtual void OnAssistantClientDestroyed() {}
+
+ protected:
+  ~AssistantClientObserver() override = default;
 };
 
 }  // namespace libassistant

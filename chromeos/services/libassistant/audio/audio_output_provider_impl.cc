@@ -165,8 +165,6 @@ void AudioOutputProviderImpl::Bind(
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
     mojom::PlatformDelegate* platform_delegate) {
   platform_delegate_ = platform_delegate;
-  platform_delegate_->BindAudioDecoderFactory(
-      audio_decoder_factory_.BindNewPipeAndPassReceiver());
 
   audio_output_delegate_.Bind(std::move(audio_output_delegate));
 
@@ -226,6 +224,15 @@ assistant_client::VolumeControl& AudioOutputProviderImpl::GetVolumeControl() {
 void AudioOutputProviderImpl::RegisterAudioEmittingStateCallback(
     AudioEmittingStateCallback callback) {
   // TODO(muyuanli): implement.
+}
+
+void AudioOutputProviderImpl::BindAudioDecoderFactory() {
+  platform_delegate_->BindAudioDecoderFactory(
+      audio_decoder_factory_.BindNewPipeAndPassReceiver());
+}
+
+void AudioOutputProviderImpl::UnBindAudioDecoderFactory() {
+  audio_decoder_factory_.reset();
 }
 
 void AudioOutputProviderImpl::BindStreamFactory(

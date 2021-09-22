@@ -54,15 +54,14 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
 
   std::vector<assistant_client::OutputStreamEncoding>
   GetSupportedStreamEncodings() override;
-
   assistant_client::AudioInput* GetReferenceInput() override;
-
   bool SupportsPlaybackTimestamp() const override;
-
   assistant_client::VolumeControl& GetVolumeControl() override;
-
   void RegisterAudioEmittingStateCallback(
       AudioEmittingStateCallback callback) override;
+
+  void BindAudioDecoderFactory();
+  void UnBindAudioDecoderFactory();
 
  private:
   void BindStreamFactory(
