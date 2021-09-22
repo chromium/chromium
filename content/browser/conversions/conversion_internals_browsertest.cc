@@ -324,14 +324,14 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
             table.children[0].children[1].innerText === "https://sub.conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
-            table.children[0].children[4].innerText === "13" &&
-            table.children[0].children[5].innerText === "yes" &&
-            table.children[0].children[6].innerText === "Pending" &&
-            table.children[1].children[4].innerText === "11" &&
-            table.children[1].children[6].innerText === "Dropped due to low priority" &&
-            table.children[2].children[4].innerText === "0" &&
-            table.children[2].children[5].innerText === "no" &&
-            table.children[2].children[6].innerText === "Sent: HTTP 200") {
+            table.children[0].children[5].innerText === "13" &&
+            table.children[0].children[6].innerText === "yes" &&
+            table.children[0].children[7].innerText === "Pending" &&
+            table.children[1].children[5].innerText === "11" &&
+            table.children[1].children[7].innerText === "Dropped due to low priority" &&
+            table.children[2].children[5].innerText === "0" &&
+            table.children[2].children[6].innerText === "no" &&
+            table.children[2].children[7].innerText === "Sent: HTTP 200") {
           document.title = $1;
         }
       });
@@ -351,14 +351,14 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
             table.children[2].children[1].innerText === "https://sub.conversion.test" &&
             table.children[2].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
-            table.children[2].children[4].innerText === "13" &&
-            table.children[2].children[5].innerText === "yes" &&
-            table.children[2].children[6].innerText === "Pending" &&
-            table.children[1].children[4].innerText === "11" &&
-            table.children[1].children[6].innerText === "Dropped due to low priority" &&
-            table.children[0].children[4].innerText === "0" &&
-            table.children[0].children[5].innerText === "no" &&
-            table.children[0].children[6].innerText === "Sent: HTTP 200") {
+            table.children[2].children[5].innerText === "13" &&
+            table.children[2].children[6].innerText === "yes" &&
+            table.children[2].children[7].innerText === "Pending" &&
+            table.children[1].children[5].innerText === "11" &&
+            table.children[1].children[7].innerText === "Dropped due to low priority" &&
+            table.children[0].children[5].innerText === "0" &&
+            table.children[0].children[6].innerText === "no" &&
+            table.children[0].children[7].innerText === "Sent: HTTP 200") {
           document.title = $1;
         }
       });
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle2);
     // Sort by priority ascending.
     EXPECT_TRUE(ExecJsInWebUI(
-        "document.querySelectorAll('#report-table-wrapper th')[4].click();"));
+        "document.querySelectorAll('#report-table-wrapper th')[5].click();"));
     EXPECT_EQ(kCompleteTitle2, title_watcher.WaitAndGetTitle());
   }
 
@@ -380,14 +380,14 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
             table.children[0].children[1].innerText === "https://sub.conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
-            table.children[0].children[4].innerText === "13" &&
-            table.children[0].children[5].innerText === "yes" &&
-            table.children[0].children[6].innerText === "Pending" &&
-            table.children[1].children[4].innerText === "11" &&
-            table.children[1].children[6].innerText === "Dropped due to low priority" &&
-            table.children[2].children[4].innerText === "0" &&
-            table.children[2].children[5].innerText === "no" &&
-            table.children[2].children[6].innerText === "Sent: HTTP 200") {
+            table.children[0].children[5].innerText === "13" &&
+            table.children[0].children[6].innerText === "yes" &&
+            table.children[0].children[7].innerText === "Pending" &&
+            table.children[1].children[5].innerText === "11" &&
+            table.children[1].children[7].innerText === "Dropped due to low priority" &&
+            table.children[2].children[5].innerText === "0" &&
+            table.children[2].children[6].innerText === "no" &&
+            table.children[2].children[7].innerText === "Sent: HTTP 200") {
           document.title = $1;
         }
       });
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle3);
     // Sort by priority descending.
     EXPECT_TRUE(ExecJsInWebUI(
-        "document.querySelectorAll('#report-table-wrapper th')[4].click();"));
+        "document.querySelectorAll('#report-table-wrapper th')[5].click();"));
 
     EXPECT_EQ(kCompleteTitle3, title_watcher.WaitAndGetTitle());
   }
@@ -426,8 +426,8 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let table = document.querySelector("#report-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
-          table.children[0].children[4].innerText === "7" &&
-          table.children[1].children[6].innerText === "Sent: HTTP 200") {
+          table.children[0].children[5].innerText === "7" &&
+          table.children[1].children[7].innerText === "Sent: HTTP 200") {
         document.title = $1;
       }
     });
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let table = document.querySelector("#report-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 1 &&
-          table.children[0].children[4].innerText === "7") {
+          table.children[0].children[5].innerText === "7") {
         document.title = $1;
       }
     });

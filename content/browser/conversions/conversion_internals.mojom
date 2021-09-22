@@ -18,6 +18,7 @@ enum SourceType {
 struct WebUIConversionReport {
   url.mojom.Origin conversion_origin;
   url.mojom.Url report_url;
+  double trigger_time;
   double report_time;
   int64 priority;
   string report_body;

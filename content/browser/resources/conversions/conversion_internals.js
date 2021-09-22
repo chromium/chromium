@@ -344,6 +344,7 @@ class Report {
     this.reportBody = mojo.reportBody;
     this.conversionOrigin = UrlToText(mojo.conversionOrigin);
     this.reportUrl = mojo.reportUrl.url;
+    this.triggerTime = new Date(mojo.triggerTime);
     this.reportTime = new Date(mojo.reportTime);
     this.reportPriority = mojo.priority;
     this.attributedTruthfully = mojo.attributedTruthfully;
@@ -372,6 +373,7 @@ class ReportTableModel extends TableModel {
       new CodeColumn('Report Body', (e) => e.reportBody),
       new Column('Destination', (e) => e.conversionOrigin),
       new Column('Report URL', (e) => e.reportUrl),
+      new DateColumn('Trigger Time', (e) => e.triggerTime),
       new DateColumn('Report Time', (e) => e.reportTime),
       new Column('Report Priority', (e) => e.reportPriority),
       new Column('Fake Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),

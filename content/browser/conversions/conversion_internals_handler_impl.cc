@@ -67,7 +67,8 @@ mojom::WebUIConversionReportPtr WebUIConversionReport(
     mojom::WebUIConversionReport::Status status) {
   return mojom::WebUIConversionReport::New(
       report.impression.conversion_origin(), report.ReportURL(),
-      report.report_time.ToJsTime(), report.priority,
+      /*trigger_time=*/report.conversion_time.ToJsTime(),
+      /*report_time=*/report.report_time.ToJsTime(), report.priority,
       report.ReportBody(/*pretty_print=*/true),
       /*attributed_truthfully=*/report.impression.attribution_logic() ==
           StorableImpression::AttributionLogic::kTruthfully,
