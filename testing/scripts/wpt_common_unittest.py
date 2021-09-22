@@ -119,16 +119,18 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             'path_delimiter': os.path.sep,
         }
         test_abs_path = os.path.join(WEB_TESTS_DIR,
-                                     'external/wpt/fail/test.html')
+                                     'external', 'wpt', 'fail', 'test.html')
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
 
         baseline_artifacts = {'wpt_actual_status': ['OK'],
                               'actual_text': [
-                                  ('layout-test-results/external'
-                                   '/wpt/fail/test_variant1-actual.txt')]}
+                                  (os.path.join('layout-test-results',
+                                                'external', 'wpt', 'fail',
+                                                'test_variant1-actual.txt'))]}
         self.assertEquals(self.wpt_adapter.sink.sink_requests,
-                          [{'test': 'external/wpt/fail/test.html?variant1',
+                          [{'test': os.path.join('external','wpt', 'fail',
+                                                 'test.html?variant1'),
                             'test_path': test_abs_path,
                             'result': {'actual': 'FAIL',
                                        'expected': set(['PASS', 'FAIL']),
@@ -152,15 +154,17 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             'path_delimiter': os.path.sep,
         }
         test_abs_path = os.path.join(WEB_TESTS_DIR,
-                                     'external/wpt/fail/test.html')
+                                     'external', 'wpt', 'fail', 'test.html')
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
         baseline_artifacts = {'wpt_actual_status': ['OK'],
                               'actual_text': [
-                                  ('layout-test-results/external'
-                                   '/wpt/fail/test_variant1-actual.txt')]}
+                                  (os.path.join('layout-test-results',
+                                                'external', 'wpt', 'fail',
+                                                'test_variant1-actual.txt'))]}
         self.assertEquals(self.wpt_adapter.sink.sink_requests,
-                          [{'test': 'external/wpt/fail/test.html?variant1',
+                          [{'test': os.path.join('external', 'wpt', 'fail',
+                                                 'test.html?variant1'),
                             'test_path': test_abs_path,
                             'result': {'actual': 'FAIL',
                                        'expected': set(['PASS']),
@@ -186,13 +190,15 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
         test_abs_path = os.path.join(WEB_TESTS_DIR,
-                                     'external/wpt/fail/test.html')
+                                     'external', 'wpt', 'fail', 'test.html')
         baseline_artifacts = {'wpt_actual_status': ['OK'],
                               'actual_text': [
-                                  ('layout-test-results/external'
-                                   '/wpt/fail/test-actual.txt')]}
+                                  os.path.join('layout-test-results',
+                                               'external', 'wpt', 'fail',
+                                               'test-actual.txt')]}
         self.assertEquals(self.wpt_adapter.sink.sink_requests,
-                          [{'test': 'external/wpt/fail/test.html',
+                          [{'test': os.path.join('external', 'wpt', 'fail',
+                                                 'test.html'),
                             'test_path': test_abs_path,
                             'result': {'actual': 'FAIL',
                                        'expected': set(['PASS']),
