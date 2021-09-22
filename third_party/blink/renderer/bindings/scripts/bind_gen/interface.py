@@ -63,9 +63,29 @@ def backward_compatible_api_func(cg_context):
     """
     assert isinstance(cg_context, CodeGenContext)
 
-    name = (cg_context.member_like.code_generator_info.property_implemented_as
-            or cg_context.member_like.identifier
-            or cg_context.property_.identifier)
+    name = cg_context.member_like.code_generator_info.property_implemented_as
+    if name:
+        pass
+    elif cg_context.constructor:
+        if cg_context.is_named_constructor:
+            name = "CreateForJSConstructor"
+        else:
+            name = "Create"
+    else:
+        name = (cg_context.member_like.identifier
+                or cg_context.property_.identifier)
+        if name:
+            pass
+        elif cg_context.indexed_property_getter:
+            name = "AnonymousIndexedGetter"
+        elif cg_context.indexed_property_setter:
+            name = "AnonymousIndexedSetter"
+        elif cg_context.named_property_getter:
+            name = "AnonymousNamedGetter"
+        elif cg_context.named_property_setter:
+            name = "AnonymousNamedSetter"
+        elif cg_context.named_property_deleter:
+            name = "AnonymousNamedDeleter"
 
     if cg_context.attribute_get:
         # modules/webaudio/biquad_filter_node.idl has readonly attribute "Q"
@@ -81,17 +101,6 @@ def backward_compatible_api_func(cg_context):
             tokens[0] = tokens[0].capitalize()
         tokens.insert(0, "set")
         name = "".join(tokens)
-
-    if cg_context.indexed_property_getter and not name:
-        name = "AnonymousIndexedGetter"
-    if cg_context.indexed_property_setter and not name:
-        name = "AnonymousIndexedSetter"
-    if cg_context.named_property_getter and not name:
-        name = "AnonymousNamedGetter"
-    if cg_context.named_property_setter and not name:
-        name = "AnonymousNamedSetter"
-    if cg_context.named_property_deleter and not name:
-        name = "AnonymousNamedDeleter"
 
     return name
 
@@ -709,11 +718,6 @@ def _make_blink_api_call(code_node,
         arguments.append("${exception_state}")
 
     func_name = backward_compatible_api_func(cg_context)
-    if cg_context.constructor:
-        if cg_context.is_named_constructor:
-            func_name = "CreateForJSConstructor"
-        else:
-            func_name = "Create"
     if "Reflect" in ext_attrs:  # [Reflect]
         func_name = _make_reflect_accessor_func_name(cg_context)
 
