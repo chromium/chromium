@@ -207,7 +207,7 @@ public class PageInfoViewTest {
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR)
+                    PageInfoController.OpenedFromSource.TOOLBAR, null)
                     .show(tab, highlightedPermission);
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
@@ -614,7 +614,7 @@ public class PageInfoViewTest {
             ChromePageInfoControllerDelegate pageInfoControllerDelegate =
                     new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
                             activity::getModalDialogManager,
-                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)) {
+                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab), null) {
                         @Override
                         public boolean isShowingPaintPreviewPage() {
                             return true;

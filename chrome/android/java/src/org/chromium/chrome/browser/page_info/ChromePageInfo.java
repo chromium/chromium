@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -26,17 +27,21 @@ public class ChromePageInfo {
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable String mPublisher;
     private final @OpenedFromSource int mSource;
+    private final @Nullable Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
 
     /**
      * @param modalDialogManagerSupplier Supplier of modal dialog manager.
      * @param publisher The name of the publisher of the content.
      * @param source the source that triggered the popup.
+     * @param storeInfoActionHandlerSupplier Supplier of {@link StoreInfoActionHandler}.
      */
     public ChromePageInfo(@NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable String publisher, @OpenedFromSource int source) {
+            @Nullable String publisher, @OpenedFromSource int source,
+            @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mPublisher = publisher;
         mSource = source;
+        mStoreInfoActionHandlerSupplier = storeInfoActionHandlerSupplier;
     }
 
     /**
@@ -50,7 +55,8 @@ public class ChromePageInfo {
         PageInfoController.show(activity, webContents, mPublisher, mSource,
                 new ChromePageInfoControllerDelegate(activity, webContents,
                         mModalDialogManagerSupplier,
-                        new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
+                        new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
+                        mStoreInfoActionHandlerSupplier),
                 permission);
     }
 }

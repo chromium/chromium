@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarC
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
@@ -81,6 +82,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
+     * @param intentRequestTracker Tracks intent requests.
      * @param customTabToolbarCoordinator Coordinates the custom tab toolbar.
      * @param customTabNavigationController Controls the custom tab navigation.
      */
@@ -111,6 +113,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
+            @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull Supplier<CustomTabToolbarCoordinator> customTabToolbarCoordinator,
             @NonNull Supplier<CustomTabActivityNavigationController>
                     customTabNavigationController) {
@@ -126,7 +129,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 fullscreenManager, compositorViewHolderSupplier, tabContentManagerSupplier,
                 overviewModeBehaviorSupplier, snackbarManagerSupplier, activityType,
                 isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
-                statusBarColorProvider);
+                statusBarColorProvider, intentRequestTracker);
         // clang-format on
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
