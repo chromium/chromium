@@ -69,26 +69,21 @@ class FetchEventTestHelper {
     }
   }
 
-  void DispatchFetchEventsOnCoreThread(
-      // |done_barrier_closure| is called on the UI thread each time a fetch
-      // event is dispatched.
-      base::RepeatingClosure done_barrier_closure_on_ui,
-      net::EmbeddedTestServer* embedded_test_server,
-      scoped_refptr<ServiceWorkerVersion> version) {
-    ASSERT_TRUE(
-        BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId()));
+  // `done_barrier_closure` is called each time a fetch event is dispatched.
+  void DispatchFetchEvents(base::RepeatingClosure done_barrier_closure,
+                           net::EmbeddedTestServer* embedded_test_server,
+                           scoped_refptr<ServiceWorkerVersion> version) {
     ASSERT_TRUE(version->status() == ServiceWorkerVersion::ACTIVATING ||
                 version->status() == ServiceWorkerVersion::ACTIVATED);
 
     for (FetchEventDispatch& fetch_event_dispatch : fetch_event_dispatches_) {
-      FetchOnCoreThread(done_barrier_closure_on_ui, embedded_test_server,
-                        version, &fetch_event_dispatch);
+      Fetch(done_barrier_closure, embedded_test_server, version,
+            &fetch_event_dispatch);
     }
   }
 
   void CheckResult() {
     for (FetchEventDispatch& dispatch : fetch_event_dispatches_) {
-      ASSERT_FALSE(dispatch.fetch_dispatcher);
       ExpectedResult& expected =
           dispatch.param_and_expected_result.expected_result;
       ASSERT_TRUE(dispatch.fetch_result.has_value());
@@ -108,8 +103,8 @@ class FetchEventTestHelper {
     std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher;
   };
 
-  void FetchCallbackOnCoreThread(
-      base::RepeatingClosure done_barrier_closure_on_ui,
+  void FetchCallback(
+      base::RepeatingClosure done_barrier_closure,
       FetchEventDispatch* fetch_event_dispatch,
       blink::ServiceWorkerStatusCode actual_status,
       ServiceWorkerFetchDispatcher::FetchEventResult actual_result,
@@ -117,8 +112,7 @@ class FetchEventTestHelper {
       blink::mojom::ServiceWorkerStreamHandlePtr /* stream */,
       blink::mojom::ServiceWorkerFetchEventTimingPtr /* timing */,
       scoped_refptr<ServiceWorkerVersion> /* worker */) {
-    ASSERT_TRUE(
-        BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId()));
+    ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     ASSERT_FALSE(fetch_event_dispatch->fetch_result.has_value());
     fetch_event_dispatch->fetch_result = FetchResult{
         actual_status,
@@ -126,27 +120,18 @@ class FetchEventTestHelper {
         std::move(actual_response),
     };
 
-    // FetchEventDispatch's |fetch_dispatcher| should be released on
-    // the core thread.  If we don't release |fetch_dispatcher|
-    // here, |fetch_dispatcher| would be wrongly released at the
-    // FetchEventTestHelper's destructor on the UI thread, which
-    // would cause a decrement of a ref count on the wrong thread.
-    fetch_event_dispatch->fetch_dispatcher.reset();
-    RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                          std::move(done_barrier_closure_on_ui));
+    done_barrier_closure.Run();
   }
 
-  void FetchOnCoreThread(base::RepeatingClosure done_barrier_closure_on_ui,
-                         net::EmbeddedTestServer* embedded_test_server,
-                         scoped_refptr<ServiceWorkerVersion> version,
-                         FetchEventDispatch* fetch_event_dispatch) {
-    ASSERT_TRUE(
-        BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId()));
+  void Fetch(base::RepeatingClosure done_barrier_closure,
+             net::EmbeddedTestServer* embedded_test_server,
+             scoped_refptr<ServiceWorkerVersion> version,
+             FetchEventDispatch* fetch_event_dispatch) {
+    ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-    ServiceWorkerFetchDispatcher::FetchCallback fetch_callback =
-        base::BindOnce(&FetchEventTestHelper::FetchCallbackOnCoreThread,
-                       base::Unretained(this), done_barrier_closure_on_ui,
-                       fetch_event_dispatch);
+    ServiceWorkerFetchDispatcher::FetchCallback fetch_callback = base::BindOnce(
+        &FetchEventTestHelper::FetchCallback, base::Unretained(this),
+        done_barrier_closure, fetch_event_dispatch);
 
     auto request = blink::mojom::FetchAPIRequest::New();
     request->url = embedded_test_server->GetURL(
@@ -167,16 +152,6 @@ class FetchEventTestHelper {
   std::vector<FetchEventDispatch> fetch_event_dispatches_;
 };
 
-void RunOnCoreThread(base::OnceClosure closure) {
-  base::RunLoop run_loop;
-  RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-                        base::BindLambdaForTesting([&]() {
-                          std::move(closure).Run();
-                          run_loop.Quit();
-                        }));
-  run_loop.Run();
-}
-
 }  // namespace
 
 class ServiceWorkerOfflineCapabilityCheckBrowserTest
@@ -190,18 +165,6 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
       const ServiceWorkerOfflineCapabilityCheckBrowserTest&) = delete;
 
   void SetUp() override { ContentBrowserTest::SetUp(); }
-
-  void TearDownOnMainThread() override {
-    RunOnCoreThread(base::BindOnce(
-        &ServiceWorkerOfflineCapabilityCheckBrowserTest::TearDownOnCoreThread,
-        base::Unretained(this)));
-  }
-
-  void TearDownOnCoreThread() {
-    // |version_| must be released on the core thread.
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-    version_ = nullptr;
-  }
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -217,27 +180,18 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }
 
   void SetupFetchEventDispatchTargetVersion() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(!version_);
     base::RunLoop run_loop;
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(&ServiceWorkerOfflineCapabilityCheckBrowserTest::
-                           SetupFetchEventDispatchTargetVersionOnCoreThread,
-                       base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-    DCHECK(version_);
-  }
-
-  void SetupFetchEventDispatchTargetVersionOnCoreThread(
-      base::OnceClosure done) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
     GURL url = embedded_test_server()->GetURL("/service_worker/");
     blink::StorageKey key = blink::StorageKey(url::Origin::Create(url));
     wrapper()->context()->registry()->FindRegistrationForScope(
         embedded_test_server()->GetURL("/service_worker/"), key,
         base::BindOnce(&ServiceWorkerOfflineCapabilityCheckBrowserTest::
                            DidFindRegistration,
-                       base::Unretained(this), std::move(done)));
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+    DCHECK(version_);
   }
 
   void DidFindRegistration(
@@ -261,46 +215,28 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
                                                 fetch_run_loop.QuitClosure());
 
     FetchEventTestHelper test_helper(fetch_event_dispatches);
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindLambdaForTesting([&]() {
-          test_helper.DispatchFetchEventsOnCoreThread(
-              barrier_closure, embedded_test_server(),
-              // |version_| must be accessed from the core thread
-              version_);
-        }));
+    test_helper.DispatchFetchEvents(barrier_closure, embedded_test_server(),
+                                    version_);
     fetch_run_loop.Run();
     test_helper.CheckResult();
-  }
-
-  void CheckOfflineCapabilityOnCoreThread(
-      const std::string& path,
-      ServiceWorkerContext::CheckOfflineCapabilityCallback callback) {
-    GURL url = embedded_test_server()->GetURL(path);
-    wrapper()->CheckOfflineCapability(
-        url, blink::StorageKey(url::Origin::Create(url)), std::move(callback));
   }
 
   OfflineCapability CheckOfflineCapability(const std::string& path) {
     base::RunLoop fetch_run_loop;
     absl::optional<OfflineCapability> out_offline_capability;
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(
-            &ServiceWorkerOfflineCapabilityCheckBrowserTest::
-                CheckOfflineCapabilityOnCoreThread,
-            base::Unretained(this), path,
-            base::BindLambdaForTesting([&out_offline_capability,
-                                        &fetch_run_loop](
-                                           OfflineCapability offline_capability,
-                                           int64_t registration_id) {
+    GURL url = embedded_test_server()->GetURL(path);
+    wrapper()->CheckOfflineCapability(
+        url, blink::StorageKey(url::Origin::Create(url)),
+        base::BindLambdaForTesting(
+            [&out_offline_capability, &fetch_run_loop](
+                OfflineCapability offline_capability, int64_t registration_id) {
               out_offline_capability = offline_capability;
               if (offline_capability == OfflineCapability::kSupported) {
                 EXPECT_NE(registration_id,
                           blink::mojom::kInvalidServiceWorkerRegistrationId);
               }
               fetch_run_loop.Quit();
-            })));
+            }));
     fetch_run_loop.Run();
     DCHECK(out_offline_capability.has_value());
     return *out_offline_capability;
