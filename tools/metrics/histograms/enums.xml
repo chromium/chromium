@@ -46354,6 +46354,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="LinuxAudioIO">
+  <obsolete>
+    Deprecated 2021/09, as relevant UMA is deprecated.
+  </obsolete>
   <int value="0" label="PulseAudio"/>
   <int value="1" label="ALSA"/>
   <int value="2" label="Cras"/>

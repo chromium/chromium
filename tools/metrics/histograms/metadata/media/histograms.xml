@@ -2709,6 +2709,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.LinuxAudioIO" enum="LinuxAudioIO"
     expires_after="2021-10-25">
+  <obsolete>
+    Deprecated as of 2021/09.
+  </obsolete>
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     Audio IO layer used by the Linux OS, sampled once at startup of the browser.
