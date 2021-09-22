@@ -33,6 +33,7 @@ class BrowserShortcutShelfItemController;
 class BrowserStatusMonitor;
 class ChromeShelfControllerUserSwitchObserver;
 class ChromeShelfItemFactory;
+class ChromeShelfPrefs;
 class Profile;
 class ShelfControllerHelper;
 class ShelfSpinnerController;
@@ -313,6 +314,9 @@ class ChromeShelfController
       ash::ShelfItemType shelf_item_type,
       const std::u16string& title = std::u16string());
 
+  // Returns the shelf prefs owned by this instance.
+  ChromeShelfPrefs* shelf_prefs() { return shelf_prefs_.get(); }
+
  private:
   friend class ChromeShelfControllerTestBase;
   friend class ShelfAppBrowserTest;
@@ -466,6 +470,9 @@ class ChromeShelfController
       user_switch_observer_;
 
   std::unique_ptr<ShelfSpinnerController> shelf_spinner_controller_;
+
+  // Responsible for bridging between the shelf and sync/prefs.
+  std::unique_ptr<ChromeShelfPrefs> shelf_prefs_;
 
   // The list of running & un-pinned applications for different users on hidden
   // desktops.

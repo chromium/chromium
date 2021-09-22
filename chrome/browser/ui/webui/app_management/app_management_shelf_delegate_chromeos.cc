@@ -10,7 +10,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -75,7 +75,8 @@ bool AppManagementShelfDelegate::IsPolicyPinned(
   }
   // The app doesn't exist on the shelf - check launcher prefs instead.
   std::vector<std::string> policy_pinned_apps =
-      GetAppsPinnedByPolicy(shelf_controller_helper_.get());
+      shelf_controller->shelf_prefs()->GetAppsPinnedByPolicy(
+          shelf_controller_helper_.get());
   return std::any_of(policy_pinned_apps.begin(), policy_pinned_apps.end(),
                      [app_id](std::string app) { return app_id == app; });
 }

@@ -21,7 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/network/onc/onc_signature.h"
@@ -325,7 +325,7 @@ void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value filtered_list,
   std::vector<base::Value> pinned_apps_list;
   for (const base::Value& entry : filtered_list.GetList()) {
     base::Value app_dict(base::Value::Type::DICTIONARY);
-    app_dict.SetKey(kPinnedAppsPrefAppIDKey, entry.Clone());
+    app_dict.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, entry.Clone());
     pinned_apps_list.push_back(std::move(app_dict));
   }
   prefs->SetValue(prefs::kPolicyPinnedLauncherApps,

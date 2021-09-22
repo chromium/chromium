@@ -66,7 +66,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_default_app_list.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -655,7 +655,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   void AppendPrefValue(base::ListValue* pref_value,
                        const std::string& extension_id) {
     base::DictionaryValue entry;
-    entry.SetKey(kPinnedAppsPrefAppIDKey, base::Value(extension_id));
+    entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, base::Value(extension_id));
     pref_value->Append(std::move(entry));
   }
 

@@ -51,7 +51,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -209,7 +209,7 @@ ChromeShelfController* ChromeShelfController::instance_ = nullptr;
 ChromeShelfController::ChromeShelfController(Profile* profile,
                                              ash::ShelfModel* model,
                                              ChromeShelfItemFactory* creator)
-    : model_(model), shelf_item_factory_(creator) {
+    : model_(model), shelf_item_factory_(creator), shelf_prefs_(std::make_unique<ChromeShelfPrefs>()) {
   DCHECK(!instance_);
   instance_ = this;
 
@@ -1109,7 +1109,8 @@ void ChromeShelfController::SyncPinPosition(const ash::ShelfID& shelf_id) {
       shelf_ids_after.push_back(shelf_id_after);
   }
 
-  SetPinPosition(profile(), shelf_id, shelf_id_before, shelf_ids_after);
+  shelf_prefs_->SetPinPosition(profile(), shelf_id, shelf_id_before,
+                               shelf_ids_after);
 }
 
 void ChromeShelfController::OnSyncModelUpdated() {
@@ -1127,10 +1128,12 @@ void ChromeShelfController::OnIsSyncingChanged() {
   if (!is_syncing)
     return;
   // Initialize the local prefs if this is the first time sync has occurred.
-  InitLocalPref(profile()->GetPrefs(), ash::prefs::kShelfAlignmentLocal,
-                ash::prefs::kShelfAlignment);
-  InitLocalPref(profile()->GetPrefs(), ash::prefs::kShelfAutoHideBehaviorLocal,
-                ash::prefs::kShelfAutoHideBehavior);
+  shelf_prefs_->InitLocalPref(profile()->GetPrefs(),
+                              ash::prefs::kShelfAlignmentLocal,
+                              ash::prefs::kShelfAlignment);
+  shelf_prefs_->InitLocalPref(profile()->GetPrefs(),
+                              ash::prefs::kShelfAutoHideBehaviorLocal,
+                              ash::prefs::kShelfAutoHideBehavior);
 }
 
 void ChromeShelfController::ScheduleUpdatePinnedAppsFromSync() {
@@ -1150,7 +1153,7 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
   const std::vector<ash::ShelfID> pinned_apps =
-      GetPinnedAppsFromSync(shelf_controller_helper_.get());
+      shelf_prefs_->GetPinnedAppsFromSync(shelf_controller_helper_.get());
 
   int index = 0;
 
@@ -1471,7 +1474,7 @@ void ChromeShelfController::ShelfItemRemoved(int index,
                                              const ash::ShelfItem& old_item) {
   // Remove the pin position from preferences as needed.
   if (ItemTypeIsPinned(old_item) && should_sync_pin_changes_)
-    RemovePinPosition(profile(), old_item.id);
+    shelf_prefs_->RemovePinPosition(profile(), old_item.id);
   if (auto* app_icon_loader = GetAppIconLoaderForApp(old_item.id.app_id))
     app_icon_loader->ClearImage(old_item.id.app_id);
 }
@@ -1493,5 +1496,5 @@ void ChromeShelfController::ShelfItemChanged(int index,
   if (!ItemTypeIsPinned(old_item) && ItemTypeIsPinned(item))
     SyncPinPosition(item.id);
   else if (ItemTypeIsPinned(old_item) && !ItemTypeIsPinned(item))
-    RemovePinPosition(profile(), old_item.id);
+    shelf_prefs_->RemovePinPosition(profile(), old_item.id);
 }

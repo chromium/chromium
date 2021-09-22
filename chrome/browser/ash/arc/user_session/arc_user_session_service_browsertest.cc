@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -50,7 +50,7 @@ class ArcUserSessionServiceTest : public InProcessBrowserTest {
     // SyncSettingsCategorization makes an untitled Play Store icon appear in
     // the shelf due to app pin syncing code. Sync isn't relevant to this test,
     // so skip pinned app sync. https://crbug.com/1085597
-    SkipPinnedAppsFromSyncForTest();
+    ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
   }
 
   ArcUserSessionServiceTest(const ArcUserSessionServiceTest&) = delete;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 
 #include <stddef.h>
 
@@ -201,9 +201,12 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
 
 }  // namespace
 
-const char kPinnedAppsPrefAppIDKey[] = "id";
+const char ChromeShelfPrefs::kPinnedAppsPrefAppIDKey[] = "id";
 
-void RegisterChromeShelfProfilePrefs(
+ChromeShelfPrefs::ChromeShelfPrefs() = default;
+ChromeShelfPrefs::~ChromeShelfPrefs() = default;
+
+void ChromeShelfPrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kPolicyPinnedLauncherApps);
   registry->RegisterListPref(
@@ -214,7 +217,9 @@ void RegisterChromeShelfProfilePrefs(
       PrefRegistry::NO_REGISTRATION_FLAGS);
 }
 
-void InitLocalPref(PrefService* prefs, const char* local, const char* synced) {
+void ChromeShelfPrefs::InitLocalPref(PrefService* prefs,
+                                     const char* local,
+                                     const char* synced) {
   // Ash's prefs *should* have been propagated to Chrome by now, but maybe not.
   // This belongs in Ash, but it can't observe syncing changes: crbug.com/774657
   if (prefs->FindPreference(local) && prefs->FindPreference(synced) &&
@@ -224,7 +229,8 @@ void InitLocalPref(PrefService* prefs, const char* local, const char* synced) {
 }
 
 // Helper that extracts app list from policy preferences.
-std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper) {
+std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
+    ShelfControllerHelper* helper) {
   const PrefService* prefs = helper->profile()->GetPrefs();
   std::vector<std::string> result;
   const base::Value* policy_apps =
@@ -242,7 +248,7 @@ std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper) {
   for (const auto& policy_dict_entry : policy_apps->GetList()) {
     const std::string* policy_entry =
         policy_dict_entry.is_dict()
-            ? policy_dict_entry.FindStringKey(kPinnedAppsPrefAppIDKey)
+            ? policy_dict_entry.FindStringKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey)
             : nullptr;
 
     if (!policy_entry) {
@@ -399,7 +405,8 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
   }
 }
 
-std::vector<ash::ShelfID> GetPinnedAppsFromSync(ShelfControllerHelper* helper) {
+std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
+    ShelfControllerHelper* helper) {
   const PrefService* prefs = helper->profile()->GetPrefs();
   app_list::AppListSyncableService* const syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(helper->profile());
@@ -533,7 +540,8 @@ std::vector<ash::ShelfID> GetPinnedAppsFromSync(ShelfControllerHelper* helper) {
   return AppIdsToShelfIDs(pins);
 }
 
-void RemovePinPosition(Profile* profile, const ash::ShelfID& shelf_id) {
+void ChromeShelfPrefs::RemovePinPosition(Profile* profile,
+                                         const ash::ShelfID& shelf_id) {
   DCHECK(profile);
 
   const std::string& app_id = shelf_id.app_id;
@@ -550,10 +558,11 @@ void RemovePinPosition(Profile* profile, const ash::ShelfID& shelf_id) {
   syncable_service->SetPinPosition(app_id, syncer::StringOrdinal());
 }
 
-void SetPinPosition(Profile* profile,
-                    const ash::ShelfID& shelf_id,
-                    const ash::ShelfID& shelf_id_before,
-                    const std::vector<ash::ShelfID>& shelf_ids_after) {
+void ChromeShelfPrefs::SetPinPosition(
+    Profile* profile,
+    const ash::ShelfID& shelf_id,
+    const ash::ShelfID& shelf_id_before,
+    const std::vector<ash::ShelfID>& shelf_ids_after) {
   DCHECK(profile);
 
   const std::string& app_id = shelf_id.app_id;
@@ -608,6 +617,6 @@ void SetPinPosition(Profile* profile,
   syncable_service->SetPinPosition(app_id, pin_position);
 }
 
-void SkipPinnedAppsFromSyncForTest() {
+void ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest() {
   skip_pinned_apps_from_sync_for_test = true;
 }

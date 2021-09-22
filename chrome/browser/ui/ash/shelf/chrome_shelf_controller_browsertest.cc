@@ -57,7 +57,7 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
@@ -2455,7 +2455,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
 
   // Set policy to pin the web app.
   base::DictionaryValue entry;
-  entry.SetKey(kPinnedAppsPrefAppIDKey, base::Value(app_url.spec()));
+  entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, base::Value(app_url.spec()));
   base::ListValue policy_value;
   policy_value.Append(std::move(entry));
   profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
@@ -2477,7 +2477,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
 
   // Set policy to pin the non existent web app.
   base::DictionaryValue entry;
-  entry.SetKey(kPinnedAppsPrefAppIDKey, base::Value(app_url.spec()));
+  entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, base::Value(app_url.spec()));
   base::ListValue policy_value;
   policy_value.Append(std::move(entry));
   profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);

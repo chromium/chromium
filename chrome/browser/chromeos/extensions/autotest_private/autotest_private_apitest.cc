@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "components/arc/arc_prefs.h"
@@ -56,7 +56,7 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
     // SyncSettingsCategorization makes an untitled Play Store icon appear in
     // the shelf due to app pin syncing code. Sync isn't relevant to this test,
     // so skip pinned app sync. https://crbug.com/1085597
-    SkipPinnedAppsFromSyncForTest();
+    ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
   }
 
   AutotestPrivateApiTest(const AutotestPrivateApiTest&) = delete;
