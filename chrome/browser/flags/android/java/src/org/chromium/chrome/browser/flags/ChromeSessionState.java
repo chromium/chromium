@@ -26,9 +26,36 @@ public class ChromeSessionState {
         ChromeSessionStateJni.get().setActivityType(activityType);
     }
 
+    /**
+     * Records the dark mode settings for the current Activity and the system.
+     * @param activityIsInDarkMode Whether the current Activity is in dark mode.
+     * @param systemIsInDarkMode Whether the phone/tablet is in dark mode.
+     */
+    public static void setDarkModeState(boolean activityIsInDarkMode, boolean systemIsInDarkMode) {
+        boolean activityMatchesSystem = activityIsInDarkMode == systemIsInDarkMode;
+
+        @DarkModeState
+        int darkModeState;
+        if (activityIsInDarkMode) {
+            if (activityMatchesSystem) {
+                darkModeState = DarkModeState.DARK_MODE_SYSTEM;
+            } else {
+                darkModeState = DarkModeState.DARK_MODE_APP;
+            }
+        } else {
+            if (activityMatchesSystem) {
+                darkModeState = DarkModeState.LIGHT_MODE_SYSTEM;
+            } else {
+                darkModeState = DarkModeState.LIGHT_MODE_APP;
+            }
+        }
+        ChromeSessionStateJni.get().setDarkModeState(darkModeState);
+    }
+
     @NativeMethods
     interface Natives {
         void setActivityType(@ActivityType int type);
         void setIsInMultiWindowMode(boolean isInMultiWindowMode);
+        void setDarkModeState(@DarkModeState int state);
     }
 }
