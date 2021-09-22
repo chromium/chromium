@@ -391,4 +391,48 @@ SharedImageRepresentationMemory::BeginScopedReadAccess() {
       BeginReadAccess());
 }
 
+SharedImageRepresentationRaster::ScopedReadAccess::ScopedReadAccess(
+    base::PassKey<SharedImageRepresentationRaster> pass_key,
+    SharedImageRepresentationRaster* representation,
+    const cc::PaintOpBuffer* paint_op_buffer,
+    const absl::optional<SkColor>& clear_color)
+    : ScopedAccessBase(representation),
+      paint_op_buffer_(paint_op_buffer),
+      clear_color_(clear_color) {}
+
+SharedImageRepresentationRaster::ScopedReadAccess::~ScopedReadAccess() {
+  representation()->EndReadAccess();
+}
+
+SharedImageRepresentationRaster::ScopedWriteAccess::ScopedWriteAccess(
+    base::PassKey<SharedImageRepresentationRaster> pass_key,
+    SharedImageRepresentationRaster* representation,
+    cc::PaintOpBuffer* paint_op_buffer)
+    : ScopedAccessBase(representation), paint_op_buffer_(paint_op_buffer) {}
+
+SharedImageRepresentationRaster::ScopedWriteAccess::~ScopedWriteAccess() {
+  representation()->EndWriteAccess(std::move(callback_));
+}
+
+std::unique_ptr<SharedImageRepresentationRaster::ScopedReadAccess>
+SharedImageRepresentationRaster::BeginScopedReadAccess() {
+  absl::optional<SkColor> clear_color;
+  auto* paint_op_buffer = BeginReadAccess(clear_color);
+  if (!paint_op_buffer)
+    return nullptr;
+  return std::make_unique<ScopedReadAccess>(
+      base::PassKey<SharedImageRepresentationRaster>(), this, paint_op_buffer,
+      clear_color);
+}
+
+std::unique_ptr<SharedImageRepresentationRaster::ScopedWriteAccess>
+SharedImageRepresentationRaster::BeginScopedWriteAccess(
+    int final_msaa_count,
+    const SkSurfaceProps& surface_props,
+    const absl::optional<SkColor>& clear_color) {
+  return std::make_unique<ScopedWriteAccess>(
+      base::PassKey<SharedImageRepresentationRaster>(), this,
+      BeginWriteAccess(final_msaa_count, surface_props, clear_color));
+}
+
 }  // namespace gpu

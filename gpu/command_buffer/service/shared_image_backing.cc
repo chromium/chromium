@@ -103,6 +103,12 @@ SharedImageBacking::ProduceMemory(SharedImageManager* manager,
   return nullptr;
 }
 
+std::unique_ptr<SharedImageRepresentationRaster>
+SharedImageBacking::ProduceRaster(SharedImageManager* manager,
+                                  MemoryTypeTracker* tracker) {
+  return nullptr;
+}
+
 void SharedImageBacking::AddRef(SharedImageRepresentation* representation) {
   AutoLock auto_lock(this);
 

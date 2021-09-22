@@ -52,6 +52,7 @@ class SharedImageRepresentationDawn;
 class SharedImageRepresentationOverlay;
 class SharedImageRepresentationMemory;
 class SharedImageRepresentationVaapi;
+class SharedImageRepresentationRaster;
 class MemoryTypeTracker;
 class SharedImageFactory;
 class VaapiDependenciesFactory;
@@ -175,6 +176,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       MemoryTypeTracker* tracker,
       VaapiDependenciesFactory* dep_factory);
   virtual std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker);
+  virtual std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
 

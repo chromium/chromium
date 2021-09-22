@@ -216,6 +216,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
       const Mailbox& mailbox);
   std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
       const Mailbox& mailbox);
+  std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
+      const Mailbox& mailbox);
 
  private:
   SharedImageManager* const manager_;

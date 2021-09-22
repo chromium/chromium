@@ -33,6 +33,10 @@ class ScopedHardwareBufferFenceSync;
 }  // namespace android
 }  // namespace base
 
+namespace cc {
+class PaintOpBuffer;
+}
+
 namespace gl {
 class GLImage;
 }
@@ -562,6 +566,78 @@ class GPU_GLES2_EXPORT SharedImageRepresentationVaapi
   VaapiDependencies* vaapi_deps_;
   virtual void EndAccess() = 0;
   virtual void BeginAccess() = 0;
+};
+
+// Representation of a SharedImageBacking for raster work.
+// This representation is used for raster work and compositor. The raster work
+// will be converted to a cc::PaintOpBuffer and stored in the
+// SharedImageBacking. And then the the compositor will access the stored
+// cc::PaintOpBuffer and execute paint ops in it.
+class GPU_GLES2_EXPORT SharedImageRepresentationRaster
+    : public SharedImageRepresentation {
+ public:
+  class GPU_GLES2_EXPORT ScopedReadAccess
+      : public ScopedAccessBase<SharedImageRepresentationRaster> {
+   public:
+    ScopedReadAccess(base::PassKey<SharedImageRepresentationRaster> pass_key,
+                     SharedImageRepresentationRaster* representation,
+                     const cc::PaintOpBuffer* paint_op_buffer,
+                     const absl::optional<SkColor>& clear_color);
+    ~ScopedReadAccess();
+
+    const cc::PaintOpBuffer* paint_op_buffer() const {
+      return paint_op_buffer_;
+    }
+    const absl::optional<SkColor>& clear_color() const { return clear_color_; }
+
+   private:
+    const cc::PaintOpBuffer* const paint_op_buffer_;
+    absl::optional<SkColor> clear_color_;
+  };
+
+  class GPU_GLES2_EXPORT ScopedWriteAccess
+      : public ScopedAccessBase<SharedImageRepresentationRaster> {
+   public:
+    ScopedWriteAccess(base::PassKey<SharedImageRepresentationRaster> pass_key,
+                      SharedImageRepresentationRaster* representation,
+                      cc::PaintOpBuffer* paint_op_buffer);
+    ~ScopedWriteAccess();
+
+    cc::PaintOpBuffer* paint_op_buffer() { return paint_op_buffer_; }
+    // An optional callback which will be called when the all paint ops in the
+    // |paint_op_buffer_| are released.
+    void set_callback(base::OnceClosure callback) {
+      DCHECK(!callback_);
+      DCHECK(callback);
+      callback_ = std::move(callback);
+    }
+
+   private:
+    cc::PaintOpBuffer* const paint_op_buffer_;
+    base::OnceClosure callback_;
+  };
+
+  SharedImageRepresentationRaster(SharedImageManager* manager,
+                                  SharedImageBacking* backing,
+                                  MemoryTypeTracker* tracker)
+      : SharedImageRepresentation(manager, backing, tracker) {}
+
+  std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
+
+  std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess(
+      int final_msaa_count,
+      const SkSurfaceProps& surface_props,
+      const absl::optional<SkColor>& clear_color);
+
+ protected:
+  virtual cc::PaintOpBuffer* BeginReadAccess(
+      absl::optional<SkColor>& clear_color) = 0;
+  virtual void EndReadAccess() = 0;
+  virtual cc::PaintOpBuffer* BeginWriteAccess(
+      int final_msaa_count,
+      const SkSurfaceProps& surface_props,
+      const absl::optional<SkColor>& clear_color) = 0;
+  virtual void EndWriteAccess(base::OnceClosure callback) = 0;
 };
 
 }  // namespace gpu

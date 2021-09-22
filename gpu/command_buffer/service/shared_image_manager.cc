@@ -307,7 +307,7 @@ SharedImageManager::ProduceMemory(const Mailbox& mailbox,
   AutoLock autolock(this);
   auto found = images_.find(mailbox);
   if (found == images_.end()) {
-    LOG(ERROR) << "SharedImageManager::Producememory: Trying to Produce a "
+    LOG(ERROR) << "SharedImageManager::ProduceMemory: Trying to Produce a "
                   "Memory representation from a non-existent mailbox.";
     return nullptr;
   }
@@ -315,6 +315,24 @@ SharedImageManager::ProduceMemory(const Mailbox& mailbox,
   // This is expected to fail based on the SharedImageBacking type, so don't log
   // error here. Caller is expected to handle nullptr.
   return (*found)->ProduceMemory(this, tracker);
+}
+
+std::unique_ptr<SharedImageRepresentationRaster>
+SharedImageManager::ProduceRaster(const Mailbox& mailbox,
+                                  MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::ProduceRaster: Trying to Produce a "
+                  "Raster representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  // This is expected to fail based on the SharedImageBacking type, so don't log
+  // error here. Caller is expected to handle nullptr.
+  return (*found)->ProduceRaster(this, tracker);
 }
 
 void SharedImageManager::OnRepresentationDestroyed(

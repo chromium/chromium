@@ -638,4 +638,9 @@ SharedImageRepresentationFactory::ProduceMemory(const gpu::Mailbox& mailbox) {
   return manager_->ProduceMemory(mailbox, tracker_.get());
 }
 
+std::unique_ptr<SharedImageRepresentationRaster>
+SharedImageRepresentationFactory::ProduceRaster(const Mailbox& mailbox) {
+  return manager_->ProduceRaster(mailbox, tracker_.get());
+}
+
 }  // namespace gpu
