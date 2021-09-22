@@ -71,12 +71,11 @@ void ExecuteWebTask(Profile* profile,
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
 
+  // No event flags means the launch container will be based on the app
+  // settings.
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithFiles(
-      task.app_id,
-      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
-                          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                          /* preferred_containner=*/false),
-      apps::mojom::LaunchSource::kFromFileManager, std::move(launch_files));
+      task.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromFileManager,
+      std::move(launch_files));
 
   // In a multiprofile session, web apps always open on the current desktop,
   // regardless of which profile owns the files being opened, so use
