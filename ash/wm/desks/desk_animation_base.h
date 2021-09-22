@@ -99,6 +99,16 @@ class ASH_EXPORT DeskAnimationBase
   // OnEndingDeskScreenshotTaken is called.
   const bool is_continuous_gesture_animation_;
 
+  // Used when the animation is a continuous gesture animation. True when
+  // `EndSwipeAnimation()` has been called and a fast swipe was detected, and
+  // reset to false if `Replace()` has been called. A fast swipe is one where
+  // the user starts and ends the swipe gesture within half a second. If this is
+  // false, we do not start the animation when `OnEndingDeskScreenshotTaken` is
+  // called.
+  // TODO(sammiequon): If the trial feature is removed, this can be combined
+  // with `is_continuous_gesture_animation_` as an optional or enum.
+  bool did_continuous_gesture_end_fast_ = false;
+
   // Used for metrics collection to track how many desks changes a user has seen
   // during the animation. This is different from the number of desk activations
   // as the user may switch desks but not activate it if the desk already has a

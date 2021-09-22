@@ -40,6 +40,12 @@ int RootWindowDeskSwitchAnimatorTestApi::GetEndingDeskIndex() const {
   return animator_->ending_desk_index_;
 }
 
+void RootWindowDeskSwitchAnimatorTestApi::SetOnStartingScreenshotTakenCallback(
+    base::OnceClosure callback) {
+  animator_->on_starting_screenshot_taken_callback_for_testing_ =
+      std::move(callback);
+}
+
 void RootWindowDeskSwitchAnimatorTestApi::SetOnEndingScreenshotTakenCallback(
     base::OnceClosure callback) {
   animator_->on_ending_screenshot_taken_callback_for_testing_ =
