@@ -193,7 +193,6 @@ void ChromeCleanupHandler::HandleRegisterChromeCleanerObserver(
     const base::ListValue* args) {
   DCHECK_EQ(0U, args->GetList().size());
 
-  UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.CleanupCard", true);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_Shown"));
   AllowJavascript();

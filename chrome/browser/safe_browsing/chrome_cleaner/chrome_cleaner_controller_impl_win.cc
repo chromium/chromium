@@ -67,16 +67,6 @@ constexpr int kRebootNotRequiredExitCode = 0;
 
 // These values are used to send UMA information and are replicated in the
 // enums.xml file, so the order MUST NOT CHANGE.
-enum CleanupResultHistogramValue {
-  CLEANUP_RESULT_SUCCEEDED = 0,
-  CLEANUP_RESULT_REBOOT_REQUIRED = 1,
-  CLEANUP_RESULT_FAILED = 2,
-
-  CLEANUP_RESULT_MAX,
-};
-
-// These values are used to send UMA information and are replicated in the
-// enums.xml file, so the order MUST NOT CHANGE.
 enum IPCDisconnectedHistogramValue {
   IPC_DISCONNECTED_SUCCESS = 0,
   IPC_DISCONNECTED_LOST_WHILE_SCANNING = 1,
@@ -141,11 +131,6 @@ void RecordScannerLogsAcceptanceHistogram(bool logs_accepted) {
 void RecordCleanerLogsAcceptanceHistogram(bool logs_accepted) {
   UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.CleanerLogsAcceptance",
                         logs_accepted);
-}
-
-void RecordCleanupResultHistogram(CleanupResultHistogramValue result) {
-  UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.Cleaner.CleanupResult", result,
-                            CLEANUP_RESULT_MAX);
 }
 
 void RecordIPCDisconnectedHistogram(IPCDisconnectedHistogramValue error) {
@@ -516,7 +501,6 @@ void ChromeCleanerControllerImpl::Reboot() {
   if (state() != State::kRebootRequired)
     return;
 
-  UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.Cleaner.RebootResponse", true);
   InitiateReboot();
 }
 
@@ -673,8 +657,6 @@ void ChromeCleanerControllerImpl::OnPromptUser(
     return;
   }
 
-  UMA_HISTOGRAM_COUNTS_1000("SoftwareReporter.NumberOfFilesToDelete",
-                            scanner_results.files_to_delete().size());
   scanner_results_ = std::move(scanner_results);
   prompt_user_reply_callback_ = std::move(reply_callback);
   SetStateAndNotifyObservers(State::kInfected);
@@ -734,7 +716,6 @@ void ChromeCleanerControllerImpl::OnCleanerProcessDone(
     }
 
     if (process_status.exit_code == kRebootRequiredExitCode) {
-      RecordCleanupResultHistogram(CLEANUP_RESULT_REBOOT_REQUIRED);
       SetStateAndNotifyObservers(State::kRebootRequired);
 
       // Start the reboot prompt flow.
@@ -743,7 +724,6 @@ void ChromeCleanerControllerImpl::OnCleanerProcessDone(
     }
 
     if (process_status.exit_code == kRebootNotRequiredExitCode) {
-      RecordCleanupResultHistogram(CLEANUP_RESULT_SUCCEEDED);
       delegate_->ResetTaggedProfiles(
           g_browser_process->profile_manager()->GetLoadedProfiles(),
           base::DoNothing());
@@ -753,7 +733,6 @@ void ChromeCleanerControllerImpl::OnCleanerProcessDone(
     }
   }
 
-  RecordCleanupResultHistogram(CLEANUP_RESULT_FAILED);
   idle_reason_ = IdleReason::kCleaningFailed;
   SetStateAndNotifyObservers(State::kIdle);
 }

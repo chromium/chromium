@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="SoftwareReporter.Cleaner.ChromePromptChannelError"
-    enum="SoftwareReporterChromePromptChannelError" expires_after="M95">
+    enum="SoftwareReporterChromePromptChannelError" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -35,7 +35,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.CleaningTime" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -49,6 +49,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.Cleaner.CleanupResult"
     enum="SoftwareReporterCleanupResult" expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -61,6 +64,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.Cleaner.DownloadStatus"
     enum="SoftwareReporterCleanerDownloadStatus" expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -72,7 +78,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.DownloadStatusErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M95">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -85,6 +91,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.Cleaner.HasRebooted" enum="BooleanRebooted"
     expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -97,6 +106,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.Cleaner.RebootResponse" enum="Boolean"
     expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -111,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.RunningTime" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -123,7 +135,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.ScanningTime" units="ms"
-    expires_after="M95">
+    expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -138,6 +150,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.Cleaner.SettingsPageActiveOnRebootRequired"
     enum="SoftwareReporterCleanerSettingsPageActiveOnRebootRequired"
     expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -160,7 +175,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.CleanerLogsAcceptance" enum="BooleanAccepted"
-    expires_after="M95">
+    expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -175,6 +190,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.CleanupCard" enum="Boolean"
     expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -186,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.CleanupStarted"
-    enum="SoftwareReporterCleanupStarted" expires_after="M95">
+    enum="SoftwareReporterCleanupStarted" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -314,7 +332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.NoPromptReason"
-    enum="SoftwareReporterNoPromptReason" expires_after="M95">
+    enum="SoftwareReporterNoPromptReason" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -328,6 +346,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.NumberOfFilesToDelete" units="counts"
     expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>

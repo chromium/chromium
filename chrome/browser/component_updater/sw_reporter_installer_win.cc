@@ -459,9 +459,6 @@ void ReportUMAForLastCleanerRun() {
         // Check if we are running after the user has rebooted.
         const base::TimeDelta elapsed = base::Time::Now() - start_time;
         DCHECK_GT(elapsed.InMilliseconds(), 0);
-        UMA_HISTOGRAM_BOOLEAN(
-            "SoftwareReporter.Cleaner.HasRebooted",
-            static_cast<uint64_t>(elapsed.InMilliseconds()) > ::GetTickCount());
       }
 
       if (cleaner_key.HasValue(chrome_cleaner::kUploadResultsValueName)) {
