@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 # [VPYTHON:BEGIN]
-# python_version: "2"
+# python_version: "3"
 # wheel: <
 #   name: "infra/python/wheels/pywin32/${vpython_platform}"
-#    version: "version:224"
+#    version: "version:300"
 # >
 # [VPYTHON:END]
 

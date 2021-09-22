@@ -37,9 +37,9 @@ class _StdoutStderrPipes(object):
     security_attributes.bInheritHandle = 1
     stdout_r, stdout_w = win32pipe.CreatePipe(security_attributes, 0)
     stderr_r, stderr_w = win32pipe.CreatePipe(security_attributes, 0)
-    self.stdout_r = stdout_r
+    self.stdout_r = stdout_r.Detach()
     self.stdout_w = self._MakeInheritable(stdout_w)
-    self.stderr_r = stderr_r
+    self.stderr_r = stderr_r.Detach()
     self.stderr_w = self._MakeInheritable(stderr_w)
 
     # Threads to read pipes and the actual contents returned.
@@ -58,15 +58,21 @@ class _StdoutStderrPipes(object):
 
   def _ReadStdout(self):
     """Read content from the stdout pipe."""
-    logging.info('Into read thread for STDOUT...')
-    stdout_buf = os.fdopen(msvcrt.open_osfhandle(self.stdout_r, 0), 'rt')
-    self.stdout = stdout_buf.read()
+    try:
+      logging.info('Into read thread for STDOUT...')
+      stdout_buf = os.fdopen(msvcrt.open_osfhandle(self.stdout_r, 0), 'rt')
+      self.stdout = stdout_buf.read()
+    except Exception as err:
+      logging.exception(err)
 
   def _ReadStderr(self):
     """Read content from the stderr pipe."""
-    logging.info('Into read thread for STDERR...')
-    stderr_buf = os.fdopen(msvcrt.open_osfhandle(self.stderr_r, 0), 'rt')
-    self.stderr = stderr_buf.read()
+    try:
+      logging.info('Into read thread for STDERR...')
+      stderr_buf = os.fdopen(msvcrt.open_osfhandle(self.stderr_r, 0), 'rt')
+      self.stderr = stderr_buf.read()
+    except Exception as err:
+      logging.exception(err)
 
   def ReadAll(self):
     """Fork threads to read stdout/stderr."""
