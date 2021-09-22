@@ -59,19 +59,6 @@ TEST_F(RuntimeDataTest, IsBackgroundPageReady) {
   EXPECT_FALSE(runtime_data_.IsBackgroundPageReady(with_background.get()));
 }
 
-TEST_F(RuntimeDataTest, IsBeingUpgraded) {
-  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
-
-  // An extension is not being upgraded until the flag is set.
-  EXPECT_FALSE(runtime_data_.IsBeingUpgraded(extension->id()));
-
-  // The flag can be toggled.
-  runtime_data_.SetBeingUpgraded(extension->id(), true);
-  EXPECT_TRUE(runtime_data_.IsBeingUpgraded(extension->id()));
-  runtime_data_.SetBeingUpgraded(extension->id(), false);
-  EXPECT_FALSE(runtime_data_.IsBeingUpgraded(extension->id()));
-}
-
 // Unloading an extension erases any data that shouldn't explicitly be kept
 // across loads.
 TEST_F(RuntimeDataTest, OnExtensionUnloaded) {
@@ -79,13 +66,11 @@ TEST_F(RuntimeDataTest, OnExtensionUnloaded) {
       CreateExtensionWithBackgroundPage();
   runtime_data_.SetBackgroundPageReady(extension->id(), true);
   ASSERT_TRUE(runtime_data_.HasExtensionForTesting(extension->id()));
-  runtime_data_.SetBeingUpgraded(extension->id(), true);
 
   runtime_data_.OnExtensionUnloaded(nullptr, extension.get(),
                                     UnloadedExtensionReason::DISABLE);
   EXPECT_TRUE(runtime_data_.HasExtensionForTesting(extension->id()));
   EXPECT_FALSE(runtime_data_.IsBackgroundPageReady(extension.get()));
-  EXPECT_TRUE(runtime_data_.IsBeingUpgraded(extension->id()));
 }
 
 }  // namespace

@@ -27,7 +27,6 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/task_queue_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -90,10 +89,6 @@ void ExtensionRegistrar::AddExtension(
   // If the extension was disabled for a reload, we will enable it.
   bool was_reloading = reloading_extensions_.erase(extension->id()) > 0;
 
-  // Set the upgraded bit; we consider reloads upgrades.
-  extension_system_->runtime_data()->SetBeingUpgraded(
-      extension->id(), is_extension_upgrade || was_reloading);
-
   // The extension is now loaded; remove its data from unloaded extension map.
   unloaded_extension_paths_.erase(extension->id());
 
@@ -115,8 +110,6 @@ void ExtensionRegistrar::AddExtension(
     }
     AddNewExtension(extension);
   }
-
-  extension_system_->runtime_data()->SetBeingUpgraded(extension->id(), false);
 }
 
 void ExtensionRegistrar::AddNewExtension(
@@ -380,9 +373,6 @@ void ExtensionRegistrar::ReloadExtension(
       orphaned_dev_tools_[extension_id] = std::move(agent_hosts);
     }
     path = enabled_extension->path();
-    // BeingUpgraded is set back to false when the extension is added.
-    extension_system_->runtime_data()->SetBeingUpgraded(enabled_extension->id(),
-                                                        true);
     DisableExtension(extension_id, disable_reason::DISABLE_RELOAD);
     DCHECK(registry_->disabled_extensions().Contains(extension_id));
     reloading_extensions_.insert(extension_id);

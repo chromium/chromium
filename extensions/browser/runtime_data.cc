@@ -29,15 +29,6 @@ void RuntimeData::SetBackgroundPageReady(const std::string& extension_id,
   SetFlag(extension_id, BACKGROUND_PAGE_READY, value);
 }
 
-bool RuntimeData::IsBeingUpgraded(const std::string& extension_id) const {
-  return HasFlag(extension_id, BEING_UPGRADED);
-}
-
-void RuntimeData::SetBeingUpgraded(const std::string& extension_id,
-                                   bool value) {
-  SetFlag(extension_id, BEING_UPGRADED, value);
-}
-
 bool RuntimeData::HasExtensionForTesting(
     const std::string& extension_id) const {
   return extension_flags_.find(extension_id) != extension_flags_.end();
@@ -52,7 +43,7 @@ void RuntimeData::OnExtensionUnloaded(content::BrowserContext* browser_context,
                                       UnloadedExtensionReason reason) {
   auto iter = extension_flags_.find(extension->id());
   if (iter != extension_flags_.end())
-    iter->second = iter->second & kPersistAcrossUnloadMask;
+    iter->second = 0;
 }
 
 bool RuntimeData::HasFlag(const std::string& extension_id,

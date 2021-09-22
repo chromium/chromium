@@ -22,6 +22,9 @@ class ExtensionRegistry;
 // If we start putting to much into this, we should expose the generic
 // "[G|S]etRuntimeProperty(const std::string& extension_id, RuntimeFlag flag)"
 // instead of all these.
+// TODO(devlin): Remove this whole class. It's now just
+// IsBackgroundPageReady(), which can easily be determined by looking at the
+// background host on ProcessManager.
 class RuntimeData : public ExtensionRegistryObserver {
  public:
   // Observes |registry| to clean itself up when extensions change state.
@@ -34,12 +37,6 @@ class RuntimeData : public ExtensionRegistryObserver {
   // non-persistent (lazy), we consider it to be ready.
   bool IsBackgroundPageReady(const Extension* extension) const;
   void SetBackgroundPageReady(const std::string& extension_id, bool value);
-
-  // Getter and setter for the flag that specifies whether the extension is
-  // being upgraded.
-  // For these purposes, a reload counts as an upgrade.
-  bool IsBeingUpgraded(const std::string& extension_id) const;
-  void SetBeingUpgraded(const std::string& extension_id, bool value);
 
   // Returns true if the extension is being tracked. Used only for testing.
   bool HasExtensionForTesting(const std::string& extension_id) const;
@@ -58,13 +55,7 @@ class RuntimeData : public ExtensionRegistryObserver {
   enum RuntimeFlag {
     // Set if the background page is ready.
     BACKGROUND_PAGE_READY = 1 << 0,
-    // Set while the extension is being upgraded.
-    BEING_UPGRADED        = 1 << 1,
   };
-
-  // The mask of any data that should persist across the extension being
-  // unloaded.
-  static const int kPersistAcrossUnloadMask = BEING_UPGRADED;
 
   // Returns the setting for the flag or false if the extension isn't found.
   bool HasFlag(const std::string& extension_id, RuntimeFlag flag) const;
