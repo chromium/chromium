@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/common_signals_decorator.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -20,7 +20,7 @@ TEST(CommonSignalsDecoratorTest, Decorate) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   CommonSignalsDecorator decorator;
 
-  DeviceTrustSignals signals;
+  SignalsType signals;
   decorator.Decorate(signals);
 
   EXPECT_TRUE(signals.has_os());

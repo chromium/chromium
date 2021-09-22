@@ -32,7 +32,7 @@ class AshAttestationService : public AttestationService {
   // AttestationService:
   void BuildChallengeResponseForVAChallenge(
       const std::string& challenge,
-      std::unique_ptr<DeviceTrustSignals> signals,
+      std::unique_ptr<attestation::DeviceTrustSignals> signals,
       AttestationCallback callback) override;
 
  private:

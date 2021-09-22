@@ -11,7 +11,7 @@ namespace enterprise_connectors {
 CommonSignalsDecorator::CommonSignalsDecorator() = default;
 CommonSignalsDecorator::~CommonSignalsDecorator() = default;
 
-void CommonSignalsDecorator::Decorate(DeviceTrustSignals& signals) {
+void CommonSignalsDecorator::Decorate(SignalsType& signals) {
   signals.set_os(policy::GetOSPlatform());
   signals.set_os_version(policy::GetOSVersion());
   signals.set_device_model(policy::GetDeviceModel());

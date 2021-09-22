@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 
 namespace enterprise_connectors {
@@ -18,8 +18,8 @@ SignalsServiceImpl::SignalsServiceImpl(
 
 SignalsServiceImpl::~SignalsServiceImpl() = default;
 
-std::unique_ptr<DeviceTrustSignals> SignalsServiceImpl::CollectSignals() {
-  auto signals = std::make_unique<DeviceTrustSignals>();
+std::unique_ptr<SignalsType> SignalsServiceImpl::CollectSignals() {
+  auto signals = std::make_unique<SignalsType>();
 
   for (const auto& decorator : signals_decorators_) {
     decorator->Decorate(*signals);

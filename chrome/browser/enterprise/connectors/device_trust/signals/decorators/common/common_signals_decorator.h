@@ -16,7 +16,7 @@ class CommonSignalsDecorator : public SignalsDecorator {
   ~CommonSignalsDecorator() override;
 
   // SignalsDecorator:
-  void Decorate(DeviceTrustSignals& signals) override;
+  void Decorate(SignalsType& signals) override;
 };
 
 }  // namespace enterprise_connectors

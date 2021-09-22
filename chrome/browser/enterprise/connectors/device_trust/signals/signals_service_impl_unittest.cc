@@ -24,7 +24,7 @@ TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
   std::unique_ptr<MockSignalsDecorator> first_decorator =
       std::make_unique<MockSignalsDecorator>();
   EXPECT_CALL(*first_decorator.get(), Decorate(_))
-      .WillOnce([&fake_obfuscated_customer_id](DeviceTrustSignals& signals) {
+      .WillOnce([&fake_obfuscated_customer_id](SignalsType& signals) {
         signals.set_obfuscated_customer_id(fake_obfuscated_customer_id);
       });
 
@@ -32,7 +32,7 @@ TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
   std::unique_ptr<MockSignalsDecorator> second_decorator =
       std::make_unique<MockSignalsDecorator>();
   EXPECT_CALL(*second_decorator.get(), Decorate(_))
-      .WillOnce([&fake_device_id](DeviceTrustSignals& signals) {
+      .WillOnce([&fake_device_id](SignalsType& signals) {
         signals.set_device_id(fake_device_id);
       });
 
@@ -42,7 +42,7 @@ TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
 
   SignalsServiceImpl service(std::move(decorators));
 
-  std::unique_ptr<DeviceTrustSignals> signals = service.CollectSignals();
+  std::unique_ptr<SignalsType> signals = service.CollectSignals();
 
   EXPECT_EQ(signals->obfuscated_customer_id(), fake_obfuscated_customer_id);
   EXPECT_EQ(signals->device_id(), fake_device_id);

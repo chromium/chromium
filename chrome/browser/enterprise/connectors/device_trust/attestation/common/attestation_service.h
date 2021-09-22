@@ -9,11 +9,11 @@
 #include <string>
 
 #include "base/callback.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 
 namespace enterprise_connectors {
 
 class DeviceTrustReportEvent;
-class DeviceTrustSignals;
 
 // Interface for classes in charge of building challenge-responses to enable
 // handshake between Chrome, an IdP and Verified Access.
@@ -28,7 +28,7 @@ class AttestationService {
   // the challenge does not come from VA, runs `callback` with an empty string.
   virtual void BuildChallengeResponseForVAChallenge(
       const std::string& challenge,
-      std::unique_ptr<DeviceTrustSignals> signals,
+      std::unique_ptr<SignalsType> signals,
       AttestationCallback callback) = 0;
 
   // Applies, if any, updates to a `report` about to be sent.

@@ -121,7 +121,7 @@ TEST_F(DeviceTrustServiceTest, BuildChallengeResponse) {
   std::string fake_device_id = "fake_device_id";
   EXPECT_CALL(*mock_signals_service_, CollectSignals())
       .WillOnce(Invoke([&fake_device_id]() {
-        auto fake_signals = std::make_unique<DeviceTrustSignals>();
+        auto fake_signals = std::make_unique<SignalsType>();
         fake_signals->set_device_id(fake_device_id);
         return fake_signals;
       }));
@@ -129,12 +129,11 @@ TEST_F(DeviceTrustServiceTest, BuildChallengeResponse) {
   std::string fake_challenge = "fake_challenge";
   EXPECT_CALL(*mock_attestation_service_, BuildChallengeResponseForVAChallenge(
                                               fake_challenge, NotNull(), _))
-      .WillOnce(
-          Invoke([&fake_device_id](const std::string& challenge,
-                                   std::unique_ptr<DeviceTrustSignals> signals,
-                                   AttestationCallback callback) {
-            EXPECT_EQ(signals->device_id(), fake_device_id);
-          }));
+      .WillOnce(Invoke([&fake_device_id](const std::string& challenge,
+                                         std::unique_ptr<SignalsType> signals,
+                                         AttestationCallback callback) {
+        EXPECT_EQ(signals->device_id(), fake_device_id);
+      }));
 
   device_trust_service->BuildChallengeResponse(
       fake_challenge,

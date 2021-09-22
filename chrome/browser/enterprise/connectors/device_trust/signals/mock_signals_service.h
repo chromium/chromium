@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_MOCK_SIGNALS_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_MOCK_SIGNALS_SERVICE_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,10 +16,7 @@ class MockSignalsService : public SignalsService {
   MockSignalsService();
   ~MockSignalsService() override;
 
-  MOCK_METHOD(std::unique_ptr<DeviceTrustSignals>,
-              CollectSignals,
-              (),
-              (override));
+  MOCK_METHOD(std::unique_ptr<SignalsType>, CollectSignals, (), (override));
 };
 
 }  // namespace test

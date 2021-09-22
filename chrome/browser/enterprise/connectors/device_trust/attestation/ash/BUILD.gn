@@ -12,7 +12,6 @@ source_set("ash") {
 
   deps = [
     "//chrome/browser/chromeos",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
     "//chrome/browser/profiles:profile",
   ]
 

@@ -12,7 +12,7 @@ source_set("common") {
 
   sources = [ "common_signals_decorator.cc" ]
 
-  public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto" ]
+  public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types" ]
 
   deps = [ "//components/policy/core/common" ]
 }
@@ -26,7 +26,7 @@ source_set("test_support") {
 
   public_deps = [
     ":common",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
     "//testing/gmock",
   ]
 }
@@ -38,7 +38,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//build:chromeos_buildflags",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
     "//testing/gtest",
   ]
 
