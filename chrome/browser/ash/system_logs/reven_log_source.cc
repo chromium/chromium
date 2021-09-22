@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 
-#include <base/strings/stringprintf.h>
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -31,22 +32,38 @@ constexpr char kKeyValueDelimiter[] = ": ";
 //   {key1}: {value1}
 //   {key2}: {value2}
 void AddIndentedLogEntry(std::string* log,
-                         const std::string& key,
-                         const std::string& value) {
+                         const base::StringPiece key,
+                         const base::StringPiece value) {
   base::StrAppend(log, {kNewlineWithIndent, key, kKeyValueDelimiter, value});
 }
 
 // Format for regular log entry:
 // {key1}: {value1}
 void AddLogEntry(std::string* log,
-                 const std::string& key,
-                 const std::string& value) {
+                 const base::StringPiece key,
+                 const base::StringPiece value) {
   base::StrAppend(log, {key, kKeyValueDelimiter, value, "\n"});
 }
 
 // Format the combination of vendor_id and product_id (or device_id)
 std::string FormatDeviceIDs(uint16_t vendor_id, uint16_t product_id) {
   return base::StringPrintf("%04x:%04x", vendor_id, product_id);
+}
+
+// TPM family. We use the TPM 2.0 style encoding, e.g.:
+//  * TPM 1.2: "1.2" -> 0x312e3200
+//  * TPM 2.0: "2.0" -> 0x322e3000
+std::string ToTpmVersionStr(uint32_t tpm_family) {
+  if (tpm_family == (uint32_t)0x312e3200)
+    return "1.2";
+  else if (tpm_family == (uint32_t)0x322e3000)
+    return "2.0";
+  else
+    return "unknown";
+}
+
+std::string FormatBool(bool value) {
+  return value ? "true" : "false";
 }
 
 void PopulateBluetoothInfo(std::string* log, const TelemetryInfoPtr& info) {
@@ -120,7 +137,7 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
   if (!os_info.is_null()) {
     AddIndentedLogEntry(
         log, "uefi",
-        (os_info->boot_mode == healthd::BootMode::kCrosEfi) ? "true" : "false");
+        FormatBool(os_info->boot_mode == healthd::BootMode::kCrosEfi));
   }
   base::StrAppend(log, {"\n"});
 }
@@ -136,19 +153,20 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
 //   ethernet_adapter
 //   wireless_adapter
 void PopulateBusDevicesInfo(std::string* log,
-                            const std::string& prefix,
+                            const base::StringPiece prefix,
                             const std::vector<healthd::BusDevicePtr>& devices) {
   if (devices.empty())
     return;
   base::StrAppend(log, {prefix, "_info:"});
 
-  for (auto& device : devices) {
+  for (const auto& device : devices) {
     AddIndentedLogEntry(
         log, base::StrCat({prefix, "_name"}),
         base::StrCat({device->vendor_name, " ", device->product_name}));
 
     if (device->bus_info->is_pci_bus_info()) {
-      healthd::PciBusInfoPtr& pci_info = device->bus_info->get_pci_bus_info();
+      const healthd::PciBusInfoPtr& pci_info =
+          device->bus_info->get_pci_bus_info();
 
       AddIndentedLogEntry(
           log, base::StrCat({prefix, "_id"}),
@@ -159,13 +177,14 @@ void PopulateBusDevicesInfo(std::string* log,
     }
 
     if (device->bus_info->is_usb_bus_info()) {
-      healthd::UsbBusInfoPtr& usb_info = device->bus_info->get_usb_bus_info();
+      const healthd::UsbBusInfoPtr& usb_info =
+          device->bus_info->get_usb_bus_info();
 
       AddIndentedLogEntry(
           log, base::StrCat({prefix, "_id"}),
           FormatDeviceIDs(usb_info->vendor_id, usb_info->product_id));
       AddIndentedLogEntry(log, base::StrCat({prefix, "_bus"}), "usb");
-      std::vector<healthd::UsbBusInterfaceInfoPtr>& usb_interfaces =
+      const std::vector<healthd::UsbBusInterfaceInfoPtr>& usb_interfaces =
           usb_info->interfaces;
       for (const auto& interface : usb_interfaces) {
         AddIndentedLogEntry(log, base::StrCat({prefix, "_driver"}),
@@ -203,6 +222,29 @@ void PopulateBusDevicesInfo(std::string* log, const TelemetryInfoPtr& info) {
   PopulateBusDevicesInfo(log, "wireless_adapter", wireless_devices);
 }
 
+void PopulateTpmInfo(std::string* log, const TelemetryInfoPtr& info) {
+  if (info->tpm_result.is_null() || info->tpm_result->is_error()) {
+    DVLOG(1) << "TpmResult not found in croshealthd response";
+    return;
+  }
+  const healthd::TpmInfoPtr& dmi_info = info->tpm_result->get_tpm_info();
+  base::StrAppend(log, {"tpm_info:"});
+
+  const healthd::TpmVersionPtr& version = dmi_info->version;
+  AddIndentedLogEntry(log, "tpm_version", ToTpmVersionStr(version->family));
+  AddIndentedLogEntry(log, "spec_level",
+                      base::NumberToString(version->spec_level));
+  AddIndentedLogEntry(log, "manufacturer",
+                      base::NumberToString(version->manufacturer));
+  AddIndentedLogEntry(log, "did_vid", dmi_info->did_vid.value_or(""));
+
+  AddIndentedLogEntry(log, "tpm_allow_listed",
+                      FormatBool(dmi_info->supported_features->is_allowed));
+  AddIndentedLogEntry(log, "tpm_owned", FormatBool(dmi_info->status->owned));
+
+  base::StrAppend(log, {"\n"});
+}
+
 }  // namespace
 
 RevenLogSource::RevenLogSource() : SystemLogsSource("Reven") {
@@ -216,7 +258,7 @@ void RevenLogSource::Fetch(SysLogsSourceCallback callback) {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBluetooth, ProbeCategories::kBus,
        ProbeCategories::kCpu, ProbeCategories::kMemory,
-       ProbeCategories::kSystem2},
+       ProbeCategories::kSystem2, ProbeCategories::kTpm},
       base::BindOnce(&RevenLogSource::OnTelemetryInfoProbeResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -237,6 +279,7 @@ void RevenLogSource::OnTelemetryInfoProbeResponse(
     PopulateMemoryInfo(&log_val, info_ptr);
     PopulateSystemInfo(&log_val, info_ptr);
     PopulateBusDevicesInfo(&log_val, info_ptr);
+    PopulateTpmInfo(&log_val, info_ptr);
   }
 
   response->emplace(kRevenLogKey, log_val);

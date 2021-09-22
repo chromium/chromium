@@ -225,6 +225,39 @@ void SetUsbWirelessDevices(healthd::TelemetryInfoPtr& telemetry_info) {
       healthd::BusResult::NewBusDevices(std::move(bus_devices));
 }
 
+void SetTpmInfo(healthd::TelemetryInfoPtr& telemetry_info,
+                const std::string& did_vid,
+                uint32_t family,
+                bool is_owned,
+                bool is_allowed) {
+  auto version = healthd::TpmVersion::New();
+  version->family = family;
+  version->manufacturer = 1129467731;
+  version->spec_level = 116;
+
+  auto status = healthd::TpmStatus::New();
+  status->owned = is_owned;
+
+  auto dictionary_attack = healthd::TpmDictionaryAttack::New();
+  auto attestation = healthd::TpmAttestation::New();
+
+  auto supported_features = healthd::TpmSupportedFeatures::New();
+  supported_features->is_allowed = is_allowed;
+
+  healthd::TpmInfoPtr tpm_info = healthd::TpmInfo::New();
+  if (did_vid != "")
+    tpm_info->did_vid = absl::optional<std::string>(did_vid);
+
+  tpm_info->version = std::move(version);
+  tpm_info->status = std::move(status);
+  tpm_info->dictionary_attack = std::move(dictionary_attack);
+  tpm_info->attestation = std::move(attestation);
+  tpm_info->supported_features = std::move(supported_features);
+
+  telemetry_info->tpm_result =
+      healthd::TpmResult::NewTpmInfo(std::move(tpm_info));
+}
+
 }  // namespace
 
 class RevenLogSourceTest : public ::testing::Test {
@@ -272,6 +305,35 @@ class RevenLogSourceTest : public ::testing::Test {
 
     EXPECT_THAT(revenlog_iter->second, HasSubstr("biosinfo:\n"));
     EXPECT_THAT(revenlog_iter->second, HasSubstr(expected));
+  }
+
+  void VerifyTpmInfo(uint32_t version,
+                     const std::string& expected_version,
+                     const std::string& did_vid,
+                     const std::string& expected_did_vid,
+                     bool is_owned,
+                     bool is_allowed) {
+    auto info = healthd::TelemetryInfo::New();
+    SetTpmInfo(info, did_vid, version, is_owned, is_allowed);
+    ash::cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(info);
+
+    std::unique_ptr<SystemLogsResponse> response = Fetch();
+    ASSERT_NE(response, nullptr);
+    const auto revenlog_iter = response->find(kRevenLogKey);
+    ASSERT_NE(revenlog_iter, response->end());
+
+    EXPECT_THAT(revenlog_iter->second, HasSubstr("tpm_info:"));
+    EXPECT_THAT(revenlog_iter->second, HasSubstr(expected_version));
+    EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  spec_level: 116"));
+    EXPECT_THAT(revenlog_iter->second,
+                HasSubstr("\n  manufacturer: 1129467731"));
+    EXPECT_THAT(
+        revenlog_iter->second,
+        HasSubstr(is_owned ? "\n  tpm_owned: true" : "\n  tpm_owned: false"));
+    EXPECT_THAT(revenlog_iter->second,
+                HasSubstr(is_allowed ? "\n  tpm_allow_listed: true"
+                                     : "\n  tpm_allow_listed: false"));
   }
 
  protected:
@@ -578,6 +640,28 @@ TEST_F(RevenLogSourceTest, UsbWirelessDevices) {
               HasSubstr("\n  wireless_adapter_bus: usb"));
   EXPECT_THAT(revenlog_iter->second,
               HasSubstr("\n  wireless_adapter_driver: \n"));
+}
+
+TEST_F(RevenLogSourceTest, TpmInfoVersion_1_2WithDidVid_Owned_Allowed) {
+  VerifyTpmInfo(0x312e3200, "\n  tpm_version: 1.2", "286536196",
+                "\n  did_vid: 286536196", true, true);
+}
+
+TEST_F(RevenLogSourceTest, TpmInfoVersion_2_0WithoutDidVid_Owned_NotAllowed) {
+  VerifyTpmInfo(0x322e3000, "\n  tpm_version: 2.0", "", "\n  did_vid: \n", true,
+                false);
+}
+
+TEST_F(RevenLogSourceTest,
+       TpmInfoVersionUnknownWithoutDidVid_Allowed_NotOwned) {
+  VerifyTpmInfo(0xaaaaaaaa, "\n  tpm_version: unknown", "", "\n  did_vid: \n",
+                false, true);
+}
+
+TEST_F(RevenLogSourceTest,
+       TpmInfoVersionUnknownWithoutDidVid_NotAllowed_NotOwned) {
+  VerifyTpmInfo(0xaaaaaaaa, "\n  tpm_version: unknown", "", "\n  did_vid: \n",
+                false, false);
 }
 
 }  // namespace system_logs
