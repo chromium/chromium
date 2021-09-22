@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/metrics/histogram_macros.h"
 #include "content/browser/find_in_page_client.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -270,6 +271,24 @@ void FindRequestManager::Find(int request_id,
   // requests.
   DCHECK_GT(request_id, current_request_.id);
   DCHECK_GT(request_id, current_session_id_);
+
+  // TODO(crbug.com/1250158): Remove this when we decide how long the
+  // find-in-page delay should be.
+  if (options->new_session) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    if (!last_time_typed_.is_null() &&
+        base::StartsWith(search_text, last_searched_text_)) {
+      base::TimeDelta elapsed = now - last_time_typed_;
+      // If we waited more than 5 seconds, the user probably is searching for
+      // something else now.
+      if (elapsed.InSecondsF() <= 5.f) {
+        UMA_HISTOGRAM_TIMES("WebCore.FindInPage.DurationBetweenKeystrokes",
+                            elapsed);
+      }
+    }
+    last_time_typed_ = now;
+    last_searched_text_ = search_text;
+  }
 
   // If this is a new find session, clear any queued requests from last session.
   if (options->new_session)

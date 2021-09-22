@@ -337,6 +337,13 @@ class CONTENT_EXPORT FindRequestManager {
   // WebContentsObservers to observe frame changes in |contents_| and its inner
   // WebContentses.
   std::vector<std::unique_ptr<FrameObserver>> frame_observers_;
+
+  // last_time_typed_ and last_searched_text_ are used to measure how long the
+  // user takes between keystrokes.
+  // TODO(crbug.com/1250158): Remove these when we decide how long the
+  // find-in-page delay should be.
+  base::TimeTicks last_time_typed_;
+  std::u16string last_searched_text_;
 };
 
 }  // namespace content
