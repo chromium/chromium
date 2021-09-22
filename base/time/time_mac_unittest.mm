@@ -11,16 +11,18 @@ namespace {
 class ScopedTimebase {
  public:
   ScopedTimebase(mach_timebase_info_data_t timebase)
-      : orig_timebase_(*base::TimeTicks::MachTimebaseInfo()) {
-    base::TimeTicks::MachTimebaseInfo()->numer = timebase.numer;
-    base::TimeTicks::MachTimebaseInfo()->denom = timebase.denom;
+      : orig_timebase_(*base::TimeTicks::MachTimebaseInfoForTesting()) {
+    base::TimeTicks::MachTimebaseInfoForTesting()->numer = timebase.numer;
+    base::TimeTicks::MachTimebaseInfoForTesting()->denom = timebase.denom;
   }
 
   ScopedTimebase(const ScopedTimebase&) = delete;
 
   ScopedTimebase& operator=(const ScopedTimebase&) = delete;
 
-  ~ScopedTimebase() { *base::TimeTicks::MachTimebaseInfo() = orig_timebase_; }
+  ~ScopedTimebase() {
+    *base::TimeTicks::MachTimebaseInfoForTesting() = orig_timebase_;
+  }
 
  private:
   mach_timebase_info_data_t orig_timebase_;

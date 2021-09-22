@@ -233,7 +233,7 @@ TimeTicks TimeTicks::FromMachAbsoluteTime(uint64_t mach_absolute_time) {
 }
 
 // static
-mach_timebase_info_data_t* TimeTicks::MachTimebaseInfo() {
+mach_timebase_info_data_t* TimeTicks::MachTimebaseInfoForTesting() {
   return MachTimebaseInfoInternal();
 }
 #endif  // defined(OS_MAC)
