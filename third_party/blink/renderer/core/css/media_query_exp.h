@@ -230,6 +230,8 @@ class CORE_EXPORT MediaQueryExp {
     return bounds_.right.value;
   }
 
+  const MediaQueryExpBounds& Bounds() const { return bounds_; }
+
   bool IsValid() const { return !media_feature_.IsNull(); }
 
   bool operator==(const MediaQueryExp& other) const;

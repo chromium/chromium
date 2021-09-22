@@ -179,13 +179,13 @@ bool CompareValue(T a, T b, MediaQueryOperator op) {
       return a >= b;
     case MediaQueryOperator::kLe:
       return a <= b;
+    case MediaQueryOperator::kEq:
     case MediaQueryOperator::kNone:
       return a == b;
-    case MediaQueryOperator::kEq:
     case MediaQueryOperator::kLt:
+      return a < b;
     case MediaQueryOperator::kGt:
-      // TODO(crbug.com/1034465): Implement.
-      return false;
+      return a > b;
   }
   return false;
 }
@@ -197,13 +197,13 @@ bool CompareDoubleValue(double a, double b, MediaQueryOperator op) {
       return a >= (b - precision);
     case MediaQueryOperator::kLe:
       return a <= (b + precision);
+    case MediaQueryOperator::kEq:
     case MediaQueryOperator::kNone:
       return std::abs(a - b) <= precision;
-    case MediaQueryOperator::kEq:
     case MediaQueryOperator::kLt:
+      return a < b;
     case MediaQueryOperator::kGt:
-      // TODO(crbug.com/1034465): Implement.
-      return false;
+      return a > b;
   }
   return false;
 }
@@ -1050,6 +1050,25 @@ static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {
+  switch (op) {
+    case MediaQueryOperator::kNone:
+    case MediaQueryOperator::kEq:
+      return op;
+    case MediaQueryOperator::kLt:
+      return MediaQueryOperator::kGt;
+    case MediaQueryOperator::kLe:
+      return MediaQueryOperator::kGe;
+    case MediaQueryOperator::kGt:
+      return MediaQueryOperator::kLt;
+    case MediaQueryOperator::kGe:
+      return MediaQueryOperator::kLe;
+  }
+
+  NOTREACHED();
+  return MediaQueryOperator::kNone;
+}
+
 void MediaQueryEvaluator::Init() {
   // Create the table.
   g_function_map = new FunctionMap;
@@ -1074,10 +1093,26 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr) const {
   // Call the media feature evaluation function. Assume no prefix and let
   // trampoline functions override the prefix if prefix is used.
   EvalFunc func = g_function_map->at(expr.MediaFeature().Impl());
-  if (func)
-    return func(expr.ExpValue(), MediaQueryOperator::kNone, *media_values_);
 
-  return false;
+  if (!func)
+    return false;
+
+  const auto& bounds = expr.Bounds();
+
+  bool result = true;
+
+  if (!bounds.IsRange() || bounds.right.IsValid()) {
+    DCHECK((bounds.right.op == MediaQueryOperator::kNone) || bounds.IsRange());
+    result &= func(bounds.right.value, bounds.right.op, *media_values_);
+  }
+
+  if (bounds.left.IsValid()) {
+    DCHECK(bounds.IsRange());
+    auto op = ReverseOperator(bounds.left.op);
+    result &= func(bounds.left.value, op, *media_values_);
+  }
+
+  return result;
 }
 
 }  // namespace blink
