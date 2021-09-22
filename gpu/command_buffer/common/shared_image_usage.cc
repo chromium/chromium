@@ -20,6 +20,9 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
   if (usage & SHARED_IMAGE_USAGE_RASTER) {
     label += "|Raster";
   }
+  if (usage & SHARED_IMAGE_USAGE_RAW_DRAW) {
+    label += "|RawDraw";
+  }
   if (usage & SHARED_IMAGE_USAGE_DISPLAY) {
     label += "|Display";
   }

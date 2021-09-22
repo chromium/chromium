@@ -23,10 +23,12 @@
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_texture.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_raw_draw.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_shared_memory.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/wrapped_sk_image.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/trace_util.h"
@@ -145,6 +147,12 @@ SharedImageFactory::SharedImageFactory(
     auto wrapped_sk_image_factory =
         std::make_unique<raster::WrappedSkImageFactory>(context_state);
     factories_.push_back(std::move(wrapped_sk_image_factory));
+  }
+
+  if (features::IsUsingRawDraw() && context_state) {
+    auto factory = std::make_unique<raster::SharedImageBackingFactoryRawDraw>(
+        context_state);
+    factories_.push_back(std::move(factory));
   }
 
   bool use_gl = gl::GetGLImplementation() != gl::kGLImplementationNone;

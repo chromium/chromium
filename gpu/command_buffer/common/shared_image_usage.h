@@ -52,6 +52,8 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_MIPMAP = 1 << 13,
   // Image will be used for CPU Writes by client
   SHARED_IMAGE_USAGE_CPU_WRITE = 1 << 14,
+  // Image will be used in RasterInterface with RawDraw.
+  SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 15,
 };
 
 // Create a string to label SharedImageUsage.
