@@ -254,7 +254,7 @@ export class BannerController extends EventTarget {
             isPathSharedWithVm(
                 this.crostini_, this.currentEntry_, constants.PLUGIN_VM),
         context: () =>
-            ({type: constants.PLUGIN_VM + constants.DEFAULT_CROSTINI_VM}),
+            ({type: constants.DEFAULT_CROSTINI_VM + constants.PLUGIN_VM}),
       });
       this.registerCustomBannerFilter_(SharedWithCrostiniPluginVmBanner, {
         shouldShow: () => isPathSharedWithVm(
