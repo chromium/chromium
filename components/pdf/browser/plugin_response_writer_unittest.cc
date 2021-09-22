@@ -120,10 +120,15 @@ class PluginResponseWriterTest : public testing::Test {
 }  // namespace
 
 TEST_F(PluginResponseWriterTest, Start) {
-  PdfStreamDelegate::StreamInfo stream{
-      GURL("chrome-extension://id/stream-url"),
-      GURL("https://example.test/fake.pdf"), /*background_color=*/0,
-      /*full_frame=*/true, /*allow_javascript=*/true};
+  const std::string kFakeScript = "fake-script";
+
+  PdfStreamDelegate::StreamInfo stream;
+  stream.stream_url = GURL("chrome-extension://id/stream-url");
+  stream.original_url = GURL("https://example.test/fake.pdf");
+  stream.injected_script = &kFakeScript;
+  stream.background_color = SK_ColorGREEN;
+  stream.full_frame = true;
+  stream.allow_javascript = true;
   auto response_writer = NewPluginResponseWriter(stream);
 
   base::RunLoop run_loop;
@@ -166,64 +171,63 @@ TEST_F(PluginResponseWriterTest, Start) {
               HasSubstr("src=\"chrome-extension://id/stream-url\""));
   EXPECT_THAT(body_drainer_->content(),
               HasSubstr("original-url=\"https://example.test/fake.pdf\""));
-  EXPECT_THAT(body_drainer_->content(), HasSubstr("'chrome-extension://id/'"));
-  EXPECT_THAT(body_drainer_->content(), HasSubstr("background-color=\"0\""));
+  EXPECT_THAT(body_drainer_->content(), HasSubstr(kFakeScript));
+  EXPECT_THAT(body_drainer_->content(),
+              HasSubstr("background-color=\"4278255360\""));
   EXPECT_THAT(body_drainer_->content(), HasSubstr("javascript=\"allow\""));
   EXPECT_THAT(body_drainer_->content(), HasSubstr("full-frame"));
 }
 
 TEST_F(PluginResponseWriterTest, StartWithUnescapedUrls) {
-  PdfStreamDelegate::StreamInfo stream{
-      GURL("chrome-extension://id/stream-url\""),
-      GURL("https://example.test/\"fake.pdf"), /*background_color=*/0,
-      /*full_frame=*/true, /*allow_javascript=*/true};
+  PdfStreamDelegate::StreamInfo stream;
+  stream.stream_url = GURL("chrome-extension://id/stream-url\"");
+  stream.original_url = GURL("https://example.test/\"fake.pdf");
   std::string response = GenerateResponse(stream);
 
   EXPECT_THAT(response,
               HasSubstr("src=\"chrome-extension://id/stream-url%22\""));
   EXPECT_THAT(response,
               HasSubstr("original-url=\"https://example.test/%22fake.pdf\""));
-  EXPECT_THAT(response, HasSubstr("'chrome-extension://id/'"));
 }
 
 TEST_F(PluginResponseWriterTest, StartForPrintPreview) {
-  PdfStreamDelegate::StreamInfo stream{
-      GURL("chrome://print/1/0/print.pdf"),
-      GURL("chrome://print/1/0/print.pdf"), /*background_color=*/0,
-      /*full_frame=*/true, /*allow_javascript=*/true};
+  PdfStreamDelegate::StreamInfo stream;
+  stream.stream_url = GURL("chrome://print/1/0/print.pdf");
+  stream.original_url = GURL("chrome://print/1/0/print.pdf");
   std::string response = GenerateResponse(stream);
 
   EXPECT_THAT(response, HasSubstr("src=\"chrome://print/1/0/print.pdf\""));
   EXPECT_THAT(response,
               HasSubstr("original-url=\"chrome://print/1/0/print.pdf\""));
-  EXPECT_THAT(response, HasSubstr("'chrome://print/'"));
+}
+
+TEST_F(PluginResponseWriterTest, StartWithoutInjectedScript) {
+  PdfStreamDelegate::StreamInfo stream;
+  stream.injected_script = nullptr;
+  std::string response = GenerateResponse(stream);
+
+  EXPECT_THAT(response, Not(HasSubstr("fake-script")));
 }
 
 TEST_F(PluginResponseWriterTest, StartWithBackgroundColor) {
-  PdfStreamDelegate::StreamInfo stream{
-      GURL("chrome-extension://id/stream-url"),
-      GURL("https://example.test/fake.pdf"), /*background_color=*/SK_ColorBLUE,
-      /*full_frame=*/true, /*allow_javascript=*/true};
+  PdfStreamDelegate::StreamInfo stream;
+  stream.background_color = SK_ColorBLUE;
   std::string response = GenerateResponse(stream);
 
   EXPECT_THAT(response, HasSubstr("background-color=\"4278190335\""));
 }
 
 TEST_F(PluginResponseWriterTest, StartWithNonFullFrame) {
-  PdfStreamDelegate::StreamInfo stream{
-      GURL("chrome-extension://id/stream-url"),
-      GURL("https://example.test/fake.pdf"), /*background_color=*/0,
-      /*full_frame=*/false, /*allow_javascript=*/true};
+  PdfStreamDelegate::StreamInfo stream;
+  stream.full_frame = false;
   std::string response = GenerateResponse(stream);
 
   EXPECT_THAT(response, Not(HasSubstr("full-frame")));
 }
 
 TEST_F(PluginResponseWriterTest, StartWithJavaScriptDisabled) {
-  PdfStreamDelegate::StreamInfo stream{
-      GURL("chrome-extension://id/stream-url"),
-      GURL("https://example.test/fake.pdf"), /*background_color=*/0,
-      /*full_frame=*/true, /*allow_javascript=*/false};
+  PdfStreamDelegate::StreamInfo stream;
+  stream.allow_javascript = false;
   std::string response = GenerateResponse(stream);
 
   EXPECT_THAT(response, HasSubstr("javascript=\"block\""));

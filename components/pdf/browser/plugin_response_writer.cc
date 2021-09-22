@@ -51,34 +51,17 @@ html {
   width: 100%;
 }
 </style>
-<embed type="application/x-google-chrome-pdf" src="$2" original-url="$3"
+<embed type="application/x-google-chrome-pdf" src="$1" original-url="$2"
   background-color="$4" javascript="$5"$6>
-<script>
-const channel = new MessageChannel();
-const plugin = document.querySelector('embed');
-
-plugin.addEventListener('message', e => channel.port1.postMessage(e.data));
-channel.port1.onmessage = e => {
-  if (e.data.type === 'loadArray') {
-    if (plugin.src.startsWith('blob:')) {
-      URL.revokeObjectURL(plugin.src);
-    }
-    plugin.src = URL.createObjectURL(new Blob([e.data.dataToLoad]));
-  } else {
-    plugin.postMessage(e.data);
-  }
-};
-
-window.parent.postMessage(
-    {type: 'connect', token: plugin.getAttribute('src')}, '$1',
-    [channel.port2]);
+<script type="module">
+$3
 </script>
 )";
 
   return base::ReplaceStringPlaceholders(
       kResponseTemplate,
-      {stream_info.stream_url.GetOrigin().spec(), stream_info.stream_url.spec(),
-       stream_info.original_url.spec(),
+      {stream_info.stream_url.spec(), stream_info.original_url.spec(),
+       stream_info.injected_script ? *stream_info.injected_script : "",
        base::NumberToString(stream_info.background_color),
        stream_info.allow_javascript ? "allow" : "block",
        stream_info.full_frame ? " full-frame" : ""},

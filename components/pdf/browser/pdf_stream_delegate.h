@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PDF_BROWSER_PDF_STREAM_DELEGATE_H_
 #define COMPONENTS_PDF_BROWSER_PDF_STREAM_DELEGATE_H_
 
+#include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -21,11 +23,23 @@ namespace pdf {
 class PdfStreamDelegate {
  public:
   struct StreamInfo {
+    StreamInfo();
+    StreamInfo(const StreamInfo&);
+    StreamInfo(StreamInfo&&);
+    StreamInfo& operator=(const StreamInfo&);
+    StreamInfo& operator=(StreamInfo&&);
+    ~StreamInfo();
+
     GURL stream_url;
     GURL original_url;
-    SkColor background_color;
-    bool full_frame;
-    bool allow_javascript;
+
+    // Script to be injected into the internal plugin frame. This should point
+    // at an immutable string with static storage duration.
+    const std::string* injected_script = nullptr;
+
+    SkColor background_color = SK_ColorTRANSPARENT;
+    bool full_frame = false;
+    bool allow_javascript = false;
   };
 
   PdfStreamDelegate();
