@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">வெளியேறி, ஒத்திசைவை முடக்கவா?</translation>
 <translation id="1373696734384179344">தேர்ந்தெடுத்ததைப் பதிவிறக்க, போதுமான நினைவகம் இல்லை.</translation>
 <translation id="1376578503827013741">கணக்கிடுகிறது…</translation>
+<translation id="1382912999714108023">சமீபத்திய தகவல்கள் காட்டப்படவில்லையா? பேங்கைத் தொடர்புகொண்டு அவற்றைச் சேர்க்குமாறு கேட்கவும்.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">படத்திலுள்ளதை Google Lens மூலம் மொழிபெயர் <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> நாட்களுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">நீங்கள் உள்நுழைந்திருக்கும்போது <ph name="BEGIN_LINK1" />தேடல் விவரங்களும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />பிற வகையான செயல்பாடுகளும்<ph name="END_LINK2" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம். அவற்றை எப்போது வேண்டுமானாலும் நீக்கலாம்.</translation>
 <translation id="321773570071367578">கடவுச்சொற்றொடரை மறந்துவிட்டால் அல்லது இந்த அமைப்பை மாற்ற விரும்பினால், <ph name="BEGIN_LINK" />ஒத்திசைவை மீட்டமைக்கவும்<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">கடவுச்சொற்களை ஒத்திசைக்க இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
+<translation id="3223522355830797639">இது நீங்கள்தான் என்பதை பேங்க் உறுதிசெய்ய விரும்புகிறது.</translation>
 <translation id="3227557059438308877">Google Chromeமைப் பாதுகாப்பு விசையாகப் பயன்படுத்தும் வசதி</translation>
 <translation id="3232754137068452469">இணைய ஆப்ஸ்</translation>
 <translation id="3234978181857588512">சாதனத்தில் சேமி</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">உங்கள் செய்திகளையும் செயல்பாட்டையும் இங்கே கட்டுப்படுத்தலாம்</translation>
 <translation id="6069177176307973611">தனியுரிமை &amp; பாதுகாப்பு அமைப்புகளைப் பார்க்கலாம் மாற்றலாம்</translation>
+<translation id="6070730414166672373">பேங்கைத் தொடர்புகொள்கிறோம்\u2026</translation>
 <translation id="6085886413119427067">பாதுகாப்பான இணைப்பின் மூலம் இணையதளங்களில் இணைவது எப்படி என்பதைக் கண்டறியும்</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> மணிநேரம் மீதமுள்ளது</translation>
 <translation id="6108923351542677676">அமைவு செயலிலுள்ளது...</translation>

@@ -1091,6 +1091,13 @@
 <translation id="2299220924812062390">指定停用的外掛程式清單</translation>
 <translation id="2301048990069984110">延長在 Windows、Mac 和 Linux 上支援 Chrome 應用程式的時間。</translation>
 <translation id="2303795211377219696">啟用信用卡的自動填入功能</translation>
+<translation id="2304009805995145854">自 <ph name="PRODUCT_NAME" /> 第 67 版起，系統預設已在所有電腦平台上啟用網站隔離功能，因此每個網站都會以獨立程序執行。網站是指加上 eTLD+1 的配置 (例如 https://example.com)。將這項政策設為 Enabled 並不會改變這項行為，只會禁止使用者停用這項設定 (例如在 chrome://flags 中使用「停用網站隔離」功能)。自 <ph name="PRODUCT_NAME" /> 第 76 版起，如果將這項政策設為 Disabled 或不設定，系統並不會關閉網站隔離功能，只會開放使用者停用這項設定。
+
+      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 也能用來隔離低於網站層級的來源 (例如 https://a.example.com)。
+
+      在 <ph name="PRODUCT_OS_NAME" /> 76 以下版本中，請將 <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> 裝置政策設為相同的值 (如果兩者的值不相符，就可能導致進入使用者工作階段的過程出現延遲)。
+
+      注意：對於 Android 裝置，請改用 <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="2307496301287881990">回報顯示狀態和圖形狀態</translation>
 <translation id="2309390639296060546">預設地理位置設定</translation>
 <translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 範本。如要指定多個 DNS-over-HTTPS 解析器，請以半形空格分隔相應的 URI 範本。
@@ -1152,6 +1159,17 @@
 
       如果設為 <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (值為 2)，使用者無法將任何變化版本套用到瀏覽器。請注意，這個模式可能會讓 <ph name="PRODUCT_NAME" /> 開發人員無法及時提供重大安全性修正項目，因此不建議使用。</translation>
 <translation id="2402547085566757554">不要將新分頁設為首頁</translation>
+<translation id="240713331529749993">如果設定這項政策，那麼在 Android 裝置上，逗號分隔清單中指定的每個來源就會在獨立程序中執行。每個指定來源的程序都只能容納來自相同來源及其子網域的文件。舉例來說，如果指定 https://a1.example.com/，https://a2.a1.example.com/ 就能使用同一個程序，但是 https://example.com 和 https://b.example.com 並不能使用同一個程序。請注意，自 <ph name="PRODUCT_NAME" /> 第 77 版起，Android 平台預設會隔離某些敏感網站，而這項政策會將這個模式擴大應用至隔離其他特定來源。
+
+      自 <ph name="PRODUCT_NAME" /> 第 77 版起，你也可以使用萬用字元來指定要隔離的來源範圍。舉例來說，如果指定 https://[*.]corp.example.com，則 https://corp.example.com 底下的每個來源都會在獨立程序中執行，其中包括 https://corp.example.com 本身、https://a1.corp.example.com 和 https://a2.a1.corp.example.com。
+
+      請注意，這項政策所隔離的來源將無法針對同一網站中的其他來源編寫指令碼；不過，如果同一個網站上的兩份文件將 document.domain 改成一致的值，就可能允許跨來源編寫指令碼。如果系統管理員需要隔離某個來源，應先確認該來源沒有這種不常見的行為。
+
+      如果將這項政策設為 Disabled，則會關閉所有形式的網站隔離功能，包括隔離敏感網站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的實測，以及其他網站隔離模式。使用者仍可透過指令列旗標來手動啟用 IsolateOrigins。
+
+      如果未設定這項政策，代表使用者可以自行變更這項設定。
+
+      注意：在 Android 裝置上隔離太多網站可能會導致效能問題 (尤其是在記憶體不足的裝置上)。這項政策僅適用於在 RAM 超過 1 GB 的裝置上執行的 Android 版 Chrome。如要在 Android 以外平台上應用這項政策，請使用 <ph name="ISOLATE_ORIGINS_POLICY_NAME" />。</translation>
 <translation id="2411629345938804022">如果將這項政策設為 3，網站即可要求存取附近的藍牙裝置。如果將這項政策設為 2，網站將無法存取附近的藍牙裝置。
 
       如果未設定這項政策，網站可要求存取附近的藍牙裝置，但使用者可以變更這項設定。</translation>
@@ -2666,6 +2684,17 @@
       如果將這項政策設為停用或不設定，使用者可在使用行動網路連線時，將檔案傳輸至雲端硬碟。</translation>
 <translation id="4248277954659222481">允許符合網址模式許可清單的網頁自動播放媒體</translation>
 <translation id="4250680216510889253">否</translation>
+<translation id="4260027436474745627">如果設定這項政策，逗號分隔清單中指定的每個來源就會在獨立程序中執行。每個指定來源的程序都只能容納來自相同來源及其子網域的文件。舉例來說，如果指定 https://a1.example.com/，https://a2.a1.example.com/ 就能使用同一個程序，但是 https://example.com 和 https://b.example.com 並不能使用同一個程序。
+
+      自 <ph name="PRODUCT_NAME" /> 第 77 版起，你也可以使用萬用字元來指定要隔離的來源範圍。舉例來說，如果指定 https://[*.]corp.example.com，則 https://corp.example.com 底下的每個來源都會在獨立程序中執行，其中包括 https://corp.example.com 本身、https://a1.corp.example.com 和 https://a2.a1.corp.example.com。
+
+      請注意，如 <ph name="SITE_PER_PROCESS_POLICY_NAME" /> 政策所述，系統預設已在電腦平台上隔離所有網站 (即加上 eTLD+1 的配置，例如 https://example.com)。<ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 政策也能用來隔離低於網站層級的來源 (例如 https://a.example.com)。
+
+      另請注意，這項政策所隔離的來源將無法針對同一網站中的其他來源編寫指令碼；不過，如果同一個網站上的兩份文件將 document.domain 改成一致的值，就可能允許跨來源編寫指令碼。如果系統管理員需要隔離某個來源，應先確認該來源沒有這種不常見的行為。
+
+      如果將這項政策設為停用或不設定，就代表使用者可以變更這項設定。
+
+      注意：對於 Android 裝置，請改用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="4261820385751181068">裝置登入畫面語言代碼</translation>
 <translation id="4266547484666068234">如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blocklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路通訊協定、其他網域的子網域、通訊埠或特定路徑設為例外。系統需要判定是否封鎖某一個網址時，會以最精確的篩選條件為依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。這項政策最多只能輸入 1,000 個項目。
 
@@ -3529,6 +3558,15 @@
           </translation>
 <translation id="5435888298115339571">啟用網址列和三點選單中的桌面分享功能</translation>
 <translation id="5442026853063570579">這項政策也可以控制 Android 開發人員選項的存取權。如果將這項政策設為「DeveloperToolsDisallowed」(值 2)，使用者將無法存取開發人員選項。如果將這項政策設為其他值或不予設定，使用者只要在 Android 設定應用程式中輕觸版本號碼七次，即可存取開發人員選項。</translation>
+<translation id="5443582909255996887">如果將這項政策設為 Enabled，系統就會在 Android 裝置上隔離所有網站，讓每個網站以獨立程序執行，並禁止使用者停用這項設定。網站是指加上 eTLD+1 的配置 (例如 https://example.com)。請注意，自 <ph name="PRODUCT_NAME" /> 第 77 版起，Android 會預設隔離某些敏感網站，而這項政策會將這個預設的網站隔離模式應用於所有網站。
+
+      如果將這項政策設為 Disabled，則會關閉所有形式的網站隔離功能，包括隔離敏感網站、IsolateOriginsAndroid 和 SitePerProcessAndroid 的實測，以及其他網站隔離模式。不過，使用者仍然可以手動啟用這項政策。
+
+      如果未設定這項政策，代表使用者可以變更這項設定。
+
+      <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 也能用來隔離低於網站層級的來源 (例如 https://a.example.com)。
+
+      注意：目前 Android 裝置上的網站隔離支援功能可能會導致效能問題 (尤其是在低階裝置上)，但日後將會改善。這項政策僅適用於在 RAM 超過 1 GB 的裝置上執行的 Android 版 Chrome。如果想隔離特定網站，同時減少對使用者效能的影響，請使用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 來指定要隔離的一系列網站。如要在 Android 以外平台上應用這項政策，請使用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
 <translation id="5445596354079213552">只有在裝置的自動更新期限已結束，且裝置不符合透過 <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> 政策設定的 <ph name="PRODUCT_OS_NAME" />最低版本限制時，這項政策才會生效。
 
       將這項政策設為非空白的字串時：
@@ -6062,6 +6100,7 @@
       自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
 
       注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
+<translation id="8626826495474944836">要求針對所有網站啟用網站隔離功能</translation>
 <translation id="8631434304112909927">到第 <ph name="UNTIL_VERSION" /> 版為止</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上允許的筆記應用程式清單</translation>
 <translation id="8637566476051166626">明確允許的網路通訊埠</translation>

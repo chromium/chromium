@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">オーバーフロー</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
+<translation id="1364382257761975320">Chromebook のロックを解除するには、指紋認証を使用します</translation>
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1391102559483454063">オン</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">タッチペンの設定</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> を有効にしています</translation>
 <translation id="2359808026110333948">続行</translation>
+<translation id="2367186422933365202">Chromebook にログインできません</translation>
 <translation id="2369165858548251131">中国語で「こんにちは」ってどう言うの</translation>
 <translation id="2390318262976603432">言語 / 地域設定</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">メディア コントロール</translation>
+<translation id="2402411679569069051">Chromebook のロックを解除するには、指紋認証を使用するか、スマートフォンのロックを解除します</translation>
 <translation id="2405664212338326887">未接続</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2412593942846481727">アップデートが利用可能</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">他 <ph name="COUNT" /> 件</translation>
 <translation id="324366796737464147">ノイズ キャンセル</translation>
 <translation id="3249513730522716925">ウィンドウ <ph name="WINDOW_TITLE" /> がデスク <ph name="ACTIVE_DESK" /> からデスク <ph name="TARGET_DESK" /> に移動されました</translation>
+<translation id="3252248118006571685">Chromebook のロックを解除するには、スマートフォンの Bluetooth をオンにします</translation>
 <translation id="3255483164551725916">何ができる？</translation>
 <translation id="3269597722229482060">右クリック</translation>
 <translation id="3289674678944039601">アダプター経由で充電しています</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control+Shift+Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">定義</translation>
+<translation id="3509391053705095206">スマートフォンが見つかりません。スマートフォンの Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> 台のデバイスに接続しています</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
+<translation id="3744282433224562605">Chromebook のロックを解除するには、パスワードを入力します</translation>
 <translation id="3771549900096082774">ハイ コントラスト モード</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> へのマルチログインは、管理者によって禁止されています。続行するには、すべてのユーザーがログアウトする必要があります。</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> を接続中</translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">右クリックするか長押しすると、選択した項目の情報（定義、翻訳、単位変換など）が表示されます。</translation>
 <translation id="4505050298327493054">使用中のデスクです。</translation>
 <translation id="4513946894732546136">フィードバック</translation>
+<translation id="4518404433291145981">Chromebook のロックを解除するには、先にスマートフォンのロックを解除します</translation>
 <translation id="4527045527269911712">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。</translation>
 <translation id="453661520163887813">あと <ph name="TIME" /> で充電完了</translation>
 <translation id="4538824937723742295">全画面のスクリーンショットを撮影</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
+<translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
 <translation id="5166918508782100047">クイック アンサーの設定</translation>
 <translation id="5168181903108465623">キャスト デバイスを利用できます</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5176318573511391780">画面の一部を録画</translation>
+<translation id="5199367439331364630">Chromebook にログインするには、パスワードを入力します</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{他 1 件の通知}other{他 # 件の通知}}</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
 <translation id="5208059991603368177">オン</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">新しいデバイスとペア設定</translation>
 <translation id="5322611492012084517">スマートフォンが見つかりません</translation>
 <translation id="5329548388331921293">接続中…</translation>
+<translation id="5330201449517439522">タップまたはクリックで Chromebook を開きます</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
 <translation id="5352250171825660495">ダークモードはオンになっています</translation>
 <translation id="5379115545237091094">試行回数が上限を超えました</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">接続済みデバイスの設定</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
+<translation id="584525477304726060">長押しして最大化</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5867217927013474703">ネットワーク情報を収集しています</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">スマートフォンのアクセス ポイントに接続することや、スマートフォンをサイレント モードに切り替える、探すなどのほか、スマートフォンで最近使った Chrome タブを表示することができます</translation>
 <translation id="6670153871843998651">デスク 3</translation>
 <translation id="6671495933530132209">画像をコピー</translation>
+<translation id="6671661918848783005">Chromebook のロックを解除できません</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
 <translation id="6696025732084565524">お使いのキーボード（取り外し可能）に重要なアップデートを適用する必要があります</translation>
 <translation id="6700713906295497288">IME メニューボタン</translation>
@@ -770,6 +782,7 @@
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
 <translation id="6921188888306725546">キーボード ショートカットが改善されました</translation>
 <translation id="6929655271276551705">日付の設定</translation>
+<translation id="6931576957638141829">保存先</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6961121602502368900">スマートフォンの消音は仕事用プロファイルでは使用できません</translation>
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>
@@ -907,6 +920,7 @@
 <translation id="79341161159229895">このアカウントは <ph name="FIRST_PARENT_EMAIL" /> と <ph name="SECOND_PARENT_EMAIL" /> により管理されています</translation>
 <translation id="793716872548410480"><ph name="SHORTCUT_KEY_NAME" />+V キーを押すと、クリップボードを表示できます。クリップボードに、コピーした最新のアイテム 5 件が保存されています。</translation>
 <translation id="7955885781510802139">ハイコントラスト モード</translation>
+<translation id="7968693143708939792">フォルダを選択...</translation>
 <translation id="7977927628060636163">モバイル ネットワークを検索しています...</translation>
 <translation id="7980780401175799550">Chrome OS の新しい操作方法をお試しください</translation>
 <translation id="7982789257301363584">ネットワーク</translation>

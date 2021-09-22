@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">አልተሳካም - ተቋርጧል</translation>
 <translation id="3102119246920354026">መሸጎጫ</translation>
 <translation id="3122464029669770682">ሲፒዩ</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ገፅ ይወገድ?}=1{ገፅ {PAGE_NUMBER} ይወገድ?}one{ገፅ {PAGE_NUMBER} ይወገድ?}other{ገፅ {PAGE_NUMBER} ይወገድ?}}</translation>
 <translation id="315116470104423982">የተንቀሳቃሽ ስልክ ውሂብ</translation>
 <translation id="3156846309055100599">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ...</translation>
 <translation id="315738237743207937">ተያዥ መግቢያ ተገኝቷል</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">ሲም ተቆልፏል (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">የቡድን ስም</translation>
+<translation id="5051044138948155788">ይህ ብቸኛው ገጽ ነው። ይህ ወደ መቃኘት መጀመሪያው ማያ ገጽ ይወስደዎታል።</translation>
 <translation id="5088172560898466307">የአገልጋይ አስተናጋጅ ስም</translation>
 <translation id="5089810972385038852">ግዛት</translation>
 <translation id="5142961317498132443">ማረጋገጥ</translation>
@@ -269,6 +271,7 @@
 <translation id="5499114900554609492">ቅኝቱን ማጠናቀቅ አልተቻለም</translation>
 <translation id="5502931783115429516">Android እያሄደ አይደለም</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">ዳግም ቃኝ</translation>
 <translation id="5669267381087807207">በማግበር ላይ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ቤተሰብ</translation>
@@ -319,6 +322,7 @@
 <translation id="641081527798843608">የርዕሰ ጉዳይ ተዛማጅ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">ጥሩ</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ገጽ ዳግም ይቃኝ?}=1{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}one{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}other{ገጽ {PAGE_NUMBER} ዳግም ይቃኝ?}}</translation>
 <translation id="6472207088655375767">ኦቲፒ</translation>
 <translation id="6480327114083866287">በ<ph name="MANAGER" /> የሚተዳደር</translation>
 <translation id="649050271426829538">ቆሟል - የወረቀት መታጨቅ</translation>
