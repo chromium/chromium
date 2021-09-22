@@ -774,7 +774,7 @@ void ArcAppLaunchHandler::StopCpuUsageCount() {
 }
 
 void ArcAppLaunchHandler::UpdateCpuUsage() {
-  if (!probe_service_.is_connected())
+  if (!probe_service_ || !probe_service_.is_connected())
     return;
   probe_service_->ProbeTelemetryInfo(
       {chromeos::cros_healthd::mojom::ProbeCategoryEnum::kCpu},
