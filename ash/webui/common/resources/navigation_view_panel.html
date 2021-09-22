@@ -1,5 +1,6 @@
 <style include="cr-shared-style">
-  ::slotted([slot=bottom-nav-content]) {
+  ::slotted([slot=bottom-nav-content-drawer]),
+  ::slotted([slot=bottom-nav-content-panel]) {
     bottom: 24px;
     inset-inline-start: 16px;
     position: fixed;
@@ -86,7 +87,7 @@
       <navigation-selector selector-items={{selectorItems_}}
           selected-item={{selectedItem}}>
       </navigation-selector>
-    <slot name="bottom-nav-content"></slot>
+    <slot name="bottom-nav-content-drawer"></slot>
     </div>
   </cr-drawer>
   <template is="dom-if" if="[[showNav]]">
@@ -95,7 +96,7 @@
         <navigation-selector selector-items={{selectorItems_}}
             selected-item={{selectedItem}}>
         </navigation-selector>
-        <slot name="bottom-nav-content"></slot>
+        <slot name="bottom-nav-content-panel"></slot>
       </div>
     </div>
   </template>
