@@ -51,9 +51,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     The latency improvement provided by the delegated ink trail API, both with
     and without prediction, in milliseconds. This latency improvement is the
@@ -73,9 +73,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment{Number}"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     The latency improvement provided by predicting extra delegated ink points
     when using the delegated ink trail API with SkiaRenderer in milliseconds.
@@ -94,9 +94,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
-    enum="BooleanDirection" expires_after="M95">
+    enum="BooleanDirection" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     Boolean that indicates whether the prediction is in the same direction as
     the real trajectory at the same prediction time. True means the direction is
@@ -109,9 +109,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
-    units="pixels" expires_after="M95">
+    units="pixels" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     {Direction}shoot distance in pixels between a predicted point and the
     corresponding interpolated real point that occurred at the prediction time.
@@ -127,9 +127,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Type}Jitter"
-    units="pixels" expires_after="M95">
+    units="pixels" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     Euclidean distance in pixels between two successive variations of delegated
     ink trail deltas which are the difference beween a predicted delegated ink
@@ -148,9 +148,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.Frame{ScoreType}"
-    units="pixels" expires_after="M95">
+    units="pixels" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
   <owner>joalmei@microsoft.com</owner>
   <summary>
     Distance in pixels between a predicted point and the corresponding
@@ -177,9 +176,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.WrongDirection"
-    enum="BooleanDirection" expires_after="M95">
+    enum="BooleanDirection" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     Whether the prediction is in the same direction as the real trajectory at
     the same prediction time.
@@ -197,9 +196,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{ScoreType}"
-    units="pixels" expires_after="M95">
+    units="pixels" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
   <owner>joalmei@microsoft.com</owner>
   <summary>
     Distance in pixels between a predicted point and the corresponding
@@ -223,9 +221,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{Type}Jitter"
-    units="pixels" expires_after="M95">
+    units="pixels" expires_after="M98">
   <owner>jonross@chromium.org</owner>
-  <owner>mabian@microsoft.com</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     Euclidean distance in pixels between two successive variations of delegated
     ink trail deltas which are the difference beween a predicted delegated ink
