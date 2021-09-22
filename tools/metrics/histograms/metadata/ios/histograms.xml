@@ -531,14 +531,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Incognito.BiometricAuthEnabled" enum="Boolean"
-    expires_after="2021-11-05">
+    expires_after="2022-09-20">
   <owner>stkhapugin@chromium.org</owner>
-  <owner>javierrobles@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <summary>
     Logged once per app launch. Logs whether the biometric incognito
     authentication setting is enabled. This metric is designed to measure % of
     users who have the setting enabled by using &quot;group by users&quot; in
     UMA.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Incognito.BiometricReauthAttemptSuccessful" enum="Boolean"
+    expires_after="2022-09-20">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Logged when the user attempt to reauthenticate to display the incognito
+    tabs. This metric is designed to measure the success of the reauth.
   </summary>
 </histogram>
 

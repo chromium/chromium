@@ -99,19 +99,20 @@
       base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
 
   __weak IncognitoReauthSceneAgent* weakSelf = self;
-  [self.reauthModule
-      attemptReauthWithLocalizedReason:authReason
-                  canReusePreviousAuth:false
-                               handler:^(ReauthenticationResult result) {
-                                 BOOL success =
-                                     (result ==
-                                      ReauthenticationResult::kSuccess);
-                                 weakSelf.authenticatedSinceLastForeground =
-                                     success;
-                                 if (completion) {
-                                   completion(success);
-                                 }
-                               }];
+  void (^completionHandler)(ReauthenticationResult) =
+      ^(ReauthenticationResult result) {
+        BOOL success = (result == ReauthenticationResult::kSuccess);
+        base::UmaHistogramBoolean(
+            "IOS.Incognito.BiometricReauthAttemptSuccessful", success);
+
+        weakSelf.authenticatedSinceLastForeground = success;
+        if (completion) {
+          completion(success);
+        }
+      };
+  [self.reauthModule attemptReauthWithLocalizedReason:authReason
+                                 canReusePreviousAuth:false
+                                              handler:completionHandler];
 }
 
 - (void)addObserver:(id<IncognitoReauthObserver>)observer {
@@ -195,7 +196,8 @@
     BOOL settingEnabled =
         self.localState &&
         self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
-    UMA_HISTOGRAM_BOOLEAN("IOS.Incognito.BiometricAuthEnabled", settingEnabled);
+    base::UmaHistogramBoolean("IOS.Incognito.BiometricAuthEnabled",
+                              settingEnabled);
   });
 }
 
