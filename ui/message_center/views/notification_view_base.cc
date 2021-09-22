@@ -1148,14 +1148,12 @@ void NotificationViewBase::ActionButtonPressed(size_t index,
       action_buttons_[index]->placeholder();
   if (placeholder) {
     inline_reply_->SetTextfieldIndex(static_cast<int>(index));
-    inline_reply_->textfield()->SetPlaceholderText(
-        placeholder->empty()
-            ? l10n_util::GetStringUTF16(
-                  IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER)
-            : *placeholder);
+    inline_reply_->SetPlaceholderText(placeholder);
     inline_reply_->AnimateBackground(event);
     inline_reply_->SetVisible(true);
+
     action_buttons_row_->SetVisible(false);
+
     // RequestFocus() should be called after SetVisible().
     inline_reply_->textfield()->RequestFocus();
     Layout();

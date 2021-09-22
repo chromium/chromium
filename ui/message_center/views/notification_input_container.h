@@ -50,6 +50,10 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
   void SetTextfieldIndex(int index);
   size_t GetTextfieldIndex() const;
 
+  // Sets `textfield_`'s placeholder string to `placeholder` or the default if
+  // not supplied.
+  void SetPlaceholderText(const absl::optional<std::u16string>& placeholder);
+
   // Animates the background, if one exists.
   void AnimateBackground(const ui::Event& event);
 
@@ -83,6 +87,9 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
 
   // Sets the custom highlight path for `button_`.
   virtual void SetSendButtonHighlightPath();
+
+  // Gets the id for the default placeholder string for `textfield_`.
+  virtual int GetDefaultPlaceholderStringId() const;
 
   // Sets the visible background of `textfield_`.
   virtual void SetTextfieldBackground();

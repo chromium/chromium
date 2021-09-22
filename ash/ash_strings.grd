@@ -2915,11 +2915,14 @@ This file contains the strings for ash.
       </if>
 
       <!-- Notification -->
-      <message name="IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP" desc="The tooltip for the expand button, indicating action to expand the notification">
+      <message name="IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP" desc="The tooltip for the expand button, indicating action to expand the notification.">
         Expand notification
       </message>
-      <message name="IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP" desc="The tooltip for the expand button, indicating action to collapse the notification">
+      <message name="IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP" desc="The tooltip for the expand button, indicating action to collapse the notification.">
         Collapse notification
+      </message>
+      <message name="IDS_ASH_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The placeholder string for the textfield of an in-line reply notification.">
+        Reply
       </message>
 
       <message name="IDS_ASH_DIALOG_DONT_SHOW_AGAIN" desc="Label for checkbox dismissing show of a dialog.">

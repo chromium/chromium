@@ -5,6 +5,7 @@
 #include "ui/message_center/views/notification_input_container.h"
 
 #include "base/bind.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -12,6 +13,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/notification_view_util.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -81,6 +83,14 @@ void NotificationInputContainer::SetTextfieldIndex(int index) {
 
 size_t NotificationInputContainer::GetTextfieldIndex() const {
   return textfield()->GetProperty(kTextfieldIndexKey);
+}
+
+void NotificationInputContainer::SetPlaceholderText(
+    const absl::optional<std::u16string>& placeholder) {
+  textfield_->SetPlaceholderText(
+      placeholder->empty()
+          ? l10n_util::GetStringUTF16(GetDefaultPlaceholderStringId())
+          : *placeholder);
 }
 
 void NotificationInputContainer::AnimateBackground(const ui::Event& event) {
@@ -191,6 +201,10 @@ gfx::Insets NotificationInputContainer::GetSendButtonPadding() const {
 
 void NotificationInputContainer::SetSendButtonHighlightPath() {
   // Use the default highlight path.
+}
+
+int NotificationInputContainer::GetDefaultPlaceholderStringId() const {
+  return IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER;
 }
 
 void NotificationInputContainer::SetTextfieldBackground() {
