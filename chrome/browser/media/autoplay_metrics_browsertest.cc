@@ -60,7 +60,7 @@ class AutoplayMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* second_child() const {
-    return ChildFrameAt(web_contents(), 1);
+    return ChildFrameAt(first_child(), 0);
   }
 };
 
