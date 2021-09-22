@@ -8,5 +8,6 @@ namespace chromeos {
 
 const char kInvalidChromeOSSystemExtensionDeclaration[] =
     "Invalid value for 'chromeos_system_extension'. Must be a dictionary.";
-
+const char kSerialNumberPermissionMustBeOptional[] =
+    "'os.telemetry.serial_number' must be declared in 'optional_permissions'.";
 }  // namespace chromeos

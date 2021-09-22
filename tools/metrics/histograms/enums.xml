@@ -29955,6 +29955,7 @@ Called by update_extension_permission.py.-->
   <int value="234" label="kChromeOSTelemetry"/>
   <int value="235" label="kSpeechRecognitionPrivate"/>
   <int value="236" label="kChromeOSDiagnostics"/>
+  <int value="237" label="kChromeOSTelemetrySerialNumber"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

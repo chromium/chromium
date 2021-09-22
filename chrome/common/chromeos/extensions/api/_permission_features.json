@@ -21,5 +21,11 @@
       "chromeos_system_extension"
     ],
     "dependencies": [ "manifest:chromeos_system_extension" ]
+  },
+  "os.telemetry.serial_number": {
+    "channel": "stable",
+    "extension_types": [
+      "chromeos_system_extension"
+    ]
   }
 }

@@ -790,6 +790,13 @@ ChromePermissionMessageRule::GetAllRules() {
            IDS_EXTENSION_PROMPT_WARNING_DEVICE_INFO_MAYBE_SHARED_WITH_MANUFACTURER}),
        {APIPermissionID::kChromeOSTelemetry},
        {}},
+      // Serial number permission warning that appears the first time the
+      // extension accesses serial numbers.
+      {std::make_unique<ConcatenateMessageFormatter>(std::initializer_list<int>{
+           IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER,
+           IDS_EXTENSION_PROMPT_WARNING_DEVICE_INFO_MAYBE_SHARED_WITH_MANUFACTURER}),
+       {APIPermissionID::kChromeOSTelemetrySerialNumber},
+       {}},
   };
 
   return std::vector<ChromePermissionMessageRule>(

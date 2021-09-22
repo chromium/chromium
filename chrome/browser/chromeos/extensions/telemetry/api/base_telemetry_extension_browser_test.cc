@@ -30,6 +30,7 @@ constexpr char kManifest[] = R"(
           "service_worker": "sw.js"
         },
         "permissions": [ "os.diagnostics", "os.telemetry" ],
+        "optional_permissions": [ "os.telemetry.serial_number" ],
         "externally_connectable": {
           "ids": [
             "*"

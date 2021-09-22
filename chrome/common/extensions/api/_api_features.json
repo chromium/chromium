@@ -666,7 +666,12 @@
   }],
   "permissions": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "extension_types": [
+      "extension",
+      "legacy_packaged_app",
+      "platform_app",
+      "chromeos_system_extension"
+    ],
     "contexts": ["blessed_extension"]
   },
   "platformKeys": {

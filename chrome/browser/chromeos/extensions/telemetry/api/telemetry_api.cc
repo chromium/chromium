@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace chromeos {
 
@@ -51,13 +52,17 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
     result.model_name =
         std::make_unique<std::string>(vpd_info->model_name.value());
   }
-  if (vpd_info->serial_number.has_value()) {
-    result.serial_number =
-        std::make_unique<std::string>(vpd_info->serial_number.value());
-  }
   if (vpd_info->sku_number.has_value()) {
     result.sku_number =
         std::make_unique<std::string>(vpd_info->sku_number.value());
+  }
+
+  // Protect accessing the serial number by a runtime permission.
+  if (extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber) &&
+      vpd_info->serial_number.has_value()) {
+    result.serial_number =
+        std::make_unique<std::string>(vpd_info->serial_number.value());
   }
 
   Respond(ArgumentList(api::os_telemetry::GetVpdInfo::Results::Create(result)));
@@ -70,6 +75,14 @@ OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
 
 ExtensionFunction::ResponseAction
 OsTelemetryGetOemDataFunction::RunIfAllowed() {
+  // Protect accessing the serial number by a runtime permission.
+  if (!extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber)) {
+    return RespondNow(
+        Error("Unauthorized access to chrome.os.telemetry.getOemData. Extension"
+              " doesn't have the permission."));
+  }
+
   auto cb = base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this);
 
   remote_probe_service_->GetOemData(std::move(cb));

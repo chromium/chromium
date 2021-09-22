@@ -179,7 +179,11 @@
   "optional_permissions": {
     "channel": "stable",
     "extension_types": [
-      "extension", "legacy_packaged_app", "hosted_app", "platform_app"
+      "extension",
+      "legacy_packaged_app",
+      "hosted_app",
+      "platform_app",
+      "chromeos_system_extension"
     ]
   },
   "options_page": {

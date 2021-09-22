@@ -8,8 +8,16 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/permissions_parser.h"
 
 namespace chromeos {
+
+namespace {
+
+using extensions::PermissionsParser;
+using extensions::mojom::APIPermissionID;
+
+}  // namespace
 
 ChromeOSSystemExtensionHandler::ChromeOSSystemExtensionHandler() = default;
 
@@ -22,6 +30,16 @@ bool ChromeOSSystemExtensionHandler::Parse(extensions::Extension* extension,
           extensions::manifest_keys::kChromeOSSystemExtension,
           &system_extension_dict)) {
     *error = base::ASCIIToUTF16(kInvalidChromeOSSystemExtensionDeclaration);
+    return false;
+  }
+
+  // Verifies that chromeos_system_extension's serial number permission is not
+  // declared as a required permission. It can only be declared in the
+  // "optional_permissions" key. It is a privacy requirement to prompt the user
+  // with a warning the first time the serial number is accessed.
+  if (PermissionsParser::HasAPIPermission(
+          extension, APIPermissionID::kChromeOSTelemetrySerialNumber)) {
+    *error = base::ASCIIToUTF16(kSerialNumberPermissionMustBeOptional);
     return false;
   }
 
