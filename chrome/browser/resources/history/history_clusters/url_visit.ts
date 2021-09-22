@@ -181,10 +181,14 @@ class VisitRowElement extends PolymerElement {
   }
 
   /**
-   * Returns the domain name of `url` without the leading 'www.'.
+   * Returns the domain name of `url` without the leading 'www.', if applicable.
    */
-  private getHostnameFromUrl_(url: Url): string {
-    return new URL(url.url).hostname.replace(/^(www\.)/, '').trim();
+  private hostnameFromUrl_(url: Url): string {
+    try {
+      return new URL(url.url).hostname.replace(/^(www\.)/, '').trim();
+    } catch (err) {
+      return '';
+    }
   }
 }
 
