@@ -39,6 +39,9 @@ class NET_EXPORT ReportingContext {
       URLRequestContext* request_context,
       ReportingCache::PersistentReportingStore* store);
 
+  ReportingContext(const ReportingContext&) = delete;
+  ReportingContext& operator=(const ReportingContext&) = delete;
+
   ~ReportingContext();
 
   const ReportingPolicy& policy() const { return policy_; }
@@ -104,8 +107,6 @@ class NET_EXPORT ReportingContext {
 
   // |network_change_observer_| must come after |cache_|.
   std::unique_ptr<ReportingNetworkChangeObserver> network_change_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingContext);
 };
 
 }  // namespace net

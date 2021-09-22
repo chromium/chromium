@@ -32,6 +32,10 @@ static const int kBufferSize = 2048;
 class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   void SendRequest(const GURL& url, const std::string& post_data);
@@ -62,8 +66,6 @@ class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
   scoped_refptr<IOBuffer> read_buffer_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 RemoteTestServerSpawnerRequest::Core::Core()

@@ -35,6 +35,9 @@ class ReportingCacheImpl : public ReportingCache {
  public:
   ReportingCacheImpl(ReportingContext* context);
 
+  ReportingCacheImpl(const ReportingCacheImpl&) = delete;
+  ReportingCacheImpl& operator=(const ReportingCacheImpl&) = delete;
+
   ~ReportingCacheImpl() override;
 
   // ReportingCache implementation
@@ -379,8 +382,6 @@ class ReportingCacheImpl : public ReportingCache {
   base::flat_set<base::UnguessableToken> expired_sources_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingCacheImpl);
 };
 
 }  // namespace net

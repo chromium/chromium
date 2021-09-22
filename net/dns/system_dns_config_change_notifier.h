@@ -52,6 +52,11 @@ class NET_EXPORT_PRIVATE SystemDnsConfigChangeNotifier {
   SystemDnsConfigChangeNotifier(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<DnsConfigService> dns_config_service);
+
+  SystemDnsConfigChangeNotifier(const SystemDnsConfigChangeNotifier&) = delete;
+  SystemDnsConfigChangeNotifier& operator=(
+      const SystemDnsConfigChangeNotifier&) = delete;
+
   ~SystemDnsConfigChangeNotifier();
 
   // An added Observer will receive notifications on the sequence where
@@ -77,8 +82,6 @@ class NET_EXPORT_PRIVATE SystemDnsConfigChangeNotifier {
   class Core;
 
   std::unique_ptr<Core, base::OnTaskRunnerDeleter> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemDnsConfigChangeNotifier);
 };
 
 }  // namespace net

@@ -190,6 +190,10 @@ class InFlightBackendIO : public InFlightIO {
   InFlightBackendIO(
       BackendImpl* backend,
       const scoped_refptr<base::SingleThreadTaskRunner>& background_thread);
+
+  InFlightBackendIO(const InFlightBackendIO&) = delete;
+  InFlightBackendIO& operator=(const InFlightBackendIO&) = delete;
+
   ~InFlightBackendIO() override;
 
   // Proxied operations.
@@ -265,8 +269,6 @@ class InFlightBackendIO : public InFlightIO {
   BackendImpl* backend_;
   scoped_refptr<base::SingleThreadTaskRunner> background_thread_;
   base::WeakPtrFactory<InFlightBackendIO> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InFlightBackendIO);
 };
 
 }  // namespace disk_cache

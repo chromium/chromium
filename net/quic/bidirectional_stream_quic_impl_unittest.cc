@@ -140,6 +140,9 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
     loop_ = std::make_unique<base::RunLoop>();
   }
 
+  TestDelegateBase(const TestDelegateBase&) = delete;
+  TestDelegateBase& operator=(const TestDelegateBase&) = delete;
+
   ~TestDelegateBase() override {}
 
   void OnStreamReady(bool request_headers_sent) override {
@@ -351,8 +354,6 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   bool is_ready_;
   bool trailers_expected_;
   bool trailers_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegateBase);
 };
 
 // A delegate that deletes the stream in a particular callback.
@@ -369,6 +370,10 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   DeleteStreamDelegate(IOBuffer* buf, int buf_len, Phase phase)
       : TestDelegateBase(buf, buf_len), phase_(phase) {}
+
+  DeleteStreamDelegate(const DeleteStreamDelegate&) = delete;
+  DeleteStreamDelegate& operator=(const DeleteStreamDelegate&) = delete;
+
   ~DeleteStreamDelegate() override {}
 
   void OnStreamReady(bool request_headers_sent) override {
@@ -417,8 +422,6 @@ class DeleteStreamDelegate : public TestDelegateBase {
   // Indicates in which callback the delegate should cancel or delete the
   // stream.
   Phase phase_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteStreamDelegate);
 };
 
 }  // namespace

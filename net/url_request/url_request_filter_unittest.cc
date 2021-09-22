@@ -26,6 +26,11 @@ namespace {
 class TestURLRequestInterceptor : public URLRequestInterceptor {
  public:
   TestURLRequestInterceptor() : job_(nullptr) {}
+
+  TestURLRequestInterceptor(const TestURLRequestInterceptor&) = delete;
+  TestURLRequestInterceptor& operator=(const TestURLRequestInterceptor&) =
+      delete;
+
   ~TestURLRequestInterceptor() override = default;
 
   // URLRequestInterceptor implementation:
@@ -42,8 +47,6 @@ class TestURLRequestInterceptor : public URLRequestInterceptor {
 
  private:
   mutable URLRequestTestJob* job_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLRequestInterceptor);
 };
 
 TEST(URLRequestFilter, BasicMatching) {

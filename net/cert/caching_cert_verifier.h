@@ -41,6 +41,9 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
   // item has expired.
   explicit CachingCertVerifier(std::unique_ptr<CertVerifier> verifier);
 
+  CachingCertVerifier(const CachingCertVerifier&) = delete;
+  CachingCertVerifier& operator=(const CachingCertVerifier&) = delete;
+
   ~CachingCertVerifier() override;
 
   // CertVerifier implementation:
@@ -130,8 +133,6 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
 
   uint64_t requests_;
   uint64_t cache_hits_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachingCertVerifier);
 };
 
 }  // namespace net

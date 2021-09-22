@@ -33,6 +33,10 @@ class NET_EXPORT HttpAuthPreferences {
   };
 
   HttpAuthPreferences();
+
+  HttpAuthPreferences(const HttpAuthPreferences&) = delete;
+  HttpAuthPreferences& operator=(const HttpAuthPreferences&) = delete;
+
   virtual ~HttpAuthPreferences();
 
   virtual bool NegotiateDisableCnameLookup() const;
@@ -118,7 +122,6 @@ class NET_EXPORT HttpAuthPreferences {
 #endif
 
   std::unique_ptr<URLSecurityManager> security_manager_;
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthPreferences);
 };
 
 }  // namespace net

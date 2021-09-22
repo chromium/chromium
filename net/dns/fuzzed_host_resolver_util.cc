@@ -393,6 +393,10 @@ class FuzzedHostResolverManager : public HostResolverManager {
     HostResolverManager::SetDnsClientForTesting(std::move(dns_client));
   }
 
+  FuzzedHostResolverManager(const FuzzedHostResolverManager&) = delete;
+  FuzzedHostResolverManager& operator=(const FuzzedHostResolverManager&) =
+      delete;
+
   ~FuzzedHostResolverManager() override = default;
 
   void SetDnsClientForTesting(std::unique_ptr<DnsClient> dns_client) {
@@ -424,8 +428,6 @@ class FuzzedHostResolverManager : public HostResolverManager {
   NetLog* const net_log_;
 
   base::WeakPtrFactory<FuzzedDataProvider> data_provider_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedHostResolverManager);
 };
 
 }  // namespace

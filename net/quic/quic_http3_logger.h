@@ -20,6 +20,9 @@ class NET_EXPORT_PRIVATE QuicHttp3Logger : public quic::Http3DebugVisitor {
  public:
   explicit QuicHttp3Logger(const NetLogWithSource& net_log);
 
+  QuicHttp3Logger(const QuicHttp3Logger&) = delete;
+  QuicHttp3Logger& operator=(const QuicHttp3Logger&) = delete;
+
   ~QuicHttp3Logger() override;
 
   // Implementation of Http3DebugVisitor.
@@ -62,8 +65,6 @@ class NET_EXPORT_PRIVATE QuicHttp3Logger : public quic::Http3DebugVisitor {
 
  private:
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicHttp3Logger);
 };
 }  // namespace net
 

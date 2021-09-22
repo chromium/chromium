@@ -300,6 +300,10 @@ class CapturingProxyResolver : public ProxyResolver {
 
   CapturingProxyResolver()
       : proxy_server_(ProxyServer::SCHEME_HTTP, HostPortPair("myproxy", 80)) {}
+
+  CapturingProxyResolver(const CapturingProxyResolver&) = delete;
+  CapturingProxyResolver& operator=(const CapturingProxyResolver&) = delete;
+
   ~CapturingProxyResolver() override = default;
 
   int GetProxyForURL(const GURL& url,
@@ -325,8 +329,6 @@ class CapturingProxyResolver : public ProxyResolver {
   std::vector<LookupInfo> lookup_info_;
 
   ProxyServer proxy_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturingProxyResolver);
 };
 
 class CapturingProxyResolverFactory : public ProxyResolverFactory {
@@ -5875,6 +5877,12 @@ TEST_F(HttpNetworkTransactionTest, NonPermanentGenerateAuthTokenError) {
 class SameProxyWithDifferentSchemesProxyResolver : public ProxyResolver {
  public:
   SameProxyWithDifferentSchemesProxyResolver() {}
+
+  SameProxyWithDifferentSchemesProxyResolver(
+      const SameProxyWithDifferentSchemesProxyResolver&) = delete;
+  SameProxyWithDifferentSchemesProxyResolver& operator=(
+      const SameProxyWithDifferentSchemesProxyResolver&) = delete;
+
   ~SameProxyWithDifferentSchemesProxyResolver() override {}
 
   static constexpr uint16_t kProxyPort = 10000;
@@ -5916,9 +5924,6 @@ class SameProxyWithDifferentSchemesProxyResolver : public ProxyResolver {
     NOTREACHED();
     return ERR_NOT_IMPLEMENTED;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SameProxyWithDifferentSchemesProxyResolver);
 };
 
 class SameProxyWithDifferentSchemesProxyResolverFactory

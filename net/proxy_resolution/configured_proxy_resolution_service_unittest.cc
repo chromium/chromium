@@ -514,6 +514,10 @@ template <typename T>
 class DeletingCallback : public TestCompletionCallbackBase {
  public:
   explicit DeletingCallback(std::unique_ptr<T>* deletee);
+
+  DeletingCallback(const DeletingCallback&) = delete;
+  DeletingCallback& operator=(const DeletingCallback&) = delete;
+
   ~DeletingCallback() override;
 
   CompletionOnceCallback callback() {
@@ -528,8 +532,6 @@ class DeletingCallback : public TestCompletionCallbackBase {
   }
 
   std::unique_ptr<T>* deletee_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletingCallback);
 };
 
 template <typename T>

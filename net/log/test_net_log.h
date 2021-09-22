@@ -35,6 +35,9 @@ class RecordingNetLogObserver : public NetLog::ThreadSafeObserver {
   // Observe the specified |net_log| object with |capture_mode|.
   RecordingNetLogObserver(NetLog* net_log, NetLogCaptureMode capture_mode);
 
+  RecordingNetLogObserver(const RecordingNetLogObserver&) = delete;
+  RecordingNetLogObserver& operator=(const RecordingNetLogObserver&) = delete;
+
   ~RecordingNetLogObserver() override;
 
   // Change the |capture_mode|.
@@ -72,8 +75,6 @@ class RecordingNetLogObserver : public NetLog::ThreadSafeObserver {
   std::vector<NetLogEntry> entry_list_;
   NetLog* const net_log_;
   base::RepeatingClosure add_entry_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecordingNetLogObserver);
 };
 
 // NetLog subclass that follows normal lifetime rules (has a public
@@ -84,10 +85,11 @@ class RecordingNetLogObserver : public NetLog::ThreadSafeObserver {
 class TestNetLog : public NetLog {
  public:
   TestNetLog();
-  ~TestNetLog() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNetLog);
+  TestNetLog(const TestNetLog&) = delete;
+  TestNetLog& operator=(const TestNetLog&) = delete;
+
+  ~TestNetLog() override;
 };
 
 // NetLog subclass that attaches a single observer (this) to record NetLog
@@ -100,6 +102,10 @@ class TestNetLog : public NetLog {
 class RecordingTestNetLog : public TestNetLog {
  public:
   RecordingTestNetLog();
+
+  RecordingTestNetLog(const RecordingTestNetLog&) = delete;
+  RecordingTestNetLog& operator=(const RecordingTestNetLog&) = delete;
+
   ~RecordingTestNetLog() override;
 
   // These methods all delegate to the underlying RecordingNetLogObserver,
@@ -122,8 +128,6 @@ class RecordingTestNetLog : public TestNetLog {
 
  private:
   RecordingNetLogObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecordingTestNetLog);
 };
 
 // Helper class that exposes a similar API as NetLogWithSource, but uses a
@@ -134,6 +138,10 @@ class RecordingTestNetLog : public TestNetLog {
 class RecordingBoundTestNetLog {
  public:
   RecordingBoundTestNetLog();
+
+  RecordingBoundTestNetLog(const RecordingBoundTestNetLog&) = delete;
+  RecordingBoundTestNetLog& operator=(const RecordingBoundTestNetLog&) = delete;
+
   ~RecordingBoundTestNetLog();
 
   // The returned NetLogWithSource is only valid while |this| is alive.
@@ -155,8 +163,6 @@ class RecordingBoundTestNetLog {
  private:
   RecordingTestNetLog test_net_log_;
   const NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecordingBoundTestNetLog);
 };
 
 }  // namespace net

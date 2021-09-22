@@ -355,6 +355,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // A helper class used to manage a request to create a stream.
   class NET_EXPORT_PRIVATE StreamRequest {
    public:
+    StreamRequest(const StreamRequest&) = delete;
+    StreamRequest& operator=(const StreamRequest&) = delete;
+
     // Cancels any pending stream creation request and resets |stream_| if
     // it has not yet been released.
     ~StreamRequest();
@@ -418,8 +421,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     const NetworkTrafficAnnotationTag traffic_annotation_;
 
     base::WeakPtrFactory<StreamRequest> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(StreamRequest);
   };
 
   // This class contains all the context needed for path validation and
@@ -496,6 +497,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     QuicChromiumPathValidationWriterDelegate(
         QuicChromiumClientSession* session,
         base::SequencedTaskRunner* task_runner);
+
+    QuicChromiumPathValidationWriterDelegate(
+        const QuicChromiumPathValidationWriterDelegate&) = delete;
+    QuicChromiumPathValidationWriterDelegate& operator=(
+        const QuicChromiumPathValidationWriterDelegate&) = delete;
+
     ~QuicChromiumPathValidationWriterDelegate();
 
     // QuicChromiumPacketWriter::Delegate interface.
@@ -521,7 +528,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     quic::QuicSocketAddress peer_address_;
     base::WeakPtrFactory<QuicChromiumPathValidationWriterDelegate>
         weak_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(QuicChromiumPathValidationWriterDelegate);
   };
 
   // Constructs a new session which will own |connection|, but not

@@ -67,6 +67,9 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
               net::CacheType cache_type,
               net::NetLog* net_log);
 
+  BackendImpl(const BackendImpl&) = delete;
+  BackendImpl& operator=(const BackendImpl&) = delete;
+
   ~BackendImpl() override;
 
   // Performs general initialization for this current instance of the cache.
@@ -424,8 +427,6 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   Stats stats_;  // Usage statistics.
   std::unique_ptr<base::RepeatingTimer> timer_;  // Usage timer.
   base::WeakPtrFactory<BackendImpl> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackendImpl);
 };
 
 }  // namespace disk_cache

@@ -42,6 +42,10 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     static const size_t BUFFER_SIZE = 512;
 
     SettingGetter() {}
+
+    SettingGetter(const SettingGetter&) = delete;
+    SettingGetter& operator=(const SettingGetter&) = delete;
+
     virtual ~SettingGetter() {}
 
     // Initializes the class: obtains a gconf/gsettings client, or simulates
@@ -137,9 +141,6 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     // considered a match for "google.com", even though the bypass rule does not
     // include a wildcard, and the matched host is not a subdomain.
     virtual bool UseSuffixMatching() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SettingGetter);
   };
 
   // ProxyConfigServiceLinux is created on the glib thread, and

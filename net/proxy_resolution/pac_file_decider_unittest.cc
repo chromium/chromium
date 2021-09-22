@@ -137,6 +137,10 @@ class RuleBasedPacFileFetcher : public PacFileFetcher {
 class MockDhcpPacFileFetcher : public DhcpPacFileFetcher {
  public:
   MockDhcpPacFileFetcher();
+
+  MockDhcpPacFileFetcher(const MockDhcpPacFileFetcher&) = delete;
+  MockDhcpPacFileFetcher& operator=(const MockDhcpPacFileFetcher&) = delete;
+
   ~MockDhcpPacFileFetcher() override;
 
   int Fetch(std::u16string* utf16_text,
@@ -155,7 +159,6 @@ class MockDhcpPacFileFetcher : public DhcpPacFileFetcher {
   CompletionOnceCallback callback_;
   std::u16string* utf16_text_;
   GURL gurl_;
-  DISALLOW_COPY_AND_ASSIGN(MockDhcpPacFileFetcher);
 };
 
 MockDhcpPacFileFetcher::MockDhcpPacFileFetcher() = default;

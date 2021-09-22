@@ -37,12 +37,14 @@ namespace net {
 class ScopedURLFetcherFactory {
  public:
   explicit ScopedURLFetcherFactory(URLFetcherFactory* factory);
+
+  ScopedURLFetcherFactory(const ScopedURLFetcherFactory&) = delete;
+  ScopedURLFetcherFactory& operator=(const ScopedURLFetcherFactory&) = delete;
+
   virtual ~ScopedURLFetcherFactory();
 
  private:
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedURLFetcherFactory);
 };
 
 // TestURLFetcher and TestURLFetcherFactory are used for testing consumers of
@@ -92,6 +94,10 @@ class TestURLFetcher : public URLFetcher {
   TestURLFetcher(int id,
                  const GURL& url,
                  URLFetcherDelegate* d);
+
+  TestURLFetcher(const TestURLFetcher&) = delete;
+  TestURLFetcher& operator=(const TestURLFetcher&) = delete;
+
   ~TestURLFetcher() override;
 
   // URLFetcher implementation
@@ -236,8 +242,6 @@ class TestURLFetcher : public URLFetcher {
   int fake_max_retries_;
   base::TimeDelta fake_backoff_delay_;
   std::unique_ptr<URLFetcherResponseWriter> response_writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLFetcher);
 };
 
 // The FakeURLFetcher and FakeURLFetcherFactory classes are similar to the
@@ -276,6 +280,9 @@ class FakeURLFetcher : public TestURLFetcher {
 
   const GURL& GetURL() const override;
 
+  FakeURLFetcher(const FakeURLFetcher&) = delete;
+  FakeURLFetcher& operator=(const FakeURLFetcher&) = delete;
+
   ~FakeURLFetcher() override;
 
  private:
@@ -285,8 +292,6 @@ class FakeURLFetcher : public TestURLFetcher {
 
   int64_t response_bytes_;
   base::WeakPtrFactory<FakeURLFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeURLFetcher);
 };
 
 // FakeURLFetcherFactory is a factory for FakeURLFetcher objects. When
@@ -370,6 +375,9 @@ class FakeURLFetcherFactory : public URLFetcherFactory,
   FakeURLFetcherFactory(URLFetcherFactory* default_factory,
                         const FakeURLFetcherCreator& creator);
 
+  FakeURLFetcherFactory(const FakeURLFetcherFactory&) = delete;
+  FakeURLFetcherFactory& operator=(const FakeURLFetcherFactory&) = delete;
+
   ~FakeURLFetcherFactory() override;
 
   // If no fake response is set for the given URL this method will delegate the
@@ -417,7 +425,6 @@ class FakeURLFetcherFactory : public URLFetcherFactory,
       const std::string& response_data,
       HttpStatusCode response_code,
       Error error);
-  DISALLOW_COPY_AND_ASSIGN(FakeURLFetcherFactory);
 };
 
 }  // namespace net

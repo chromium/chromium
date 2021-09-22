@@ -295,6 +295,11 @@ TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
 class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
  public:
   TestSocketPerformanceWatcher() : connection_changed_count_(0u) {}
+
+  TestSocketPerformanceWatcher(const TestSocketPerformanceWatcher&) = delete;
+  TestSocketPerformanceWatcher& operator=(const TestSocketPerformanceWatcher&) =
+      delete;
+
   ~TestSocketPerformanceWatcher() override = default;
 
   bool ShouldNotifyUpdatedRTT() const override { return true; }
@@ -307,8 +312,6 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
 
  private:
   size_t connection_changed_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketPerformanceWatcher);
 };
 
 // TestSocketPerformanceWatcher requires kernel support for tcp_info struct, and

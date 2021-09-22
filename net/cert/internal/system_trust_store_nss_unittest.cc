@@ -49,6 +49,10 @@ namespace {
 class SystemTrustStoreNSSTest : public ::testing::Test {
  public:
   SystemTrustStoreNSSTest() : test_root_certs_(TestRootCerts::GetInstance()) {}
+
+  SystemTrustStoreNSSTest(const SystemTrustStoreNSSTest&) = delete;
+  SystemTrustStoreNSSTest& operator=(const SystemTrustStoreNSSTest&) = delete;
+
   ~SystemTrustStoreNSSTest() override = default;
 
   void SetUp() override {
@@ -91,9 +95,6 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
   scoped_refptr<X509Certificate> root_cert_;
   scoped_refptr<ParsedCertificate> parsed_root_cert_;
   ScopedCERTCertificate nss_root_cert_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTrustStoreNSSTest);
 };
 
 // Tests that SystemTrustStore created for NSS with a user-slot restriction

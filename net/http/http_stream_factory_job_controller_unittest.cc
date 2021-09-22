@@ -110,6 +110,10 @@ class FailingProxyResolverFactory : public ProxyResolverFactory {
 class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
  public:
   MockPrefDelegate() = default;
+
+  MockPrefDelegate(const MockPrefDelegate&) = delete;
+  MockPrefDelegate& operator=(const MockPrefDelegate&) = delete;
+
   ~MockPrefDelegate() override = default;
 
   // HttpServerProperties::PrefDelegate implementation:
@@ -117,9 +121,6 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
   void SetServerProperties(const base::Value& value,
                            base::OnceClosure callback) override {}
   void WaitForPrefLoad(base::OnceClosure pref_loaded_callback) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPrefDelegate);
 };
 
 }  // anonymous namespace
@@ -262,6 +263,11 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
     return test_proxy_delegate_.get();
   }
 
+  HttpStreamFactoryJobControllerTest(
+      const HttpStreamFactoryJobControllerTest&) = delete;
+  HttpStreamFactoryJobControllerTest& operator=(
+      const HttpStreamFactoryJobControllerTest&) = delete;
+
   ~HttpStreamFactoryJobControllerTest() override {
     if (quic_data_) {
       EXPECT_TRUE(quic_data_->AllReadDataConsumed());
@@ -352,8 +358,6 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
  private:
   std::unique_ptr<TestProxyDelegate> test_proxy_delegate_;
   bool create_job_controller_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpStreamFactoryJobControllerTest);
 };
 
 TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {

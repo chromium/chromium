@@ -31,6 +31,10 @@ class NET_EXPORT_PRIVATE HttpBasicState {
  public:
   HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
                  bool using_proxy);
+
+  HttpBasicState(const HttpBasicState&) = delete;
+  HttpBasicState& operator=(const HttpBasicState&) = delete;
+
   ~HttpBasicState();
 
   // Initialize() must be called before using any of the other methods.
@@ -85,8 +89,6 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   std::string request_method_;
 
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpBasicState);
 };
 
 }  // namespace net

@@ -59,6 +59,10 @@ class SSLClientSocketImpl : public SSLClientSocket,
                       std::unique_ptr<StreamSocket> stream_socket,
                       const HostPortPair& host_and_port,
                       const SSLConfig& ssl_config);
+
+  SSLClientSocketImpl(const SSLClientSocketImpl&) = delete;
+  SSLClientSocketImpl& operator=(const SSLClientSocketImpl&) = delete;
+
   ~SSLClientSocketImpl() override;
 
   const HostPortPair& host_and_port() const { return host_and_port_; }
@@ -301,8 +305,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   NetLogWithSource net_log_;
   base::WeakPtrFactory<SSLClientSocketImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SSLClientSocketImpl);
 };
 
 }  // namespace net

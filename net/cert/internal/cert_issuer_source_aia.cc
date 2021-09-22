@@ -55,6 +55,10 @@ bool ParseCertFromPem(const uint8_t* data,
 class AiaRequest : public CertIssuerSource::Request {
  public:
   AiaRequest() = default;
+
+  AiaRequest(const AiaRequest&) = delete;
+  AiaRequest& operator=(const AiaRequest&) = delete;
+
   ~AiaRequest() override;
 
   // CertIssuerSource::Request implementation.
@@ -70,8 +74,6 @@ class AiaRequest : public CertIssuerSource::Request {
  private:
   std::vector<std::unique_ptr<CertNetFetcher::Request>> cert_fetcher_requests_;
   size_t current_request_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AiaRequest);
 };
 
 AiaRequest::~AiaRequest() = default;

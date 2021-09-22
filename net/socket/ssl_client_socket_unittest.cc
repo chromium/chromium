@@ -143,6 +143,11 @@ class SynchronousErrorStreamSocket : public WrappedStreamSocket {
  public:
   explicit SynchronousErrorStreamSocket(std::unique_ptr<StreamSocket> transport)
       : WrappedStreamSocket(std::move(transport)) {}
+
+  SynchronousErrorStreamSocket(const SynchronousErrorStreamSocket&) = delete;
+  SynchronousErrorStreamSocket& operator=(const SynchronousErrorStreamSocket&) =
+      delete;
+
   ~SynchronousErrorStreamSocket() override = default;
 
   // Socket implementation:
@@ -183,8 +188,6 @@ class SynchronousErrorStreamSocket : public WrappedStreamSocket {
 
   bool have_write_error_ = false;
   int pending_write_error_ = OK;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousErrorStreamSocket);
 };
 
 int SynchronousErrorStreamSocket::Read(IOBuffer* buf,
@@ -560,6 +563,10 @@ class CountingStreamSocket : public WrappedStreamSocket {
 class DeleteSocketCallback : public TestCompletionCallbackBase {
  public:
   explicit DeleteSocketCallback(StreamSocket* socket) : socket_(socket) {}
+
+  DeleteSocketCallback(const DeleteSocketCallback&) = delete;
+  DeleteSocketCallback& operator=(const DeleteSocketCallback&) = delete;
+
   ~DeleteSocketCallback() override = default;
 
   CompletionOnceCallback callback() {
@@ -579,8 +586,6 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
   }
 
   StreamSocket* socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteSocketCallback);
 };
 
 // A mock ExpectCTReporter that remembers the latest violation that was
@@ -1328,6 +1333,10 @@ int MakeHTTPRequest(StreamSocket* socket, const char* path = "/") {
 class ZeroRTTResponse : public test_server::HttpResponse {
  public:
   ZeroRTTResponse(bool zero_rtt) : zero_rtt_(zero_rtt) {}
+
+  ZeroRTTResponse(const ZeroRTTResponse&) = delete;
+  ZeroRTTResponse& operator=(const ZeroRTTResponse&) = delete;
+
   ~ZeroRTTResponse() override {}
 
   void SendResponse(const test_server::SendBytesCallback& send,
@@ -1347,8 +1356,6 @@ class ZeroRTTResponse : public test_server::HttpResponse {
 
  private:
   bool zero_rtt_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZeroRTTResponse);
 };
 
 std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(

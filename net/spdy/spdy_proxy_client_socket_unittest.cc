@@ -129,6 +129,11 @@ class SpdyProxyClientSocketTest : public PlatformTest,
                                   public ::testing::WithParamInterface<bool> {
  public:
   SpdyProxyClientSocketTest();
+
+  SpdyProxyClientSocketTest(const SpdyProxyClientSocketTest&) = delete;
+  SpdyProxyClientSocketTest& operator=(const SpdyProxyClientSocketTest&) =
+      delete;
+
   ~SpdyProxyClientSocketTest() override;
 
   void TearDown() override;
@@ -204,8 +209,6 @@ class SpdyProxyClientSocketTest : public PlatformTest,
   SpdySessionKey endpoint_spdy_session_key_;
   std::unique_ptr<CommonConnectJobParams> common_connect_job_params_;
   SSLSocketDataProvider ssl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyProxyClientSocketTest);
 };
 
 SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
@@ -1465,6 +1468,9 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
   explicit DeleteSockCallback(std::unique_ptr<SpdyProxyClientSocket>* sock)
       : sock_(sock) {}
 
+  DeleteSockCallback(const DeleteSockCallback&) = delete;
+  DeleteSockCallback& operator=(const DeleteSockCallback&) = delete;
+
   ~DeleteSockCallback() override = default;
 
   CompletionOnceCallback callback() {
@@ -1479,8 +1485,6 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
   }
 
   std::unique_ptr<SpdyProxyClientSocket>* sock_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteSockCallback);
 };
 
 // If the socket is Reset when both a read and write are pending, and the

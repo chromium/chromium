@@ -163,6 +163,9 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
                     const NetLogWithSource& net_log,
                     StreamType stream_type);
 
+  HttpStreamRequest(const HttpStreamRequest&) = delete;
+  HttpStreamRequest& operator=(const HttpStreamRequest&) = delete;
+
   ~HttpStreamRequest();
 
   // When a HttpStream creation process is stalled due to necessity
@@ -230,8 +233,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   bool using_spdy_;
   ConnectionAttempts connection_attempts_;
   const StreamType stream_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpStreamRequest);
 };
 
 }  // namespace net

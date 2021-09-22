@@ -33,6 +33,10 @@ class NET_EXPORT ThreadedSSLPrivateKey : public SSLPrivateKey {
   class Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() {}
 
     // Returns a human-readable name of the provider that backs this
@@ -60,9 +64,6 @@ class NET_EXPORT ThreadedSSLPrivateKey : public SSLPrivateKey {
     virtual Error Sign(uint16_t algorithm,
                        base::span<const uint8_t> input,
                        std::vector<uint8_t>* signature) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   ThreadedSSLPrivateKey(

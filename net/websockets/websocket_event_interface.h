@@ -38,6 +38,9 @@ class NET_EXPORT WebSocketEventInterface {
  public:
   typedef int WebSocketMessageType;
 
+  WebSocketEventInterface(const WebSocketEventInterface&) = delete;
+  WebSocketEventInterface& operator=(const WebSocketEventInterface&) = delete;
+
   virtual ~WebSocketEventInterface() {}
 
   // Called when a URLRequest is created for handshaking.
@@ -156,9 +159,6 @@ class NET_EXPORT WebSocketEventInterface {
 
  protected:
   WebSocketEventInterface() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketEventInterface);
 };
 
 }  // namespace net

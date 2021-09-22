@@ -41,6 +41,10 @@ class NET_EXPORT HttpRequestHeaders {
   class NET_EXPORT Iterator {
    public:
     explicit Iterator(const HttpRequestHeaders& headers);
+
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     ~Iterator();
 
     // Advances the iterator to the next header, if any.  Returns true if there
@@ -56,8 +60,6 @@ class NET_EXPORT HttpRequestHeaders {
     bool started_;
     HttpRequestHeaders::HeaderVector::const_iterator curr_;
     const HttpRequestHeaders::HeaderVector::const_iterator end_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   static const char kConnectMethod[];

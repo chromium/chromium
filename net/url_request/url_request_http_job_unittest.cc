@@ -105,6 +105,9 @@ class TestURLRequestHttpJob : public URLRequestHttpJob {
                           request->context()->http_user_agent_settings()),
         use_null_source_stream_(false) {}
 
+  TestURLRequestHttpJob(const TestURLRequestHttpJob&) = delete;
+  TestURLRequestHttpJob& operator=(const TestURLRequestHttpJob&) = delete;
+
   ~TestURLRequestHttpJob() override = default;
 
   // URLRequestJob implementation:
@@ -125,8 +128,6 @@ class TestURLRequestHttpJob : public URLRequestHttpJob {
 
  private:
   bool use_null_source_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLRequestHttpJob);
 };
 
 class URLRequestHttpJobSetUpSourceTest : public TestWithTaskEnvironment {

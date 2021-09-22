@@ -97,6 +97,9 @@ class MockHostResolverBase
   class MdnsListenerImpl;
 
  public:
+  MockHostResolverBase(const MockHostResolverBase&) = delete;
+  MockHostResolverBase& operator=(const MockHostResolverBase&) = delete;
+
   ~MockHostResolverBase() override;
 
   RuleBasedHostResolverProc* rules() {
@@ -311,8 +314,6 @@ class MockHostResolverBase
   const base::TickClock* tick_clock_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MockHostResolverBase);
 };
 
 class MockHostResolver : public MockHostResolverBase {
@@ -354,6 +355,10 @@ class MockHostResolverFactory : public HostResolver::Factory {
       scoped_refptr<RuleBasedHostResolverProc> rules = nullptr,
       bool use_caching = false,
       int cache_invalidation_num = 0);
+
+  MockHostResolverFactory(const MockHostResolverFactory&) = delete;
+  MockHostResolverFactory& operator=(const MockHostResolverFactory&) = delete;
+
   ~MockHostResolverFactory() override;
 
   std::unique_ptr<HostResolver> CreateResolver(
@@ -370,8 +375,6 @@ class MockHostResolverFactory : public HostResolver::Factory {
   const scoped_refptr<RuleBasedHostResolverProc> rules_;
   const bool use_caching_;
   const int cache_invalidation_num_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockHostResolverFactory);
 };
 
 // RuleBasedHostResolverProc applies a set of rules to map a host string to

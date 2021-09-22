@@ -128,6 +128,10 @@ ConvertSettingsToDnsConfig(const DnsSystemSettings& settings);
 class NET_EXPORT_PRIVATE DnsConfigServiceWin : public DnsConfigService {
  public:
   DnsConfigServiceWin();
+
+  DnsConfigServiceWin(const DnsConfigServiceWin&) = delete;
+  DnsConfigServiceWin& operator=(const DnsConfigServiceWin&) = delete;
+
   ~DnsConfigServiceWin() override;
 
  private:
@@ -143,8 +147,6 @@ class NET_EXPORT_PRIVATE DnsConfigServiceWin : public DnsConfigService {
   std::unique_ptr<Watcher> watcher_;
   scoped_refptr<ConfigReader> config_reader_;
   scoped_refptr<HostsReader> hosts_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsConfigServiceWin);
 };
 
 }  // namespace internal

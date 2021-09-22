@@ -55,6 +55,9 @@ class TestConnectionListener
         did_get_socket_on_complete_(false),
         task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
+  TestConnectionListener(const TestConnectionListener&) = delete;
+  TestConnectionListener& operator=(const TestConnectionListener&) = delete;
+
   ~TestConnectionListener() override = default;
 
   // Get called from the EmbeddedTestServer thread to be notified that
@@ -110,8 +113,6 @@ class TestConnectionListener
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectionListener);
 };
 
 class EmbeddedTestServerTest
@@ -430,6 +431,10 @@ namespace {
 class CancelRequestDelegate : public TestDelegate {
  public:
   CancelRequestDelegate() { set_on_complete(base::DoNothing()); }
+
+  CancelRequestDelegate(const CancelRequestDelegate&) = delete;
+  CancelRequestDelegate& operator=(const CancelRequestDelegate&) = delete;
+
   ~CancelRequestDelegate() override = default;
 
   void OnResponseStarted(URLRequest* request, int net_error) override {
@@ -442,8 +447,6 @@ class CancelRequestDelegate : public TestDelegate {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CancelRequestDelegate);
 };
 
 class InfiniteResponse : public BasicHttpResponse {

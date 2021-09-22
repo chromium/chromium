@@ -43,6 +43,10 @@ class NET_EXPORT ParsedCookie {
   // is valid.
   explicit ParsedCookie(const std::string& cookie_line,
                         CookieInclusionStatus* status_out = nullptr);
+
+  ParsedCookie(const ParsedCookie&) = delete;
+  ParsedCookie& operator=(const ParsedCookie&) = delete;
+
   ~ParsedCookie();
 
   // You should not call any other methods except for SetName/SetValue on the
@@ -219,8 +223,6 @@ class NET_EXPORT ParsedCookie {
   // For metrics on cookie name/value truncation. See usage at the bottom of
   // `ParseTokenValuePairs()` for more details.
   bool truncated_name_or_value_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ParsedCookie);
 };
 
 }  // namespace net

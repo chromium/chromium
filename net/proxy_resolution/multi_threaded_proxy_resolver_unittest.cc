@@ -111,6 +111,9 @@ class BlockableProxyResolver : public MockProxyResolver {
 
   BlockableProxyResolver() : state_(State::NONE), condition_(&lock_) {}
 
+  BlockableProxyResolver(const BlockableProxyResolver&) = delete;
+  BlockableProxyResolver& operator=(const BlockableProxyResolver&) = delete;
+
   ~BlockableProxyResolver() override {
     base::AutoLock lock(lock_);
     EXPECT_NE(State::BLOCKED, state_);
@@ -170,8 +173,6 @@ class BlockableProxyResolver : public MockProxyResolver {
   State state_;
   base::Lock lock_;
   base::ConditionVariable condition_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockableProxyResolver);
 };
 
 // This factory returns new instances of BlockableProxyResolver.

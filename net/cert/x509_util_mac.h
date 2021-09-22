@@ -109,6 +109,10 @@ class CSSMFieldValue {
   CSSMFieldValue(CSSM_CL_HANDLE cl_handle,
                  const CSSM_OID* oid,
                  CSSM_DATA_PTR field);
+
+  CSSMFieldValue(const CSSMFieldValue&) = delete;
+  CSSMFieldValue& operator=(const CSSMFieldValue&) = delete;
+
   ~CSSMFieldValue();
 
   CSSM_OID_PTR oid() const { return oid_; }
@@ -133,8 +137,6 @@ class CSSMFieldValue {
   CSSM_CL_HANDLE cl_handle_;
   CSSM_OID_PTR oid_;
   CSSM_DATA_PTR field_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSSMFieldValue);
 };
 
 // CSSMCachedCertificate is a container class that is used to wrap the

@@ -51,6 +51,10 @@ class QuicHttpProxyBackendStream;
 class QuicHttpProxyBackend : public quic::QuicSimpleServerBackend {
  public:
   explicit QuicHttpProxyBackend();
+
+  QuicHttpProxyBackend(const QuicHttpProxyBackend&) = delete;
+  QuicHttpProxyBackend& operator=(const QuicHttpProxyBackend&) = delete;
+
   ~QuicHttpProxyBackend() override;
 
   // Must be called from the backend thread of the quic proxy
@@ -100,8 +104,6 @@ class QuicHttpProxyBackend : public quic::QuicSimpleServerBackend {
   // Protects against concurrent access from quic (main) and proxy
   // threads for adding and clearing a backend request handler
   base::Lock backend_stream_mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicHttpProxyBackend);
 };
 }  // namespace net
 

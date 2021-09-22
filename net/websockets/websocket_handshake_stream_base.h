@@ -83,6 +83,11 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
   };
 
   WebSocketHandshakeStreamBase() = default;
+
+  WebSocketHandshakeStreamBase(const WebSocketHandshakeStreamBase&) = delete;
+  WebSocketHandshakeStreamBase& operator=(const WebSocketHandshakeStreamBase&) =
+      delete;
+
   ~WebSocketHandshakeStreamBase() override = default;
 
   // An object that stores data needed for the creation of a
@@ -148,9 +153,6 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
                                  WebSocketExtensionParams* params);
 
   void RecordHandshakeResult(HandshakeResult result);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeStreamBase);
 };
 
 }  // namespace net

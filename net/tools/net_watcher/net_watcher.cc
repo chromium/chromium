@@ -112,6 +112,9 @@ class NetWatcher :
  public:
   NetWatcher() = default;
 
+  NetWatcher(const NetWatcher&) = delete;
+  NetWatcher& operator=(const NetWatcher&) = delete;
+
   ~NetWatcher() override = default;
 
   // net::NetworkChangeNotifier::IPAddressObserver implementation.
@@ -141,9 +144,6 @@ class NetWatcher :
     LOG(INFO) << "OnProxyConfigChanged(" << ProxyConfigToString(config.value())
               << ", " << ConfigAvailabilityToString(availability) << ")";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetWatcher);
 };
 
 }  // namespace

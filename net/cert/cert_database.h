@@ -37,6 +37,9 @@ class NET_EXPORT CertDatabase {
   // CertDatabase::RemoveObserver.
   class NET_EXPORT Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Called whenever the Cert Database is known to have changed.
@@ -47,9 +50,6 @@ class NET_EXPORT CertDatabase {
 
    protected:
     Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Returns the CertDatabase singleton.

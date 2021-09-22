@@ -71,6 +71,10 @@ std::unique_ptr<base::test::ScopedFeatureList> SetNetworkIsolationKeyMode(
 class MockPrefDelegate : public net::HttpServerProperties::PrefDelegate {
  public:
   MockPrefDelegate() = default;
+
+  MockPrefDelegate(const MockPrefDelegate&) = delete;
+  MockPrefDelegate& operator=(const MockPrefDelegate&) = delete;
+
   ~MockPrefDelegate() override = default;
 
   // HttpServerProperties::PrefDelegate implementation.
@@ -125,8 +129,6 @@ class MockPrefDelegate : public net::HttpServerProperties::PrefDelegate {
   int num_pref_updates_ = 0;
 
   base::OnceClosure set_properties_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPrefDelegate);
 };
 
 // Converts |server_info_map| to a base::Value by running it through an

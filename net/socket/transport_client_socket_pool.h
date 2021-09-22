@@ -101,6 +101,9 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
         const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
         const NetLogWithSource& net_log);
 
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request();
 
     ClientSocketHandle* handle() const { return handle_; }
@@ -141,8 +144,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const NetLogWithSource net_log_;
     const SocketTag socket_tag_;
     ConnectJob* job_;
-
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   TransportClientSocketPool(

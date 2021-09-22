@@ -163,6 +163,9 @@ class NET_EXPORT CookieMonster : public CookieStore {
                 base::TimeDelta last_access_threshold,
                 NetLog* net_log);
 
+  CookieMonster(const CookieMonster&) = delete;
+  CookieMonster& operator=(const CookieMonster&) = delete;
+
   ~CookieMonster() override;
 
   // Writes all the cookies in |list| into the store, replacing all cookies
@@ -754,8 +757,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<CookieMonster> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieMonster);
 };
 
 typedef base::RefCountedThreadSafe<CookieMonster::PersistentCookieStore>

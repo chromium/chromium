@@ -44,6 +44,10 @@ class HttpResponse{
 class BasicHttpResponse : public HttpResponse {
  public:
   BasicHttpResponse();
+
+  BasicHttpResponse(const BasicHttpResponse&) = delete;
+  BasicHttpResponse& operator=(const BasicHttpResponse&) = delete;
+
   ~BasicHttpResponse() override;
 
   // The response code.
@@ -76,13 +80,15 @@ class BasicHttpResponse : public HttpResponse {
   std::string content_;
   std::string content_type_;
   base::StringPairs custom_headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasicHttpResponse);
 };
 
 class DelayedHttpResponse : public BasicHttpResponse {
  public:
   DelayedHttpResponse(const base::TimeDelta delay);
+
+  DelayedHttpResponse(const DelayedHttpResponse&) = delete;
+  DelayedHttpResponse& operator=(const DelayedHttpResponse&) = delete;
+
   ~DelayedHttpResponse() override;
 
   // Issues a delayed send to the to the task runner.
@@ -92,13 +98,15 @@ class DelayedHttpResponse : public BasicHttpResponse {
  private:
   // The delay time for the response.
   const base::TimeDelta delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedHttpResponse);
 };
 
 class RawHttpResponse : public HttpResponse {
  public:
   RawHttpResponse(const std::string& headers, const std::string& contents);
+
+  RawHttpResponse(const RawHttpResponse&) = delete;
+  RawHttpResponse& operator=(const RawHttpResponse&) = delete;
+
   ~RawHttpResponse() override;
 
   void SendResponse(const SendBytesCallback& send,
@@ -109,8 +117,6 @@ class RawHttpResponse : public HttpResponse {
  private:
   std::string headers_;
   const std::string contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(RawHttpResponse);
 };
 
 // "Response" where the server doesn't actually respond until the server is
@@ -118,13 +124,14 @@ class RawHttpResponse : public HttpResponse {
 class HungResponse : public HttpResponse {
  public:
   HungResponse() {}
+
+  HungResponse(const HungResponse&) = delete;
+  HungResponse& operator=(const HungResponse&) = delete;
+
   ~HungResponse() override {}
 
   void SendResponse(const SendBytesCallback& send,
                     SendCompleteCallback done) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HungResponse);
 };
 
 }  // namespace test_server

@@ -21,6 +21,10 @@ class SpdyBuffer;
 class NET_EXPORT_PRIVATE SpdyReadQueue {
  public:
   SpdyReadQueue();
+
+  SpdyReadQueue(const SpdyReadQueue&) = delete;
+  SpdyReadQueue& operator=(const SpdyReadQueue&) = delete;
+
   ~SpdyReadQueue();
 
   // Returns whether there's anything in the queue.
@@ -44,8 +48,6 @@ class NET_EXPORT_PRIVATE SpdyReadQueue {
   // |total_size_| is the sum of GetRemainingSize() of |queue_|'s elements.
   base::circular_deque<std::unique_ptr<SpdyBuffer>> queue_;
   size_t total_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyReadQueue);
 };
 
 }  // namespace net

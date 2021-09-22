@@ -87,6 +87,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   Transaction(RequestPriority priority,
               HttpCache* cache);
+
+  Transaction(const Transaction&) = delete;
+  Transaction& operator=(const Transaction&) = delete;
+
   ~Transaction() override;
 
   // Virtual so it can be extended for testing.
@@ -680,8 +684,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   bool in_do_loop_;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Transaction);
 };
 
 }  // namespace net

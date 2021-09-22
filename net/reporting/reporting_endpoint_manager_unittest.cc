@@ -33,6 +33,10 @@ class TestReportingCache : public ReportingCache {
   TestReportingCache(const url::Origin& expected_origin,
                      const std::string& expected_group)
       : expected_origin_(expected_origin), expected_group_(expected_group) {}
+
+  TestReportingCache(const TestReportingCache&) = delete;
+  TestReportingCache& operator=(const TestReportingCache&) = delete;
+
   ~TestReportingCache() override = default;
 
   void SetEndpoint(const ReportingEndpoint& reporting_endpoint) {
@@ -231,8 +235,6 @@ class TestReportingCache : public ReportingCache {
   std::map<NetworkIsolationKey, std::vector<ReportingEndpoint>>
       reporting_endpoints_;
   base::flat_set<base::UnguessableToken> expired_sources_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingCache);
 };
 
 class ReportingEndpointManagerTest : public testing::Test {

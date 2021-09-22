@@ -79,14 +79,15 @@ class NET_EXPORT SpdySessionPool
     class NET_EXPORT_PRIVATE Delegate {
      public:
       Delegate();
+
+      Delegate(const Delegate&) = delete;
+      Delegate& operator=(const Delegate&) = delete;
+
       virtual ~Delegate();
 
       // |spdy_session| will not be null.
       virtual void OnSpdySessionAvailable(
           base::WeakPtr<SpdySession> spdy_session) = 0;
-
-     private:
-      DISALLOW_COPY_AND_ASSIGN(Delegate);
     };
 
     // Constructor - this is called by the SpdySessionPool.
@@ -96,6 +97,9 @@ class NET_EXPORT SpdySessionPool
                        bool is_blocking_request_for_session,
                        Delegate* delegate,
                        SpdySessionPool* spdy_session_pool);
+
+    SpdySessionRequest(const SpdySessionRequest&) = delete;
+    SpdySessionRequest& operator=(const SpdySessionRequest&) = delete;
 
     ~SpdySessionRequest();
 
@@ -122,8 +126,6 @@ class NET_EXPORT SpdySessionPool
     const bool is_blocking_request_for_session_;
     Delegate* const delegate_;
     SpdySessionPool* spdy_session_pool_;
-
-    DISALLOW_COPY_AND_ASSIGN(SpdySessionRequest);
   };
 
   SpdySessionPool(HostResolver* host_resolver,

@@ -321,6 +321,10 @@ class NET_EXPORT ReportingCache::PersistentReportingStore {
                               std::vector<CachedReportingEndpointGroup>)>;
 
   PersistentReportingStore() = default;
+
+  PersistentReportingStore(const PersistentReportingStore&) = delete;
+  PersistentReportingStore& operator=(const PersistentReportingStore&) = delete;
+
   virtual ~PersistentReportingStore() = default;
 
   // Initializes the store and retrieves stored endpoints and endpoint groups.
@@ -355,9 +359,6 @@ class NET_EXPORT ReportingCache::PersistentReportingStore {
 
   // Flushes the store.
   virtual void Flush() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PersistentReportingStore);
 };
 
 }  // namespace net

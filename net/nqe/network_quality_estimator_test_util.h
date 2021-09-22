@@ -52,6 +52,10 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   explicit TestNetworkQualityEstimator(
       std::unique_ptr<NetworkQualityEstimatorParams> params);
 
+  TestNetworkQualityEstimator(const TestNetworkQualityEstimator&) = delete;
+  TestNetworkQualityEstimator& operator=(const TestNetworkQualityEstimator&) =
+      delete;
+
   ~TestNetworkQualityEstimator() override;
 
   // Runs one URL request to completion.
@@ -286,8 +290,6 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   size_t ping_rtt_received_count_ = 0;
 
   absl::optional<size_t> transport_rtt_observation_count_last_ect_computation_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityEstimator);
 };
 
 }  // namespace net

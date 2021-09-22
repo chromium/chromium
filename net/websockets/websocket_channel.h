@@ -76,6 +76,10 @@ class NET_EXPORT WebSocketChannel {
   // connection process.
   WebSocketChannel(std::unique_ptr<WebSocketEventInterface> event_interface,
                    URLRequestContext* url_request_context);
+
+  WebSocketChannel(const WebSocketChannel&) = delete;
+  WebSocketChannel& operator=(const WebSocketChannel&) = delete;
+
   virtual ~WebSocketChannel();
 
   // Starts the connection process.
@@ -388,8 +392,6 @@ class NET_EXPORT WebSocketChannel {
 
   // True if we're waiting for OnReadDone() callback.
   bool is_reading_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketChannel);
 };
 
 }  // namespace net

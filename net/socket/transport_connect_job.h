@@ -129,6 +129,10 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
                       const scoped_refptr<TransportSocketParams>& params,
                       Delegate* delegate,
                       const NetLogWithSource* net_log);
+
+  TransportConnectJob(const TransportConnectJob&) = delete;
+  TransportConnectJob& operator=(const TransportConnectJob&) = delete;
+
   ~TransportConnectJob() override;
 
   // ConnectJob methods.
@@ -205,8 +209,6 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   ConnectionAttempts fallback_connection_attempts_;
 
   base::WeakPtrFactory<TransportConnectJob> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransportConnectJob);
 };
 
 }  // namespace net

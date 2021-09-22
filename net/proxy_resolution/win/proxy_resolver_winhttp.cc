@@ -55,6 +55,10 @@ static Error WinHttpErrorToNetError(DWORD win_http_error) {
 class ProxyResolverWinHttp : public ProxyResolver {
  public:
   ProxyResolverWinHttp(const scoped_refptr<PacFileData>& script_data);
+
+  ProxyResolverWinHttp(const ProxyResolverWinHttp&) = delete;
+  ProxyResolverWinHttp& operator=(const ProxyResolverWinHttp&) = delete;
+
   ~ProxyResolverWinHttp() override;
 
   // ProxyResolver implementation:
@@ -73,8 +77,6 @@ class ProxyResolverWinHttp : public ProxyResolver {
   HINTERNET session_handle_;
 
   const GURL pac_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverWinHttp);
 };
 
 ProxyResolverWinHttp::ProxyResolverWinHttp(

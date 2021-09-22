@@ -27,6 +27,11 @@ class TestFilterSourceStreamBase : public FilterSourceStream {
  public:
   TestFilterSourceStreamBase(std::unique_ptr<SourceStream> upstream)
       : FilterSourceStream(SourceStream::TYPE_NONE, std::move(upstream)) {}
+
+  TestFilterSourceStreamBase(const TestFilterSourceStreamBase&) = delete;
+  TestFilterSourceStreamBase& operator=(const TestFilterSourceStreamBase&) =
+      delete;
+
   ~TestFilterSourceStreamBase() override { DCHECK(buffer_.empty()); }
   std::string GetTypeAsString() const override { return type_string_; }
 
@@ -52,8 +57,6 @@ class TestFilterSourceStreamBase : public FilterSourceStream {
 
  private:
   std::string type_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFilterSourceStreamBase);
 };
 
 // A FilterSourceStream that needs all input data before it can return non-zero

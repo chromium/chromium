@@ -352,6 +352,10 @@ class FastTransactionServer {
   FastTransactionServer() {
     no_store = false;
   }
+
+  FastTransactionServer(const FastTransactionServer&) = delete;
+  FastTransactionServer& operator=(const FastTransactionServer&) = delete;
+
   ~FastTransactionServer() = default;
 
   void set_no_store(bool value) { no_store = value; }
@@ -366,7 +370,6 @@ class FastTransactionServer {
 
  private:
   static bool no_store;
-  DISALLOW_COPY_AND_ASSIGN(FastTransactionServer);
 };
 bool FastTransactionServer::no_store;
 
@@ -402,6 +405,10 @@ class RangeTransactionServer {
     redirect_ = false;
     length_ = 80;
   }
+
+  RangeTransactionServer(const RangeTransactionServer&) = delete;
+  RangeTransactionServer& operator=(const RangeTransactionServer&) = delete;
+
   ~RangeTransactionServer() {
     not_modified_ = false;
     modified_ = false;
@@ -443,7 +450,6 @@ class RangeTransactionServer {
   static bool bad_200_;
   static bool redirect_;
   static int64_t length_;
-  DISALLOW_COPY_AND_ASSIGN(RangeTransactionServer);
 };
 bool RangeTransactionServer::not_modified_ = false;
 bool RangeTransactionServer::modified_ = false;

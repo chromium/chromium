@@ -138,6 +138,10 @@ class TrialComparisonCertVerifier::Job {
       const CertVerifier::RequestParams& params,
       const NetLogWithSource& source_net_log,
       TrialComparisonCertVerifier* parent);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   // Start the Job, attempting first to verify with the parent's primary
@@ -221,8 +225,6 @@ class TrialComparisonCertVerifier::Job {
   std::unique_ptr<CertVerifier::Request> reverification_request_;
 
   base::WeakPtrFactory<Job> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 // The Request is vended to the TrialComparisonCertVerifier::Verify() callers,
@@ -238,6 +240,10 @@ class TrialComparisonCertVerifier::Job::Request : public CertVerifier::Request {
   Request(TrialComparisonCertVerifier::Job* parent,
           CertVerifyResult* client_result,
           CompletionOnceCallback client_callback);
+
+  Request(const Request&) = delete;
+  Request& operator=(const Request&) = delete;
+
   ~Request() override;
 
   // Called when the Job has completed, and used to invoke the client
@@ -254,8 +260,6 @@ class TrialComparisonCertVerifier::Job::Request : public CertVerifier::Request {
   TrialComparisonCertVerifier::Job* parent_;
   CertVerifyResult* client_result_;
   CompletionOnceCallback client_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Request);
 };
 
 TrialComparisonCertVerifier::Job::Job(const CertVerifier::Config& config,

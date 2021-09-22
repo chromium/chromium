@@ -31,6 +31,10 @@ class URLRequestMockHTTPJob : public URLRequestTestJobBackedByFile {
   // Note that all file I/O is done using ThreadPool.
   URLRequestMockHTTPJob(URLRequest* request,
                         const base::FilePath& file_path);
+
+  URLRequestMockHTTPJob(const URLRequestMockHTTPJob&) = delete;
+  URLRequestMockHTTPJob& operator=(const URLRequestMockHTTPJob&) = delete;
+
   ~URLRequestMockHTTPJob() override;
 
   // URLRequestJob overrides.
@@ -75,8 +79,6 @@ class URLRequestMockHTTPJob : public URLRequestTestJobBackedByFile {
   int64_t total_received_bytes_ = 0;
 
   base::WeakPtrFactory<URLRequestMockHTTPJob> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestMockHTTPJob);
 };
 
 }  // namespace net

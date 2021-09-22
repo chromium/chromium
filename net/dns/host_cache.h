@@ -321,6 +321,9 @@ class NET_EXPORT HostCache {
   // Constructs a HostCache that stores up to |max_entries|.
   explicit HostCache(size_t max_entries);
 
+  HostCache(const HostCache&) = delete;
+  HostCache& operator=(const HostCache&) = delete;
+
   ~HostCache();
 
   // Returns a pointer to the matching (key, entry) pair, which is valid at time
@@ -452,8 +455,6 @@ class NET_EXPORT HostCache {
   const base::TickClock* tick_clock_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HostCache);
 };
 
 }  // namespace net

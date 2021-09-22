@@ -19,6 +19,10 @@ namespace net {
 class NET_EXPORT TrustStoreCollection : public TrustStore {
  public:
   TrustStoreCollection();
+
+  TrustStoreCollection(const TrustStoreCollection&) = delete;
+  TrustStoreCollection& operator=(const TrustStoreCollection&) = delete;
+
   ~TrustStoreCollection() override;
 
   // Includes results from |store| in the combined output. |store| must
@@ -33,8 +37,6 @@ class NET_EXPORT TrustStoreCollection : public TrustStore {
 
  private:
   std::vector<TrustStore*> stores_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustStoreCollection);
 };
 
 }  // namespace net

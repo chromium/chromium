@@ -135,6 +135,10 @@ GURL GetTestFileUrl(const std::string& relpath) {
 class BasicNetworkDelegate : public NetworkDelegateImpl {
  public:
   BasicNetworkDelegate() = default;
+
+  BasicNetworkDelegate(const BasicNetworkDelegate&) = delete;
+  BasicNetworkDelegate& operator=(const BasicNetworkDelegate&) = delete;
+
   ~BasicNetworkDelegate() override = default;
 
  private:
@@ -144,8 +148,6 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
     EXPECT_TRUE(request->load_flags() & LOAD_DISABLE_CERT_NETWORK_FETCHES);
     return OK;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BasicNetworkDelegate);
 };
 
 class PacFileFetcherImplTest : public PlatformTest, public WithTaskEnvironment {

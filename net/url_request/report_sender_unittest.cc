@@ -82,6 +82,10 @@ void SuccessCallback(bool* called) {
 class MockServerErrorJob : public URLRequestJob {
  public:
   explicit MockServerErrorJob(URLRequest* request) : URLRequestJob(request) {}
+
+  MockServerErrorJob(const MockServerErrorJob&) = delete;
+  MockServerErrorJob& operator=(const MockServerErrorJob&) = delete;
+
   ~MockServerErrorJob() override = default;
 
  protected:
@@ -92,23 +96,22 @@ class MockServerErrorJob : public URLRequestJob {
         "Content-Length: 0\n");
   }
   void Start() override { NotifyHeadersComplete(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockServerErrorJob);
 };
 
 class MockServerErrorJobInterceptor : public URLRequestInterceptor {
  public:
   MockServerErrorJobInterceptor() = default;
+
+  MockServerErrorJobInterceptor(const MockServerErrorJobInterceptor&) = delete;
+  MockServerErrorJobInterceptor& operator=(
+      const MockServerErrorJobInterceptor&) = delete;
+
   ~MockServerErrorJobInterceptor() override = default;
 
   std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
       URLRequest* request) const override {
     return std::make_unique<MockServerErrorJob>(request);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockServerErrorJobInterceptor);
 };
 
 // A network delegate that lets tests check that a report

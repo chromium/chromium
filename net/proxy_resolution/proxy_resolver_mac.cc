@@ -100,6 +100,11 @@ class SynchronizedRunLoopObserver final {
   // Creates the instance of an observer that will synchronize the sources
   // using a given |lock|.
   SynchronizedRunLoopObserver(base::Lock& lock);
+
+  SynchronizedRunLoopObserver(const SynchronizedRunLoopObserver&) = delete;
+  SynchronizedRunLoopObserver& operator=(const SynchronizedRunLoopObserver&) =
+      delete;
+
   // Destructor.
   ~SynchronizedRunLoopObserver();
   // Adds the observer to the current run loop for a given run loop mode.
@@ -122,7 +127,6 @@ class SynchronizedRunLoopObserver final {
   base::ScopedCFTypeRef<CFRunLoopObserverRef> observer_;
   // Validates that all methods of this class are executed on the same thread.
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(SynchronizedRunLoopObserver);
 };
 
 SynchronizedRunLoopObserver::SynchronizedRunLoopObserver(base::Lock& lock)

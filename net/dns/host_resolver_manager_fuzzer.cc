@@ -43,6 +43,9 @@ class DnsRequest {
         data_provider_(data_provider),
         dns_requests_(dns_requests) {}
 
+  DnsRequest(const DnsRequest&) = delete;
+  DnsRequest& operator=(const DnsRequest&) = delete;
+
   ~DnsRequest() = default;
 
   // Creates and starts a DNS request using fuzzed parameters. If the request
@@ -219,8 +222,6 @@ class DnsRequest {
   net::AddressList address_list_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsRequest);
 };
 
 }  // namespace

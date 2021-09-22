@@ -98,10 +98,11 @@ using CookieChangeCallback =
 class CookieChangeSubscription {
  public:
   CookieChangeSubscription() = default;
-  virtual ~CookieChangeSubscription() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieChangeSubscription);
+  CookieChangeSubscription(const CookieChangeSubscription&) = delete;
+  CookieChangeSubscription& operator=(const CookieChangeSubscription&) = delete;
+
+  virtual ~CookieChangeSubscription() = default;
 };
 
 // Exposes changes to a CookieStore's contents.
@@ -122,6 +123,10 @@ class CookieChangeSubscription {
 class CookieChangeDispatcher {
  public:
   CookieChangeDispatcher() = default;
+
+  CookieChangeDispatcher(const CookieChangeDispatcher&) = delete;
+  CookieChangeDispatcher& operator=(const CookieChangeDispatcher&) = delete;
+
   virtual ~CookieChangeDispatcher() = default;
 
   // Observe changes to all cookies named |name| that would be sent in a
@@ -142,9 +147,6 @@ class CookieChangeDispatcher {
   // See kChangeCauseMapping in cookie_monster.cc for details.
   virtual std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
       CookieChangeCallback callback) WARN_UNUSED_RESULT = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieChangeDispatcher);
 };
 
 }  // namespace net

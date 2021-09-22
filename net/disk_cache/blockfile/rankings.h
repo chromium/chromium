@@ -72,6 +72,9 @@ class Rankings {
     explicit ScopedRankingsBlock(Rankings* rankings);
     ScopedRankingsBlock(Rankings* rankings, CacheRankingsBlock* node);
 
+    ScopedRankingsBlock(const ScopedRankingsBlock&) = delete;
+    ScopedRankingsBlock& operator=(const ScopedRankingsBlock&) = delete;
+
     ~ScopedRankingsBlock() {
       rankings_->FreeRankingsBlock(get());
     }
@@ -89,7 +92,6 @@ class Rankings {
 
    private:
     Rankings* rankings_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedRankingsBlock);
   };
 
   // If we have multiple lists, we have to iterate through all at the same time.

@@ -53,6 +53,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   HttpNetworkTransaction(RequestPriority priority,
                          HttpNetworkSession* session);
 
+  HttpNetworkTransaction(const HttpNetworkTransaction&) = delete;
+  HttpNetworkTransaction& operator=(const HttpNetworkTransaction&) = delete;
+
   ~HttpNetworkTransaction() override;
 
   // HttpTransaction methods:
@@ -443,8 +446,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   size_t num_restarts_;
 
   bool close_connection_on_destruction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpNetworkTransaction);
 };
 
 }  // namespace net

@@ -108,6 +108,11 @@ class NET_EXPORT ConfiguredProxyResolutionService
       NetLog* net_log,
       bool quick_check_enabled);
 
+  ConfiguredProxyResolutionService(const ConfiguredProxyResolutionService&) =
+      delete;
+  ConfiguredProxyResolutionService& operator=(
+      const ConfiguredProxyResolutionService&) = delete;
+
   ~ConfiguredProxyResolutionService() override;
 
   // ProxyResolutionService
@@ -415,8 +420,6 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // synchronous callback.
   base::WeakPtrFactory<ConfiguredProxyResolutionService> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConfiguredProxyResolutionService);
 };
 
 }  // namespace net

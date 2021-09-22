@@ -229,6 +229,11 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
                                bool* rtt_notification_received)
       : should_notify_updated_rtt_(should_notify_updated_rtt),
         rtt_notification_received_(rtt_notification_received) {}
+
+  TestSocketPerformanceWatcher(const TestSocketPerformanceWatcher&) = delete;
+  TestSocketPerformanceWatcher& operator=(const TestSocketPerformanceWatcher&) =
+      delete;
+
   ~TestSocketPerformanceWatcher() override {}
 
   bool ShouldNotifyUpdatedRTT() const override {
@@ -244,8 +249,6 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
  private:
   bool* should_notify_updated_rtt_;
   bool* rtt_notification_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketPerformanceWatcher);
 };
 
 class TestSocketPerformanceWatcherFactory
@@ -255,6 +258,12 @@ class TestSocketPerformanceWatcherFactory
       : watcher_count_(0u),
         should_notify_updated_rtt_(true),
         rtt_notification_received_(false) {}
+
+  TestSocketPerformanceWatcherFactory(
+      const TestSocketPerformanceWatcherFactory&) = delete;
+  TestSocketPerformanceWatcherFactory& operator=(
+      const TestSocketPerformanceWatcherFactory&) = delete;
+
   ~TestSocketPerformanceWatcherFactory() override {}
 
   // SocketPerformanceWatcherFactory implementation:
@@ -282,8 +291,6 @@ class TestSocketPerformanceWatcherFactory
   size_t watcher_count_;
   bool should_notify_updated_rtt_;
   bool rtt_notification_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketPerformanceWatcherFactory);
 };
 
 class QuicNetworkTransactionTest

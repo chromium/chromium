@@ -30,6 +30,10 @@ class SpdyStream;
 class NET_EXPORT_PRIVATE SpdyWriteQueue {
  public:
   SpdyWriteQueue();
+
+  SpdyWriteQueue(const SpdyWriteQueue&) = delete;
+  SpdyWriteQueue& operator=(const SpdyWriteQueue&) = delete;
+
   ~SpdyWriteQueue();
 
   // Returns whether there is anything in the write queue,
@@ -108,8 +112,6 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
 
   // The actual write queue, binned by priority.
   base::circular_deque<PendingWrite> queue_[NUM_PRIORITIES];
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyWriteQueue);
 };
 
 }  // namespace net

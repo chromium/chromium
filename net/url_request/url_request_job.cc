@@ -57,6 +57,10 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
     DCHECK(job_);
   }
 
+  URLRequestJobSourceStream(const URLRequestJobSourceStream&) = delete;
+  URLRequestJobSourceStream& operator=(const URLRequestJobSourceStream&) =
+      delete;
+
   ~URLRequestJobSourceStream() override = default;
 
   // SourceStream implementation:
@@ -77,8 +81,6 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   // indirectly owns |this|. Therefore, |job_| will not be destroyed when |this|
   // is alive.
   URLRequestJob* const job_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestJobSourceStream);
 };
 
 URLRequestJob::URLRequestJob(URLRequest* request)

@@ -25,6 +25,11 @@ class QUIC_EXPORT_PRIVATE PropertiesBasedQuicServerInfo
       const quic::QuicServerId& server_id,
       const NetworkIsolationKey& network_isolation_key,
       HttpServerProperties* http_server_properties);
+
+  PropertiesBasedQuicServerInfo(const PropertiesBasedQuicServerInfo&) = delete;
+  PropertiesBasedQuicServerInfo& operator=(
+      const PropertiesBasedQuicServerInfo&) = delete;
+
   ~PropertiesBasedQuicServerInfo() override;
 
   // QuicServerInfo implementation.
@@ -34,8 +39,6 @@ class QUIC_EXPORT_PRIVATE PropertiesBasedQuicServerInfo
  private:
   const NetworkIsolationKey network_isolation_key_;
   HttpServerProperties* const http_server_properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(PropertiesBasedQuicServerInfo);
 };
 
 }  // namespace net

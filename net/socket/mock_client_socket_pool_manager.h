@@ -21,6 +21,11 @@ class ClientSocketPool;
 class MockClientSocketPoolManager : public ClientSocketPoolManager {
  public:
   MockClientSocketPoolManager();
+
+  MockClientSocketPoolManager(const MockClientSocketPoolManager&) = delete;
+  MockClientSocketPoolManager& operator=(const MockClientSocketPoolManager&) =
+      delete;
+
   ~MockClientSocketPoolManager() override;
 
   // Sets socket pool that gets used for the specified ProxyServer.
@@ -39,8 +44,6 @@ class MockClientSocketPoolManager : public ClientSocketPoolManager {
       std::map<ProxyServer, std::unique_ptr<ClientSocketPool>>;
 
   ClientSocketPoolMap socket_pools_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockClientSocketPoolManager);
 };
 
 }  // namespace net

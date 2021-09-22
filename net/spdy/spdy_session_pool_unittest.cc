@@ -96,6 +96,11 @@ class SpdySessionRequestDelegate
     : public SpdySessionPool::SpdySessionRequest::Delegate {
  public:
   SpdySessionRequestDelegate() = default;
+
+  SpdySessionRequestDelegate(const SpdySessionRequestDelegate&) = delete;
+  SpdySessionRequestDelegate& operator=(const SpdySessionRequestDelegate&) =
+      delete;
+
   ~SpdySessionRequestDelegate() override = default;
 
   void OnSpdySessionAvailable(
@@ -112,8 +117,6 @@ class SpdySessionRequestDelegate
  private:
   bool callback_invoked_ = false;
   base::WeakPtr<SpdySession> spdy_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpdySessionRequestDelegate);
 };
 
 // Attempts to set up an alias for |key| using an already existing session in
@@ -1194,6 +1197,11 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
 class TestOnRequestDeletedCallback {
  public:
   TestOnRequestDeletedCallback() = default;
+
+  TestOnRequestDeletedCallback(const TestOnRequestDeletedCallback&) = delete;
+  TestOnRequestDeletedCallback& operator=(const TestOnRequestDeletedCallback&) =
+      delete;
+
   ~TestOnRequestDeletedCallback() = default;
 
   base::RepeatingClosure Callback() {
@@ -1223,22 +1231,21 @@ class TestOnRequestDeletedCallback {
   base::RunLoop run_loop_;
 
   base::OnceClosure request_deleted_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOnRequestDeletedCallback);
 };
 
 class TestRequestDelegate
     : public SpdySessionPool::SpdySessionRequest::Delegate {
  public:
   TestRequestDelegate() = default;
+
+  TestRequestDelegate(const TestRequestDelegate&) = delete;
+  TestRequestDelegate& operator=(const TestRequestDelegate&) = delete;
+
   ~TestRequestDelegate() override = default;
 
   // SpdySessionPool::SpdySessionRequest::Delegate implementation:
   void OnSpdySessionAvailable(
       base::WeakPtr<SpdySession> spdy_session) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestRequestDelegate);
 };
 
 TEST_F(SpdySessionPoolTest, RequestSessionWithNoSessions) {

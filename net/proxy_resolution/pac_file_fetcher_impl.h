@@ -49,6 +49,9 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
   static std::unique_ptr<PacFileFetcherImpl> Create(
       URLRequestContext* url_request_context);
 
+  PacFileFetcherImpl(const PacFileFetcherImpl&) = delete;
+  PacFileFetcherImpl& operator=(const PacFileFetcherImpl&) = delete;
+
   ~PacFileFetcherImpl() override;
 
   // Used by unit-tests to modify the default limits.
@@ -151,8 +154,6 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
   // Factory for creating the time-out task. This takes care of revoking
   // outstanding tasks when |this| is deleted.
   base::WeakPtrFactory<PacFileFetcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PacFileFetcherImpl);
 };
 
 }  // namespace net

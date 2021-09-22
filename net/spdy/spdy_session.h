@@ -224,6 +224,10 @@ static_assert(13 == spdy::SpdyErrorCode::ERROR_CODE_MAX,
 class NET_EXPORT_PRIVATE SpdyStreamRequest {
  public:
   SpdyStreamRequest();
+
+  SpdyStreamRequest(const SpdyStreamRequest&) = delete;
+  SpdyStreamRequest& operator=(const SpdyStreamRequest&) = delete;
+
   // Calls CancelRequest().
   ~SpdyStreamRequest();
 
@@ -310,8 +314,6 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
   base::TimeTicks confirm_handshake_end_;
 
   base::WeakPtrFactory<SpdyStreamRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyStreamRequest);
 };
 
 class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,

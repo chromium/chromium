@@ -127,6 +127,10 @@ class NET_EXPORT URLRequestContextBuilder {
   };
 
   URLRequestContextBuilder();
+
+  URLRequestContextBuilder(const URLRequestContextBuilder&) = delete;
+  URLRequestContextBuilder& operator=(const URLRequestContextBuilder&) = delete;
+
   virtual ~URLRequestContextBuilder();
 
   // Sets whether Brotli compression is enabled.  Disabled by default;
@@ -372,8 +376,6 @@ class NET_EXPORT URLRequestContextBuilder {
       protocol_handlers_;
 
   ClientSocketFactory* client_socket_factory_for_testing_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextBuilder);
 };
 
 }  // namespace net

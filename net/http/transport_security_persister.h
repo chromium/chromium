@@ -65,6 +65,11 @@ class NET_EXPORT TransportSecurityPersister
       TransportSecurityState* state,
       const scoped_refptr<base::SequencedTaskRunner>& background_runner,
       const base::FilePath& data_path);
+
+  TransportSecurityPersister(const TransportSecurityPersister&) = delete;
+  TransportSecurityPersister& operator=(const TransportSecurityPersister&) =
+      delete;
+
   ~TransportSecurityPersister() override;
 
   // Called by the TransportSecurityState when it changes its state.
@@ -128,8 +133,6 @@ class NET_EXPORT TransportSecurityPersister
   scoped_refptr<base::SequencedTaskRunner> background_runner_;
 
   base::WeakPtrFactory<TransportSecurityPersister> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransportSecurityPersister);
 };
 
 }  // namespace net

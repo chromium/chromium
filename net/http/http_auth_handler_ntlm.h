@@ -44,6 +44,10 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
   class Factory : public HttpAuthHandlerFactory {
    public:
     Factory();
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override;
 
     int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
@@ -70,8 +74,6 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
 #if defined(NTLM_SSPI)
     std::unique_ptr<SSPILibrary> sspi_library_;
 #endif  // defined(NTLM_SSPI)
-
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
 #if defined(NTLM_PORTABLE)

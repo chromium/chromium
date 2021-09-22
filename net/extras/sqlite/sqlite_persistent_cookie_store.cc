@@ -540,6 +540,9 @@ class IncrementTimeDelta {
   explicit IncrementTimeDelta(base::TimeDelta* delta)
       : delta_(delta), original_value_(*delta), start_(base::Time::Now()) {}
 
+  IncrementTimeDelta(const IncrementTimeDelta&) = delete;
+  IncrementTimeDelta& operator=(const IncrementTimeDelta&) = delete;
+
   ~IncrementTimeDelta() {
     *delta_ = original_value_ + base::Time::Now() - start_;
   }
@@ -548,8 +551,6 @@ class IncrementTimeDelta {
   base::TimeDelta* delta_;
   base::TimeDelta original_value_;
   base::Time start_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncrementTimeDelta);
 };
 
 // Initializes the cookies table, returning true on success.

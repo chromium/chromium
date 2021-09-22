@@ -108,6 +108,10 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
                       scoped_refptr<HttpProxySocketParams> params,
                       ConnectJob::Delegate* delegate,
                       const NetLogWithSource* net_log);
+
+  HttpProxyConnectJob(const HttpProxyConnectJob&) = delete;
+  HttpProxyConnectJob& operator=(const HttpProxyConnectJob&) = delete;
+
   ~HttpProxyConnectJob() override;
 
   // A single priority is used for tunnels over H2 and QUIC, which can be shared
@@ -254,8 +258,6 @@ class NET_EXPORT_PRIVATE HttpProxyConnectJob : public ConnectJob,
   base::TimeTicks connect_start_time_;
 
   base::WeakPtrFactory<HttpProxyConnectJob> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpProxyConnectJob);
 };
 
 }  // namespace net

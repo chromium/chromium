@@ -57,6 +57,10 @@ class NET_EXPORT SSLClientSessionCache {
   };
 
   explicit SSLClientSessionCache(const Config& config);
+
+  SSLClientSessionCache(const SSLClientSessionCache&) = delete;
+  SSLClientSessionCache& operator=(const SSLClientSessionCache&) = delete;
+
   ~SSLClientSessionCache();
 
   // Returns true if |entry| is expired as of |now|.
@@ -119,8 +123,6 @@ class NET_EXPORT SSLClientSessionCache {
   base::MRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLClientSessionCache);
 };
 
 }  // namespace net

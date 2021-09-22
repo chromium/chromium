@@ -87,6 +87,9 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
         not_expect_callback_(false),
         on_failed_called_(false) {}
 
+  TestDelegateBase(const TestDelegateBase&) = delete;
+  TestDelegateBase& operator=(const TestDelegateBase&) = delete;
+
   ~TestDelegateBase() override = default;
 
   void OnStreamReady(bool request_headers_sent) override {
@@ -234,8 +237,6 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
   bool run_until_completion_;
   bool not_expect_callback_;
   bool on_failed_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegateBase);
 };
 
 }  // namespace

@@ -109,6 +109,10 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
                 scoped_refptr<SSLSocketParams> params,
                 ConnectJob::Delegate* delegate,
                 const NetLogWithSource* net_log);
+
+  SSLConnectJob(const SSLConnectJob&) = delete;
+  SSLConnectJob& operator=(const SSLConnectJob&) = delete;
+
   ~SSLConnectJob() override;
 
   // ConnectJob methods.
@@ -201,8 +205,6 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // limited lifetime and the aliases can no longer be retrieved from there by
   // by the time that the aliases are needed to be passed in SetSocket.
   std::vector<std::string> dns_aliases_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLConnectJob);
 };
 
 }  // namespace net

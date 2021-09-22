@@ -133,6 +133,10 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                      const NetLogWithSource& net_log,
                      TimeFunc time_func = base::TimeTicks::Now);
   BufferedSpdyFramer() = delete;
+
+  BufferedSpdyFramer(const BufferedSpdyFramer&) = delete;
+  BufferedSpdyFramer& operator=(const BufferedSpdyFramer&) = delete;
+
   ~BufferedSpdyFramer() override;
 
   // Sets callbacks to be called from the buffered spdy framer.  A visitor must
@@ -279,8 +283,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   const uint32_t max_header_list_size_;
   NetLogWithSource net_log_;
   TimeFunc time_func_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedSpdyFramer);
 };
 
 }  // namespace net

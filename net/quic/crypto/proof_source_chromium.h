@@ -23,6 +23,10 @@ namespace net {
 class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
  public:
   ProofSourceChromium();
+
+  ProofSourceChromium(const ProofSourceChromium&) = delete;
+  ProofSourceChromium& operator=(const ProofSourceChromium&) = delete;
+
   ~ProofSourceChromium() override;
 
   // Initializes this object based on the certificate chain in |cert_path|,
@@ -76,8 +80,6 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
   quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain_;
   std::string signed_certificate_timestamp_;
   std::unique_ptr<TicketCrypter> ticket_crypter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProofSourceChromium);
 };
 
 }  // namespace net

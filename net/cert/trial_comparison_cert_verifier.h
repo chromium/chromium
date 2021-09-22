@@ -87,6 +87,10 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
                               scoped_refptr<CertVerifyProc> trial_verify_proc,
                               ReportCallback report_callback);
 
+  TrialComparisonCertVerifier(const TrialComparisonCertVerifier&) = delete;
+  TrialComparisonCertVerifier& operator=(const TrialComparisonCertVerifier&) =
+      delete;
+
   ~TrialComparisonCertVerifier() override;
 
   void set_trial_allowed(bool allowed) { allowed_ = allowed; }
@@ -130,8 +134,6 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
   std::set<std::unique_ptr<Job>, base::UniquePtrComparator> jobs_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TrialComparisonCertVerifier);
 };
 
 }  // namespace net

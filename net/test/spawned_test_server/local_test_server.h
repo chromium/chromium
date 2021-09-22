@@ -39,6 +39,9 @@ class LocalTestServer : public BaseTestServer {
                   const SSLOptions& ssl_options,
                   const base::FilePath& document_root);
 
+  LocalTestServer(const LocalTestServer&) = delete;
+  LocalTestServer& operator=(const LocalTestServer&) = delete;
+
   ~LocalTestServer() override;
 
   // BaseTestServer overrides.
@@ -93,8 +96,6 @@ class LocalTestServer : public BaseTestServer {
   // The file descriptor the child writes to when it starts.
   base::ScopedFD child_fd_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(LocalTestServer);
 };
 
 }  // namespace net

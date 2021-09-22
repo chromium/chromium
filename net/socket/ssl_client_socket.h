@@ -105,6 +105,10 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
                    CTPolicyEnforcer* ct_policy_enforcer,
                    SSLClientSessionCache* ssl_client_session_cache,
                    SCTAuditingDelegate* sct_auditing_delegate);
+
+  SSLClientContext(const SSLClientContext&) = delete;
+  SSLClientContext& operator=(const SSLClientContext&) = delete;
+
   ~SSLClientContext() override;
 
   const SSLContextConfig& config() { return config_; }
@@ -188,8 +192,6 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
   SSLClientAuthCache ssl_client_auth_cache_;
 
   base::ObserverList<Observer, true /* check_empty */> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLClientContext);
 };
 
 }  // namespace net

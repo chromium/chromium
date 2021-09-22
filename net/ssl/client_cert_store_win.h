@@ -25,6 +25,9 @@ class NET_EXPORT ClientCertStoreWin : public ClientCertStore {
   explicit ClientCertStoreWin(
       base::RepeatingCallback<crypto::ScopedHCERTSTORE()> cert_store_callback);
 
+  ClientCertStoreWin(const ClientCertStoreWin&) = delete;
+  ClientCertStoreWin& operator=(const ClientCertStoreWin&) = delete;
+
   ~ClientCertStoreWin() override;
 
   // If a cert store has been provided at construction time GetClientCerts
@@ -51,8 +54,6 @@ class NET_EXPORT ClientCertStoreWin : public ClientCertStore {
                                    ClientCertIdentityList* selected_identities);
 
   base::RepeatingCallback<crypto::ScopedHCERTSTORE()> cert_store_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertStoreWin);
 };
 
 }  // namespace net

@@ -44,6 +44,10 @@ namespace ntlm {
 class NET_EXPORT_PRIVATE NtlmBufferWriter {
  public:
   explicit NtlmBufferWriter(size_t buffer_len);
+
+  NtlmBufferWriter(const NtlmBufferWriter&) = delete;
+  NtlmBufferWriter& operator=(const NtlmBufferWriter&) = delete;
+
   ~NtlmBufferWriter();
 
   size_t GetLength() const { return buffer_.size(); }
@@ -186,8 +190,6 @@ class NET_EXPORT_PRIVATE NtlmBufferWriter {
 
   std::vector<uint8_t> buffer_;
   size_t cursor_;
-
-  DISALLOW_COPY_AND_ASSIGN(NtlmBufferWriter);
 };
 
 }  // namespace ntlm

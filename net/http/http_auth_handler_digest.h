@@ -27,12 +27,14 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
   class NET_EXPORT_PRIVATE NonceGenerator {
    public:
     NonceGenerator();
+
+    NonceGenerator(const NonceGenerator&) = delete;
+    NonceGenerator& operator=(const NonceGenerator&) = delete;
+
     virtual ~NonceGenerator();
 
     // Generates a client nonce.
     virtual std::string GenerateNonce() const = 0;
-   private:
-    DISALLOW_COPY_AND_ASSIGN(NonceGenerator);
   };
 
   // DynamicNonceGenerator does a random shuffle of 16

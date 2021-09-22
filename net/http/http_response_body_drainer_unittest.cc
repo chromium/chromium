@@ -88,6 +88,10 @@ class MockHttpStream : public HttpStream {
         is_last_chunk_zero_size_(false),
         is_complete_(false),
         can_reuse_connection_(true) {}
+
+  MockHttpStream(const MockHttpStream&) = delete;
+  MockHttpStream& operator=(const MockHttpStream&) = delete;
+
   ~MockHttpStream() override = default;
 
   // HttpStream implementation.
@@ -186,8 +190,6 @@ class MockHttpStream : public HttpStream {
   bool can_reuse_connection_;
 
   base::WeakPtrFactory<MockHttpStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpStream);
 };
 
 int MockHttpStream::ReadResponseBody(IOBuffer* buf,

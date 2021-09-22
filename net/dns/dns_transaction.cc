@@ -139,6 +139,9 @@ class DnsAttempt {
  public:
   explicit DnsAttempt(size_t server_index) : server_index_(server_index) {}
 
+  DnsAttempt(const DnsAttempt&) = delete;
+  DnsAttempt& operator=(const DnsAttempt&) = delete;
+
   virtual ~DnsAttempt() = default;
   // Starts the attempt. Returns ERR_IO_PENDING if cannot complete synchronously
   // and calls |callback| upon completion.
@@ -188,8 +191,6 @@ class DnsAttempt {
 
  private:
   const size_t server_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsAttempt);
 };
 
 class DnsUDPAttempt : public DnsAttempt {
@@ -1105,6 +1106,9 @@ class DnsTransactionImpl : public DnsTransaction,
     DCHECK(!IsIPLiteral(hostname_));
   }
 
+  DnsTransactionImpl(const DnsTransactionImpl&) = delete;
+  DnsTransactionImpl& operator=(const DnsTransactionImpl&) = delete;
+
   ~DnsTransactionImpl() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (!callback_.is_null()) {
@@ -1671,8 +1675,6 @@ class DnsTransactionImpl : public DnsTransaction,
   RequestPriority request_priority_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DnsTransactionImpl);
 };
 
 // ----------------------------------------------------------------------------

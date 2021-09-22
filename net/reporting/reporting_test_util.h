@@ -107,6 +107,9 @@ class TestReportingDelegate : public ReportingDelegate {
  public:
   TestReportingDelegate();
 
+  TestReportingDelegate(const TestReportingDelegate&) = delete;
+  TestReportingDelegate& operator=(const TestReportingDelegate&) = delete;
+
   // ReportingDelegate implementation:
 
   ~TestReportingDelegate() override;
@@ -141,8 +144,6 @@ class TestReportingDelegate : public ReportingDelegate {
   mutable std::set<url::Origin> saved_origins_;
   mutable base::OnceCallback<void(std::set<url::Origin>)>
       permissions_check_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingDelegate);
 };
 
 // A test implementation of ReportingContext that uses test versions of
@@ -154,6 +155,10 @@ class TestReportingContext : public ReportingContext {
       const base::TickClock* tick_clock,
       const ReportingPolicy& policy,
       ReportingCache::PersistentReportingStore* store = nullptr);
+
+  TestReportingContext(const TestReportingContext&) = delete;
+  TestReportingContext& operator=(const TestReportingContext&) = delete;
+
   ~TestReportingContext();
 
   base::MockOneShotTimer* test_delivery_timer() { return delivery_timer_; }
@@ -173,8 +178,6 @@ class TestReportingContext : public ReportingContext {
 
   base::MockOneShotTimer* delivery_timer_;
   base::MockOneShotTimer* garbage_collection_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingContext);
 };
 
 // A unit test base class that provides a TestReportingContext and shorthand

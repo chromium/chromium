@@ -34,6 +34,11 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
       const CommonConnectJobParams& common_connect_job_params,
       const CommonConnectJobParams& websocket_common_connect_job_params,
       HttpNetworkSession::SocketPoolType pool_type);
+
+  ClientSocketPoolManagerImpl(const ClientSocketPoolManagerImpl&) = delete;
+  ClientSocketPoolManagerImpl& operator=(const ClientSocketPoolManagerImpl&) =
+      delete;
+
   ~ClientSocketPoolManagerImpl() override;
 
   void FlushSocketPoolsWithError(int net_error,
@@ -58,8 +63,6 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
   SocketPoolMap socket_pools_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketPoolManagerImpl);
 };
 
 }  // namespace net

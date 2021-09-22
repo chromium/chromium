@@ -81,6 +81,11 @@ class MockPersistentReportingStore
   using CommandList = std::vector<Command>;
 
   MockPersistentReportingStore();
+
+  MockPersistentReportingStore(const MockPersistentReportingStore&) = delete;
+  MockPersistentReportingStore& operator=(const MockPersistentReportingStore&) =
+      delete;
+
   ~MockPersistentReportingStore() override;
 
   // PersistentReportingStore implementation:
@@ -150,8 +155,6 @@ class MockPersistentReportingStore
   // called. Reset to 0 when Flush() is called.
   int queued_endpoint_count_delta_;
   int queued_endpoint_group_count_delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPersistentReportingStore);
 };
 
 bool operator==(const MockPersistentReportingStore::Command& lhs,

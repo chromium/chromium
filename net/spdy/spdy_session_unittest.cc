@@ -113,13 +113,15 @@ class SpdySessionRequestDelegate
     : public SpdySessionPool::SpdySessionRequest::Delegate {
  public:
   SpdySessionRequestDelegate() = default;
+
+  SpdySessionRequestDelegate(const SpdySessionRequestDelegate&) = delete;
+  SpdySessionRequestDelegate& operator=(const SpdySessionRequestDelegate&) =
+      delete;
+
   ~SpdySessionRequestDelegate() override = default;
 
   void OnSpdySessionAvailable(
       base::WeakPtr<SpdySession> spdy_session) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpdySessionRequestDelegate);
 };
 
 }  // namespace

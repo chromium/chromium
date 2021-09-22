@@ -34,6 +34,10 @@ class SSLInfo;
 class NET_EXPORT_PRIVATE HttpAuthHandler {
  public:
   HttpAuthHandler();
+
+  HttpAuthHandler(const HttpAuthHandler&) = delete;
+  HttpAuthHandler& operator=(const HttpAuthHandler&) = delete;
+
   virtual ~HttpAuthHandler();
 
   // Initializes the handler using a challenge issued by a server.
@@ -236,8 +240,6 @@ class NET_EXPORT_PRIVATE HttpAuthHandler {
   NetLogWithSource net_log_;
 
   CompletionOnceCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthHandler);
 };
 
 }  // namespace net

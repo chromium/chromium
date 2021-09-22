@@ -51,6 +51,10 @@ class NET_EXPORT_PRIVATE DnsConfigService {
       base::FilePath::StringPieceType hosts_file_path,
       absl::optional<base::TimeDelta> config_change_delay =
           base::TimeDelta::FromMilliseconds(50));
+
+  DnsConfigService(const DnsConfigService&) = delete;
+  DnsConfigService& operator=(const DnsConfigService&) = delete;
+
   virtual ~DnsConfigService();
 
   // Attempts to read the configuration. Will run |callback| when succeeded.
@@ -209,8 +213,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   base::OneShotTimer timer_;
 
   base::WeakPtrFactory<DnsConfigService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DnsConfigService);
 };
 
 }  // namespace net

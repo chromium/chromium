@@ -864,6 +864,9 @@ class RequestSocketCallback : public TestCompletionCallbackBase {
         pool_(pool),
         within_callback_(false) {}
 
+  RequestSocketCallback(const RequestSocketCallback&) = delete;
+  RequestSocketCallback& operator=(const RequestSocketCallback&) = delete;
+
   ~RequestSocketCallback() override = default;
 
   CompletionOnceCallback callback() {
@@ -897,8 +900,6 @@ class RequestSocketCallback : public TestCompletionCallbackBase {
   ClientSocketHandle* const handle_;
   TransportClientSocketPool* const pool_;
   bool within_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestSocketCallback);
 };
 
 TEST_F(TransportClientSocketPoolTest, RequestTwice) {

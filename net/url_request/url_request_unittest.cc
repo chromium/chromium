@@ -3586,6 +3586,10 @@ class FixedDateNetworkDelegate : public TestNetworkDelegate {
  public:
   explicit FixedDateNetworkDelegate(const std::string& fixed_date)
       : fixed_date_(fixed_date) {}
+
+  FixedDateNetworkDelegate(const FixedDateNetworkDelegate&) = delete;
+  FixedDateNetworkDelegate& operator=(const FixedDateNetworkDelegate&) = delete;
+
   ~FixedDateNetworkDelegate() override = default;
 
   // NetworkDelegate implementation
@@ -3599,8 +3603,6 @@ class FixedDateNetworkDelegate : public TestNetworkDelegate {
 
  private:
   std::string fixed_date_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedDateNetworkDelegate);
 };
 
 int FixedDateNetworkDelegate::OnHeadersReceived(
@@ -3750,6 +3752,12 @@ class URLRequestTestHTTP : public URLRequestTest {
       : public URLRequestJobFactory::ProtocolHandler {
    public:
     UnsafeRedirectProtocolHandler() = default;
+
+    UnsafeRedirectProtocolHandler(const UnsafeRedirectProtocolHandler&) =
+        delete;
+    UnsafeRedirectProtocolHandler& operator=(
+        const UnsafeRedirectProtocolHandler&) = delete;
+
     ~UnsafeRedirectProtocolHandler() override = default;
 
     // URLRequestJobFactory::ProtocolHandler implementation:
@@ -3763,9 +3771,6 @@ class URLRequestTestHTTP : public URLRequestTest {
     bool IsSafeRedirectTarget(const GURL& location) const override {
       return false;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UnsafeRedirectProtocolHandler);
   };
 
   // URLRequestTest interface:
@@ -5013,6 +5018,11 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
 class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
  public:
   AsyncLoggingNetworkDelegate() = default;
+
+  AsyncLoggingNetworkDelegate(const AsyncLoggingNetworkDelegate&) = delete;
+  AsyncLoggingNetworkDelegate& operator=(const AsyncLoggingNetworkDelegate&) =
+      delete;
+
   ~AsyncLoggingNetworkDelegate() override = default;
 
   // NetworkDelegate implementation.
@@ -5065,8 +5075,6 @@ class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
                              base::BindOnce(std::move(callback), OK));
     return ERR_IO_PENDING;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncLoggingNetworkDelegate);
 };
 
 // URLRequest::Delegate that logs delegate information when the headers
@@ -5093,6 +5101,12 @@ class AsyncLoggingUrlRequestDelegate : public TestDelegate {
     else if (cancel_stage == CANCEL_ON_READ_COMPLETED)
       set_cancel_in_received_data(true);
   }
+
+  AsyncLoggingUrlRequestDelegate(const AsyncLoggingUrlRequestDelegate&) =
+      delete;
+  AsyncLoggingUrlRequestDelegate& operator=(
+      const AsyncLoggingUrlRequestDelegate&) = delete;
+
   ~AsyncLoggingUrlRequestDelegate() override = default;
 
   // URLRequest::Delegate implementation:
@@ -5150,8 +5164,6 @@ class AsyncLoggingUrlRequestDelegate : public TestDelegate {
   }
 
   const CancelStage cancel_stage_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncLoggingUrlRequestDelegate);
 };
 
 // Tests handling of delegate info before a request starts.
@@ -8981,6 +8993,10 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
   explicit FailingHttpTransactionFactory(HttpNetworkSession* network_session)
       : network_session_(network_session) {}
 
+  FailingHttpTransactionFactory(const FailingHttpTransactionFactory&) = delete;
+  FailingHttpTransactionFactory& operator=(
+      const FailingHttpTransactionFactory&) = delete;
+
   ~FailingHttpTransactionFactory() override = default;
 
   // HttpTransactionFactory methods:
@@ -8995,8 +9011,6 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 
  private:
   HttpNetworkSession* network_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailingHttpTransactionFactory);
 };
 
 }  // namespace
@@ -12270,6 +12284,10 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
  public:
   ZeroRTTResponse(bool zero_rtt, bool send_too_early)
       : zero_rtt_(zero_rtt), send_too_early_(send_too_early) {}
+
+  ZeroRTTResponse(const ZeroRTTResponse&) = delete;
+  ZeroRTTResponse& operator=(const ZeroRTTResponse&) = delete;
+
   ~ZeroRTTResponse() override {}
 
   void SendResponse(const test_server::SendBytesCallback& send,
@@ -12294,8 +12312,6 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
  private:
   bool zero_rtt_;
   bool send_too_early_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZeroRTTResponse);
 };
 
 std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(

@@ -29,6 +29,10 @@ class ProxyConfigServiceMac : public ProxyConfigService {
   explicit ProxyConfigServiceMac(
       const scoped_refptr<base::SequencedTaskRunner>& sequenced_task_runner,
       const NetworkTrafficAnnotationTag& traffic_annotation);
+
+  ProxyConfigServiceMac(const ProxyConfigServiceMac&) = delete;
+  ProxyConfigServiceMac& operator=(const ProxyConfigServiceMac&) = delete;
+
   ~ProxyConfigServiceMac() override;
 
  public:
@@ -80,8 +84,6 @@ class ProxyConfigServiceMac : public ProxyConfigService {
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceMac);
 };
 
 }  // namespace net

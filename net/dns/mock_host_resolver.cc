@@ -103,6 +103,9 @@ class MockHostResolverBase::RequestImpl
         resolver_(resolver),
         complete_(false) {}
 
+  RequestImpl(const RequestImpl&) = delete;
+  RequestImpl& operator=(const RequestImpl&) = delete;
+
   ~RequestImpl() override {
     if (id_ > 0) {
       if (resolver_)
@@ -261,8 +264,6 @@ class MockHostResolverBase::RequestImpl
   // outstanding request objects.
   base::WeakPtr<MockHostResolverBase> resolver_;
   bool complete_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestImpl);
 };
 
 class MockHostResolverBase::ProbeRequestImpl
@@ -1083,6 +1084,9 @@ class HangingHostResolver::RequestImpl
   explicit RequestImpl(base::WeakPtr<HangingHostResolver> resolver)
       : resolver_(resolver) {}
 
+  RequestImpl(const RequestImpl&) = delete;
+  RequestImpl& operator=(const RequestImpl&) = delete;
+
   ~RequestImpl() override {
     if (is_running_ && resolver_)
       resolver_->num_cancellations_++;
@@ -1131,8 +1135,6 @@ class HangingHostResolver::RequestImpl
   // outstanding request objects.
   base::WeakPtr<HangingHostResolver> resolver_;
   bool is_running_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestImpl);
 };
 
 HangingHostResolver::HangingHostResolver() = default;

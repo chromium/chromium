@@ -60,6 +60,9 @@ class SocketWatcherFactory : public SocketPerformanceWatcherFactory {
       ShouldNotifyRTTCallback should_notify_rtt_callback,
       const base::TickClock* tick_clock);
 
+  SocketWatcherFactory(const SocketWatcherFactory&) = delete;
+  SocketWatcherFactory& operator=(const SocketWatcherFactory&) = delete;
+
   ~SocketWatcherFactory() override;
 
   // SocketPerformanceWatcherFactory implementation:
@@ -93,8 +96,6 @@ class SocketWatcherFactory : public SocketPerformanceWatcherFactory {
   ShouldNotifyRTTCallback should_notify_rtt_callback_;
 
   const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketWatcherFactory);
 };
 
 }  // namespace internal

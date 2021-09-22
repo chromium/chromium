@@ -272,6 +272,10 @@ class NetLogTestThread : public base::SimpleThread {
 class AddEventsTestThread : public NetLogTestThread {
  public:
   AddEventsTestThread() = default;
+
+  AddEventsTestThread(const AddEventsTestThread&) = delete;
+  AddEventsTestThread& operator=(const AddEventsTestThread&) = delete;
+
   ~AddEventsTestThread() override = default;
 
  private:
@@ -279,14 +283,16 @@ class AddEventsTestThread : public NetLogTestThread {
     for (int i = 0; i < kEvents; ++i)
       AddEvent(net_log_);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AddEventsTestThread);
 };
 
 // A thread that adds and removes an observer from the NetLog repeatedly.
 class AddRemoveObserverTestThread : public NetLogTestThread {
  public:
   AddRemoveObserverTestThread() = default;
+
+  AddRemoveObserverTestThread(const AddRemoveObserverTestThread&) = delete;
+  AddRemoveObserverTestThread& operator=(const AddRemoveObserverTestThread&) =
+      delete;
 
   ~AddRemoveObserverTestThread() override { EXPECT_TRUE(!observer_.net_log()); }
 
@@ -305,8 +311,6 @@ class AddRemoveObserverTestThread : public NetLogTestThread {
   }
 
   CountingObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddRemoveObserverTestThread);
 };
 
 // Creates |kThreads| threads of type |ThreadType| and then runs them all

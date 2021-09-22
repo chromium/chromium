@@ -38,6 +38,10 @@ class ControllableHttpResponse {
   ControllableHttpResponse(EmbeddedTestServer* embedded_test_server,
                            const std::string& relative_url,
                            bool relative_url_is_prefix = false);
+
+  ControllableHttpResponse(const ControllableHttpResponse&) = delete;
+  ControllableHttpResponse& operator=(const ControllableHttpResponse&) = delete;
+
   ~ControllableHttpResponse();
 
   // These method are intented to be used in order.
@@ -89,8 +93,6 @@ class ControllableHttpResponse {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ControllableHttpResponse> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ControllableHttpResponse);
 };
 
 }  // namespace test_server

@@ -89,6 +89,10 @@ class NET_EXPORT_PRIVATE SOCKSConnectJob : public ConnectJob,
                   scoped_refptr<SOCKSSocketParams> socks_params,
                   ConnectJob::Delegate* delegate,
                   const NetLogWithSource* net_log);
+
+  SOCKSConnectJob(const SOCKSConnectJob&) = delete;
+  SOCKSConnectJob& operator=(const SOCKSConnectJob&) = delete;
+
   ~SOCKSConnectJob() override;
 
   // ConnectJob methods.
@@ -140,8 +144,6 @@ class NET_EXPORT_PRIVATE SOCKSConnectJob : public ConnectJob,
   SOCKSClientSocket* socks_socket_ptr_;
 
   ResolveErrorInfo resolve_error_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(SOCKSConnectJob);
 };
 
 }  // namespace net

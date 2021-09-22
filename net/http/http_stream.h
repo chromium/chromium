@@ -43,6 +43,10 @@ class SSLInfo;
 class NET_EXPORT_PRIVATE HttpStream {
  public:
   HttpStream() {}
+
+  HttpStream(const HttpStream&) = delete;
+  HttpStream& operator=(const HttpStream&) = delete;
+
   virtual ~HttpStream() {}
 
   // Initialize stream.  Must be called before calling SendRequest().
@@ -202,9 +206,6 @@ class NET_EXPORT_PRIVATE HttpStream {
   // Accept-CH header fields received in HTTP responses, this value is available
   // before any requests are made.
   virtual base::StringPiece GetAcceptChViaAlps() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpStream);
 };
 
 }  // namespace net

@@ -43,6 +43,11 @@ class MockQuicChromiumClientSession
   MockQuicChromiumClientSession()
       : probed_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
         is_successfully_probed_(false) {}
+
+  MockQuicChromiumClientSession(const MockQuicChromiumClientSession&) = delete;
+  MockQuicChromiumClientSession& operator=(
+      const MockQuicChromiumClientSession&) = delete;
+
   ~MockQuicChromiumClientSession() override {}
 
   // QuicChromiumPacketReader::Visitor interface.
@@ -100,8 +105,6 @@ class MockQuicChromiumClientSession
   quic::QuicSocketAddress probed_peer_address_;
   quic::QuicSocketAddress probed_self_address_;
   bool is_successfully_probed_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuicChromiumClientSession);
 };
 
 class QuicConnectivityProbingManagerTest : public ::testing::Test {

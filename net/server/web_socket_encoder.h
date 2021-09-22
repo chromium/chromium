@@ -23,6 +23,9 @@ class WebSocketEncoder final {
  public:
   static const char kClientExtensions[];
 
+  WebSocketEncoder(const WebSocketEncoder&) = delete;
+  WebSocketEncoder& operator=(const WebSocketEncoder&) = delete;
+
   ~WebSocketEncoder();
 
   // Creates and returns an encoder for a server without extensions.
@@ -67,8 +70,6 @@ class WebSocketEncoder final {
   Type type_;
   std::unique_ptr<WebSocketDeflater> deflater_;
   std::unique_ptr<WebSocketInflater> inflater_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketEncoder);
 };
 
 }  // namespace net

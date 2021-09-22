@@ -111,6 +111,10 @@ class NET_EXPORT_PRIVATE ScopedTestRoot {
   // TestRootCerts store (if there were existing roots they are
   // cleared).
   explicit ScopedTestRoot(CertificateList certs);
+
+  ScopedTestRoot(const ScopedTestRoot&) = delete;
+  ScopedTestRoot& operator=(const ScopedTestRoot&) = delete;
+
   ~ScopedTestRoot();
 
   // Assigns |certs| to be the new test root certs. If |certs| is empty, undoes
@@ -122,8 +126,6 @@ class NET_EXPORT_PRIVATE ScopedTestRoot {
 
  private:
   CertificateList certs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestRoot);
 };
 
 }  // namespace net

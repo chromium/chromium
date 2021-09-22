@@ -666,6 +666,9 @@ class HostResolverManager::RequestImpl
         complete_(false),
         tick_clock_(tick_clock) {}
 
+  RequestImpl(const RequestImpl&) = delete;
+  RequestImpl& operator=(const RequestImpl&) = delete;
+
   ~RequestImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Cancel();
@@ -925,8 +928,6 @@ class HostResolverManager::RequestImpl
   base::TimeTicks request_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RequestImpl);
 };
 
 class HostResolverManager::ProbeRequestImpl
@@ -1044,6 +1045,9 @@ class HostResolverManager::ProcTask {
     if (!params_.resolver_proc.get())
       params_.resolver_proc = new SystemHostResolverProc();
   }
+
+  ProcTask(const ProcTask&) = delete;
+  ProcTask& operator=(const ProcTask&) = delete;
 
   // Cancels this ProcTask. Any outstanding resolve attempts running on worker
   // thread will continue running, but they will post back to the network thread
@@ -1220,8 +1224,6 @@ class HostResolverManager::ProcTask {
   // delayed retry tasks. Invalidate WeakPtrs on completion and cancellation to
   // cancel handling of such posted tasks.
   base::WeakPtrFactory<ProcTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcTask);
 };
 
 //-----------------------------------------------------------------------------

@@ -42,6 +42,10 @@ class WebSocket final {
   void Send(base::StringPiece message,
             WebSocketFrameHeader::OpCodeEnum op_code,
             const NetworkTrafficAnnotationTag traffic_annotation);
+
+  WebSocket(const WebSocket&) = delete;
+  WebSocket& operator=(const WebSocket&) = delete;
+
   ~WebSocket();
 
  private:
@@ -54,8 +58,6 @@ class WebSocket final {
   std::unique_ptr<WebSocketEncoder> encoder_;
   bool closed_;
   std::unique_ptr<NetworkTrafficAnnotationTag> traffic_annotation_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocket);
 };
 
 }  // namespace net

@@ -1991,6 +1991,9 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
   explicit DeleteSockCallback(std::unique_ptr<QuicProxyClientSocket>* sock)
       : sock_(sock) {}
 
+  DeleteSockCallback(const DeleteSockCallback&) = delete;
+  DeleteSockCallback& operator=(const DeleteSockCallback&) = delete;
+
   ~DeleteSockCallback() override {}
 
   CompletionOnceCallback callback() {
@@ -2005,8 +2008,6 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
   }
 
   std::unique_ptr<QuicProxyClientSocket>* sock_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteSockCallback);
 };
 
 // If the socket is reset when both a read and write are pending, and the

@@ -50,6 +50,9 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
                         ProxyDelegate* proxy_delegate,
                         const NetworkTrafficAnnotationTag& traffic_annotation);
 
+  HttpProxyClientSocket(const HttpProxyClientSocket&) = delete;
+  HttpProxyClientSocket& operator=(const HttpProxyClientSocket&) = delete;
+
   // On destruction Disconnect() is called.
   ~HttpProxyClientSocket() override;
 
@@ -172,8 +175,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   const NetworkTrafficAnnotationTag traffic_annotation_;
 
   const NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpProxyClientSocket);
 };
 
 }  // namespace net

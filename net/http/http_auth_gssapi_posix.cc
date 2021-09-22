@@ -62,6 +62,9 @@ class ScopedBuffer {
     DCHECK(gssapi_lib_);
   }
 
+  ScopedBuffer(const ScopedBuffer&) = delete;
+  ScopedBuffer& operator=(const ScopedBuffer&) = delete;
+
   ~ScopedBuffer() {
     if (buffer_ != GSS_C_NO_BUFFER) {
       OM_uint32 minor_status = 0;
@@ -77,8 +80,6 @@ class ScopedBuffer {
  private:
   gss_buffer_t buffer_;
   GSSAPILibrary* gssapi_lib_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBuffer);
 };
 
 // ScopedName releases a gss_name_t when it goes out of scope.
@@ -88,6 +89,9 @@ class ScopedName {
       : name_(name), gssapi_lib_(gssapi_lib) {
     DCHECK(gssapi_lib_);
   }
+
+  ScopedName(const ScopedName&) = delete;
+  ScopedName& operator=(const ScopedName&) = delete;
 
   ~ScopedName() {
     if (name_ != GSS_C_NO_NAME) {
@@ -106,8 +110,6 @@ class ScopedName {
  private:
   gss_name_t name_;
   GSSAPILibrary* gssapi_lib_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedName);
 };
 
 bool OidEquals(const gss_OID left, const gss_OID right) {

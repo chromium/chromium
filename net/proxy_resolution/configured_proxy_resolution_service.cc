@@ -415,6 +415,9 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
         next_state_(State::kNone),
         quick_check_enabled_(true) {}
 
+  InitProxyResolver(const InitProxyResolver&) = delete;
+  InitProxyResolver& operator=(const InitProxyResolver&) = delete;
+
   // Note that the destruction of PacFileDecider will automatically cancel
   // any outstanding work.
   ~InitProxyResolver() = default;
@@ -597,8 +600,6 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   CompletionOnceCallback callback_;
   State next_state_;
   bool quick_check_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitProxyResolver);
 };
 
 // ConfiguredProxyResolutionService::PacFileDeciderPoller

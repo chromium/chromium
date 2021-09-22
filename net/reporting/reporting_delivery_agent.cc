@@ -192,6 +192,10 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     context_->AddCacheObserver(this);
   }
 
+  ReportingDeliveryAgentImpl(const ReportingDeliveryAgentImpl&) = delete;
+  ReportingDeliveryAgentImpl& operator=(const ReportingDeliveryAgentImpl&) =
+      delete;
+
   // ReportingDeliveryAgent implementation:
 
   ~ReportingDeliveryAgentImpl() override {
@@ -380,8 +384,6 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
   std::unique_ptr<ReportingEndpointManager> endpoint_manager_;
 
   base::WeakPtrFactory<ReportingDeliveryAgentImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingDeliveryAgentImpl);
 };
 
 }  // namespace

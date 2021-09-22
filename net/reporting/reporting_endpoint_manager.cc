@@ -49,6 +49,10 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
     DCHECK(cache);
   }
 
+  ReportingEndpointManagerImpl(const ReportingEndpointManagerImpl&) = delete;
+  ReportingEndpointManagerImpl& operator=(const ReportingEndpointManagerImpl&) =
+      delete;
+
   ~ReportingEndpointManagerImpl() override = default;
 
   const ReportingEndpoint FindEndpointForDelivery(
@@ -153,8 +157,6 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
   // growth of this map.
   base::MRUCache<EndpointBackoffKey, std::unique_ptr<net::BackoffEntry>>
       endpoint_backoff_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingEndpointManagerImpl);
 };
 
 }  // namespace

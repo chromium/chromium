@@ -132,6 +132,10 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
  public:
   explicit Watcher(DnsConfigServicePosix& service)
       : DnsConfigService::Watcher(service) {}
+
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
+
   ~Watcher() override = default;
 
   bool Watch() override {
@@ -168,8 +172,6 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
 #if !defined(OS_IOS)
   base::FilePathWatcher hosts_watcher_;
 #endif  // !defined(OS_IOS)
-
-  DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
 
 // A SerialWorker that uses libresolv to initialize res_state and converts

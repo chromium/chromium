@@ -34,6 +34,9 @@ class URLRequestContext;
 // and also other parts of //net.
 class NET_EXPORT ReportingService {
  public:
+  ReportingService(const ReportingService&) = delete;
+  ReportingService& operator=(const ReportingService&) = delete;
+
   virtual ~ReportingService();
 
   // Creates a ReportingService. |policy| will be copied. |request_context| must
@@ -131,9 +134,6 @@ class NET_EXPORT ReportingService {
 
  protected:
   ReportingService() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReportingService);
 };
 
 }  // namespace net

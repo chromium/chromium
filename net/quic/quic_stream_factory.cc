@@ -239,6 +239,10 @@ class QuicStreamFactory::QuicCryptoClientConfigOwner {
     DCHECK(quic_stream_factory_);
   }
 
+  QuicCryptoClientConfigOwner(const QuicCryptoClientConfigOwner&) = delete;
+  QuicCryptoClientConfigOwner& operator=(const QuicCryptoClientConfigOwner&) =
+      delete;
+
   ~QuicCryptoClientConfigOwner() { DCHECK_EQ(num_refs_, 0); }
 
   quic::QuicCryptoClientConfig* config() { return &config_; }
@@ -265,8 +269,6 @@ class QuicStreamFactory::QuicCryptoClientConfigOwner {
   int num_refs_ = 0;
   quic::QuicCryptoClientConfig config_;
   QuicStreamFactory* const quic_stream_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicCryptoClientConfigOwner);
 };
 
 // Class that owns a reference to a QuicCryptoClientConfigOwner. Handles
@@ -322,6 +324,9 @@ class QuicStreamFactory::Job {
       bool use_dns_aliases,
       int cert_verify_flags,
       const NetLogWithSource& net_log);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
 
   ~Job();
 
@@ -478,8 +483,6 @@ class QuicStreamFactory::Job {
   base::TimeTicks quic_connection_start_time_;
   std::set<QuicStreamRequest*> stream_requests_;
   base::WeakPtrFactory<Job> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 QuicStreamFactory::Job::Job(

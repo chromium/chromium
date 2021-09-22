@@ -115,6 +115,9 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
         run_until_completion_(false),
         not_expect_callback_(false) {}
 
+  TestDelegateBase(const TestDelegateBase&) = delete;
+  TestDelegateBase& operator=(const TestDelegateBase&) = delete;
+
   ~TestDelegateBase() override = default;
 
   void OnStreamReady(bool request_headers_sent) override {
@@ -308,7 +311,6 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
   bool not_expect_callback_;
 
   CompletionOnceCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(TestDelegateBase);
 };
 
 // A delegate that deletes the stream in a particular callback.
@@ -324,6 +326,10 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   DeleteStreamDelegate(IOBuffer* buf, int buf_len, Phase phase)
       : TestDelegateBase(buf, buf_len), phase_(phase) {}
+
+  DeleteStreamDelegate(const DeleteStreamDelegate&) = delete;
+  DeleteStreamDelegate& operator=(const DeleteStreamDelegate&) = delete;
+
   ~DeleteStreamDelegate() override = default;
 
   void OnHeadersReceived(
@@ -375,14 +381,16 @@ class DeleteStreamDelegate : public TestDelegateBase {
   // Indicates in which callback the delegate should cancel or delete the
   // stream.
   Phase phase_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteStreamDelegate);
 };
 
 // A Timer that does not start a delayed task unless the timer is fired.
 class MockTimer : public base::MockOneShotTimer {
  public:
   MockTimer() {}
+
+  MockTimer(const MockTimer&) = delete;
+  MockTimer& operator=(const MockTimer&) = delete;
+
   ~MockTimer() override = default;
 
   void Start(const base::Location& posted_from,
@@ -393,9 +401,6 @@ class MockTimer : public base::MockOneShotTimer {
     base::MockOneShotTimer::Start(posted_from, infinite_delay,
                                   std::move(user_task));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTimer);
 };
 
 }  // namespace

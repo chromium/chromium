@@ -50,6 +50,10 @@ class NET_EXPORT ClientSocketHandle {
   };
 
   ClientSocketHandle();
+
+  ClientSocketHandle(const ClientSocketHandle&) = delete;
+  ClientSocketHandle& operator=(const ClientSocketHandle&) = delete;
+
   ~ClientSocketHandle();
 
   // Initializes a ClientSocketHandle object, which involves talking to the
@@ -245,8 +249,6 @@ class NET_EXPORT ClientSocketHandle {
 
   // Timing information is set when a connection is successfully established.
   LoadTimingInfo::ConnectTiming connect_timing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketHandle);
 };
 
 }  // namespace net

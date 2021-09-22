@@ -17,6 +17,10 @@ namespace net {
 class NET_EXPORT CertIssuerSourceStatic : public CertIssuerSource {
  public:
   CertIssuerSourceStatic();
+
+  CertIssuerSourceStatic(const CertIssuerSourceStatic&) = delete;
+  CertIssuerSourceStatic& operator=(const CertIssuerSourceStatic&) = delete;
+
   ~CertIssuerSourceStatic() override;
 
   // Adds |cert| to the set of certificates that this CertIssuerSource will
@@ -36,8 +40,6 @@ class NET_EXPORT CertIssuerSourceStatic : public CertIssuerSource {
                           scoped_refptr<ParsedCertificate>,
                           base::StringPieceHash>
       intermediates_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertIssuerSourceStatic);
 };
 
 }  // namespace net

@@ -947,6 +947,11 @@ class CheckUploadProgressDelegate : public WaitingURLFetcherDelegate {
  public:
   CheckUploadProgressDelegate()
       : chunk_(1 << 16, 'a'), num_chunks_appended_(0), last_seen_progress_(0) {}
+
+  CheckUploadProgressDelegate(const CheckUploadProgressDelegate&) = delete;
+  CheckUploadProgressDelegate& operator=(const CheckUploadProgressDelegate&) =
+      delete;
+
   ~CheckUploadProgressDelegate() override = default;
 
   void OnURLFetchUploadProgress(const URLFetcher* source,
@@ -981,8 +986,6 @@ class CheckUploadProgressDelegate : public WaitingURLFetcherDelegate {
 
   int64_t num_chunks_appended_;
   int64_t last_seen_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckUploadProgressDelegate);
 };
 
 TEST_F(URLFetcherTest, UploadProgress) {
@@ -1014,6 +1017,11 @@ class CheckDownloadProgressDelegate : public WaitingURLFetcherDelegate {
  public:
   CheckDownloadProgressDelegate(int64_t file_size)
       : file_size_(file_size), last_seen_progress_(0) {}
+
+  CheckDownloadProgressDelegate(const CheckDownloadProgressDelegate&) = delete;
+  CheckDownloadProgressDelegate& operator=(
+      const CheckDownloadProgressDelegate&) = delete;
+
   ~CheckDownloadProgressDelegate() override = default;
 
   void OnURLFetchDownloadProgress(const URLFetcher* source,
@@ -1032,8 +1040,6 @@ class CheckDownloadProgressDelegate : public WaitingURLFetcherDelegate {
  private:
   int64_t file_size_;
   int64_t last_seen_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckDownloadProgressDelegate);
 };
 
 TEST_F(URLFetcherTest, DownloadProgress) {
@@ -1065,6 +1071,12 @@ TEST_F(URLFetcherTest, DownloadProgress) {
 class CancelOnUploadProgressDelegate : public WaitingURLFetcherDelegate {
  public:
   CancelOnUploadProgressDelegate() = default;
+
+  CancelOnUploadProgressDelegate(const CancelOnUploadProgressDelegate&) =
+      delete;
+  CancelOnUploadProgressDelegate& operator=(
+      const CancelOnUploadProgressDelegate&) = delete;
+
   ~CancelOnUploadProgressDelegate() override = default;
 
   void OnURLFetchUploadProgress(const URLFetcher* source,
@@ -1072,9 +1084,6 @@ class CancelOnUploadProgressDelegate : public WaitingURLFetcherDelegate {
                                 int64_t total) override {
     CancelFetch();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CancelOnUploadProgressDelegate);
 };
 
 // Check that a fetch can be safely cancelled/deleted during an upload progress
@@ -1102,6 +1111,12 @@ TEST_F(URLFetcherTest, CancelInUploadProgressCallback) {
 class CancelOnDownloadProgressDelegate : public WaitingURLFetcherDelegate {
  public:
   CancelOnDownloadProgressDelegate() = default;
+
+  CancelOnDownloadProgressDelegate(const CancelOnDownloadProgressDelegate&) =
+      delete;
+  CancelOnDownloadProgressDelegate& operator=(
+      const CancelOnDownloadProgressDelegate&) = delete;
+
   ~CancelOnDownloadProgressDelegate() override = default;
 
   void OnURLFetchDownloadProgress(const URLFetcher* source,
@@ -1110,9 +1125,6 @@ class CancelOnDownloadProgressDelegate : public WaitingURLFetcherDelegate {
                                   int64_t current_network_bytes) override {
     CancelFetch();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CancelOnDownloadProgressDelegate);
 };
 
 // Check that a fetch can be safely cancelled/deleted during a download progress
@@ -1419,6 +1431,9 @@ class ReuseFetcherDelegate : public WaitingURLFetcherDelegate {
       : first_request_complete_(false),
         second_request_context_getter_(second_request_context_getter) {}
 
+  ReuseFetcherDelegate(const ReuseFetcherDelegate&) = delete;
+  ReuseFetcherDelegate& operator=(const ReuseFetcherDelegate&) = delete;
+
   ~ReuseFetcherDelegate() override = default;
 
   void OnURLFetchComplete(const URLFetcher* source) override {
@@ -1443,8 +1458,6 @@ class ReuseFetcherDelegate : public WaitingURLFetcherDelegate {
  private:
   bool first_request_complete_;
   scoped_refptr<URLRequestContextGetter> second_request_context_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReuseFetcherDelegate);
 };
 
 TEST_F(URLFetcherTest, ReuseFetcherForSameURL) {

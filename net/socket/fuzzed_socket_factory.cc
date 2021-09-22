@@ -28,6 +28,10 @@ namespace {
 class FailingSSLClientSocket : public SSLClientSocket {
  public:
   FailingSSLClientSocket() = default;
+
+  FailingSSLClientSocket(const FailingSSLClientSocket&) = delete;
+  FailingSSLClientSocket& operator=(const FailingSSLClientSocket&) = delete;
+
   ~FailingSSLClientSocket() override = default;
 
   // Socket implementation:
@@ -100,8 +104,6 @@ class FailingSSLClientSocket : public SSLClientSocket {
 
  private:
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailingSSLClientSocket);
 };
 
 }  // namespace

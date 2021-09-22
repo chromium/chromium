@@ -38,6 +38,10 @@ static_assert(base::size(kFailurePhase) ==
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestJobFactory::ProtocolHandler implementation:
@@ -58,9 +62,6 @@ class MockJobInterceptor : public URLRequestInterceptor {
     }
     return std::make_unique<URLRequestFailedJob>(request, phase, net_error);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 GURL GetMockUrl(const std::string& scheme,

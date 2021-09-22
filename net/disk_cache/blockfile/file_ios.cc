@@ -72,6 +72,10 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
 class FileInFlightIO : public disk_cache::InFlightIO {
  public:
   FileInFlightIO() {}
+
+  FileInFlightIO(const FileInFlightIO&) = delete;
+  FileInFlightIO& operator=(const FileInFlightIO&) = delete;
+
   ~FileInFlightIO() override {}
 
   // These methods start an asynchronous operation. The arguments have the same
@@ -89,9 +93,6 @@ class FileInFlightIO : public disk_cache::InFlightIO {
   // the one performing the call.
   void OnOperationComplete(disk_cache::BackgroundIO* operation,
                            bool cancel) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileInFlightIO);
 };
 
 // ---------------------------------------------------------------------------

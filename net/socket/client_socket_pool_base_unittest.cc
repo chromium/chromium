@@ -546,6 +546,9 @@ class TestConnectJobFactory : public ConnectJobFactory {
   explicit TestConnectJobFactory(MockClientSocketFactory* client_socket_factory)
       : client_socket_factory_(client_socket_factory) {}
 
+  TestConnectJobFactory(const TestConnectJobFactory&) = delete;
+  TestConnectJobFactory& operator=(const TestConnectJobFactory&) = delete;
+
   ~TestConnectJobFactory() override = default;
 
   void set_job_type(TestConnectJob::JobType job_type) { job_type_ = job_type; }
@@ -592,8 +595,6 @@ class TestConnectJobFactory : public ConnectJobFactory {
   std::list<TestConnectJob::JobType>* job_types_ = nullptr;
   base::TimeDelta timeout_duration_;
   MockClientSocketFactory* const client_socket_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectJobFactory);
 };
 
 }  // namespace
@@ -3022,6 +3023,9 @@ class ConnectWithinCallback : public TestCompletionCallbackBase {
       TransportClientSocketPool* pool)
       : group_id_(group_id), params_(params), pool_(pool) {}
 
+  ConnectWithinCallback(const ConnectWithinCallback&) = delete;
+  ConnectWithinCallback& operator=(const ConnectWithinCallback&) = delete;
+
   ~ConnectWithinCallback() override = default;
 
   int WaitForNestedResult() {
@@ -3050,8 +3054,6 @@ class ConnectWithinCallback : public TestCompletionCallbackBase {
   TransportClientSocketPool* const pool_;
   ClientSocketHandle handle_;
   TestCompletionCallback nested_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectWithinCallback);
 };
 
 TEST_F(ClientSocketPoolBaseTest, AbortAllRequestsOnFlush) {
@@ -5153,6 +5155,10 @@ TEST_F(ClientSocketPoolBaseTest, ProxyAuthNoAuthCallback) {
 class TestAuthHelper {
  public:
   TestAuthHelper() = default;
+
+  TestAuthHelper(const TestAuthHelper&) = delete;
+  TestAuthHelper& operator=(const TestAuthHelper&) = delete;
+
   ~TestAuthHelper() = default;
 
   void InitHandle(
@@ -5242,8 +5248,6 @@ class TestAuthHelper {
   ClientSocketHandle handle_;
   int auth_count_ = 0;
   TestCompletionCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAuthHelper);
 };
 
 TEST_F(ClientSocketPoolBaseTest, ProxyAuthOnce) {

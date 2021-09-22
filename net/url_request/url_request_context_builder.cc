@@ -72,6 +72,10 @@ class ContainerURLRequestContext final : public URLRequestContext {
  public:
   explicit ContainerURLRequestContext() : storage_(this) {}
 
+  ContainerURLRequestContext(const ContainerURLRequestContext&) = delete;
+  ContainerURLRequestContext& operator=(const ContainerURLRequestContext&) =
+      delete;
+
   ~ContainerURLRequestContext() override {
 #if BUILDFLAG(ENABLE_REPORTING)
     // Shut down the NetworkErrorLoggingService so that destroying the
@@ -110,8 +114,6 @@ class ContainerURLRequestContext final : public URLRequestContext {
  private:
   URLRequestContextStorage storage_;
   std::unique_ptr<TransportSecurityPersister> transport_security_persister_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContainerURLRequestContext);
 };
 
 }  // namespace

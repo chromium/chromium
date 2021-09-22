@@ -79,6 +79,9 @@ class RegistryReader {
     key_.Open(HKEY_LOCAL_MACHINE, key, KEY_QUERY_VALUE);
   }
 
+  RegistryReader(const RegistryReader&) = delete;
+  RegistryReader& operator=(const RegistryReader&) = delete;
+
   ~RegistryReader() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   absl::optional<DnsSystemSettings::RegString> ReadString(
@@ -127,8 +130,6 @@ class RegistryReader {
   base::win::RegKey key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryReader);
 };
 
 // Wrapper for GetAdaptersAddresses. Returns NULL if failed.
@@ -321,6 +322,9 @@ class RegistryWatcher {
   typedef base::RepeatingCallback<void(bool succeeded)> CallbackType;
   RegistryWatcher() {}
 
+  RegistryWatcher(const RegistryWatcher&) = delete;
+  RegistryWatcher& operator=(const RegistryWatcher&) = delete;
+
   ~RegistryWatcher() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   bool Watch(const wchar_t key[], const CallbackType& callback) {
@@ -352,8 +356,6 @@ class RegistryWatcher {
   base::win::RegKey key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryWatcher);
 };
 
 // Returns true iff |address| is DNS address from IPv6 stateless discovery,
@@ -626,6 +628,10 @@ class DnsConfigServiceWin::Watcher
  public:
   explicit Watcher(DnsConfigServiceWin& service)
       : DnsConfigService::Watcher(service) {}
+
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
+
   ~Watcher() override { NetworkChangeNotifier::RemoveIPAddressObserver(this); }
 
   bool Watch() override {
@@ -685,8 +691,6 @@ class DnsConfigServiceWin::Watcher
   RegistryWatcher dnscache_watcher_;
   RegistryWatcher policy_watcher_;
   base::FilePathWatcher hosts_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
 
 // Reads config from registry and IpHelper. All work performed in ThreadPool.

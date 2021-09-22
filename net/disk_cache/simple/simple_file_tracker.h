@@ -46,6 +46,10 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
    public:
     FileHandle();
     FileHandle(FileHandle&& other);
+
+    FileHandle(const FileHandle&) = delete;
+    FileHandle& operator=(const FileHandle&) = delete;
+
     ~FileHandle();
     FileHandle& operator=(FileHandle&& other);
     base::File* operator->() const;
@@ -67,7 +71,6 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     const SimpleSynchronousEntry* entry_ = nullptr;
     SimpleFileTracker::SubFile subfile_;
     base::File* file_ = nullptr;
-    DISALLOW_COPY_AND_ASSIGN(FileHandle);
   };
 
   struct EntryFileKey {

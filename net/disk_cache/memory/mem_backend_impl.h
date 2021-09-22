@@ -39,6 +39,10 @@ namespace disk_cache {
 class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
  public:
   explicit MemBackendImpl(net::NetLog* net_log);
+
+  MemBackendImpl(const MemBackendImpl&) = delete;
+  MemBackendImpl& operator=(const MemBackendImpl&) = delete;
+
   ~MemBackendImpl() override;
 
   // Returns an instance of a Backend implemented only in memory. The returned
@@ -153,8 +157,6 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   base::MemoryPressureListener memory_pressure_listener_;
 
   base::WeakPtrFactory<MemBackendImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MemBackendImpl);
 };
 
 }  // namespace disk_cache

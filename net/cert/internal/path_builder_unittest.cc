@@ -56,6 +56,10 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
       issuers_.swap(issuers);
       issuers_iter_ = issuers_.begin();
     }
+
+    StaticAsyncRequest(const StaticAsyncRequest&) = delete;
+    StaticAsyncRequest& operator=(const StaticAsyncRequest&) = delete;
+
     ~StaticAsyncRequest() override = default;
 
     void GetNext(ParsedCertificateList* out_certs) override {
@@ -65,8 +69,6 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
     ParsedCertificateList issuers_;
     ParsedCertificateList::iterator issuers_iter_;
-
-    DISALLOW_COPY_AND_ASSIGN(StaticAsyncRequest);
   };
 
   ~AsyncCertIssuerSourceStatic() override = default;

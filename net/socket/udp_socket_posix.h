@@ -129,6 +129,10 @@ class NET_EXPORT UDPSocketPosix {
   class ReceivedActivityMonitor {
    public:
     ReceivedActivityMonitor() : bytes_(0), increments_(0) {}
+
+    ReceivedActivityMonitor(const ReceivedActivityMonitor&) = delete;
+    ReceivedActivityMonitor& operator=(const ReceivedActivityMonitor&) = delete;
+
     ~ReceivedActivityMonitor() = default;
     // Provided by sent/received subclass.
     // Update throughput, but batch to limit overhead of net::activity_monitor.
@@ -143,7 +147,6 @@ class NET_EXPORT UDPSocketPosix {
     uint32_t bytes_;
     uint32_t increments_;
     base::RepeatingTimer timer_;
-    DISALLOW_COPY_AND_ASSIGN(ReceivedActivityMonitor);
   };
 
   UDPSocketPosix(DatagramSocket::BindType bind_type,

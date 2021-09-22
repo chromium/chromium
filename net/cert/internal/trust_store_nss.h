@@ -58,6 +58,9 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   TrustStoreNSS(SECTrustType trust_type,
                 IgnoreSystemTrustSettings ignore_system_trust_settings);
 
+  TrustStoreNSS(const TrustStoreNSS&) = delete;
+  TrustStoreNSS& operator=(const TrustStoreNSS&) = delete;
+
   ~TrustStoreNSS() override;
 
   // CertIssuerSource implementation:
@@ -99,8 +102,6 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   // (*) are stored on |user_slot_|.
   const bool filter_trusted_certs_by_slot_;
   crypto::ScopedPK11Slot user_slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustStoreNSS);
 };
 
 }  // namespace net

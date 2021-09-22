@@ -132,6 +132,10 @@ class CertNetFetcherURLRequest::AsyncCertNetFetcherURLRequest {
   // Shutdown() is called or the AsyncCertNetFetcherURLRequest is destroyed.
   explicit AsyncCertNetFetcherURLRequest(URLRequestContext* context);
 
+  AsyncCertNetFetcherURLRequest(const AsyncCertNetFetcherURLRequest&) = delete;
+  AsyncCertNetFetcherURLRequest& operator=(
+      const AsyncCertNetFetcherURLRequest&) = delete;
+
   // The AsyncCertNetFetcherURLRequest is expected to be kept alive until all
   // requests have completed or Shutdown() is called.
   ~AsyncCertNetFetcherURLRequest();
@@ -162,8 +166,6 @@ class CertNetFetcherURLRequest::AsyncCertNetFetcherURLRequest {
   URLRequestContext* context_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncCertNetFetcherURLRequest);
 };
 
 namespace {
@@ -318,6 +320,10 @@ class Job : public URLRequest::Delegate {
  public:
   Job(std::unique_ptr<CertNetFetcherURLRequest::RequestParams> request_params,
       CertNetFetcherURLRequest::AsyncCertNetFetcherURLRequest* parent);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job() override;
 
   const CertNetFetcherURLRequest::RequestParams& request_params() const {
@@ -397,8 +403,6 @@ class Job : public URLRequest::Delegate {
   // Non-owned pointer to the AsyncCertNetFetcherURLRequest that created this
   // job.
   CertNetFetcherURLRequest::AsyncCertNetFetcherURLRequest* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 }  // namespace

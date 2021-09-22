@@ -30,6 +30,9 @@ class AddressSorterWin : public AddressSorter {
     EnsureWinsockInit();
   }
 
+  AddressSorterWin(const AddressSorterWin&) = delete;
+  AddressSorterWin& operator=(const AddressSorterWin&) = delete;
+
   ~AddressSorterWin() override {}
 
   // AddressSorter:
@@ -137,8 +140,6 @@ class AddressSorterWin : public AddressSorter {
 
     DISALLOW_COPY_AND_ASSIGN(Job);
   };
-
-  DISALLOW_COPY_AND_ASSIGN(AddressSorterWin);
 };
 
 }  // namespace

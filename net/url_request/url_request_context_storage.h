@@ -49,6 +49,10 @@ class NET_EXPORT URLRequestContextStorage {
   // URLRequestContext, since it is often designed to be embedded in a
   // URLRequestContext subclass.
   explicit URLRequestContextStorage(URLRequestContext* context);
+
+  URLRequestContextStorage(const URLRequestContextStorage&) = delete;
+  URLRequestContextStorage& operator=(const URLRequestContextStorage&) = delete;
+
   ~URLRequestContextStorage();
 
   // These setters will set both the member variables and call the setter on the
@@ -137,8 +141,6 @@ class NET_EXPORT URLRequestContextStorage {
   std::unique_ptr<ReportingService> reporting_service_;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextStorage);
 };
 
 }  // namespace net

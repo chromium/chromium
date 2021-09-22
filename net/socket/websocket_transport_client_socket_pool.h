@@ -39,6 +39,11 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
       const ProxyServer& proxy_server,
       const CommonConnectJobParams* common_connect_job_params);
 
+  WebSocketTransportClientSocketPool(
+      const WebSocketTransportClientSocketPool&) = delete;
+  WebSocketTransportClientSocketPool& operator=(
+      const WebSocketTransportClientSocketPool&) = delete;
+
   ~WebSocketTransportClientSocketPool() override;
 
   // Allow another connection to be started to the IPEndPoint that this |handle|
@@ -100,6 +105,10 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
                        CompletionOnceCallback callback,
                        ClientSocketHandle* socket_handle,
                        const NetLogWithSource& request_net_log);
+
+    ConnectJobDelegate(const ConnectJobDelegate&) = delete;
+    ConnectJobDelegate& operator=(const ConnectJobDelegate&) = delete;
+
     ~ConnectJobDelegate() override;
 
     // ConnectJob::Delegate implementation
@@ -127,8 +136,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     std::unique_ptr<ConnectJob> connect_job_;
     ClientSocketHandle* const socket_handle_;
     const NetLogWithSource request_net_log_;
-
-    DISALLOW_COPY_AND_ASSIGN(ConnectJobDelegate);
   };
 
   // Store the arguments from a call to RequestSocket() that has stalled so we
@@ -200,8 +207,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   bool flushing_;
 
   base::WeakPtrFactory<WebSocketTransportClientSocketPool> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketTransportClientSocketPool);
 };
 
 }  // namespace net

@@ -96,6 +96,10 @@ class BackgroundIO : public base::RefCountedThreadSafe<BackgroundIO> {
 class InFlightIO {
  public:
   InFlightIO();
+
+  InFlightIO(const InFlightIO&) = delete;
+  InFlightIO& operator=(const InFlightIO&) = delete;
+
   virtual ~InFlightIO();
 
   // Blocks the current thread until all IO operations tracked by this object
@@ -135,8 +139,6 @@ class InFlightIO {
 #if DCHECK_IS_ON()
   bool single_thread_ = false;  // True if we only have one thread.
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(InFlightIO);
 };
 
 }  // namespace disk_cache

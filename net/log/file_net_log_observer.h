@@ -85,6 +85,9 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
       NetLogCaptureMode capture_mode,
       std::unique_ptr<base::Value> constants);
 
+  FileNetLogObserver(const FileNetLogObserver&) = delete;
+  FileNetLogObserver& operator=(const FileNetLogObserver&) = delete;
+
   ~FileNetLogObserver() override;
 
   // Attaches this observer to |net_log| and begins observing events.
@@ -157,8 +160,6 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
   std::unique_ptr<FileWriter> file_writer_;
 
   const NetLogCaptureMode capture_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileNetLogObserver);
 };
 
 // Serializes |value| to a JSON string used when writing to a file.

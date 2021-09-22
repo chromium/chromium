@@ -52,6 +52,10 @@ class X509Certificate;
 class NET_EXPORT URLRequestJob {
  public:
   explicit URLRequestJob(URLRequest* request);
+
+  URLRequestJob(const URLRequestJob&) = delete;
+  URLRequestJob& operator=(const URLRequestJob&) = delete;
+
   virtual ~URLRequestJob();
 
   // Returns the request that owns this job.
@@ -447,8 +451,6 @@ class NET_EXPORT URLRequestJob {
   CompletionOnceCallback read_raw_callback_;
 
   base::WeakPtrFactory<URLRequestJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestJob);
 };
 
 }  // namespace net

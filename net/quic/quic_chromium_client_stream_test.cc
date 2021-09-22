@@ -42,6 +42,11 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
  public:
   explicit MockQuicClientSessionBase(quic::QuicConnection* connection,
                                      quic::QuicClientPushPromiseIndex* index);
+
+  MockQuicClientSessionBase(const MockQuicClientSessionBase&) = delete;
+  MockQuicClientSessionBase& operator=(const MockQuicClientSessionBase&) =
+      delete;
+
   ~MockQuicClientSessionBase() override;
 
   const quic::QuicCryptoStream* GetCryptoStream() const override {
@@ -138,8 +143,6 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
 
  private:
   std::unique_ptr<quic::QuicCryptoStream> crypto_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuicClientSessionBase);
 };
 
 MockQuicClientSessionBase::MockQuicClientSessionBase(

@@ -22,6 +22,10 @@ class ControllableHttpResponse::Interceptor : public HttpResponse {
       : controller_(controller),
         controller_task_runner_(controller_task_runner),
         http_request_(std::make_unique<HttpRequest>(http_request)) {}
+
+  Interceptor(const Interceptor&) = delete;
+  Interceptor& operator=(const Interceptor&) = delete;
+
   ~Interceptor() override {}
 
  private:
@@ -38,8 +42,6 @@ class ControllableHttpResponse::Interceptor : public HttpResponse {
   scoped_refptr<base::SingleThreadTaskRunner> controller_task_runner_;
 
   std::unique_ptr<HttpRequest> http_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(Interceptor);
 };
 
 ControllableHttpResponse::ControllableHttpResponse(

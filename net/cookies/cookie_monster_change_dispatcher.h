@@ -33,6 +33,11 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
 
   // Expects |cookie_monster| to outlive this.
   explicit CookieMonsterChangeDispatcher(const CookieMonster* cookie_monster);
+
+  CookieMonsterChangeDispatcher(const CookieMonsterChangeDispatcher&) = delete;
+  CookieMonsterChangeDispatcher& operator=(
+      const CookieMonsterChangeDispatcher&) = delete;
+
   ~CookieMonsterChangeDispatcher() override;
 
   // The key in CookieNameMap for a cookie name.
@@ -71,6 +76,9 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
                  GURL url,
                  net::CookieChangeCallback callback);
 
+    Subscription(const Subscription&) = delete;
+    Subscription& operator=(const Subscription&) = delete;
+
     ~Subscription() override;
 
     // The lookup key used in the domain subscription map.
@@ -103,8 +111,6 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
     // Used to cancel delayed calls to DoDispatchChange() when the subscription
     // gets destroyed.
     base::WeakPtrFactory<Subscription> weak_ptr_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Subscription);
   };
 
   // The last level of the subscription data structures.
@@ -147,8 +153,6 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
 
   // Vends weak pointers to subscriptions.
   base::WeakPtrFactory<CookieMonsterChangeDispatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieMonsterChangeDispatcher);
 };
 
 }  // namespace net

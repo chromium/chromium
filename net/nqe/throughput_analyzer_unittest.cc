@@ -67,6 +67,9 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
         throughput_observations_received_(0),
         bits_received_(0) {}
 
+  TestThroughputAnalyzer(const TestThroughputAnalyzer&) = delete;
+  TestThroughputAnalyzer& operator=(const TestThroughputAnalyzer&) = delete;
+
   ~TestThroughputAnalyzer() override = default;
 
   int32_t throughput_observations_received() const {
@@ -112,8 +115,6 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
   int64_t bits_received_;
 
   MockCachingHostResolver mock_host_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestThroughputAnalyzer);
 };
 
 using ThroughputAnalyzerTest = TestWithTaskEnvironment;

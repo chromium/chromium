@@ -16,6 +16,10 @@ class TestTickClock : public base::TickClock {
  public:
   TestTickClock();
   explicit TestTickClock(base::TimeTicks now);
+
+  TestTickClock(const TestTickClock&) = delete;
+  TestTickClock& operator=(const TestTickClock&) = delete;
+
   ~TestTickClock() override;
 
   base::TimeTicks NowTicks() const override;
@@ -23,7 +27,6 @@ class TestTickClock : public base::TickClock {
 
  private:
   base::TimeTicks now_ticks_;
-  DISALLOW_COPY_AND_ASSIGN(TestTickClock);
 };
 
 }  // namespace net

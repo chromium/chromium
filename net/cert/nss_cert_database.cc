@@ -57,14 +57,16 @@ class CertNotificationForwarder : public NSSCertDatabase::Observer {
   explicit CertNotificationForwarder(CertDatabase* cert_db)
       : cert_db_(cert_db) {}
 
+  CertNotificationForwarder(const CertNotificationForwarder&) = delete;
+  CertNotificationForwarder& operator=(const CertNotificationForwarder&) =
+      delete;
+
   ~CertNotificationForwarder() override = default;
 
   void OnCertDBChanged() override { cert_db_->NotifyObserversCertDBChanged(); }
 
  private:
   CertDatabase* cert_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertNotificationForwarder);
 };
 
 }  // namespace

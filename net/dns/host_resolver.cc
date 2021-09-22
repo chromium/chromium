@@ -35,6 +35,10 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
                            public HostResolver::ProbeRequest {
  public:
   explicit FailingRequestImpl(int error) : error_(error) {}
+
+  FailingRequestImpl(const FailingRequestImpl&) = delete;
+  FailingRequestImpl& operator=(const FailingRequestImpl&) = delete;
+
   ~FailingRequestImpl() override = default;
 
   int Start(CompletionOnceCallback callback) override { return error_; }
@@ -78,8 +82,6 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
 
  private:
   const int error_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailingRequestImpl);
 };
 
 }  // namespace

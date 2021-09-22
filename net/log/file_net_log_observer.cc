@@ -206,6 +206,9 @@ class FileNetLogObserver::FileWriter {
              size_t total_num_event_files,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  FileWriter(const FileWriter&) = delete;
+  FileWriter& operator=(const FileWriter&) = delete;
+
   ~FileWriter();
 
   // Writes |constants_value| to disk and opens the events array (closed in
@@ -326,8 +329,6 @@ class FileNetLogObserver::FileWriter {
 
   // Task runner for doing file operations.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileWriter);
 };
 
 std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateBounded(

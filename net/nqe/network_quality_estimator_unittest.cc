@@ -2187,6 +2187,12 @@ class TestNetworkQualitiesCacheObserver
                     std::string(),
                     INT32_MIN),
         notification_received_(0) {}
+
+  TestNetworkQualitiesCacheObserver(const TestNetworkQualitiesCacheObserver&) =
+      delete;
+  TestNetworkQualitiesCacheObserver& operator=(
+      const TestNetworkQualitiesCacheObserver&) = delete;
+
   ~TestNetworkQualitiesCacheObserver() override = default;
 
   void OnChangeInCachedNetworkQuality(
@@ -2208,7 +2214,6 @@ class TestNetworkQualitiesCacheObserver
  private:
   nqe::internal::NetworkID network_id_;
   size_t notification_received_;
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkQualitiesCacheObserver);
 };
 
 TEST_F(NetworkQualityEstimatorTest, CacheObserver) {

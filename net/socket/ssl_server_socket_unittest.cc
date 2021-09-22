@@ -225,6 +225,9 @@ class FakeSocket : public StreamSocket {
              FakeDataChannel* outgoing_channel)
       : incoming_(incoming_channel), outgoing_(outgoing_channel) {}
 
+  FakeSocket(const FakeSocket&) = delete;
+  FakeSocket& operator=(const FakeSocket&) = delete;
+
   ~FakeSocket() override = default;
 
   int Read(IOBuffer* buf,
@@ -299,8 +302,6 @@ class FakeSocket : public StreamSocket {
   NetLogWithSource net_log_;
   FakeDataChannel* incoming_;
   FakeDataChannel* outgoing_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSocket);
 };
 
 }  // namespace

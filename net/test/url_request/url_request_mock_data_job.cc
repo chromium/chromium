@@ -78,6 +78,10 @@ GURL GetMockUrl(const std::string& scheme,
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestInterceptor implementation
@@ -88,9 +92,6 @@ class MockJobInterceptor : public URLRequestInterceptor {
         GetRepeatCountFromRequest(*request),
         GetRequestClientCertificate(*request));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 }  // namespace

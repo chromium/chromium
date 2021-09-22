@@ -24,6 +24,11 @@ class ScopedTransportSecurityStateSource {
   // port number of |reporting_port|.
   explicit ScopedTransportSecurityStateSource(uint16_t reporting_port);
 
+  ScopedTransportSecurityStateSource(
+      const ScopedTransportSecurityStateSource&) = delete;
+  ScopedTransportSecurityStateSource& operator=(
+      const ScopedTransportSecurityStateSource&) = delete;
+
   ~ScopedTransportSecurityStateSource();
 
  private:
@@ -35,8 +40,6 @@ class ScopedTransportSecurityStateSource {
   std::vector<TransportSecurityStateSource::Pinset> pinsets_;
   std::vector<std::string> expect_ct_report_uri_strings_;
   std::vector<const char*> expect_ct_report_uris_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTransportSecurityStateSource);
 };
 
 }  // namespace net

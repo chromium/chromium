@@ -47,6 +47,10 @@ class NET_EXPORT UnixDomainServerSocket : public ServerSocket {
 
   UnixDomainServerSocket(const AuthCallback& auth_callack,
                          bool use_abstract_namespace);
+
+  UnixDomainServerSocket(const UnixDomainServerSocket&) = delete;
+  UnixDomainServerSocket& operator=(const UnixDomainServerSocket&) = delete;
+
   ~UnixDomainServerSocket() override;
 
   // Gets credentials of peer to check permissions.
@@ -94,8 +98,6 @@ class NET_EXPORT UnixDomainServerSocket : public ServerSocket {
     SocketDescriptor* descriptor = nullptr;
   };
   SocketDestination out_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainServerSocket);
 };
 
 }  // namespace net

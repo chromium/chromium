@@ -21,6 +21,10 @@ namespace net {
 class NET_EXPORT_PRIVATE WebSocketExtensionParser {
  public:
   WebSocketExtensionParser();
+
+  WebSocketExtensionParser(const WebSocketExtensionParser&) = delete;
+  WebSocketExtensionParser& operator=(const WebSocketExtensionParser&) = delete;
+
   ~WebSocketExtensionParser();
 
   // Parses the given string as a Sec-WebSocket-Extensions header value.
@@ -55,8 +59,6 @@ class NET_EXPORT_PRIVATE WebSocketExtensionParser {
   // The pointer of the end of the input string.
   const char* end_;
   std::vector<WebSocketExtension> extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketExtensionParser);
 };
 
 }  // namespace net

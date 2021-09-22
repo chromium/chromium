@@ -95,6 +95,10 @@ class HttpRequestParser {
   };
 
   HttpRequestParser();
+
+  HttpRequestParser(const HttpRequestParser&) = delete;
+  HttpRequestParser& operator=(const HttpRequestParser&) = delete;
+
   ~HttpRequestParser();
 
   // Adds chunk of data into the internal buffer.
@@ -135,8 +139,6 @@ class HttpRequestParser {
   size_t declared_content_length_;
 
   std::unique_ptr<HttpChunkedDecoder> chunked_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpRequestParser);
 };
 
 }  // namespace test_server

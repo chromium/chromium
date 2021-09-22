@@ -419,17 +419,22 @@ class PtrRecordCopyContainer {
 class MockClock : public base::Clock {
  public:
   MockClock() = default;
+
+  MockClock(const MockClock&) = delete;
+  MockClock& operator=(const MockClock&) = delete;
+
   ~MockClock() override = default;
 
   MOCK_CONST_METHOD0(Now, base::Time());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClock);
 };
 
 class MockTimer : public base::MockOneShotTimer {
  public:
   MockTimer() {}
+
+  MockTimer(const MockTimer&) = delete;
+  MockTimer& operator=(const MockTimer&) = delete;
+
   ~MockTimer() override = default;
 
   void Start(const base::Location& posted_from,
@@ -443,9 +448,6 @@ class MockTimer : public base::MockOneShotTimer {
   // Does not replace the behavior of MockTimer::Start().
   MOCK_METHOD2(StartObserver,
                void(const base::Location& posted_from, base::TimeDelta delay));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTimer);
 };
 
 }  // namespace

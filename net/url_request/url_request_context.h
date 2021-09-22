@@ -64,6 +64,10 @@ class ReportingService;
 class NET_EXPORT URLRequestContext {
  public:
   URLRequestContext();
+
+  URLRequestContext(const URLRequestContext&) = delete;
+  URLRequestContext& operator=(const URLRequestContext&) = delete;
+
   virtual ~URLRequestContext();
 
   // May return nullptr if this context doesn't have an associated network
@@ -339,8 +343,6 @@ class NET_EXPORT URLRequestContext {
   bool require_network_isolation_key_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContext);
 };
 
 }  // namespace net

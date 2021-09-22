@@ -50,6 +50,10 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
    public:
     LockReleaser(WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
                  IPEndPoint endpoint);
+
+    LockReleaser(const LockReleaser&) = delete;
+    LockReleaser& operator=(const LockReleaser&) = delete;
+
     ~LockReleaser();
 
    private:
@@ -59,8 +63,6 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
     // destroyed.
     WebSocketEndpointLockManager* websocket_endpoint_lock_manager_;
     const IPEndPoint endpoint_;
-
-    DISALLOW_COPY_AND_ASSIGN(LockReleaser);
   };
 
   WebSocketEndpointLockManager();

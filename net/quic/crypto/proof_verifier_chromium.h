@@ -75,6 +75,10 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
                         SCTAuditingDelegate* sct_auditing_delegate,
                         std::set<std::string> hostnames_to_allow_unknown_roots,
                         const NetworkIsolationKey& network_isolation_key);
+
+  ProofVerifierChromium(const ProofVerifierChromium&) = delete;
+  ProofVerifierChromium& operator=(const ProofVerifierChromium&) = delete;
+
   ~ProofVerifierChromium() override;
 
   // quic::ProofVerifier interface
@@ -123,8 +127,6 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
   std::set<std::string> hostnames_to_allow_unknown_roots_;
 
   const NetworkIsolationKey network_isolation_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProofVerifierChromium);
 };
 
 }  // namespace net

@@ -110,6 +110,10 @@ enum AllActiveSessionsGoingAwayReason {
 class NET_EXPORT_PRIVATE QuicStreamRequest {
  public:
   explicit QuicStreamRequest(QuicStreamFactory* factory);
+
+  QuicStreamRequest(const QuicStreamRequest&) = delete;
+  QuicStreamRequest& operator=(const QuicStreamRequest&) = delete;
+
   ~QuicStreamRequest();
 
   // |cert_verify_flags| is bitwise OR'd of CertVerifier::VerifyFlags and it is
@@ -193,8 +197,6 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   bool expect_on_host_resolution_;
   // Callback passed to WaitForHostResolution().
   CompletionOnceCallback host_resolution_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicStreamRequest);
 };
 
 // A factory for fetching QuicChromiumClientSessions.

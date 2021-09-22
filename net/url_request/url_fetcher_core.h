@@ -164,6 +164,10 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   class Registry {
    public:
     Registry();
+
+    Registry(const Registry&) = delete;
+    Registry& operator=(const Registry&) = delete;
+
     ~Registry();
 
     void AddURLFetcherCore(URLFetcherCore* core);
@@ -177,8 +181,6 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
 
    private:
     std::set<URLFetcherCore*> fetchers_;
-
-    DISALLOW_COPY_AND_ASSIGN(Registry);
   };
 
   ~URLFetcherCore() override;

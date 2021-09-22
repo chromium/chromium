@@ -84,14 +84,16 @@ class NET_EXPORT_PRIVATE AddressInfo {
 class NET_EXPORT_PRIVATE AddrInfoGetter {
  public:
   AddrInfoGetter();
+
+  AddrInfoGetter(const AddrInfoGetter&) = delete;
+  AddrInfoGetter& operator=(const AddrInfoGetter&) = delete;
+
   // Virtual for tests.
   virtual ~AddrInfoGetter();
   virtual addrinfo* getaddrinfo(const std::string& host,
                                 const addrinfo* hints,
                                 int* out_os_error);
   virtual void freeaddrinfo(addrinfo* ai);
-
-  DISALLOW_COPY_AND_ASSIGN(AddrInfoGetter);
 };
 
 }  // namespace net

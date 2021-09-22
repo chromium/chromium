@@ -49,6 +49,9 @@ class ReportingServiceImpl : public ReportingService {
       initialized_ = true;
   }
 
+  ReportingServiceImpl(const ReportingServiceImpl&) = delete;
+  ReportingServiceImpl& operator=(const ReportingServiceImpl&) = delete;
+
   // ReportingService implementation:
 
   ~ReportingServiceImpl() override {
@@ -303,8 +306,6 @@ class ReportingServiceImpl : public ReportingService {
   NetworkIsolationKey empty_nik_;
 
   base::WeakPtrFactory<ReportingServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingServiceImpl);
 };
 
 }  // namespace

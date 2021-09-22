@@ -53,6 +53,10 @@ class NET_EXPORT HttpStreamFactory {
   };
 
   explicit HttpStreamFactory(HttpNetworkSession* session);
+
+  HttpStreamFactory(const HttpStreamFactory&) = delete;
+  HttpStreamFactory& operator=(const HttpStreamFactory&) = delete;
+
   virtual ~HttpStreamFactory();
 
   void ProcessAlternativeServices(
@@ -164,8 +168,6 @@ class NET_EXPORT HttpStreamFactory {
 
   // Factory used by job controllers for creating jobs.
   std::unique_ptr<JobFactory> job_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpStreamFactory);
 };
 
 }  // namespace net
