@@ -216,6 +216,9 @@ crbug.com/1008450 [ android skia-renderer-vulkan ] Pixel_Video_BackdropFilter [ 
 crbug.com/1008450 [ android skia-renderer-gl ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
 crbug.com/1008450 [ android skia-renderer-vulkan ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
 
+# Flaky test on SkiaRenderer vulkan android bot.
+crbug.com/1252081 [ android skia-renderer-vulkan ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
+
 # Produces blank images on Intel HD 630 w/ Mesa 19.0.2
 crbug.com/976861 [ linux intel-0x5912 skia-renderer-disabled ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
 crbug.com/976861 [ linux intel-0x5912 skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
