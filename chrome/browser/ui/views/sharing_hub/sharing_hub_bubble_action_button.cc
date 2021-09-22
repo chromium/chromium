@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -28,8 +29,7 @@ constexpr auto kPrimaryIconBorder = gfx::Insets(6);
 std::unique_ptr<views::ImageView> CreateIconFromVector(
     const gfx::VectorIcon& vector_icon) {
   auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
-      kPrimaryIconSize));
+      vector_icon, ui::kColorIcon, kPrimaryIconSize));
   icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon;
 }

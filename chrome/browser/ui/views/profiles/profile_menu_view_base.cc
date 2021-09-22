@@ -35,6 +35,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -290,7 +291,7 @@ class AvatarImageView : public views::ImageView {
       // This can happen if the account image hasn't been fetched yet, if there
       // is no image, or in tests.
       avatar_image_ = ui::ImageModel::FromVectorIcon(
-          kUserAccountAvatarIcon, ui::NativeTheme::kColorId_MenuIconColor,
+          kUserAccountAvatarIcon, ui::kColorMenuIcon,
           ProfileMenuViewBase::kIdentityImageSize);
     }
   }
@@ -302,7 +303,7 @@ class AvatarImageView : public views::ImageView {
     DCHECK(!avatar_image_.IsEmpty());
     gfx::ImageSkia sized_avatar_image = views::GetImageSkiaFromImageModel(
         SizeImageModel(avatar_image_, ProfileMenuViewBase::kIdentityImageSize),
-        GetNativeTheme());
+        GetColorProvider());
     sized_avatar_image = AddCircularBackground(
         sized_avatar_image, GetBackgroundColor(), kIdentityImageSizeInclBorder);
     gfx::ImageSkia sized_badge = AddCircularBackground(

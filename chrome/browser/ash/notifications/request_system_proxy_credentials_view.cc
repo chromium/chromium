@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -187,8 +188,7 @@ void RequestSystemProxyCredentialsView::Init() {
   auto error_icon = std::make_unique<views::ImageView>();
   const int kIconSize = 18;
   error_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kInfoOutlineIcon,
-      ui::NativeTheme::kColorId_AlertSeverityHigh, kIconSize));
+      vector_icons::kInfoOutlineIcon, ui::kColorAlertHighSeverity, kIconSize));
   error_icon->SetImageSize(gfx::Size(kIconSize, kIconSize));
   error_icon->SetVisible(show_error_label_);
   layout->AddView(std::move(error_icon));

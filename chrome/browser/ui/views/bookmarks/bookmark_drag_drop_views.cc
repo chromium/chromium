@@ -223,17 +223,18 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
                             const ui::ImageModel& icon) {
     auto* widget =
         views::Widget::GetWidgetForNativeView(web_contents_->GetNativeView());
-    ui::NativeTheme* native_theme = widget ? widget->GetNativeTheme() : nullptr;
+    ui::ColorProvider* color_provider =
+        widget ? widget->GetColorProvider() : nullptr;
     gfx::ImageSkia drag_image(
         std::make_unique<BookmarkDragImageSource>(
             drag_node->GetTitle(),
-            // It's not clear if the "generator without native theme" case can
+            // It's not clear if the "generator without color provider" case can
             // occur, but if it can, better to wrongly show the default favicon
             // than to crash.
-            (icon.IsEmpty() || (icon.IsImageGenerator() && !native_theme))
+            (icon.IsEmpty() || (icon.IsImageGenerator() && !color_provider))
                 ? *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                       IDR_DEFAULT_FAVICON)
-                : views::GetImageSkiaFromImageModel(icon, native_theme),
+                : views::GetImageSkiaFromImageModel(icon, color_provider),
             count_),
         BookmarkDragImageSource::kBookmarkDragImageSize);
 

@@ -67,6 +67,7 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -83,8 +84,6 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -682,7 +681,7 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
   if (mode_ != download::DownloadItemMode::kNormal) {
     VLOG(2) << "Overlaying warning icon in mode " << static_cast<int>(mode_);
     const gfx::ImageSkia icon = ui::ThemedVectorIcon(GetIcon().GetVectorIcon())
-                                    .GetImageSkia(GetNativeTheme());
+                                    .GetImageSkia(GetColorProvider());
     gfx::RectF bounds = GetIconBounds();
     canvas->DrawImageInt(icon, bounds.x(), bounds.y());
   }
@@ -1094,10 +1093,10 @@ ui::ImageModel DownloadItemView::GetIcon() const {
   // new UX is fully launched.
   const int non_error_icon_size = UseNewWarnings() ? 20 : 27;
   const auto kWarning = ui::ImageModel::FromVectorIcon(
-      vector_icons::kWarningIcon, ui::NativeTheme::kColorId_AlertSeverityMedium,
+      vector_icons::kWarningIcon, ui::kColorAlertMediumSeverity,
       non_error_icon_size);
   const auto kError = ui::ImageModel::FromVectorIcon(
-      vector_icons::kErrorIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+      vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
       UseNewWarnings() ? 20 : 24);
 
   const auto danger_type = model_->GetDangerType();
@@ -1127,7 +1126,7 @@ ui::ImageModel DownloadItemView::GetIcon() const {
           (danger_type == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING)
               ? views::kInfoIcon
               : vector_icons::kHelpIcon,
-          ui::NativeTheme::kColorId_DefaultIconColor, non_error_icon_size);
+          ui::kColorIcon, non_error_icon_size);
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:

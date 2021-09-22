@@ -7,6 +7,7 @@ include_rules = [
   "+third_party/skia",
   "+third_party/zlib",
   "+ui/base/ui_base_jni_headers",
+  "+ui/color",
   "+ui/display",
   "+ui/events",
   "+ui/gfx",

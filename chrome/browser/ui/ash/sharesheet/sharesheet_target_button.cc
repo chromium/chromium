@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -38,8 +39,7 @@ std::unique_ptr<views::ImageView> CreateImageView(
     return image;
   } else if (vector_icon != nullptr) {
     return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-        *vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
-        sharesheet::kIconSize));
+        *vector_icon, ui::kColorIcon, sharesheet::kIconSize));
   }
   NOTREACHED();
   return nullptr;

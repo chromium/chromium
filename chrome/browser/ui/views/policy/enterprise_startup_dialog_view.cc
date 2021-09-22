@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
@@ -146,8 +147,7 @@ void EnterpriseStartupDialogView::DisplayErrorMessage(
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kBrowserToolsErrorIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
-          kIconSize));
+          kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity, kIconSize));
 
   if (accept_button) {
     // TODO(ellyjones): This should use SetButtonLabel()

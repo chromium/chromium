@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -266,7 +267,7 @@ ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
       static_cast<size_t>(row) < files_.size()
           ? vector_icons::kInsertDriveFileOutlineIcon
           : vector_icons::kFolderOpenIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, kIconSize);
+      ui::kColorIcon, kIconSize);
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(

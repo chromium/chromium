@@ -39,6 +39,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -241,8 +242,7 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
     ui::ImageModel primary_account_avatar,
     bool is_using_account_store) {
   ui::ImageModel computer_image = ui::ImageModel::FromVectorIcon(
-      kComputerWithCircleBackgroundIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, ComboboxIconSize());
+      kComputerWithCircleBackgroundIcon, ui::kColorIcon, ComboboxIconSize());
 
   ui::SimpleComboboxModel::Item account_destination(
       /*text=*/l10n_util::GetStringUTF16(

@@ -808,7 +808,7 @@ void GlassBrowserFrameView::StopThrobber() {
     HICON big_icon = nullptr;
 
     gfx::ImageSkia icon = views::GetImageSkiaFromImageModel(
-        browser_view()->GetWindowIcon(), GetNativeTheme());
+        browser_view()->GetWindowIcon(), GetColorProvider());
 
     if (!icon.isNull()) {
       // Keep previous icons alive as long as they are referenced by the HWND.

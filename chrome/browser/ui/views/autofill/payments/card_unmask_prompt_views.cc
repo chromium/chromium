@@ -154,8 +154,7 @@ void CardUnmaskPromptViews::GotVerificationResult(
       // error we do not intend to return to a previous state.
       auto error_icon =
           std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-              kBrowserToolsErrorIcon,
-              ui::NativeTheme::kColorId_AlertSeverityHigh));
+              kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity));
 
       layout->StartRow(1.0, 0);
       layout->AddView(std::move(error_icon));
@@ -390,7 +389,7 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   temporary_error->SetVisible(false);
   temporary_error->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+          vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
           gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon))));
 
   auto error_label = std::make_unique<views::Label>(

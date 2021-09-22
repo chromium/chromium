@@ -989,7 +989,7 @@ void Widget::UpdateWindowIcon() {
     non_client_view_->UpdateWindowIcon();
 
   gfx::ImageSkia window_icon = GetImageSkiaFromImageModel(
-      widget_delegate_->GetWindowIcon(), GetNativeTheme());
+      widget_delegate_->GetWindowIcon(), GetColorProvider());
 
   // In general, icon information is read from a |widget_delegate_| and then
   // passed to |native_widget_|. On ChromeOS, for lacros-chrome to support the
@@ -1005,7 +1005,7 @@ void Widget::UpdateWindowIcon() {
   }
 
   gfx::ImageSkia app_icon = GetImageSkiaFromImageModel(
-      widget_delegate_->GetWindowAppIcon(), GetNativeTheme());
+      widget_delegate_->GetWindowAppIcon(), GetColorProvider());
   if (app_icon.isNull()) {
     const gfx::ImageSkia* icon = native_widget_->GetWindowAppIcon();
     if (icon && !icon->isNull())

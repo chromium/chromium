@@ -6,11 +6,6 @@
 
 #include <memory>
 
-#if defined(OS_WIN)
-#include <windows.h>
-#include <shellapi.h>
-#endif
-
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -27,6 +22,11 @@
 #include "ui/views/image_model_utils.h"
 
 #if defined(OS_WIN)
+#include <windows.h>
+
+// windows.h needs to come first.  The gap above prevents reordering.
+#include <shellapi.h>
+
 #include "chrome/browser/win/app_icon.h"
 #include "ui/gfx/icon_util.h"
 #endif
@@ -141,7 +141,7 @@ void TabIconView::PaintButtonContents(gfx::Canvas* canvas) {
     }
 
     gfx::ImageSkia favicon = views::GetImageSkiaFromImageModel(
-        model_->GetFaviconForTabIconView(), GetNativeTheme());
+        model_->GetFaviconForTabIconView(), GetColorProvider());
     if (!favicon.isNull()) {
       PaintFavicon(canvas, favicon);
       return;

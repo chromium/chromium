@@ -17,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/button/button_controller.h"
 
@@ -24,10 +25,9 @@ namespace send_tab_to_self {
 
 SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
     BrowserView* browser_view)
-    : ImageView(ui::ImageModel::FromVectorIcon(
-          kSendTabToSelfIcon,
-          ui::NativeTheme::kColorId_DefaultIconColor,
-          gfx::kFaviconSize)),
+    : ImageView(ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon,
+                                               ui::kColorIcon,
+                                               gfx::kFaviconSize)),
       browser_(browser_view->browser()) {
   SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_A11Y_NAME));

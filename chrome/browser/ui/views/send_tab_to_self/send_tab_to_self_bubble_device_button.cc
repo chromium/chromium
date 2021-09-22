@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -30,7 +31,7 @@ std::unique_ptr<views::ImageView> CreateIcon(
   auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
       device_type == sync_pb::SyncEnums::TYPE_PHONE ? kHardwareSmartphoneIcon
                                                     : kHardwareComputerIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, kPrimaryIconSize));
+      ui::kColorIcon, kPrimaryIconSize));
   constexpr auto kPrimaryIconBorder = gfx::Insets(6);
   icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon;

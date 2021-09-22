@@ -941,7 +941,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
       // Always paint the icon in the first visible column.
       if (j == 0 && table_type_ == ICON_AND_TEXT) {
         gfx::ImageSkia image = views::GetImageSkiaFromImageModel(
-            model_->GetIcon(model_index), GetNativeTheme());
+            model_->GetIcon(model_index), GetColorProvider());
         if (!image.isNull()) {
           int image_x =
               GetMirroredXWithWidthInView(text_x, ui::TableModel::kIconSize);

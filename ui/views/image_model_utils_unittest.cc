@@ -7,8 +7,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/native_theme/test_native_theme.h"
 
 namespace views {
 
@@ -18,9 +18,9 @@ TEST(GetImageSkiaFromImageModel, ShouldConvertEmptyModel) {
 }
 
 TEST(GetImageSkiaFromImageModel, ShouldConvertVectorIcon) {
-  ui::TestNativeTheme test_theme;
+  ui::ColorProvider color_provider;
   gfx::ImageSkia image_skia = GetImageSkiaFromImageModel(
-      ui::ImageModel::FromVectorIcon(vector_icons::kSyncIcon), &test_theme);
+      ui::ImageModel::FromVectorIcon(vector_icons::kSyncIcon), &color_provider);
   EXPECT_FALSE(image_skia.isNull());
 }
 

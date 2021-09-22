@@ -295,7 +295,7 @@ void BubbleFrameView::UpdateWindowIcon() {
   gfx::ImageSkia image;
   if (GetWidget()->widget_delegate()->ShouldShowWindowIcon()) {
     image = GetImageSkiaFromImageModel(
-        GetWidget()->widget_delegate()->GetWindowIcon(), GetNativeTheme());
+        GetWidget()->widget_delegate()->GetWindowIcon(), GetColorProvider());
   }
   title_icon_->SetImage(&image);
 }

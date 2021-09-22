@@ -562,7 +562,7 @@ void SearchResultView::OnMetadataChanged() {
   if (result() && !result()->badge_icon().IsEmpty()) {
     const ui::ImageModel& badge_icon = result()->badge_icon();
     gfx::ImageSkia badge_icon_skia =
-        views::GetImageSkiaFromImageModel(badge_icon, GetNativeTheme());
+        views::GetImageSkiaFromImageModel(badge_icon, GetColorProvider());
 
     if (result()->use_badge_icon_background())
       badge_icon_skia =

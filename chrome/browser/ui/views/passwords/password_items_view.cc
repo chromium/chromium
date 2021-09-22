@@ -26,6 +26,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -197,8 +198,7 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
     // Use a globe fallback until the actual favicon is loaded.
     layout->AddView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            kGlobeIcon, ui::NativeTheme::kColorId_DefaultIconColor,
-            gfx::kFaviconSize)));
+            kGlobeIcon, ui::kColorIcon, gfx::kFaviconSize)));
   } else {
     layout->AddView(std::make_unique<views::ImageView>())
         ->SetImage(parent_->favicon_.AsImageSkia());

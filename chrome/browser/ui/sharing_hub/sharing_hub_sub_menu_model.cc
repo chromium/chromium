@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/color/color_id.h"
 
 namespace sharing_hub {
 
@@ -79,9 +80,10 @@ void SharingHubSubMenuModel::Build(content::WebContents* web_contents) {
   AddSeparator(ui::NORMAL_SEPARATOR);
   for (auto action : third_party_actions) {
     if (action.third_party_icon.isNull()) {
-      AddItemWithIcon(action.command_id, action.title,
-                      ui::ImageModel::FromVectorIcon(*action.icon, /*color*/ -1,
-                                                     /*icon_size*/ 16));
+      AddItemWithIcon(
+          action.command_id, action.title,
+          ui::ImageModel::FromVectorIcon(*action.icon, ui::kColorMenuIcon,
+                                         /*icon_size*/ 16));
     } else {
       AddItemWithIcon(action.command_id, action.title,
                       ui::ImageModel::FromImageSkia(action.third_party_icon));

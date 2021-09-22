@@ -28,6 +28,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -601,7 +602,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     context_menu_model_->AddItemWithIcon(
         static_cast<int>(HoldingSpaceCommandId::kPauseItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE),
-        ui::ImageModel::FromVectorIcon(kPauseIcon, /*color_id=*/-1,
+        ui::ImageModel::FromVectorIcon(kPauseIcon, ui::kColorMenuIcon,
                                        kHoldingSpaceIconSize));
   }
 
@@ -609,7 +610,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     context_menu_model_->AddItemWithIcon(
         static_cast<int>(HoldingSpaceCommandId::kResumeItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME),
-        ui::ImageModel::FromVectorIcon(kResumeIcon, /*color_id=*/-1,
+        ui::ImageModel::FromVectorIcon(kResumeIcon, ui::kColorMenuIcon,
                                        kHoldingSpaceIconSize));
   }
 
@@ -617,7 +618,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     context_menu_model_->AddItemWithIcon(
         static_cast<int>(HoldingSpaceCommandId::kCancelItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL),
-        ui::ImageModel::FromVectorIcon(kCancelIcon, /*color_id=*/-1,
+        ui::ImageModel::FromVectorIcon(kCancelIcon, ui::kColorMenuIcon,
                                        kHoldingSpaceIconSize));
   }
 
@@ -632,7 +633,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
         static_cast<int>(HoldingSpaceCommandId::kShowInFolder),
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER),
-        ui::ImageModel::FromVectorIcon(kFolderIcon, /*color_id=*/-1,
+        ui::ImageModel::FromVectorIcon(kFolderIcon, ui::kColorMenuIcon,
                                        kHoldingSpaceIconSize));
 
     std::string mime_type;
@@ -648,7 +649,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
           static_cast<int>(HoldingSpaceCommandId::kCopyImageToClipboard),
           l10n_util::GetStringUTF16(
               IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD),
-          ui::ImageModel::FromVectorIcon(kCopyIcon, /*color_id=*/-1,
+          ui::ImageModel::FromVectorIcon(kCopyIcon, ui::kColorMenuIcon,
                                          kHoldingSpaceIconSize));
     }
   }
@@ -658,13 +659,13 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       context_menu_model_->AddItemWithIcon(
           static_cast<int>(HoldingSpaceCommandId::kPinItem),
           l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN),
-          ui::ImageModel::FromVectorIcon(views::kPinIcon, /*color_id=*/-1,
+          ui::ImageModel::FromVectorIcon(views::kPinIcon, ui::kColorMenuIcon,
                                          kHoldingSpaceIconSize));
     } else {
       context_menu_model_->AddItemWithIcon(
           static_cast<int>(HoldingSpaceCommandId::kUnpinItem),
           l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
-          ui::ImageModel::FromVectorIcon(views::kUnpinIcon, /*color_id=*/-1,
+          ui::ImageModel::FromVectorIcon(views::kUnpinIcon, ui::kColorMenuIcon,
                                          kHoldingSpaceIconSize));
     }
   }
@@ -674,7 +675,8 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
         static_cast<int>(HoldingSpaceCommandId::kRemoveItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_REMOVE),
         ui::ImageModel::FromVectorIcon(kCancelCircleOutlineIcon,
-                                       /*color_id=*/-1, kHoldingSpaceIconSize));
+                                       ui::kColorMenuIcon,
+                                       kHoldingSpaceIconSize));
   }
 
   return context_menu_model_.get();

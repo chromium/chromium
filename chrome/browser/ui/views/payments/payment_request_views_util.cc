@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -491,8 +492,7 @@ std::unique_ptr<views::View> CreateWarningView(const std::u16string& message,
     auto warning_icon = std::make_unique<views::ImageView>();
     warning_icon->SetCanProcessEventsWithinSubtree(false);
     warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kWarningIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
-        16));
+        vector_icons::kWarningIcon, ui::kColorAlertHighSeverity, 16));
     header_view->AddChildView(std::move(warning_icon));
     label->set_enabled_color_id(ui::NativeTheme::kColorId_AlertSeverityHigh);
   }

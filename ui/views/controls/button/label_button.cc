@@ -68,7 +68,7 @@ LabelButton::~LabelButton() {
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
   for_state = ImageStateForState(for_state);
   return GetImageSkiaFromImageModel(button_state_image_models_[for_state],
-                                    GetNativeTheme());
+                                    GetColorProvider());
 }
 
 void LabelButton::SetImage(ButtonState for_state, const gfx::ImageSkia& image) {

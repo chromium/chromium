@@ -605,7 +605,7 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   ui::ImageModel icon = GetModel()->GetIconAt(selected_index_);
   if (!icon.IsEmpty()) {
     gfx::ImageSkia icon_skia =
-        GetImageSkiaFromImageModel(icon, GetNativeTheme());
+        GetImageSkiaFromImageModel(icon, GetColorProvider());
     int icon_y = y + (contents_height - icon_skia.height()) / 2;
     gfx::Rect icon_bounds(x, icon_y, icon_skia.width(), icon_skia.height());
     AdjustBoundsForRTLUI(&icon_bounds);
@@ -715,7 +715,7 @@ gfx::Size Combobox::GetContentSize() const {
       if (!icon.IsEmpty()) {
         gfx::ImageSkia icon_skia;
         if (GetWidget())
-          icon_skia = GetImageSkiaFromImageModel(icon, GetNativeTheme());
+          icon_skia = GetImageSkiaFromImageModel(icon, GetColorProvider());
         item_width +=
             icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_RELATED_LABEL_HORIZONTAL);

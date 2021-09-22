@@ -49,10 +49,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 
 namespace {
@@ -69,8 +69,8 @@ bool SortSessionsByRecency(const sync_sessions::SyncedSession* s1,
 }
 
 ui::ImageModel CreateFavicon(const gfx::VectorIcon& icon) {
-  return ui::ImageModel::FromVectorIcon(
-      icon, ui::NativeTheme::kColorId_MenuIconColor, gfx::kFaviconSize);
+  return ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+                                        gfx::kFaviconSize);
 }
 
 }  // namespace

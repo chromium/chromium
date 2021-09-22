@@ -37,6 +37,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
@@ -46,7 +47,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
-#include "ui/native_theme/native_theme.h"
 #include "url/url_canon.h"
 
 #if defined(OS_WIN)
@@ -367,9 +367,8 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
-    return ui::ImageModel::FromVectorIcon(
-        kUserAccountAvatarIcon, ui::NativeTheme::kColorId_AvatarIconGuest,
-        size);
+  return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
+                                        ui::kColorAvatarIconGuest, size);
 }
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,

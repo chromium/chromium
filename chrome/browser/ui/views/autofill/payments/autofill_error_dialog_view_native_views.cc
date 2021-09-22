@@ -11,6 +11,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
@@ -69,7 +70,7 @@ views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
 
   AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kErrorIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+          vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
           gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon))));
 
   auto* label = AddChildView(std::make_unique<views::Label>(

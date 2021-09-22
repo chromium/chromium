@@ -8,19 +8,20 @@
 
 namespace views {
 
-gfx::ImageSkia GetImageSkiaFromImageModel(const ui::ImageModel& model,
-                                          const ui::NativeTheme* native_theme) {
+gfx::ImageSkia GetImageSkiaFromImageModel(
+    const ui::ImageModel& model,
+    const ui::ColorProvider* color_provider) {
   if (model.IsImage())
     return model.GetImage().AsImageSkia();
 
   if (model.IsVectorIcon()) {
-    DCHECK(native_theme);
+    DCHECK(color_provider);
     return ui::ThemedVectorIcon(model.GetVectorIcon())
-        .GetImageSkia(native_theme);
+        .GetImageSkia(color_provider);
   }
 
   if (model.IsImageGenerator())
-    return model.GetImageGenerator().Run(native_theme);
+    return model.GetImageGenerator().Run(color_provider);
 
   return gfx::ImageSkia();
 }

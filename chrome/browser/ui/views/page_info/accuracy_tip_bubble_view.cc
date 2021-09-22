@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -60,8 +61,8 @@ std::unique_ptr<views::View> CreateRow(const std::u16string& text,
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
   auto icon_view = std::make_unique<NonAccessibleImageView>();
-  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      icon, ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize));
+  icon_view->SetImage(
+      ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kVectorIconSize));
   icon_view->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));
   icon_view->SetProperty(views::kCrossAxisAlignmentKey,
                          views::LayoutAlignment::kStart);

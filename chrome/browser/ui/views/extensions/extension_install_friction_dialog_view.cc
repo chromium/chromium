@@ -26,8 +26,8 @@
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -212,9 +212,9 @@ ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() {
 
 // override
 ui::ImageModel ExtensionInstallFrictionDialogView::GetWindowIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kGppMaybeIcon,
-      ui::NativeTheme::kColorId_AlertSeverityMedium, kWarningIconSize);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGppMaybeIcon,
+                                        ui::kColorAlertMediumSeverity,
+                                        kWarningIconSize);
 }
 
 void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {

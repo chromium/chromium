@@ -24,6 +24,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/style/typography.h"
@@ -53,14 +54,14 @@ void IncognitoMenuView::BuildMenu() {
       BrowserList::GetOffTheRecordBrowsersActiveForProfile(
           browser()->profile());
 
-  ui::ThemedVectorIcon header_art_icon(
-      &kIncognitoMenuArtIcon, ui::NativeTheme::kColorId_AvatarHeaderArt);
+  ui::ThemedVectorIcon header_art_icon(&kIncognitoMenuArtIcon,
+                                       ui::kColorAvatarHeaderArt);
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*edit_button=*/absl::nullopt,
-      ui::ImageModel::FromVectorIcon(
-          kIncognitoProfileIcon, ui::NativeTheme::kColorId_AvatarIconIncognito),
+      ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
+                                     ui::kColorAvatarIconIncognito),
       l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE),
       incognito_window_count > 1
           ? l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_WINDOW_COUNT_MESSAGE,

@@ -20,7 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
 
 RecoveryInstallGlobalError::RecoveryInstallGlobalError(Profile* profile)
         : elevation_needed_(false),
@@ -69,8 +69,8 @@ std::u16string RecoveryInstallGlobalError::MenuItemLabel() {
 }
 
 ui::ImageModel RecoveryInstallGlobalError::MenuItemIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      kBrowserToolsUpdateIcon, ui::NativeTheme::kColorId_AlertSeverityHigh);
+  return ui::ImageModel::FromVectorIcon(kBrowserToolsUpdateIcon,
+                                        ui::kColorAlertHighSeverity);
 }
 
 void RecoveryInstallGlobalError::ExecuteMenuItem(Browser* browser) {

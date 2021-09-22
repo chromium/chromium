@@ -35,6 +35,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -279,8 +280,7 @@ void CvcUnmaskViewController::FillContentView(views::View* content_view) {
   auto error_icon = std::make_unique<views::ImageView>();
   error_icon->SetID(static_cast<int>(DialogViewID::CVC_ERROR_ICON));
   error_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kWarningIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
-      16));
+      vector_icons::kWarningIcon, ui::kColorAlertHighSeverity, 16));
   error_icon->SetVisible(false);
   layout->AddView(std::move(error_icon));
 

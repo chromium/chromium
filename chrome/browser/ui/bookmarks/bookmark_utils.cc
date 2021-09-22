@@ -38,6 +38,8 @@
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_source.h"
@@ -273,7 +275,7 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
 #endif
   const auto generator = [](int default_id, BookmarkFolderIconType icon_type,
                             absl::variant<int, SkColor> color,
-                            const ui::NativeTheme* native_theme) {
+                            const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
 #if defined(OS_WIN)
     // TODO(bsep): vectorize the Windows versions: crbug.com/564112
@@ -284,9 +286,8 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
     if (absl::holds_alternative<SkColor>(color)) {
       sk_color = absl::get<SkColor>(color);
     } else {
-      DCHECK(native_theme);
-      sk_color = native_theme->GetSystemColor(
-          static_cast<ui::NativeTheme::ColorId>(absl::get<int>(color)));
+      DCHECK(color_provider);
+      sk_color = color_provider->GetColor(absl::get<ui::ColorId>(color));
     }
     const int white_id = (icon_type == BookmarkFolderIconType::kNormal)
                              ? IDR_FOLDER_CLOSED_WHITE
@@ -310,8 +311,8 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
     const ui::ThemedVectorIcon icon =
         absl::holds_alternative<SkColor>(color)
             ? ui::ThemedVectorIcon(id, absl::get<SkColor>(color))
-            : ui::ThemedVectorIcon(id, absl::get<int>(color));
-    folder = icon.GetImageSkia(native_theme);
+            : ui::ThemedVectorIcon(id, absl::get<ui::ColorId>(color));
+    folder = icon.GetImageSkia(color_provider);
 #endif
     return gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder),
                           folder.size());

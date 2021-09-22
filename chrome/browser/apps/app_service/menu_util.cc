@@ -19,6 +19,7 @@
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -171,7 +172,7 @@ bool PopulateNewItemFromMojoMenuItems(
           std::move(get_vector_icon).Run(item->command_id, item->string_id);
       model->AddItemWithStringIdAndIcon(
           item->command_id, item->string_id,
-          ui::ImageModel::FromVectorIcon(icon, /*color_id=*/-1,
+          ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
                                          ash::kAppContextMenuIconSize));
       break;
     }
@@ -182,7 +183,7 @@ bool PopulateNewItemFromMojoMenuItems(
             std::move(get_vector_icon).Run(item->command_id, item->string_id);
         model->AddActionableSubmenuWithStringIdAndIcon(
             item->command_id, item->string_id, submenu,
-            ui::ImageModel::FromVectorIcon(icon, /*color_id=*/-1,
+            ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
                                            ash::kAppContextMenuIconSize));
       }
       break;

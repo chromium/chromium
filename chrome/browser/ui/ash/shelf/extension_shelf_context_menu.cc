@@ -25,6 +25,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -209,7 +210,7 @@ void ExtensionShelfContextMenu::CreateOpenNewSubmenu(
       open_new_submenu_model_.get(),
       ui::ImageModel::FromVectorIcon(
           GetCommandIdVectorIcon(ash::MENU_OPEN_NEW, GetLaunchTypeStringId()),
-          /*color_id=*/-1, ash::kAppContextMenuIconSize));
+          ui::kColorMenuIcon, ash::kAppContextMenuIconSize));
 }
 
 extensions::LaunchType ExtensionShelfContextMenu::GetLaunchType() const {

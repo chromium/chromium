@@ -84,12 +84,12 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
-#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
@@ -947,10 +947,9 @@ void AppMenuModel::Build() {
     AddHighlightedItemWithIcon(
         IDC_SHOW_MANAGEMENT_PAGE,
         chrome::GetManagedUiMenuItemLabel(browser_->profile()),
-        ui::ImageModel::FromVectorIcon(
-            vector_icons::kBusinessIcon,
-            ui::NativeTheme::kColorId_HighlightedMenuItemForegroundColor,
-            kIconSize));
+        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                       ui::kColorMenuItemForegroundHighlighted,
+                                       kIconSize));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

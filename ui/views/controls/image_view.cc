@@ -66,7 +66,7 @@ gfx::Rect ImageView::GetImageBounds() const {
 }
 
 gfx::ImageSkia ImageView::GetImage() const {
-  return views::GetImageSkiaFromImageModel(image_model_, GetNativeTheme());
+  return views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
 }
 
 ui::ImageModel ImageView::GetImageModel() const {
@@ -278,7 +278,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
 
   if (image_model_.IsImage() || image_model_.IsImageGenerator()) {
     const gfx::ImageSkia image =
-        views::GetImageSkiaFromImageModel(image_model_, GetNativeTheme());
+        views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
     if (image.isNull())
       return image;
 
@@ -301,7 +301,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
         scale));
   } else if (scaled_image_.isNull()) {
     scaled_image_ =
-        views::GetImageSkiaFromImageModel(image_model_, GetNativeTheme());
+        views::GetImageSkiaFromImageModel(image_model_, GetColorProvider());
   }
   return scaled_image_;
 }

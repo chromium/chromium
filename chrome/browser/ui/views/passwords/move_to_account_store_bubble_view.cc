@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
@@ -233,8 +234,7 @@ MoveToAccountStoreBubbleView::MovingBannerView::MovingBannerView(
 
   auto arrow_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kChevronRightIcon, ui::NativeTheme::kColorId_DefaultIconColor,
-          gfx::kFaviconSize));
+          kChevronRightIcon, ui::kColorIcon, gfx::kFaviconSize));
   arrow_view->SetFlipCanvasOnPaintForRTLUI(true);
   AddChildView(std::move(arrow_view));
 

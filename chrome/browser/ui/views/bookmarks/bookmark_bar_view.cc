@@ -1442,7 +1442,7 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
 
   button_drag_utils::SetDragImage(
       node->url(), node->GetTitle(),
-      views::GetImageSkiaFromImageModel(icon, GetNativeTheme()), &press_pt,
+      views::GetImageSkiaFromImageModel(icon, GetColorProvider()), &press_pt,
       *widget, data);
   WriteBookmarkDragData(node, data);
 }

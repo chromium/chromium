@@ -36,6 +36,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -102,8 +103,8 @@ class TipTextContainer : public views::View {
     constexpr int kTipImageSize = 16;
     auto* lightbulb_outline_image = AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kLightbulbOutlineIcon,
-            ui::NativeTheme::kColorId_AlertSeverityMedium, kTipImageSize)));
+            vector_icons::kLightbulbOutlineIcon, ui::kColorAlertMediumSeverity,
+            kTipImageSize)));
     lightbulb_outline_image->SetVerticalAlignment(
         views::ImageView::Alignment::kLeading);
 

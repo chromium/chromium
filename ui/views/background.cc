@@ -83,7 +83,7 @@ class ThemedVectorIconBackground : public Background, public ViewObserver {
   }
 
   void Paint(gfx::Canvas* canvas, View* view) const override {
-    canvas->DrawImageInt(icon_.GetImageSkia(view->GetNativeTheme()), 0, 0);
+    canvas->DrawImageInt(icon_.GetImageSkia(view->GetColorProvider()), 0, 0);
   }
 
  private:

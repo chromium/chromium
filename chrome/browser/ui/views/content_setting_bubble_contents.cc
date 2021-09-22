@@ -30,6 +30,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -246,7 +247,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
     item_icon->SetBorder(
         views::CreateEmptyBorder(kTitleDescriptionListItemInset));
     item_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        *item.image, ui::NativeTheme::kColorId_LabelEnabledColor,
+        *item.image, ui::kColorLabelForeground,
         GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
         item.has_blocked_badge ? &vector_icons::kBlockedBadgeIcon
                                : &gfx::kNoneIcon));

@@ -4,6 +4,7 @@
 
 #include "ui/native_theme/themed_vector_icon.h"
 
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -13,7 +14,7 @@ namespace ui {
 ThemedVectorIcon::ThemedVectorIcon() = default;
 
 ThemedVectorIcon::ThemedVectorIcon(const gfx::VectorIcon* icon,
-                                   int color_id,
+                                   ColorId color_id,
                                    int icon_size,
                                    const gfx::VectorIcon* badge)
     : icon_(icon), icon_size_(icon_size), color_(color_id), badge_(badge) {}
@@ -24,11 +25,8 @@ ThemedVectorIcon::ThemedVectorIcon(const VectorIconModel& vector_icon_model)
       badge_(vector_icon_model.badge_icon()) {
   if (vector_icon_model.has_color()) {
     color_ = vector_icon_model.color();
-  } else if (vector_icon_model.color_id() >= 0) {
-    color_ =
-        static_cast<ui::NativeTheme::ColorId>(vector_icon_model.color_id());
   } else {
-    color_ = ui::NativeTheme::kColorId_MenuIconColor;
+    color_ = vector_icon_model.color_id();
   }
 }
 
@@ -47,17 +45,19 @@ ThemedVectorIcon::ThemedVectorIcon(ThemedVectorIcon&&) = default;
 
 ThemedVectorIcon& ThemedVectorIcon::operator=(ThemedVectorIcon&&) = default;
 
-gfx::ImageSkia ThemedVectorIcon::GetImageSkia(const NativeTheme* theme) const {
+gfx::ImageSkia ThemedVectorIcon::GetImageSkia(
+    const ColorProvider* color_provider) const {
   DCHECK(!empty());
-  return GetImageSkia(theme, (icon_size_ > 0)
-                                 ? icon_size_
-                                 : GetDefaultSizeOfVectorIcon(*icon_));
+  return GetImageSkia(color_provider, (icon_size_ > 0)
+                                          ? icon_size_
+                                          : GetDefaultSizeOfVectorIcon(*icon_));
 }
 
-gfx::ImageSkia ThemedVectorIcon::GetImageSkia(const NativeTheme* theme,
-                                              int icon_size) const {
+gfx::ImageSkia ThemedVectorIcon::GetImageSkia(
+    const ColorProvider* color_provider,
+    int icon_size) const {
   DCHECK(!empty());
-  return GetImageSkia(GetColor(theme), icon_size);
+  return GetImageSkia(GetColor(color_provider), icon_size);
 }
 
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(SkColor color) const {
@@ -67,10 +67,9 @@ gfx::ImageSkia ThemedVectorIcon::GetImageSkia(SkColor color) const {
                                  : GetDefaultSizeOfVectorIcon(*icon_));
 }
 
-SkColor ThemedVectorIcon::GetColor(const NativeTheme* theme) const {
-  return absl::holds_alternative<int>(color_)
-             ? theme->GetSystemColor(static_cast<ui::NativeTheme::ColorId>(
-                   absl::get<int>(color_)))
+SkColor ThemedVectorIcon::GetColor(const ColorProvider* color_provider) const {
+  return absl::holds_alternative<ColorId>(color_)
+             ? color_provider->GetColor(absl::get<ColorId>(color_))
              : absl::get<SkColor>(color_);
 }
 

@@ -20,6 +20,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -295,7 +296,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
           ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
           : setting == CONTENT_SETTING_BLOCK;
   return ui::ImageModel::FromVectorIcon(
-      *icon, ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
+      *icon, ui::kColorIcon, GetIconSize(),
       show_blocked_badge ? &vector_icons::kBlockedBadgeIcon : nullptr);
 }
 
@@ -329,63 +330,57 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
   }
 
   return ui::ImageModel::FromVectorIcon(
-      *icon, ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
+      *icon, ui::kColorIcon, GetIconSize(),
       deleted ? &vector_icons::kBlockedBadgeIcon : nullptr);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetValidCertificateIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kCertificateIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize());
+  return ui::ImageModel::FromVectorIcon(vector_icons::kCertificateIcon,
+                                        ui::kColorIcon, GetIconSize());
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetInvalidCertificateIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kCertificateIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
-      &vector_icons::kBlockedBadgeIcon);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kCertificateIcon,
+                                        ui::kColorIcon, GetIconSize(),
+                                        &vector_icons::kBlockedBadgeIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSettingsIcon, ui::NativeTheme::kColorId_DefaultIconColor);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                        ui::kColorIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetVrSettingsIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kVrHeadsetIcon, ui::NativeTheme::kColorId_DefaultIconColor);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetIcon,
+                                        ui::kColorIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_SecondaryIconColor,
-      GetIconSize());
+  return ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                        ui::kColorIconSecondary, GetIconSize());
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetConnectionNotSecureIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kNotSecureWarningIcon,
-      ui::NativeTheme::kColorId_AlertSeverityHigh);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
+                                        ui::kColorAlertHighSeverity);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kHttpsValidIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kHttpsValidIcon,
+                                        ui::kColorIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
+                                        ui::kColorIcon);
 }
 
 // static
@@ -395,7 +390,6 @@ const ui::ImageModel PageInfoViewFactory::GetManagedPermissionIcon(
       info.source == content_settings::SETTING_SOURCE_EXTENSION
           ? vector_icons::kExtensionIcon
           : vector_icons::kBusinessIcon;
-  return ui::ImageModel::FromVectorIcon(
-      managed_vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
-      GetIconSize());
+  return ui::ImageModel::FromVectorIcon(managed_vector_icon, ui::kColorIcon,
+                                        GetIconSize());
 }

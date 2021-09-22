@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -249,7 +250,7 @@ void SharingDialogView::InitListView() {
             device->device_type() == sync_pb::SyncEnums::TYPE_TABLET
                 ? kTabletIcon
                 : kHardwareSmartphoneIcon,
-            ui::NativeTheme::kColorId_DefaultIconColor, kPrimaryIconSize));
+            ui::kColorIcon, kPrimaryIconSize));
 
     auto* dialog_button =
         button_list->AddChildView(std::make_unique<HoverButton>(
@@ -268,8 +269,7 @@ void SharingDialogView::InitListView() {
     std::unique_ptr<views::ImageView> icon;
     if (app.vector_icon) {
       icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          *app.vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
-          kPrimaryIconSize));
+          *app.vector_icon, ui::kColorIcon, kPrimaryIconSize));
     } else {
       icon = std::make_unique<views::ImageView>();
       icon->SetImage(app.image.AsImageSkia());
