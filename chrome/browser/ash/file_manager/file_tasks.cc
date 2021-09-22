@@ -833,15 +833,18 @@ void FindExtensionAndAppTasks(
     std::unique_ptr<std::vector<FullTaskDescriptor>> result_list) {
   std::vector<FullTaskDescriptor>* result_list_ptr = result_list.get();
 
-  // 2. Find and append file browser handler tasks. We know there aren't
+  // 2. Continues from FindAllTypesOfTasks. Find and append file handler tasks.
+  FindFileHandlerTasks(profile, entries, result_list_ptr);
+
+  // 3. Find and append file browser handler tasks. We know there aren't
   // duplicates because "file_browser_handlers" and "file_handlers" shouldn't
   // be used in the same manifest.json.
   FindFileBrowserHandlerTasks(profile, file_urls, result_list_ptr);
 
-  // 3. Web tasks file_handlers (View/Open With), and Chrome app file_handlers.
+  // 4. Web tasks file_handlers (View/Open With).
   FindAppServiceTasks(profile, entries, file_urls, result_list_ptr);
 
-  // 4. Find and append Guest OS tasks.
+  // 5. Find and append Guest OS tasks.
   FindGuestOsTasks(profile, entries, file_urls, result_list_ptr,
                    // Done. Apply post-filtering and callback.
                    base::BindOnce(PostProcessFoundTasks, profile, entries,
