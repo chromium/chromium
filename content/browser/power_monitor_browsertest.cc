@@ -50,21 +50,6 @@ void VerifyPowerStateInChildProcess(mojom::PowerMonitorTest* power_monitor_test,
   run_loop.Run();
 }
 
-void StartUtilityProcessOnProcessThread(
-    mojo::PendingReceiver<mojom::PowerMonitorTest> receiver) {
-  UtilityProcessHost* host = new UtilityProcessHost();
-  host->SetMetricsName("test_process");
-  host->SetName(u"TestProcess");
-  EXPECT_TRUE(host->Start());
-
-  host->GetChildProcess()->BindReceiver(std::move(receiver));
-}
-
-void BindInterfaceForGpuOnProcessThread(
-    mojo::PendingReceiver<mojom::PowerMonitorTest> receiver) {
-  BindInterfaceInGpuProcess(std::move(receiver));
-}
-
 class MockPowerMonitorMessageBroadcaster : public device::mojom::PowerMonitor {
  public:
   MockPowerMonitorMessageBroadcaster() = default;
@@ -154,15 +139,14 @@ class PowerMonitorTest : public ContentBrowserTest {
       mojo::Remote<mojom::PowerMonitorTest>* power_monitor_test,
       base::OnceClosure utility_bound_closure) {
     utility_bound_closure_ = std::move(utility_bound_closure);
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      StartUtilityProcessOnProcessThread(
-          power_monitor_test->BindNewPipeAndPassReceiver());
-    } else {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&StartUtilityProcessOnProcessThread,
-                         power_monitor_test->BindNewPipeAndPassReceiver()));
-    }
+
+    UtilityProcessHost* host = new UtilityProcessHost();
+    host->SetMetricsName("test_process");
+    host->SetName(u"TestProcess");
+    EXPECT_TRUE(host->Start());
+
+    host->GetChildProcess()->BindReceiver(
+        power_monitor_test->BindNewPipeAndPassReceiver());
   }
 
   void set_renderer_bound_closure(base::OnceClosure closure) {
@@ -297,15 +281,7 @@ IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestGpuProcess) {
   EXPECT_EQ(1, request_count_from_gpu());
 
   mojo::Remote<mojom::PowerMonitorTest> power_monitor_gpu;
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    BindInterfaceForGpuOnProcessThread(
-        power_monitor_gpu.BindNewPipeAndPassReceiver());
-  } else {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BindInterfaceForGpuOnProcessThread,
-                       power_monitor_gpu.BindNewPipeAndPassReceiver()));
-  }
+  BindInterfaceInGpuProcess(power_monitor_gpu.BindNewPipeAndPassReceiver());
 
   // Ensure that the PowerMonitorTestImpl instance has been created and is
   // observing power state changes in the child process before simulating a

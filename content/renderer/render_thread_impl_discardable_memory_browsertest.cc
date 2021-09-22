@@ -58,36 +58,25 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
 
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
       size_t size) {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      std::unique_ptr<base::DiscardableMemory> rv;
-      PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
-        rv = discardable_memory_allocator()->AllocateLockedDiscardableMemory(
-            size);
-      }));
-      return rv;
-    } else {
-      return discardable_memory_allocator()->AllocateLockedDiscardableMemory(
-          size);
-    }
+    std::unique_ptr<base::DiscardableMemory> rv;
+    PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
+      rv =
+          discardable_memory_allocator()->AllocateLockedDiscardableMemory(size);
+    }));
+    return rv;
   }
 
   std::unique_ptr<base::DiscardableMemory>
   AllocateLockedDiscardableMemoryWithRetryOrDie(
       size_t size,
       base::OnceClosure on_no_memory) {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      std::unique_ptr<base::DiscardableMemory> rv;
-      PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
-        rv = discardable_memory_allocator()
-                 ->AllocateLockedDiscardableMemoryWithRetryOrDie(
-                     size, std::move(on_no_memory));
-      }));
-      return rv;
-    } else {
-      return discardable_memory_allocator()
-          ->AllocateLockedDiscardableMemoryWithRetryOrDie(
-              size, std::move(on_no_memory));
-    }
+    std::unique_ptr<base::DiscardableMemory> rv;
+    PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
+      rv = discardable_memory_allocator()
+               ->AllocateLockedDiscardableMemoryWithRetryOrDie(
+                   size, std::move(on_no_memory));
+    }));
+    return rv;
   }
 
   base::DiscardableMemoryAllocator* discardable_memory_allocator() {
