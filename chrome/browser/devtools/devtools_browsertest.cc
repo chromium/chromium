@@ -2657,7 +2657,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, OpenBlackListedDevTools) {
   ASSERT_EQ(nullptr, window);
 }
 
-// Flaky on Mus. See https://crbug.com/819285.
+// Times out. See https://crbug.com/819285.
 IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest,
                        DISABLED_InputDispatchEventsToOOPIF) {
   GURL url(
