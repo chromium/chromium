@@ -73,7 +73,7 @@ suite('edit dictionary page', () => {
     languageSettingsPrivate = new settings.FakeLanguageSettingsPrivate();
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
     const browserProxy = new settings.TestLanguagesBrowserProxy();
-    settings.LanguagesBrowserProxyImpl.instance_ = browserProxy;
+    settings.LanguagesBrowserProxyImpl.setInstance(browserProxy);
     browserProxy.setLanguageSettingsPrivate(languageSettingsPrivate);
 
     editDictPage = document.createElement('os-settings-edit-dictionary-page');

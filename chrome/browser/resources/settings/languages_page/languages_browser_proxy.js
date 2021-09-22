@@ -8,7 +8,7 @@
  */
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
   /** @interface */
@@ -64,8 +64,17 @@ export class LanguagesBrowserProxyImpl {
     return /** @type {!InputMethodPrivate} */ (chrome.inputMethodPrivate);
   }
   // </if>
+
+  /** @return {!LanguagesBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new LanguagesBrowserProxyImpl());
+  }
+
+  /** @param {!LanguagesBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-  // The singleton instance_ is replaced with a test version of this wrapper
-  // during testing.
-addSingletonGetter(LanguagesBrowserProxyImpl);
+/** @type {?LanguagesBrowserProxy} */
+let instance = null;

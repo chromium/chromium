@@ -153,7 +153,6 @@ js_type_check("closure_compile") {
   if (!is_chromeos_ash) {
     deps += [
       ":fake_language_settings_private",
-      ":languages_page_metrics_test_browser",
       ":test_languages_browser_proxy",
     ]
   }
@@ -186,19 +185,6 @@ js_library("fake_settings_private") {
     "..:chai_assert",
     "..:fake_chrome_event.m",
   ]
-}
-
-js_library("languages_page_metrics_test_browser") {
-  deps = [
-    ":fake_language_settings_private",
-    ":fake_settings_private",
-    ":test_languages_browser_proxy",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//chrome/browser/resources/settings:settings",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("privacy_sandbox_test") {

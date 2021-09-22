@@ -44,7 +44,7 @@ suite('settings-languages', function() {
 
     // Setup test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
-    LanguagesBrowserProxyImpl.instance_ = browserProxy;
+    LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
     // Setup fake languageSettingsPrivate API.
     const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();

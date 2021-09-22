@@ -100,7 +100,7 @@ suite('input page', () => {
     return CrSettingsPrefs.initialized.then(() => {
       // Set up test browser proxy.
       browserProxy = new settings.TestLanguagesBrowserProxy();
-      settings.LanguagesBrowserProxyImpl.instance_ = browserProxy;
+      settings.LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
       // Sets up test metrics proxy.
       metricsProxy = new settings.TestLanguagesMetricsProxy();

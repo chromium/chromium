@@ -188,7 +188,7 @@ preprocess_if_expr("preprocess") {
     in_files += [
       "languages_page/languages.js",
       "languages_page/languages_browser_proxy.js",
-      "languages_page/languages_settings_metrics_proxy.js",
+      "languages_page/languages_settings_metrics_proxy.ts",
       "languages_page/languages_types.js",
       "people_page/import_data_browser_proxy.js",
       "people_page/manage_profile_browser_proxy.js",
@@ -347,7 +347,7 @@ preprocess_if_expr("preprocess_generated") {
   }
 
   if (!is_chromeos_ash && !is_mac) {
-    in_files += [ "languages_page/edit_dictionary_page.js" ]
+    in_files += [ "languages_page/edit_dictionary_page.ts" ]
   }
 
   if (!is_chromeos) {
@@ -359,9 +359,9 @@ preprocess_if_expr("preprocess_generated") {
 
   if (!is_chromeos_ash) {
     in_files += [
-      "languages_page/add_languages_dialog.js",
-      "languages_page/languages_page.js",
-      "languages_page/languages_subpage.js",
+      "languages_page/add_languages_dialog.ts",
+      "languages_page/languages_page.ts",
+      "languages_page/languages_subpage.ts",
       "people_page/import_data_dialog.js",
       "people_page/manage_profile.js",
     ]
@@ -476,9 +476,6 @@ js_library("lazy_load") {
   if (!is_chromeos_ash) {
     deps = [
       "languages_page:languages_browser_proxy",
-      "languages_page:languages_page",
-      "languages_page:languages_settings_metrics_proxy",
-      "languages_page:languages_subpage",
       "languages_page:languages_types",
     ]
   }
@@ -827,12 +824,12 @@ ts_library("build_ts") {
       ]
     }
     in_files += [
-      "languages_page/add_languages_dialog.js",
+      "languages_page/add_languages_dialog.ts",
       "languages_page/languages_browser_proxy.js",
       "languages_page/languages.js",
-      "languages_page/languages_page.js",
-      "languages_page/languages_settings_metrics_proxy.js",
-      "languages_page/languages_subpage.js",
+      "languages_page/languages_page.ts",
+      "languages_page/languages_settings_metrics_proxy.ts",
+      "languages_page/languages_subpage.ts",
       "languages_page/languages_types.js",
       "people_page/import_data_browser_proxy.js",
       "people_page/import_data_dialog.js",
@@ -842,7 +839,7 @@ ts_library("build_ts") {
   }
 
   if (!is_chromeos_ash && !is_mac) {
-    in_files += [ "languages_page/edit_dictionary_page.js" ]
+    in_files += [ "languages_page/edit_dictionary_page.ts" ]
   }
 
   deps = [
@@ -859,6 +856,7 @@ ts_library("build_ts") {
   definitions = [
     "//tools/typescript/definitions/autofill_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/language_settings_private.d.ts",
     "//tools/typescript/definitions/management.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/passwords_private.d.ts",

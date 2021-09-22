@@ -54,7 +54,7 @@ suite('languages page', () => {
     await CrSettingsPrefs.initialized;
     // Sets up test browser proxy.
     browserProxy = new settings.TestLanguagesBrowserProxy();
-    settings.LanguagesBrowserProxyImpl.instance_ = browserProxy;
+    settings.LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
     lifetimeProxy = new settings.TestLifetimeBrowserProxy();
     settings.LifetimeBrowserProxyImpl.setInstance(lifetimeProxy);

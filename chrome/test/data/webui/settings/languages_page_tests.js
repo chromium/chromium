@@ -51,7 +51,7 @@ suite('languages page', function() {
     return CrSettingsPrefs.initialized.then(function() {
       // Set up test browser proxy.
       browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.instance_ = browserProxy;
+      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
       // Set up fake languageSettingsPrivate API.
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
@@ -374,7 +374,7 @@ suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
     return CrSettingsPrefs.initialized.then(function() {
       // Set up test browser proxy.
       browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.instance_ = browserProxy;
+      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
       // Set up fake languageSettingsPrivate API.
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();

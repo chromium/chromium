@@ -37,7 +37,7 @@ import './edit_dictionary_page.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -48,16 +48,18 @@ import {Route, Router} from '../router.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- */
-const SettingsLanguagesPageElementBase =
-    mixinBehaviors([I18nBehavior, PrefsBehavior], PolymerElement);
+interface RepeaterEvent extends Event {
+  model: {
+    item: LanguageState,
+  };
+}
 
-/** @polymer */
+type FocusConfig = Map<string, (string|(() => void))>;
+
+const SettingsLanguagesPageElementBase =
+    mixinBehaviors([I18nBehavior, PrefsBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & PrefsBehaviorInterface};
+
 class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   static get is() {
     return 'settings-languages-page';
@@ -80,18 +82,15 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
       /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
-       * @type {!LanguagesModel|undefined}
        */
       languages: {
         type: Object,
         notify: true,
       },
 
-      /** @type {!LanguageHelper} */
       languageHelper: Object,
 
       // <if expr="not is_macosx">
-      /** @private */
       spellCheckLanguages_: {
         type: Array,
         value() {
@@ -102,12 +101,9 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
 
       /**
        * The language to display the details for.
-       * @type {!LanguageState|undefined}
-       * @private
        */
       detailLanguage_: Object,
 
-      /** @private */
       enableDesktopRestructuredLanguageSettings_: {
         type: Boolean,
         value() {
@@ -120,7 +116,6 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
         },
       },
 
-      /** @private */
       hideSpellCheckLanguages_: {
         type: Boolean,
         value: false,
@@ -128,17 +123,14 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
 
       /**
        * Whether the language settings list is opened.
-       * @private
        */
       languagesOpened_: {
         type: Boolean,
         observer: 'onLanguagesOpenedChanged_',
       },
 
-      /** @private */
       showAddLanguagesDialog_: Boolean,
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -174,26 +166,26 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   }
   // </if>
 
-  /** @override */
-  constructor() {
-    super();
-
-    /** @private {!LanguageSettingsMetricsProxy} */
-    this.languageSettingsMetricsProxy_ =
-        LanguageSettingsMetricsProxyImpl.getInstance();
-  }
+  languages?: LanguagesModel;
+  languageHelper: LanguageHelper;
+  private spellCheckLanguages_: Array<LanguageState|SpellCheckLanguageState>;
+  private detailLanguage_?: LanguageState;
+  private enableDesktopRestructuredLanguageSettings_: boolean;
+  private hideSpellCheckLanguages_: boolean;
+  private languagesOpened_: boolean;
+  private showAddLanguagesDialog_: boolean;
+  private focusConfig_: FocusConfig;
+  private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
+      LanguageSettingsMetricsProxyImpl.getInstance();
 
   // <if expr="not is_macosx">
   /**
    * Checks if there are any errors downloading the spell check dictionary.
    * This is used for showing/hiding error messages, spell check toggle and
    * retry. button.
-   * @param {number} downloadDictionaryFailureCount
-   * @param {number} threshold
-   * @return {boolean}
-   * @private
    */
-  errorsGreaterThan_(downloadDictionaryFailureCount, threshold) {
+  private errorsGreaterThan_(
+      downloadDictionaryFailureCount: number, threshold: number): boolean {
     return downloadDictionaryFailureCount > threshold;
   }
   // </if>
@@ -202,9 +194,10 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   /**
    * Returns the value to use as the |pref| attribute for the policy indicator
    * of spellcheck languages, based on whether or not the language is enabled.
-   * @param {boolean} isEnabled Whether the language is enabled or not.
+   * @param isEnabled Whether the language is enabled or not.
    */
-  getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled) {
+  getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled: boolean):
+      chrome.settingsPrivate.PrefObject {
     return isEnabled ? this.get('spellcheck.forced_dictionaries', this.prefs) :
                        this.get('spellcheck.blocked_dictionaries', this.prefs);
   }
@@ -212,18 +205,17 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   /**
    * Returns an array of enabled languages, plus spellcheck languages that are
    * force-enabled by policy.
-   * @return {!Array<!LanguageState|!SpellCheckLanguageState>}
-   * @private
    */
-  getSpellCheckLanguages_() {
-    const supportedSpellcheckLanguages =
-        /** @type {!Array<!LanguageState|!SpellCheckLanguageState>} */ (
-            this.languages.enabled.filter(
-                (item) => item.language.supportsSpellcheck));
+  private getSpellCheckLanguages_():
+      Array<LanguageState|SpellCheckLanguageState> {
+    const supportedSpellcheckLanguages:
+        Array<LanguageState|SpellCheckLanguageState> =
+            this.languages!.enabled.filter(
+                (item) => item.language.supportsSpellcheck);
     const supportedSpellcheckLanguagesSet =
         new Set(supportedSpellcheckLanguages.map(x => x.language.code));
 
-    this.languages.spellCheckOnLanguages.forEach(spellCheckLang => {
+    this.languages!.spellCheckOnLanguages.forEach(spellCheckLang => {
       if (!supportedSpellcheckLanguagesSet.has(spellCheckLang.language.code)) {
         supportedSpellcheckLanguages.push(spellCheckLang);
       }
@@ -232,8 +224,7 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
     return supportedSpellcheckLanguages;
   }
 
-  /** @private */
-  updateSpellcheckLanguages_() {
+  private updateSpellcheckLanguages_() {
     if (this.languages === undefined) {
       return;
     }
@@ -275,8 +266,7 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
     }
   }
 
-  /** @private */
-  updateSpellcheckEnabled_() {
+  private updateSpellcheckEnabled_() {
     if (this.prefs === undefined) {
       return;
     }
@@ -295,18 +285,15 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
 
   /**
    * Opens the Custom Dictionary page.
-   * @private
    */
-  onEditDictionaryTap_() {
-    Router.getInstance().navigateTo(
-        /** @type {!Route} */ (routes.EDIT_DICTIONARY));
+  private onEditDictionaryTap_() {
+    Router.getInstance().navigateTo(routes.EDIT_DICTIONARY);
   }
 
   /**
    * Handler for enabling or disabling spell check for a specific language.
-   * @param {!{target: Element, model: !{item: !LanguageState}}} e
    */
-  onSpellCheckLanguageChange_(e) {
+  private onSpellCheckLanguageChange_(e: RepeaterEvent) {
     const item = e.model.item;
     if (!item.language.supportsSpellcheck) {
       return;
@@ -317,20 +304,17 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   }
 
   /**
-   * @param {string} languageCode
-   * @return {string} The display name for a given language code.
-   * @private
+   * @return The display name for a given language code.
    */
-  getProspectiveUILanguageName_(languageCode) {
-    return this.languageHelper.getLanguage(languageCode).displayName;
+  private getProspectiveUILanguageName_(languageCode: string): string {
+    return this.languageHelper.getLanguage(languageCode)!.displayName;
   }
 
   /**
    * Handler to initiate another attempt at downloading the spell check
    * dictionary for a specified language.
-   * @param {!{target: Element, model: !{item: !LanguageState}}} e
    */
-  onRetryDictionaryDownloadClick_(e) {
+  private onRetryDictionaryDownloadClick_(e: RepeaterEvent) {
     assert(this.errorsGreaterThan_(
         e.model.item.downloadDictionaryFailureCount, 0));
     this.languageHelper.retryDownloadDictionary(e.model.item.language.code);
@@ -339,9 +323,8 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   /**
    * Handler for clicking on the name of the language. The action taken must
    * match the control that is available.
-   * @param {!{target: Element, model: !{item: !LanguageState}}} e
    */
-  onSpellCheckNameClick_(e) {
+  private onSpellCheckNameClick_(e: RepeaterEvent) {
     assert(!this.isSpellCheckNameClickDisabled_(e.model.item));
     this.onSpellCheckLanguageChange_(e);
   }
@@ -349,21 +332,15 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   /**
    * Name only supports clicking when language is not managed, supports
    * spellcheck, and the dictionary has been downloaded with no errors.
-   * @param {!LanguageState|!SpellCheckLanguageState} item
-   * @return {boolean}
-   * @private
    */
-  isSpellCheckNameClickDisabled_(item) {
+  private isSpellCheckNameClickDisabled_(item: LanguageState|
+                                         SpellCheckLanguageState): boolean {
     return item.isManaged || !item.language.supportsSpellcheck ||
         item.downloadDictionaryFailureCount > 0;
   }
   // </if> expr="not is_macosx"
 
-  /**
-   * @return {string|undefined}
-   * @private
-   */
-  getSpellCheckSubLabel_() {
+  private getSpellCheckSubLabel_(): string|undefined {
     // <if expr="not is_macosx">
     if (this.spellCheckLanguages_.length === 0) {
       return this.i18n('spellCheckDisabledReason');
@@ -374,11 +351,10 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   }
 
   /**
-   * @param {boolean} newVal The new value of languagesOpened_.
-   * @param {boolean} oldVal The old value of languagesOpened_.
-   * @private
+   * @param newVal The new value of languagesOpened_.
+   * @param oldVal The old value of languagesOpened_.
    */
-  onLanguagesOpenedChanged_(newVal, oldVal) {
+  private onLanguagesOpenedChanged_(newVal: boolean, oldVal: boolean) {
     if (!oldVal && newVal) {
       this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
           LanguageSettingsPageImpressionType.MAIN);
@@ -388,34 +364,29 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   // <if expr="not lacros">
   /**
    * Opens the Language Settings page.
-   * @private
    */
-  onLanguagesSubpageClick_() {
+  private onLanguagesSubpageClick_() {
     if (this.enableDesktopRestructuredLanguageSettings_) {
-      Router.getInstance().navigateTo(
-          /** @type {!Route} */ (routes.LANGUAGE_SETTINGS));
+      Router.getInstance().navigateTo(routes.LANGUAGE_SETTINGS);
     }
   }
   // </if>
 
   /**
    * Toggles the expand button within the element being listened to.
-   * @param {!Event} e
-   * @private
    */
-  toggleExpandButton_(e) {
+  private toggleExpandButton_(e: Event) {
     // The expand button handles toggling itself.
-    const expandButtonTag = 'CR-EXPAND-BUTTON';
-    if (e.target.tagName === expandButtonTag) {
+    if ((e.target as HTMLElement).tagName === 'CR-EXPAND-BUTTON') {
       return;
     }
 
-    if (!e.currentTarget.hasAttribute('actionable')) {
+    if (!(e.currentTarget as HTMLElement).hasAttribute('actionable')) {
       return;
     }
 
-    /** @type {!CrExpandButtonElement} */
-    const expandButton = e.currentTarget.querySelector(expandButtonTag);
+    const expandButton =
+        (e.currentTarget as HTMLElement).querySelector('cr-expand-button')!;
     assert(expandButton);
     expandButton.expanded = !expandButton.expanded;
     focusWithoutInk(expandButton);
