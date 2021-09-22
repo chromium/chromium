@@ -82,9 +82,13 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   // only a single frame, and it is not yet created. We sanity check that here.
 #if DCHECK_IS_ON()
   DCHECK(!web_contents->GetMainFrame()->IsRenderFrameCreated());
-  std::vector<content::RenderFrameHost*> frames = web_contents->GetAllFrames();
-  DCHECK_EQ(1u, frames.size());
-  DCHECK_EQ(web_contents->GetMainFrame(), frames[0]);
+  size_t frame_count = 0;
+  web_contents->ForEachRenderFrameHost(base::BindRepeating(
+      [](size_t* frame_count, content::RenderFrameHost* render_frame_host) {
+        (*frame_count)++;
+      },
+      &frame_count));
+  DCHECK_EQ(1u, frame_count);
 #endif
 
   // Create the page node.
