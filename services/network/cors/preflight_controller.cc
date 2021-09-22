@@ -368,9 +368,6 @@ class PreflightController::PreflightLoader final {
           network::URLLoaderCompletionStatus(net::ERR_INVALID_REDIRECT));
     }
 
-    // Preflight should not allow any redirect.
-    FinalizeLoader();
-
     std::move(completion_callback_)
         .Run(net::ERR_FAILED,
              CorsErrorStatus(mojom::CorsError::kPreflightDisallowedRedirect),
@@ -391,8 +388,6 @@ class PreflightController::PreflightLoader final {
       devtools_observer_->OnCorsPreflightRequestCompleted(
           *devtools_request_id_, network::URLLoaderCompletionStatus(net::OK));
     }
-
-    FinalizeLoader();
 
     absl::optional<CorsErrorStatus> detected_error_status;
     bool has_authorization_covered_by_wildcard = false;
@@ -421,32 +416,24 @@ class PreflightController::PreflightLoader final {
     std::move(completion_callback_)
         .Run(detected_error_status ? net::ERR_FAILED : net::OK,
              detected_error_status, has_authorization_covered_by_wildcard);
-
-    RemoveFromController();
-    // |this| is deleted here.
   }
 
   void HandleResponseBody(std::unique_ptr<std::string> response_body) {
-    // Reached only when the request fails without receiving headers, e.g.
-    // unknown hosts, unreachable remote, reset by peer, and so on.
-    // See https://crbug.com/826868 for related discussion.
-    DCHECK(!response_body);
     const int error = loader_->NetError();
-    DCHECK_NE(error, net::OK);
-    if (devtools_observer_) {
-      DCHECK(devtools_request_id_);
-      devtools_observer_->OnCorsPreflightRequestCompleted(
-          *devtools_request_id_, network::URLLoaderCompletionStatus(error));
+    if (!completion_callback_.is_null()) {
+      // As HandleResponseHeader() isn't called due to a request failure, such
+      // as unknown hosts. unreachable remote, reset by peer, and so on, we
+      // still hold `completion_callback_` to invoke.
+      if (devtools_observer_) {
+        DCHECK(devtools_request_id_);
+        devtools_observer_->OnCorsPreflightRequestCompleted(
+            *devtools_request_id_, network::URLLoaderCompletionStatus(error));
+      }
+      std::move(completion_callback_).Run(error, absl::nullopt, false);
     }
-    FinalizeLoader();
-    std::move(completion_callback_).Run(error, absl::nullopt, false);
+
     RemoveFromController();
     // |this| is deleted here.
-  }
-
-  void FinalizeLoader() {
-    DCHECK(loader_);
-    loader_.reset();
   }
 
   // Removes |this| instance from |controller_|. Once the method returns, |this|
