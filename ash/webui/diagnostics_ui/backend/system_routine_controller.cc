@@ -124,8 +124,8 @@ SystemRoutineController::~SystemRoutineController() {
     diagnostics_service_->GetRoutineUpdate(
         inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
         /*should_include_output=*/false, base::DoNothing());
-    if (IsLoggingEnabled()) {
-      routine_log_ptr_->LogRoutineCancelled();
+    if (IsLoggingEnabled() && inflight_routine_type_.has_value()) {
+      routine_log_ptr_->LogRoutineCancelled(inflight_routine_type_.value());
     }
   }
 
@@ -351,6 +351,7 @@ void SystemRoutineController::OnRoutineStarted(
 
   DCHECK_EQ(kInvalidRoutineId, inflight_routine_id_);
   inflight_routine_id_ = response_ptr->id;
+  inflight_routine_type_ = routine_type;
 
   // Sleep for the length of the test using a one-shot timer, then start
   // querying again for status.
@@ -372,6 +373,7 @@ void SystemRoutineController::OnPowerRoutineStarted(
 
   DCHECK_EQ(kInvalidRoutineId, inflight_routine_id_);
   inflight_routine_id_ = response_ptr->id;
+  inflight_routine_type_ = routine_type;
 
   ContinuePowerRoutine(routine_type);
 }
@@ -660,6 +662,7 @@ void SystemRoutineController::SendRoutineResult(
   inflight_routine_runner_->OnRoutineResult(std::move(result_info));
   inflight_routine_runner_.reset();
   inflight_routine_id_ = kInvalidRoutineId;
+  inflight_routine_type_.reset();
 }
 
 void SystemRoutineController::BindCrosHealthdDiagnosticsServiceIfNeccessary() {
@@ -701,8 +704,8 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
   // Reset `inflight_routine_id_` to maintain invariant.
   inflight_routine_id_ = kInvalidRoutineId;
 
-  if (IsLoggingEnabled()) {
-    routine_log_ptr_->LogRoutineCancelled();
+  if (IsLoggingEnabled() && inflight_routine_type_.has_value()) {
+    routine_log_ptr_->LogRoutineCancelled(inflight_routine_type_.value());
   }
 }
 

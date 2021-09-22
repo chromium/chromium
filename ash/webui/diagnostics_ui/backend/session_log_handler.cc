@@ -122,7 +122,9 @@ void SessionLogHandler::SetLogCreatedClosureForTest(base::OnceClosure closure) {
 
 bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
   // Fetch RoutineLog
-  const std::string routine_log_contents = routine_log_->GetContents();
+  // TODO(zentaro): Update when categories are supported.
+  const std::string routine_log_contents =
+      routine_log_->GetContentsForCategory("all");
 
   // Fetch TelemetryLog
   const std::string telemetry_log_contents = telemetry_log_->GetContents();

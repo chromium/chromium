@@ -18,6 +18,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -135,6 +136,10 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   // Keeps track of the id created by CrosHealthd for the currently running
   // routine.
   int32_t inflight_routine_id_ = kInvalidRoutineId;
+
+  // The currently inflight routine (if any). This is used to correctly
+  // attribute cancellations.
+  absl::optional<mojom::RoutineType> inflight_routine_type_;
 
   // Records the number of routines that a user attempts to run during one
   // session in the app. Emitted when the app is closed.

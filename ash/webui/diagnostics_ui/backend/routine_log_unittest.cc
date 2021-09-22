@@ -49,7 +49,7 @@ TEST_F(RoutineLogTest, Empty) {
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(base::PathExists(log_path_));
-  EXPECT_TRUE(log.GetContents().empty());
+  EXPECT_TRUE(log.GetContentsForCategory("all").empty());
 }
 
 TEST_F(RoutineLogTest, Basic) {
@@ -62,7 +62,7 @@ TEST_F(RoutineLogTest, Basic) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContents();
+  const std::string contents = log.GetContentsForCategory("all");
   const std::string first_line = GetLogLines(contents)[0];
   const std::vector<std::string> first_line_contents =
       GetLogLineContents(first_line);
@@ -84,7 +84,7 @@ TEST_F(RoutineLogTest, TwoLine) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContents();
+  const std::string contents = log.GetContentsForCategory("all");
   const std::vector<std::string> log_lines = GetLogLines(contents);
   const std::string first_line = log_lines[0];
   const std::vector<std::string> first_line_contents =
@@ -107,14 +107,14 @@ TEST_F(RoutineLogTest, Cancelled) {
   RoutineLog log(log_path_);
 
   log.LogRoutineStarted(mojom::RoutineType::kMemory);
-  log.LogRoutineCancelled();
+  log.LogRoutineCancelled(mojom::RoutineType::kMemory);
 
   // Ensure pending tasks complete.
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContents();
+  const std::string contents = log.GetContentsForCategory("all");
   LOG(ERROR) << contents;
   const std::vector<std::string> log_lines = GetLogLines(contents);
 

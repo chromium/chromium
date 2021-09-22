@@ -7,7 +7,6 @@
 #include <sstream>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/sequenced_task_runner.h"
@@ -51,10 +50,19 @@ std::string getRoutineTypeString(mojom::RoutineType type) {
   return routineName.substr(1, routineName.size() - 1);
 }
 
+// Get the category for the routine `type`.
+std::string GetRoutineCategory(mojom::RoutineType type) {
+  switch (type) {
+    // TODO(zentaro): Implement categorization.
+    default:
+      return "all";
+  };
+}
+
 }  // namespace
 
-RoutineLog::RoutineLog(const base::FilePath& routine_log_file_path)
-    : log_(routine_log_file_path) {}
+RoutineLog::RoutineLog(const base::FilePath& log_base_path)
+    : log_base_path_(log_base_path) {}
 
 RoutineLog::~RoutineLog() = default;
 
@@ -63,7 +71,7 @@ void RoutineLog::LogRoutineStarted(mojom::RoutineType type) {
   log_line << GetCurrentDateTimeAsString() << kSeparator
            << getRoutineTypeString(type) << kSeparator << kStartedDescription
            << kNewline;
-  log_.Append(log_line.str());
+  Append(type, log_line.str());
 }
 
 void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
@@ -72,18 +80,48 @@ void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
   log_line << GetCurrentDateTimeAsString() << kSeparator
            << getRoutineTypeString(type) << kSeparator
            << getRoutineResultString(result) << kNewline;
-  log_.Append(log_line.str());
+  Append(type, log_line.str());
 }
 
-void RoutineLog::LogRoutineCancelled() {
+void RoutineLog::LogRoutineCancelled(mojom::RoutineType type) {
   std::stringstream log_line;
   log_line << GetCurrentDateTimeAsString() << kSeparator
            << kCancelledDescription << kNewline;
-  log_.Append(log_line.str());
+  Append(type, log_line.str());
 }
 
-std::string RoutineLog::GetContents() const {
-  return log_.GetContents();
+std::string RoutineLog::GetContentsForCategory(
+    const std::string& category) const {
+  // TODO(zentaro): Remove DCHECK once categories are implemented.
+  DCHECK_EQ("all", category);
+
+  const auto iter = logs_.find(category);
+  if (iter == logs_.end()) {
+    return "";
+  }
+
+  return iter->second->GetContents();
+}
+
+void RoutineLog::Append(mojom::RoutineType type, const std::string& text) {
+  std::string category = GetRoutineCategory(type);
+
+  // TODO(zentaro): Remove DCHECK once categories are implemented.
+  DCHECK_EQ("all", category);
+
+  // Insert a new log if it doesn't exist then append to it.
+  base::FilePath log_path = GetCategoryLogFilePath(category);
+  auto iter = logs_.find(category);
+  if (iter == logs_.end()) {
+    iter = logs_.emplace(category, std::make_unique<AsyncLog>(log_path)).first;
+  }
+
+  iter->second->Append(text);
+}
+
+base::FilePath RoutineLog::GetCategoryLogFilePath(const std::string& category) {
+  std::string name = "diagnostics_routines_" + category + ".log";
+  return log_base_path_.Append(name);
 }
 
 }  // namespace diagnostics
