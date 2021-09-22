@@ -123,6 +123,9 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
       // variant, because it is hard to generate the correct error information
       // from here, and cache miss is in most case recoverable.
       ReportCacheMetricAndRecordNetLog(CacheMetric::kHitAndPass, net_log);
+      net_log.AddEvent(
+          net::NetLogEventType::CORS_PREFLIGHT_CACHED_RESULT,
+          [&cache_entry] { return cache_entry->second->NetLogParams(); });
       return true;
     }
     ReportCacheMetricAndRecordNetLog(CacheMetric::kHitAndFail, net_log);

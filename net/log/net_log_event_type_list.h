@@ -3995,7 +3995,7 @@ EVENT_TYPE(CORS_REQUEST)
 // It contains the following parameter:
 //  {
 //    "preflight_required": <Boolean indicating whether preflight request is
-//                          required>
+//                          required>,
 //    "preflight_required_reason": <The reason why preflight is required>
 //  }
 EVENT_TYPE(CHECK_CORS_PREFLIGHT_REQUIRED)
@@ -4007,3 +4007,19 @@ EVENT_TYPE(CHECK_CORS_PREFLIGHT_REQUIRED)
 //              "hit-and-fail", "miss" or "stale">
 //  }
 EVENT_TYPE(CHECK_CORS_PREFLIGHT_CACHE)
+
+// This event is logged when PreflightController gets CORS preflight result
+// from preflight request.
+// It contains the following parameter:
+//  {
+//    "access-control-allow-headers": <List of headers given in
+//                                    `Access-Control-Allow-Headers`>,
+//    "access-control-allow-methods": <List of methods given in
+//                                    `Access-Control-Allow-Methods`>
+//  }
+EVENT_TYPE(CORS_PREFLIGHT_RESULT)
+
+// This event is logged when PreflightController gets CORS preflight result
+// from preflight cache.
+// The parameters are the same as for CORS_PREFLIGHT_RESULT.
+EVENT_TYPE(CORS_PREFLIGHT_CACHED_RESULT)

@@ -242,17 +242,28 @@ TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {
   EXPECT_FALSE(CheckEntryAndRefreshCache(kOrigin, kUrl, kNik));
 
   std::vector<net::NetLogEntry> entries = net_log_observer.GetEntries();
-  ASSERT_EQ(entries.size(), 4u);
+  ASSERT_EQ(entries.size(), 5u);
   for (const auto& entry : entries) {
     EXPECT_EQ(entry.source.type, net::NetLogSourceType::CORS_URL_LOADER);
-    EXPECT_EQ(entry.type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
   }
+  EXPECT_EQ(entries[0].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
   EXPECT_EQ(net::GetStringValueFromParams(entries[0], "status"),
             "hit-and-pass");
-  EXPECT_EQ(net::GetStringValueFromParams(entries[1], "status"),
+  EXPECT_EQ(entries[1].type,
+            net::NetLogEventType::CORS_PREFLIGHT_CACHED_RESULT);
+  EXPECT_EQ(
+      net::GetStringValueFromParams(entries[1], "access-control-allow-headers"),
+      "");
+  EXPECT_EQ(
+      net::GetStringValueFromParams(entries[1], "access-control-allow-methods"),
+      "POST");
+  EXPECT_EQ(entries[2].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
+  EXPECT_EQ(net::GetStringValueFromParams(entries[2], "status"),
             "hit-and-fail");
-  EXPECT_EQ(net::GetStringValueFromParams(entries[2], "status"), "miss");
-  EXPECT_EQ(net::GetStringValueFromParams(entries[3], "status"), "stale");
+  EXPECT_EQ(entries[3].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
+  EXPECT_EQ(net::GetStringValueFromParams(entries[3], "status"), "miss");
+  EXPECT_EQ(entries[4].type, net::NetLogEventType::CHECK_CORS_PREFLIGHT_CACHE);
+  EXPECT_EQ(net::GetStringValueFromParams(entries[4], "status"), "stale");
 }
 
 }  // namespace

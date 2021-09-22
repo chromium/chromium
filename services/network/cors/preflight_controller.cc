@@ -308,7 +308,8 @@ class PreflightController::PreflightLoader final {
       bool tainted,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const net::NetworkIsolationKey& network_isolation_key,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+      const net::NetLogWithSource net_log)
       : controller_(controller),
         completion_callback_(std::move(completion_callback)),
         original_request_(request),
@@ -316,7 +317,8 @@ class PreflightController::PreflightLoader final {
             with_non_wildcard_request_headers_support),
         tainted_(tainted),
         network_isolation_key_(network_isolation_key),
-        devtools_observer_(std::move(devtools_observer)) {
+        devtools_observer_(std::move(devtools_observer)),
+        net_log_(net_log) {
     if (devtools_observer_)
       devtools_request_id_ = base::UnguessableToken::Create();
     auto preflight_request =
@@ -396,6 +398,8 @@ class PreflightController::PreflightLoader final {
     bool has_authorization_covered_by_wildcard = false;
     std::unique_ptr<PreflightResult> result = CreatePreflightResult(
         final_url, head, original_request_, tainted_, &detected_error_status);
+    net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_RESULT,
+                      [&result] { return result->NetLogParams(); });
 
     if (result) {
       // Preflight succeeded. Check |original_request_| with |result|.
@@ -465,6 +469,7 @@ class PreflightController::PreflightLoader final {
   absl::optional<base::UnguessableToken> devtools_request_id_;
   const net::NetworkIsolationKey network_isolation_key_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
+  const net::NetLogWithSource net_log_;
 
   DISALLOW_COPY_AND_ASSIGN(PreflightLoader);
 };
@@ -547,7 +552,7 @@ void PreflightController::PerformPreflightCheck(
   auto emplaced_pair = loaders_.emplace(std::make_unique<PreflightLoader>(
       this, std::move(callback), request, with_trusted_header_client,
       with_non_wildcard_request_headers_support, tainted, annotation_tag,
-      network_isolation_key, std::move(devtools_observer)));
+      network_isolation_key, std::move(devtools_observer), net_log));
   (*emplaced_pair.first)->Request(loader_factory);
 }
 

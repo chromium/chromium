@@ -6,6 +6,7 @@
 
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -423,6 +424,42 @@ TEST_F(PreflightResultTest, NoAuthorization) {
   ASSERT_EQ(error, absl::nullopt);
   EXPECT_FALSE(result->HasAuthorizationCoveredByWildcard(
       CreateHeaders({{"foo", "bar"}})));
+}
+
+struct TestCaseForNetLogParams {
+  const std::string allow_methods;
+  const std::string allow_headers;
+
+  const std::string expected_methods;
+  const std::string expected_headers;
+};
+
+TEST_F(PreflightResultTest, NetLogParams) {
+  const struct {
+    const char* allow_methods;
+    const char* allow_headers;
+
+    const char* expected_methods;
+    const char* expected_headers;
+  } kNetLogParamsCases[] = {
+      {"", "X-MY-HEADER", "", "x-my-header"},
+      {"GET", "X-MY-HEADER", "GET", "x-my-header"},
+      {"GET, POST", "X-MY-HEADER", "GET,POST", "x-my-header"},
+      {"GET", "", "GET", ""},
+      {"GET", "X-MY-HEADER", "GET", "x-my-header"},
+      {"GET", "X-MY-HEADER, Y-MY-HEADER", "GET", "x-my-header,y-my-header"}};
+
+  for (const auto& test : kNetLogParamsCases) {
+    std::unique_ptr<PreflightResult> result = PreflightResult::Create(
+        mojom::CredentialsMode::kOmit, test.allow_methods, test.allow_headers,
+        absl::nullopt, nullptr);
+    ASSERT_TRUE(result);
+    base::Value dict = result->NetLogParams();
+    EXPECT_EQ(dict.FindKey("access-control-allow-methods")->GetString(),
+              test.expected_methods);
+    EXPECT_EQ(dict.FindKey("access-control-allow-headers")->GetString(),
+              test.expected_headers);
+  }
 }
 
 }  // namespace

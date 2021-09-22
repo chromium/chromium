@@ -93,6 +93,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // Refers the cache expiry time.
   base::TimeTicks absolute_expiry_time() const { return absolute_expiry_time_; }
 
+  // Create a param for NetLog.
+  base::Value NetLogParams();
+
  protected:
   explicit PreflightResult(const mojom::CredentialsMode credentials_mode);
 

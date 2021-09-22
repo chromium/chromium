@@ -4,6 +4,9 @@
 
 #include "services/network/cors/preflight_result.h"
 
+#include <string>
+#include <vector>
+
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -12,6 +15,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/cors/cors_util.h"
@@ -244,6 +248,17 @@ bool PreflightResult::HasAuthorizationCoveredByWildcard(
 
   return has_wildcard && headers.HasHeader(kAuthorization) &&
          !headers_.contains(kAuthorization);
+}
+
+base::Value PreflightResult::NetLogParams() {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  std::vector<std::string> methods(methods_.begin(), methods_.end());
+  std::vector<std::string> headers(headers_.begin(), headers_.end());
+  dict.SetStringKey("access-control-allow-methods",
+                    base::JoinString(methods, ","));
+  dict.SetStringKey("access-control-allow-headers",
+                    base::JoinString(headers, ","));
+  return dict;
 }
 
 }  // namespace cors
