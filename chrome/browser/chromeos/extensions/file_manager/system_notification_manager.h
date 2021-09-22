@@ -173,6 +173,16 @@ class SystemNotificationManager {
                                      base::Value::ListView& event_arguments);
 
   /**
+   * Update/remove Drive sync progress notification.
+   * |event| is the event object delivered from EventRouter and
+   * |event_arguments| contains ListView serialized version of
+   * file_manager_private::FileTransferStatus.
+   */
+  std::unique_ptr<message_center::Notification> UpdateDriveSyncNotification(
+      const extensions::Event& event,
+      base::Value::ListView& event_arguments);
+
+  /**
    * Click handler for the removable device notification.
    */
   void HandleRemovableNotificationClick(const std::string& path,

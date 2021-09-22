@@ -1068,4 +1068,124 @@ TEST_F(SystemNotificationManagerTest, EnableDocsOffline) {
             u"available offline.");
 }
 
+TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
+  // Setup a sync progress status object.
+  file_manager_private::FileTransferStatus transfer_status;
+  transfer_status.transfer_state =
+      file_manager_private::TRANSFER_STATE_IN_PROGRESS;
+  transfer_status.num_total_jobs = 1;
+  transfer_status.file_url =
+      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
+  transfer_status.processed = 0;
+  transfer_status.total = 100;
+  std::unique_ptr<extensions::Event> event =
+      std::make_unique<extensions::Event>(
+          extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+          file_manager_private::OnFileTransfersUpdated::kEventName,
+          file_manager_private::OnFileTransfersUpdated::Create(
+              transfer_status));
+
+  // Send the transfers updated event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-drive-sync");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Syncing file.txt\x2026");
+  // Setup an completed transfer event.
+  transfer_status.transfer_state =
+      file_manager_private::TRANSFER_STATE_COMPLETED;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+      file_manager_private::OnFileTransfersUpdated::kEventName,
+      file_manager_private::OnFileTransfersUpdated::Create(transfer_status));
+
+  // Send the completed transfer event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have 0 notifications (notification closed on end).
+  ASSERT_EQ(0, notification_count);
+  // Start another transfer that ends in error.
+  transfer_status.transfer_state =
+      file_manager_private::TRANSFER_STATE_IN_PROGRESS;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+      file_manager_private::OnFileTransfersUpdated::kEventName,
+      file_manager_private::OnFileTransfersUpdated::Create(transfer_status));
+
+  // Send the transfers updated event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Setup an completed transfer event.
+  transfer_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
+  event = std::make_unique<extensions::Event>(
+      extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+      file_manager_private::OnFileTransfersUpdated::kEventName,
+      file_manager_private::OnFileTransfersUpdated::Create(transfer_status));
+
+  // Send the completed transfer event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have 0 notifications (notification closed on end).
+  ASSERT_EQ(0, notification_count);
+}
+
+TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
+  // Setup a sync progress status object.
+  file_manager_private::FileTransferStatus transfer_status;
+  transfer_status.transfer_state =
+      file_manager_private::TRANSFER_STATE_IN_PROGRESS;
+  transfer_status.num_total_jobs = 10;
+  transfer_status.file_url =
+      "filesystem:chrome://file-manager/drive/MyDrive-test-user/file.txt";
+  transfer_status.processed = 0;
+  transfer_status.total = 100;
+  std::unique_ptr<extensions::Event> event =
+      std::make_unique<extensions::Event>(
+          extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
+          file_manager_private::OnFileTransfersUpdated::kEventName,
+          file_manager_private::OnFileTransfersUpdated::Create(
+              transfer_status));
+
+  // Send the transfers updated event.
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-drive-sync");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Syncing 10 items\x2026");
+}
+
 }  // namespace file_manager

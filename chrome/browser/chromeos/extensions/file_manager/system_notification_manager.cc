@@ -354,6 +354,46 @@ SystemNotificationManager::MakeDriveConfirmDialogNotification(
   return notification;
 }
 
+constexpr char kDriveSyncId[] = "swa-drive-sync";
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::UpdateDriveSyncNotification(
+    const extensions::Event& event,
+    base::Value::ListView& event_arguments) {
+  std::unique_ptr<message_center::Notification> notification;
+  file_manager_private::FileTransferStatus transfer_status;
+  if (!file_manager_private::FileTransferStatus::Populate(event_arguments[0],
+                                                          &transfer_status)) {
+    LOG(ERROR) << "Invalid event argument or transfer status...";
+    return notification;
+  }
+  if (transfer_status.transfer_state ==
+          file_manager_private::TRANSFER_STATE_COMPLETED ||
+      transfer_status.transfer_state ==
+          file_manager_private::TRANSFER_STATE_FAILED) {
+    GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                           kDriveSyncId);
+    return notification;
+  }
+  std::u16string title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
+  std::u16string message;
+  if (transfer_status.num_total_jobs == 1) {
+    GURL source_gurl(transfer_status.file_url);
+    message = l10n_util::GetStringFUTF16(
+        IDS_FILE_BROWSER_SYNC_FILE_NAME,
+        base::UTF8ToUTF16(source_gurl.ExtractFileName()));
+  } else {
+    message = l10n_util::GetStringFUTF16(
+        IDS_FILE_BROWSER_SYNC_FILE_NUMBER,
+        base::NumberToString16(transfer_status.num_total_jobs));
+  }
+  notification = CreateProgressNotification(
+      kDriveSyncId, title, message,
+      static_cast<int>((transfer_status.processed / transfer_status.total) *
+                       100.0));
+  return notification;
+}
+
 void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
   if (!swa_enabled_) {
     return;
@@ -371,6 +411,9 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
       break;
     case extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
       notification = MakeDriveConfirmDialogNotification(event, event_arguments);
+      break;
+    case extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
+      notification = UpdateDriveSyncNotification(event, event_arguments);
       break;
     default:
       DLOG(WARNING) << "Unhandled event: " << event.event_name;
@@ -412,10 +455,7 @@ void SystemNotificationManager::HandleCopyEvent(
                                            id);
     return;
   }
-  // TODO(b/187656842) In legacy Files App this comes from
-  // chrome.runtime.getManifest().name FIX.
-  std::u16string title =
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE);
+  std::u16string title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
 
   std::u16string message;
   if (status.source_url) {
