@@ -187,9 +187,10 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
 TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
   NavigationEventList events(3);
 
-  EXPECT_EQ(nullptr, events.FindNavigationEvent(
-                         base::Time::Now(), GURL("http://invalid.com"), GURL(),
-                         SessionID::InvalidValue()));
+  EXPECT_EQ(-1, static_cast<int>(events.FindNavigationEvent(
+                    base::Time::Now(), GURL("http://invalid.com"), GURL(),
+                    SessionID::InvalidValue(),
+                    navigation_event_list()->navigation_events().size() - 1)));
   EXPECT_EQ(0U, events.CleanUpNavigationEvents());
   EXPECT_EQ(0U, events.NavigationEventsSize());
 
@@ -203,11 +204,11 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
       CreateNavigationEventUniquePtr(GURL("http://foo1.com"), now));
   EXPECT_EQ(2U, events.NavigationEventsSize());
   // FindNavigationEvent should return the latest matching event.
-  EXPECT_EQ(now,
-            events
-                .FindNavigationEvent(base::Time::Now(), GURL("http://foo1.com"),
-                                     GURL(), SessionID::InvalidValue())
-                ->last_updated);
+  int index = events.FindNavigationEvent(
+      base::Time::Now(), GURL("http://foo1.com"), GURL(),
+      SessionID::InvalidValue(), events.navigation_events().size() - 1);
+
+  EXPECT_EQ(now, events.GetNavigationEvent(index)->last_updated);
   // One event should get removed.
   EXPECT_EQ(1U, events.CleanUpNavigationEvents());
   EXPECT_EQ(1U, events.NavigationEventsSize());
@@ -228,6 +229,66 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
             events.GetNavigationEvent(2)->original_request_url);
   EXPECT_EQ(2U, events.CleanUpNavigationEvents());
   EXPECT_EQ(1U, events.NavigationEventsSize());
+}
+
+TEST_F(SBNavigationObserverTest, TestInfiniteLoop) {
+  user_gesture_map()->clear();
+  base::Time now = base::Time::Now();
+  base::Time half_hour_ago =
+      base::Time::FromDoubleT(now.ToDoubleT() - 30.0 * 60.0);
+  base::Time one_hour_ago =
+      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+  base::Time two_hours_ago =
+      base::Time::FromDoubleT(now.ToDoubleT() - 2 * 60.0 * 60.0);
+
+  // Add 5 navigations and one starting page. The first is BROWSER_INITIATED
+  // to A. Then from A to B, then 2 redirects back and forth between B and C,
+  // then back to A.
+  std::unique_ptr<NavigationEvent> first_navigation =
+      std::make_unique<NavigationEvent>();
+  first_navigation->original_request_url = GURL("http://A.com");
+  first_navigation->last_updated = two_hours_ago;
+  first_navigation->navigation_initiation =
+      ReferrerChainEntry::BROWSER_INITIATED;
+  navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
+
+  std::unique_ptr<NavigationEvent> second_navigation =
+      std::make_unique<NavigationEvent>();
+  second_navigation->source_url = GURL("http://A.com");
+  second_navigation->original_request_url = GURL("http://B.com");
+  second_navigation->last_updated = one_hour_ago;
+  second_navigation->navigation_initiation =
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+  navigation_event_list()->RecordNavigationEvent(std::move(second_navigation));
+  GURL prev_url = GURL("http://B.com");
+  GURL current_url = GURL("http://C.com?utm=0");
+  for (int i = 1; i < 4; i++) {
+    std::unique_ptr<NavigationEvent> navigation =
+        std::make_unique<NavigationEvent>();
+    navigation->source_url = prev_url;
+    navigation->original_request_url = current_url;
+    navigation->last_updated = one_hour_ago;
+    navigation->navigation_initiation =
+        ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
+    navigation_event_list()->RecordNavigationEvent(std::move(navigation));
+    GURL current_prev_url = prev_url;
+    prev_url = current_url;
+    current_url = current_prev_url;
+  }
+
+  std::unique_ptr<NavigationEvent> last_navigation =
+      std::make_unique<NavigationEvent>();
+  last_navigation->source_url = prev_url;
+  last_navigation->original_request_url = GURL("http://A.com");
+  last_navigation->last_updated = half_hour_ago;
+  last_navigation->navigation_initiation =
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+  navigation_event_list()->RecordNavigationEvent(std::move(last_navigation));
+  ASSERT_EQ(6U, navigation_event_list()->NavigationEventsSize());
+  ReferrerChain referrer_chain;
+  navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      GURL("http://A.com/"), SessionID::InvalidValue(), 10, &referrer_chain);
+  ASSERT_EQ(6, referrer_chain.size());
 }
 
 TEST_F(SBNavigationObserverTest, BasicNavigationAndCommit) {
@@ -348,9 +409,9 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
   // Verifies all stale and invalid navigation events are removed.
   ASSERT_EQ(2U, navigation_event_list()->NavigationEventsSize());
   ASSERT_EQ(1U, navigation_event_list()->PendingNavigationEventsSize());
-  EXPECT_EQ(nullptr,
-            navigation_event_list()->FindNavigationEvent(
-                base::Time::Now(), url_1, GURL(), SessionID::InvalidValue()));
+  EXPECT_EQ(-1, static_cast<int>(navigation_event_list()->FindNavigationEvent(
+                    base::Time::Now(), url_1, GURL(), SessionID::InvalidValue(),
+                    navigation_event_list()->NavigationEventsSize() - 1)));
   EXPECT_EQ(nullptr,
             navigation_event_list()->FindPendingNavigationEvent(url_1));
 }

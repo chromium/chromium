@@ -555,10 +555,16 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
 
   void FindAndAddNavigationToReferrerChain(ReferrerChain* referrer_chain,
                                            const GURL& target_url) {
-    NavigationEvent* nav_event =
+    size_t nav_event_index =
         observer_manager_->navigation_event_list()->FindNavigationEvent(
-            base::Time::Now(), target_url, GURL(), SessionID::InvalidValue());
-    if (nav_event) {
+            base::Time::Now(), target_url, GURL(), SessionID::InvalidValue(),
+            (observer_manager_->navigation_event_list()
+                 ->NavigationEventsSize() -
+             1));
+    if (static_cast<int>(nav_event_index) != -1) {
+      auto* nav_event =
+          observer_manager_->navigation_event_list()->GetNavigationEvent(
+              nav_event_index);
       observer_manager_->AddToReferrerChain(referrer_chain, nav_event, GURL(),
                                             ReferrerChainEntry::EVENT_URL);
     }
