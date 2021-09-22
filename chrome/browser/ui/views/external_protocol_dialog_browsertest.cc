@@ -276,7 +276,8 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
   EXPECT_TRUE(focused_view);
 }
 
-#if defined(OS_WIN)
+// https://crbug.com/1250386
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_OriginNameTest DISABLED_OriginNameTest
 #else
 #define MAYBE_OriginNameTest OriginNameTest
