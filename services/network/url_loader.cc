@@ -2359,15 +2359,12 @@ void URLLoader::SetRequestCredentials(const GURL& url) {
       ShouldSendClientCertificates(request_credentials_mode_) &&
       coep_allow_credentials;
 
-  // TODO(https://crbug.com/799935) net::LOAD_DO_NOT_* are in the process of
-  // being converted to credentials_mode. Using set_allow_credentials will
-  // implicitly override the deprecated LOAD_DO_NOT_SAVE_COOKIE flag. As a
-  // result, set_allow_credentials should not be called when not needed, or it
-  // would have side effects.
-  if (url_request_->allow_credentials() != allow_credentials)
-    url_request_->set_allow_credentials(allow_credentials);
-
-  url_request_->set_send_client_certs(allow_client_certificates);
+  // The decision not to include credentials is sticky. This is equivalent to
+  // checking the tainted origin flag in the fetch specification.
+  if (!allow_credentials)
+    url_request_->set_allow_credentials(false);
+  if (!allow_client_certificates)
+    url_request_->set_send_client_certs(false);
 
   // Contrary to Firefox or blink's cache, the HTTP cache doesn't distinguish
   // requests including user's credentials from the anonymous ones yet. See

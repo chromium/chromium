@@ -53,7 +53,7 @@ promise_test_parallel(async test => {
   redirectTest("same-origin -> cross-origin",
     same_origin, cross_origin, undefined)
   redirectTest("cross-origin -> same-origin",
-    cross_origin, same_origin, cookie_same_origin);
+    cross_origin, same_origin, undefined);
   redirectTest("cross-origin -> cross-origin",
     cross_origin, cross_origin, undefined);
 }, "Setup");
