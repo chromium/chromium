@@ -132,8 +132,8 @@ ChannelPosix::ChannelPosix(
 }
 
 ChannelPosix::~ChannelPosix() {
-  DCHECK(!read_watcher_);
-  DCHECK(!write_watcher_);
+  CHECK(!read_watcher_);
+  CHECK(!write_watcher_);
 }
 
 void ChannelPosix::Start() {
