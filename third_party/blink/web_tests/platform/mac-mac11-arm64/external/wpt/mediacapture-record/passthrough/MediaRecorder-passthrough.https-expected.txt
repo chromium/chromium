@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS PeerConnection passthrough MediaRecorder receives VP8 after onstart with a video stream.
-PASS PeerConnection passthrough MediaRecorder receives VP8 after onstart with a audio/video stream.
-PASS PeerConnection passthrough MediaRecorder receives VP9 after onstart with a video stream.
-PASS PeerConnection passthrough MediaRecorder receives VP9 after onstart with a audio/video stream.
-PASS PeerConnection passthrough MediaRecorder should be prepared to handle the codec switching from VP8 to VP9
-Harness: the test ran to completion.
-
