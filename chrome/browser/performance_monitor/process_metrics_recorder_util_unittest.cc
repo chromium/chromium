@@ -24,6 +24,7 @@ TEST(ProcessMetricsRecorderUtilTest, RecordCoalitionData) {
   coalition_data.bytesread_per_second = 10;
   coalition_data.byteswritten_per_second = 0.1;
   coalition_data.gpu_time_per_second = 0.8;
+  coalition_data.energy_impact_per_second = 3.0;
   coalition_data.power_nw = 1000;
 
   for (int i = 0;
@@ -68,6 +69,12 @@ TEST(ProcessMetricsRecorderUtilTest, RecordCoalitionData) {
             {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond",
              scenario_suffix}),
         coalition_data.byteswritten_per_second * 1000, 1);
+    // EI is reported in centi-EI so the data needs to be multiplied by 100.0.
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"PerformanceMonitor.ResourceCoalition.EnergyImpact",
+                      scenario_suffix}),
+        coalition_data.energy_impact_per_second * 100.0, 1);
+
     // Power is reported in milliwatts (mj/s), the data is in nj/s so it has to
     // be divided by 1000000.
     histogram_tester.ExpectUniqueSample(

@@ -5109,7 +5109,9 @@ test("unit_tests") {
     data_deps += [ "//chrome" ]
     data += [ "$root_out_dir/chrome.exe" ]
   }
-
+  if (is_mac) {
+    data += [ "//chrome/test/data/performance_monitor/" ]
+  }
   defines = []
 
   deps = [

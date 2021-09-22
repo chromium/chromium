@@ -12387,6 +12387,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PerformanceMonitor.ResourceCoalition.EnergyImpact"
+    units="centi-EnergyImpact" expires_after="2021-11-30">
+  <owner>siggi@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    (Mac only) A synthetic power use estimate, as displayed in macOS Activity
+    Monitor and the battery menu. This incorporates CPU utilization, idle
+    wakeups, IO, and task QoS level using per-machine-model weights. Divide by
+    100 to match Activity Monitor's scale. Recorded every two minutes, only
+    available on macs with an Intel CPU.
+
+    This EnergyImpact score is computed from the usage reported by the resource
+    coalition mechanism on macOS. It accounts for the resource usage of all
+    Chrome processes no matter how short-lived, as well as XPC services running
+    on Chrome's behalf.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceMonitor.ResourceCoalition.GPUTime"
     units="hundredth of percent" expires_after="2021-11-30">
   <obsolete>
