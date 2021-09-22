@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_flags.h"
@@ -25,6 +26,7 @@
 #include "cc/paint/paint_shader.h"
 #include "cc/paint/shader_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -808,9 +810,14 @@ void PaintOpReader::AlignMemory(size_t alignment) {
 
 // Don't inline this function so that crash reports can show the caller.
 NOINLINE void PaintOpReader::SetInvalid(DeserializationError error) {
+  static crash_reporter::CrashKeyString<4> deserialization_error_crash_key(
+      "PaintOpReader deserialization error");
   base::UmaHistogramEnumeration("GPU.PaintOpReader.DeserializationError",
                                 error);
   if (valid_ && options_.crash_dump_on_failure && base::RandInt(1, 10) == 1) {
+    crash_reporter::ScopedCrashKeyString crash_key_scope(
+        &deserialization_error_crash_key,
+        base::NumberToString(static_cast<int>(error)));
     base::debug::DumpWithoutCrashing();
   }
   valid_ = false;

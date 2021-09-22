@@ -15,6 +15,9 @@ specific_include_rules = {
     "+components/viz/test",
     "+gpu/command_buffer",
   ],
+  "paint_op_reader.cc": [
+    "+components/crash/core/common",
+  ],
   "transfer_cache_fuzzer.cc": [
     "+components/viz/test",
   ],
