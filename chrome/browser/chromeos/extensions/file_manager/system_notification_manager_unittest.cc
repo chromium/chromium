@@ -1104,6 +1104,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
   // Setup an completed transfer event.
   transfer_status.transfer_state =
       file_manager_private::TRANSFER_STATE_COMPLETED;
+  transfer_status.num_total_jobs = 0;
   event = std::make_unique<extensions::Event>(
       extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
       file_manager_private::OnFileTransfersUpdated::kEventName,
@@ -1137,6 +1138,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
   ASSERT_EQ(1, notification_count);
   // Setup an completed transfer event.
   transfer_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
+  transfer_status.num_total_jobs = 0;
   event = std::make_unique<extensions::Event>(
       extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED,
       file_manager_private::OnFileTransfersUpdated::kEventName,
