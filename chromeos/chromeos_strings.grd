@@ -1716,9 +1716,6 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_GATEWAY" desc="Label for `Gateway` address data-point in `IP Configuration` drawer.">
         Gateway
       </message>
-      <message name="IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_MAC_ADDRESS" desc="Label for `MAC Address` data-point in `IP Configuration` drawer.">
-        MAC Address
-      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_IP_CONFIG_INFO_DRAWER_SUBNET_MASK" desc="Label for `Subnet mask` data-point in `IP Configuration` drawer.">
         Subnet mask
       </message>
@@ -1739,9 +1736,6 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_DNS_NOT_CONFIGURED" desc="Message for when no DNS servers are configured for display in `IP Configuration` drawer.">
         Not configured
-      </message>
-      <message name="IDS_NETWORK_DIAGNOSTICS_DEFAULT_CONNECTION" desc="Label for `default connection` chip displayed above network card.">
-        Default connection
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_ARC_HTTP" desc="Label for Network diagnostics `ARC HTTP` test. This test ensures that the device's http requests inside ARC have an acceptable amount of latency">
         (Android) HTTP Latency
@@ -1782,6 +1776,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_CELLULAR_UMTS" desc="Label for Cellular network technology `UMTS`.">
         UMTS
+      </message>
+      <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_MAC_ADDRESS_LABEL" desc="Label for Mac Address.">
+        MAC
       </message>
 
       <!-- Personalization App -->

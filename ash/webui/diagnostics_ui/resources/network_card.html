@@ -11,8 +11,14 @@
     </network-troubleshooting>
   </template>
   <div id="cardTitle" slot="title">
-    [[getNetworkCardTitle_(networkType_, networkState_, macAddress_)]]
+    [[getNetworkCardTitle_(networkType_, networkState_)]]
   </div>
+  <template is="dom-if" if="[[macAddress_]]">
+    <div id="macAddressChip" slot="chip" class="diagnostics-chip"
+        aria-hidden="true">
+      [[getMacAddress_(macAddress_)]]
+    </div>
+  </template>
   <template is="dom-if" if="[[showNetworkDataPoints_]]">
     <network-info slot="body" guid="[[guid]]" network="[[network]]">
     </network-info>

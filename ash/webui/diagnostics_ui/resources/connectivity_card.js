@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
-import {getNetworkState, getNetworkType, getRoutineGroups} from './diagnostics_utils.js';
+import {formatMacAddress, getNetworkState, getNetworkType, getRoutineGroups} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 import {RoutineGroup} from './routine_group.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
@@ -156,7 +156,7 @@ Polymer({
 
   /** @protected */
   getNetworkCardTitle_() {
-    return `${this.networkType_} [${this.macAddress_}] (${this.networkState_})`;
+    return `${this.networkType_} (${this.networkState_})`;
   },
 
   /**
@@ -187,5 +187,16 @@ Polymer({
     if (this.routineGroups_.length > 0) {
       this.getRoutineSectionElem_().runTests();
     }
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  getMacAddress_() {
+    if (!this.macAddress_) {
+      return '';
+    }
+    return formatMacAddress(this.macAddress_);
   },
 });

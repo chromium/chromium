@@ -13,7 +13,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkState, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType} from './diagnostics_types.js';
-import {getNetworkState, getNetworkType} from './diagnostics_utils.js';
+import {formatMacAddress, getNetworkState, getNetworkType} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 /**
@@ -132,7 +132,7 @@ Polymer({
    * @return {string}
    */
   getNetworkCardTitle_() {
-    return `${this.networkType_} [${this.macAddress_}] (${this.networkState_})`;
+    return `${this.networkType_} (${this.networkState_})`;
   },
 
   /**
@@ -181,5 +181,16 @@ Polymer({
    */
   isNetworkDisabled_() {
     return this.network.state === NetworkState.kDisabled;
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  getMacAddress_() {
+    if (!this.macAddress_) {
+      return '';
+    }
+    return formatMacAddress(this.macAddress_);
   },
 });

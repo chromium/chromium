@@ -192,3 +192,12 @@ export function getSubnetMaskFromRoutingPrefix(prefix) {
 export function isNavEnabled() {
   return loadTimeData.getBoolean('isNetworkingEnabled');
 }
+
+
+/**
+ * @param {string} macAddress
+ * @return {string}
+ */
+export function formatMacAddress(macAddress) {
+  return `${loadTimeData.getString('macAddressLabel')}: ${macAddress}`;
+}
