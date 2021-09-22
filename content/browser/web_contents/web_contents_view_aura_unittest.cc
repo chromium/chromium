@@ -48,9 +48,7 @@ using ::ui::mojom::DragOperation;
 constexpr gfx::Rect kBounds = gfx::Rect(0, 0, 20, 20);
 constexpr gfx::PointF kClientPt = {5, 10};
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 constexpr gfx::PointF kScreenPt = {17, 3};
 #endif
 
@@ -233,9 +231,7 @@ TEST_F(WebContentsViewAuraTest, OccludeView) {
   EXPECT_EQ(web_contents()->GetVisibility(), Visibility::VISIBLE);
 }
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
@@ -273,9 +269,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   view->OnDragEntered(event);
   ASSERT_NE(nullptr, view->current_drop_data_);
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // By design, Linux implementations return an empty string if file data
   // is also present.
   EXPECT_TRUE(!view->current_drop_data_->text ||
@@ -311,9 +305,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
 
   CheckDropData(view);
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // By design, Linux implementations returns an empty string if file data
   // is also present.
   EXPECT_TRUE(!drop_complete_data_->drop_data.text ||
@@ -359,7 +351,8 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   data->SetFilenames(test_file_infos);
 
   // Simulate the drag originating in the renderer process, in which case
-  // any file data should be filtered out (anchor drag scenario).
+  // any file data should be filtered out (anchor drag scenario) except in
+  // CHROMEOS_ASH.
   data->MarkOriginatedFromRenderer();
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
@@ -370,9 +363,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   view->OnDragEntered(event);
   ASSERT_NE(nullptr, view->current_drop_data_);
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // By design, Linux implementations return an empty string if file data
   // is also present.
   EXPECT_TRUE(!view->current_drop_data_->text ||
@@ -381,7 +372,12 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   EXPECT_EQ(string_data, view->current_drop_data_->text);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // CHROMEOS_ASH always returns false for DidOriginateFromRenderer().
+  ASSERT_FALSE(view->current_drop_data_->filenames.empty());
+#else
   ASSERT_TRUE(view->current_drop_data_->filenames.empty());
+#endif
 
   // Simulate drop.
   auto callback = base::BindOnce(&WebContentsViewAuraTest::OnDropComplete,
@@ -396,9 +392,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
 
   CheckDropData(view);
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // By design, Linux implementations returns an empty string if file data is
   // also present.
   EXPECT_TRUE(!drop_complete_data_->drop_data.text ||
@@ -407,7 +401,12 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   EXPECT_EQ(string_data, drop_complete_data_->drop_data.text);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // CHROMEOS_ASH always returns false for DidOriginateFromRenderer().
+  ASSERT_FALSE(drop_complete_data_->drop_data.filenames.empty());
+#else
   ASSERT_TRUE(drop_complete_data_->drop_data.filenames.empty());
+#endif
 }
 #endif
 
