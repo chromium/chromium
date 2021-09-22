@@ -78,6 +78,10 @@ const base::Feature kBackForwardCacheMediaSessionPlaybackStateChange{
 const base::Feature kBackForwardCacheMediaSessionService{
     "BackForwardCacheMediaSessionService", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows pages with a media play to stay eligible the back/forward cache.
+constexpr base::Feature kBackForwardCacheMediaPlay{
+    "BackForwardCacheMediaPlay", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // BackForwardCache:
 //
 // After the user navigates away from a document, the old one goes into the
@@ -177,6 +181,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // Returns whether MediaSession's service is allowed for the BackForwardCache.
   static bool IsMediaSessionServiceAllowed();
+
+  // Returns whether a media play is allowed for the BackForwardCache.
+  static bool IsMediaPlayAllowed();
 
   // Returns whether a RenderFrameHost can be stored into the BackForwardCache
   // right now. Depends on the |render_frame_host| and its children's state.

@@ -7934,6 +7934,7 @@ domain Page
       InjectedStyleSheet
       Dummy
       # Disabled for render frame host reasons
+      # See content/browser/renderer_host/back_forward_cache_disable.h for explanations.
       ContentSecurityHandler
       ContentWebAuthenticationAPI
       ContentFileChooser
@@ -7944,6 +7945,9 @@ domain Page
       ContentWebUSB
       ContentMediaSession
       ContentMediaSessionService
+      ContentMediaPlay
+
+      # See components/back_forward_cache/back_forward_cache_disable.h for explanations.
       EmbedderPopupBlockerTabHelper
       EmbedderSafeBrowsingTriggeredPopupBlocker
       EmbedderSafeBrowsingThreatDetails

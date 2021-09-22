@@ -7719,9 +7719,95 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(web_contents()->GetContentsMimeType(), "text/html");
 }
 
+// Check that an audio play blocks back-forward cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AudioPlay) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // Load and play an audio.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    new Promise(async resolve => {
+      const audio = document.createElement('audio');
+      document.body.appendChild(audio);
+      audio.src = 'media/bear-opus.ogg';
+      audio.play();
+      while (audio.currentTime === 0)
+        await new Promise(r => setTimeout(r, 1));
+      resolve();
+    });
+  )"));
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Navigate back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // The page is not restored due to the playback.
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaPlay);
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, {}, FROM_HERE);
+}
+
+// Check that a video play blocks back-forward cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoPlay) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  // Load and play a video.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    new Promise(async resolve => {
+      const video = document.createElement('video');
+      document.body.appendChild(video);
+      video.src = 'media/bear.webm';
+      video.play();
+      while (video.currentTime === 0)
+        await new Promise(r => setTimeout(r, 1));
+      resolve();
+    });
+  )"));
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Navigate back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // The page is not restored due to the playback.
+  auto reason = BackForwardCacheDisable::DisabledReason(
+      BackForwardCacheDisable::DisabledReasonId::kMediaPlay);
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kDisableForRenderFrameHostCalled},
+                    {}, {}, {reason}, {}, FROM_HERE);
+}
+
+class BackForwardCacheBrowserTestWithMediaPlay
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(kBackForwardCacheMediaPlay, "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
 // Check that an audio suspends when the page goes to the cache and can resume
 // after restored.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AudioSuspendAndResume) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaPlay,
+                       AudioSuspendAndResume) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -7799,7 +7885,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AudioSuspendAndResume) {
 
 // Check that a video suspends when the page goes to the cache and can resume
 // after restored.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaPlay,
+                       VideoSuspendAndResume) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -11450,6 +11537,7 @@ class BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(kBackForwardCacheMediaSessionPlaybackStateChange,
                               "", "");
+    EnableFeatureAndSetParams(kBackForwardCacheMediaPlay, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 
