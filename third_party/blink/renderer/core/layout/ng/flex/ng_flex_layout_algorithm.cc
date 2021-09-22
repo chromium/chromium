@@ -582,6 +582,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
 
       LayoutUnit transferred_size_suggestion = LayoutUnit::Max();
       if (specified_size_suggestion == LayoutUnit::Max() &&
+          child.IsReplaced() &&
           AspectRatioProvidesMainSize(child, cross_axis_length)) {
         transferred_size_suggestion = ComputeTransferredMainSize();
       }
