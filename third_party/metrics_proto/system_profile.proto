@@ -149,7 +149,7 @@ message SystemProfileProto {
   repeated fixed32 command_line_key_hash = 38 [packed = true];
 
   // Information on the user's operating system.
-  // Next tag: 8
+  // Next tag: 9
   message OS {
     // The user's operating system. This should be one of:
     // - 'Android'
@@ -199,6 +199,28 @@ message SystemProfileProto {
     // histogram to determine if ARC is enabled for current report.
     // Logged on ChromeOS only.
     optional Arc arc = 7;
+
+    // Data related to system-level dark mode configuration. This is currently
+    // only uploaded on Android. "*_APP" variants are included to reflect when
+    // the user overrides the system configuration within the browser
+    enum DarkModeState {
+      UNKNOWN = 0;
+
+      // Both the system and the browser are in dark mode.
+      DARK_MODE_SYSTEM = 1;
+
+      // The browser is in dark mode, but the state of the system either cannot
+      // be determined or has been overridden by the user.
+      DARK_MODE_APP = 2;
+
+      // Both the system and the browser are in light mode.
+      LIGHT_MODE_SYSTEM = 3;
+
+      // The browser is in light mode, but the state of the system either cannot
+      // be determined or has been overridden by the user.
+      LIGHT_MODE_APP = 4;
+    }
+    optional DarkModeState dark_mode_state = 8 [default = UNKNOWN];
   }
   optional OS os = 5;
 
