@@ -7,9 +7,8 @@
 
 namespace content {
 
-ServiceWorkerClientInfo::ServiceWorkerClientInfo(int frame_tree_node_id)
-    : type_(blink::mojom::ServiceWorkerClientType::kWindow),
-      frame_tree_node_id_(frame_tree_node_id) {}
+ServiceWorkerClientInfo::ServiceWorkerClientInfo()
+    : type_(blink::mojom::ServiceWorkerClientType::kWindow) {}
 
 ServiceWorkerClientInfo::ServiceWorkerClientInfo(
     const blink::DedicatedWorkerToken& dedicated_worker_token)
@@ -39,11 +38,6 @@ ServiceWorkerClientInfo& ServiceWorkerClientInfo::operator=(
     const ServiceWorkerClientInfo& other) = default;
 
 ServiceWorkerClientInfo::~ServiceWorkerClientInfo() = default;
-
-int ServiceWorkerClientInfo::GetFrameTreeNodeId() const {
-  DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kWindow);
-  return frame_tree_node_id_;
-}
 
 GlobalRenderFrameHostId ServiceWorkerClientInfo::GetRenderFrameHostId() const {
   DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kWindow);

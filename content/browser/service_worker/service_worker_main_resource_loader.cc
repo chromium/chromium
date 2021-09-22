@@ -174,7 +174,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   if (container_host_->IsContainerForWindowClient()) {
     did_navigation_preload_ = fetch_dispatcher_->MaybeStartNavigationPreload(
         resource_request_, std::move(context),
-        container_host_->frame_tree_node_id());
+        container_host_->GetFrameTreeNodeIdForOngoingNavigation());
   }
 
   // Record worker start time here as |fetch_dispatcher_| will start a service

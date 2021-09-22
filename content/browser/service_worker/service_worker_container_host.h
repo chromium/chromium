@@ -422,16 +422,26 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   base::TimeTicks create_time() const { return create_time_; }
 
-  // For service worker window clients. The RFH ID is set only after
-  // navigation commit.
+  // For service worker window clients. The RFH ID is set only after navigation
+  // commit. Prefer to use GetRenderFrameHostId() over
+  // GetFrameTreeNodeIdForOngoingNavigation() when possible, since the client
+  // can change to another FrameTreeNode over its lifetime while its RFH ID
+  // never changes. See also comments for RenderFrameHost::GetFrameTreeNodeId()
+  // for more details.
   GlobalRenderFrameHostId GetRenderFrameHostId() const;
 
   // For service worker clients. For window clients, this is not populated until
   // after navigation commit.
   int GetProcessId() const;
 
-  // For service worker window clients.
-  int frame_tree_node_id() const { return client_info_->GetFrameTreeNodeId(); }
+  // For service worker window clients. Returns the frame tree node ID before
+  // the navigation commit starts and kNoFrameTreeNodeId after the navigation
+  // commit. Prefer to use GetRenderFrameHostId() over
+  // GetFrameTreeNodeIdForOngoingNavigation() when possible, since the client
+  // can change to another FrameTreeNode over its lifetime while its RFH ID
+  // never changes. See also comments for RenderFrameHost::GetFrameTreeNodeId()
+  // for more details.
+  int GetFrameTreeNodeIdForOngoingNavigation() const;
 
   // For service worker clients.
   const std::string& client_uuid() const;
@@ -743,6 +753,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   // Indicates if OnEndNavigationCommit() was called on this container host.
   bool navigation_commit_ended_ = false;
+
+  // The frame tree node ID that is set in the constructor and is reset in
+  // OnBeginNavigationCommit().
+  int ongoing_navigation_frame_tree_node_id_ =
+      RenderFrameHost::kNoFrameTreeNodeId;
 
   // For service worker execution contexts -------------------------------------
 

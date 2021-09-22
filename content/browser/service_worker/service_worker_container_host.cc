@@ -108,7 +108,8 @@ ServiceWorkerContainerHost::ServiceWorkerContainerHost(
       client_uuid_(base::GenerateGUID()),
       is_parent_frame_secure_(is_parent_frame_secure),
       container_(std::move(container_remote)),
-      client_info_(frame_tree_node_id) {
+      client_info_(ServiceWorkerClientInfo()),
+      ongoing_navigation_frame_tree_node_id_(frame_tree_node_id) {
   DCHECK(IsContainerForWindowClient());
   DCHECK(context_);
   DCHECK(container_.is_bound());
@@ -791,6 +792,7 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForWindowClient());
 
+  ongoing_navigation_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
   client_info_->SetRenderFrameHostId(rfh_id);
 
   if (controller_)
@@ -814,7 +816,7 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   }
 
   auto* rfh = RenderFrameHostImpl::FromID(rfh_id);
-  // |rfh| may be null in tests (but it should not happen in production).
+  // `rfh` may be null in tests (but it should not happen in production).
   if (rfh)
     rfh->AddServiceWorkerContainerHost(client_uuid(), GetWeakPtr());
 
@@ -1078,6 +1080,11 @@ int ServiceWorkerContainerHost::GetProcessId() const {
   }
   DCHECK(IsContainerForWorkerClient());
   return process_id_for_worker_client_;
+}
+
+int ServiceWorkerContainerHost::GetFrameTreeNodeIdForOngoingNavigation() const {
+  DCHECK(IsContainerForWindowClient());
+  return ongoing_navigation_frame_tree_node_id_;
 }
 
 const std::string& ServiceWorkerContainerHost::client_uuid() const {

@@ -22,7 +22,7 @@ using DedicatedOrSharedWorkerToken =
 // https://w3c.github.io/ServiceWorker/#client
 class CONTENT_EXPORT ServiceWorkerClientInfo {
  public:
-  explicit ServiceWorkerClientInfo(int frame_tree_node_id);
+  ServiceWorkerClientInfo();
   explicit ServiceWorkerClientInfo(
       const blink::DedicatedWorkerToken& dedicated_worker_token);
   explicit ServiceWorkerClientInfo(
@@ -37,10 +37,6 @@ class CONTENT_EXPORT ServiceWorkerClientInfo {
 
   // Returns the type of this client.
   blink::mojom::ServiceWorkerClientType type() const { return type_; }
-
-  // DEPRECATED. This id can be stale because the client's FrameTreeNode can
-  // change over time due to prerender activation.
-  int GetFrameTreeNodeId() const;
 
   GlobalRenderFrameHostId GetRenderFrameHostId() const;
   void SetRenderFrameHostId(
@@ -58,10 +54,11 @@ class CONTENT_EXPORT ServiceWorkerClientInfo {
   // The client type.
   blink::mojom::ServiceWorkerClientType type_;
 
-  // The frame tree node ID, if it is a window client.
-  int frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
-
   // For a window client.
+  // Currently, there is a time lag between when ServiceWorkerClientInfo is
+  // created and `render_frame_host_id_` is set.
+  // TODO(asamidoi): Set GlobalRenderFrameHostId in the constructor of
+  // ServiceWorkerClientInfo and remove SetRenderFrameHostId().
   GlobalRenderFrameHostId render_frame_host_id_;
 
   // The ID of the client, if it is a worker.

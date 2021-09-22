@@ -563,6 +563,7 @@ void OnAuthRequiredContinuation(
       head_headers, first_auth_attempt);  // deletes self
 }
 
+// Returns true if the request is the primary main frame navigation.
 bool IsPrimaryMainFrameRequest(int process_id, int routing_id) {
   if (process_id != network::mojom::kBrowserProcessId)
     return false;
@@ -1726,10 +1727,9 @@ void StoragePartitionImpl::OnAuthRequired(
     const scoped_refptr<net::HttpResponseHeaders>& head_headers,
     mojo::PendingRemote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder) {
-  bool is_primary_main_frame = false;
-  base::RepeatingCallback<WebContents*(void)> web_contents_getter;
   int process_id = url_loader_network_observers_.current_context().process_id;
   int routing_id = url_loader_network_observers_.current_context().routing_id;
+  absl::optional<bool> is_primary_main_frame;
 
   if (window_id) {
     // Use `window_id` if it is provided, because this request was sent by a
@@ -1738,24 +1738,38 @@ void StoragePartitionImpl::OnAuthRequired(
     // TODO(https://crbug.com/1240483): Add a DCHECK here that process_id and
     // routing_id are invalid. It can't be added yet because somehow routing_id
     // is valid here.
-    int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
     if (service_worker_context_->context()) {
       auto* container_host =
           service_worker_context_->context()->GetContainerHostByWindowId(
               *window_id);
       if (container_host) {
-        // TODO(https://crbug.com/1223838): Use RenderFrameHost instead of
-        // FrameTreeNode when possible.
-        frame_tree_node_id = container_host->frame_tree_node_id();
+        if (container_host->GetRenderFrameHostId()) {
+          // Use ServiceWorkerContainerHost's GlobalRenderFrameHostId when
+          // the navigation commit has already started.
+          GlobalRenderFrameHostId render_frame_host_id =
+              container_host->GetRenderFrameHostId();
+          process_id = render_frame_host_id.child_id;
+          routing_id = render_frame_host_id.frame_routing_id;
+
+          // TODO(crbug.com/963748, crbug.com/1251596): `is_primary_main_frame`
+          // should be false because only the request for a sub resource
+          // intercepted by a service worker reaches here.
+          auto* render_frame_host_impl =
+              RenderFrameHostImpl::FromID(render_frame_host_id);
+          if (render_frame_host_impl) {
+            is_primary_main_frame =
+                render_frame_host_impl->IsInPrimaryMainFrame();
+          }
+        } else {
+          // Overwrite the process_id and routing_id; set `process_id` to
+          // kBrowserProcessId which indicates that `routing_id` is actually a
+          // FrameTreeNode ID.
+          // TODO(https://crbug.com/1239554): Optimize locating logic.
+          process_id = network::mojom::kBrowserProcessId;
+          routing_id = container_host->GetFrameTreeNodeIdForOngoingNavigation();
+        }
       }
     }
-
-    // Overwrite the process_id and routing_id; set `process_id` to
-    // kBrowserProcessId which indicates that `routing_id` is actually a
-    // FrameTreeNode ID.
-    // TODO(https://crbug.com/1239554): Optimize locating logic.
-    process_id = network::mojom::kBrowserProcessId;
-    routing_id = frame_tree_node_id;
   }
 
   // If the request is for a prerendering page, prerendering should be cancelled
@@ -1772,13 +1786,14 @@ void StoragePartitionImpl::OnAuthRequired(
     return;
   }
 
-  is_primary_main_frame = IsPrimaryMainFrameRequest(process_id, routing_id);
-  web_contents_getter =
+  if (!is_primary_main_frame)
+    is_primary_main_frame = IsPrimaryMainFrameRequest(process_id, routing_id);
+  auto web_contents_getter =
       base::BindRepeating(GetWebContents, process_id, routing_id);
-  OnAuthRequiredContinuation(process_id, request_id, url, is_primary_main_frame,
-                             first_auth_attempt, auth_info, head_headers,
-                             std::move(auth_challenge_responder),
-                             web_contents_getter);
+  OnAuthRequiredContinuation(
+      process_id, request_id, url, *is_primary_main_frame, first_auth_attempt,
+      auth_info, head_headers, std::move(auth_challenge_responder),
+      web_contents_getter);
 }
 
 void StoragePartitionImpl::OnCertificateRequested(
@@ -1786,7 +1801,6 @@ void StoragePartitionImpl::OnCertificateRequested(
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder) {
-  base::RepeatingCallback<WebContents*(void)> web_contents_getter;
   int process_id = url_loader_network_observers_.current_context().process_id;
   int routing_id = url_loader_network_observers_.current_context().routing_id;
 
@@ -1797,24 +1811,29 @@ void StoragePartitionImpl::OnCertificateRequested(
     // TODO(https://crbug.com/1240483): Add a DCHECK here that process_id and
     // routing_id are invalid. It can't be added yet because somehow routing_id
     // is valid here.
-    int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
     if (service_worker_context_->context()) {
       auto* container_host =
           service_worker_context_->context()->GetContainerHostByWindowId(
               *window_id);
       if (container_host) {
-        // TODO(https://crbug.com/1223838): Use RenderFrameHost instead of
-        // FrameTreeNode when possible.
-        frame_tree_node_id = container_host->frame_tree_node_id();
+        if (container_host->GetRenderFrameHostId()) {
+          // Use ServiceWorkerContainerHost's GlobalRenderFrameHostId when
+          // the navigation commit has already started.
+          GlobalRenderFrameHostId render_frame_host_id =
+              container_host->GetRenderFrameHostId();
+          process_id = render_frame_host_id.child_id;
+          routing_id = render_frame_host_id.frame_routing_id;
+        } else {
+          // Overwrite the render_frame_host_id; set
+          // `render_frame_host_id.child_id` to kBrowserProcessId which
+          // indicates that `render_frame_host_id.frame_routing_id` is actually
+          // a FrameTreeNode ID.
+          // TODO(https://crbug.com/1239554): Optimize locating logic.
+          process_id = network::mojom::kBrowserProcessId;
+          routing_id = container_host->GetFrameTreeNodeIdForOngoingNavigation();
+        }
       }
     }
-
-    // Overwrite the process_id and routing_id; set `process_id` to
-    // kBrowserProcessId which indicates that `routing_id` is actually a
-    // FrameTreeNode ID.
-    // TODO(https://crbug.com/1239554): Optimize locating logic.
-    process_id = network::mojom::kBrowserProcessId;
-    routing_id = frame_tree_node_id;
   }
 
   // If the request is for a prerendering page, prerendering should be cancelled
@@ -1833,7 +1852,7 @@ void StoragePartitionImpl::OnCertificateRequested(
     return;
   }
 
-  web_contents_getter =
+  auto web_contents_getter =
       base::BindRepeating(GetWebContents, process_id, routing_id);
   OnCertificateRequestedContinuation(cert_info, std::move(cert_responder),
                                      std::move(web_contents_getter));
