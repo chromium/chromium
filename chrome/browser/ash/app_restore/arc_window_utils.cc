@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 
+#include "chrome/browser/ash/app_restore/full_restore_prefs.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/app_restore/features.h"
 #include "components/arc/arc_util.h"
 #include "components/exo/wm_helper.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -31,8 +36,20 @@ namespace ash {
 namespace full_restore {
 
 bool IsArcGhostWindowEnabled() {
-  return ::full_restore::features::IsArcGhostWindowEnabled() &&
-         arc::IsArcVmEnabled() && exo::WMHelper::HasInstance();
+  if (!::full_restore::features::IsArcGhostWindowEnabled() ||
+      !arc::IsArcVmEnabled() || !exo::WMHelper::HasInstance()) {
+    return false;
+  }
+
+  auto* user_manager = user_manager::UserManager::Get();
+  // Check `user_manager`, which might be null for test cases.
+  if (!user_manager || !user_manager->GetPrimaryUser())
+    return true;
+
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(
+      user_manager->GetPrimaryUser()->GetAccountId());
+  DCHECK(profile);
+  return profile->GetPrefs()->GetBoolean(kGhostWindowEnabled);
 }
 
 absl::optional<double> GetDisplayScaleFactor(int64_t display_id) {

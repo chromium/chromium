@@ -26,6 +26,8 @@ enum class RestoreOption {
   kMaxValue = kDoNotRestore,
 };
 
+extern const char kRestoreAppsEnabled[];
+extern const char kGhostWindowEnabled[];
 extern const char kRestoreAppsAndPagesPrefName[];
 
 // Registers the restore pref |kRestoreAppsAndPagesPrefName|.

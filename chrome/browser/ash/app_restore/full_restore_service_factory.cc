@@ -6,6 +6,7 @@
 
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_restore/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 namespace full_restore {
@@ -35,7 +37,7 @@ bool FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(
     return false;
   }
 
-  return true;
+  return profile->GetPrefs()->GetBoolean(kRestoreAppsEnabled);
 }
 
 // static

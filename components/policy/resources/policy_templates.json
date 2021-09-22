@@ -27764,6 +27764,64 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       If this policy is disabled or unset, Chrome Apps may not be allowed to run, depending on the status of the deprecation rollout.
       In either case, Chrome Apps that are force installed by policy will continue to be allowed.''',
     },
+    {
+      'name': 'FullRestoreEnabled',
+      'owners': ['nancylingwang@chromium.org', 'sammiequon@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:96-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the full restore feature.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the full restore feature.',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 897,
+      'caption': '''Enable the full restore feature''',
+      'tags': [],
+      'desc': '''Setting the policy to enable the full restore feature.
+      If this policy is true, apps and app windows will be restored or not restored after a crash or reboot based on the restore app setting.
+      If this policy is false, only browser windows are automatcially launched.'''
+    },
+    {
+      'name': 'GhostWindowEnabled',
+      'owners': ['nancylingwang@chromium.org', 'sstan@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:96-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the ghost window feature.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the ghost window feature.',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 898,
+      'caption': '''Enable the ghost window feature''',
+      'tags': [],
+      'desc': '''Setting the policy to enable the ghost window feature.
+      If this policy is true, ARC ghost windows will be created before ARC boots after a crash or reboot based on the restore app setting.
+      If this policy is false, there is no ghost window created before ARC boots. Arc apps are restored after ARC boots'''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -28723,6 +28781,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 896,
+  'highest_id_currently_used': 898,
   'highest_atomic_group_id_currently_used': 41
 }

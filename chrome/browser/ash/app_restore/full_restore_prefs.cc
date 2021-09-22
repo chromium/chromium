@@ -14,11 +14,18 @@
 namespace ash {
 namespace full_restore {
 
+// Prefs to define whether the features are enabled by policy.
+const char kRestoreAppsEnabled[] = "settings.restore_apps_enabled";
+const char kGhostWindowEnabled[] = "settings.ghost_window_enabled";
+
 // An integer pref to define whether restore apps and web pages on startup.
 // Refer to |RestoreOption|.
 const char kRestoreAppsAndPagesPrefName[] = "settings.restore_apps_and_pages";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kRestoreAppsEnabled, true);
+  registry->RegisterBooleanPref(kGhostWindowEnabled, true);
+
   if (!::full_restore::features::IsFullRestoreEnabled())
     return;
 

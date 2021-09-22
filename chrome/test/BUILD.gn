@@ -2964,6 +2964,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/app_mode/kiosk_crash_restore_browsertest.cc",
         "../browser/ash/app_mode/web_app/web_kiosk_app_data_browsertest.cc",
         "../browser/ash/app_restore/full_restore_app_launch_handler_browsertest.cc",
+        "../browser/ash/app_restore/full_restore_policy_browsertest.cc",
         "../browser/ash/apps/apk_web_app_installer_browsertest.cc",
         "../browser/ash/arc/accessibility/arc_accessibility_helper_bridge_browsertest.cc",
         "../browser/ash/arc/auth/arc_active_directory_enrollment_token_fetcher_browsertest.cc",

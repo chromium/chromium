@@ -26388,6 +26388,8 @@ Called by update_document_policy_enum.py.-->
   <int value="894" label="DeviceRestrictedManagedGuestSessionEnabled"/>
   <int value="895" label="PrintPostScriptMode"/>
   <int value="896" label="PrintPdfAsImageDefault"/>
+  <int value="897" label="FullRestoreEnabled"/>
+  <int value="898" label="GhostWindowEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
