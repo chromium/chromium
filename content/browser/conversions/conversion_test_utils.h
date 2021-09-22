@@ -10,7 +10,6 @@
 #include <iosfwd>
 #include <vector>
 
-#include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -18,6 +17,7 @@
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_policy.h"
 #include "content/browser/conversions/conversion_report.h"
+#include "content/browser/conversions/conversion_session_storage.h"
 #include "content/browser/conversions/conversion_storage.h"
 #include "content/browser/conversions/rate_limit_table.h"
 #include "content/browser/conversions/sent_report_info.h"
@@ -178,8 +178,7 @@ class TestConversionManager : public ConversionManager {
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<ConversionReport>)> callback,
       base::Time max_report_time) override;
-  const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI()
-      const override;
+  const ConversionSessionStorage& GetSessionStorage() const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const ConversionPolicy& GetConversionPolicy() const override;
   void ClearData(base::Time delete_begin,
@@ -190,8 +189,7 @@ class TestConversionManager : public ConversionManager {
   void SetActiveImpressionsForWebUI(
       std::vector<StorableImpression> impressions);
   void SetReportsForWebUI(std::vector<ConversionReport> reports);
-  void SetSentReportsForWebUI(
-      base::circular_deque<SentReportInfo> sent_reports);
+  ConversionSessionStorage& GetSessionStorage();
 
   // Resets all counters on this.
   void Reset();
@@ -218,6 +216,7 @@ class TestConversionManager : public ConversionManager {
 
  private:
   ConversionPolicy policy_;
+  ConversionSessionStorage session_storage_{INT_MAX};
   net::SchemefulSite last_conversion_destination_;
   absl::optional<StorableImpression::SourceType> last_impression_source_type_;
   absl::optional<url::Origin> last_impression_origin_;
@@ -227,7 +226,6 @@ class TestConversionManager : public ConversionManager {
 
   std::vector<StorableImpression> impressions_;
   std::vector<ConversionReport> reports_;
-  base::circular_deque<SentReportInfo> sent_reports_;
 };
 
 // Helper class to construct a StorableImpression for tests using default data.
@@ -326,7 +324,7 @@ bool operator==(const ConversionReport& a, const ConversionReport& b);
 bool operator==(const SentReportInfo& a, const SentReportInfo& b);
 
 std::ostream& operator<<(std::ostream& out,
-                         ConversionStorage::CreateReportStatus status);
+                         ConversionStorage::CreateReportResult::Status status);
 
 std::ostream& operator<<(std::ostream& out,
                          RateLimitTable::AttributionAllowedStatus status);

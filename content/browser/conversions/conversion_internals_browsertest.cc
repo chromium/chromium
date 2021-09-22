@@ -290,41 +290,48 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIShownWithPendingReports_ReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
+  const base::Time now = base::Time::Now();
+
   TestConversionManager manager;
-  manager.SetSentReportsForWebUI({SentReportInfo(
-      ConversionReport(
-          ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
-          /*conversion_data=*/5,
-          /*conversion_time=*/base::Time::Now(),
-          /*report_time=*/base::Time::Now(), /*priority=*/0,
-          ConversionReport::Id(1)),
+  manager.GetSessionStorage().AddSentReport(SentReportInfo(
+      ConversionReport(ImpressionBuilder(now).SetData(100).Build(),
+                       /*conversion_data=*/5,
+                       /*conversion_time=*/now,
+                       /*report_time=*/now + base::TimeDelta::FromHours(2),
+                       /*priority=*/0, ConversionReport::Id(2)),
       SentReportInfo::Status::kSent,
-      /*http_response_code=*/200)});
+      /*http_response_code=*/200));
   manager.SetReportsForWebUI({ConversionReport(
-      ImpressionBuilder(base::Time::Now())
+      ImpressionBuilder(now)
           .SetData(200)
           .SetSourceType(StorableImpression::SourceType::kEvent)
           .SetAttributionLogic(StorableImpression::AttributionLogic::kFalsely)
           .Build(),
-      /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), /*priority=*/13,
-      ConversionReport::Id(1))});
+      /*conversion_data=*/7, /*conversion_time=*/now,
+      /*report_time=*/now, /*priority=*/13, ConversionReport::Id(1))});
+  manager.GetSessionStorage().AddDroppedReport(
+      ConversionReport(ImpressionBuilder(now).Build(),
+                       /*conversion_data=*/8, /*conversion_time=*/now,
+                       /*report_time=*/now + base::TimeDelta::FromHours(1),
+                       /*priority=*/11, ConversionReport::Id(3)));
   OverrideWebUIConversionManager(&manager);
 
   {
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 2 &&
+        if (table.children.length === 3 &&
             table.children[0].children[1].innerText === "https://sub.conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[0].children[4].innerText === "13" &&
             table.children[0].children[5].innerText === "yes" &&
             table.children[0].children[6].innerText === "Pending" &&
-            table.children[1].children[4].innerText === "0" &&
-            table.children[1].children[5].innerText === "no" &&
-            table.children[1].children[6].innerText === "Sent: HTTP 200") {
+            table.children[1].children[4].innerText === "11" &&
+            table.children[1].children[6].innerText === "Dropped due to low priority" &&
+            table.children[2].children[4].innerText === "0" &&
+            table.children[2].children[5].innerText === "no" &&
+            table.children[2].children[6].innerText === "Sent: HTTP 200") {
           document.title = $1;
         }
       });
@@ -340,13 +347,15 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 2 &&
-            table.children[1].children[1].innerText === "https://sub.conversion.test" &&
-            table.children[1].children[2].innerText ===
+        if (table.children.length === 3 &&
+            table.children[2].children[1].innerText === "https://sub.conversion.test" &&
+            table.children[2].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
-            table.children[1].children[4].innerText === "13" &&
-            table.children[1].children[5].innerText === "yes" &&
-            table.children[1].children[6].innerText === "Pending" &&
+            table.children[2].children[4].innerText === "13" &&
+            table.children[2].children[5].innerText === "yes" &&
+            table.children[2].children[6].innerText === "Pending" &&
+            table.children[1].children[4].innerText === "11" &&
+            table.children[1].children[6].innerText === "Dropped due to low priority" &&
             table.children[0].children[4].innerText === "0" &&
             table.children[0].children[5].innerText === "no" &&
             table.children[0].children[6].innerText === "Sent: HTTP 200") {
@@ -367,16 +376,18 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 2 &&
+        if (table.children.length === 3 &&
             table.children[0].children[1].innerText === "https://sub.conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[0].children[4].innerText === "13" &&
             table.children[0].children[5].innerText === "yes" &&
             table.children[0].children[6].innerText === "Pending" &&
-            table.children[1].children[4].innerText === "0" &&
-            table.children[1].children[5].innerText === "no" &&
-            table.children[1].children[6].innerText === "Sent: HTTP 200") {
+            table.children[1].children[4].innerText === "11" &&
+            table.children[1].children[6].innerText === "Dropped due to low priority" &&
+            table.children[2].children[4].innerText === "0" &&
+            table.children[2].children[5].innerText === "no" &&
+            table.children[2].children[6].innerText === "Sent: HTTP 200") {
           document.title = $1;
         }
       });
@@ -396,16 +407,18 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        WebUIWithPendingReportsClearStorage_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
+  const base::Time now = base::Time::Now();
+
   TestConversionManager manager;
-  ConversionReport report(
-      ImpressionBuilder(base::Time::Now()).SetData(100).Build(),
-      /*conversion_data=*/0, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), /*priority=*/7,
-      ConversionReport::Id(1));
+  ConversionReport report(ImpressionBuilder(now).SetData(100).Build(),
+                          /*conversion_data=*/0, /*conversion_time=*/now,
+                          /*report_time=*/now, /*priority=*/7,
+                          ConversionReport::Id(1));
   manager.SetReportsForWebUI({report});
-  manager.SetSentReportsForWebUI(
-      {SentReportInfo(report, SentReportInfo::Status::kSent,
-                      /*http_response_code=*/200)});
+  report.report_time += base::TimeDelta::FromHours(1);
+  manager.GetSessionStorage().AddSentReport(
+      SentReportInfo(report, SentReportInfo::Status::kSent,
+                     /*http_response_code=*/200));
   OverrideWebUIConversionManager(&manager);
 
   // Verify both rows get rendered.

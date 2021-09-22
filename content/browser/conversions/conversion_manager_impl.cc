@@ -69,8 +69,9 @@ bool ShouldRetryReport(const ConversionPolicy& policy,
          !past_max_allowed_age;
 }
 
-void RecordCreateReportStatus(ConversionStorage::CreateReportStatus result) {
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus", result);
+void RecordCreateReportStatus(
+    ConversionStorage::CreateReportResult::Status status) {
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus", status);
 }
 
 // We measure this in order to be able to count reports that weren't
@@ -145,7 +146,7 @@ ConversionManagerImpl::ConversionManagerImpl(
           user_data_directory,
           std::make_unique<ConversionStorageDelegateImpl>(debug_mode_),
           clock_)),
-      max_sent_reports_to_store_(max_sent_reports_to_store),
+      session_storage_(max_sent_reports_to_store),
       conversion_policy_(std::move(policy)),
       special_storage_policy_(std::move(special_storage_policy)),
       weak_factory_(this) {
@@ -190,12 +191,22 @@ void ConversionManagerImpl::HandleConversion(StorableConversion conversion) {
   conversion_storage_
       .AsyncCall(&ConversionStorage::MaybeCreateAndStoreConversionReport)
       .WithArgs(std::move(conversion))
-      .Then(base::BindOnce(&RecordCreateReportStatus));
+      .Then(base::BindOnce(&ConversionManagerImpl::OnReportStored,
+                           weak_factory_.GetWeakPtr()));
 
   // If we are running in debug mode, we should also schedule a task to
   // gather and send any new reports.
   if (debug_mode_)
     GetAndQueueReportsForNextInterval();
+}
+
+void ConversionManagerImpl::OnReportStored(
+    ConversionStorage::CreateReportResult result) {
+  RecordCreateReportStatus(result.status);
+  if (!result.dropped_report.has_value())
+    return;
+
+  session_storage_.AddDroppedReport(std::move(*result.dropped_report));
 }
 
 void ConversionManagerImpl::GetActiveImpressionsForWebUI(
@@ -213,9 +224,9 @@ void ConversionManagerImpl::GetPendingReportsForWebUI(
   GetAndHandleReports(std::move(callback), max_report_time, kMaxReports);
 }
 
-const base::circular_deque<SentReportInfo>&
-ConversionManagerImpl::GetSentReportsForWebUI() const {
-  return sent_reports_;
+const ConversionSessionStorage& ConversionManagerImpl::GetSessionStorage()
+    const {
+  return session_storage_;
 }
 
 void ConversionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
@@ -234,7 +245,7 @@ void ConversionManagerImpl::ClearData(
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
     base::OnceClosure done) {
-  sent_reports_.clear();
+  session_storage_.Reset();
   conversion_storage_.AsyncCall(&ConversionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter))
       .Then(std::move(done));
@@ -341,9 +352,7 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   if (info.status != SentReportInfo::Status::kSent)
     return;
 
-  while (sent_reports_.size() >= max_sent_reports_to_store_)
-    sent_reports_.pop_front();
-  sent_reports_.push_back(std::move(info));
+  session_storage_.AddSentReport(std::move(info));
 }
 
 }  // namespace content

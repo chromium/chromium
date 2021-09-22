@@ -83,7 +83,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
 
   // ConversionStorage
   void StoreImpression(const StorableImpression& impression) override;
-  CreateReportStatus MaybeCreateAndStoreConversionReport(
+  CreateReportResult MaybeCreateAndStoreConversionReport(
       const StorableConversion& conversion) override;
   std::vector<ConversionReport> GetConversionsToReport(base::Time expiry_time,
                                                        int limit = -1) override;
@@ -148,7 +148,12 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   MaybeReplaceLowerPriorityReportResult MaybeReplaceLowerPriorityReport(
       const ConversionReport& report,
       int num_conversions,
-      int64_t conversion_priority)
+      int64_t conversion_priority,
+      absl::optional<ConversionReport>& replaced_report)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+
+  absl::optional<ConversionReport> GetConversion(
+      ConversionReport::Id conversion_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // When storing an event-source impression, deletes active event-source

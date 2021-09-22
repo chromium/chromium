@@ -19,6 +19,8 @@
 #include "base/timer/timer.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_report.h"
+#include "content/browser/conversions/conversion_session_storage.h"
+#include "content/browser/conversions/conversion_storage.h"
 #include "content/browser/conversions/sent_report_info.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,7 +37,6 @@ namespace content {
 extern CONTENT_EXPORT const base::TimeDelta
     kConversionManagerQueueReportsInterval;
 
-class ConversionStorage;
 class StoragePartitionImpl;
 
 // Provides access to the manager owned by the default StoragePartition.
@@ -109,8 +110,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<ConversionReport>)> callback,
       base::Time max_report_time) override;
-  const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI()
-      const override;
+  const ConversionSessionStorage& GetSessionStorage() const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const ConversionPolicy& GetConversionPolicy() const override;
   void ClearData(base::Time delete_begin,
@@ -153,6 +153,8 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
   // report has been sent.
   void OnReportSent(SentReportInfo info);
 
+  void OnReportStored(ConversionStorage::CreateReportResult result);
+
   // Friend to expose the ConversionStorage for certain tests.
   friend std::vector<ConversionReport> GetConversionsToReportForTesting(
       ConversionManagerImpl* manager,
@@ -174,18 +176,13 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
 
   base::SequenceBound<ConversionStorage> conversion_storage_;
 
-  // Stores info for the last |max_sent_reports_to_store_| reports sent in this
-  // session for display in conversion internals UI.
-  base::circular_deque<SentReportInfo> sent_reports_;
+  ConversionSessionStorage session_storage_;
 
   // Stores the set of conversion IDs whose reports are being sent by
   // `SendReportsForWebUI()`. Once empty, `send_reports_for_web_ui_callback_` is
   // invoked if non-null.
   base::flat_set<ConversionReport::Id> pending_conversion_ids_for_internals_ui_;
   base::OnceClosure send_reports_for_web_ui_callback_;
-
-  // This is needed to avoid leaking memory.
-  const size_t max_sent_reports_to_store_;
 
   // Policy used for controlling API configurations such as reporting and
   // attribution models. Unique ptr so it can be overridden for testing.

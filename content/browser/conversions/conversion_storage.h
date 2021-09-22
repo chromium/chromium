@@ -119,21 +119,38 @@ class ConversionStorage {
   // reporting. Unconverted matching impressions are not modified.
   virtual void StoreImpression(const StorableImpression& impression) = 0;
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class CreateReportStatus {
-    kSuccess = 0,
-    // The report was stored successfully, but it replaced an existing report
-    // with a lower priority.
-    kSuccessDroppedLowerPriority = 1,
-    kInternalError = 2,
-    kNoCapacityForConversionDestination = 3,
-    kNoMatchingImpressions = 4,
-    kDeduplicated = 5,
-    kRateLimited = 6,
-    kPriorityTooLow = 7,
-    kDroppedForNoise = 8,
-    kMaxValue = kDroppedForNoise,
+  struct CONTENT_EXPORT CreateReportResult {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    enum class Status {
+      kSuccess = 0,
+      // The report was stored successfully, but it replaced an existing report
+      // with a lower priority.
+      kSuccessDroppedLowerPriority = 1,
+      kInternalError = 2,
+      kNoCapacityForConversionDestination = 3,
+      kNoMatchingImpressions = 4,
+      kDeduplicated = 5,
+      kRateLimited = 6,
+      kPriorityTooLow = 7,
+      kDroppedForNoise = 8,
+      kMaxValue = kDroppedForNoise,
+    };
+
+    CreateReportResult(Status status,
+                       absl::optional<ConversionReport> dropped_report);
+    ~CreateReportResult();
+
+    CreateReportResult(const CreateReportResult&);
+    CreateReportResult(CreateReportResult&&);
+
+    CreateReportResult& operator=(const CreateReportResult&);
+    CreateReportResult& operator=(CreateReportResult&&);
+
+    Status status;
+    // Null unless `status` is `kSuccessDroppedLowerPriority` or
+    // `kPriorityTooLow`.
+    absl::optional<ConversionReport> dropped_report;
   };
 
   // Finds all stored impressions matching a given `conversion`, and stores the
@@ -141,7 +158,7 @@ class ConversionStorage {
   // `Delegate::ProcessNewConversionReports()` before the report is added to
   // storage. Only active impressions will receive new conversions. Returns
   // whether a new conversion report has been scheduled/added to storage.
-  virtual CreateReportStatus MaybeCreateAndStoreConversionReport(
+  virtual CreateReportResult MaybeCreateAndStoreConversionReport(
       const StorableConversion& conversion) = 0;
 
   // Returns all of the conversion reports that should be sent before

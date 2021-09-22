@@ -10,6 +10,8 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "content/browser/conversions/conversion_report.h"
+#include "content/browser/conversions/sent_report_info.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -23,12 +25,10 @@ class Origin;
 namespace content {
 
 class ConversionPolicy;
+class ConversionSessionStorage;
 class StorableConversion;
 class StorableImpression;
 class WebContents;
-
-struct ConversionReport;
-struct SentReportInfo;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
@@ -68,10 +68,8 @@ class CONTENT_EXPORT ConversionManager {
       base::OnceCallback<void(std::vector<ConversionReport>)> callback,
       base::Time max_report_time) = 0;
 
-  // Get all reports sent in this session. Used for populating WebUI. Limited to
-  // last 100.
-  virtual const base::circular_deque<SentReportInfo>& GetSentReportsForWebUI()
-      const WARN_UNUSED_RESULT = 0;
+  virtual const ConversionSessionStorage& GetSessionStorage() const
+      WARN_UNUSED_RESULT = 0;
 
   // Sends all pending reports immediately, and runs |done| once they have all
   // been sent.

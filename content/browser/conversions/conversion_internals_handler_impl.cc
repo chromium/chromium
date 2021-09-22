@@ -11,9 +11,11 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_report.h"
+#include "content/browser/conversions/conversion_session_storage.h"
 #include "content/browser/conversions/sent_report_info.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/browser/storage_partition_impl.h"
@@ -61,29 +63,31 @@ void ForwardImpressionsToWebUI(
 
 mojom::WebUIConversionReportPtr WebUIConversionReport(
     const ConversionReport& report,
-    int http_response_code) {
+    int http_response_code,
+    mojom::WebUIConversionReport::Status status) {
   return mojom::WebUIConversionReport::New(
       report.impression.conversion_origin(), report.ReportURL(),
       report.report_time.ToJsTime(), report.priority,
-      report.ReportBody(/*pretty_print=*/true), http_response_code,
+      report.ReportBody(/*pretty_print=*/true),
       /*attributed_truthfully=*/report.impression.attribution_logic() ==
-          StorableImpression::AttributionLogic::kTruthfully);
+          StorableImpression::AttributionLogic::kTruthfully,
+      status, http_response_code);
 }
 
 void ForwardReportsToWebUI(
-    mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
-        web_ui_callback,
-    std::vector<mojom::WebUIConversionReportPtr> sent_reports,
-    std::vector<ConversionReport> stored_reports) {
-  std::vector<mojom::WebUIConversionReportPtr> web_ui_reports;
-  web_ui_reports.reserve(stored_reports.size());
-
-  for (const ConversionReport& report : stored_reports) {
+    mojom::ConversionInternalsHandler::GetReportsCallback web_ui_callback,
+    std::vector<mojom::WebUIConversionReportPtr> web_ui_reports,
+    std::vector<ConversionReport> pending_reports) {
+  web_ui_reports.reserve(web_ui_reports.capacity() + pending_reports.size());
+  for (const ConversionReport& report : pending_reports) {
     web_ui_reports.push_back(
-        WebUIConversionReport(report, /*http_response_code=*/0));
+        WebUIConversionReport(report, /*http_response_code=*/0,
+                              mojom::WebUIConversionReport::Status::kPending));
   }
-  std::move(web_ui_callback)
-      .Run(std::move(sent_reports), std::move(web_ui_reports));
+
+  base::ranges::sort(web_ui_reports, std::less<>(),
+                     [](const auto& report) { return report->report_time; });
+  std::move(web_ui_callback).Run(std::move(web_ui_reports));
 }
 
 }  // namespace
@@ -123,26 +127,40 @@ void ConversionInternalsHandlerImpl::GetActiveImpressions(
   }
 }
 
-void ConversionInternalsHandlerImpl::GetSentAndPendingReports(
-    mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
-        callback) {
+void ConversionInternalsHandlerImpl::GetReports(
+    mojom::ConversionInternalsHandler::GetReportsCallback callback) {
   if (ConversionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
+    const ConversionSessionStorage& session_storage =
+        manager->GetSessionStorage();
+
     const base::circular_deque<SentReportInfo>& sent_reports =
-        manager->GetSentReportsForWebUI();
-    std::vector<mojom::WebUIConversionReportPtr> web_ui_sent_reports;
-    web_ui_sent_reports.reserve(sent_reports.size());
+        session_storage.GetSentReports();
+    const base::circular_deque<ConversionReport>& dropped_reports =
+        session_storage.GetDroppedReports();
+
+    std::vector<mojom::WebUIConversionReportPtr> session_cached_reports;
+    session_cached_reports.reserve(sent_reports.size() +
+                                   dropped_reports.size());
+
     for (const SentReportInfo& info : sent_reports) {
-      web_ui_sent_reports.push_back(
-          WebUIConversionReport(info.report, info.http_response_code));
+      session_cached_reports.push_back(
+          WebUIConversionReport(info.report, info.http_response_code,
+                                mojom::WebUIConversionReport::Status::kSent));
+    }
+
+    for (const ConversionReport& report : dropped_reports) {
+      session_cached_reports.push_back(WebUIConversionReport(
+          report, /*http_response_code=*/0,
+          mojom::WebUIConversionReport::Status::kDroppedDueToLowPriority));
     }
 
     manager->GetPendingReportsForWebUI(
         base::BindOnce(&ForwardReportsToWebUI, std::move(callback),
-                       std::move(web_ui_sent_reports)),
+                       std::move(session_cached_reports)),
         base::Time::Max());
   } else {
-    std::move(callback).Run({}, {});
+    std::move(callback).Run({});
   }
 }
 

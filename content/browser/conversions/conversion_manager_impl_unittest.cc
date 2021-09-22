@@ -415,7 +415,8 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
 
-  const auto& sent_reports = conversion_manager_->GetSentReportsForWebUI();
+  const auto& sent_reports =
+      conversion_manager_->GetSessionStorage().GetSentReports();
   EXPECT_EQ(2u, sent_reports.size());
   EXPECT_EQ(1u, sent_reports[0].report.impression.impression_data());
   EXPECT_EQ(3u, sent_reports[1].report.impression.impression_data());
@@ -436,11 +437,70 @@ TEST_F(ConversionManagerImplTest, QueuedReportSent_StoresLastN) {
   }
 
   // Only the last |kMaxSentReportsToStore| should be stored.
-  const auto& sent_reports = conversion_manager_->GetSentReportsForWebUI();
+  const auto& sent_reports =
+      conversion_manager_->GetSessionStorage().GetSentReports();
   EXPECT_EQ(3u, sent_reports.size());
   EXPECT_EQ(2u, sent_reports[0].report.impression.impression_data());
   EXPECT_EQ(3u, sent_reports[1].report.impression.impression_data());
   EXPECT_EQ(4u, sent_reports[2].report.impression.impression_data());
+}
+
+TEST_F(ConversionManagerImplTest, DroppedReport_StoresLastN) {
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  ExpectNumStoredImpressions(1);
+
+  // `kNavigation` sources can have 3 reports, so none of these should result in
+  // a dropped report.
+  for (int i = 1; i <= 3; i++) {
+    conversion_manager_->HandleConversion(
+        ConversionBuilder().SetPriority(i).Build());
+    ExpectNumStoredReports(i);
+    EXPECT_EQ(
+        0u,
+        conversion_manager_->GetSessionStorage().GetDroppedReports().size());
+  }
+
+  {
+    // This should replace the report with priority 1.
+    conversion_manager_->HandleConversion(
+        ConversionBuilder().SetPriority(4).Build());
+    ExpectNumStoredReports(3);
+    const auto& dropped_reports =
+        conversion_manager_->GetSessionStorage().GetDroppedReports();
+    EXPECT_EQ(1u, dropped_reports.size());
+    EXPECT_EQ(1, dropped_reports[0].priority);
+  }
+
+  {
+    // This should be dropped, as it has a lower priority than all stored
+    // reports.
+    conversion_manager_->HandleConversion(
+        ConversionBuilder().SetPriority(-5).Build());
+    ExpectNumStoredReports(3);
+    const auto& dropped_reports =
+        conversion_manager_->GetSessionStorage().GetDroppedReports();
+    EXPECT_EQ(2u, dropped_reports.size());
+    EXPECT_EQ(1, dropped_reports[0].priority);
+    EXPECT_EQ(-5, dropped_reports[1].priority);
+  }
+
+  {
+    // These should replace the reports with priority 2 and 3 and pop the report
+    // with priority 1 from the session storage, as only
+    // `kMaxSentReportsToStore` should be stored.
+    conversion_manager_->HandleConversion(
+        ConversionBuilder().SetPriority(5).Build());
+    conversion_manager_->HandleConversion(
+        ConversionBuilder().SetPriority(6).Build());
+    ExpectNumStoredReports(3);
+    const auto& dropped_reports =
+        conversion_manager_->GetSessionStorage().GetDroppedReports();
+    EXPECT_EQ(3u, dropped_reports.size());
+    EXPECT_EQ(-5, dropped_reports[0].priority);
+    EXPECT_EQ(2, dropped_reports[1].priority);
+    EXPECT_EQ(3, dropped_reports[2].priority);
+  }
 }
 
 // Add a conversion to storage and reset the manager to mimic a report being
@@ -513,11 +573,13 @@ TEST_F(ConversionManagerImplTest, ClearData_ClearsSentReports) {
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kConversionManagerQueueReportsInterval);
-  EXPECT_FALSE(conversion_manager_->GetSentReportsForWebUI().empty());
+  EXPECT_FALSE(
+      conversion_manager_->GetSessionStorage().GetSentReports().empty());
 
   conversion_manager_->ClearData(clock().Now(), clock().Now(),
                                  base::NullCallback(), base::DoNothing());
-  EXPECT_TRUE(conversion_manager_->GetSentReportsForWebUI().empty());
+  EXPECT_TRUE(
+      conversion_manager_->GetSessionStorage().GetSentReports().empty());
 }
 
 TEST_F(ConversionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
@@ -685,7 +747,7 @@ TEST_F(ConversionManagerImplTest, HandleConversion_RecordsMetric) {
   ExpectNumStoredReports(0);
   histograms.ExpectUniqueSample(
       "Conversions.CreateReportStatus",
-      ConversionStorage::CreateReportStatus::kNoMatchingImpressions, 1);
+      ConversionStorage::CreateReportResult::Status::kNoMatchingImpressions, 1);
 }
 
 TEST_F(ConversionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
@@ -720,7 +782,8 @@ TEST_F(ConversionManagerImplTest, NoIDReuse_ViaClearData) {
                                   kConversionManagerQueueReportsInterval);
   ExpectNumStoredReports(1);
   EXPECT_EQ(1u, test_reporter_->num_reports());
-  EXPECT_EQ(0u, conversion_manager_->GetSentReportsForWebUI().size());
+  EXPECT_EQ(0u,
+            conversion_manager_->GetSessionStorage().GetSentReports().size());
   // The above report with `conversion_data == 5` has been sent, and the manager
   // is waiting for its callback to be invoked.
 
@@ -739,7 +802,8 @@ TEST_F(ConversionManagerImplTest, NoIDReuse_ViaClearData) {
         ConversionBuilder().SetConversionData(6).Build());
     ExpectNumStoredReports(1);
     EXPECT_EQ(1u, test_reporter_->num_reports());
-    EXPECT_EQ(0u, conversion_manager_->GetSentReportsForWebUI().size());
+    EXPECT_EQ(0u,
+              conversion_manager_->GetSessionStorage().GetSentReports().size());
   }
 
   // The manager's `OnReportSent` callback is invoked, and the new conversion
@@ -748,7 +812,8 @@ TEST_F(ConversionManagerImplTest, NoIDReuse_ViaClearData) {
   test_reporter_->RunDeferredCallbacks();
   ExpectNumStoredReports(1);
   EXPECT_EQ(1u, test_reporter_->num_reports());
-  const auto& sent_reports = conversion_manager_->GetSentReportsForWebUI();
+  const auto& sent_reports =
+      conversion_manager_->GetSessionStorage().GetSentReports();
   EXPECT_EQ(1u, sent_reports.size());
   EXPECT_EQ(5u, sent_reports[0].report.conversion_data);
 }

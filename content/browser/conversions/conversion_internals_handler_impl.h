@@ -40,9 +40,8 @@ class ConversionInternalsHandlerImpl
   void GetActiveImpressions(
       mojom::ConversionInternalsHandler::GetActiveImpressionsCallback callback)
       override;
-  void GetSentAndPendingReports(
-      mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
-          callback) override;
+  void GetReports(
+      mojom::ConversionInternalsHandler::GetReportsCallback callback) override;
   void SendPendingReports(
       mojom::ConversionInternalsHandler::SendPendingReportsCallback callback)
       override;

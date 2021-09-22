@@ -21,8 +21,18 @@ struct WebUIConversionReport {
   double report_time;
   int64 priority;
   string report_body;
-  int32 http_response_code;
   bool attributed_truthfully;
+
+  enum Status {
+    kPending,
+    kDroppedDueToLowPriority,
+    kSent,
+  };
+
+  Status status;
+
+  // Only valid if `status == kSent`.
+  int32 http_response_code;
 };
 
 // Struct representing a stored impression that will be displayed by WebUI.
@@ -53,7 +63,7 @@ interface ConversionInternalsHandler {
 
   // Returns all reports contained in storage, including those that are actively
   // being sent.
-  GetSentAndPendingReports() => (array<WebUIConversionReport> sent_reports, array<WebUIConversionReport> pending_reports);
+  GetReports() => (array<WebUIConversionReport> reports);
 
   // Sends all stored reports, ignoring delay, returning when the
   // operation has been completed and all reports have been cleared from

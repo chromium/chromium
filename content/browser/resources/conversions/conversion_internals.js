@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {ConversionInternalsHandler, ConversionInternalsHandlerRemote, SourceType, WebUIConversionReport, WebUIImpression} from './conversion_internals.mojom-webui.js';
+import {ConversionInternalsHandler, ConversionInternalsHandlerRemote, SourceType, WebUIConversionReport, WebUIConversionReport_Status, WebUIImpression,} from './conversion_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -339,9 +339,8 @@ class SourceTableModel extends TableModel {
 class Report {
   /**
    * @param {!WebUIConversionReport} mojo
-   * @param {boolean} sent
    */
-  constructor(mojo, sent) {
+  constructor(mojo) {
     this.reportBody = mojo.reportBody;
     this.conversionOrigin = UrlToText(mojo.conversionOrigin);
     this.reportUrl = mojo.reportUrl.url;
@@ -349,11 +348,17 @@ class Report {
     this.reportPriority = mojo.priority;
     this.attributedTruthfully = mojo.attributedTruthfully;
 
-    if (sent) {
-      this.status = `Sent: HTTP ${mojo.httpResponseCode}`;
-      this.httpResponseCode = mojo.httpResponseCode;
-    } else {
-      this.status = 'Pending';
+    switch (mojo.status) {
+      case WebUIConversionReport_Status.kSent:
+        this.status = `Sent: HTTP ${mojo.httpResponseCode}`;
+        this.httpResponseCode = mojo.httpResponseCode;
+        break;
+      case WebUIConversionReport_Status.kPending:
+        this.status = 'Pending';
+        break;
+      case WebUIConversionReport_Status.kDroppedDueToLowPriority:
+        this.status = 'Dropped due to low priority';
+        break;
     }
   }
 }
@@ -450,12 +455,9 @@ function updatePageData() {
         .setRows(response.impressions.map((mojo) => new Source(mojo)));
   });
 
-  pageHandler.getSentAndPendingReports().then((response) => {
+  pageHandler.getReports().then((response) => {
     $('report-table-wrapper')
-        .setRows(response.pendingReports
-                     .map((mojo) => new Report(mojo, /*sent=*/ false))
-                     .concat(response.sentReports.map(
-                         (mojo) => new Report(mojo, /*sent=*/ true))));
+        .setRows(response.reports.map((mojo) => new Report(mojo)));
   });
 }
 

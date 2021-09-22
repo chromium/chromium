@@ -25,7 +25,8 @@ namespace {
 
 using AttributionAllowedStatus =
     ::content::RateLimitTable::AttributionAllowedStatus;
-using CreateReportStatus = ::content::ConversionStorage::CreateReportStatus;
+using CreateReportStatus =
+    ::content::ConversionStorage::CreateReportResult::Status;
 
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
 const char kDefaultConversionOrigin[] = "https://sub.conversion.test/";
@@ -168,14 +169,18 @@ void TestConversionManager::GetPendingReportsForWebUI(
   std::move(callback).Run(reports_);
 }
 
-const base::circular_deque<SentReportInfo>&
-TestConversionManager::GetSentReportsForWebUI() const {
-  return sent_reports_;
+const ConversionSessionStorage& TestConversionManager::GetSessionStorage()
+    const {
+  return session_storage_;
 }
 
 void TestConversionManager::SendReportsForWebUI(base::OnceClosure done) {
   reports_.clear();
   std::move(done).Run();
+}
+
+ConversionSessionStorage& TestConversionManager::GetSessionStorage() {
+  return session_storage_;
 }
 
 const ConversionPolicy& TestConversionManager::GetConversionPolicy() const {
@@ -189,7 +194,7 @@ void TestConversionManager::ClearData(
     base::OnceClosure done) {
   impressions_.clear();
   reports_.clear();
-  sent_reports_.clear();
+  session_storage_.Reset();
   std::move(done).Run();
 }
 
@@ -201,11 +206,6 @@ void TestConversionManager::SetActiveImpressionsForWebUI(
 void TestConversionManager::SetReportsForWebUI(
     std::vector<ConversionReport> reports) {
   reports_ = std::move(reports);
-}
-
-void TestConversionManager::SetSentReportsForWebUI(
-    base::circular_deque<SentReportInfo> reports) {
-  sent_reports_ = std::move(reports);
 }
 
 void TestConversionManager::Reset() {
