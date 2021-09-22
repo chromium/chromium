@@ -22,11 +22,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
@@ -56,6 +59,8 @@ bool GetNewerChromeFile(base::FilePath* path) {
 
 bool InvokeGoogleUpdateForRename() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  TRACE_EVENT0("startup", "upgrade_util::InvokeGoogleUpdateForRename");
+
   Microsoft::WRL::ComPtr<IProcessLauncher> ipl;
   HRESULT hr = ::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
                                   CLSCTX_ALL, IID_PPV_ARGS(&ipl));
@@ -99,6 +104,8 @@ bool InvokeGoogleUpdateForRename() {
 namespace upgrade_util {
 
 bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
+  TRACE_EVENT0("startup", "upgrade_util::RelaunchChromeBrowserImpl");
+
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
     NOTREACHED();
@@ -121,6 +128,7 @@ bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
 }
 
 bool IsUpdatePendingRestart() {
+  TRACE_EVENT0("startup", "upgrade_util::IsUpdatePendingRestart");
   base::FilePath new_chrome_exe;
   if (!GetNewerChromeFile(&new_chrome_exe))
     return false;
@@ -130,6 +138,8 @@ bool IsUpdatePendingRestart() {
 bool SwapNewChromeExeIfPresent() {
   if (!IsUpdatePendingRestart())
     return false;
+
+  TRACE_EVENT0("startup", "upgrade_util::SwapNewChromeExeIfPresent");
 
   // If this is a system-level install, ask Google Update to launch an elevated
   // process to rename Chrome executables.
@@ -181,6 +191,7 @@ bool SwapNewChromeExeIfPresent() {
 }
 
 bool IsRunningOldChrome() {
+  TRACE_EVENT0("startup", "upgrade_util::IsRunningOldChrome");
   // This figures out the actual file name that the section containing the
   // mapped exe refers to. This is used instead of GetModuleFileName because the
   // .exe may have been renamed out from under us while we've been running which
@@ -199,12 +210,23 @@ bool IsRunningOldChrome() {
 }
 
 bool DoUpgradeTasks(const base::CommandLine& command_line) {
-  if (!SwapNewChromeExeIfPresent() && !IsRunningOldChrome())
+  TRACE_EVENT0("startup", "upgrade_util::DoUpgradeTasks");
+  const auto begin_time = base::TimeTicks::Now();
+  if (!SwapNewChromeExeIfPresent() && !IsRunningOldChrome()) {
+    UMA_HISTOGRAM_MEDIUM_TIMES("Startup.DoUpgradeTasks.NoRelaunch",
+                               base::TimeTicks::Now() - begin_time);
     return false;
+  }
   // At this point the chrome.exe has been swapped with the new one.
-  if (!RelaunchChromeBrowser(command_line)) {
-    // The re-launch fails. Feel free to panic now.
+  if (RelaunchChromeBrowser(command_line)) {
+    UMA_HISTOGRAM_MEDIUM_TIMES("Startup.DoUpgradeTasks.RelaunchSucceeded",
+                               base::TimeTicks::Now() - begin_time);
+  } else {
+    // The re-launch failed. Feel free to panic now.
     NOTREACHED();
+    // Log a metric anyways to see if this is at fault in crbug.com/1252004
+    UMA_HISTOGRAM_MEDIUM_TIMES("Startup.DoUpgradeTasks.RelaunchFailed",
+                               base::TimeTicks::Now() - begin_time);
   }
   return true;
 }
