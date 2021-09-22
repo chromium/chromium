@@ -310,17 +310,6 @@ bool ShouldIncludeVirtualFiles(const DropData& drop_data) {
 void PrepareDropData(DropData* drop_data, const ui::OSExchangeData& data) {
   drop_data->did_originate_from_renderer = data.DidOriginateFromRenderer();
 
-  base::FilePath filename;
-  std::string file_contents;
-  data.GetFileContents(&filename, &file_contents);
-  if (!filename.empty()) {
-    drop_data->file_contents = std::move(file_contents);
-    drop_data->file_contents_source_url = GURL(ui::FilePathToFileURL(filename));
-    base::FilePath::StringType extension = filename.Extension();
-    if (!extension.empty())
-      drop_data->file_contents_filename_extension = extension.substr(1);
-  }
-
   std::u16string plain_text;
   data.GetString(&plain_text);
   if (!plain_text.empty())
@@ -343,7 +332,23 @@ void PrepareDropData(DropData* drop_data, const ui::OSExchangeData& data) {
   if (html_base_url.is_valid())
     drop_data->html_base_url = html_base_url;
 
+  // Only add FileContents if Filenames is empty to avoid duplicates
+  // (https://crbug.com/1251482). We prefer filenames since it supports multiple
+  // files and does not send all file data upfront.
   data.GetFilenames(&drop_data->filenames);
+  if (drop_data->filenames.empty()) {
+    base::FilePath filename;
+    std::string file_contents;
+    data.GetFileContents(&filename, &file_contents);
+    if (!filename.empty()) {
+      drop_data->file_contents = std::move(file_contents);
+      drop_data->file_contents_source_url =
+          GURL(ui::FilePathToFileURL(filename));
+      base::FilePath::StringType extension = filename.Extension();
+      if (!extension.empty())
+        drop_data->file_contents_filename_extension = extension.substr(1);
+    }
+  }
 
 #if defined(OS_WIN)
   // Get a list of virtual files for later retrieval when a drop is performed

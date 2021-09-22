@@ -262,6 +262,8 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   };
 #endif
   data->SetFilenames(test_file_infos);
+  data->SetFileContents(base::FilePath(FILE_PATH_LITERAL("ignored")),
+                        "ignored");
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
                             ui::DragDropTypes::DRAG_COPY);
@@ -281,6 +283,11 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
 #else
   EXPECT_EQ(string_data, view->current_drop_data_->text);
 #endif
+
+  // FileContents should be ignored when Filenames exists
+  // (https://crbug.com/1251482).
+  EXPECT_FALSE(view->current_drop_data_->file_contents_source_url.is_valid());
+  EXPECT_TRUE(view->current_drop_data_->file_contents.empty());
 
   std::vector<ui::FileInfo> retrieved_file_infos =
       view->current_drop_data_->filenames;
