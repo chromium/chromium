@@ -422,9 +422,9 @@ IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest, TitleForNonHTTPOrigin) {
     nav_observer.Wait();
   }
 
-  ASSERT_EQ(2u, tab->GetAllFrames().size());
   content::RenderFrameHost* subframe =
       content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(subframe);
 
   // Verify the title that would be used for a dialog spawned by that subframe.
   javascript_dialogs::AppModalDialogManager* dialog_manager =

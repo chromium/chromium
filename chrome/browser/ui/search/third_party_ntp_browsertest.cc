@@ -73,8 +73,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
   nav_observer.WaitForNavigationFinished();
 
   // Verify that the subframe exists and has the expected origin.
-  ASSERT_EQ(2u, contents->GetAllFrames().size());
-  content::RenderFrameHost* subframe = contents->GetAllFrames()[1];
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
   std::string subframe_origin;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       subframe, "domAutomationController.send(window.origin)",

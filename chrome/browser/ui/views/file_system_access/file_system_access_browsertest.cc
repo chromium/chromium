@@ -497,9 +497,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 
   content::WebContents* third_party_web_contents =
       second_window->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(3u, third_party_web_contents->GetAllFrames().size());
   content::RenderFrameHost* third_party_iframe =
-      third_party_web_contents->GetAllFrames()[1];
+      ChildFrameAt(third_party_web_contents, 0);
+  ASSERT_TRUE(third_party_iframe);
   ASSERT_EQ(
       third_party_iframe->GetLastCommittedOrigin(),
       url::Origin::Create(first_party_web_contents->GetLastCommittedURL()));
@@ -641,9 +641,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 
   content::WebContents* third_party_web_contents =
       second_window->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(3u, third_party_web_contents->GetAllFrames().size());
   content::RenderFrameHost* third_party_iframe =
-      third_party_web_contents->GetAllFrames()[1];
+      ChildFrameAt(third_party_web_contents, 0);
+  ASSERT_TRUE(third_party_iframe);
   ASSERT_EQ(
       third_party_iframe->GetLastCommittedOrigin(),
       url::Origin::Create(first_party_web_contents->GetLastCommittedURL()));

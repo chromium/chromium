@@ -87,14 +87,16 @@ TEST_F(FlashTemporaryPermissionTrackerTest,
        GrantSurvivesChildFrameNavigations) {
   content::RenderFrameHost* rfh = GetMainRFH(kOrigin1);
   content::RenderFrameHost* child = AddChildRFH(rfh, kOrigin2);
-  EXPECT_EQ(2u, web_contents()->GetAllFrames().size());
+  EXPECT_EQ(
+      2u, CollectAllRenderFrameHosts(web_contents()->GetPrimaryPage()).size());
 
   tracker()->FlashEnabledForWebContents(web_contents());
   content::NavigationSimulator::Reload(web_contents());
   EXPECT_TRUE(tracker()->IsFlashEnabled(GURL(kOrigin1)));
 
   // Recreate the child frame after the reload.
-  EXPECT_EQ(1u, web_contents()->GetAllFrames().size());
+  EXPECT_EQ(
+      1u, CollectAllRenderFrameHosts(web_contents()->GetPrimaryPage()).size());
   child = AddChildRFH(rfh, kOrigin2);
 
   // Navigate the child frame. Flash should still be enabled after this.

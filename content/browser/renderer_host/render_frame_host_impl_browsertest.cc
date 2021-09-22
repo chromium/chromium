@@ -2667,8 +2667,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child0", blocked_url));
 
   // Verify that the NavigationHandle / NavigationRequest didn't leak.
-  RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetAllFrames()[1]);
+  RenderFrameHostImpl* frame =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(root_frame_host(), 0));
+
   EXPECT_FALSE(frame->HasPendingCommitNavigation());
 
   // TODO(lukasza, clamy): https://crbug.com/784904: Verify that
@@ -2870,9 +2871,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Browser-side origin should match the renderer-side origin.
   // See also https://crbug.com/932067.
-  ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
   RenderFrameHostImpl* subframe =
-      web_contents()->GetMainFrame()->child_at(0)->current_frame_host();
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(root_frame_host(), 0));
+  ASSERT_TRUE(subframe);
   EXPECT_EQ(main_origin, subframe->GetLastCommittedOrigin());
   EXPECT_EQ(blink::StorageKey(main_origin), subframe->storage_key());
 }
@@ -2900,8 +2901,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Wait for a new subframe, but ignore the frame returned by
   // |subframe_observer| (it might be the speculative one, not the current one).
   subframe_observer.Wait();
-  ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
-  RenderFrameHost* subframe = web_contents()->GetAllFrames()[1];
+  RenderFrameHost* subframe = ChildFrameAt(root_frame_host(), 0);
+  ASSERT_TRUE(subframe);
 
   // The browser-side origin of the *sandboxed* subframe should be set to an
   // *opaque* origin (with the parent's origin as the precursor origin).
@@ -2955,9 +2956,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Browser-side origin should match the renderer-side origin.
   // See also https://crbug.com/932067.
-  ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
   RenderFrameHostImpl* subframe2 =
-      web_contents()->GetMainFrame()->child_at(0)->current_frame_host();
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(root_frame_host(), 0));
+  ASSERT_TRUE(subframe2);
   EXPECT_EQ(subframe, subframe2);  // No swaps are expected.
   EXPECT_EQ(main_origin, subframe2->GetLastCommittedOrigin());
   EXPECT_EQ(blink::StorageKey(main_origin), subframe2->storage_key());
@@ -4820,7 +4821,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {
   DocumentUkmSourceIdObserver observer(web_contents);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-  ASSERT_EQ(2u, web_contents->GetAllFrames().size());
 
   RenderFrameHostImpl* main_frame_host =
       static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame());
@@ -4828,6 +4828,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {
   ukm::SourceId main_frame_doc_ukm_source_id =
       observer.GetMainFrameDocumentUkmSourceId();
 
+  ASSERT_EQ(1u, main_frame_host->child_count());
   RenderFrameHostImpl* sub_frame_host = static_cast<RenderFrameHostImpl*>(
       main_frame_host->child_at(0)->current_frame_host());
   ukm::SourceId subframe_doc_ukm_source_id =

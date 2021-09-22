@@ -1502,7 +1502,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   // Temporary extra expectations to investigate:
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1215493
   EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
-  EXPECT_EQ(2u, web_contents()->GetAllFrames().size());
+  EXPECT_EQ(
+      2u, CollectAllRenderFrameHosts(web_contents()->GetPrimaryPage()).size());
 
   RenderFrameHostImpl* A4 = web_contents()->GetMainFrame();
   RenderFrameHostImpl* B5 = A4->child_at(0)->current_frame_host();
@@ -1609,7 +1610,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
   // Temporary extra expectations to investigate:
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1215493
   EXPECT_EQ(url, web_contents()->GetLastCommittedURL());
-  EXPECT_EQ(3u, web_contents()->GetAllFrames().size());
+  EXPECT_EQ(
+      3u, CollectAllRenderFrameHosts(web_contents()->GetPrimaryPage()).size());
 
   RenderFrameHostImpl* A5 = web_contents()->GetMainFrame();
   RenderFrameHostImpl* B6 = A5->child_at(0)->current_frame_host();

@@ -3614,7 +3614,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, CtrlClickSubframeLink) {
   // Start intercepting the DidOpenRequestedURL callback.
   MockDidOpenRequestedURLObserver mock_observer(shell());
   WebContents* new_web_contents1 = nullptr;
-  RenderFrameHost* subframe = shell()->web_contents()->GetAllFrames()[1];
+  RenderFrameHost* subframe =
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
   EXPECT_CALL(mock_observer,
               DidOpenRequestedURL(
                   ::testing::_,  // new_contents (captured via SaveArg below)

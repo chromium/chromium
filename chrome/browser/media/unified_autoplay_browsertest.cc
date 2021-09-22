@@ -458,11 +458,11 @@ class UnifiedAutoplaySettingBrowserTest : public UnifiedAutoplayBrowserTest {
   }
 
   content::RenderFrameHost* main_frame() const {
-    return web_contents()->GetAllFrames()[0];
+    return web_contents()->GetMainFrame();
   }
 
   content::RenderFrameHost* first_child() const {
-    return web_contents()->GetAllFrames()[1];
+    return ChildFrameAt(main_frame(), 0);
   }
 
  private:

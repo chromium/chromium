@@ -1080,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, InifiniteLoopInGetEffectiveURL) {
                                   var iframe = document.createElement('iframe');
                                   document.body.appendChild(iframe);
                                   window.name = 'main-frame'; )"));
-  content::RenderFrameHost* subframe1 = web_contents->GetAllFrames()[1];
+  content::RenderFrameHost* subframe1 = ChildFrameAt(web_contents, 0);
   ASSERT_TRUE(
       content::ExecJs(subframe1, "var w = window.open('', 'main-frame');"));
   EXPECT_EQ(subframe1, web_contents->GetOpener());

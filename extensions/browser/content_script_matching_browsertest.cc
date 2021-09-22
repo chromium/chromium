@@ -207,37 +207,41 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
   }
 
   content::RenderFrameHost* tab1_fooFrame() {
-    DCHECK(tab1_);
+    EXPECT_TRUE(tab1_);
     return tab1_->GetMainFrame();
   }
 
   content::RenderFrameHost* tab1_fooBlankFrame() {
-    DCHECK(tab1_);
-    DCHECK_LT(1u, tab1_->GetAllFrames().size());
-    return tab1_->GetAllFrames()[1];
+    EXPECT_TRUE(tab1_);
+    content::RenderFrameHost* child = ChildFrameAt(tab1_fooFrame(), 0);
+    EXPECT_TRUE(child);
+    return child;
   }
 
   content::RenderFrameHost* tab1_barFrame() {
-    DCHECK(tab1_);
-    DCHECK_LT(2u, tab1_->GetAllFrames().size());
-    return tab1_->GetAllFrames()[2];
+    EXPECT_TRUE(tab1_);
+    content::RenderFrameHost* child = ChildFrameAt(tab1_fooFrame(), 1);
+    EXPECT_TRUE(child);
+    return child;
   }
 
   content::RenderFrameHost* tab1_barBlankFrame() {
-    DCHECK(tab1_);
-    DCHECK_LT(3u, tab1_->GetAllFrames().size());
-    return tab1_->GetAllFrames()[3];
+    EXPECT_TRUE(tab1_);
+    content::RenderFrameHost* child = ChildFrameAt(tab1_barFrame(), 0);
+    EXPECT_TRUE(child);
+    return child;
   }
 
   content::RenderFrameHost* tab2_barBlankFrame1() {
-    DCHECK(tab2_);
+    EXPECT_TRUE(tab2_);
     return tab2_->GetMainFrame();
   }
 
   content::RenderFrameHost* tab2_barBlankFrame2() {
-    DCHECK(tab2_);
-    DCHECK_LT(1u, tab1_->GetAllFrames().size());
-    return tab2_->GetAllFrames()[1];
+    EXPECT_TRUE(tab2_);
+    content::RenderFrameHost* child = ChildFrameAt(tab2_barBlankFrame1(), 0);
+    EXPECT_TRUE(child);
+    return child;
   }
 
   // Populated by SetUpFrameTree (during test setup / in SetUpOnMainThread).

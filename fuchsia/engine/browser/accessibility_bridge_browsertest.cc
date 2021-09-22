@@ -1076,7 +1076,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
       kPage1Title);
 
   // Two frames should be present.
-  int num_frames = frame_impl_->web_contents_for_test()->GetAllFrames().size();
+  int num_frames = CollectAllRenderFrameHosts(
+                       frame_impl_->web_contents_for_test()->GetPrimaryPage())
+                       .size();
+
   EXPECT_EQ(num_frames, 2);
 
   // Check that the iframe node has been loaded.
@@ -1122,7 +1125,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
 
   // We've navigated to a different page that has no iframes. Only one frame
   // should be present.
-  num_frames = frame_impl_->web_contents_for_test()->GetAllFrames().size();
+  num_frames = CollectAllRenderFrameHosts(
+                   frame_impl_->web_contents_for_test()->GetPrimaryPage())
+                   .size();
+
   EXPECT_EQ(num_frames, 1);
 }
 

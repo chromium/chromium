@@ -766,8 +766,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
         content::JsReplace(kSubframeInjectionScriptTemplate,
                            extension->GetResourceURL("subframe.html"))));
     subframe_nav_observer.Wait();
-    ASSERT_EQ(2u, web_contents()->GetAllFrames().size());
-    extension_subframe = web_contents()->GetAllFrames()[1];
+    extension_subframe = ChildFrameAt(web_contents(), 0);
+    ASSERT_TRUE(extension_subframe);
     ASSERT_EQ(extension->origin(),
               extension_subframe->GetLastCommittedOrigin());
   }

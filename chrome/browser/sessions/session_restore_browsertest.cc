@@ -2580,10 +2580,12 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* old_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(main_url, old_tab->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(a_origin, old_tab->GetMainFrame()->GetLastCommittedOrigin());
-  ASSERT_EQ(2u, old_tab->GetAllFrames().size());
-  content::RenderFrameHost* subframe = old_tab->GetAllFrames()[1];
+  content::RenderFrameHostWrapper old_tab_main_frame(old_tab->GetMainFrame());
+  EXPECT_EQ(main_url, old_tab_main_frame->GetLastCommittedURL());
+  EXPECT_EQ(a_origin, old_tab_main_frame->GetLastCommittedOrigin());
+  content::RenderFrameHost* subframe =
+      ChildFrameAt(old_tab_main_frame.get(), 0);
+  ASSERT_TRUE(subframe);
   EXPECT_EQ(subframe_url, subframe->GetLastCommittedURL());
   EXPECT_EQ(a_origin, subframe->GetLastCommittedOrigin());
 
@@ -2595,8 +2597,7 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
         content::ExecJs(old_tab, "window.open('about:blank', 'subframe');"));
     nav_observer.Wait();
   }
-  ASSERT_EQ(2u, old_tab->GetAllFrames().size());
-  EXPECT_EQ(subframe, old_tab->GetAllFrames()[1]);
+  EXPECT_EQ(subframe, ChildFrameAt(old_tab_main_frame.get(), 0));
   EXPECT_EQ(GURL(url::kAboutBlankURL), subframe->GetLastCommittedURL());
   EXPECT_EQ(a_origin, subframe->GetLastCommittedOrigin());
 
@@ -2610,8 +2611,8 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
         content::ExecJs(subframe, content::JsReplace("location = $1;", c_url)));
     nav_observer.Wait();
   }
-  ASSERT_EQ(2u, old_tab->GetAllFrames().size());
-  subframe = old_tab->GetAllFrames()[1];
+  subframe = ChildFrameAt(old_tab_main_frame.get(), 0);
+  ASSERT_TRUE(subframe);
   EXPECT_EQ(c_url, subframe->GetLastCommittedURL());
   EXPECT_EQ(c_origin, subframe->GetLastCommittedOrigin());
 
@@ -2625,17 +2626,18 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
   ASSERT_TRUE(new_tab->GetController().CanGoBack());
   old_tab = nullptr;
 
+  content::RenderFrameHost* new_tab_main_frame = new_tab->GetMainFrame();
   // Verify that the restored tab hosts: a.com(c.com).
-  EXPECT_EQ(main_url, new_tab->GetMainFrame()->GetLastCommittedURL());
-  EXPECT_EQ(a_origin, new_tab->GetMainFrame()->GetLastCommittedOrigin());
-  ASSERT_EQ(2u, new_tab->GetAllFrames().size());
-  subframe = new_tab->GetAllFrames()[1];
+  EXPECT_EQ(main_url, new_tab_main_frame->GetLastCommittedURL());
+  EXPECT_EQ(a_origin, new_tab_main_frame->GetLastCommittedOrigin());
+  subframe = ChildFrameAt(new_tab_main_frame, 0);
+  ASSERT_TRUE(subframe);
   EXPECT_EQ(c_url, subframe->GetLastCommittedURL());
   EXPECT_EQ(c_origin, subframe->GetLastCommittedOrigin());
 
   // Check that main frame and subframe are in the same BrowsingInstance.
   content::SiteInstance* subframe_instance_c = subframe->GetSiteInstance();
-  EXPECT_TRUE(new_tab->GetMainFrame()->GetSiteInstance()->IsRelatedSiteInstance(
+  EXPECT_TRUE(new_tab_main_frame->GetSiteInstance()->IsRelatedSiteInstance(
       subframe_instance_c));
 
   // Go back - this should reach: a.com(a.com-blank).
@@ -2644,13 +2646,13 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
     new_tab->GetController().GoBack();
     nav_observer.Wait();
   }
-  ASSERT_EQ(2u, new_tab->GetAllFrames().size());
-  subframe = new_tab->GetAllFrames()[1];
+  subframe = ChildFrameAt(new_tab_main_frame, 0);
+  ASSERT_TRUE(subframe);
   EXPECT_EQ(GURL(url::kAboutBlankURL), subframe->GetLastCommittedURL());
   EXPECT_EQ(a_origin, subframe->GetLastCommittedOrigin());
 
   // Check that we're still in the same BrowsingInstance.
-  EXPECT_TRUE(new_tab->GetMainFrame()->GetSiteInstance()->IsRelatedSiteInstance(
+  EXPECT_TRUE(new_tab_main_frame->GetSiteInstance()->IsRelatedSiteInstance(
       subframe->GetSiteInstance()));
   EXPECT_TRUE(
       subframe_instance_c->IsRelatedSiteInstance(subframe->GetSiteInstance()));

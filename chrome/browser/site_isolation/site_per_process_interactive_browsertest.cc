@@ -1571,8 +1571,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   content::WebContents* old_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   ASSERT_TRUE(NavigateIframeToURL(old_contents, "test", subframe_url));
-  EXPECT_LE(2u, old_contents->GetAllFrames().size());
-  content::RenderFrameHost* subframe = old_contents->GetAllFrames()[1];
+  content::RenderFrameHost* subframe = ChildFrameAt(old_contents, 0);
+  ASSERT_TRUE(subframe);
   EXPECT_EQ(subframe_url, subframe->GetLastCommittedURL());
 
   // Simulate the ctrl-return to open the anchor's link in a new background tab.

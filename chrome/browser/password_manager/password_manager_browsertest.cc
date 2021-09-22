@@ -3236,7 +3236,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ReattachWebContents) {
   observer.Wait();
   // Ensure that there is at least one more frame created than just the main
   // frame.
-  EXPECT_LT(1u, detached_web_contents->GetAllFrames().size());
+  EXPECT_LT(1u,
+            CollectAllRenderFrameHosts(detached_web_contents->GetPrimaryPage())
+                .size());
 
   auto* tab_strip_model = browser()->tab_strip_model();
   // Check that the autofill and password manager driver factories are notified

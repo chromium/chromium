@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   // https://crbug.com/642958 wouldn't repro in presence of process swaps).
   navigation_observer.Wait();
   auto* b_frame =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetAllFrames()[1];
+      ChildFrameAt(browser()->tab_strip_model()->GetActiveWebContents(), 0);
   GURL b_url = b_frame->GetLastCommittedURL();
   ASSERT_EQ(b_url.host(), "b.com");  // Sanity check of test code / setup.
   ASSERT_TRUE(b_frame->GetSiteInstance()->RequiresDedicatedProcess());

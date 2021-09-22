@@ -1854,8 +1854,9 @@ bool FrameHasSourceUrl(const GURL& url, RenderFrameHost* frame) {
   return frame->GetLastCommittedURL() == url;
 }
 
-RenderFrameHost* ChildFrameAt(RenderFrameHost* frame, size_t index) {
-  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(frame);
+RenderFrameHost* ChildFrameAt(const ToRenderFrameHost& adapter, size_t index) {
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
   if (index >= rfh->frame_tree_node()->child_count())
     return nullptr;
   return rfh->frame_tree_node()->child_at(index)->current_frame_host();
@@ -1867,6 +1868,10 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
   starting_rfh->ForEachRenderFrameHost(base::BindLambdaForTesting(
       [&](RenderFrameHost* rfh) { visited_frames.push_back(rfh); }));
   return visited_frames;
+}
+
+std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(Page& page) {
+  return CollectAllRenderFrameHosts(&page.GetMainDocument());
 }
 
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(

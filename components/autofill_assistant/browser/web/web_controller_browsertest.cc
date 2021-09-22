@@ -818,7 +818,7 @@ document.getElementById("overlay").style.visibility='visible';
   // Show the overlay in the first iframe, which covers the content
   // of that frame.
   void ShowOverlayInFrame() {
-    EXPECT_TRUE(ExecJs(shell()->web_contents()->GetAllFrames()[1],
+    EXPECT_TRUE(ExecJs(ChildFrameAt(shell()->web_contents(), 0),
                        R"(
 document.getElementById("overlay_in_frame").style.visibility='visible';
 )"));
@@ -834,7 +834,7 @@ document.getElementById("overlay").style.visibility='hidden';
 
   // Hide the overlay in the first iframe.
   void HideOverlayInFrame() {
-    EXPECT_TRUE(ExecJs(shell()->web_contents()->GetAllFrames()[1],
+    EXPECT_TRUE(ExecJs(ChildFrameAt(shell()->web_contents(), 0),
                        R"(
 document.getElementById("overlay_in_frame").style.visibility='hidden';
 )"));
@@ -2503,7 +2503,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, CheckOnTopInFrame) {
 
   // Make sure the button is visible.
   EXPECT_TRUE(
-      ExecJs(shell()->web_contents()->GetAllFrames()[1],
+      ExecJs(ChildFrameAt(shell()->web_contents(), 0),
              "document.getElementById('button').scrollIntoViewIfNeeded();"));
 
   // The button is covered by an overlay in the main frame

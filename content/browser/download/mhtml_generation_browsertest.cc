@@ -410,7 +410,8 @@ class MHTMLGenerationTest : public ContentBrowserTest,
       const std::vector<std::string>& expected_substrings,
       const std::vector<std::string>& forbidden_substrings) {
     int actual_number_of_frames =
-        shell()->web_contents()->GetAllFrames().size();
+        CollectAllRenderFrameHosts(shell()->web_contents()->GetPrimaryPage())
+            .size();
     EXPECT_EQ(expected_number_of_frames, actual_number_of_frames);
 
     for (const auto& expected_substring : expected_substrings) {

@@ -768,8 +768,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   // Grab the original frames.
   content::WebContents* contents = tsm()->GetActiveWebContents();
   content::RenderFrameHost* main_frame = contents->GetMainFrame();
-  ASSERT_EQ(3u, contents->GetAllFrames().size());
-  content::RenderFrameHost* child_frame = contents->GetAllFrames()[1];
+  content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
 
   // Sanity check that in this test page the main frame and the
   // subframe are cross-site.
@@ -805,8 +805,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   // Re-assign pointers after discarding, as they've changed.
   contents = tsm()->GetActiveWebContents();
   main_frame = contents->GetMainFrame();
-  ASSERT_LE(2u, contents->GetAllFrames().size());
-  child_frame = contents->GetAllFrames()[1];
+  child_frame = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
 
   // document.wasDiscarded is true after discard, on mainframe and childframe.
   bool discarded_mainframe_result;
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   GURL childframe_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateIframeToURL(contents, "frame1", childframe_url));
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents->GetAllFrames()[1], kDiscardedStateJS,
+      ChildFrameAt(contents, 0), kDiscardedStateJS,
       &discarded_childframe_result));
   EXPECT_FALSE(discarded_childframe_result);
 
@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
       embedded_test_server()->GetURL("d.com", "/title1.html"));
   EXPECT_TRUE(NavigateIframeToURL(contents, "frame2", second_childframe_url));
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      contents->GetAllFrames()[2], kDiscardedStateJS,
+      ChildFrameAt(contents, 1), kDiscardedStateJS,
       &discarded_childframe_result));
   EXPECT_FALSE(discarded_childframe_result);
 

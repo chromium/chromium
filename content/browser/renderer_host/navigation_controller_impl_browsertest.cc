@@ -13665,7 +13665,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       shell()->web_contents()->GetController());
 
   // Add 5 dynamic subframes to |frame|.
-  RenderFrameHost* frame = shell()->web_contents()->GetAllFrames()[1];
+  RenderFrameHost* frame = ChildFrameAt(current_main_frame_host(), 0);
   std::string script = R"(
         for (var i = 0; i < 5; i++) {
           var iframe = document.createElement("iframe");
@@ -13707,7 +13707,7 @@ IN_PROC_BROWSER_TEST_P(
       shell()->web_contents()->GetController());
 
   // Add 5 dynamic subframes to |frame|.
-  RenderFrameHost* frame = shell()->web_contents()->GetAllFrames()[1];
+  RenderFrameHost* frame = ChildFrameAt(current_main_frame_host(), 0);
   std::string script = R"(
         for (var i = 0; i < 5; i++) {
           var iframe = document.createElement("iframe");

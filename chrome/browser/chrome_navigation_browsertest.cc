@@ -905,9 +905,9 @@ IN_PROC_BROWSER_TEST_F(
   }
 
   // 3. Find the cross-site subframes in the popup.
-  EXPECT_EQ(3u, popup->GetAllFrames().size());
   content::RenderFrameHost* popup_root = popup->GetMainFrame();
-  content::RenderFrameHost* cross_site_subframe = popup->GetAllFrames()[1];
+  content::RenderFrameHost* cross_site_subframe = ChildFrameAt(popup_root, 0);
+  ASSERT_TRUE(cross_site_subframe);
   EXPECT_NE(cross_site_subframe->GetLastCommittedOrigin(),
             popup_root->GetLastCommittedOrigin());
   EXPECT_NE(cross_site_subframe->GetLastCommittedOrigin(),

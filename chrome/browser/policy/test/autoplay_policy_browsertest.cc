@@ -72,7 +72,7 @@ class AutoplayPolicyTest : public PolicyTest {
   }
 
   content::RenderFrameHost* GetChildFrame() {
-    return GetWebContents()->GetAllFrames()[1];
+    return ChildFrameAt(GetMainFrame(), 0);
   }
 
  private:

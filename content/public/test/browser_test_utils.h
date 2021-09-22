@@ -876,14 +876,17 @@ bool FrameMatchesName(const std::string& name, RenderFrameHost* frame);
 bool FrameIsChildOfMainFrame(RenderFrameHost* frame);
 bool FrameHasSourceUrl(const GURL& url, RenderFrameHost* frame);
 
-// Finds the child frame at the specified |index| for |frame| and returns its
+// Finds the child frame at the specified |index| for |adapter| and returns its
 // RenderFrameHost.  Returns nullptr if such child frame does not exist.
-RenderFrameHost* ChildFrameAt(RenderFrameHost* frame, size_t index);
+RenderFrameHost* ChildFrameAt(const ToRenderFrameHost& adapter, size_t index);
 
 // Returns the frames visited by |RenderFrameHost::ForEachRenderFrameHost| in
 // the same order.
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     RenderFrameHost* starting_rfh);
+// Returns the frames visited by |RenderFrameHost::ForEachRenderFrameHost| on
+// |page|'s main document in the same order.
+std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(Page& page);
 // Returns the frames visited by |WebContents::ForEachRenderFrameHost| in
 // the same order.
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(

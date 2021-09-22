@@ -736,8 +736,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintSubframeContent) {
 
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(2u, original_contents->GetAllFrames().size());
-  content::RenderFrameHost* test_frame = original_contents->GetAllFrames()[1];
+  content::RenderFrameHost* test_frame = ChildFrameAt(original_contents, 0);
   ASSERT_TRUE(test_frame);
 
   CreateTestPrintRenderFrame(test_frame, original_contents);
@@ -761,7 +760,6 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintSubframeChain) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(3u, original_contents->GetAllFrames().size());
   // Create composite client so subframe print message can be forwarded.
   PrintCompositeClient::CreateForWebContents(original_contents);
 
@@ -808,7 +806,6 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintSubframeABA) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(3u, original_contents->GetAllFrames().size());
   // Create composite client so subframe print message can be forwarded.
   PrintCompositeClient::CreateForWebContents(original_contents);
 
@@ -859,10 +856,9 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
 
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(2u, original_contents->GetAllFrames().size());
   content::RenderFrameHost* main_frame = original_contents->GetMainFrame();
   ASSERT_TRUE(main_frame);
-  content::RenderFrameHost* test_frame = original_contents->GetAllFrames()[1];
+  content::RenderFrameHost* test_frame = ChildFrameAt(main_frame, 0);
   ASSERT_TRUE(test_frame);
   ASSERT_NE(main_frame->GetProcess(), test_frame->GetProcess());
 
@@ -930,8 +926,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest,
 
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(2u, original_contents->GetAllFrames().size());
-  content::RenderFrameHost* test_frame = original_contents->GetAllFrames()[1];
+  content::RenderFrameHost* test_frame = ChildFrameAt(original_contents, 0);
   ASSERT_TRUE(test_frame);
   ASSERT_TRUE(test_frame->IsRenderFrameLive());
   // Wait for the renderer to be down.
@@ -958,8 +953,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest,
 
   content::WebContents* original_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(2u, original_contents->GetAllFrames().size());
-  content::RenderFrameHost* subframe = original_contents->GetAllFrames()[1];
+  content::RenderFrameHost* subframe = ChildFrameAt(original_contents, 0);
   ASSERT_TRUE(subframe);
   auto* subframe_rph = subframe->GetProcess();
 
@@ -998,9 +992,8 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPrintBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(NavigateIframeToURL(original_contents, "iframe", isolated_url));
 
-  ASSERT_EQ(2u, original_contents->GetAllFrames().size());
   auto* main_frame = original_contents->GetMainFrame();
-  auto* subframe = original_contents->GetAllFrames()[1];
+  auto* subframe = ChildFrameAt(main_frame, 0);
   ASSERT_NE(main_frame->GetProcess(), subframe->GetProcess());
 
   PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);

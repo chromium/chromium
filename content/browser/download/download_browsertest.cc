@@ -4273,7 +4273,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
       base::BindLambdaForTesting([&]() {
         DownloadInProgressObserver observer(DownloadManagerForShell(shell()));
         EXPECT_TRUE(
-            ExecJs(shell()->web_contents()->GetAllFrames()[1],
+            ExecJs(ChildFrameAt(shell()->web_contents(), 0),
                    "var anchorElement = document.querySelector('a[download]'); "
                    "anchorElement.click();"));
         download_item = observer.WaitAndGetInProgressDownload();

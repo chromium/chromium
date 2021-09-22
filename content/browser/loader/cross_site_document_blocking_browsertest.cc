@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   std::string fetch_script =
       base::StringPrintf(fetch_script_template, kPrefetchResourcePath);
   EXPECT_EQ("<p>contents of the response</p>",
-            EvalJs(shell()->web_contents()->GetAllFrames()[1], fetch_script,
+            EvalJs(ChildFrameAt(shell()->web_contents(), 0), fetch_script,
                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
