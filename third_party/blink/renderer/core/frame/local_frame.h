@@ -664,6 +664,11 @@ class CORE_EXPORT LocalFrame final : public Frame,
   // Return true if the frame has a transient affordance to enter fullscreen.
   bool IsTransientAllowFullscreenActive() const;
 
+  // Activate the transient affordance to enter fullscreen.
+  void ActivateTransientAllowFullscreen() {
+    transient_allow_fullscreen_.Activate();
+  }
+
   // Returns the state of the |PaymentRequestToken| in the current |Frame|.
   bool IsPaymentRequestTokenActive() const;
 

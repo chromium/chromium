@@ -710,10 +710,6 @@ interface LocalFrame {
   // container policy.
   DidUpdateFramePolicy(blink.mojom.FramePolicy frame_policy);
 
-  // Called when the device's screen information changes.
-  // TODO(crbug.com/1205676): Remove deprecated window.screenschange plumbing.
-  OnScreensChange();
-
   // Posts a message from a frame in another process to the current renderer.
   // |source_frame_token| is the frame token of the RemoteFrame in the current
   // renderer representing the frame (from a different renderer) where this

@@ -109,6 +109,11 @@ void Screens::UpdateScreenInfos(LocalDOMWindow* window,
 
   // (4) Send a change event if the set of screens has changed.
   if (added_or_removed) {
+    // Allow fullscreen requests shortly after user-generated screens changes.
+    // TODO(enne): consider doing this only when screens have been added.
+    LocalFrame* frame = window->GetFrame();
+    frame->ActivateTransientAllowFullscreen();
+
     DispatchEvent(*Event::Create(event_type_names::kScreenschange));
   }
 

@@ -105,8 +105,6 @@ void FakeLocalFrame::ReportContentSecurityPolicyViolation(
 void FakeLocalFrame::DidUpdateFramePolicy(
     const blink::FramePolicy& frame_policy) {}
 
-void FakeLocalFrame::OnScreensChange() {}
-
 void FakeLocalFrame::PostMessageEvent(
     const absl::optional<blink::RemoteFrameToken>& source_frame_token,
     const std::u16string& source_origin,

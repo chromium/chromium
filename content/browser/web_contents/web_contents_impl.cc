@@ -1469,21 +1469,6 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   // this local process display::Screen signal should not trigger updates.
   // TODO(crbug.com/1169291): Unify screen info plumbing, caching, etc.
 #if !defined(OS_MAC)
-  // Send |is_multi_screen_changed| events to all visible frames, but limit
-  // other events to frames with the Window Placement permission. This obviates
-  // the most pressing need for sites to poll window.screen.isExtended which is
-  // exposed without explicit permission, while also protecting privacy.
-  // TODO(crbug.com/1109989): Postpone events; refine utility/privacy balance.
-  // TODO(crbug.com/1205676): Remove this deprecated window.screenschange code.
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
-    RenderFrameHostImpl* rfh = node->current_frame_host();
-    if ((is_multi_screen_changed &&
-         rfh->GetVisibilityState() == PageVisibilityState::kVisible) ||
-        IsWindowPlacementGranted(rfh)) {
-      rfh->GetAssociatedLocalFrame()->OnScreensChange();
-    }
-  }
-
   // This updates Screen attributes and fires Screen.change events as needed,
   // propagating to all widgets through the VisualProperties update waterfall.
   // This is triggered by system changes, not renderer IPC, so explicitly check
