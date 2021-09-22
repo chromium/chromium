@@ -5,7 +5,9 @@
 #include "ui/base/interaction/interaction_sequence.h"
 
 #include "base/callback_forward.h"
+#include "base/debug/stack_trace.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -1417,6 +1419,106 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringCompleted) {
                           element2.Activate());
   EXPECT_FALSE(tracker);
 }
+
+// Test step default values:
+
+TEST(InteractionSequenceTest, MustBeVisibleAtStart_DefaultsToTrueForActivated) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step1_end);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step2_end);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  TestElement element3(kTestIdentifier3, kTestContext1);
+  auto tracker =
+      InteractionSequence::Builder()
+          .SetContext(element1.context())
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetEndCallback(step1_end.Get())
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .SetEndCallback(step2_end.Get())
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element3.identifier())
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+
+  tracker->Start();
+  EXPECT_CALLS_IN_SCOPE_3(
+      step1_end, Run, step2_end, Run, aborted,
+      Run(nullptr, element3.identifier(),
+          InteractionSequence::StepType::kActivated,
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
+      element1.Show());
+}
+
+TEST(InteractionSequenceTest,
+     MustRemainVisible_DefaultsBasedOnCurrentAndNextStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+  auto tracker =
+      InteractionSequence::Builder()
+          .SetContext(element1.context())
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          // Shown followed by hidden defaults to must_remain_visible = false.
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .Build())
+          // Activated step defaults to false.
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetMustBeVisibleAtStart(false)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          // Shown followed by activated defaults to true.
+          // (We will fail the sequence on this step.)
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element3.identifier())
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element3.identifier())
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+
+  tracker->Start();
+  // Trigger step 2.
+  element1.Hide();
+  element2.Show();
+  // Trigger step 3.
+  element2.Activate();
+  // Trigger step 4.
+  element3.Show();
+
+  // Fail step four.
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(&element3, element3.identifier(),
+          InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep),
+      element3.Hide());
+}
+
+// RunSynchronouslyForTesting() tests:
 
 TEST(InteractionSequenceTest,
      RunSynchronouslyForTesting_SequenceAbortsDuringStart) {

@@ -71,6 +71,29 @@ static SafeAutoReset<T, U> MakeSafeAutoReset(base::WeakPtr<T> ptr,
   return SafeAutoReset<T, U>(ptr, ref, new_value);
 }
 
+// Sets step->must_remain_visible if it does not have a value.
+void SetDefaultMustRemainVisibleValue(InteractionSequence::Step* step,
+                                      const InteractionSequence::Step* next) {
+  if (step->must_remain_visible.has_value())
+    return;
+
+  // Default for types other than kShown is false.
+  if (step->type != InteractionSequence::StepType::kShown) {
+    step->must_remain_visible = false;
+    return;
+  }
+
+  // If the following step is to hide the same element, the default is false.
+  if (next && next->type == InteractionSequence::StepType::kHidden &&
+      next->id == step->id) {
+    step->must_remain_visible = false;
+    return;
+  }
+
+  // Otherwise for kShown steps, the default is true.
+  step->must_remain_visible = true;
+}
+
 }  // anonymous namespace
 
 InteractionSequence::Step::Step() = default;
@@ -109,20 +132,31 @@ InteractionSequence::Builder::SetCompletedCallback(CompletedCallback callback) {
 
 InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
     std::unique_ptr<Step> step) {
+  // Do consistency checks and set up defaults.
   DCHECK(step->id);
   DCHECK(configuration_->steps.empty() || !step->element)
       << " Only the initial step of a sequence may have a pre-set element.";
-  DCHECK(!step->element || step->must_be_visible)
-      << " Initial step with associated element must be visible from start.";
   step->must_be_visible =
       step->must_be_visible.value_or(step->type == StepType::kActivated);
-  step->must_remain_visible =
-      step->must_remain_visible.value_or(step->type == StepType::kShown);
-  DCHECK(step->type != StepType::kHidden || !step->must_remain_visible.value());
+  DCHECK(!step->element || step->must_be_visible.value())
+      << " Initial step with associated element must be visible from start.";
+  DCHECK(step->type != InteractionSequence::StepType::kHidden ||
+         !step->must_remain_visible.has_value() ||
+         !step->must_remain_visible.value());
   if (!configuration_->context)
     configuration_->context = step->context;
   else
     DCHECK(!step->context || step->context == configuration_->context);
+
+  // Since the must_remain_visible value can be dependent on the following
+  // step, we'll set it on the previous step, then set it on the final step
+  // when we build the sequence.
+  if (!configuration_->steps.empty()) {
+    SetDefaultMustRemainVisibleValue(configuration_->steps.back().get(),
+                                     step.get());
+  }
+
+  // Add the step.
   configuration_->steps.emplace_back(std::move(step));
   return *this;
 }
@@ -135,6 +169,8 @@ InteractionSequence::Builder& InteractionSequence::Builder::SetContext(
 
 std::unique_ptr<InteractionSequence> InteractionSequence::Builder::Build() {
   DCHECK(!configuration_->steps.empty());
+  // Configure defaults for the final step.
+  SetDefaultMustRemainVisibleValue(configuration_->steps.back().get(), nullptr);
   DCHECK(configuration_->context)
       << "If no view is provided, Builder::SetContext() must be called.";
   return base::WrapUnique(new InteractionSequence(std::move(configuration_)));
@@ -427,6 +463,11 @@ void InteractionSequence::StageNextStep() {
 
   if (!activated_during_callback_ && next->must_be_visible.value() &&
       !next_element) {
+    // We're going to abort, but we have to finish the current step first.
+    if (current_step_) {
+      RunIfValid(std::move(current_step_->end_callback), current_step_->element,
+                 current_step_->id, current_step_->type);
+    }
     // Fast forward to the next step before aborting so we get the correct
     // information on the failed step in the abort callback.
     current_step_ = std::move(configuration_->steps.front());
