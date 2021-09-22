@@ -77,6 +77,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -4743,6 +4744,113 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kMixedContent, 1);
+}
+
+// Check that the Content-Security-Policy set via HTTP header applies after the
+// activation. This test verifies that that the web sandbox flags value is none.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       ActivatePageWithCspHeaderFrameSrc) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/set-header?Content-Security-Policy: frame-src 'none'");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+
+  // Check that CSP was set on the prerendered page prior to activation.
+  {
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp_pre =
+        prerendered_render_frame_host->policy_container_host()
+            ->policies()
+            .content_security_policies;
+    EXPECT_EQ(1u, root_csp_pre.size());
+    EXPECT_EQ("frame-src 'none'", root_csp_pre[0]->header->header_value);
+    EXPECT_EQ(prerendered_render_frame_host->active_sandbox_flags(),
+              network::mojom::WebSandboxFlags::kNone);
+  }
+
+  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+
+  // Check that CSP was set on the prerendered page after activation.
+  {
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp_post =
+        current_frame_host()
+            ->policy_container_host()
+            ->policies()
+            .content_security_policies;
+    EXPECT_EQ(1u, root_csp_post.size());
+    EXPECT_EQ("frame-src 'none'", root_csp_post[0]->header->header_value);
+    EXPECT_EQ(current_frame_host()->active_sandbox_flags(),
+              network::mojom::WebSandboxFlags::kNone);
+    EXPECT_EQ(static_cast<WebContentsImpl*>(web_contents())
+                  ->GetFrameTree()
+                  ->root()
+                  ->active_sandbox_flags(),
+              network::mojom::WebSandboxFlags::kNone);
+  }
+}
+
+// Check that the Content-Security-Policy set via HTTP header applies after the
+// activation. This test verifies that that the web sandbox flags value is set
+// to allow scripts.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       ActivatePageWithCspHeaderSandboxFlags) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/set-header?Content-Security-Policy: sandbox allow-scripts");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+
+  // Check that CSP was set on the prerendered page prior to activation.
+  {
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp_pre =
+        prerendered_render_frame_host->policy_container_host()
+            ->policies()
+            .content_security_policies;
+    EXPECT_EQ(1u, root_csp_pre.size());
+    EXPECT_EQ("sandbox allow-scripts", root_csp_pre[0]->header->header_value);
+    EXPECT_EQ(prerendered_render_frame_host->active_sandbox_flags(),
+              network::mojom::WebSandboxFlags::kAll &
+                  ~network::mojom::WebSandboxFlags::kScripts &
+                  ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
+  }
+
+  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+
+  // Check that CSP was set on the prerendered page after activation.
+  {
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp_post =
+        current_frame_host()
+            ->policy_container_host()
+            ->policies()
+            .content_security_policies;
+    EXPECT_EQ(1u, root_csp_post.size());
+    EXPECT_EQ("sandbox allow-scripts", root_csp_post[0]->header->header_value);
+    EXPECT_EQ(current_frame_host()->active_sandbox_flags(),
+              network::mojom::WebSandboxFlags::kAll &
+                  ~network::mojom::WebSandboxFlags::kScripts &
+                  ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
+    EXPECT_EQ(static_cast<WebContentsImpl*>(web_contents())
+                  ->GetFrameTree()
+                  ->root()
+                  ->active_sandbox_flags(),
+              network::mojom::WebSandboxFlags::kAll &
+                  ~network::mojom::WebSandboxFlags::kScripts &
+                  ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
+  }
 }
 
 class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
