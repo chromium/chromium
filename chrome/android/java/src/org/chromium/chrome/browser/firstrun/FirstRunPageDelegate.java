@@ -20,9 +20,8 @@ public interface FirstRunPageDelegate {
     /**
      * Advances the First Run Experience to the next page.
      * Successfully finishes FRE if the current page is the last page.
-     * @return Whether advancing to the next page succeeded.
      */
-    boolean advanceToNextPage();
+    void advanceToNextPage();
 
     /**
      * Unsuccessfully aborts the First Run Experience.

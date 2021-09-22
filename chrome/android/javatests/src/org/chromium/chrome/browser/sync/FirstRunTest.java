@@ -9,6 +9,7 @@ import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
@@ -98,7 +99,8 @@ public class FirstRunTest {
         public final CallbackHelper createPostNativeAndPoliciesPageSequence = new CallbackHelper();
 
         @Override
-        public void onCreatePostNativeAndPoliciesPageSequence(FirstRunActivity caller) {
+        public void onCreatePostNativeAndPoliciesPageSequence(
+                FirstRunActivity caller, Bundle freProperties) {
             createPostNativeAndPoliciesPageSequence.notifyCalled();
         }
 

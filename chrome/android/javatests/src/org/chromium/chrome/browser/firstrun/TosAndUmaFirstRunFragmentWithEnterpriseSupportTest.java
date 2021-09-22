@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
@@ -167,7 +168,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         mExitCount = 0;
         FirstRunActivity.setObserverForTest(new FirstRunActivity.FirstRunActivityObserver() {
             @Override
-            public void onCreatePostNativeAndPoliciesPageSequence(FirstRunActivity caller) {}
+            public void onCreatePostNativeAndPoliciesPageSequence(
+                    FirstRunActivity caller, Bundle freProperties) {}
 
             @Override
             public void onAcceptTermsOfService(FirstRunActivity caller) {
