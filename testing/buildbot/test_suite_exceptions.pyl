@@ -535,7 +535,7 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
       'linux-win_cross-rel',
       'ToTLinuxTSan',  # https://crbug.com/368525
-      # TODO(crbug.com/1171053): Enable the suite in 'Mac10.13 Tests' once it's
+      # TODO(crbug.com/1171053): Enable the suite in 'Mac10.15 Tests' once it's
       # off CQ.
       'Mac10.13 Tests', # https://crbug.com/1042757
       'Mac10.15 Tests', # https://crbug.com/1042757
@@ -607,6 +607,7 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
+        'experiment_percentage': 100, # https://crbug.com/1251657
       },
       # TODO(crbug.com/1232535) Remove once the bug is resolved.
       'Mac10.11 Tests': {
@@ -1184,6 +1185,9 @@
         'swarming': {
           'shards': 15,
         },
+      },
+      'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
+        'experiment_percentage': 100,
       },
       'Marshmallow Tablet Tester': {
         'args': [
@@ -1787,6 +1791,9 @@
         'swarming': {
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
+      },
+      'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
+        'experiment_percentage': 100,
       },
       'ToTLinuxTSan': {
         # These are slow on the TSan bots for some reason, crbug.com/794372

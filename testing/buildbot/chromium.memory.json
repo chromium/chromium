@@ -11318,6 +11318,7 @@
           "--test-launcher-print-test-stdio=always",
           "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -11509,6 +11510,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -11951,6 +11953,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
