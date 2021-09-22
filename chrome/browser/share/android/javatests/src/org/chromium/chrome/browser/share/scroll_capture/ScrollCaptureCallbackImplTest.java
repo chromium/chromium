@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.scroll_capture;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -211,7 +212,7 @@ public class ScrollCaptureCallbackImplTest {
                 session, signal, captureArea, mRectConsumer);
         inOrder.verify(mRectConsumer).accept(eq(new Rect()));
 
-        when(mEntryManager.generateEntry(any())).thenReturn(entry);
+        when(mEntryManager.generateEntry(any(), anyBoolean())).thenReturn(entry);
         doAnswer(invocation -> {
             EntryListener listener = invocation.getArgument(0);
             listener.onResult(EntryStatus.BITMAP_GENERATED);
@@ -241,6 +242,7 @@ public class ScrollCaptureCallbackImplTest {
 
         // Test end capture
         scrollCaptureCallback.onScrollCaptureEnd(onReady);
+        inOrder.verify(mEntryManager).destroy();
         Assert.assertNull(scrollCaptureCallback.getContentAreaForTesting());
         Assert.assertNull(scrollCaptureCallback.getInitialRectForTesting());
         inOrder.verify(onReady).run();

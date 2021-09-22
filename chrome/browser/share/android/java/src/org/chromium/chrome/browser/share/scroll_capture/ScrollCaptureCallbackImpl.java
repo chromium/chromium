@@ -97,6 +97,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
                 // Abort if BitmapGenerator is not initialized successfully.
                 if (status != EntryStatus.CAPTURE_COMPLETE) {
                     mEntryManager.removeBitmapGeneratorObserver(this);
+                    mEntryManager.destroy();
                     signal.cancel();
                 }
             }
@@ -105,6 +106,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
             public void onCompositorReady(Size contentSize, Size scrollOffset) {
                 mEntryManager.removeBitmapGeneratorObserver(this);
                 if (contentSize.getWidth() == 0 || contentSize.getHeight() == 0) {
+                    mEntryManager.destroy();
                     signal.cancel();
                     return;
                 }
@@ -132,7 +134,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
             return;
         }
 
-        LongScreenshotsEntry entry = mEntryManager.generateEntry(captureArea);
+        LongScreenshotsEntry entry = mEntryManager.generateEntry(captureArea, true);
         entry.setListener(status -> {
             if (status == EntryStatus.BITMAP_GENERATION_IN_PROGRESS) return;
 
@@ -156,7 +158,10 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
     // TODO(crbug.com/1231201): work out why this is causing a lint error
     @SuppressWarnings("Override")
     public void onScrollCaptureEnd(@NonNull Runnable onReady) {
-        mEntryManager = null;
+        if (mEntryManager != null) {
+            mEntryManager.destroy();
+            mEntryManager = null;
+        }
         mContentArea = null;
         mInitialRect = null;
         mViewportRect = null;
