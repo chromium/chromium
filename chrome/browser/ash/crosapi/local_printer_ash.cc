@@ -455,6 +455,13 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
         static_cast<printing::mojom::PinModeRestriction>(
             prefs->GetInteger(prefs::kPrintingPinDefault));
 
+  if (prefs->HasPrefPath(prefs::kPrintPdfAsImageDefault)) {
+    policies->default_print_pdf_as_image =
+        prefs->GetBoolean(prefs::kPrintPdfAsImageDefault)
+            ? mojom::Policies::OptionalBool::kTrue
+            : mojom::Policies::OptionalBool::kFalse;
+  }
+
   std::move(callback).Run(std::move(policies));
 }
 

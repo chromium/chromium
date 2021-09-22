@@ -112,6 +112,7 @@ export let PolicyEntry;
  *   duplex: (PolicyEntry | undefined),
  *   pin: (PolicyEntry | undefined),
  *   printPdfAsImageAvailability: (PolicyEntry | undefined),
+ *   printPdfAsImage: (PolicyEntry | undefined),
  * }}
  */
 export let PolicySettings;
@@ -1176,6 +1177,14 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
         break;
       }
+      case 'printPdfAsImage': {
+        if (defaultMode !== undefined) {
+          this.setPolicySetting_(
+              settingName, defaultMode, /*managed=*/ false,
+              /*applyOnDestinationUpdate=*/ false);
+        }
+        break;
+      }
       default:
         break;
     }
@@ -1227,6 +1236,14 @@ export class PrintPreviewModelElement extends PolymerElement {
           'printPdfAsImageAvailability', allowedMode, /*defaultMode=*/ false);
     }
     // </if>
+    if (policies['printPdfAsImage']) {
+      if (!this.policySettings_) {
+        this.policySettings_ = {};
+      }
+      const defaultMode = policies['printPdfAsImage'].defaultMode;
+      this.configurePolicySetting_(
+          'printPdfAsImage', /*allowedMode=*/ undefined, defaultMode);
+    }
   }
 
   applyStickySettings() {
@@ -1336,6 +1353,12 @@ export class PrintPreviewModelElement extends PolymerElement {
           continue;
         }
         // </if>
+        if (settingName === 'printPdfAsImage') {
+          if (policy.value) {
+            this.setSetting('rasterize', policy.value, true);
+          }
+          continue;
+        }
         if (policy.value !== undefined && !policy.applyOnDestinationUpdate) {
           this.setSetting(settingName, policy.value, true);
           if (policy.managed) {

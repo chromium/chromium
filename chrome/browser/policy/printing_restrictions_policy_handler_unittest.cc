@@ -6,12 +6,14 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -125,5 +127,107 @@ TEST_F(PrintingRestrictionsPolicyHandlerTest, NoHeightInCustomSize) {
     })";
   CheckInvalidPolicy(kNoHeightInCustomSize);
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+class PrintPdfAsImageRestrictionsPolicyHandlerTest : public testing::Test {
+ protected:
+  void SetPolicy(const std::string& policy_name, base::Value value) {
+    policies_.Set(policy_name, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_ENTERPRISE_DEFAULT, std::move(value), nullptr);
+  }
+
+  bool CheckPolicy(const std::string& policy_name, base::Value value) {
+    SetPolicy(policy_name, std::move(value));
+    return handler_.CheckPolicySettings(policies_, &errors_);
+  }
+
+  bool CheckPolicies() {
+    return handler_.CheckPolicySettings(policies_, &errors_);
+  }
+
+  void ApplyPolicies() { handler_.ApplyPolicySettings(policies_, &prefs_); }
+
+  void CheckValidPolicy(const std::string& policy_name,
+                        base::Value policy_value) {
+    EXPECT_TRUE(CheckPolicy(policy_name, std::move(policy_value)));
+    EXPECT_EQ(0U, errors_.size());
+  }
+
+  void CheckInvalidPolicy(const std::string& policy_name,
+                          base::Value policy_value) {
+    EXPECT_FALSE(CheckPolicy(policy_name, std::move(policy_value)));
+    EXPECT_EQ(1U, errors_.size());
+  }
+
+  PrintPdfAsImageDefaultPolicyHandler handler_;
+  PolicyErrorMap errors_;
+  PolicyMap policies_;
+  PrefValueMap prefs_;
+};
+
+#if defined(OS_WIN) || defined(OS_MAC)
+TEST_F(PrintPdfAsImageRestrictionsPolicyHandlerTest,
+       DefaultWithAvailabilityEnabled) {
+  // For platforms that require PrintPdfAsImageAvailability, demonstrate that
+  // it is valid to supply PrintPdfAsImageDefault policy when
+  // PrintPdfAsImageAvailability has been enabled.
+  base::Value availability_value(true);
+  base::Value default_value(true);
+
+  CheckValidPolicy(key::kPrintPdfAsImageAvailability,
+                   availability_value.Clone());
+  CheckValidPolicy(key::kPrintPdfAsImageDefault, default_value.Clone());
+
+  ApplyPolicies();
+  base::Value* value;
+  EXPECT_TRUE(prefs_.GetValue(prefs::kPrintPdfAsImageDefault, &value));
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, default_value);
+}
+
+TEST_F(PrintPdfAsImageRestrictionsPolicyHandlerTest,
+       DefaultWithAvailabilityDisabled) {
+  // For platforms that require PrintPdfAsImageAvailability, demonstrate that
+  // it is invalid to supply PrintPdfAsImageDefault policy when
+  // PrintPdfAsImageAvailability has been disabled.
+  base::Value availability_value(false);
+  base::Value default_value(true);
+
+  CheckValidPolicy(key::kPrintPdfAsImageAvailability,
+                   availability_value.Clone());
+  CheckInvalidPolicy(key::kPrintPdfAsImageDefault, default_value.Clone());
+}
+
+TEST_F(PrintPdfAsImageRestrictionsPolicyHandlerTest,
+       DefaultWithoutAvailability) {
+  // For platforms that require PrintPdfAsImageAvailability, demonstrate that
+  // it is invalid to supply PrintPdfAsImageDefault policy when
+  // PrintPdfAsImageAvailability has not been provided.
+  base::Value default_value(true);
+
+  CheckInvalidPolicy(key::kPrintPdfAsImageDefault, default_value.Clone());
+}
+#endif  // defined(OS_WIN) || defined(OS_MAC)
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+TEST_F(PrintPdfAsImageRestrictionsPolicyHandlerTest,
+       DefaultWithoutAvailability) {
+  // For platforms that do not require PrintPdfAsImageAvailability, demonstrate
+  // that it is valid to supply PrintPdfAsImageDefault policy by itself without
+  // providing PrintPdfAsImageAvailability.
+  base::Value default_value(true);
+
+  CheckValidPolicy(key::kPrintPdfAsImageDefault, default_value.Clone());
+
+  ApplyPolicies();
+  base::Value* value;
+  EXPECT_TRUE(prefs_.GetValue(prefs::kPrintPdfAsImageDefault, &value));
+  ASSERT_TRUE(value);
+  EXPECT_EQ(*value, default_value);
+}
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace policy

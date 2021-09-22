@@ -207,6 +207,10 @@ const char kIsDriveMounted[] = "isDriveMounted";
 // for a PDF job.
 const char kPrintPdfAsImageAvailability[] = "printPdfAsImageAvailability";
 #endif  // defined(OS_WIN) || defined(OS_MAC)
+// Name of dictionary pref holding policy value for whether the
+// "Print as image" option should default to set in Print Preview for
+// a PDF job.
+const char kPrintPdfAsImage[] = "printPdfAsImage";
 
 // Get the print job settings dictionary from |json_str|.
 // Returns |base::Value()| on failure.
@@ -342,6 +346,19 @@ base::Value PoliciesToValue(crosapi::mojom::PoliciesPtr ptr) {
   if (!pin_policy.DictEmpty())
     policies.SetKey(kPin, std::move(pin_policy));
 
+  base::Value print_as_image_for_pdf_default_policy(
+      base::Value::Type::DICTIONARY);
+  if (ptr->default_print_pdf_as_image !=
+      crosapi::mojom::Policies::OptionalBool::kUnset) {
+    print_as_image_for_pdf_default_policy.SetBoolKey(
+        kDefaultMode, ptr->default_print_pdf_as_image ==
+                          crosapi::mojom::Policies::OptionalBool::kTrue);
+  }
+  if (!print_as_image_for_pdf_default_policy.DictEmpty()) {
+    policies.SetKey(kPrintPdfAsImage,
+                    std::move(print_as_image_for_pdf_default_policy));
+  }
+
   return policies;
 }
 
@@ -401,6 +418,17 @@ base::Value GetPolicies(const PrefService& prefs) {
                     std::move(print_as_image_available_for_pdf_policy));
   }
 #endif  // defined(OS_WIN) || defined(OS_MAC)
+
+  base::Value print_as_image_for_pdf_default_policy(
+      base::Value::Type::DICTIONARY);
+  if (prefs.HasPrefPath(prefs::kPrintPdfAsImageDefault)) {
+    print_as_image_for_pdf_default_policy.SetBoolKey(
+        kDefaultMode, prefs.GetBoolean(prefs::kPrintPdfAsImageDefault));
+  }
+  if (!print_as_image_for_pdf_default_policy.DictEmpty()) {
+    policies.SetKey(kPrintPdfAsImage,
+                    std::move(print_as_image_for_pdf_default_policy));
+  }
 
   return policies;
 }

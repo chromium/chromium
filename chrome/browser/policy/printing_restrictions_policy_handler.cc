@@ -4,12 +4,14 @@
 
 #include "chrome/browser/policy/printing_restrictions_policy_handler.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "printing/buildflags/buildflags.h"
 
 namespace policy {
 
@@ -277,5 +279,52 @@ void PrintingPaperSizeDefaultPolicyHandler::ApplyPolicySettings(
     prefs->SetValue(prefs::kPrintingPaperSizeDefault, value->Clone());
   }
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+PrintPdfAsImageDefaultPolicyHandler::PrintPdfAsImageDefaultPolicyHandler()
+    : TypeCheckingPolicyHandler(key::kPrintPdfAsImageDefault,
+                                base::Value::Type::BOOLEAN) {}
+
+PrintPdfAsImageDefaultPolicyHandler::~PrintPdfAsImageDefaultPolicyHandler() =
+    default;
+
+bool PrintPdfAsImageDefaultPolicyHandler::CheckPolicySettings(
+    const PolicyMap& policies,
+    PolicyErrorMap* errors) {
+  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
+    return false;
+
+#if defined(OS_WIN) || defined(OS_MAC)
+  // Platforms which require a policy to enable the "Print as image" option
+  // should have that policy specified with availability enabled before trying
+  // to specify a default behavior for the option.
+  if (policies.GetValue(key::kPrintPdfAsImageDefault)) {
+    const base::Value* option_availability =
+        policies.GetValue(key::kPrintPdfAsImageAvailability);
+    if (!option_availability || !option_availability->is_bool() ||
+        !option_availability->GetBool()) {
+      errors->AddError(key::kPrintPdfAsImageDefault,
+                       IDS_POLICY_DEPENDENCY_ERROR,
+                       key::kPrintPdfAsImageAvailability, "Enabled");
+      return false;
+    }
+  }
+#endif  // defined(OS_WIN) || defined(OS_MAC)
+  return true;
+}
+
+void PrintPdfAsImageDefaultPolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
+  const base::Value* option_default_value =
+      policies.GetValue(key::kPrintPdfAsImageDefault);
+  if (option_default_value) {
+    prefs->SetValue(prefs::kPrintPdfAsImageDefault,
+                    option_default_value->Clone());
+  }
+}
+
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace policy

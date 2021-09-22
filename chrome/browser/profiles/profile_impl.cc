@@ -442,6 +442,7 @@ void ProfileImpl::RegisterProfilePrefs(
 #endif
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   registry->RegisterIntegerPref(prefs::kPrintRasterizePdfDpi, 0);
+  registry->RegisterBooleanPref(prefs::kPrintPdfAsImageDefault, false);
 #endif
 
   registry->RegisterBooleanPref(prefs::kForceEphemeralProfiles, false);

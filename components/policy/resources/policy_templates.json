@@ -1138,6 +1138,7 @@
         'DeletePrintJobHistoryAllowed',
         'CloudPrintWarningsSuppressed',
         'PrintPostScriptMode',
+        'PrintPdfAsImageDefault',
       ]
     },
     {
@@ -24683,6 +24684,41 @@
       If this policy is set to zero or not set at all then the system default resolution will be used during rasterization of page images.'''
     },
     {
+      'name': 'PrintPdfAsImageDefault',
+      'owners': ['awscreen@chromium.org', 'file://printing/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Print as image option defaults to set for print previews of PDF documents when it is available.',
+        },
+        {
+          'value': False,
+          'caption': 'Print as image option defaults to unset for print previews of PDF documents when it is available.',
+        },
+      ],
+      'supported_on': ['chrome.*:95-', 'chrome_os:95-'],
+      'features': {
+        'can_be_mandatory' : False,
+        'can_be_recommended': True,
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': True,
+      'default': False,
+      'id': 896,
+      'caption': '''Print PDF as Image Default''',
+      'tags': [],
+      'desc': '''Controls if <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> makes the Print as image option default to set when printing PDFs.
+
+      When this policy is set to Enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will default to setting the Print as image option in the Print Preview when printing a PDF.
+
+      When this policy is set to Disabled or not set <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> then the user selection for Print as image option will be initially unset.  The user will be allowed to select it for each individual PDFs print job, if the option is available.
+
+      For <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> or <ph name="MAC_OS_NAME">macOS</ph> this policy only has an effect if <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME">PrintPdfAsImageAvailability</ph> is also enabled.'''
+    },
+    {
       'name': 'DeletePrintJobHistoryAllowed',
       'owners': ['jimmyxgong@chromium.org', 'file://printing/OWNERS'],
       'type': 'main',
@@ -28668,6 +28704,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 895,
+  'highest_id_currently_used': 896,
   'highest_atomic_group_id_currently_used': 41
 }
