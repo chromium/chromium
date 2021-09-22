@@ -585,25 +585,35 @@ void LocalDOMWindow::ReportDocumentPolicyViolation(
   }
 }
 
-static void RunAddConsoleMessageTask(mojom::ConsoleMessageSource source,
-                                     mojom::ConsoleMessageLevel level,
-                                     const String& message,
-                                     LocalDOMWindow* window,
-                                     bool discard_duplicates) {
-  window->AddConsoleMessageImpl(
-      MakeGarbageCollected<ConsoleMessage>(source, level, message),
-      discard_duplicates);
+static void RunAddConsoleMessageTask(
+    mojom::blink::ConsoleMessageSource source,
+    mojom::blink::ConsoleMessageLevel level,
+    const String& message,
+    LocalDOMWindow* window,
+    bool discard_duplicates,
+    std::unique_ptr<mojom::blink::ConsoleMessageCategory> category) {
+  auto* console_message =
+      MakeGarbageCollected<ConsoleMessage>(source, level, message);
+  if (category)
+    console_message->SetCategory(*category);
+  window->AddConsoleMessageImpl(console_message, discard_duplicates);
 }
 
 void LocalDOMWindow::AddConsoleMessageImpl(ConsoleMessage* console_message,
                                            bool discard_duplicates) {
   if (!IsContextThread()) {
+    std::unique_ptr<mojom::blink::ConsoleMessageCategory> category;
+    if (console_message->Category()) {
+      category = std::make_unique<mojom::blink::ConsoleMessageCategory>(
+          *console_message->Category());
+    }
     PostCrossThreadTask(
         *GetTaskRunner(TaskType::kInternalInspector), FROM_HERE,
-        CrossThreadBindOnce(
-            &RunAddConsoleMessageTask, console_message->Source(),
-            console_message->Level(), console_message->Message(),
-            WrapCrossThreadPersistent(this), discard_duplicates));
+        CrossThreadBindOnce(&RunAddConsoleMessageTask,
+                            console_message->Source(), console_message->Level(),
+                            console_message->Message(),
+                            WrapCrossThreadPersistent(this), discard_duplicates,
+                            std::move(category)));
     return;
   }
 
@@ -621,12 +631,16 @@ void LocalDOMWindow::AddConsoleMessageImpl(ConsoleMessage* console_message,
         line_number = parser->LineNumber().OneBasedInt();
     }
     Vector<DOMNodeId> nodes(console_message->Nodes());
+    absl::optional<mojom::blink::ConsoleMessageCategory> category =
+        console_message->Category();
     console_message = MakeGarbageCollected<ConsoleMessage>(
         console_message->Source(), console_message->Level(),
         console_message->Message(),
         std::make_unique<SourceLocation>(Url().GetString(), line_number, 0,
                                          nullptr));
     console_message->SetNodes(GetFrame(), std::move(nodes));
+    if (category)
+      console_message->SetCategory(*category);
   }
 
   GetFrame()->Console().AddMessage(console_message, discard_duplicates);
