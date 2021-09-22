@@ -96,12 +96,6 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   if (is_continuous_gesture_animation_)
     throughput_tracker_.Cancel();
 
-  // For fast swipes, we skip the implicit animation after ending screenshot in
-  // DeskAnimationBase, unless the swipe has ended and is deemed fast. Since
-  // Replace is called, the animation is refreshed by a new swipe and is no
-  // longer ending, so we rest this back to false.
-  did_continuous_gesture_end_fast_ = false;
-
   // If any of the animators are still taking either screenshot, do not replace
   // the animation.
   for (const auto& animator : desk_switch_animators_) {
@@ -207,13 +201,10 @@ bool DeskActivationAnimation::EndSwipeAnimation() {
 
   // End the animation. The animator will determine which desk to animate to,
   // and update their ending desk index. When the animation is finished we will
-  // activate that desk. Set `did_continuous_gesture_end_fast_` to true if
-  // this is deemed a fast swipe. We will trigger the animation implicity if an
-  // ending screenshot is taken if so.
+  // activate that desk.
   const bool is_fast_swipe =
       base::TimeTicks::Now() - last_start_or_replace_time_ <
       kFastSwipeThresholdDuration;
-  did_continuous_gesture_end_fast_ = is_fast_swipe;
   for (const auto& animator : desk_switch_animators_)
     ending_desk_index_ = animator->EndSwipeAnimation(is_fast_swipe);
 
