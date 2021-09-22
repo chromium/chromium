@@ -24,6 +24,10 @@ namespace secure_channel {
 class FakeBluetoothHelper : public BluetoothHelper {
  public:
   FakeBluetoothHelper();
+
+  FakeBluetoothHelper(const FakeBluetoothHelper&) = delete;
+  FakeBluetoothHelper& operator=(const FakeBluetoothHelper&) = delete;
+
   ~FakeBluetoothHelper() override;
 
   // Sets the data to be returned by a GenerateForegroundAdvertisement() call.
@@ -60,8 +64,6 @@ class FakeBluetoothHelper : public BluetoothHelper {
 
   std::unordered_map<std::string, std::string>
       device_id_to_bluetooth_public_address_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothHelper);
 };
 
 }  // namespace secure_channel

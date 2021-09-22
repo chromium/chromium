@@ -59,6 +59,9 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationRequest {
       std::unique_ptr<WifiAccessPointVector> wifi_data,
       std::unique_ptr<CellTowerVector> cell_tower_data);
 
+  SimpleGeolocationRequest(const SimpleGeolocationRequest&) = delete;
+  SimpleGeolocationRequest& operator=(const SimpleGeolocationRequest&) = delete;
+
   ~SimpleGeolocationRequest();
 
   // Initiates request.
@@ -137,8 +140,6 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationRequest {
 
   // Creation and destruction should happen on the same thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleGeolocationRequest);
 };
 
 }  // namespace chromeos

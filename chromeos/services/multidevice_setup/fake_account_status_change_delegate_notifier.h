@@ -17,12 +17,15 @@ class FakeAccountStatusChangeDelegateNotifier
     : public AccountStatusChangeDelegateNotifier {
  public:
   FakeAccountStatusChangeDelegateNotifier() = default;
+
+  FakeAccountStatusChangeDelegateNotifier(
+      const FakeAccountStatusChangeDelegateNotifier&) = delete;
+  FakeAccountStatusChangeDelegateNotifier& operator=(
+      const FakeAccountStatusChangeDelegateNotifier&) = delete;
+
   ~FakeAccountStatusChangeDelegateNotifier() override = default;
 
   using AccountStatusChangeDelegateNotifier::delegate;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAccountStatusChangeDelegateNotifier);
 };
 
 }  // namespace multidevice_setup

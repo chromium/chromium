@@ -19,6 +19,10 @@ namespace multidevice_setup {
 class FakeFeatureStateObserver : public mojom::FeatureStateObserver {
  public:
   FakeFeatureStateObserver();
+
+  FakeFeatureStateObserver(const FakeFeatureStateObserver&) = delete;
+  FakeFeatureStateObserver& operator=(const FakeFeatureStateObserver&) = delete;
+
   ~FakeFeatureStateObserver() override;
 
   mojo::PendingRemote<mojom::FeatureStateObserver> GenerateRemote();
@@ -38,8 +42,6 @@ class FakeFeatureStateObserver : public mojom::FeatureStateObserver {
       feature_state_updates_;
 
   mojo::ReceiverSet<mojom::FeatureStateObserver> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFeatureStateObserver);
 };
 
 }  // namespace multidevice_setup

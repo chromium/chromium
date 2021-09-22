@@ -19,6 +19,10 @@ namespace secure_channel {
 class FakeMessageReceiver : public mojom::MessageReceiver {
  public:
   FakeMessageReceiver();
+
+  FakeMessageReceiver(const FakeMessageReceiver&) = delete;
+  FakeMessageReceiver& operator=(const FakeMessageReceiver&) = delete;
+
   ~FakeMessageReceiver() override;
 
   const std::vector<std::string>& received_messages() {
@@ -30,8 +34,6 @@ class FakeMessageReceiver : public mojom::MessageReceiver {
   void OnMessageReceived(const std::string& message) override;
 
   std::vector<std::string> received_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMessageReceiver);
 };
 
 }  // namespace secure_channel

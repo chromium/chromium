@@ -54,6 +54,9 @@ class TestSyncSchedulerImpl : public SyncSchedulerImpl {
                           max_jitter_ratio,
                           kTestSchedulerName) {}
 
+  TestSyncSchedulerImpl(const TestSyncSchedulerImpl&) = delete;
+  TestSyncSchedulerImpl& operator=(const TestSyncSchedulerImpl&) = delete;
+
   ~TestSyncSchedulerImpl() override {}
 
   base::MockOneShotTimer* timer() { return mock_timer_; }
@@ -66,8 +69,6 @@ class TestSyncSchedulerImpl : public SyncSchedulerImpl {
 
   // A timer instance for testing. Owned by the parent scheduler.
   base::MockOneShotTimer* mock_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncSchedulerImpl);
 };
 
 }  // namespace

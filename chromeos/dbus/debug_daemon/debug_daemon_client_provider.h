@@ -33,6 +33,11 @@ class DebugDaemonClient;
 class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClientProvider {
  public:
   DebugDaemonClientProvider();
+
+  DebugDaemonClientProvider(const DebugDaemonClientProvider&) = delete;
+  DebugDaemonClientProvider& operator=(const DebugDaemonClientProvider&) =
+      delete;
+
   ~DebugDaemonClientProvider();
 
   DebugDaemonClient* debug_daemon_client() const {
@@ -44,8 +49,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClientProvider {
   scoped_refptr<dbus::Bus> dbus_bus_;
   scoped_refptr<base::SequencedTaskRunner> dbus_task_runner_;
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugDaemonClientProvider);
 };
 
 }  // namespace chromeos

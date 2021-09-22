@@ -24,6 +24,11 @@ namespace device_sync {
 class ClientAppMetadataProvider {
  public:
   ClientAppMetadataProvider() = default;
+
+  ClientAppMetadataProvider(const ClientAppMetadataProvider&) = delete;
+  ClientAppMetadataProvider& operator=(const ClientAppMetadataProvider&) =
+      delete;
+
   virtual ~ClientAppMetadataProvider() = default;
 
   using GetMetadataCallback = base::OnceCallback<void(
@@ -33,9 +38,6 @@ class ClientAppMetadataProvider {
   // fails, null is passed to the callback.
   virtual void GetClientAppMetadata(const std::string& gcm_registration_id,
                                     GetMetadataCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientAppMetadataProvider);
 };
 
 }  // namespace device_sync

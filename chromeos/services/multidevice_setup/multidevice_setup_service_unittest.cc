@@ -59,6 +59,10 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
         expected_gcm_device_info_provider_(expected_gcm_device_info_provider),
         expected_is_secondary_user_(expected_is_secondary_user) {}
 
+  FakeMultiDeviceSetupFactory(const FakeMultiDeviceSetupFactory&) = delete;
+  FakeMultiDeviceSetupFactory& operator=(const FakeMultiDeviceSetupFactory&) =
+      delete;
+
   ~FakeMultiDeviceSetupFactory() override = default;
 
   FakeMultiDeviceSetup* instance() { return instance_; }
@@ -102,8 +106,6 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
   bool expected_is_secondary_user_;
 
   FakeMultiDeviceSetup* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiDeviceSetupFactory);
 };
 
 }  // namespace

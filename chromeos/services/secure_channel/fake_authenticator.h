@@ -17,6 +17,10 @@ namespace secure_channel {
 class FakeAuthenticator : public Authenticator {
  public:
   FakeAuthenticator();
+
+  FakeAuthenticator(const FakeAuthenticator&) = delete;
+  FakeAuthenticator& operator=(const FakeAuthenticator&) = delete;
+
   ~FakeAuthenticator() override;
 
   // Authenticator:
@@ -26,8 +30,6 @@ class FakeAuthenticator : public Authenticator {
 
  private:
   AuthenticationCallback last_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthenticator);
 };
 
 }  // namespace secure_channel

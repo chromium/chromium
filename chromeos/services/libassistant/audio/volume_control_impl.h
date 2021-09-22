@@ -20,6 +20,10 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
                           public ash::mojom::VolumeObserver {
  public:
   VolumeControlImpl();
+
+  VolumeControlImpl(const VolumeControlImpl&) = delete;
+  VolumeControlImpl& operator=(const VolumeControlImpl&) = delete;
+
   ~VolumeControlImpl() override;
 
   void Initialize(mojom::AudioOutputDelegate* audio_output_delegate,
@@ -55,8 +59,6 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   bool mute_ = false;
 
   base::WeakPtrFactory<VolumeControlImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeControlImpl);
 };
 
 }  // namespace libassistant

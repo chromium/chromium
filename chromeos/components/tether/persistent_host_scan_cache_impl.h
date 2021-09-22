@@ -27,6 +27,11 @@ class PersistentHostScanCacheImpl : public PersistentHostScanCache {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   PersistentHostScanCacheImpl(PrefService* pref_service);
+
+  PersistentHostScanCacheImpl(const PersistentHostScanCacheImpl&) = delete;
+  PersistentHostScanCacheImpl& operator=(const PersistentHostScanCacheImpl&) =
+      delete;
+
   ~PersistentHostScanCacheImpl() override;
 
   // HostScanCache:
@@ -48,8 +53,6 @@ class PersistentHostScanCacheImpl : public PersistentHostScanCache {
       const std::unordered_map<std::string, HostScanCacheEntry>& entries);
 
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentHostScanCacheImpl);
 };
 
 }  // namespace tether

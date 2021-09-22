@@ -51,6 +51,9 @@ class HostStatusProvider {
         const HostStatusWithDevice& host_status_with_device) = 0;
   };
 
+  HostStatusProvider(const HostStatusProvider&) = delete;
+  HostStatusProvider& operator=(const HostStatusProvider&) = delete;
+
   virtual ~HostStatusProvider();
 
   virtual HostStatusWithDevice GetHostWithStatus() const = 0;
@@ -67,8 +70,6 @@ class HostStatusProvider {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostStatusProvider);
 };
 
 }  // namespace multidevice_setup

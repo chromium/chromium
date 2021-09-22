@@ -46,6 +46,11 @@ class CryptAuthKey;
 class CryptAuthKeyProofComputer {
  public:
   CryptAuthKeyProofComputer() = default;
+
+  CryptAuthKeyProofComputer(const CryptAuthKeyProofComputer&) = delete;
+  CryptAuthKeyProofComputer& operator=(const CryptAuthKeyProofComputer&) =
+      delete;
+
   virtual ~CryptAuthKeyProofComputer() = default;
 
   // Returns null if key proof computation failed.
@@ -56,8 +61,6 @@ class CryptAuthKeyProofComputer {
       const std::string& payload,
       const std::string& salt,
       const absl::optional<std::string>& info) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyProofComputer);
 };
 
 }  // namespace device_sync

@@ -27,6 +27,10 @@ class TokenizedStringMatch {
   typedef std::vector<gfx::Range> Hits;
 
   TokenizedStringMatch();
+
+  TokenizedStringMatch(const TokenizedStringMatch&) = delete;
+  TokenizedStringMatch& operator=(const TokenizedStringMatch&) = delete;
+
   ~TokenizedStringMatch();
 
   // Calculates the relevance and hits. Returns true if the two strings are
@@ -45,8 +49,6 @@ class TokenizedStringMatch {
 
   // Char index ranges in |text| of where matches are found.
   Hits hits_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenizedStringMatch);
 };
 
 }  // namespace string_matching

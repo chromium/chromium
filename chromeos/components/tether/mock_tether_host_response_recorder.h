@@ -20,6 +20,12 @@ namespace tether {
 class MockTetherHostResponseRecorder : public TetherHostResponseRecorder {
  public:
   MockTetherHostResponseRecorder();
+
+  MockTetherHostResponseRecorder(const MockTetherHostResponseRecorder&) =
+      delete;
+  MockTetherHostResponseRecorder& operator=(
+      const MockTetherHostResponseRecorder&) = delete;
+
   ~MockTetherHostResponseRecorder() override;
 
   MOCK_METHOD1(RecordSuccessfulTetherAvailabilityResponse,
@@ -28,9 +34,6 @@ class MockTetherHostResponseRecorder : public TetherHostResponseRecorder {
                void(multidevice::RemoteDeviceRef));
   MOCK_CONST_METHOD0(GetPreviouslyAvailableHostIds, std::vector<std::string>());
   MOCK_CONST_METHOD0(GetPreviouslyConnectedHostIds, std::vector<std::string>());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTetherHostResponseRecorder);
 };
 
 }  // namespace tether

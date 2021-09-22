@@ -70,6 +70,10 @@ class ForegroundEidGenerator {
   static const int8_t kBluetooth4Flag;
 
   ForegroundEidGenerator();
+
+  ForegroundEidGenerator(const ForegroundEidGenerator&) = delete;
+  ForegroundEidGenerator& operator=(const ForegroundEidGenerator&) = delete;
+
   virtual ~ForegroundEidGenerator();
 
   // Generates EID data for the given EID seeds to be used as a background scan
@@ -162,8 +166,6 @@ class ForegroundEidGenerator {
   base::Clock* clock_;
 
   std::unique_ptr<RawEidGenerator> raw_eid_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundEidGenerator);
 
   friend class SecureChannelForegroundEidGeneratorTest;
   FRIEND_TEST_ALL_PREFIXES(SecureChannelForegroundEidGeneratorTest,

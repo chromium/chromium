@@ -26,6 +26,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
       public ShillDeviceClient::TestInterface {
  public:
   FakeShillDeviceClient();
+
+  FakeShillDeviceClient(const FakeShillDeviceClient&) = delete;
+  FakeShillDeviceClient& operator=(const FakeShillDeviceClient&) = delete;
+
   ~FakeShillDeviceClient() override;
 
   // ShillDeviceClient overrides
@@ -166,8 +170,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeShillDeviceClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeShillDeviceClient);
 };
 
 }  // namespace chromeos

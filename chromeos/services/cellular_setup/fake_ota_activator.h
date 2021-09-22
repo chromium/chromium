@@ -18,6 +18,10 @@ namespace cellular_setup {
 class FakeOtaActivator : public OtaActivator {
  public:
   explicit FakeOtaActivator(base::OnceClosure on_finished_callback);
+
+  FakeOtaActivator(const FakeOtaActivator&) = delete;
+  FakeOtaActivator& operator=(const FakeOtaActivator&) = delete;
+
   ~FakeOtaActivator() override;
 
   using OtaActivator::InvokeOnFinishedCallback;
@@ -31,8 +35,6 @@ class FakeOtaActivator : public OtaActivator {
   void OnCarrierPortalStatusChange(mojom::CarrierPortalStatus status) override;
 
   FakeCarrierPortalHandler fake_carrier_portal_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOtaActivator);
 };
 
 }  // namespace cellular_setup

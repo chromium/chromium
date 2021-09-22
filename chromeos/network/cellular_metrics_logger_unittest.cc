@@ -70,6 +70,11 @@ class CellularMetricsLoggerTest : public testing::Test {
  public:
   CellularMetricsLoggerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  CellularMetricsLoggerTest(const CellularMetricsLoggerTest&) = delete;
+  CellularMetricsLoggerTest& operator=(const CellularMetricsLoggerTest&) =
+      delete;
+
   ~CellularMetricsLoggerTest() override = default;
 
   void SetUp() override {
@@ -208,7 +213,6 @@ class CellularMetricsLoggerTest : public testing::Test {
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
-  DISALLOW_COPY_AND_ASSIGN(CellularMetricsLoggerTest);
 };
 
 TEST_F(CellularMetricsLoggerTest, ActiveProfileExists) {

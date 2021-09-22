@@ -31,6 +31,9 @@ class FeatureStateManager {
         const FeatureStatesMap& feature_states_map) = 0;
   };
 
+  FeatureStateManager(const FeatureStateManager&) = delete;
+  FeatureStateManager& operator=(const FeatureStateManager&) = delete;
+
   virtual ~FeatureStateManager();
 
   virtual FeatureStatesMap GetFeatureStates() = 0;
@@ -57,8 +60,6 @@ class FeatureStateManager {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureStateManager);
 };
 
 std::ostream& operator<<(std::ostream& stream,

@@ -82,6 +82,9 @@ class MergeListOfDictionaries {
 
   MergeListOfDictionaries() = default;
 
+  MergeListOfDictionaries(const MergeListOfDictionaries&) = delete;
+  MergeListOfDictionaries& operator=(const MergeListOfDictionaries&) = delete;
+
   virtual ~MergeListOfDictionaries() = default;
 
   // For each path in any of the dictionaries |dicts|, either MergeListOfValues
@@ -135,9 +138,6 @@ class MergeListOfDictionaries {
                                               const ValuePtrs& dicts) {
     return MergeDictionaries(dicts);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MergeListOfDictionaries);
 };
 
 // This is the base class for merging policies and user settings.

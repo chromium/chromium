@@ -225,6 +225,11 @@ class TestBluetoothLowEnergyWeaveClientConnection
             device_address,
             should_set_low_connection_latency) {}
 
+  TestBluetoothLowEnergyWeaveClientConnection(
+      const TestBluetoothLowEnergyWeaveClientConnection&) = delete;
+  TestBluetoothLowEnergyWeaveClientConnection& operator=(
+      const TestBluetoothLowEnergyWeaveClientConnection&) = delete;
+
   ~TestBluetoothLowEnergyWeaveClientConnection() override {}
 
   bool should_set_low_connection_latency() {
@@ -253,9 +258,6 @@ class TestBluetoothLowEnergyWeaveClientConnection
   // Exposing inherited protected fields for testing.
   using BluetoothLowEnergyWeaveClientConnection::status;
   using BluetoothLowEnergyWeaveClientConnection::sub_status;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestBluetoothLowEnergyWeaveClientConnection);
 };
 
 class MockBluetoothLowEnergyCharacteristicsFinder
@@ -264,10 +266,13 @@ class MockBluetoothLowEnergyCharacteristicsFinder
   MockBluetoothLowEnergyCharacteristicsFinder(
       multidevice::RemoteDeviceRef remote_device)
       : BluetoothLowEnergyCharacteristicsFinder(remote_device) {}
-  ~MockBluetoothLowEnergyCharacteristicsFinder() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBluetoothLowEnergyCharacteristicsFinder);
+  MockBluetoothLowEnergyCharacteristicsFinder(
+      const MockBluetoothLowEnergyCharacteristicsFinder&) = delete;
+  MockBluetoothLowEnergyCharacteristicsFinder& operator=(
+      const MockBluetoothLowEnergyCharacteristicsFinder&) = delete;
+
+  ~MockBluetoothLowEnergyCharacteristicsFinder() override {}
 };
 
 class MockConnectionObserver : public ConnectionObserver {

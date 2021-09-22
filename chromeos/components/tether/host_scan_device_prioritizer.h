@@ -23,14 +23,16 @@ namespace tether {
 class HostScanDevicePrioritizer {
  public:
   HostScanDevicePrioritizer() {}
+
+  HostScanDevicePrioritizer(const HostScanDevicePrioritizer&) = delete;
+  HostScanDevicePrioritizer& operator=(const HostScanDevicePrioritizer&) =
+      delete;
+
   virtual ~HostScanDevicePrioritizer() {}
 
   // Prioritizes |remote_devices| using the rules described above.
   virtual void SortByHostScanOrder(
       multidevice::RemoteDeviceRefList* remote_devices) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScanDevicePrioritizer);
 };
 
 }  // namespace tether

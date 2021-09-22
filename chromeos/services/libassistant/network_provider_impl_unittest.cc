@@ -26,6 +26,12 @@ class AssistantNetworkProviderImplTest : public ::testing::Test {
   AssistantNetworkProviderImplTest() {
     network_provider_.Initialize(&platform_delegate_);
   }
+
+  AssistantNetworkProviderImplTest(const AssistantNetworkProviderImplTest&) =
+      delete;
+  AssistantNetworkProviderImplTest& operator=(
+      const AssistantNetworkProviderImplTest&) = delete;
+
   ~AssistantNetworkProviderImplTest() override = default;
 
   void PublishConnectionStateType(ConnectionStateType connection_type) {
@@ -65,8 +71,6 @@ class AssistantNetworkProviderImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment;
   assistant::FakePlatformDelegate platform_delegate_;
   NetworkProviderImpl network_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantNetworkProviderImplTest);
 };
 
 TEST_F(AssistantNetworkProviderImplTest, StartWithStatusUnknown) {

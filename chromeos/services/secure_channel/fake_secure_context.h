@@ -20,6 +20,10 @@ namespace secure_channel {
 class FakeSecureContext : public SecureContext {
  public:
   FakeSecureContext();
+
+  FakeSecureContext(const FakeSecureContext&) = delete;
+  FakeSecureContext& operator=(const FakeSecureContext&) = delete;
+
   ~FakeSecureContext() override;
 
   // SecureContext:
@@ -40,8 +44,6 @@ class FakeSecureContext : public SecureContext {
  private:
   ProtocolVersion protocol_version_;
   absl::optional<std::string> channel_binding_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureContext);
 };
 
 }  // namespace secure_channel

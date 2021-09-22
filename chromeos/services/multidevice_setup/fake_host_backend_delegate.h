@@ -18,6 +18,10 @@ namespace multidevice_setup {
 class FakeHostBackendDelegate : public HostBackendDelegate {
  public:
   FakeHostBackendDelegate();
+
+  FakeHostBackendDelegate(const FakeHostBackendDelegate&) = delete;
+  FakeHostBackendDelegate& operator=(const FakeHostBackendDelegate&) = delete;
+
   ~FakeHostBackendDelegate() override;
 
   // Changes the backend host to |host_device_on_backend| and notifies
@@ -44,14 +48,18 @@ class FakeHostBackendDelegate : public HostBackendDelegate {
   absl::optional<absl::optional<multidevice::RemoteDeviceRef>>
       pending_host_request_;
   absl::optional<multidevice::RemoteDeviceRef> host_device_on_backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostBackendDelegate);
 };
 
 // Test HostBackendDelegate::Observer implementation.
 class FakeHostBackendDelegateObserver : public HostBackendDelegate::Observer {
  public:
   FakeHostBackendDelegateObserver();
+
+  FakeHostBackendDelegateObserver(const FakeHostBackendDelegateObserver&) =
+      delete;
+  FakeHostBackendDelegateObserver& operator=(
+      const FakeHostBackendDelegateObserver&) = delete;
+
   ~FakeHostBackendDelegateObserver() override;
 
   size_t num_changes_on_backend() const { return num_changes_on_backend_; }
@@ -71,8 +79,6 @@ class FakeHostBackendDelegateObserver : public HostBackendDelegate::Observer {
   size_t num_changes_on_backend_ = 0u;
   size_t num_failed_backend_requests_ = 0u;
   size_t num_pending_host_request_changes_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostBackendDelegateObserver);
 };
 
 }  // namespace multidevice_setup

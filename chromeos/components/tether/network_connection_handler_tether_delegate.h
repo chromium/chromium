@@ -30,6 +30,12 @@ class NetworkConnectionHandlerTetherDelegate
       ActiveHost* active_host,
       TetherConnector* tether_connector,
       TetherDisconnector* tether_disconnector);
+
+  NetworkConnectionHandlerTetherDelegate(
+      const NetworkConnectionHandlerTetherDelegate&) = delete;
+  NetworkConnectionHandlerTetherDelegate& operator=(
+      const NetworkConnectionHandlerTetherDelegate&) = delete;
+
   ~NetworkConnectionHandlerTetherDelegate() override;
 
   // NetworkConnectionHandler::TetherDelegate:
@@ -67,8 +73,6 @@ class NetworkConnectionHandlerTetherDelegate
 
   base::WeakPtrFactory<NetworkConnectionHandlerTetherDelegate>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandlerTetherDelegate);
 };
 
 }  // namespace tether

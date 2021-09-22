@@ -42,6 +42,9 @@ class SequenceMatcher {
                   bool use_edit_distance,
                   double num_matching_blocks_penalty);
 
+  SequenceMatcher(const SequenceMatcher&) = delete;
+  SequenceMatcher& operator=(const SequenceMatcher&) = delete;
+
   ~SequenceMatcher() = default;
 
   // Calculates similarity ratio of |first_string_| and |second_string_|.
@@ -81,7 +84,6 @@ class SequenceMatcher {
   std::unordered_map<char, std::vector<int>> char_to_positions_;
   // Memory for dynamic programming algorithm used in FindLongestMatch().
   std::vector<int> dp_common_string_;
-  DISALLOW_COPY_AND_ASSIGN(SequenceMatcher);
 };
 
 }  // namespace string_matching

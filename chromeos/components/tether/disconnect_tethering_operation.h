@@ -54,6 +54,10 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
                                      bool success) = 0;
   };
 
+  DisconnectTetheringOperation(const DisconnectTetheringOperation&) = delete;
+  DisconnectTetheringOperation& operator=(const DisconnectTetheringOperation&) =
+      delete;
+
   ~DisconnectTetheringOperation() override;
 
   void AddObserver(Observer* observer);
@@ -90,8 +94,6 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
 
   base::Clock* clock_;
   base::Time disconnect_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringOperation);
 };
 
 }  // namespace tether

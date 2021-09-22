@@ -48,6 +48,10 @@ class CryptAuthClientImpl : public CryptAuthClient {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const cryptauth::DeviceClassifier& device_classifier);
+
+  CryptAuthClientImpl(const CryptAuthClientImpl&) = delete;
+  CryptAuthClientImpl& operator=(const CryptAuthClientImpl&) = delete;
+
   ~CryptAuthClientImpl() override;
 
   // CryptAuthClient:
@@ -196,8 +200,6 @@ class CryptAuthClientImpl : public CryptAuthClient {
   ErrorCallback error_callback_;
 
   base::WeakPtrFactory<CryptAuthClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthClientImpl);
 };
 
 // Implementation of CryptAuthClientFactory.
@@ -211,6 +213,11 @@ class CryptAuthClientFactoryImpl : public CryptAuthClientFactory {
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const cryptauth::DeviceClassifier& device_classifier);
+
+  CryptAuthClientFactoryImpl(const CryptAuthClientFactoryImpl&) = delete;
+  CryptAuthClientFactoryImpl& operator=(const CryptAuthClientFactoryImpl&) =
+      delete;
+
   ~CryptAuthClientFactoryImpl() override;
 
   // CryptAuthClientFactory:
@@ -220,8 +227,6 @@ class CryptAuthClientFactoryImpl : public CryptAuthClientFactory {
   signin::IdentityManager* identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const cryptauth::DeviceClassifier device_classifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthClientFactoryImpl);
 };
 
 }  // namespace device_sync

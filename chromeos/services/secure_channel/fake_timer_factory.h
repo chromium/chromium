@@ -23,6 +23,10 @@ class FakeOneShotTimer;
 class FakeTimerFactory : public TimerFactory {
  public:
   FakeTimerFactory();
+
+  FakeTimerFactory(const FakeTimerFactory&) = delete;
+  FakeTimerFactory& operator=(const FakeTimerFactory&) = delete;
+
   ~FakeTimerFactory() override;
 
   const base::UnguessableToken& id_for_last_created_one_shot_timer() {
@@ -48,8 +52,6 @@ class FakeTimerFactory : public TimerFactory {
   size_t num_instances_created_ = 0u;
 
   base::WeakPtrFactory<FakeTimerFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTimerFactory);
 };
 
 }  // namespace secure_channel

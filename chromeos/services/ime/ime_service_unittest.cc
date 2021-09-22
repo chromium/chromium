@@ -144,6 +144,10 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
 class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
  public:
   ImeServiceTest() : service_(remote_service_.BindNewPipeAndPassReceiver()) {}
+
+  ImeServiceTest(const ImeServiceTest&) = delete;
+  ImeServiceTest& operator=(const ImeServiceTest&) = delete;
+
   ~ImeServiceTest() override = default;
 
   void CommitText(const std::u16string& text,
@@ -182,8 +186,6 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
   base::test::ScopedFeatureList feature_list_;
   ImeService service_;
   TestDecoderState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeServiceTest);
 };
 
 }  // namespace

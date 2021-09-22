@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
     virtual void OnUpdateOverCellularOneTimePermissionGranted() {}
   };
 
+  UpdateEngineClient(const UpdateEngineClient&) = delete;
+  UpdateEngineClient& operator=(const UpdateEngineClient&) = delete;
+
   ~UpdateEngineClient() override;
 
   // Adds and removes the observer.
@@ -165,9 +168,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) UpdateEngineClient
  protected:
   // Create() should be used instead.
   UpdateEngineClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateEngineClient);
 };
 
 }  // namespace chromeos

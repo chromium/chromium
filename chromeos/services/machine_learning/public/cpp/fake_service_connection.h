@@ -53,6 +53,11 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       public web_platform::mojom::HandwritingRecognizer {
  public:
   FakeServiceConnectionImpl();
+
+  FakeServiceConnectionImpl(const FakeServiceConnectionImpl&) = delete;
+  FakeServiceConnectionImpl& operator=(const FakeServiceConnectionImpl&) =
+      delete;
+
   ~FakeServiceConnectionImpl() override;
 
   // ServiceConnection:
@@ -379,8 +384,6 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
 
   bool async_mode_;
   std::vector<base::OnceClosure> pending_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeServiceConnectionImpl);
 };
 
 }  // namespace machine_learning

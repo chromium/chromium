@@ -16,6 +16,10 @@ namespace tether {
 class FakeHostScanScheduler : public HostScanScheduler {
  public:
   FakeHostScanScheduler();
+
+  FakeHostScanScheduler(const FakeHostScanScheduler&) = delete;
+  FakeHostScanScheduler& operator=(const FakeHostScanScheduler&) = delete;
+
   ~FakeHostScanScheduler() override;
 
   int num_attempted_scans() { return num_attempted_scans_; }
@@ -25,8 +29,6 @@ class FakeHostScanScheduler : public HostScanScheduler {
 
  private:
   int num_attempted_scans_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostScanScheduler);
 };
 
 }  // namespace tether

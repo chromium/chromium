@@ -41,6 +41,9 @@ class BleScanner {
         const std::vector<uint8_t>& eid) = 0;
   };
 
+  BleScanner(const BleScanner&) = delete;
+  BleScanner& operator=(const BleScanner&) = delete;
+
   virtual ~BleScanner();
 
   // Adds a scan request for the provided ConnectionAttemptDetails. If no scan
@@ -80,8 +83,6 @@ class BleScanner {
   base::ObserverList<Observer> observer_list_;
 
   base::flat_set<ConnectionAttemptDetails> scan_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleScanner);
 };
 
 }  // namespace secure_channel

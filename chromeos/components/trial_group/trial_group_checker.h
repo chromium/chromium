@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(TRIAL_GROUP_CHECKER) TrialGroupChecker {
 
   explicit TrialGroupChecker(GroupId group_id);
 
+  TrialGroupChecker(const TrialGroupChecker&) = delete;
+  TrialGroupChecker& operator=(const TrialGroupChecker&) = delete;
+
   ~TrialGroupChecker();
 
   // Checks user's membership and passes the result to a callback. The
@@ -67,8 +70,6 @@ class COMPONENT_EXPORT(TRIAL_GROUP_CHECKER) TrialGroupChecker {
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
   base::WeakPtrFactory<TrialGroupChecker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrialGroupChecker);
 };
 
 }  // namespace trial_group

@@ -45,6 +45,10 @@ class ModemMessagingProxy {
         base::BindOnce(&ModemMessagingProxy::OnSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  ModemMessagingProxy(const ModemMessagingProxy&) = delete;
+  ModemMessagingProxy& operator=(const ModemMessagingProxy&) = delete;
+
   virtual ~ModemMessagingProxy() = default;
 
   // Sets SmsReceived signal handler.
@@ -130,14 +134,16 @@ class ModemMessagingProxy {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ModemMessagingProxy> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModemMessagingProxy);
 };
 
 class COMPONENT_EXPORT(CHROMEOS_DBUS) ModemMessagingClientImpl
     : public ModemMessagingClient {
  public:
   explicit ModemMessagingClientImpl(dbus::Bus* bus) : bus_(bus) {}
+
+  ModemMessagingClientImpl(const ModemMessagingClientImpl&) = delete;
+  ModemMessagingClientImpl& operator=(const ModemMessagingClientImpl&) = delete;
+
   ~ModemMessagingClientImpl() override = default;
 
   void SetSmsReceivedHandler(const std::string& service_name,
@@ -188,8 +194,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ModemMessagingClientImpl
 
   dbus::Bus* bus_;
   ProxyMap proxies_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModemMessagingClientImpl);
 };
 
 }  // namespace

@@ -400,6 +400,10 @@ class TestCryptAuthDeviceManager : public CryptAuthDeviceManagerImpl {
     SetSyncSchedulerForTest(base::WrapUnique(scoped_sync_scheduler_));
   }
 
+  TestCryptAuthDeviceManager(const TestCryptAuthDeviceManager&) = delete;
+  TestCryptAuthDeviceManager& operator=(const TestCryptAuthDeviceManager&) =
+      delete;
+
   ~TestCryptAuthDeviceManager() override {}
 
   base::WeakPtr<MockSyncScheduler> GetSyncScheduler() {
@@ -416,8 +420,6 @@ class TestCryptAuthDeviceManager : public CryptAuthDeviceManagerImpl {
   // This should be safe because the life-time this SyncScheduler will always be
   // within the life of the TestCryptAuthDeviceManager object.
   base::WeakPtrFactory<MockSyncScheduler> weak_sync_scheduler_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCryptAuthDeviceManager);
 };
 
 }  // namespace

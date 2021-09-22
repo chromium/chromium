@@ -27,6 +27,10 @@ namespace secure_channel {
 class SharedResourceScheduler {
  public:
   SharedResourceScheduler();
+
+  SharedResourceScheduler(const SharedResourceScheduler&) = delete;
+  SharedResourceScheduler& operator=(const SharedResourceScheduler&) = delete;
+
   virtual ~SharedResourceScheduler();
 
   // Schedules a request to use a shared resource.
@@ -65,8 +69,6 @@ class SharedResourceScheduler {
 
   // Map from request to its priority.
   base::flat_map<DeviceIdPair, ConnectionPriority> request_to_priority_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedResourceScheduler);
 };
 
 }  // namespace secure_channel

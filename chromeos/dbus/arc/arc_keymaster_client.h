@@ -21,6 +21,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcKeymasterClient
     : public DBusClient {
  public:
+  ArcKeymasterClient(const ArcKeymasterClient&) = delete;
+  ArcKeymasterClient& operator=(const ArcKeymasterClient&) = delete;
+
   ~ArcKeymasterClient() override;
 
   // Factory function.
@@ -34,9 +37,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcKeymasterClient
  protected:
   // Create() should be used instead.
   ArcKeymasterClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcKeymasterClient);
 };
 
 }  // namespace chromeos

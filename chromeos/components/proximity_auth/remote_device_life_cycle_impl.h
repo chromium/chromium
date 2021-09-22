@@ -41,6 +41,11 @@ class RemoteDeviceLifeCycleImpl
       chromeos::multidevice::RemoteDeviceRef remote_device,
       absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device,
       chromeos::secure_channel::SecureChannelClient* secure_channel_client);
+
+  RemoteDeviceLifeCycleImpl(const RemoteDeviceLifeCycleImpl&) = delete;
+  RemoteDeviceLifeCycleImpl& operator=(const RemoteDeviceLifeCycleImpl&) =
+      delete;
+
   ~RemoteDeviceLifeCycleImpl() override;
 
   // RemoteDeviceLifeCycle:
@@ -105,8 +110,6 @@ class RemoteDeviceLifeCycleImpl
   base::OneShotTimer authentication_recovery_timer_;
 
   base::WeakPtrFactory<RemoteDeviceLifeCycleImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceLifeCycleImpl);
 };
 
 }  // namespace proximity_auth

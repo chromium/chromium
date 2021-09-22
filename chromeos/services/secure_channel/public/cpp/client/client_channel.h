@@ -31,6 +31,9 @@ class ClientChannel {
     virtual void OnMessageReceived(const std::string& payload) = 0;
   };
 
+  ClientChannel(const ClientChannel&) = delete;
+  ClientChannel& operator=(const ClientChannel&) = delete;
+
   virtual ~ClientChannel();
 
   bool GetConnectionMetadata(
@@ -66,8 +69,6 @@ class ClientChannel {
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
   bool is_disconnected_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientChannel);
 };
 
 }  // namespace secure_channel

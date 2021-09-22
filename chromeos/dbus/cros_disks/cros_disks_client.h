@@ -335,6 +335,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) CrosDisksClient
                                    const std::string& device_path) = 0;
   };
 
+  CrosDisksClient(const CrosDisksClient&) = delete;
+  CrosDisksClient& operator=(const CrosDisksClient&) = delete;
+
   ~CrosDisksClient() override;
 
   // Registers the given |observer| to listen D-Bus signals.
@@ -419,9 +422,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) CrosDisksClient
  protected:
   // Create() should be used instead.
   CrosDisksClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrosDisksClient);
 };
 
 }  // namespace chromeos

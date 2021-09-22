@@ -62,6 +62,12 @@ class TestMultiDeviceSetupClientObserver
     : public MultiDeviceSetupClient::Observer {
  public:
   TestMultiDeviceSetupClientObserver() = default;
+
+  TestMultiDeviceSetupClientObserver(
+      const TestMultiDeviceSetupClientObserver&) = delete;
+  TestMultiDeviceSetupClientObserver& operator=(
+      const TestMultiDeviceSetupClientObserver&) = delete;
+
   ~TestMultiDeviceSetupClientObserver() override = default;
 
   const std::vector<MultiDeviceSetupClient::HostStatusWithDevice>&
@@ -89,8 +95,6 @@ class TestMultiDeviceSetupClientObserver
   std::vector<MultiDeviceSetupClient::HostStatusWithDevice>
       host_status_updates_;
   std::vector<MultiDeviceSetupClient::FeatureStatesMap> feature_state_updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMultiDeviceSetupClientObserver);
 };
 
 absl::optional<multidevice::RemoteDevice> GetRemoteDeviceFromRef(

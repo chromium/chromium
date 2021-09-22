@@ -40,6 +40,11 @@ class TetherHostResponseRecorder {
   // Note: The PrefService* passed here must be created using the same registry
   // passed to RegisterPrefs().
   explicit TetherHostResponseRecorder(PrefService* pref_service);
+
+  TetherHostResponseRecorder(const TetherHostResponseRecorder&) = delete;
+  TetherHostResponseRecorder& operator=(const TetherHostResponseRecorder&) =
+      delete;
+
   virtual ~TetherHostResponseRecorder();
 
   void AddObserver(Observer* observer);
@@ -84,8 +89,6 @@ class TetherHostResponseRecorder {
 
   PrefService* pref_service_;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherHostResponseRecorder);
 };
 
 }  // namespace tether

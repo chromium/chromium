@@ -19,6 +19,10 @@ namespace secure_channel {
 class FakeConnectionAttempt : public ConnectionAttemptImpl {
  public:
   FakeConnectionAttempt();
+
+  FakeConnectionAttempt(const FakeConnectionAttempt&) = delete;
+  FakeConnectionAttempt& operator=(const FakeConnectionAttempt&) = delete;
+
   ~FakeConnectionAttempt() override;
 
   using ConnectionAttempt::NotifyConnectionAttemptFailure;
@@ -42,8 +46,6 @@ class FakeConnectionAttempt : public ConnectionAttemptImpl {
  private:
   base::OnceClosure on_connection_attempt_failure_callback_;
   base::OnceClosure on_connection_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionAttempt);
 };
 
 }  // namespace secure_channel

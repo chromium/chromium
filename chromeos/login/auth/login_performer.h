@@ -62,6 +62,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
 
   LoginPerformer(scoped_refptr<base::SequencedTaskRunner> task_runner,
                  Delegate* delegate);
+
+  LoginPerformer(const LoginPerformer&) = delete;
+  LoginPerformer& operator=(const LoginPerformer&) = delete;
+
   ~LoginPerformer() override;
 
   // Performs a login for |user_context|.
@@ -207,7 +211,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   AuthorizationMode auth_mode_ = AuthorizationMode::kInternal;
 
   base::WeakPtrFactory<LoginPerformer> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(LoginPerformer);
 };
 
 }  // namespace chromeos

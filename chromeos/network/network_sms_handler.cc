@@ -50,6 +50,12 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   ModemManager1NetworkSmsDeviceHandler(NetworkSmsHandler* host,
                                        const std::string& service_name,
                                        const dbus::ObjectPath& object_path);
+
+  ModemManager1NetworkSmsDeviceHandler(
+      const ModemManager1NetworkSmsDeviceHandler&) = delete;
+  ModemManager1NetworkSmsDeviceHandler& operator=(
+      const ModemManager1NetworkSmsDeviceHandler&) = delete;
+
   ~ModemManager1NetworkSmsDeviceHandler() override;
 
  private:
@@ -70,8 +76,6 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   base::circular_deque<dbus::ObjectPath> retrieval_queue_;
   base::WeakPtrFactory<ModemManager1NetworkSmsDeviceHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModemManager1NetworkSmsDeviceHandler);
 };
 
 NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::

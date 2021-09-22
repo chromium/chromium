@@ -44,6 +44,12 @@ class AssistantPowerManagerProviderImplTest : public testing::Test {
   AssistantPowerManagerProviderImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  AssistantPowerManagerProviderImplTest(
+      const AssistantPowerManagerProviderImplTest&) = delete;
+  AssistantPowerManagerProviderImplTest& operator=(
+      const AssistantPowerManagerProviderImplTest&) = delete;
+
   ~AssistantPowerManagerProviderImplTest() override = default;
 
   void SetUp() override {
@@ -128,8 +134,6 @@ class AssistantPowerManagerProviderImplTest : public testing::Test {
   FakePlatformDelegateImpl platform_delegate_{&wake_lock_provider_};
 
   std::unique_ptr<PowerManagerProviderImpl> power_manager_provider_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantPowerManagerProviderImplTest);
 };
 
 TEST_F(AssistantPowerManagerProviderImplTest, CheckAcquireAndReleaseWakeLock) {

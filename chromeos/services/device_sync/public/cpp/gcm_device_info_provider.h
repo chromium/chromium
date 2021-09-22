@@ -18,12 +18,13 @@ namespace device_sync {
 class GcmDeviceInfoProvider {
  public:
   GcmDeviceInfoProvider() = default;
+
+  GcmDeviceInfoProvider(const GcmDeviceInfoProvider&) = delete;
+  GcmDeviceInfoProvider& operator=(const GcmDeviceInfoProvider&) = delete;
+
   virtual ~GcmDeviceInfoProvider() = default;
 
   virtual const cryptauth::GcmDeviceInfo& GetGcmDeviceInfo() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GcmDeviceInfoProvider);
 };
 
 }  // namespace device_sync

@@ -22,14 +22,15 @@ namespace tether {
 class NetworkListSorter : public NetworkStateHandler::TetherSortDelegate {
  public:
   NetworkListSorter();
+
+  NetworkListSorter(const NetworkListSorter&) = delete;
+  NetworkListSorter& operator=(const NetworkListSorter&) = delete;
+
   virtual ~NetworkListSorter();
 
   // NetworkStateHandler::TetherNetworkListSorter:
   void SortTetherNetworkList(
       NetworkStateHandler::ManagedStateList* tether_networks) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkListSorter);
 };
 
 }  // namespace tether

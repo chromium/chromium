@@ -36,6 +36,11 @@ class RemoteDeviceCache;
 class ExpiringRemoteDeviceCache {
  public:
   ExpiringRemoteDeviceCache();
+
+  ExpiringRemoteDeviceCache(const ExpiringRemoteDeviceCache&) = delete;
+  ExpiringRemoteDeviceCache& operator=(const ExpiringRemoteDeviceCache&) =
+      delete;
+
   virtual ~ExpiringRemoteDeviceCache();
 
   void SetRemoteDevicesAndInvalidateOldEntries(
@@ -64,8 +69,6 @@ class ExpiringRemoteDeviceCache {
 
   base::flat_set<std::string> legacy_device_ids_from_last_set_call_;
   base::flat_set<std::string> instance_ids_from_last_set_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpiringRemoteDeviceCache);
 };
 
 }  // namespace multidevice

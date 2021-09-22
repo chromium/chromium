@@ -49,6 +49,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProxyConfigServiceImpl
       PrefService* profile_prefs,
       PrefService* local_state_prefs,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  ProxyConfigServiceImpl(const ProxyConfigServiceImpl&) = delete;
+  ProxyConfigServiceImpl& operator=(const ProxyConfigServiceImpl&) = delete;
+
   ~ProxyConfigServiceImpl() override;
 
   // PrefProxyConfigTrackerImpl implementation.
@@ -100,8 +104,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProxyConfigServiceImpl
   PrefService* local_state_prefs_;
 
   base::WeakPtrFactory<ProxyConfigServiceImpl> pointer_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceImpl);
 };
 
 }  // namespace chromeos

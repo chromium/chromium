@@ -67,6 +67,10 @@ class FakeConnection : public Connection {
  public:
   explicit FakeConnection(multidevice::RemoteDeviceRef remote_device)
       : Connection(remote_device), connection_blocked_(false) {}
+
+  FakeConnection(const FakeConnection&) = delete;
+  FakeConnection& operator=(const FakeConnection&) = delete;
+
   ~FakeConnection() override {}
 
   // Connection:
@@ -100,8 +104,6 @@ class FakeConnection : public Connection {
   std::vector<std::unique_ptr<WireMessage>> message_buffer_;
 
   bool connection_blocked_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnection);
 };
 
 // Harness for testing DeviceToDeviceAuthenticator.
@@ -114,6 +116,12 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
       : DeviceToDeviceAuthenticator(connection,
                                     std::move(secure_message_delegate)),
         timer_(nullptr) {}
+
+  DeviceToDeviceAuthenticatorForTest(
+      const DeviceToDeviceAuthenticatorForTest&) = delete;
+  DeviceToDeviceAuthenticatorForTest& operator=(
+      const DeviceToDeviceAuthenticatorForTest&) = delete;
+
   ~DeviceToDeviceAuthenticatorForTest() override {}
 
   base::MockOneShotTimer* timer() { return timer_; }
@@ -128,8 +136,6 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
 
   // This instance is owned by the super class.
   base::MockOneShotTimer* timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceAuthenticatorForTest);
 };
 
 }  // namespace
@@ -142,6 +148,12 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
         secure_message_delegate_(new multidevice::FakeSecureMessageDelegate),
         authenticator_(&connection_,
                        base::WrapUnique(secure_message_delegate_)) {}
+
+  SecureChannelDeviceToDeviceAuthenticatorTest(
+      const SecureChannelDeviceToDeviceAuthenticatorTest&) = delete;
+  SecureChannelDeviceToDeviceAuthenticatorTest& operator=(
+      const SecureChannelDeviceToDeviceAuthenticatorTest&) = delete;
+
   ~SecureChannelDeviceToDeviceAuthenticatorTest() override {}
 
   void SetUp() override {
@@ -241,8 +253,6 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
 
   // Stores the SecureContext returned after authentication succeeds.
   std::unique_ptr<SecureContext> secure_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelDeviceToDeviceAuthenticatorTest);
 };
 
 TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest, AuthenticateSucceeds) {

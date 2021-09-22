@@ -98,6 +98,12 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
  public:
   DisconnectTetheringRequestSenderTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(2u)) {}
+
+  DisconnectTetheringRequestSenderTest(
+      const DisconnectTetheringRequestSenderTest&) = delete;
+  DisconnectTetheringRequestSenderTest& operator=(
+      const DisconnectTetheringRequestSenderTest&) = delete;
+
   ~DisconnectTetheringRequestSenderTest() override = default;
 
   void SetUp() override {
@@ -196,9 +202,6 @@ class DisconnectTetheringRequestSenderTest : public testing::Test {
       disconnect_tethering_request_sender_;
   std::unique_ptr<FakeDisconnectTetheringRequestSenderObserver>
       fake_disconnect_tethering_request_sender_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringRequestSenderTest);
 };
 
 TEST_F(DisconnectTetheringRequestSenderTest, DISABLED_SendRequest_Success) {

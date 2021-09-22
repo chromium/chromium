@@ -32,6 +32,10 @@ namespace {
 class MockConnection : public Connection {
  public:
   MockConnection() : Connection(multidevice::CreateRemoteDeviceRefForTest()) {}
+
+  MockConnection(const MockConnection&) = delete;
+  MockConnection& operator=(const MockConnection&) = delete;
+
   ~MockConnection() {}
 
   MOCK_METHOD1(SetPaused, void(bool paused));
@@ -58,14 +62,15 @@ class MockConnection : public Connection {
   using Connection::OnDidSendMessage;
   using Connection::SetStatus;
   using Connection::status;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockConnection);
 };
 
 class MockConnectionObserver : public ConnectionObserver {
  public:
   MockConnectionObserver() {}
+
+  MockConnectionObserver(const MockConnectionObserver&) = delete;
+  MockConnectionObserver& operator=(const MockConnectionObserver&) = delete;
+
   virtual ~MockConnectionObserver() {}
 
   MOCK_METHOD3(OnConnectionStatusChanged,
@@ -78,19 +83,17 @@ class MockConnectionObserver : public ConnectionObserver {
                void(const Connection& connection,
                     const WireMessage& message,
                     bool success));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockConnectionObserver);
 };
 
 // Unlike WireMessage, offers a public constructor.
 class TestWireMessage : public WireMessage {
  public:
   TestWireMessage() : WireMessage("payload", "feature") {}
-  ~TestWireMessage() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWireMessage);
+  TestWireMessage(const TestWireMessage&) = delete;
+  TestWireMessage& operator=(const TestWireMessage&) = delete;
+
+  ~TestWireMessage() override = default;
 };
 
 }  // namespace

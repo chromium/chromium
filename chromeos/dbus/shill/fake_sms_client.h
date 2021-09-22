@@ -15,15 +15,16 @@ namespace chromeos {
 class FakeSMSClient : public SMSClient {
  public:
   FakeSMSClient();
+
+  FakeSMSClient(const FakeSMSClient&) = delete;
+  FakeSMSClient& operator=(const FakeSMSClient&) = delete;
+
   ~FakeSMSClient() override;
 
   // SMSClient overrides.
   void GetAll(const std::string& service_name,
               const dbus::ObjectPath& object_path,
               GetAllCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeSMSClient);
 };
 
 }  // namespace chromeos

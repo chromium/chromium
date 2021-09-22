@@ -14,6 +14,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcMidisClient
     : public ArcMidisClient {
  public:
   FakeArcMidisClient() = default;
+
+  FakeArcMidisClient(const FakeArcMidisClient&) = delete;
+  FakeArcMidisClient& operator=(const FakeArcMidisClient&) = delete;
+
   ~FakeArcMidisClient() override = default;
 
   // DBusClient override:
@@ -22,9 +26,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcMidisClient
   // ArcMidisClient override:
   void BootstrapMojoConnection(base::ScopedFD fd,
                                VoidDBusMethodCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeArcMidisClient);
 };
 
 }  // namespace chromeos

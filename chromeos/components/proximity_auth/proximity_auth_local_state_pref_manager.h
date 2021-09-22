@@ -27,6 +27,12 @@ namespace proximity_auth {
 class ProximityAuthLocalStatePrefManager : public ProximityAuthPrefManager {
  public:
   explicit ProximityAuthLocalStatePrefManager(PrefService* local_state);
+
+  ProximityAuthLocalStatePrefManager(
+      const ProximityAuthLocalStatePrefManager&) = delete;
+  ProximityAuthLocalStatePrefManager& operator=(
+      const ProximityAuthLocalStatePrefManager&) = delete;
+
   ~ProximityAuthLocalStatePrefManager() override;
 
   // Registers the prefs used by this class to the given |pref_service|.
@@ -64,8 +70,6 @@ class ProximityAuthLocalStatePrefManager : public ProximityAuthPrefManager {
 
   // The account id of the active user for which to fetch the prefs.
   AccountId active_user_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthLocalStatePrefManager);
 };
 
 }  // namespace proximity_auth

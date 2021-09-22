@@ -26,6 +26,10 @@ namespace ime {
 class DecoderEngine : public mojom::InputChannel {
  public:
   explicit DecoderEngine(ImeCrosPlatform* platform);
+
+  DecoderEngine(const DecoderEngine&) = delete;
+  DecoderEngine& operator=(const DecoderEngine&) = delete;
+
   ~DecoderEngine() override;
 
   // Binds the mojom::InputChannel interface to this object and returns true if
@@ -52,8 +56,6 @@ class DecoderEngine : public mojom::InputChannel {
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
 
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecoderEngine);
 };
 
 }  // namespace ime

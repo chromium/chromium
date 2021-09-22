@@ -32,6 +32,11 @@ class WifiHotspotDisconnectorImpl : public WifiHotspotDisconnector {
       NetworkStateHandler* network_state_handler,
       PrefService* pref_service,
       NetworkConfigurationRemover* network_configuration_remover);
+
+  WifiHotspotDisconnectorImpl(const WifiHotspotDisconnectorImpl&) = delete;
+  WifiHotspotDisconnectorImpl& operator=(const WifiHotspotDisconnectorImpl&) =
+      delete;
+
   ~WifiHotspotDisconnectorImpl() override;
 
   // WifiHotspotDisconnector:
@@ -60,8 +65,6 @@ class WifiHotspotDisconnectorImpl : public WifiHotspotDisconnector {
   NetworkConfigurationRemover* network_configuration_remover_;
 
   base::WeakPtrFactory<WifiHotspotDisconnectorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WifiHotspotDisconnectorImpl);
 };
 
 }  // namespace tether

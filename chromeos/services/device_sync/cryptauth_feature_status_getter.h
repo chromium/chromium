@@ -57,6 +57,10 @@ class CryptAuthFeatureStatusGetter {
       base::OnceCallback<void(const IdToDeviceSoftwareFeatureInfoMap&,
                               CryptAuthDeviceSyncResult::ResultCode)>;
 
+  CryptAuthFeatureStatusGetter(const CryptAuthFeatureStatusGetter&) = delete;
+  CryptAuthFeatureStatusGetter& operator=(const CryptAuthFeatureStatusGetter&) =
+      delete;
+
   virtual ~CryptAuthFeatureStatusGetter();
 
   // Starts the BatchGetFeatureStatuses portion of the CryptAuth v2 DeviceSync
@@ -83,8 +87,6 @@ class CryptAuthFeatureStatusGetter {
  private:
   GetFeatureStatusesAttemptFinishedCallback callback_;
   bool was_get_feature_statuses_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthFeatureStatusGetter);
 };
 
 }  // namespace device_sync

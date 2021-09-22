@@ -22,6 +22,9 @@ class NativeTimerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  NativeTimerTest(const NativeTimerTest&) = delete;
+  NativeTimerTest& operator=(const NativeTimerTest&) = delete;
+
   ~NativeTimerTest() override = default;
 
   // testing::Test:
@@ -56,9 +59,6 @@ class NativeTimerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeTimerTest);
 };
 
 TEST_F(NativeTimerTest, CheckCreateFailure) {

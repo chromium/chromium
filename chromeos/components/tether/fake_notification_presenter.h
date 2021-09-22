@@ -19,6 +19,11 @@ namespace tether {
 class FakeNotificationPresenter : public NotificationPresenter {
  public:
   FakeNotificationPresenter();
+
+  FakeNotificationPresenter(const FakeNotificationPresenter&) = delete;
+  FakeNotificationPresenter& operator=(const FakeNotificationPresenter&) =
+      delete;
+
   ~FakeNotificationPresenter() override;
 
   // Note: This function fails a test if potential_hotspot_state() is not
@@ -52,8 +57,6 @@ class FakeNotificationPresenter : public NotificationPresenter {
   absl::optional<multidevice::RemoteDeviceRef> potential_hotspot_remote_device_;
   bool is_setup_required_notification_shown_;
   bool is_connection_failed_notification_shown_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNotificationPresenter);
 };
 
 }  // namespace tether

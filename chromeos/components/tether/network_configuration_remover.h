@@ -20,6 +20,11 @@ class NetworkConfigurationRemover {
  public:
   NetworkConfigurationRemover(ManagedNetworkConfigurationHandler*
                                   managed_network_configuration_handler);
+
+  NetworkConfigurationRemover(const NetworkConfigurationRemover&) = delete;
+  NetworkConfigurationRemover& operator=(const NetworkConfigurationRemover&) =
+      delete;
+
   virtual ~NetworkConfigurationRemover();
 
   // Remove the network configuration of the Wi-Fi hotspot referenced by
@@ -31,8 +36,6 @@ class NetworkConfigurationRemover {
   friend class NetworkConfigurationRemoverTest;
 
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigurationRemover);
 };
 
 }  // namespace tether

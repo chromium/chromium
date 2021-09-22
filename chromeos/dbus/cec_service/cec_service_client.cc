@@ -83,6 +83,9 @@ class CecServiceClientImpl : public CecServiceClient {
  public:
   CecServiceClientImpl() = default;
 
+  CecServiceClientImpl(const CecServiceClientImpl&) = delete;
+  CecServiceClientImpl& operator=(const CecServiceClientImpl&) = delete;
+
   ~CecServiceClientImpl() override = default;
 
   void SendStandBy() override {
@@ -118,8 +121,6 @@ class CecServiceClientImpl : public CecServiceClient {
 
  private:
   scoped_refptr<dbus::ObjectProxy> cec_service_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(CecServiceClientImpl);
 };
 
 }  // namespace

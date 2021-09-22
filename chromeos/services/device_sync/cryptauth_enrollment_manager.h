@@ -37,6 +37,11 @@ class CryptAuthEnrollmentManager {
   };
 
   CryptAuthEnrollmentManager();
+
+  CryptAuthEnrollmentManager(const CryptAuthEnrollmentManager&) = delete;
+  CryptAuthEnrollmentManager& operator=(const CryptAuthEnrollmentManager&) =
+      delete;
+
   virtual ~CryptAuthEnrollmentManager();
 
   void AddObserver(Observer* observer);
@@ -91,8 +96,6 @@ class CryptAuthEnrollmentManager {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthEnrollmentManager);
 };
 
 }  // namespace device_sync

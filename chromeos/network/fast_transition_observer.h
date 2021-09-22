@@ -22,6 +22,10 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {
  public:
   explicit FastTransitionObserver(PrefService* local_state);
+
+  FastTransitionObserver(const FastTransitionObserver&) = delete;
+  FastTransitionObserver& operator=(const FastTransitionObserver&) = delete;
+
   ~FastTransitionObserver();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -32,8 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {
 
   PrefService* local_state_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(FastTransitionObserver);
 };
 
 }  // namespace chromeos

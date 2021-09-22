@@ -38,12 +38,13 @@ constexpr base::TimeDelta kDisconnectTetheringRequestTime =
 class MockOperationObserver : public DisconnectTetheringOperation::Observer {
  public:
   MockOperationObserver() = default;
+
+  MockOperationObserver(const MockOperationObserver&) = delete;
+  MockOperationObserver& operator=(const MockOperationObserver&) = delete;
+
   ~MockOperationObserver() = default;
 
   MOCK_METHOD2(OnOperationFinished, void(const std::string&, bool));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOperationObserver);
 };
 
 }  // namespace

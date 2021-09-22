@@ -21,12 +21,14 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION)
  public:
   SimpleGeolocationRequestTestMonitor();
 
+  SimpleGeolocationRequestTestMonitor(
+      const SimpleGeolocationRequestTestMonitor&) = delete;
+  SimpleGeolocationRequestTestMonitor& operator=(
+      const SimpleGeolocationRequestTestMonitor&) = delete;
+
   virtual ~SimpleGeolocationRequestTestMonitor();
   virtual void OnRequestCreated(SimpleGeolocationRequest* request);
   virtual void OnStart(SimpleGeolocationRequest* request);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleGeolocationRequestTestMonitor);
 };
 
 }  // namespace chromeos

@@ -277,6 +277,9 @@ void SetTimezoneIDFromString(const std::string& id) {
 // Common code of the TimezoneSettings implementations.
 class TimezoneSettingsBaseImpl : public chromeos::system::TimezoneSettings {
  public:
+  TimezoneSettingsBaseImpl(const TimezoneSettingsBaseImpl&) = delete;
+  TimezoneSettingsBaseImpl& operator=(const TimezoneSettingsBaseImpl&) = delete;
+
   ~TimezoneSettingsBaseImpl() override;
 
   // TimezoneSettings implementation:
@@ -304,9 +307,6 @@ class TimezoneSettingsBaseImpl : public chromeos::system::TimezoneSettings {
   base::ObserverList<Observer>::Unchecked observers_;
   std::vector<std::unique_ptr<icu::TimeZone>> timezones_;
   std::unique_ptr<icu::TimeZone> timezone_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TimezoneSettingsBaseImpl);
 };
 
 // The TimezoneSettings implementation used in production.

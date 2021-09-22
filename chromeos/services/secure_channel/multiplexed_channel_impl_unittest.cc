@@ -36,6 +36,12 @@ class FakeSingleClientMessageProxyImplFactory
     : public SingleClientMessageProxyImpl::Factory {
  public:
   FakeSingleClientMessageProxyImplFactory() = default;
+
+  FakeSingleClientMessageProxyImplFactory(
+      const FakeSingleClientMessageProxyImplFactory&) = delete;
+  FakeSingleClientMessageProxyImplFactory& operator=(
+      const FakeSingleClientMessageProxyImplFactory&) = delete;
+
   ~FakeSingleClientMessageProxyImplFactory() override = default;
 
   const SingleClientMessageProxy::Delegate* expected_delegate() {
@@ -88,8 +94,6 @@ class FakeSingleClientMessageProxyImplFactory
                      FakeSingleClientMessageProxy*,
                      base::UnguessableTokenHash>
       id_to_active_proxy_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSingleClientMessageProxyImplFactory);
 };
 
 }  // namespace

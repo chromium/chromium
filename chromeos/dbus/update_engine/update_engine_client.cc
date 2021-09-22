@@ -67,6 +67,9 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
  public:
   UpdateEngineClientImpl() : update_engine_proxy_(nullptr), last_status_() {}
 
+  UpdateEngineClientImpl(const UpdateEngineClientImpl&) = delete;
+  UpdateEngineClientImpl& operator=(const UpdateEngineClientImpl&) = delete;
+
   ~UpdateEngineClientImpl() override = default;
 
   // UpdateEngineClient implementation:
@@ -505,8 +508,6 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<UpdateEngineClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateEngineClientImpl);
 };
 
 // The UpdateEngineClient implementation used on Linux desktop,

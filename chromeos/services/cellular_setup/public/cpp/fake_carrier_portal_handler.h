@@ -20,6 +20,10 @@ namespace cellular_setup {
 class FakeCarrierPortalHandler : public mojom::CarrierPortalHandler {
  public:
   FakeCarrierPortalHandler();
+
+  FakeCarrierPortalHandler(const FakeCarrierPortalHandler&) = delete;
+  FakeCarrierPortalHandler& operator=(const FakeCarrierPortalHandler&) = delete;
+
   ~FakeCarrierPortalHandler() override;
 
   mojo::PendingRemote<mojom::CarrierPortalHandler> GenerateRemote();
@@ -35,8 +39,6 @@ class FakeCarrierPortalHandler : public mojom::CarrierPortalHandler {
  private:
   std::vector<mojom::CarrierPortalStatus> status_updates_;
   mojo::ReceiverSet<mojom::CarrierPortalHandler> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCarrierPortalHandler);
 };
 
 }  // namespace cellular_setup

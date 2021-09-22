@@ -38,6 +38,10 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
       ScreenlockType screenlock_type,
       ProximityAuthClient* proximity_auth_client,
       chromeos::secure_channel::SecureChannelClient* secure_channel_client);
+
+  ProximityAuthSystem(const ProximityAuthSystem&) = delete;
+  ProximityAuthSystem& operator=(const ProximityAuthSystem&) = delete;
+
   ~ProximityAuthSystem() override;
 
   // Starts the system to connect and authenticate when a registered user is
@@ -128,8 +132,6 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
 
   // True if the system is started_.
   bool started_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthSystem);
 };
 
 }  // namespace proximity_auth

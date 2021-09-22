@@ -23,6 +23,11 @@ constexpr char kFakePemEncodedIssuer[] = "PEM-ENCODED-ISSUER";
 class OncCertificatePatternTest : public testing::Test {
  public:
   OncCertificatePatternTest() = default;
+
+  OncCertificatePatternTest(const OncCertificatePatternTest&) = delete;
+  OncCertificatePatternTest& operator=(const OncCertificatePatternTest&) =
+      delete;
+
   ~OncCertificatePatternTest() override = default;
 
   void SetUp() override {
@@ -35,8 +40,6 @@ class OncCertificatePatternTest : public testing::Test {
 
  protected:
   scoped_refptr<net::X509Certificate> cert_;
-
-  DISALLOW_COPY_AND_ASSIGN(OncCertificatePatternTest);
 };
 
 }  // namespace

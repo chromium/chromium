@@ -25,6 +25,12 @@ class DisconnectTetheringRequestSender {
   };
 
   DisconnectTetheringRequestSender();
+
+  DisconnectTetheringRequestSender(const DisconnectTetheringRequestSender&) =
+      delete;
+  DisconnectTetheringRequestSender& operator=(
+      const DisconnectTetheringRequestSender&) = delete;
+
   virtual ~DisconnectTetheringRequestSender();
 
   // Sends a DisconnectTetheringRequest to the device with the given ID.
@@ -42,8 +48,6 @@ class DisconnectTetheringRequestSender {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringRequestSender);
 };
 
 }  // namespace tether

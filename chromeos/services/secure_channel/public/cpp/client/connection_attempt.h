@@ -33,6 +33,10 @@ class ConnectionAttempt {
   };
 
   ConnectionAttempt();
+
+  ConnectionAttempt(const ConnectionAttempt&) = delete;
+  ConnectionAttempt& operator=(const ConnectionAttempt&) = delete;
+
   virtual ~ConnectionAttempt();
 
   void SetDelegate(Delegate* delegate);
@@ -44,8 +48,6 @@ class ConnectionAttempt {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttempt);
 };
 
 }  // namespace secure_channel

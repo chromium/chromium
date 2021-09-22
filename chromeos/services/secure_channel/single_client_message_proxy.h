@@ -33,6 +33,9 @@ class SingleClientMessageProxy {
         const base::UnguessableToken& proxy_id) = 0;
   };
 
+  SingleClientMessageProxy(const SingleClientMessageProxy&) = delete;
+  SingleClientMessageProxy& operator=(const SingleClientMessageProxy&) = delete;
+
   virtual ~SingleClientMessageProxy();
 
   // Should be called when any message is received over the connection.
@@ -58,8 +61,6 @@ class SingleClientMessageProxy {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientMessageProxy);
 };
 
 }  // namespace secure_channel

@@ -179,6 +179,10 @@ class ShillPropertyHandlerTest : public testing::Test {
         device_test_(NULL),
         service_test_(NULL),
         profile_test_(NULL) {}
+
+  ShillPropertyHandlerTest(const ShillPropertyHandlerTest&) = delete;
+  ShillPropertyHandlerTest& operator=(const ShillPropertyHandlerTest&) = delete;
+
   ~ShillPropertyHandlerTest() override = default;
 
   void SetUp() override {
@@ -281,9 +285,6 @@ class ShillPropertyHandlerTest : public testing::Test {
   ShillDeviceClient::TestInterface* device_test_;
   ShillServiceClient::TestInterface* service_test_;
   ShillProfileClient::TestInterface* profile_test_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillPropertyHandlerTest);
 };
 
 TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerStub) {

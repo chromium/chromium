@@ -34,6 +34,10 @@ class Connection {
 
   // Constructs a connection to the given |remote_device|.
   explicit Connection(multidevice::RemoteDeviceRef remote_device);
+
+  Connection(const Connection&) = delete;
+  Connection& operator=(const Connection&) = delete;
+
   virtual ~Connection();
 
   // Returns true iff the connection's status is CONNECTED.
@@ -119,8 +123,6 @@ class Connection {
 
   // Whether a message is currently in the process of being sent.
   bool is_sending_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(Connection);
 };
 
 std::ostream& operator<<(std::ostream& stream,

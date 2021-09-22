@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkDeviceHandler
     : public NetworkDeviceHandler {
  public:
   MockNetworkDeviceHandler();
+
+  MockNetworkDeviceHandler(const MockNetworkDeviceHandler&) = delete;
+  MockNetworkDeviceHandler& operator=(const MockNetworkDeviceHandler&) = delete;
+
   virtual ~MockNetworkDeviceHandler();
 
   MOCK_CONST_METHOD2(GetDeviceProperties,
@@ -76,9 +80,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkDeviceHandler
 
   MOCK_METHOD1(SetUsbEthernetMacAddressSource,
                void(const std::string& enabled));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkDeviceHandler);
 };
 
 }  // namespace chromeos

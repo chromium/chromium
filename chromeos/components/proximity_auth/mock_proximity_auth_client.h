@@ -18,6 +18,10 @@ namespace proximity_auth {
 class MockProximityAuthClient : public ProximityAuthClient {
  public:
   MockProximityAuthClient();
+
+  MockProximityAuthClient(const MockProximityAuthClient&) = delete;
+  MockProximityAuthClient& operator=(const MockProximityAuthClient&) = delete;
+
   ~MockProximityAuthClient() override;
 
   // ProximityAuthClient:
@@ -32,9 +36,6 @@ class MockProximityAuthClient : public ProximityAuthClient {
            base::OnceCallback<void(const std::string& challenge)> callback));
   MOCK_CONST_METHOD0(GetAuthenticatedUsername, std::string(void));
   MOCK_METHOD0(GetPrefManager, ProximityAuthPrefManager*(void));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProximityAuthClient);
 };
 
 }  // namespace proximity_auth

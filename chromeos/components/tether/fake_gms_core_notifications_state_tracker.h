@@ -20,6 +20,12 @@ class FakeGmsCoreNotificationsStateTracker
     : public GmsCoreNotificationsStateTracker {
  public:
   FakeGmsCoreNotificationsStateTracker();
+
+  FakeGmsCoreNotificationsStateTracker(
+      const FakeGmsCoreNotificationsStateTracker&) = delete;
+  FakeGmsCoreNotificationsStateTracker& operator=(
+      const FakeGmsCoreNotificationsStateTracker&) = delete;
+
   ~FakeGmsCoreNotificationsStateTracker() override;
 
   void set_device_names(const std::vector<std::string>& device_names) {
@@ -34,8 +40,6 @@ class FakeGmsCoreNotificationsStateTracker
 
  private:
   std::vector<std::string> device_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGmsCoreNotificationsStateTracker);
 };
 
 }  // namespace tether

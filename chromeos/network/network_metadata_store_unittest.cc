@@ -103,6 +103,9 @@ class NetworkMetadataStoreTest : public ::testing::Test {
     metadata_store_->AddObserver(metadata_observer_.get());
   }
 
+  NetworkMetadataStoreTest(const NetworkMetadataStoreTest&) = delete;
+  NetworkMetadataStoreTest& operator=(const NetworkMetadataStoreTest&) = delete;
+
   ~NetworkMetadataStoreTest() override {
     network_state_handler_ = nullptr;
     metadata_store_.reset();
@@ -187,8 +190,6 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   std::unique_ptr<NetworkMetadataStore> metadata_store_;
   std::unique_ptr<TestNetworkMetadataObserver> metadata_observer_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkMetadataStoreTest);
 };
 
 namespace {

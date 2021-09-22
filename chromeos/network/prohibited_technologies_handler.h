@@ -21,6 +21,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
     : public LoginState::Observer,
       public NetworkPolicyObserver {
  public:
+  ProhibitedTechnologiesHandler(const ProhibitedTechnologiesHandler&) = delete;
+  ProhibitedTechnologiesHandler& operator=(
+      const ProhibitedTechnologiesHandler&) = delete;
+
   ~ProhibitedTechnologiesHandler() override;
 
   // LoginState::Observer
@@ -63,8 +67,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
   NetworkStateHandler* network_state_handler_ = nullptr;
   bool user_logged_in_ = false;
   bool user_policy_applied_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ProhibitedTechnologiesHandler);
 };
 
 }  // namespace chromeos

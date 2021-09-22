@@ -17,15 +17,17 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) FakeOobeConfigurationClient
     : public OobeConfigurationClient {
  public:
   FakeOobeConfigurationClient();
+
+  FakeOobeConfigurationClient(const FakeOobeConfigurationClient&) = delete;
+  FakeOobeConfigurationClient& operator=(const FakeOobeConfigurationClient&) =
+      delete;
+
   ~FakeOobeConfigurationClient() override;
 
   void Init(dbus::Bus* bus) override;
 
   // EasyUnlockClient overrides
   void CheckForOobeConfiguration(ConfigurationCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeOobeConfigurationClient);
 };
 
 }  // namespace chromeos

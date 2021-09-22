@@ -19,6 +19,10 @@ namespace secure_channel {
 class FakeBleSynchronizer : public BleSynchronizerBase {
  public:
   FakeBleSynchronizer();
+
+  FakeBleSynchronizer(const FakeBleSynchronizer&) = delete;
+  FakeBleSynchronizer& operator=(const FakeBleSynchronizer&) = delete;
+
   ~FakeBleSynchronizer() override;
 
   size_t GetNumCommands();
@@ -45,9 +49,6 @@ class FakeBleSynchronizer : public BleSynchronizerBase {
 
  protected:
   void ProcessQueue() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeBleSynchronizer);
 };
 
 }  // namespace secure_channel

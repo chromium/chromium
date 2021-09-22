@@ -18,6 +18,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_RUNTIME_PROBE) FakeRuntimeProbeClient
     : public RuntimeProbeClient {
  public:
   FakeRuntimeProbeClient();
+
+  FakeRuntimeProbeClient(const FakeRuntimeProbeClient&) = delete;
+  FakeRuntimeProbeClient& operator=(const FakeRuntimeProbeClient&) = delete;
+
   ~FakeRuntimeProbeClient() override;
 
   // RuntimeProbeClient overrides:
@@ -36,8 +40,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_RUNTIME_PROBE) FakeRuntimeProbeClient
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeRuntimeProbeClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRuntimeProbeClient);
 };
 
 }  // namespace chromeos

@@ -25,6 +25,11 @@ namespace multidevice_setup {
 class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
  public:
   FakeMultiDeviceSetupClient();
+
+  FakeMultiDeviceSetupClient(const FakeMultiDeviceSetupClient&) = delete;
+  FakeMultiDeviceSetupClient& operator=(const FakeMultiDeviceSetupClient&) =
+      delete;
+
   ~FakeMultiDeviceSetupClient() override;
 
   void SetHostStatusWithDevice(
@@ -103,8 +108,6 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
 
   HostStatusWithDevice host_status_with_device_;
   FeatureStatesMap feature_states_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiDeviceSetupClient);
 };
 
 }  // namespace multidevice_setup

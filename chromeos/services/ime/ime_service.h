@@ -28,6 +28,10 @@ class ImeService : public mojom::ImeService,
                    public ImeCrosPlatform {
  public:
   explicit ImeService(mojo::PendingReceiver<mojom::ImeService> receiver);
+
+  ImeService(const ImeService&) = delete;
+  ImeService& operator=(const ImeService&) = delete;
+
   ~ImeService() override;
 
  private:
@@ -90,8 +94,6 @@ class ImeService : public mojom::ImeService,
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeService);
 };
 
 }  // namespace ime

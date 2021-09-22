@@ -45,6 +45,9 @@ class SMSReceiveHandler {
     property_set_->Get(&state_, dbus::PropertySet::GetCallback());
   }
 
+  SMSReceiveHandler(const SMSReceiveHandler&) = delete;
+  SMSReceiveHandler& operator=(const SMSReceiveHandler&) = delete;
+
   ~SMSReceiveHandler() = default;
 
  private:
@@ -91,8 +94,6 @@ class SMSReceiveHandler {
   dbus::Property<std::string> timestamp_;
   std::unique_ptr<dbus::PropertySet> property_set_;
   base::WeakPtrFactory<SMSReceiveHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SMSReceiveHandler);
 };
 
 // SMSClient is used to communicate with the
@@ -102,6 +103,10 @@ class SMSReceiveHandler {
 class SMSClientImpl : public SMSClient {
  public:
   explicit SMSClientImpl(dbus::Bus* bus) : bus_(bus) {}
+
+  SMSClientImpl(const SMSClientImpl&) = delete;
+  SMSClientImpl& operator=(const SMSClientImpl&) = delete;
+
   ~SMSClientImpl() override = default;
 
   // Calls GetAll method.  |callback| is called after the method call succeeds.
@@ -131,8 +136,6 @@ class SMSClientImpl : public SMSClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<SMSClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SMSClientImpl);
 };
 
 }  // namespace

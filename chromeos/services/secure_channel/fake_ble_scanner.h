@@ -19,6 +19,10 @@ namespace secure_channel {
 class FakeBleScanner : public BleScanner {
  public:
   FakeBleScanner();
+
+  FakeBleScanner(const FakeBleScanner&) = delete;
+  FakeBleScanner& operator=(const FakeBleScanner&) = delete;
+
   ~FakeBleScanner() override;
 
   size_t num_scan_request_changes_handled() const {
@@ -36,8 +40,6 @@ class FakeBleScanner : public BleScanner {
   void HandleScanRequestChange() override;
 
   size_t num_scan_request_changes_handled_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScanner);
 };
 
 // Test BleScanner::Observer implementation.
@@ -57,6 +59,10 @@ class FakeBleScannerObserver : public BleScanner::Observer {
   };
 
   FakeBleScannerObserver();
+
+  FakeBleScannerObserver(const FakeBleScannerObserver&) = delete;
+  FakeBleScannerObserver& operator=(const FakeBleScannerObserver&) = delete;
+
   ~FakeBleScannerObserver() override;
 
   const std::vector<Result>& handled_scan_results() const {
@@ -71,8 +77,6 @@ class FakeBleScannerObserver : public BleScanner::Observer {
                                const std::vector<uint8_t>& eid) override;
 
   std::vector<Result> handled_scan_results_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScannerObserver);
 };
 
 }  // namespace secure_channel

@@ -47,6 +47,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   // Creates real implementations if |use_real_clients| is true and fakes
   // otherwise. Fakes are used when running on Linux desktop and in tests.
   explicit DBusClientsBrowser(bool use_real_clients);
+
+  DBusClientsBrowser(const DBusClientsBrowser&) = delete;
+  DBusClientsBrowser& operator=(const DBusClientsBrowser&) = delete;
+
   ~DBusClientsBrowser();
 
   void Initialize(dbus::Bus* system_bus);
@@ -76,8 +80,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<UpdateEngineClient> update_engine_client_;
   std::unique_ptr<VirtualFileProviderClient> virtual_file_provider_client_;
   std::unique_ptr<VmPluginDispatcherClient> vm_plugin_dispatcher_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DBusClientsBrowser);
 };
 
 }  // namespace chromeos

@@ -37,6 +37,9 @@ class ActiveConnectionManager {
     kDisconnectingConnectionExists
   };
 
+  ActiveConnectionManager(const ActiveConnectionManager&) = delete;
+  ActiveConnectionManager& operator=(const ActiveConnectionManager&) = delete;
+
   virtual ~ActiveConnectionManager();
 
   virtual ConnectionState GetConnectionState(
@@ -76,8 +79,6 @@ class ActiveConnectionManager {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveConnectionManager);
 };
 
 std::ostream& operator<<(

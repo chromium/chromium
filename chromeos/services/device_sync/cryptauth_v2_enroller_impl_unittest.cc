@@ -119,6 +119,11 @@ class FakeCryptAuthKeyProofComputerFactory
  public:
   FakeCryptAuthKeyProofComputerFactory() = default;
 
+  FakeCryptAuthKeyProofComputerFactory(
+      const FakeCryptAuthKeyProofComputerFactory&) = delete;
+  FakeCryptAuthKeyProofComputerFactory& operator=(
+      const FakeCryptAuthKeyProofComputerFactory&) = delete;
+
   ~FakeCryptAuthKeyProofComputerFactory() override = default;
 
   void set_should_return_null_key_proof(bool should_return_null_key_proof) {
@@ -134,8 +139,6 @@ class FakeCryptAuthKeyProofComputerFactory
   }
 
   bool should_return_null_key_proof_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyProofComputerFactory);
 };
 
 class SyncSingleKeyResponseData {

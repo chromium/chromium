@@ -24,6 +24,11 @@ namespace secure_channel {
 class FakePendingConnectionManager : public PendingConnectionManager {
  public:
   FakePendingConnectionManager(Delegate* delegate);
+
+  FakePendingConnectionManager(const FakePendingConnectionManager&) = delete;
+  FakePendingConnectionManager& operator=(const FakePendingConnectionManager&) =
+      delete;
+
   ~FakePendingConnectionManager() override;
 
   using HandledRequestsList =
@@ -50,8 +55,6 @@ class FakePendingConnectionManager : public PendingConnectionManager {
       ConnectionPriority connection_priority) override;
 
   HandledRequestsList handled_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionManager);
 };
 
 // Test PendingConnectionManager::Delegate implementation.
@@ -59,6 +62,12 @@ class FakePendingConnectionManagerDelegate
     : public PendingConnectionManager::Delegate {
  public:
   FakePendingConnectionManagerDelegate();
+
+  FakePendingConnectionManagerDelegate(
+      const FakePendingConnectionManagerDelegate&) = delete;
+  FakePendingConnectionManagerDelegate& operator=(
+      const FakePendingConnectionManagerDelegate&) = delete;
+
   ~FakePendingConnectionManagerDelegate() override;
 
   using ReceivedConnectionsList = std::vector<
@@ -76,8 +85,6 @@ class FakePendingConnectionManagerDelegate
       const ConnectionDetails& connection_details) override;
 
   ReceivedConnectionsList received_connections_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionManagerDelegate);
 };
 
 }  // namespace secure_channel

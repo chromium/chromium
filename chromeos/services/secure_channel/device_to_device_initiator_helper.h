@@ -56,6 +56,11 @@ class DeviceToDeviceInitiatorHelper {
       ValidateResponderAuthCallback;
 
   DeviceToDeviceInitiatorHelper();
+
+  DeviceToDeviceInitiatorHelper(const DeviceToDeviceInitiatorHelper&) = delete;
+  DeviceToDeviceInitiatorHelper& operator=(
+      const DeviceToDeviceInitiatorHelper&) = delete;
+
   virtual ~DeviceToDeviceInitiatorHelper();
 
   // Creates the [Hello] message, which is the first message that is sent:
@@ -185,8 +190,6 @@ class DeviceToDeviceInitiatorHelper {
       const securemessage::Header& header);
 
   base::WeakPtrFactory<DeviceToDeviceInitiatorHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceInitiatorHelper);
 };
 
 }  // namespace secure_channel

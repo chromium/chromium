@@ -51,10 +51,12 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
     SystemMemoryPressureEvaluator::OnMemoryPressure(level, reclaim_target_kb);
   }
 
-  ~TestSystemMemoryPressureEvaluator() override = default;
+  TestSystemMemoryPressureEvaluator(const TestSystemMemoryPressureEvaluator&) =
+      delete;
+  TestSystemMemoryPressureEvaluator& operator=(
+      const TestSystemMemoryPressureEvaluator&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSystemMemoryPressureEvaluator);
+  ~TestSystemMemoryPressureEvaluator() override = default;
 };
 
 TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {

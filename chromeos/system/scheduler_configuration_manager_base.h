@@ -27,6 +27,12 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) SchedulerConfigurationManagerBase {
   };
 
   SchedulerConfigurationManagerBase();
+
+  SchedulerConfigurationManagerBase(const SchedulerConfigurationManagerBase&) =
+      delete;
+  SchedulerConfigurationManagerBase& operator=(
+      const SchedulerConfigurationManagerBase&) = delete;
+
   virtual ~SchedulerConfigurationManagerBase();
 
   // Gets the most recent reply from debugd for SetSchedulerConfiguration D-Bus
@@ -39,9 +45,6 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) SchedulerConfigurationManagerBase {
 
  protected:
   base::ObserverList<Observer> observer_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SchedulerConfigurationManagerBase);
 };
 
 }  // namespace chromeos

@@ -41,6 +41,9 @@ namespace {
 // Adds a compression layer to a SwapFile.
 class CompressedSwapFile : public SwapFile {
  public:
+  CompressedSwapFile(const CompressedSwapFile&) = delete;
+  CompressedSwapFile& operator=(const CompressedSwapFile&) = delete;
+
   ~CompressedSwapFile() override;
 
   // SwapFile impl:
@@ -64,14 +67,14 @@ class CompressedSwapFile : public SwapFile {
   // that |dest| be large enough to hold the decompressed buffer, the return
   // value is the number of decompressed bytes.
   static ssize_t Decompress(const Region& src, const Region& dest);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompressedSwapFile);
 };
 
 // Adds an encryption layer to a SwapFile.
 class EncryptedSwapFile : public SwapFile {
  public:
+  EncryptedSwapFile(const EncryptedSwapFile&) = delete;
+  EncryptedSwapFile& operator=(const EncryptedSwapFile&) = delete;
+
   ~EncryptedSwapFile() override;
 
   // SwapFile impl:
@@ -87,14 +90,15 @@ class EncryptedSwapFile : public SwapFile {
   crypto::Aead aead_;
   std::vector<uint8_t> key_;
   std::vector<uint8_t> nonce_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EncryptedSwapFile);
 };
 
 // Adds a encryption layer to a compressed swap file.
 class EncryptedCompressedSwapFile : public EncryptedSwapFile {
  public:
+  EncryptedCompressedSwapFile(const EncryptedCompressedSwapFile&) = delete;
+  EncryptedCompressedSwapFile& operator=(const EncryptedCompressedSwapFile&) =
+      delete;
+
   ~EncryptedCompressedSwapFile() override;
 
   // SwapFile impl:
@@ -105,9 +109,6 @@ class EncryptedCompressedSwapFile : public EncryptedSwapFile {
   friend class SwapFile;
 
   explicit EncryptedCompressedSwapFile(base::ScopedFD fd);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EncryptedCompressedSwapFile);
 };
 
 // Because for some inputs that aren't compressible it can result in a size

@@ -43,6 +43,9 @@ class HostBackendDelegate {
     virtual void OnPendingHostRequestChange() {}
   };
 
+  HostBackendDelegate(const HostBackendDelegate&) = delete;
+  HostBackendDelegate& operator=(const HostBackendDelegate&) = delete;
+
   virtual ~HostBackendDelegate();
 
   // Attempts to set |host_device| as the host on the back-end. If |host_device|
@@ -90,8 +93,6 @@ class HostBackendDelegate {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostBackendDelegate);
 };
 
 }  // namespace multidevice_setup

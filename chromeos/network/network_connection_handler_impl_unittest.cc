@@ -68,6 +68,11 @@ const char kTestIccid2[] = "9876543210987654321";
 class TestNetworkConnectionObserver : public NetworkConnectionObserver {
  public:
   TestNetworkConnectionObserver() = default;
+
+  TestNetworkConnectionObserver(const TestNetworkConnectionObserver&) = delete;
+  TestNetworkConnectionObserver& operator=(
+      const TestNetworkConnectionObserver&) = delete;
+
   ~TestNetworkConnectionObserver() override = default;
 
   // NetworkConnectionObserver
@@ -108,8 +113,6 @@ class TestNetworkConnectionObserver : public NetworkConnectionObserver {
   std::set<std::string> disconnect_requests_;
   std::set<std::string> requests_;
   std::map<std::string, std::string> results_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkConnectionObserver);
 };
 
 class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
@@ -160,6 +163,12 @@ class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
 class NetworkConnectionHandlerImplTest : public testing::Test {
  public:
   NetworkConnectionHandlerImplTest() = default;
+
+  NetworkConnectionHandlerImplTest(const NetworkConnectionHandlerImplTest&) =
+      delete;
+  NetworkConnectionHandlerImplTest& operator=(
+      const NetworkConnectionHandlerImplTest&) = delete;
+
   ~NetworkConnectionHandlerImplTest() override = default;
 
   void SetUp() override {
@@ -537,8 +546,6 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   std::unique_ptr<net::NSSCertDatabaseChromeOS> test_nsscertdb_;
   std::string result_;
   std::unique_ptr<FakeTetherDelegate> fake_tether_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandlerImplTest);
 };
 
 namespace {

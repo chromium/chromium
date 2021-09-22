@@ -24,6 +24,12 @@ class GmsCoreNotificationsStateTrackerImpl
       public HostScannerOperation::Observer {
  public:
   GmsCoreNotificationsStateTrackerImpl();
+
+  GmsCoreNotificationsStateTrackerImpl(
+      const GmsCoreNotificationsStateTrackerImpl&) = delete;
+  GmsCoreNotificationsStateTrackerImpl& operator=(
+      const GmsCoreNotificationsStateTrackerImpl&) = delete;
+
   ~GmsCoreNotificationsStateTrackerImpl() override;
 
   // GmsCoreNotificationsStateTracker:
@@ -45,8 +51,6 @@ class GmsCoreNotificationsStateTrackerImpl
   void SendDeviceNamesChangeEvent();
 
   std::map<std::string, std::string> device_id_to_name_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(GmsCoreNotificationsStateTrackerImpl);
 };
 
 }  // namespace tether

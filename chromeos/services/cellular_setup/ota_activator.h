@@ -22,6 +22,9 @@ namespace cellular_setup {
 // instance.
 class OtaActivator : public mojom::CarrierPortalHandler {
  public:
+  OtaActivator(const OtaActivator&) = delete;
+  OtaActivator& operator=(const OtaActivator&) = delete;
+
   ~OtaActivator() override;
 
   // Generates a mojo::PendingRemote<> bound to this instance. Only one
@@ -36,8 +39,6 @@ class OtaActivator : public mojom::CarrierPortalHandler {
 
   base::OnceClosure on_finished_callback_;
   mojo::Receiver<mojom::CarrierPortalHandler> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OtaActivator);
 };
 
 }  // namespace cellular_setup

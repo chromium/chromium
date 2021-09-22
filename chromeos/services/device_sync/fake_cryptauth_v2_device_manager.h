@@ -29,6 +29,11 @@ namespace device_sync {
 class FakeCryptAuthV2DeviceManager : public CryptAuthV2DeviceManager {
  public:
   FakeCryptAuthV2DeviceManager();
+
+  FakeCryptAuthV2DeviceManager(const FakeCryptAuthV2DeviceManager&) = delete;
+  FakeCryptAuthV2DeviceManager& operator=(const FakeCryptAuthV2DeviceManager&) =
+      delete;
+
   ~FakeCryptAuthV2DeviceManager() override;
 
   // CryptAuthV2DeviceManager:
@@ -79,8 +84,6 @@ class FakeCryptAuthV2DeviceManager : public CryptAuthV2DeviceManager {
   absl::optional<base::TimeDelta> time_to_next_attempt_;
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap synced_devices_;
   base::queue<cryptauthv2::ClientMetadata> force_device_sync_now_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthV2DeviceManager);
 };
 
 }  // namespace device_sync

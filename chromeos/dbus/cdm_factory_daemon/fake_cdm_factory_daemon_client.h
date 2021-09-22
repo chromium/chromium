@@ -18,15 +18,17 @@ namespace chromeos {
 class FakeCdmFactoryDaemonClient : public CdmFactoryDaemonClient {
  public:
   FakeCdmFactoryDaemonClient();
+
+  FakeCdmFactoryDaemonClient(const FakeCdmFactoryDaemonClient&) = delete;
+  FakeCdmFactoryDaemonClient& operator=(const FakeCdmFactoryDaemonClient&) =
+      delete;
+
   ~FakeCdmFactoryDaemonClient() override;
 
   // CdmFactoryDaemonClient:
   void BootstrapMojoConnection(
       base::ScopedFD fd,
       base::OnceCallback<void(bool success)> callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeCdmFactoryDaemonClient);
 };
 
 }  // namespace chromeos

@@ -18,6 +18,11 @@ class FakeGcmDeviceInfoProvider : public GcmDeviceInfoProvider {
  public:
   explicit FakeGcmDeviceInfoProvider(
       const cryptauth::GcmDeviceInfo& gcm_device_info);
+
+  FakeGcmDeviceInfoProvider(const FakeGcmDeviceInfoProvider&) = delete;
+  FakeGcmDeviceInfoProvider& operator=(const FakeGcmDeviceInfoProvider&) =
+      delete;
+
   ~FakeGcmDeviceInfoProvider() override;
 
   // GcmDeviceInfoProvider:
@@ -25,8 +30,6 @@ class FakeGcmDeviceInfoProvider : public GcmDeviceInfoProvider {
 
  private:
   const cryptauth::GcmDeviceInfo gcm_device_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGcmDeviceInfoProvider);
 };
 
 }  // namespace device_sync

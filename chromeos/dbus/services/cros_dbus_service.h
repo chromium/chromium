@@ -55,6 +55,9 @@ class CrosDBusService {
   static ServiceProviderList CreateServiceProviderList(
       std::unique_ptr<ServiceProviderInterface> provider);
 
+  CrosDBusService(const CrosDBusService&) = delete;
+  CrosDBusService& operator=(const CrosDBusService&) = delete;
+
   virtual ~CrosDBusService();
 
  protected:
@@ -71,8 +74,6 @@ class CrosDBusService {
       const std::string& service_name,
       const dbus::ObjectPath& object_path,
       ServiceProviderList service_providers);
-
-  DISALLOW_COPY_AND_ASSIGN(CrosDBusService);
 };
 
 }  // namespace chromeos

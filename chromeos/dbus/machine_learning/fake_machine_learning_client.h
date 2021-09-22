@@ -16,15 +16,17 @@ namespace chromeos {
 class FakeMachineLearningClient : public MachineLearningClient {
  public:
   FakeMachineLearningClient();
+
+  FakeMachineLearningClient(const FakeMachineLearningClient&) = delete;
+  FakeMachineLearningClient& operator=(const FakeMachineLearningClient&) =
+      delete;
+
   ~FakeMachineLearningClient() override;
 
   // MachineLearningClient:
   void BootstrapMojoConnection(
       base::ScopedFD fd,
       base::OnceCallback<void(bool success)> result_callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeMachineLearningClient);
 };
 
 }  // namespace chromeos

@@ -22,6 +22,10 @@ namespace secure_channel {
 class FakeAuthenticatedChannel : public AuthenticatedChannel {
  public:
   FakeAuthenticatedChannel();
+
+  FakeAuthenticatedChannel(const FakeAuthenticatedChannel&) = delete;
+  FakeAuthenticatedChannel& operator=(const FakeAuthenticatedChannel&) = delete;
+
   ~FakeAuthenticatedChannel() override;
 
   std::vector<std::tuple<std::string, std::string, base::OnceClosure>>&
@@ -56,8 +60,6 @@ class FakeAuthenticatedChannel : public AuthenticatedChannel {
   bool has_disconnection_been_requested_ = false;
   std::vector<std::tuple<std::string, std::string, base::OnceClosure>>
       sent_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthenticatedChannel);
 };
 
 // Test AuthenticatedChannel::Observer implementation.

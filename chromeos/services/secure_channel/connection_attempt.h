@@ -42,6 +42,9 @@ class ConnectionAttempt : public PendingConnectionRequestDelegate {
     return attempt->ExtractClientConnectionParameters();
   }
 
+  ConnectionAttempt(const ConnectionAttempt&) = delete;
+  ConnectionAttempt& operator=(const ConnectionAttempt&) = delete;
+
   virtual ~ConnectionAttempt() = default;
 
   const ConnectionAttemptDetails& connection_attempt_details() const {
@@ -133,8 +136,6 @@ class ConnectionAttempt : public PendingConnectionRequestDelegate {
   const base::Time start_attempt_timestamp_;
 
   bool has_notified_delegate_of_success_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttempt);
 };
 
 }  // namespace secure_channel

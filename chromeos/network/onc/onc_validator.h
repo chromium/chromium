@@ -100,6 +100,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
             bool managed_onc,
             bool log_warnings);
 
+  Validator(const Validator&) = delete;
+  Validator& operator=(const Validator&) = delete;
+
   ~Validator() override;
 
   // Sets the ONC source to |source|. If not set, defaults to ONC_SOURCE_NONE.
@@ -293,8 +296,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
   // List of all validation issues that occured within validation initiated by
   // function ValidateAndRepairObject.
   std::vector<ValidationIssue> validation_issues_;
-
-  DISALLOW_COPY_AND_ASSIGN(Validator);
 };
 
 }  // namespace onc

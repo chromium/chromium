@@ -30,6 +30,10 @@ class CameraAppUI : public ui::MojoWebUIController,
  public:
   CameraAppUI(content::WebUI* web_ui,
               std::unique_ptr<CameraAppUIDelegate> delegate);
+
+  CameraAppUI(const CameraAppUI&) = delete;
+  CameraAppUI& operator=(const CameraAppUI&) = delete;
+
   ~CameraAppUI() override;
 
   // Instantiates implementor of the cros::mojom::CameraAppDeviceProvider mojo
@@ -67,8 +71,6 @@ class CameraAppUI : public ui::MojoWebUIController,
   std::unique_ptr<chromeos_camera::CameraAppHelperImpl> helper_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CameraAppUI);
 };
 
 }  // namespace chromeos

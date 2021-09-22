@@ -46,6 +46,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   explicit FakeSessionManagerClient(PolicyStorageType policy_storage);
 
+  FakeSessionManagerClient(const FakeSessionManagerClient&) = delete;
+  FakeSessionManagerClient& operator=(const FakeSessionManagerClient&) = delete;
+
   ~FakeSessionManagerClient() override;
 
   // Returns the fake global instance if initialized. May return null.
@@ -390,7 +393,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   absl::optional<std::string> primary_user_id_;
 
   base::WeakPtrFactory<FakeSessionManagerClient> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeSessionManagerClient);
 };
 
 class COMPONENT_EXPORT(SESSION_MANAGER) ScopedFakeSessionManagerClient {

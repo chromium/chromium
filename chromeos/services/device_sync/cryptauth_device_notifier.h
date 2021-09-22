@@ -24,6 +24,10 @@ namespace device_sync {
 class CryptAuthDeviceNotifier {
  public:
   CryptAuthDeviceNotifier() = default;
+
+  CryptAuthDeviceNotifier(const CryptAuthDeviceNotifier&) = delete;
+  CryptAuthDeviceNotifier& operator=(const CryptAuthDeviceNotifier&) = delete;
+
   virtual ~CryptAuthDeviceNotifier() = default;
 
   // Sends a GCM message to devices with Instance IDs |device_ids|. The message
@@ -37,9 +41,6 @@ class CryptAuthDeviceNotifier {
       CryptAuthFeatureType feature_type,
       base::OnceClosure success_callback,
       base::OnceCallback<void(NetworkRequestError)> error_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceNotifier);
 };
 
 }  // namespace device_sync

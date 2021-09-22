@@ -68,6 +68,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
               pending_url_loader_factory,
           signin::IdentityManager* identity_manager);
+
+  Service(const Service&) = delete;
+  Service& operator=(const Service&) = delete;
+
   ~Service() override;
 
   // Allows tests to override the S3 server URI used by the service.
@@ -193,8 +197,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<Service> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Service);
 };
 
 }  // namespace assistant

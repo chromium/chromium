@@ -48,6 +48,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   static const char kErrorUnknown[];
 
   NetworkDeviceHandler();
+
+  NetworkDeviceHandler(const NetworkDeviceHandler&) = delete;
+  NetworkDeviceHandler& operator=(const NetworkDeviceHandler&) = delete;
+
   virtual ~NetworkDeviceHandler();
 
   // Invokes |callback| with the properties for the device matching
@@ -166,9 +170,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
 
   static std::unique_ptr<NetworkDeviceHandler> InitializeForTesting(
       NetworkStateHandler* network_state_handler);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkDeviceHandler);
 };
 
 }  // namespace chromeos

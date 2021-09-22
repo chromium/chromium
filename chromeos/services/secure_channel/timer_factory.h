@@ -21,13 +21,14 @@ namespace secure_channel {
 // for timers.
 class TimerFactory {
  public:
+  TimerFactory(const TimerFactory&) = delete;
+  TimerFactory& operator=(const TimerFactory&) = delete;
+
   virtual ~TimerFactory() = default;
   virtual std::unique_ptr<base::OneShotTimer> CreateOneShotTimer() = 0;
 
  protected:
   TimerFactory() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(TimerFactory);
 };
 
 }  // namespace secure_channel

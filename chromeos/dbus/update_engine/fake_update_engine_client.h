@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
     : public UpdateEngineClient {
  public:
   FakeUpdateEngineClient();
+
+  FakeUpdateEngineClient(const FakeUpdateEngineClient&) = delete;
+  FakeUpdateEngineClient& operator=(const FakeUpdateEngineClient&) = delete;
+
   ~FakeUpdateEngineClient() override;
 
   // UpdateEngineClient overrides
@@ -115,8 +119,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   int update_over_cellular_permission_count_ = 0;
   int update_over_cellular_one_time_permission_count_ = 0;
   base::Time eol_date_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUpdateEngineClient);
 };
 
 }  // namespace chromeos

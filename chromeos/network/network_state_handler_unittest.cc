@@ -108,6 +108,10 @@ base::Value GenerateSimSlotInfosWithEid(const std::string& eid) {
 class TestObserver final : public chromeos::NetworkStateHandlerObserver {
  public:
   explicit TestObserver(NetworkStateHandler* handler) : handler_(handler) {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   void DeviceListChanged() override {
@@ -295,13 +299,15 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   absl::optional<base::RunLoop> run_loop_scan_started_;
   absl::optional<base::RunLoop> run_loop_scan_completed_;
   std::vector<std::pair<std::string, std::string>> service_path_transitions_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class TestTetherSortDelegate : public NetworkStateHandler::TetherSortDelegate {
  public:
   TestTetherSortDelegate() = default;
+
+  TestTetherSortDelegate(const TestTetherSortDelegate&) = delete;
+  TestTetherSortDelegate& operator=(const TestTetherSortDelegate&) = delete;
+
   ~TestTetherSortDelegate() = default;
 
   // NetworkStateHandler::TetherSortDelegate:
@@ -319,9 +325,6 @@ class TestTetherSortDelegate : public NetworkStateHandler::TetherSortDelegate {
                 return first_network->guid() >= second_network->guid();
               });
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTetherSortDelegate);
 };
 
 }  // namespace
@@ -335,6 +338,10 @@ class NetworkStateHandlerTest : public testing::Test {
         manager_test_(nullptr),
         profile_test_(nullptr),
         service_test_(nullptr) {}
+
+  NetworkStateHandlerTest(const NetworkStateHandlerTest&) = delete;
+  NetworkStateHandlerTest& operator=(const NetworkStateHandlerTest&) = delete;
+
   ~NetworkStateHandlerTest() override = default;
 
   void SetUp() override {
@@ -453,9 +460,6 @@ class NetworkStateHandlerTest : public testing::Test {
   ShillManagerClient::TestInterface* manager_test_;
   ShillProfileClient::TestInterface* profile_test_;
   ShillServiceClient::TestInterface* service_test_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHandlerTest);
 };
 
 TEST_F(NetworkStateHandlerTest, NetworkStateHandlerStub) {

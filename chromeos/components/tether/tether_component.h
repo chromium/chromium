@@ -38,6 +38,10 @@ class TetherComponent {
   };
 
   TetherComponent();
+
+  TetherComponent(const TetherComponent&) = delete;
+  TetherComponent& operator=(const TetherComponent&) = delete;
+
   virtual ~TetherComponent();
 
   // Requests that the Tether component shuts down. If the component can be shut
@@ -57,8 +61,6 @@ class TetherComponent {
  private:
   Status status_ = Status::ACTIVE;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherComponent);
 };
 
 }  // namespace tether

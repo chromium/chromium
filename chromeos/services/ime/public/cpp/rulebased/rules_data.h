@@ -28,6 +28,10 @@ using TransformRule = std::pair<std::unique_ptr<re2::RE2>, std::string>;
 class RulesData {
  public:
   RulesData();
+
+  RulesData(const RulesData&) = delete;
+  RulesData& operator=(const RulesData&) = delete;
+
   ~RulesData();
 
   // Creates the RulesData by the given raw data.
@@ -84,8 +88,6 @@ class RulesData {
 
   // The history prune regexp which is only used by client code of RulesData.
   std::unique_ptr<re2::RE2> history_prune_re_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesData);
 };
 
 }  // namespace rulebased

@@ -54,6 +54,10 @@ class SuspendUnmountManagerTest : public testing::Test {
         std::make_unique<SuspendUnmountManager>(&disk_mount_manager_);
   }
 
+  SuspendUnmountManagerTest(const SuspendUnmountManagerTest&) = delete;
+  SuspendUnmountManagerTest& operator=(const SuspendUnmountManagerTest&) =
+      delete;
+
   ~SuspendUnmountManagerTest() override {
     suspend_unmount_manager_.reset();
     PowerManagerClient::Shutdown();
@@ -62,9 +66,6 @@ class SuspendUnmountManagerTest : public testing::Test {
  protected:
   FakeDiskMountManager disk_mount_manager_;
   std::unique_ptr<SuspendUnmountManager> suspend_unmount_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SuspendUnmountManagerTest);
 };
 
 TEST_F(SuspendUnmountManagerTest, Basic) {

@@ -17,6 +17,9 @@ namespace secure_channel {
 // Base SecureChannel implementation.
 class SecureChannelBase : public mojom::SecureChannel {
  public:
+  SecureChannelBase(const SecureChannelBase&) = delete;
+  SecureChannelBase& operator=(const SecureChannelBase&) = delete;
+
   ~SecureChannelBase() override;
 
   // Binds a receiver to this implementation. Should be called each time that
@@ -28,8 +31,6 @@ class SecureChannelBase : public mojom::SecureChannel {
 
  private:
   mojo::ReceiverSet<mojom::SecureChannel> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBase);
 };
 
 }  // namespace secure_channel

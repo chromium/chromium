@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
                        PrefService* local_state_prefs,
                        NetworkStateHandler* network_state_handler,
                        NetworkProfileHandler* network_profile_handler);
+
+  UIProxyConfigService(const UIProxyConfigService&) = delete;
+  UIProxyConfigService& operator=(const UIProxyConfigService&) = delete;
+
   ~UIProxyConfigService();
 
   // Generates ONC dictionary for proxy settings enforced for the network, and
@@ -85,8 +89,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
 
   NetworkStateHandler* network_state_handler_;      // unowned
   NetworkProfileHandler* network_profile_handler_;  // unowned
-
-  DISALLOW_COPY_AND_ASSIGN(UIProxyConfigService);
 };
 
 }  // namespace chromeos

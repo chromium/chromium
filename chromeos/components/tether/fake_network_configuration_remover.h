@@ -18,6 +18,12 @@ namespace tether {
 class FakeNetworkConfigurationRemover : public NetworkConfigurationRemover {
  public:
   FakeNetworkConfigurationRemover();
+
+  FakeNetworkConfigurationRemover(const FakeNetworkConfigurationRemover&) =
+      delete;
+  FakeNetworkConfigurationRemover& operator=(
+      const FakeNetworkConfigurationRemover&) = delete;
+
   ~FakeNetworkConfigurationRemover() override;
 
   std::string last_removed_wifi_network_path() {
@@ -30,8 +36,6 @@ class FakeNetworkConfigurationRemover : public NetworkConfigurationRemover {
 
  private:
   std::string last_removed_wifi_network_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetworkConfigurationRemover);
 };
 
 }  // namespace tether

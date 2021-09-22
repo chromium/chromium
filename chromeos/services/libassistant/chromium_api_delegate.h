@@ -28,6 +28,10 @@ class ChromiumApiDelegate : public assistant_client::ChromeOSApiDelegate {
   explicit ChromiumApiDelegate(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory);
+
+  ChromiumApiDelegate(const ChromiumApiDelegate&) = delete;
+  ChromiumApiDelegate& operator=(const ChromiumApiDelegate&) = delete;
+
   ~ChromiumApiDelegate() override;
   // assistant_client::FuchsiaApiDelegate overrides:
   assistant_client::HttpConnectionFactory* GetHttpConnectionFactory() override;
@@ -38,7 +42,6 @@ class ChromiumApiDelegate : public assistant_client::ChromeOSApiDelegate {
 
  private:
   ChromiumHttpConnectionFactory http_connection_factory_;
-  DISALLOW_COPY_AND_ASSIGN(ChromiumApiDelegate);
 };
 
 }  // namespace libassistant

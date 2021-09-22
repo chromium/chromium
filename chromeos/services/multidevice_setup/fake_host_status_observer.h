@@ -19,6 +19,10 @@ namespace multidevice_setup {
 class FakeHostStatusObserver : public mojom::HostStatusObserver {
  public:
   FakeHostStatusObserver();
+
+  FakeHostStatusObserver(const FakeHostStatusObserver&) = delete;
+  FakeHostStatusObserver& operator=(const FakeHostStatusObserver&) = delete;
+
   ~FakeHostStatusObserver() override;
 
   mojo::PendingRemote<mojom::HostStatusObserver> GenerateRemote();
@@ -40,8 +44,6 @@ class FakeHostStatusObserver : public mojom::HostStatusObserver {
       host_status_updates_;
 
   mojo::ReceiverSet<mojom::HostStatusObserver> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostStatusObserver);
 };
 
 }  // namespace multidevice_setup

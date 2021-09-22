@@ -16,6 +16,9 @@ namespace multidevice_setup {
 // MultiDeviceSetup implementation which accepts receivers to bind to it.
 class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
  public:
+  MultiDeviceSetupBase(const MultiDeviceSetupBase&) = delete;
+  MultiDeviceSetupBase& operator=(const MultiDeviceSetupBase&) = delete;
+
   ~MultiDeviceSetupBase() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver);
@@ -34,8 +37,6 @@ class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
 
  private:
   mojo::ReceiverSet<mojom::MultiDeviceSetup> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupBase);
 };
 
 }  // namespace multidevice_setup

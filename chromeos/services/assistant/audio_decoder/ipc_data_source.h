@@ -25,6 +25,10 @@ class IPCDataSource : public media::DataSource {
   // May only be called on the utility thread.
   explicit IPCDataSource(
       mojo::PendingRemote<mojom::AssistantMediaDataSource> media_data_source);
+
+  IPCDataSource(const IPCDataSource&) = delete;
+  IPCDataSource& operator=(const IPCDataSource&) = delete;
+
   ~IPCDataSource() override;
 
   // media::DataSource implementation. The methods may be called on any single
@@ -55,8 +59,6 @@ class IPCDataSource : public media::DataSource {
 
   // Enforces that the DataSource methods are called on one other thread only.
   THREAD_CHECKER(data_source_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IPCDataSource);
 };
 
 }  // namespace assistant

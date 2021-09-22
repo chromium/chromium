@@ -21,6 +21,11 @@ namespace multidevice {
 class FakeSecureMessageDelegate : public SecureMessageDelegate {
  public:
   FakeSecureMessageDelegate();
+
+  FakeSecureMessageDelegate(const FakeSecureMessageDelegate&) = delete;
+  FakeSecureMessageDelegate& operator=(const FakeSecureMessageDelegate&) =
+      delete;
+
   ~FakeSecureMessageDelegate() override;
 
   // SecureMessageDelegate:
@@ -48,14 +53,18 @@ class FakeSecureMessageDelegate : public SecureMessageDelegate {
 
  private:
   std::string next_public_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureMessageDelegate);
 };
 
 class FakeSecureMessageDelegateFactory
     : public multidevice::SecureMessageDelegateImpl::Factory {
  public:
   FakeSecureMessageDelegateFactory() = default;
+
+  FakeSecureMessageDelegateFactory(const FakeSecureMessageDelegateFactory&) =
+      delete;
+  FakeSecureMessageDelegateFactory& operator=(
+      const FakeSecureMessageDelegateFactory&) = delete;
+
   ~FakeSecureMessageDelegateFactory() override = default;
 
   multidevice::FakeSecureMessageDelegate* instance() { return instance_; }
@@ -65,8 +74,6 @@ class FakeSecureMessageDelegateFactory
   std::unique_ptr<multidevice::SecureMessageDelegate> CreateInstance() override;
 
   multidevice::FakeSecureMessageDelegate* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureMessageDelegateFactory);
 };
 
 }  // namespace multidevice

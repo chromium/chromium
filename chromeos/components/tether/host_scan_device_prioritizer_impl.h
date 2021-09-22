@@ -20,6 +20,11 @@ class HostScanDevicePrioritizerImpl : public HostScanDevicePrioritizer {
  public:
   HostScanDevicePrioritizerImpl(
       TetherHostResponseRecorder* tether_host_response_recorder);
+
+  HostScanDevicePrioritizerImpl(const HostScanDevicePrioritizerImpl&) = delete;
+  HostScanDevicePrioritizerImpl& operator=(
+      const HostScanDevicePrioritizerImpl&) = delete;
+
   ~HostScanDevicePrioritizerImpl() override;
 
   // HostScanDevicePrioritizer:
@@ -28,8 +33,6 @@ class HostScanDevicePrioritizerImpl : public HostScanDevicePrioritizer {
 
  private:
   TetherHostResponseRecorder* tether_host_response_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostScanDevicePrioritizerImpl);
 };
 
 }  // namespace tether

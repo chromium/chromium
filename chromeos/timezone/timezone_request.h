@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneRequest {
                   const Geoposition& geoposition,
                   base::TimeDelta retry_timeout);
 
+  TimeZoneRequest(const TimeZoneRequest&) = delete;
+  TimeZoneRequest& operator=(const TimeZoneRequest&) = delete;
+
   ~TimeZoneRequest();
 
   // Initiates request.
@@ -128,8 +131,6 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneRequest {
 
   // Creation and destruction should happen on the same thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneRequest);
 };
 
 }  // namespace chromeos

@@ -30,6 +30,10 @@ class FakeConnectToDeviceOperation
                                                     std::move(failure_callback),
                                                     connection_priority) {}
 
+  FakeConnectToDeviceOperation(const FakeConnectToDeviceOperation&) = delete;
+  FakeConnectToDeviceOperation& operator=(const FakeConnectToDeviceOperation&) =
+      delete;
+
   ~FakeConnectToDeviceOperation() override = default;
 
   bool canceled() const { return canceled_; }
@@ -69,8 +73,6 @@ class FakeConnectToDeviceOperation
   absl::optional<ConnectionPriority> updated_priority_;
   base::OnceClosure destructor_callback_;
   base::OnceClosure cancel_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectToDeviceOperation);
 };
 
 }  // namespace secure_channel

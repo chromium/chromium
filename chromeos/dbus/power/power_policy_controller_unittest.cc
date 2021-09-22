@@ -17,6 +17,11 @@ namespace chromeos {
 class PowerPolicyControllerTest : public testing::Test {
  public:
   PowerPolicyControllerTest() = default;
+
+  PowerPolicyControllerTest(const PowerPolicyControllerTest&) = delete;
+  PowerPolicyControllerTest& operator=(const PowerPolicyControllerTest&) =
+      delete;
+
   ~PowerPolicyControllerTest() override = default;
 
   void SetUp() override {
@@ -39,9 +44,6 @@ class PowerPolicyControllerTest : public testing::Test {
 
   PowerPolicyController* policy_controller_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerPolicyControllerTest);
 };
 
 TEST_F(PowerPolicyControllerTest, Prefs) {

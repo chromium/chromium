@@ -43,6 +43,9 @@ class CryptAuthEciesEncryptor {
       base::OnceCallback<void(const absl::optional<std::string>&)>;
   using BatchCallback = base::OnceCallback<void(const IdToOutputMap&)>;
 
+  CryptAuthEciesEncryptor(const CryptAuthEciesEncryptor&) = delete;
+  CryptAuthEciesEncryptor& operator=(const CryptAuthEciesEncryptor&) = delete;
+
   virtual ~CryptAuthEciesEncryptor();
 
   // Encrypts/Decrypts the input payload with the provided key, returning the
@@ -80,8 +83,6 @@ class CryptAuthEciesEncryptor {
                     BatchCallback callback);
 
   BatchCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthEciesEncryptor);
 };
 
 }  // namespace device_sync

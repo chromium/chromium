@@ -100,6 +100,10 @@ class ClientCertResolverTest : public testing::Test,
                                public ClientCertResolver::Observer {
  public:
   ClientCertResolverTest() = default;
+
+  ClientCertResolverTest(const ClientCertResolverTest&) = delete;
+  ClientCertResolverTest& operator=(const ClientCertResolverTest&) = delete;
+
   ~ClientCertResolverTest() override = default;
 
   void SetUp() override {
@@ -505,8 +509,6 @@ class ClientCertResolverTest : public testing::Test,
   std::string test_ca_cert_pem_;
   crypto::ScopedTestNSSDB test_nssdb_;
   crypto::ScopedTestNSSDB test_system_nssdb_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertResolverTest);
 };
 
 TEST_F(ClientCertResolverTest, NoMatchingCertificates) {

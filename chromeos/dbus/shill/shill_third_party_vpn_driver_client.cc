@@ -44,6 +44,12 @@ class ShillThirdPartyVpnDriverClientImpl
     : public ShillThirdPartyVpnDriverClient {
  public:
   explicit ShillThirdPartyVpnDriverClientImpl(dbus::Bus* bus);
+
+  ShillThirdPartyVpnDriverClientImpl(
+      const ShillThirdPartyVpnDriverClientImpl&) = delete;
+  ShillThirdPartyVpnDriverClientImpl& operator=(
+      const ShillThirdPartyVpnDriverClientImpl&) = delete;
+
   ~ShillThirdPartyVpnDriverClientImpl() override;
 
   // ShillThirdPartyVpnDriverClient overrides
@@ -121,8 +127,6 @@ class ShillThirdPartyVpnDriverClientImpl
   dbus::Bus* bus_;
   HelperMap helpers_;
   std::set<std::string> valid_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillThirdPartyVpnDriverClientImpl);
 };
 
 ShillThirdPartyVpnDriverClientImpl::HelperInfo::HelperInfo(

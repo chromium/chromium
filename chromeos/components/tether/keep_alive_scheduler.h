@@ -43,6 +43,10 @@ class KeepAliveScheduler : public ActiveHost::Observer,
       ActiveHost* active_host,
       HostScanCache* host_scan_cache,
       DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map);
+
+  KeepAliveScheduler(const KeepAliveScheduler&) = delete;
+  KeepAliveScheduler& operator=(const KeepAliveScheduler&) = delete;
+
   virtual ~KeepAliveScheduler();
 
   // ActiveHost::Observer:
@@ -80,8 +84,6 @@ class KeepAliveScheduler : public ActiveHost::Observer,
   std::unique_ptr<KeepAliveOperation> keep_alive_operation_;
 
   base::WeakPtrFactory<KeepAliveScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveScheduler);
 };
 
 }  // namespace tether

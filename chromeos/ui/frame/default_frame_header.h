@@ -28,6 +28,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
       views::Widget* target_widget,
       views::View* header_view,
       chromeos::FrameCaptionButtonContainerView* caption_button_container);
+
+  DefaultFrameHeader(const DefaultFrameHeader&) = delete;
+  DefaultFrameHeader& operator=(const DefaultFrameHeader&) = delete;
+
   ~DefaultFrameHeader() override;
 
   SkColor active_frame_color_for_testing() { return active_frame_color_; }
@@ -57,8 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
   SkColor inactive_frame_color_ = chromeos::kDefaultFrameColor;
 
   int width_in_pixels_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultFrameHeader);
 };
 
 }  // namespace chromeos

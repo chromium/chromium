@@ -34,6 +34,10 @@ namespace libassistant {
 class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
  public:
   explicit AudioOutputProviderImpl(const std::string& device_id);
+
+  AudioOutputProviderImpl(const AudioOutputProviderImpl&) = delete;
+  AudioOutputProviderImpl& operator=(const AudioOutputProviderImpl&) = delete;
+
   ~AudioOutputProviderImpl() override;
 
   void Bind(
@@ -83,8 +87,6 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
       audio_decoder_factory_;
   std::string device_id_;
   base::WeakPtrFactory<AudioOutputProviderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputProviderImpl);
 };
 
 }  // namespace libassistant

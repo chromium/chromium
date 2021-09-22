@@ -56,6 +56,10 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
     : public NetworkStateHandlerObserver {
  public:
+  NetworkConfigurationHandler(const NetworkConfigurationHandler&) = delete;
+  NetworkConfigurationHandler& operator=(const NetworkConfigurationHandler&) =
+      delete;
+
   ~NetworkConfigurationHandler() override;
 
   // Manages the observer list.
@@ -229,8 +233,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   base::ObserverList<NetworkConfigurationObserver, true>::Unchecked observers_;
 
   base::WeakPtrFactory<NetworkConfigurationHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigurationHandler);
 };
 
 }  // namespace chromeos

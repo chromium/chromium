@@ -17,6 +17,11 @@ namespace secure_channel {
 class FakeBleAdvertisementGenerator : public BleAdvertisementGenerator {
  public:
   FakeBleAdvertisementGenerator();
+
+  FakeBleAdvertisementGenerator(const FakeBleAdvertisementGenerator&) = delete;
+  FakeBleAdvertisementGenerator& operator=(
+      const FakeBleAdvertisementGenerator&) = delete;
+
   ~FakeBleAdvertisementGenerator() override;
 
   // Sets the advertisement to be returned by the next call to
@@ -34,8 +39,6 @@ class FakeBleAdvertisementGenerator : public BleAdvertisementGenerator {
 
  private:
   std::unique_ptr<DataWithTimestamp> advertisement_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleAdvertisementGenerator);
 };
 
 }  // namespace secure_channel

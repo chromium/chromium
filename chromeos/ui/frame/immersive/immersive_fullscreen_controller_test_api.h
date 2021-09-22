@@ -17,6 +17,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
  public:
   explicit ImmersiveFullscreenControllerTestApi(
       ImmersiveFullscreenController* controller);
+
+  ImmersiveFullscreenControllerTestApi(
+      const ImmersiveFullscreenControllerTestApi&) = delete;
+  ImmersiveFullscreenControllerTestApi& operator=(
+      const ImmersiveFullscreenControllerTestApi&) = delete;
+
   ~ImmersiveFullscreenControllerTestApi();
 
   // Disables animations for any ImmersiveFullscreenControllers created while
@@ -24,10 +30,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
   class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) GlobalAnimationDisabler {
    public:
     GlobalAnimationDisabler();
-    ~GlobalAnimationDisabler();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(GlobalAnimationDisabler);
+    GlobalAnimationDisabler(const GlobalAnimationDisabler&) = delete;
+    GlobalAnimationDisabler& operator=(const GlobalAnimationDisabler&) = delete;
+
+    ~GlobalAnimationDisabler();
   };
 
   // Disables animations and moves the mouse so that it is not over the
@@ -38,8 +45,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
 
  private:
   ImmersiveFullscreenController* immersive_fullscreen_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveFullscreenControllerTestApi);
 };
 
 }  // namespace chromeos

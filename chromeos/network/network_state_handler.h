@@ -115,6 +115,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
     TECHNOLOGY_PROHIBITED
   };
 
+  NetworkStateHandler(const NetworkStateHandler&) = delete;
+  NetworkStateHandler& operator=(const NetworkStateHandler&) = delete;
+
   ~NetworkStateHandler() override;
 
   // Called just before destruction to give observers a chance to remove
@@ -773,8 +776,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   bool is_user_logged_in_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHandler);
 };
 
 }  // namespace chromeos

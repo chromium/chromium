@@ -35,6 +35,11 @@ class TokenizedStringCharIterator {
 
   // Requires |tokenized| out-lives this iterator.
   explicit TokenizedStringCharIterator(const TokenizedString& tokenized);
+
+  TokenizedStringCharIterator(const TokenizedStringCharIterator&) = delete;
+  TokenizedStringCharIterator& operator=(const TokenizedStringCharIterator&) =
+      delete;
+
   ~TokenizedStringCharIterator();
 
   // Advances to the next char. Returns false if there is no next char.
@@ -72,8 +77,6 @@ class TokenizedStringCharIterator {
 
   size_t current_token_;
   std::unique_ptr<base::i18n::UTF16CharIterator> current_token_iter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenizedStringCharIterator);
 };
 
 }  // namespace string_matching

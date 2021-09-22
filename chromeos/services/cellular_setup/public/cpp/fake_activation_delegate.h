@@ -20,6 +20,10 @@ namespace cellular_setup {
 class FakeActivationDelegate : public mojom::ActivationDelegate {
  public:
   FakeActivationDelegate();
+
+  FakeActivationDelegate(const FakeActivationDelegate&) = delete;
+  FakeActivationDelegate& operator=(const FakeActivationDelegate&) = delete;
+
   ~FakeActivationDelegate() override;
 
   mojo::PendingRemote<mojom::ActivationDelegate> GenerateRemote();
@@ -44,8 +48,6 @@ class FakeActivationDelegate : public mojom::ActivationDelegate {
   std::vector<mojom::ActivationResult> activation_results_;
 
   mojo::ReceiverSet<mojom::ActivationDelegate> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeActivationDelegate);
 };
 
 }  // namespace cellular_setup

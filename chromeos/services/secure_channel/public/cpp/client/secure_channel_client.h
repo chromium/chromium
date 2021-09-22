@@ -53,6 +53,9 @@ class NearbyConnector;
 // devices over BLE. In the future, more connection mediums will be offered.
 class SecureChannelClient {
  public:
+  SecureChannelClient(const SecureChannelClient&) = delete;
+  SecureChannelClient& operator=(const SecureChannelClient&) = delete;
+
   virtual ~SecureChannelClient() = default;
 
   virtual std::unique_ptr<ConnectionAttempt> InitiateConnectionToDevice(
@@ -71,9 +74,6 @@ class SecureChannelClient {
 
  protected:
   SecureChannelClient() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClient);
 };
 
 }  // namespace secure_channel

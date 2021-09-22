@@ -16,6 +16,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcObbMounterClient
     : public ArcObbMounterClient {
  public:
   FakeArcObbMounterClient();
+
+  FakeArcObbMounterClient(const FakeArcObbMounterClient&) = delete;
+  FakeArcObbMounterClient& operator=(const FakeArcObbMounterClient&) = delete;
+
   ~FakeArcObbMounterClient() override;
 
   // DBusClient override.
@@ -28,9 +32,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcObbMounterClient
                 VoidDBusMethodCallback callback) override;
   void UnmountObb(const std::string& mount_path,
                   VoidDBusMethodCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeArcObbMounterClient);
 };
 
 }  // namespace chromeos

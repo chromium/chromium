@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) CPUTemperatureReader {
   };
 
   CPUTemperatureReader();
+
+  CPUTemperatureReader(const CPUTemperatureReader&) = delete;
+  CPUTemperatureReader& operator=(const CPUTemperatureReader&) = delete;
+
   ~CPUTemperatureReader();
 
   void set_hwmon_dir_for_test(const base::FilePath& dir) { hwmon_dir_ = dir; }
@@ -51,8 +55,6 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) CPUTemperatureReader {
  private:
   // Sysfs hwmon directory path.
   base::FilePath hwmon_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(CPUTemperatureReader);
 };
 
 }  // namespace system

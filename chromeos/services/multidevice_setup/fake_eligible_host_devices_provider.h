@@ -17,6 +17,12 @@ namespace multidevice_setup {
 class FakeEligibleHostDevicesProvider : public EligibleHostDevicesProvider {
  public:
   FakeEligibleHostDevicesProvider();
+
+  FakeEligibleHostDevicesProvider(const FakeEligibleHostDevicesProvider&) =
+      delete;
+  FakeEligibleHostDevicesProvider& operator=(
+      const FakeEligibleHostDevicesProvider&) = delete;
+
   ~FakeEligibleHostDevicesProvider() override;
 
   void set_eligible_host_devices(
@@ -38,8 +44,6 @@ class FakeEligibleHostDevicesProvider : public EligibleHostDevicesProvider {
 
   multidevice::RemoteDeviceRefList eligible_host_devices_;
   multidevice::DeviceWithConnectivityStatusList eligible_active_host_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeEligibleHostDevicesProvider);
 };
 
 }  // namespace multidevice_setup

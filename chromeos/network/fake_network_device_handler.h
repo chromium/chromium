@@ -21,6 +21,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkDeviceHandler
     : public NetworkDeviceHandler {
  public:
   FakeNetworkDeviceHandler();
+
+  FakeNetworkDeviceHandler(const FakeNetworkDeviceHandler&) = delete;
+  FakeNetworkDeviceHandler& operator=(const FakeNetworkDeviceHandler&) = delete;
+
   ~FakeNetworkDeviceHandler() override;
 
   // NetworkDeviceHandler overrides
@@ -68,9 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkDeviceHandler
                                bool policy_allow_roaming) override;
 
   void SetUsbEthernetMacAddressSource(const std::string& source) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeNetworkDeviceHandler);
 };
 
 }  // namespace chromeos

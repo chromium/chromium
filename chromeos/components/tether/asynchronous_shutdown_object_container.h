@@ -23,6 +23,12 @@ class WifiHotspotDisconnector;
 class AsynchronousShutdownObjectContainer {
  public:
   AsynchronousShutdownObjectContainer() {}
+
+  AsynchronousShutdownObjectContainer(
+      const AsynchronousShutdownObjectContainer&) = delete;
+  AsynchronousShutdownObjectContainer& operator=(
+      const AsynchronousShutdownObjectContainer&) = delete;
+
   virtual ~AsynchronousShutdownObjectContainer() {}
 
   // Shuts down the objects contained by this class and invokes
@@ -35,9 +41,6 @@ class AsynchronousShutdownObjectContainer {
   disconnect_tethering_request_sender() = 0;
   virtual NetworkConfigurationRemover* network_configuration_remover() = 0;
   virtual WifiHotspotDisconnector* wifi_hotspot_disconnector() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousShutdownObjectContainer);
 };
 
 }  // namespace tether

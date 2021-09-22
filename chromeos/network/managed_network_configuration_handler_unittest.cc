@@ -188,6 +188,11 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  ManagedNetworkConfigurationHandlerTest(
+      const ManagedNetworkConfigurationHandlerTest&) = delete;
+  ManagedNetworkConfigurationHandlerTest& operator=(
+      const ManagedNetworkConfigurationHandlerTest&) = delete;
+
   ~ManagedNetworkConfigurationHandlerTest() override {
     ResetManagedNetworkConfigurationHandler();
     cellular_policy_handler_.reset();
@@ -336,8 +341,6 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
 
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedNetworkConfigurationHandlerTest);
 };
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {

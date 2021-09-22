@@ -45,14 +45,15 @@ namespace {
 class ImmersiveWindowTargeter : public aura::WindowTargeter {
  public:
   ImmersiveWindowTargeter() = default;
+
+  ImmersiveWindowTargeter(const ImmersiveWindowTargeter&) = delete;
+  ImmersiveWindowTargeter& operator=(const ImmersiveWindowTargeter&) = delete;
+
   ~ImmersiveWindowTargeter() override = default;
 
   bool ShouldUseExtendedBounds(const aura::Window* target) const override {
     return target->parent() == window();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveWindowTargeter);
 };
 
 // The delay in milliseconds between the mouse stopping at the top edge of the

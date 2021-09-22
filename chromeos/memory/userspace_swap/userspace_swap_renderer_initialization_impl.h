@@ -18,6 +18,12 @@ namespace userspace_swap {
 class CHROMEOS_EXPORT UserspaceSwapRendererInitializationImpl {
  public:
   UserspaceSwapRendererInitializationImpl();
+
+  UserspaceSwapRendererInitializationImpl(
+      const UserspaceSwapRendererInitializationImpl&) = delete;
+  UserspaceSwapRendererInitializationImpl& operator=(
+      const UserspaceSwapRendererInitializationImpl&) = delete;
+
   ~UserspaceSwapRendererInitializationImpl();
 
   static bool UserspaceSwapSupportedAndEnabled();
@@ -40,8 +46,6 @@ class CHROMEOS_EXPORT UserspaceSwapRendererInitializationImpl {
   int mmap_errno_ = 0;
   uint64_t swap_area_ = 0;
   uint64_t swap_area_len_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UserspaceSwapRendererInitializationImpl);
 };
 
 }  // namespace userspace_swap

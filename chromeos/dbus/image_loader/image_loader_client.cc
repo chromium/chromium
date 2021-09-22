@@ -24,6 +24,9 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
  public:
   ImageLoaderClientImpl() = default;
 
+  ImageLoaderClientImpl(const ImageLoaderClientImpl&) = delete;
+  ImageLoaderClientImpl& operator=(const ImageLoaderClientImpl&) = delete;
+
   ~ImageLoaderClientImpl() override = default;
 
   void RegisterComponent(const std::string& name,
@@ -158,8 +161,6 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
   }
 
   dbus::ObjectProxy* proxy_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageLoaderClientImpl);
 };
 
 }  // namespace

@@ -46,6 +46,10 @@ class UnlockManagerImpl : public UnlockManager,
   // unlock manager.
   UnlockManagerImpl(ProximityAuthSystem::ScreenlockType screenlock_type,
                     ProximityAuthClient* proximity_auth_client);
+
+  UnlockManagerImpl(const UnlockManagerImpl&) = delete;
+  UnlockManagerImpl& operator=(const UnlockManagerImpl&) = delete;
+
   ~UnlockManagerImpl() override;
 
   // UnlockManager:
@@ -315,8 +319,6 @@ class UnlockManagerImpl : public UnlockManager,
 
   // Used to vend all other weak pointers.
   base::WeakPtrFactory<UnlockManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UnlockManagerImpl);
 };
 
 }  // namespace proximity_auth

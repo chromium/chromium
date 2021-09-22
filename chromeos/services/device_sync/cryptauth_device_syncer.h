@@ -65,6 +65,9 @@ namespace device_sync {
 // call. For a new DeviceSync attempt, a new object should be created.
 class CryptAuthDeviceSyncer {
  public:
+  CryptAuthDeviceSyncer(const CryptAuthDeviceSyncer&) = delete;
+  CryptAuthDeviceSyncer& operator=(const CryptAuthDeviceSyncer&) = delete;
+
   virtual ~CryptAuthDeviceSyncer();
 
   // The DeviceSync result is passed by value so that the device syner can be
@@ -97,8 +100,6 @@ class CryptAuthDeviceSyncer {
  private:
   DeviceSyncAttemptFinishedCallback callback_;
   bool was_sync_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceSyncer);
 };
 
 }  // namespace device_sync

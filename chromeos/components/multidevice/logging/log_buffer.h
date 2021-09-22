@@ -48,6 +48,10 @@ class LogBuffer {
   };
 
   LogBuffer();
+
+  LogBuffer(const LogBuffer&) = delete;
+  LogBuffer& operator=(const LogBuffer&) = delete;
+
   ~LogBuffer();
 
   // Returns the global instance.
@@ -76,8 +80,6 @@ class LogBuffer {
 
   // List of observers.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogBuffer);
 };
 
 }  // namespace multidevice

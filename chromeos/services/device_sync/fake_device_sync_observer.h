@@ -18,6 +18,10 @@ namespace device_sync {
 class FakeDeviceSyncObserver : public mojom::DeviceSyncObserver {
  public:
   FakeDeviceSyncObserver();
+
+  FakeDeviceSyncObserver(const FakeDeviceSyncObserver&) = delete;
+  FakeDeviceSyncObserver& operator=(const FakeDeviceSyncObserver&) = delete;
+
   ~FakeDeviceSyncObserver() override;
 
   mojo::PendingRemote<mojom::DeviceSyncObserver> GenerateRemote();
@@ -34,8 +38,6 @@ class FakeDeviceSyncObserver : public mojom::DeviceSyncObserver {
   size_t num_sync_events_ = 0u;
 
   mojo::ReceiverSet<mojom::DeviceSyncObserver> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceSyncObserver);
 };
 
 }  // namespace device_sync

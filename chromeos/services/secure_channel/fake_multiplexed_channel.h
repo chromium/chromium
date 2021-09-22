@@ -26,6 +26,10 @@ class FakeMultiplexedChannel : public MultiplexedChannel {
       ConnectionDetails connection_details,
       base::OnceCallback<void(const ConnectionDetails&)> destructor_callback =
           base::OnceCallback<void(const ConnectionDetails&)>());
+
+  FakeMultiplexedChannel(const FakeMultiplexedChannel&) = delete;
+  FakeMultiplexedChannel& operator=(const FakeMultiplexedChannel&) = delete;
+
   ~FakeMultiplexedChannel() override;
 
   std::vector<std::unique_ptr<ClientConnectionParameters>>& added_clients() {
@@ -51,14 +55,18 @@ class FakeMultiplexedChannel : public MultiplexedChannel {
   std::vector<std::unique_ptr<ClientConnectionParameters>> added_clients_;
 
   base::OnceCallback<void(const ConnectionDetails&)> destructor_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiplexedChannel);
 };
 
 // Test MultiplexedChannel::Delegate implementation.
 class FakeMultiplexedChannelDelegate : public MultiplexedChannel::Delegate {
  public:
   FakeMultiplexedChannelDelegate();
+
+  FakeMultiplexedChannelDelegate(const FakeMultiplexedChannelDelegate&) =
+      delete;
+  FakeMultiplexedChannelDelegate& operator=(
+      const FakeMultiplexedChannelDelegate&) = delete;
+
   ~FakeMultiplexedChannelDelegate() override;
 
   const absl::optional<ConnectionDetails>& disconnected_connection_details() {
@@ -69,8 +77,6 @@ class FakeMultiplexedChannelDelegate : public MultiplexedChannel::Delegate {
   void OnDisconnected(const ConnectionDetails& connection_details) override;
 
   absl::optional<ConnectionDetails> disconnected_connection_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiplexedChannelDelegate);
 };
 
 }  // namespace secure_channel

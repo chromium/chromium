@@ -26,6 +26,11 @@ class FuzzyTokenizedStringMatch {
   typedef std::vector<gfx::Range> Hits;
 
   FuzzyTokenizedStringMatch();
+
+  FuzzyTokenizedStringMatch(const FuzzyTokenizedStringMatch&) = delete;
+  FuzzyTokenizedStringMatch& operator=(const FuzzyTokenizedStringMatch&) =
+      delete;
+
   ~FuzzyTokenizedStringMatch();
 
   // TokenSetRatio takes two sets of tokens, finds their intersection and
@@ -92,8 +97,6 @@ class FuzzyTokenizedStringMatch {
   // Score in range of [0,1] representing how well the query matches the text.
   double relevance_ = 0;
   Hits hits_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzyTokenizedStringMatch);
 };
 
 }  // namespace string_matching

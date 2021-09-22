@@ -63,6 +63,11 @@ class DeviceSyncRemoteDeviceLoaderTest : public testing::Test {
         user_private_key_(secure_message_delegate_->GetPrivateKeyForPublicKey(
             kUserPublicKey)) {}
 
+  DeviceSyncRemoteDeviceLoaderTest(const DeviceSyncRemoteDeviceLoaderTest&) =
+      delete;
+  DeviceSyncRemoteDeviceLoaderTest& operator=(
+      const DeviceSyncRemoteDeviceLoaderTest&) = delete;
+
   ~DeviceSyncRemoteDeviceLoaderTest() {}
 
   void OnRemoteDevicesLoaded(
@@ -84,8 +89,6 @@ class DeviceSyncRemoteDeviceLoaderTest : public testing::Test {
 
   // Stores the result of the RemoteDeviceLoader.
   multidevice::RemoteDeviceList remote_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncRemoteDeviceLoaderTest);
 };
 
 TEST_F(DeviceSyncRemoteDeviceLoaderTest, LoadZeroDevices) {

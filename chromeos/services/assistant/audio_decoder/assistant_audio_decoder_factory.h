@@ -18,6 +18,11 @@ class AssistantAudioDecoderFactory
  public:
   explicit AssistantAudioDecoderFactory(
       mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory> receiver);
+
+  AssistantAudioDecoderFactory(const AssistantAudioDecoderFactory&) = delete;
+  AssistantAudioDecoderFactory& operator=(const AssistantAudioDecoderFactory&) =
+      delete;
+
   ~AssistantAudioDecoderFactory() override;
 
  private:
@@ -29,8 +34,6 @@ class AssistantAudioDecoderFactory
       override;
 
   mojo::Receiver<mojom::AssistantAudioDecoderFactory> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAudioDecoderFactory);
 };
 
 }  // namespace assistant

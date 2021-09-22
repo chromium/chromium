@@ -40,6 +40,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
     : public PowerManagerClient {
  public:
   FakePowerManagerClient();
+
+  FakePowerManagerClient(const FakePowerManagerClient&) = delete;
+  FakePowerManagerClient& operator=(const FakePowerManagerClient&) = delete;
+
   ~FakePowerManagerClient() override;
 
   // Checks that FakePowerManagerClient was initialized and returns it.
@@ -326,8 +330,6 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakePowerManagerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakePowerManagerClient);
 };
 
 }  // namespace chromeos

@@ -43,6 +43,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
     : public DBusClient,
       public base::trace_event::TracingAgent {
  public:
+  DebugDaemonClient(const DebugDaemonClient&) = delete;
+  DebugDaemonClient& operator=(const DebugDaemonClient&) = delete;
+
   ~DebugDaemonClient() override;
 
   // Observes the signals that are received from D-Bus.
@@ -332,9 +335,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 
   // Create() should be used instead.
   DebugDaemonClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DebugDaemonClient);
 };
 
 }  // namespace chromeos

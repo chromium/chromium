@@ -21,6 +21,10 @@ namespace secure_channel {
 // until the stop callback is invoked.
 class ErrorTolerantBleAdvertisement {
  public:
+  ErrorTolerantBleAdvertisement(const ErrorTolerantBleAdvertisement&) = delete;
+  ErrorTolerantBleAdvertisement& operator=(
+      const ErrorTolerantBleAdvertisement&) = delete;
+
   virtual ~ErrorTolerantBleAdvertisement();
 
   // Stops advertising. Because BLE advertisements start and stop
@@ -40,8 +44,6 @@ class ErrorTolerantBleAdvertisement {
 
  private:
   const DeviceIdPair device_id_pair_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorTolerantBleAdvertisement);
 };
 
 }  // namespace secure_channel

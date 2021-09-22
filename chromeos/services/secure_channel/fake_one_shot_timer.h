@@ -20,6 +20,10 @@ class FakeOneShotTimer : public base::MockOneShotTimer {
  public:
   FakeOneShotTimer(base::OnceCallback<void(const base::UnguessableToken&)>
                        destructor_callback);
+
+  FakeOneShotTimer(const FakeOneShotTimer&) = delete;
+  FakeOneShotTimer& operator=(const FakeOneShotTimer&) = delete;
+
   ~FakeOneShotTimer() override;
 
   const base::UnguessableToken& id() const { return id_; }
@@ -27,8 +31,6 @@ class FakeOneShotTimer : public base::MockOneShotTimer {
  private:
   base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback_;
   base::UnguessableToken id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOneShotTimer);
 };
 
 }  // namespace secure_channel

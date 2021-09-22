@@ -18,6 +18,10 @@ namespace tether {
 class FakeTetherConnector : public TetherConnector {
  public:
   FakeTetherConnector();
+
+  FakeTetherConnector(const FakeTetherConnector&) = delete;
+  FakeTetherConnector& operator=(const FakeTetherConnector&) = delete;
+
   ~FakeTetherConnector() override;
 
   std::string last_connected_tether_network_guid() {
@@ -48,8 +52,6 @@ class FakeTetherConnector : public TetherConnector {
 
   std::string last_canceled_tether_network_guid_;
   bool should_cancel_successfully_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTetherConnector);
 };
 
 }  // namespace tether

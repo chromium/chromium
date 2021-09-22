@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneProvider {
  public:
   TimeZoneProvider(scoped_refptr<network::SharedURLLoaderFactory> factory,
                    const GURL& url);
+
+  TimeZoneProvider(const TimeZoneProvider&) = delete;
+  TimeZoneProvider& operator=(const TimeZoneProvider&) = delete;
+
   virtual ~TimeZoneProvider();
 
   // Initiates new request (See TimeZoneRequest for parameters description.)
@@ -58,8 +62,6 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneProvider {
 
   // Creation and destruction should happen on the same thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneProvider);
 };
 
 }  // namespace chromeos

@@ -41,6 +41,10 @@ class RawEidGenerator;
 class BackgroundEidGenerator {
  public:
   BackgroundEidGenerator();
+
+  BackgroundEidGenerator(const BackgroundEidGenerator&) = delete;
+  BackgroundEidGenerator& operator=(const BackgroundEidGenerator&) = delete;
+
   virtual ~BackgroundEidGenerator();
 
   // Returns a list of the nearest EIDs from the current time. Note that the
@@ -70,8 +74,6 @@ class BackgroundEidGenerator {
 
   std::unique_ptr<RawEidGenerator> raw_eid_generator_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundEidGenerator);
 };
 
 }  // namespace secure_channel

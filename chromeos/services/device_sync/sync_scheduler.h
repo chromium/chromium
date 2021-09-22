@@ -38,6 +38,10 @@ class SyncScheduler {
   class SyncRequest {
    public:
     explicit SyncRequest(base::WeakPtr<SyncScheduler> sync_scheduler);
+
+    SyncRequest(const SyncRequest&) = delete;
+    SyncRequest& operator=(const SyncRequest&) = delete;
+
     ~SyncRequest();
 
     void OnDidComplete(bool success);
@@ -49,8 +53,6 @@ class SyncScheduler {
 
     // True if |OnDidComplete()| has been called.
     bool completed_;
-
-    DISALLOW_COPY_AND_ASSIGN(SyncRequest);
   };
 
   // Handles the actual sync operation.

@@ -66,6 +66,9 @@ class CryptAuthScheduler {
         const cryptauthv2::ClientMetadata& client_metadata) = 0;
   };
 
+  CryptAuthScheduler(const CryptAuthScheduler&) = delete;
+  CryptAuthScheduler& operator=(const CryptAuthScheduler&) = delete;
+
   virtual ~CryptAuthScheduler();
 
   // Note: These should only be called once.
@@ -144,8 +147,6 @@ class CryptAuthScheduler {
  private:
   base::WeakPtr<EnrollmentDelegate> enrollment_delegate_;
   base::WeakPtr<DeviceSyncDelegate> device_sync_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthScheduler);
 };
 
 }  // namespace device_sync

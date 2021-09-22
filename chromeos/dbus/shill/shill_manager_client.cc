@@ -31,6 +31,10 @@ ShillManagerClient* g_instance = nullptr;
 class ShillManagerClientImpl : public ShillManagerClient {
  public:
   ShillManagerClientImpl() = default;
+
+  ShillManagerClientImpl(const ShillManagerClientImpl&) = delete;
+  ShillManagerClientImpl& operator=(const ShillManagerClientImpl&) = delete;
+
   ~ShillManagerClientImpl() override = default;
 
   ////////////////////////////////////
@@ -197,8 +201,6 @@ class ShillManagerClientImpl : public ShillManagerClient {
 
   dbus::ObjectProxy* proxy_ = nullptr;
   std::unique_ptr<ShillClientHelper> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillManagerClientImpl);
 };
 
 }  // namespace

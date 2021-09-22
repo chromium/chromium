@@ -29,6 +29,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
  public:
   FrameSizeButton(PressedCallback callback, FrameSizeButtonDelegate* delegate);
 
+  FrameSizeButton(const FrameSizeButton&) = delete;
+  FrameSizeButton& operator=(const FrameSizeButton&) = delete;
+
   ~FrameSizeButton() override;
 
   // views::Button overrides:
@@ -99,8 +102,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // Whether the buttons adjacent to the size button snap the window left and
   // right.
   bool in_snap_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSizeButton);
 };
 
 }  // namespace chromeos

@@ -22,6 +22,12 @@ class PendingNetworkConfigurationTrackerImpl
     : public PendingNetworkConfigurationTracker {
  public:
   explicit PendingNetworkConfigurationTrackerImpl(PrefService* pref_service);
+
+  PendingNetworkConfigurationTrackerImpl(
+      const PendingNetworkConfigurationTrackerImpl&) = delete;
+  PendingNetworkConfigurationTrackerImpl& operator=(
+      const PendingNetworkConfigurationTrackerImpl&) = delete;
+
   ~PendingNetworkConfigurationTrackerImpl() override;
 
   // Registers preferences used by this class in the provided |registry|.
@@ -44,8 +50,6 @@ class PendingNetworkConfigurationTrackerImpl
  private:
   PrefService* pref_service_;
   base::Value dict_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingNetworkConfigurationTrackerImpl);
 };
 
 }  // namespace sync_wifi

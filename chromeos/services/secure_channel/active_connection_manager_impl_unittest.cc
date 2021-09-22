@@ -32,6 +32,11 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
   explicit FakeMultiplexedChannelFactory(
       MultiplexedChannel::Delegate* expected_delegate)
       : expected_delegate_(expected_delegate) {}
+
+  FakeMultiplexedChannelFactory(const FakeMultiplexedChannelFactory&) = delete;
+  FakeMultiplexedChannelFactory& operator=(
+      const FakeMultiplexedChannelFactory&) = delete;
+
   ~FakeMultiplexedChannelFactory() override = default;
 
   base::flat_map<ConnectionDetails, FakeMultiplexedChannel*>&
@@ -83,8 +88,6 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
 
   base::flat_map<ConnectionDetails, FakeMultiplexedChannel*>
       connection_details_to_active_channel_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiplexedChannelFactory);
 };
 
 std::vector<base::UnguessableToken> ClientListToIdList(

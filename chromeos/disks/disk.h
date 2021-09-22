@@ -180,6 +180,10 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk {
 class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk::Builder {
  public:
   Builder();
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
   ~Builder();
 
   Builder& SetDevicePath(const std::string& device_path);
@@ -212,8 +216,6 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) Disk::Builder {
 
  private:
   std::unique_ptr<Disk> disk_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 COMPONENT_EXPORT(CHROMEOS_DISKS) base::FilePath GetStatefulPartitionPath();

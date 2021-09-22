@@ -130,6 +130,10 @@ class ScopedAshSessionObserver {
 class Service::Context : public ServiceContext {
  public:
   explicit Context(Service* parent) : parent_(parent) {}
+
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+
   ~Context() override = default;
 
   // ServiceContext:
@@ -176,8 +180,6 @@ class Service::Context : public ServiceContext {
 
  private:
   Service* const parent_;  // |this| is owned by |parent_|.
-
-  DISALLOW_COPY_AND_ASSIGN(Context);
 };
 
 Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>

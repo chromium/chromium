@@ -33,6 +33,9 @@ class SyncSchedulerImpl : public SyncScheduler {
                     double max_jitter_ratio,
                     const std::string& scheduler_name);
 
+  SyncSchedulerImpl(const SyncSchedulerImpl&) = delete;
+  SyncSchedulerImpl& operator=(const SyncSchedulerImpl&) = delete;
+
   ~SyncSchedulerImpl() override;
 
   // SyncScheduler:
@@ -97,8 +100,6 @@ class SyncSchedulerImpl : public SyncScheduler {
   std::unique_ptr<base::OneShotTimer> timer_;
 
   base::WeakPtrFactory<SyncSchedulerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSchedulerImpl);
 };
 
 }  // namespace device_sync

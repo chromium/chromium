@@ -19,6 +19,10 @@ struct OncValueSignature;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
  public:
   explicit Normalizer(bool remove_recommended_fields);
+
+  Normalizer(const Normalizer&) = delete;
+  Normalizer& operator=(const Normalizer&) = delete;
+
   ~Normalizer() override;
 
   // Removes all fields that are ignored/irrelevant because of the value of
@@ -53,8 +57,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
   void NormalizeStaticIPConfigForNetwork(base::DictionaryValue* network);
 
   const bool remove_recommended_fields_;
-
-  DISALLOW_COPY_AND_ASSIGN(Normalizer);
 };
 
 }  // namespace onc

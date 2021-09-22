@@ -35,6 +35,10 @@ class ProximityAuthUI : public ui::MojoWebUIController {
                   device_sync::DeviceSyncClient* device_sync_client,
                   secure_channel::SecureChannelClient* secure_channel_client,
                   MultiDeviceSetupBinder multidevice_setup_binder);
+
+  ProximityAuthUI(const ProximityAuthUI&) = delete;
+  ProximityAuthUI& operator=(const ProximityAuthUI&) = delete;
+
   ~ProximityAuthUI() override;
 
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
@@ -47,8 +51,6 @@ class ProximityAuthUI : public ui::MojoWebUIController {
   const MultiDeviceSetupBinder multidevice_setup_binder_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthUI);
 };
 
 }  // namespace multidevice

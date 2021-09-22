@@ -22,6 +22,10 @@ namespace secure_channel {
 class FakeChannel : public mojom::Channel {
  public:
   FakeChannel();
+
+  FakeChannel(const FakeChannel&) = delete;
+  FakeChannel& operator=(const FakeChannel&) = delete;
+
   ~FakeChannel() override;
 
   mojo::PendingRemote<mojom::Channel> GenerateRemote();
@@ -47,8 +51,6 @@ class FakeChannel : public mojom::Channel {
 
   std::vector<std::pair<std::string, SendMessageCallback>> sent_messages_;
   mojom::ConnectionMetadataPtr connection_metadata_for_next_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeChannel);
 };
 
 }  // namespace secure_channel

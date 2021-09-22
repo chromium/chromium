@@ -42,6 +42,10 @@ const CryptAuthFeatureType kFeatureType2 =
 class MockGCMDriver : public gcm::FakeGCMDriver {
  public:
   MockGCMDriver() {}
+
+  MockGCMDriver(const MockGCMDriver&) = delete;
+  MockGCMDriver& operator=(const MockGCMDriver&) = delete;
+
   ~MockGCMDriver() override {}
 
   MOCK_METHOD2(AddAppHandler,
@@ -52,9 +56,6 @@ class MockGCMDriver : public gcm::FakeGCMDriver {
                     const std::vector<std::string>& sender_ids));
 
   using gcm::GCMDriver::RegisterFinished;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGCMDriver);
 };
 
 }  // namespace

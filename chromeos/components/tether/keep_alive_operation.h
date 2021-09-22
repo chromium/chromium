@@ -55,6 +55,9 @@ class KeepAliveOperation : public MessageTransferOperation {
         std::unique_ptr<DeviceStatus> device_status) = 0;
   };
 
+  KeepAliveOperation(const KeepAliveOperation&) = delete;
+  KeepAliveOperation& operator=(const KeepAliveOperation&) = delete;
+
   ~KeepAliveOperation() override;
 
   void AddObserver(Observer* observer);
@@ -90,8 +93,6 @@ class KeepAliveOperation : public MessageTransferOperation {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::Time keep_alive_tickle_request_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveOperation);
 };
 
 }  // namespace tether

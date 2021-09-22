@@ -29,6 +29,11 @@ MachineLearningClient* g_instance = nullptr;
 class MachineLearningClientImpl : public MachineLearningClient {
  public:
   MachineLearningClientImpl() = default;
+
+  MachineLearningClientImpl(const MachineLearningClientImpl&) = delete;
+  MachineLearningClientImpl& operator=(const MachineLearningClientImpl&) =
+      delete;
+
   ~MachineLearningClientImpl() override = default;
 
   // MachineLearningClient:
@@ -65,8 +70,6 @@ class MachineLearningClientImpl : public MachineLearningClient {
 
   // Must be last class member.
   base::WeakPtrFactory<MachineLearningClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLearningClientImpl);
 };
 
 }  // namespace

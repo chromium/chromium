@@ -25,6 +25,10 @@ namespace secure_channel {
 class FakeSecureChannel : public SecureChannelBase {
  public:
   FakeSecureChannel();
+
+  FakeSecureChannel(const FakeSecureChannel&) = delete;
+  FakeSecureChannel& operator=(const FakeSecureChannel&) = delete;
+
   ~FakeSecureChannel() override;
 
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call() {
@@ -56,8 +60,6 @@ class FakeSecureChannel : public SecureChannelBase {
 
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call_;
   mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureChannel);
 };
 
 }  // namespace secure_channel

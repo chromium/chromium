@@ -21,6 +21,10 @@ class FakeTetherHostFetcher : public TetherHostFetcher {
   explicit FakeTetherHostFetcher(
       const multidevice::RemoteDeviceRefList& tether_hosts);
   FakeTetherHostFetcher();
+
+  FakeTetherHostFetcher(const FakeTetherHostFetcher&) = delete;
+  FakeTetherHostFetcher& operator=(const FakeTetherHostFetcher&) = delete;
+
   ~FakeTetherHostFetcher() override;
 
   void set_tether_hosts(const multidevice::RemoteDeviceRefList& tether_hosts) {
@@ -38,8 +42,6 @@ class FakeTetherHostFetcher : public TetherHostFetcher {
 
  private:
   multidevice::RemoteDeviceRefList tether_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTetherHostFetcher);
 };
 
 }  // namespace tether

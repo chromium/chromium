@@ -21,6 +21,11 @@ class AuthenticatedChannel;
 class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
  public:
   FakeConnectionAttemptDelegate();
+
+  FakeConnectionAttemptDelegate(const FakeConnectionAttemptDelegate&) = delete;
+  FakeConnectionAttemptDelegate& operator=(
+      const FakeConnectionAttemptDelegate&) = delete;
+
   ~FakeConnectionAttemptDelegate() override;
 
   const AuthenticatedChannel* authenticated_channel() const {
@@ -47,8 +52,6 @@ class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
   absl::optional<ConnectionAttemptDetails> connection_attempt_details_;
   absl::optional<ConnectionDetails> connection_details_;
   std::unique_ptr<AuthenticatedChannel> authenticated_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionAttemptDelegate);
 };
 
 }  // namespace secure_channel

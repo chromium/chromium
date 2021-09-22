@@ -58,6 +58,10 @@ const double kLastExpiredEnrollmentTimeSeconds =
 class MockCryptAuthEnroller : public CryptAuthEnroller {
  public:
   MockCryptAuthEnroller() {}
+
+  MockCryptAuthEnroller(const MockCryptAuthEnroller&) = delete;
+  MockCryptAuthEnroller& operator=(const MockCryptAuthEnroller&) = delete;
+
   ~MockCryptAuthEnroller() override {}
 
   MOCK_METHOD5(Enroll,
@@ -66,9 +70,6 @@ class MockCryptAuthEnroller : public CryptAuthEnroller {
                     const cryptauth::GcmDeviceInfo& device_info,
                     cryptauth::InvocationReason invocation_reason,
                     EnrollmentFinishedCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCryptAuthEnroller);
 };
 
 // Creates MockCryptAuthEnroller instances, and allows expecations to be set
@@ -77,6 +78,11 @@ class MockCryptAuthEnrollerFactory : public CryptAuthEnrollerFactory {
  public:
   MockCryptAuthEnrollerFactory()
       : next_cryptauth_enroller_(new NiceMock<MockCryptAuthEnroller>()) {}
+
+  MockCryptAuthEnrollerFactory(const MockCryptAuthEnrollerFactory&) = delete;
+  MockCryptAuthEnrollerFactory& operator=(const MockCryptAuthEnrollerFactory&) =
+      delete;
+
   ~MockCryptAuthEnrollerFactory() override {}
 
   // CryptAuthEnrollerFactory:
@@ -95,8 +101,6 @@ class MockCryptAuthEnrollerFactory : public CryptAuthEnrollerFactory {
   // Stores the next CryptAuthEnroller to be created.
   // Ownership is passed to the caller of |CreateInstance()|.
   std::unique_ptr<MockCryptAuthEnroller> next_cryptauth_enroller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCryptAuthEnrollerFactory);
 };
 
 // Harness for testing CryptAuthEnrollmentManager.
@@ -121,6 +125,11 @@ class TestCryptAuthEnrollmentManager : public CryptAuthEnrollmentManagerImpl {
     SetSyncSchedulerForTest(base::WrapUnique(scoped_sync_scheduler_));
   }
 
+  TestCryptAuthEnrollmentManager(const TestCryptAuthEnrollmentManager&) =
+      delete;
+  TestCryptAuthEnrollmentManager& operator=(
+      const TestCryptAuthEnrollmentManager&) = delete;
+
   ~TestCryptAuthEnrollmentManager() override {}
 
   base::WeakPtr<MockSyncScheduler> GetSyncScheduler() {
@@ -137,8 +146,6 @@ class TestCryptAuthEnrollmentManager : public CryptAuthEnrollmentManagerImpl {
   // This should be safe because the life-time this SyncScheduler will always be
   // within the life of the TestCryptAuthEnrollmentManager object.
   base::WeakPtrFactory<MockSyncScheduler> weak_sync_scheduler_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCryptAuthEnrollmentManager);
 };
 
 }  // namespace

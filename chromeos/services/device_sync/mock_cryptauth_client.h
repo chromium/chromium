@@ -21,6 +21,10 @@ namespace device_sync {
 class MockCryptAuthClient : public CryptAuthClient {
  public:
   MockCryptAuthClient();
+
+  MockCryptAuthClient(const MockCryptAuthClient&) = delete;
+  MockCryptAuthClient& operator=(const MockCryptAuthClient&) = delete;
+
   ~MockCryptAuthClient() override;
 
   // TODO(https://crbug.com/997268): Update these to use MOCK_METHOD.
@@ -98,9 +102,6 @@ class MockCryptAuthClient : public CryptAuthClient {
                     GetDevicesActivityStatusCallback callback,
                     ErrorCallback error_callback));
   MOCK_METHOD0(GetAccessTokenUsed, std::string());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCryptAuthClient);
 };
 
 class MockCryptAuthClientFactory : public CryptAuthClientFactory {
@@ -119,6 +120,11 @@ class MockCryptAuthClientFactory : public CryptAuthClientFactory {
   // If |mock_type| is STRICT, then StrictMocks will be created. Otherwise,
   // NiceMocks will be created.
   explicit MockCryptAuthClientFactory(MockType mock_type);
+
+  MockCryptAuthClientFactory(const MockCryptAuthClientFactory&) = delete;
+  MockCryptAuthClientFactory& operator=(const MockCryptAuthClientFactory&) =
+      delete;
+
   ~MockCryptAuthClientFactory() override;
 
   // CryptAuthClientFactory:
@@ -133,8 +139,6 @@ class MockCryptAuthClientFactory : public CryptAuthClientFactory {
 
   // Observers of the factory.
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCryptAuthClientFactory);
 };
 
 }  // namespace device_sync

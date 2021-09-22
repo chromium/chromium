@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   CertificateImporterImpl(
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
       net::NSSCertDatabase* target_nssdb_);
+
+  CertificateImporterImpl(const CertificateImporterImpl&) = delete;
+  CertificateImporterImpl& operator=(const CertificateImporterImpl&) = delete;
+
   ~CertificateImporterImpl() override;
 
   // CertificateImporter overrides
@@ -102,8 +106,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   net::NSSCertDatabase* target_nssdb_;
 
   base::WeakPtrFactory<CertificateImporterImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateImporterImpl);
 };
 
 }  // namespace onc

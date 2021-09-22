@@ -17,6 +17,10 @@ namespace tether {
 class FakeCrashRecoveryManager : public CrashRecoveryManager {
  public:
   FakeCrashRecoveryManager();
+
+  FakeCrashRecoveryManager(const FakeCrashRecoveryManager&) = delete;
+  FakeCrashRecoveryManager& operator=(const FakeCrashRecoveryManager&) = delete;
+
   ~FakeCrashRecoveryManager() override;
 
   base::OnceClosure TakeOnRestorationFinishedCallback() {
@@ -29,8 +33,6 @@ class FakeCrashRecoveryManager : public CrashRecoveryManager {
 
  private:
   base::OnceClosure on_restoration_finished_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrashRecoveryManager);
 };
 
 }  // namespace tether

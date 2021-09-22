@@ -33,6 +33,10 @@ struct ProcessKeyResult {
 class Engine {
  public:
   Engine();
+
+  Engine(const Engine&) = delete;
+  Engine& operator=(const Engine&) = delete;
+
   ~Engine();
 
   static bool IsImeSupported(const std::string& id);
@@ -62,8 +66,6 @@ class Engine {
   int history_transat_ = -1;
   // The history ambiguous string which matches the history prune regexp.
   std::string history_ambi_;
-
-  DISALLOW_COPY_AND_ASSIGN(Engine);
 };
 
 }  // namespace rulebased

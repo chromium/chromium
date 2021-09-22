@@ -44,6 +44,10 @@ class ScopedDisableLoggingForTesting {
 class ScopedLogMessage {
  public:
   ScopedLogMessage(const char* file, int line, logging::LogSeverity severity);
+
+  ScopedLogMessage(const ScopedLogMessage&) = delete;
+  ScopedLogMessage& operator=(const ScopedLogMessage&) = delete;
+
   ~ScopedLogMessage();
 
   std::ostream& stream() { return stream_; }
@@ -53,8 +57,6 @@ class ScopedLogMessage {
   int line_;
   logging::LogSeverity severity_;
   std::ostringstream stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLogMessage);
 };
 
 }  // namespace multidevice

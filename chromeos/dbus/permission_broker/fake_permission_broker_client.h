@@ -21,6 +21,11 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
     : public PermissionBrokerClient {
  public:
   FakePermissionBrokerClient();
+
+  FakePermissionBrokerClient(const FakePermissionBrokerClient&) = delete;
+  FakePermissionBrokerClient& operator=(const FakePermissionBrokerClient&) =
+      delete;
+
   ~FakePermissionBrokerClient() override;
 
   // Checks that a fake instance was initialized and returns it.
@@ -104,8 +109,6 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
 
   RuleSet tcp_deny_rule_set_;
   RuleSet udp_deny_rule_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePermissionBrokerClient);
 };
 
 }  // namespace chromeos

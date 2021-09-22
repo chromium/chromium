@@ -58,6 +58,10 @@ const size_t kNumTestDevices = 6;
 class FakeTimerFactoryFactory : public TimerFactoryImpl::Factory {
  public:
   FakeTimerFactoryFactory() = default;
+
+  FakeTimerFactoryFactory(const FakeTimerFactoryFactory&) = delete;
+  FakeTimerFactoryFactory& operator=(const FakeTimerFactoryFactory&) = delete;
+
   ~FakeTimerFactoryFactory() override = default;
 
   FakeTimerFactory* instance() { return instance_; }
@@ -72,14 +76,17 @@ class FakeTimerFactoryFactory : public TimerFactoryImpl::Factory {
   }
 
   FakeTimerFactory* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTimerFactoryFactory);
 };
 
 class TestRemoteDeviceCacheFactory
     : public multidevice::RemoteDeviceCache::Factory {
  public:
   TestRemoteDeviceCacheFactory() = default;
+
+  TestRemoteDeviceCacheFactory(const TestRemoteDeviceCacheFactory&) = delete;
+  TestRemoteDeviceCacheFactory& operator=(const TestRemoteDeviceCacheFactory&) =
+      delete;
+
   ~TestRemoteDeviceCacheFactory() override = default;
 
   multidevice::RemoteDeviceCache* instance() { return instance_; }
@@ -98,8 +105,6 @@ class TestRemoteDeviceCacheFactory
   }
 
   multidevice::RemoteDeviceCache* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRemoteDeviceCacheFactory);
 };
 
 class FakeBluetoothHelperFactory : public BluetoothHelperImpl::Factory {
@@ -107,6 +112,10 @@ class FakeBluetoothHelperFactory : public BluetoothHelperImpl::Factory {
   FakeBluetoothHelperFactory(
       TestRemoteDeviceCacheFactory* test_remote_device_cache_factory)
       : test_remote_device_cache_factory_(test_remote_device_cache_factory) {}
+
+  FakeBluetoothHelperFactory(const FakeBluetoothHelperFactory&) = delete;
+  FakeBluetoothHelperFactory& operator=(const FakeBluetoothHelperFactory&) =
+      delete;
 
   ~FakeBluetoothHelperFactory() override = default;
 
@@ -128,13 +137,16 @@ class FakeBluetoothHelperFactory : public BluetoothHelperImpl::Factory {
   TestRemoteDeviceCacheFactory* test_remote_device_cache_factory_;
 
   FakeBluetoothHelper* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothHelperFactory);
 };
 
 class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
  public:
   FakeBleSynchronizerFactory() = default;
+
+  FakeBleSynchronizerFactory(const FakeBleSynchronizerFactory&) = delete;
+  FakeBleSynchronizerFactory& operator=(const FakeBleSynchronizerFactory&) =
+      delete;
+
   ~FakeBleSynchronizerFactory() override = default;
 
   FakeBleSynchronizer* instance() { return instance_; }
@@ -151,8 +163,6 @@ class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
   }
 
   FakeBleSynchronizer* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleSynchronizerFactory);
 };
 
 class FakeBleScannerFactory : public BleScannerImpl::Factory {
@@ -162,6 +172,9 @@ class FakeBleScannerFactory : public BleScannerImpl::Factory {
       FakeBleSynchronizerFactory* fake_ble_synchronizer_factory)
       : fake_bluetooth_helper_factory_(fake_bluetooth_helper_factory),
         fake_ble_synchronizer_factory_(fake_ble_synchronizer_factory) {}
+
+  FakeBleScannerFactory(const FakeBleScannerFactory&) = delete;
+  FakeBleScannerFactory& operator=(const FakeBleScannerFactory&) = delete;
 
   ~FakeBleScannerFactory() override = default;
 
@@ -187,14 +200,18 @@ class FakeBleScannerFactory : public BleScannerImpl::Factory {
 
   FakeBluetoothHelperFactory* fake_bluetooth_helper_factory_;
   FakeBleSynchronizerFactory* fake_ble_synchronizer_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScannerFactory);
 };
 
 class FakeSecureChannelDisconnectorFactory
     : public SecureChannelDisconnectorImpl::Factory {
  public:
   FakeSecureChannelDisconnectorFactory() = default;
+
+  FakeSecureChannelDisconnectorFactory(
+      const FakeSecureChannelDisconnectorFactory&) = delete;
+  FakeSecureChannelDisconnectorFactory& operator=(
+      const FakeSecureChannelDisconnectorFactory&) = delete;
+
   ~FakeSecureChannelDisconnectorFactory() override = default;
 
   FakeSecureChannelDisconnector* instance() { return instance_; }
@@ -208,8 +225,6 @@ class FakeSecureChannelDisconnectorFactory
   }
 
   FakeSecureChannelDisconnector* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureChannelDisconnectorFactory);
 };
 
 class FakeBleConnectionManagerFactory
@@ -230,6 +245,11 @@ class FakeBleConnectionManagerFactory
         fake_secure_channel_disconnector_factory_(
             fake_secure_channel_disconnector_factory),
         fake_timer_factory_factory_(fake_timer_factory_factory) {}
+
+  FakeBleConnectionManagerFactory(const FakeBleConnectionManagerFactory&) =
+      delete;
+  FakeBleConnectionManagerFactory& operator=(
+      const FakeBleConnectionManagerFactory&) = delete;
 
   ~FakeBleConnectionManagerFactory() override = default;
 
@@ -268,8 +288,6 @@ class FakeBleConnectionManagerFactory
   FakeTimerFactoryFactory* fake_timer_factory_factory_;
 
   FakeBleConnectionManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleConnectionManagerFactory);
 };
 
 class FakeNearbyConnectionManagerFactory
@@ -282,6 +300,11 @@ class FakeNearbyConnectionManagerFactory
       : fake_ble_scanner_factory_(fake_ble_scanner_factory),
         fake_secure_channel_disconnector_factory_(
             fake_secure_channel_disconnector_factory) {}
+
+  FakeNearbyConnectionManagerFactory(
+      const FakeNearbyConnectionManagerFactory&) = delete;
+  FakeNearbyConnectionManagerFactory& operator=(
+      const FakeNearbyConnectionManagerFactory&) = delete;
 
   ~FakeNearbyConnectionManagerFactory() override = default;
 
@@ -307,8 +330,6 @@ class FakeNearbyConnectionManagerFactory
       fake_secure_channel_disconnector_factory_;
 
   FakeNearbyConnectionManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNearbyConnectionManagerFactory);
 };
 
 class FakePendingConnectionManagerFactory
@@ -322,6 +343,11 @@ class FakePendingConnectionManagerFactory
             fake_ble_connection_manager_factory),
         fake_nearby_connection_manager_factory_(
             fake_nearby_connection_manager_factory) {}
+
+  FakePendingConnectionManagerFactory(
+      const FakePendingConnectionManagerFactory&) = delete;
+  FakePendingConnectionManagerFactory& operator=(
+      const FakePendingConnectionManagerFactory&) = delete;
 
   ~FakePendingConnectionManagerFactory() override = default;
 
@@ -349,14 +375,18 @@ class FakePendingConnectionManagerFactory
   FakeNearbyConnectionManagerFactory* fake_nearby_connection_manager_factory_;
 
   FakePendingConnectionManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionManagerFactory);
 };
 
 class FakeActiveConnectionManagerFactory
     : public ActiveConnectionManagerImpl::Factory {
  public:
   FakeActiveConnectionManagerFactory() = default;
+
+  FakeActiveConnectionManagerFactory(
+      const FakeActiveConnectionManagerFactory&) = delete;
+  FakeActiveConnectionManagerFactory& operator=(
+      const FakeActiveConnectionManagerFactory&) = delete;
+
   ~FakeActiveConnectionManagerFactory() override = default;
 
   FakeActiveConnectionManager* instance() { return instance_; }
@@ -372,8 +402,6 @@ class FakeActiveConnectionManagerFactory
   }
 
   FakeActiveConnectionManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeActiveConnectionManagerFactory);
 };
 
 class TestSecureChannelInitializerFactory
@@ -382,6 +410,11 @@ class TestSecureChannelInitializerFactory
   TestSecureChannelInitializerFactory(
       scoped_refptr<base::TestSimpleTaskRunner> test_task_runner)
       : test_task_runner_(test_task_runner) {}
+
+  TestSecureChannelInitializerFactory(
+      const TestSecureChannelInitializerFactory&) = delete;
+  TestSecureChannelInitializerFactory& operator=(
+      const TestSecureChannelInitializerFactory&) = delete;
 
   ~TestSecureChannelInitializerFactory() override = default;
 
@@ -403,14 +436,18 @@ class TestSecureChannelInitializerFactory
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
 
   SecureChannelBase* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSecureChannelInitializerFactory);
 };
 
 class FakeClientConnectionParametersFactory
     : public ClientConnectionParametersImpl::Factory {
  public:
   FakeClientConnectionParametersFactory() = default;
+
+  FakeClientConnectionParametersFactory(
+      const FakeClientConnectionParametersFactory&) = delete;
+  FakeClientConnectionParametersFactory& operator=(
+      const FakeClientConnectionParametersFactory&) = delete;
+
   ~FakeClientConnectionParametersFactory() override = default;
 
   const base::UnguessableToken& last_created_instance_id() {
@@ -467,8 +504,6 @@ class FakeClientConnectionParametersFactory
                      absl::optional<mojom::ConnectionAttemptFailureReason>,
                      base::UnguessableTokenHash>
       id_to_failure_reason_when_deleted_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientConnectionParametersFactory);
 };
 
 }  // namespace

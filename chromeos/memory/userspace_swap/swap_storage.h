@@ -21,6 +21,9 @@ namespace userspace_swap {
 // thread safe as synchronization is handled internally where necessary.
 class CHROMEOS_EXPORT SwapFile {
  public:
+  SwapFile(const SwapFile&) = delete;
+  SwapFile& operator=(const SwapFile&) = delete;
+
   virtual ~SwapFile();
 
   enum Type {
@@ -84,8 +87,6 @@ class CHROMEOS_EXPORT SwapFile {
   // drops are safe, because they use syscalls which do not rely on the file
   // pointer, specifically pread(2) and fallocate(2) respectively).
   base::Lock write_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwapFile);
 };
 
 }  // namespace userspace_swap

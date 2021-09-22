@@ -20,6 +20,10 @@ namespace secure_channel {
 class FakeBleConnectionManager : public BleConnectionManager {
  public:
   FakeBleConnectionManager();
+
+  FakeBleConnectionManager(const FakeBleConnectionManager&) = delete;
+  FakeBleConnectionManager& operator=(const FakeBleConnectionManager&) = delete;
+
   ~FakeBleConnectionManager() override;
 
   // Make public for testing.
@@ -48,8 +52,6 @@ class FakeBleConnectionManager : public BleConnectionManager {
       ConnectionPriority connection_priority) override;
   void PerformCancelBleListenerConnectionAttempt(
       const DeviceIdPair& device_id_pair) override;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleConnectionManager);
 };
 
 }  // namespace secure_channel

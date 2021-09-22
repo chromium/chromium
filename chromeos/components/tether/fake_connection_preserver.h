@@ -18,6 +18,10 @@ namespace tether {
 class FakeConnectionPreserver : public ConnectionPreserver {
  public:
   FakeConnectionPreserver();
+
+  FakeConnectionPreserver(const FakeConnectionPreserver&) = delete;
+  FakeConnectionPreserver& operator=(const FakeConnectionPreserver&) = delete;
+
   ~FakeConnectionPreserver() override;
 
   void HandleSuccessfulTetherAvailabilityResponse(
@@ -29,8 +33,6 @@ class FakeConnectionPreserver : public ConnectionPreserver {
 
  private:
   std::string last_requested_preserved_connection_device_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionPreserver);
 };
 
 }  // namespace tether

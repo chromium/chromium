@@ -79,6 +79,11 @@ class FakeEligibleHostDevicesProviderFactory
       device_sync::FakeDeviceSyncClient* expected_device_sync_client)
       : expected_device_sync_client_(expected_device_sync_client) {}
 
+  FakeEligibleHostDevicesProviderFactory(
+      const FakeEligibleHostDevicesProviderFactory&) = delete;
+  FakeEligibleHostDevicesProviderFactory& operator=(
+      const FakeEligibleHostDevicesProviderFactory&) = delete;
+
   ~FakeEligibleHostDevicesProviderFactory() override = default;
 
   FakeEligibleHostDevicesProvider* instance() { return instance_; }
@@ -98,8 +103,6 @@ class FakeEligibleHostDevicesProviderFactory
   device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
 
   FakeEligibleHostDevicesProvider* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeEligibleHostDevicesProviderFactory);
 };
 
 class FakeHostBackendDelegateFactory : public HostBackendDelegateImpl::Factory {
@@ -114,6 +117,11 @@ class FakeHostBackendDelegateFactory : public HostBackendDelegateImpl::Factory {
             fake_eligible_host_devices_provider_factory),
         expected_testing_pref_service_(expected_testing_pref_service),
         expected_device_sync_client_(expected_device_sync_client) {}
+
+  FakeHostBackendDelegateFactory(const FakeHostBackendDelegateFactory&) =
+      delete;
+  FakeHostBackendDelegateFactory& operator=(
+      const FakeHostBackendDelegateFactory&) = delete;
 
   ~FakeHostBackendDelegateFactory() override = default;
 
@@ -143,8 +151,6 @@ class FakeHostBackendDelegateFactory : public HostBackendDelegateImpl::Factory {
   device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
 
   FakeHostBackendDelegate* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostBackendDelegateFactory);
 };
 
 class FakeHostVerifierFactory : public HostVerifierImpl::Factory {
@@ -157,6 +163,9 @@ class FakeHostVerifierFactory : public HostVerifierImpl::Factory {
       : fake_host_backend_delegate_factory_(fake_host_backend_delegate_factory),
         expected_device_sync_client_(expected_device_sync_client),
         expected_testing_pref_service_(expected_testing_pref_service) {}
+
+  FakeHostVerifierFactory(const FakeHostVerifierFactory&) = delete;
+  FakeHostVerifierFactory& operator=(const FakeHostVerifierFactory&) = delete;
 
   ~FakeHostVerifierFactory() override = default;
 
@@ -187,8 +196,6 @@ class FakeHostVerifierFactory : public HostVerifierImpl::Factory {
   sync_preferences::TestingPrefServiceSyncable* expected_testing_pref_service_;
 
   FakeHostVerifier* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostVerifierFactory);
 };
 
 class FakeHostStatusProviderFactory : public HostStatusProviderImpl::Factory {
@@ -204,6 +211,10 @@ class FakeHostStatusProviderFactory : public HostStatusProviderImpl::Factory {
         fake_host_backend_delegate_factory_(fake_host_backend_delegate_factory),
         fake_host_verifier_factory_(fake_host_verifier_factory),
         expected_device_sync_client_(expected_device_sync_client) {}
+
+  FakeHostStatusProviderFactory(const FakeHostStatusProviderFactory&) = delete;
+  FakeHostStatusProviderFactory& operator=(
+      const FakeHostStatusProviderFactory&) = delete;
 
   ~FakeHostStatusProviderFactory() override = default;
 
@@ -236,8 +247,6 @@ class FakeHostStatusProviderFactory : public HostStatusProviderImpl::Factory {
   device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
 
   FakeHostStatusProvider* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostStatusProviderFactory);
 };
 
 class FakeWifiSyncFeatureManagerFactory
@@ -251,6 +260,11 @@ class FakeWifiSyncFeatureManagerFactory
       : fake_host_status_provider_factory_(fake_host_status_provider_factory),
         expected_testing_pref_service_(expected_testing_pref_service),
         expected_device_sync_client_(expected_device_sync_client) {}
+
+  FakeWifiSyncFeatureManagerFactory(const FakeWifiSyncFeatureManagerFactory&) =
+      delete;
+  FakeWifiSyncFeatureManagerFactory& operator=(
+      const FakeWifiSyncFeatureManagerFactory&) = delete;
 
   ~FakeWifiSyncFeatureManagerFactory() override = default;
 
@@ -280,8 +294,6 @@ class FakeWifiSyncFeatureManagerFactory
   device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
 
   FakeWifiSyncFeatureManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWifiSyncFeatureManagerFactory);
 };
 
 class FakeGrandfatheredEasyUnlockHostDisablerFactory
@@ -295,6 +307,11 @@ class FakeGrandfatheredEasyUnlockHostDisablerFactory
       : fake_host_backend_delegate_factory_(fake_host_backend_delegate_factory),
         expected_device_sync_client_(expected_device_sync_client),
         expected_testing_pref_service_(expected_testing_pref_service) {}
+
+  FakeGrandfatheredEasyUnlockHostDisablerFactory(
+      const FakeGrandfatheredEasyUnlockHostDisablerFactory&) = delete;
+  FakeGrandfatheredEasyUnlockHostDisablerFactory& operator=(
+      const FakeGrandfatheredEasyUnlockHostDisablerFactory&) = delete;
 
   ~FakeGrandfatheredEasyUnlockHostDisablerFactory() override = default;
 
@@ -317,8 +334,6 @@ class FakeGrandfatheredEasyUnlockHostDisablerFactory
   FakeHostBackendDelegateFactory* fake_host_backend_delegate_factory_;
   device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
   sync_preferences::TestingPrefServiceSyncable* expected_testing_pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGrandfatheredEasyUnlockHostDisablerFactory);
 };
 
 class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
@@ -337,6 +352,11 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
         expected_android_sms_pairing_state_tracker_(
             expected_android_sms_pairing_state_tracker),
         expected_is_secondary_user_(expected_is_secondary_user) {}
+
+  FakeFeatureStateManagerFactory(const FakeFeatureStateManagerFactory&) =
+      delete;
+  FakeFeatureStateManagerFactory& operator=(
+      const FakeFeatureStateManagerFactory&) = delete;
 
   ~FakeFeatureStateManagerFactory() override = default;
 
@@ -373,8 +393,6 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
   bool expected_is_secondary_user_;
 
   FakeFeatureStateManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFeatureStateManagerFactory);
 };
 
 class FakeHostDeviceTimestampManagerFactory
@@ -386,6 +404,11 @@ class FakeHostDeviceTimestampManagerFactory
           expected_testing_pref_service)
       : fake_host_status_provider_factory_(fake_host_status_provider_factory),
         expected_testing_pref_service_(expected_testing_pref_service) {}
+
+  FakeHostDeviceTimestampManagerFactory(
+      const FakeHostDeviceTimestampManagerFactory&) = delete;
+  FakeHostDeviceTimestampManagerFactory& operator=(
+      const FakeHostDeviceTimestampManagerFactory&) = delete;
 
   ~FakeHostDeviceTimestampManagerFactory() override = default;
 
@@ -411,8 +434,6 @@ class FakeHostDeviceTimestampManagerFactory
   sync_preferences::TestingPrefServiceSyncable* expected_testing_pref_service_;
 
   FakeHostDeviceTimestampManager* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostDeviceTimestampManagerFactory);
 };
 
 class FakeAccountStatusChangeDelegateNotifierFactory
@@ -430,6 +451,11 @@ class FakeAccountStatusChangeDelegateNotifierFactory
         fake_host_device_timestamp_manager_factory_(
             fake_host_device_timestamp_manager_factory),
         expected_oobe_completion_tracker_(expected_oobe_completion_tracker) {}
+
+  FakeAccountStatusChangeDelegateNotifierFactory(
+      const FakeAccountStatusChangeDelegateNotifierFactory&) = delete;
+  FakeAccountStatusChangeDelegateNotifierFactory& operator=(
+      const FakeAccountStatusChangeDelegateNotifierFactory&) = delete;
 
   ~FakeAccountStatusChangeDelegateNotifierFactory() override = default;
 
@@ -463,8 +489,6 @@ class FakeAccountStatusChangeDelegateNotifierFactory
   OobeCompletionTracker* expected_oobe_completion_tracker_;
 
   FakeAccountStatusChangeDelegateNotifier* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAccountStatusChangeDelegateNotifierFactory);
 };
 
 class FakeAndroidSmsAppInstallingStatusObserverFactory
@@ -478,6 +502,11 @@ class FakeAndroidSmsAppInstallingStatusObserverFactory
         fake_feature_state_manager_factory_(fake_feature_state_manager_factory),
         expected_android_sms_app_helper_delegate_(
             expected_android_sms_app_helper_delegate) {}
+
+  FakeAndroidSmsAppInstallingStatusObserverFactory(
+      const FakeAndroidSmsAppInstallingStatusObserverFactory&) = delete;
+  FakeAndroidSmsAppInstallingStatusObserverFactory& operator=(
+      const FakeAndroidSmsAppInstallingStatusObserverFactory&) = delete;
 
   ~FakeAndroidSmsAppInstallingStatusObserverFactory() override = default;
 
@@ -501,8 +530,6 @@ class FakeAndroidSmsAppInstallingStatusObserverFactory
   FakeHostStatusProviderFactory* fake_host_status_provider_factory_;
   FakeFeatureStateManagerFactory* fake_feature_state_manager_factory_;
   AndroidSmsAppHelperDelegate* expected_android_sms_app_helper_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAndroidSmsAppInstallingStatusObserverFactory);
 };
 
 }  // namespace

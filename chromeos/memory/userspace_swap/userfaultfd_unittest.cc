@@ -44,6 +44,9 @@ using testing::StrictMock;
 // tests.
 class ScopedMemory {
  public:
+  ScopedMemory(const ScopedMemory&) = delete;
+  ScopedMemory& operator=(const ScopedMemory&) = delete;
+
   ~ScopedMemory() { Free(); }
 
   ScopedMemory() = default;
@@ -92,8 +95,6 @@ class ScopedMemory {
  private:
   void* ptr_ = nullptr;
   size_t len_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMemory);
 };
 
 const size_t kPageSize = base::GetPageSize();
@@ -150,6 +151,10 @@ class UserfaultFDTest : public testing::Test {
 class MockUserfaultFDHandler : public UserfaultFDHandler {
  public:
   MockUserfaultFDHandler() = default;
+
+  MockUserfaultFDHandler(const MockUserfaultFDHandler&) = delete;
+  MockUserfaultFDHandler& operator=(const MockUserfaultFDHandler&) = delete;
+
   ~MockUserfaultFDHandler() override = default;
 
   MOCK_METHOD3(Pagefault,
@@ -163,9 +168,6 @@ class MockUserfaultFDHandler : public UserfaultFDHandler {
                     uintptr_t new_address,
                     uint64_t original_length));
   MOCK_METHOD1(Closed, void(int err));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUserfaultFDHandler);
 };
 
 uintptr_t GetPageBase(uintptr_t addr) {

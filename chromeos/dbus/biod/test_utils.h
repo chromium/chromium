@@ -36,6 +36,10 @@ void CopyDBusMethodCallResult(bool* dest_result, bool src_result);
 class TestBiodObserver : public BiodClient::Observer {
  public:
   TestBiodObserver();
+
+  TestBiodObserver(const TestBiodObserver&) = delete;
+  TestBiodObserver& operator=(const TestBiodObserver&) = delete;
+
   ~TestBiodObserver() override;
 
   int num_complete_enroll_scans_received() const {
@@ -78,8 +82,6 @@ class TestBiodObserver : public BiodClient::Observer {
 
   // When auth scan is received, store the result.
   AuthScanMatches last_auth_scan_matches_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBiodObserver);
 };
 
 }  // namespace test_utils

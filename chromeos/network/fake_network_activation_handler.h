@@ -19,6 +19,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkActivationHandler
     : public NetworkActivationHandler {
  public:
   FakeNetworkActivationHandler();
+
+  FakeNetworkActivationHandler(const FakeNetworkActivationHandler&) = delete;
+  FakeNetworkActivationHandler& operator=(const FakeNetworkActivationHandler&) =
+      delete;
+
   ~FakeNetworkActivationHandler() override;
 
   // Parameters captured by calls to CompleteActivation().
@@ -56,8 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkActivationHandler
       network_handler::ErrorCallback error_callback) override;
 
   std::vector<ActivationParams> complete_activation_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetworkActivationHandler);
 };
 
 }  // namespace chromeos

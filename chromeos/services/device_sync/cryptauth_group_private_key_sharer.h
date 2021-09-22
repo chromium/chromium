@@ -36,6 +36,11 @@ class CryptAuthGroupPrivateKeySharer {
   using ShareGroupPrivateKeyAttemptFinishedCallback =
       base::OnceCallback<void(CryptAuthDeviceSyncResult::ResultCode)>;
 
+  CryptAuthGroupPrivateKeySharer(const CryptAuthGroupPrivateKeySharer&) =
+      delete;
+  CryptAuthGroupPrivateKeySharer& operator=(
+      const CryptAuthGroupPrivateKeySharer&) = delete;
+
   virtual ~CryptAuthGroupPrivateKeySharer();
 
   // Starts the ShareGroupPrivateKey portion of the CryptAuth v2 DeviceSync
@@ -63,8 +68,6 @@ class CryptAuthGroupPrivateKeySharer {
  private:
   ShareGroupPrivateKeyAttemptFinishedCallback callback_;
   bool was_share_group_private_key_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthGroupPrivateKeySharer);
 };
 
 }  // namespace device_sync

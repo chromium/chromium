@@ -17,6 +17,11 @@ namespace tether {
 class FakeWifiHotspotDisconnector : public WifiHotspotDisconnector {
  public:
   FakeWifiHotspotDisconnector();
+
+  FakeWifiHotspotDisconnector(const FakeWifiHotspotDisconnector&) = delete;
+  FakeWifiHotspotDisconnector& operator=(const FakeWifiHotspotDisconnector&) =
+      delete;
+
   ~FakeWifiHotspotDisconnector() override;
 
   std::string last_disconnected_wifi_network_guid() {
@@ -36,8 +41,6 @@ class FakeWifiHotspotDisconnector : public WifiHotspotDisconnector {
  private:
   std::string last_disconnected_wifi_network_guid_;
   std::string disconnection_error_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWifiHotspotDisconnector);
 };
 
 }  // namespace tether

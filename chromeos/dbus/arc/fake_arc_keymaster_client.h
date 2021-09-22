@@ -14,6 +14,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcKeymasterClient
     : public ArcKeymasterClient {
  public:
   FakeArcKeymasterClient() = default;
+
+  FakeArcKeymasterClient(const FakeArcKeymasterClient&) = delete;
+  FakeArcKeymasterClient& operator=(const FakeArcKeymasterClient&) = delete;
+
   ~FakeArcKeymasterClient() override = default;
 
   // DBusClient override:
@@ -22,9 +26,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcKeymasterClient
   // ArcKeymasterClient override:
   void BootstrapMojoConnection(base::ScopedFD fd,
                                VoidDBusMethodCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeArcKeymasterClient);
 };
 
 }  // namespace chromeos

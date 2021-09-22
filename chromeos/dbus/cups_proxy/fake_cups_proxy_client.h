@@ -17,6 +17,10 @@ namespace chromeos {
 class FakeCupsProxyClient : public CupsProxyClient {
  public:
   FakeCupsProxyClient();
+
+  FakeCupsProxyClient(const FakeCupsProxyClient&) = delete;
+  FakeCupsProxyClient& operator=(const FakeCupsProxyClient&) = delete;
+
   ~FakeCupsProxyClient() override;
 
   // CupsProxyClient:
@@ -25,9 +29,6 @@ class FakeCupsProxyClient : public CupsProxyClient {
   void BootstrapMojoConnection(
       base::ScopedFD fd,
       base::OnceCallback<void(bool success)> result_callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeCupsProxyClient);
 };
 
 }  // namespace chromeos

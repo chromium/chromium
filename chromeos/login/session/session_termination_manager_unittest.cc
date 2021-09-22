@@ -20,6 +20,11 @@ class SessionTerminationManagerTest : public testing::Test {
     CryptohomeMiscClient::InitializeFake();
     SessionManagerClient::InitializeFake();
   }
+
+  SessionTerminationManagerTest(const SessionTerminationManagerTest&) = delete;
+  SessionTerminationManagerTest& operator=(
+      const SessionTerminationManagerTest&) = delete;
+
   ~SessionTerminationManagerTest() override {
     CryptohomeMiscClient::Shutdown();
     PowerManagerClient::Shutdown();
@@ -29,8 +34,6 @@ class SessionTerminationManagerTest : public testing::Test {
  protected:
   FakePowerManagerClient* power_client_;
   SessionTerminationManager session_termination_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionTerminationManagerTest);
 };
 
 // The device is not locked to single user. Check that no reboot is triggered

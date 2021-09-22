@@ -23,6 +23,12 @@ class NetworkIdentifier;
 class PendingNetworkConfigurationTracker {
  public:
   PendingNetworkConfigurationTracker() = default;
+
+  PendingNetworkConfigurationTracker(
+      const PendingNetworkConfigurationTracker&) = delete;
+  PendingNetworkConfigurationTracker& operator=(
+      const PendingNetworkConfigurationTracker&) = delete;
+
   virtual ~PendingNetworkConfigurationTracker() = default;
 
   // Adds an update to the list of in flight changes.  |change_uuid| is a
@@ -50,9 +56,6 @@ class PendingNetworkConfigurationTracker {
   // that the |change_guid| and |ssid| exist in the tracker before calling.
   virtual void IncrementCompletedAttempts(const std::string& change_guid,
                                           const NetworkIdentifier& id) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PendingNetworkConfigurationTracker);
 };
 
 }  // namespace sync_wifi

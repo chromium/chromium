@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
     : public assistant_client::PowerManagerProvider {
  public:
   PowerManagerProviderImpl();
+
+  PowerManagerProviderImpl(const PowerManagerProviderImpl&) = delete;
+  PowerManagerProviderImpl& operator=(const PowerManagerProviderImpl&) = delete;
+
   ~PowerManagerProviderImpl() override;
 
   void Initialize(chromeos::libassistant::mojom::PlatformDelegate* delegate);
@@ -112,8 +116,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
   const base::TickClock* tick_clock_ = nullptr;
 
   base::WeakPtrFactory<PowerManagerProviderImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerProviderImpl);
 };
 
 }  // namespace libassistant

@@ -21,6 +21,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertMigrator
     : public NetworkStateHandlerObserver,
       public NetworkCertLoader::Observer {
  public:
+  NetworkCertMigrator(const NetworkCertMigrator&) = delete;
+  NetworkCertMigrator& operator=(const NetworkCertMigrator&) = delete;
+
   ~NetworkCertMigrator() override;
 
  private:
@@ -41,8 +44,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertMigrator
   NetworkStateHandler* network_state_handler_;
 
   base::WeakPtrFactory<NetworkCertMigrator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCertMigrator);
 };
 
 }  // namespace chromeos

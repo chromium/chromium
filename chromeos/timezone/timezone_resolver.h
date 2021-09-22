@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneResolver {
   class Delegate {
    public:
     Delegate();
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     // Returns true if TimeZoneResolver should include WiFi data in request.
@@ -48,9 +52,6 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneResolver {
 
     // Returns true if TimeZoneResolver should include Cellular data in request.
     virtual bool ShouldSendCellularGeolocationData() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // This is a LocalState preference to store base::Time value of the last
@@ -63,6 +64,10 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneResolver {
                    const ApplyTimeZoneCallback& apply_timezone,
                    const DelayNetworkCallClosure& delay_network_call,
                    PrefService* local_state);
+
+  TimeZoneResolver(const TimeZoneResolver&) = delete;
+  TimeZoneResolver& operator=(const TimeZoneResolver&) = delete;
+
   ~TimeZoneResolver();
 
   // Starts periodic timezone refresh.
@@ -109,8 +114,6 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneResolver {
   std::unique_ptr<TimeZoneResolverImpl> implementation_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneResolver);
 };
 
 }  // namespace chromeos

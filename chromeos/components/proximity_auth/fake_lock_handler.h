@@ -13,6 +13,10 @@ namespace proximity_auth {
 class FakeLockHandler : public ScreenlockBridge::LockHandler {
  public:
   FakeLockHandler();
+
+  FakeLockHandler(const FakeLockHandler&) = delete;
+  FakeLockHandler& operator=(const FakeLockHandler&) = delete;
+
   ~FakeLockHandler() override;
 
   // LockHandler:
@@ -32,9 +36,6 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
   void AttemptEasySignin(const AccountId& account_id,
                          const std::string& secret,
                          const std::string& key_label) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeLockHandler);
 };
 
 }  // namespace proximity_auth

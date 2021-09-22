@@ -20,6 +20,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
       public ShillIPConfigClient::TestInterface {
  public:
   FakeShillIPConfigClient();
+
+  FakeShillIPConfigClient(const FakeShillIPConfigClient&) = delete;
+  FakeShillIPConfigClient& operator=(const FakeShillIPConfigClient&) = delete;
+
   ~FakeShillIPConfigClient() override;
 
   // ShillIPConfigClient overrides
@@ -53,8 +57,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillIPConfigClient
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeShillIPConfigClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeShillIPConfigClient);
 };
 
 }  // namespace chromeos

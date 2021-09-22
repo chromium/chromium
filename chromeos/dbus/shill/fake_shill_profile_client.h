@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
       public ShillProfileClient::TestInterface {
  public:
   FakeShillProfileClient();
+
+  FakeShillProfileClient(const FakeShillProfileClient&) = delete;
+  FakeShillProfileClient& operator=(const FakeShillProfileClient&) = delete;
+
   ~FakeShillProfileClient() override;
 
   // ShillProfileClient overrides
@@ -91,8 +95,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
 
   FakeShillSimulatedResult simulate_delete_result_ =
       FakeShillSimulatedResult::kSuccess;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeShillProfileClient);
 };
 
 }  // namespace chromeos

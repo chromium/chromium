@@ -46,6 +46,10 @@ class TopLevelHostScanCache : public HostScanCache {
                         ActiveHost* active_host,
                         HostScanCache* network_host_scan_cache,
                         PersistentHostScanCache* persistent_host_scan_cache);
+
+  TopLevelHostScanCache(const TopLevelHostScanCache&) = delete;
+  TopLevelHostScanCache& operator=(const TopLevelHostScanCache&) = delete;
+
   ~TopLevelHostScanCache() override;
 
   // HostScanCache:
@@ -79,8 +83,6 @@ class TopLevelHostScanCache : public HostScanCache {
   std::unordered_map<std::string, std::unique_ptr<base::OneShotTimer>>
       tether_guid_to_timer_map_;
   base::WeakPtrFactory<TopLevelHostScanCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TopLevelHostScanCache);
 };
 
 }  // namespace tether

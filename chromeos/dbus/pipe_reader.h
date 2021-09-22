@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) PipeReader {
       base::OnceCallback<void(absl::optional<std::string> data)>;
 
   explicit PipeReader(const scoped_refptr<base::TaskRunner>& task_runner);
+
+  PipeReader(const PipeReader&) = delete;
+  PipeReader& operator=(const PipeReader&) = delete;
+
   ~PipeReader();
 
   // Starts data collection.
@@ -68,8 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) PipeReader {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<PipeReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PipeReader);
 };
 
 }  // namespace chromeos

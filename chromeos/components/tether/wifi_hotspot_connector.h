@@ -32,6 +32,10 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
  public:
   WifiHotspotConnector(NetworkStateHandler* network_state_handler,
                        NetworkConnect* network_connect);
+
+  WifiHotspotConnector(const WifiHotspotConnector&) = delete;
+  WifiHotspotConnector& operator=(const WifiHotspotConnector&) = delete;
+
   ~WifiHotspotConnector() override;
 
   // Function which receives the GUID of the connected Wi-Fi hotspot. If
@@ -90,8 +94,6 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   scoped_refptr<base::TaskRunner> task_runner_;
 
   base::WeakPtrFactory<WifiHotspotConnector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WifiHotspotConnector);
 };
 
 }  // namespace tether

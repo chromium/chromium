@@ -18,6 +18,12 @@ namespace tether {
 class FakeTetherSessionCompletionLogger : public TetherSessionCompletionLogger {
  public:
   FakeTetherSessionCompletionLogger();
+
+  FakeTetherSessionCompletionLogger(const FakeTetherSessionCompletionLogger&) =
+      delete;
+  FakeTetherSessionCompletionLogger& operator=(
+      const FakeTetherSessionCompletionLogger&) = delete;
+
   ~FakeTetherSessionCompletionLogger() override;
 
   TetherSessionCompletionLogger::SessionCompletionReason*
@@ -32,8 +38,6 @@ class FakeTetherSessionCompletionLogger : public TetherSessionCompletionLogger {
  private:
   std::unique_ptr<TetherSessionCompletionLogger::SessionCompletionReason>
       last_session_completion_reason_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTetherSessionCompletionLogger);
 };
 
 }  // namespace tether

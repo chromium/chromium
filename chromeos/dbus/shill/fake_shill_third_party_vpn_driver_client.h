@@ -26,6 +26,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
       public ShillThirdPartyVpnDriverClient::TestInterface {
  public:
   FakeShillThirdPartyVpnDriverClient();
+
+  FakeShillThirdPartyVpnDriverClient(
+      const FakeShillThirdPartyVpnDriverClient&) = delete;
+  FakeShillThirdPartyVpnDriverClient& operator=(
+      const FakeShillThirdPartyVpnDriverClient&) = delete;
+
   ~FakeShillThirdPartyVpnDriverClient() override;
 
   // ShillThirdPartyVpnDriverClient overrides
@@ -58,8 +64,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
   using ObserverMap = std::map<std::string, ShillThirdPartyVpnObserver*>;
 
   ObserverMap observer_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeShillThirdPartyVpnDriverClient);
 };
 
 }  // namespace chromeos

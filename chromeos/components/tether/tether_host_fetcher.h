@@ -31,6 +31,10 @@ class TetherHostFetcher {
   };
 
   TetherHostFetcher();
+
+  TetherHostFetcher(const TetherHostFetcher&) = delete;
+  TetherHostFetcher& operator=(const TetherHostFetcher&) = delete;
+
   virtual ~TetherHostFetcher();
 
   void AddObserver(Observer* observer);
@@ -62,8 +66,6 @@ class TetherHostFetcher {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherHostFetcher);
 };
 
 }  // namespace tether

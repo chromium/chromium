@@ -84,6 +84,10 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
   };
 
   FakeDeviceSyncClient();
+
+  FakeDeviceSyncClient(const FakeDeviceSyncClient&) = delete;
+  FakeDeviceSyncClient& operator=(const FakeDeviceSyncClient&) = delete;
+
   ~FakeDeviceSyncClient() override;
 
   const base::circular_deque<SetSoftwareFeatureStateInputs>&
@@ -192,8 +196,6 @@ class FakeDeviceSyncClient : public DeviceSyncClient {
       get_devices_activity_status_callback_queue_;
   base::circular_deque<mojom::DeviceSync::GetDebugInfoCallback>
       get_debug_info_callback_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceSyncClient);
 };
 
 }  // namespace device_sync

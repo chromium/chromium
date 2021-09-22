@@ -67,6 +67,10 @@ DataWithTimestamp CreateDataWithTimestamp(
 class TestRawEidGenerator : public RawEidGeneratorImpl {
  public:
   TestRawEidGenerator() {}
+
+  TestRawEidGenerator(const TestRawEidGenerator&) = delete;
+  TestRawEidGenerator& operator=(const TestRawEidGenerator&) = delete;
+
   ~TestRawEidGenerator() override {}
 
   // RawEidGenerator:
@@ -77,9 +81,6 @@ class TestRawEidGenerator : public RawEidGeneratorImpl {
     return RawEidGeneratorImpl::GenerateEid(
         eid_seed, start_of_period_timestamp_ms, extra_entropy);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestRawEidGenerator);
 };
 
 }  //  namespace

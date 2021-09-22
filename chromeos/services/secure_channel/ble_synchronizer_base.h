@@ -25,6 +25,10 @@ namespace secure_channel {
 class BleSynchronizerBase {
  public:
   BleSynchronizerBase();
+
+  BleSynchronizerBase(const BleSynchronizerBase&) = delete;
+  BleSynchronizerBase& operator=(const BleSynchronizerBase&) = delete;
+
   virtual ~BleSynchronizerBase();
 
   // Advertisement wrappers.
@@ -124,8 +128,6 @@ class BleSynchronizerBase {
 
  private:
   std::deque<std::unique_ptr<Command>> command_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleSynchronizerBase);
 };
 
 }  // namespace secure_channel

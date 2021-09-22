@@ -21,6 +21,12 @@ class FakePendingConnectionRequestDelegate
     : public PendingConnectionRequestDelegate {
  public:
   FakePendingConnectionRequestDelegate();
+
+  FakePendingConnectionRequestDelegate(
+      const FakePendingConnectionRequestDelegate&) = delete;
+  FakePendingConnectionRequestDelegate& operator=(
+      const FakePendingConnectionRequestDelegate&) = delete;
+
   ~FakePendingConnectionRequestDelegate() override;
 
   const absl::optional<FailedConnectionReason>& GetFailedConnectionReasonForId(
@@ -42,8 +48,6 @@ class FakePendingConnectionRequestDelegate
       request_id_to_failed_connection_reason_map_;
 
   base::OnceClosure closure_for_next_delegate_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionRequestDelegate);
 };
 
 }  // namespace secure_channel

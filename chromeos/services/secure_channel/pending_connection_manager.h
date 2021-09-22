@@ -37,6 +37,9 @@ class PendingConnectionManager {
         const ConnectionDetails& connection_details) = 0;
   };
 
+  PendingConnectionManager(const PendingConnectionManager&) = delete;
+  PendingConnectionManager& operator=(const PendingConnectionManager&) = delete;
+
   virtual ~PendingConnectionManager();
 
   // Attempts a connection according to the provided parameters. If other
@@ -58,8 +61,6 @@ class PendingConnectionManager {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingConnectionManager);
 };
 
 }  // namespace secure_channel

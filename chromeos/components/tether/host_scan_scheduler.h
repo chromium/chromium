@@ -15,15 +15,16 @@ namespace tether {
 class HostScanScheduler {
  public:
   HostScanScheduler() {}
+
+  HostScanScheduler(const HostScanScheduler&) = delete;
+  HostScanScheduler& operator=(const HostScanScheduler&) = delete;
+
   virtual ~HostScanScheduler() {}
 
   // Attempts to perform a Tether host scan. If the device is already connected
   // to the internet, a scan will not be performed. If a scan is already active,
   // this function is a no-op.
   virtual void AttemptScanIfOffline() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScanScheduler);
 };
 
 }  // namespace tether

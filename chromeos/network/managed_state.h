@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
     MANAGED_TYPE_DEVICE
   };
 
+  ManagedState(const ManagedState&) = delete;
+  ManagedState& operator=(const ManagedState&) = delete;
+
   virtual ~ManagedState();
 
   // This will construct and return a new instance of the appropriate class
@@ -141,8 +144,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
 
   // Tracks when an update has been requested.
   bool update_requested_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedState);
 };
 
 }  // namespace chromeos

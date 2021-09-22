@@ -36,6 +36,11 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationProvider {
   SimpleGeolocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       const GURL& url);
+
+  SimpleGeolocationProvider(const SimpleGeolocationProvider&) = delete;
+  SimpleGeolocationProvider& operator=(const SimpleGeolocationProvider&) =
+      delete;
+
   virtual ~SimpleGeolocationProvider();
 
   // Initiates new request. If |send_wifi_access_points|, WiFi AP information
@@ -81,8 +86,6 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationProvider {
 
   // Creation and destruction should happen on the same thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleGeolocationProvider);
 };
 
 }  // namespace chromeos

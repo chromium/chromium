@@ -22,6 +22,9 @@ class CryptAuthDeviceRegistry {
  public:
   using InstanceIdToDeviceMap = base::flat_map<std::string, CryptAuthDevice>;
 
+  CryptAuthDeviceRegistry(const CryptAuthDeviceRegistry&) = delete;
+  CryptAuthDeviceRegistry& operator=(const CryptAuthDeviceRegistry&) = delete;
+
   virtual ~CryptAuthDeviceRegistry();
 
   // Returns a map from Instance ID to CryptAuthDevice.
@@ -55,8 +58,6 @@ class CryptAuthDeviceRegistry {
 
  private:
   InstanceIdToDeviceMap instance_id_to_device_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceRegistry);
 };
 
 std::ostream& operator<<(std::ostream& stream,

@@ -20,6 +20,10 @@ namespace tether {
 class HostScanCache {
  public:
   HostScanCache();
+
+  HostScanCache(const HostScanCache&) = delete;
+  HostScanCache& operator=(const HostScanCache&) = delete;
+
   virtual ~HostScanCache();
 
   class Observer {
@@ -59,8 +63,6 @@ class HostScanCache {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostScanCache);
 };
 
 }  // namespace tether

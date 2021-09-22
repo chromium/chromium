@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   using ClientTypeToInputStreamCount = base::flat_map<std::string, uint32_t>;
 
   FakeCrasAudioClient();
+
+  FakeCrasAudioClient(const FakeCrasAudioClient&) = delete;
+  FakeCrasAudioClient& operator=(const FakeCrasAudioClient&) = delete;
+
   ~FakeCrasAudioClient() override;
 
   static FakeCrasAudioClient* Get();
@@ -136,8 +140,6 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   ClientTypeToInputStreamCount active_input_streams_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrasAudioClient);
 };
 
 }  // namespace chromeos

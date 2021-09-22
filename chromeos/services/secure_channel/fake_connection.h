@@ -21,6 +21,10 @@ class FakeConnection : public Connection {
   FakeConnection(multidevice::RemoteDeviceRef remote_device);
   FakeConnection(multidevice::RemoteDeviceRef remote_device,
                  bool should_auto_connect);
+
+  FakeConnection(const FakeConnection&) = delete;
+  FakeConnection& operator=(const FakeConnection&) = delete;
+
   ~FakeConnection() override;
 
   void set_rssi_to_return(const absl::optional<int32_t>& rssi_to_return) {
@@ -75,8 +79,6 @@ class FakeConnection : public Connection {
 
   absl::optional<int32_t> rssi_to_return_;
   const bool should_auto_connect_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnection);
 };
 
 }  // namespace secure_channel

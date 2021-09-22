@@ -27,6 +27,10 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
     : public AuthPolicyClient {
  public:
   FakeAuthPolicyClient();
+
+  FakeAuthPolicyClient(const FakeAuthPolicyClient&) = delete;
+  FakeAuthPolicyClient& operator=(const FakeAuthPolicyClient&) = delete;
+
   ~FakeAuthPolicyClient() override;
 
   // Returns the fake global instance if initialized. May return null.
@@ -185,8 +189,6 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
   absl::optional<authpolicy::ErrorType> refresh_user_policy_error_;
 
   base::WeakPtrFactory<FakeAuthPolicyClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthPolicyClient);
 };
 
 }  // namespace chromeos

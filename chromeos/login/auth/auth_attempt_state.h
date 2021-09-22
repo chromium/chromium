@@ -25,6 +25,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthAttemptState
   // Used to initialize for a login attempt.
   AuthAttemptState(const UserContext& user_context, bool unlock);
 
+  AuthAttemptState(const AuthAttemptState&) = delete;
+  AuthAttemptState& operator=(const AuthAttemptState&) = delete;
+
   virtual ~AuthAttemptState();
 
   // Deprecated legacy method, will be removed soon.
@@ -87,8 +90,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthAttemptState
   // After the username hash request is completed, this marks whether
   // the request was successful.
   bool username_hash_valid_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthAttemptState);
 };
 
 }  // namespace chromeos

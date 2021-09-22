@@ -41,6 +41,11 @@ class ProximityAuthWebUIHandler
   ProximityAuthWebUIHandler(
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client);
+
+  ProximityAuthWebUIHandler(const ProximityAuthWebUIHandler&) = delete;
+  ProximityAuthWebUIHandler& operator=(const ProximityAuthWebUIHandler&) =
+      delete;
+
   ~ProximityAuthWebUIHandler() override;
 
   // content::WebUIMessageHandler:
@@ -129,8 +134,6 @@ class ProximityAuthWebUIHandler
   bool get_local_state_update_waiting_for_debug_info_ = false;
 
   base::WeakPtrFactory<ProximityAuthWebUIHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthWebUIHandler);
 };
 
 }  // namespace multidevice

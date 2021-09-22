@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
     virtual void OnAutoConnectedInitiated(int auto_connect_reasons) = 0;
   };
 
+  AutoConnectHandler(const AutoConnectHandler&) = delete;
+  AutoConnectHandler& operator=(const AutoConnectHandler&) = delete;
+
   ~AutoConnectHandler() override;
 
   // LoginState::Observer
@@ -163,8 +166,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<AutoConnectHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoConnectHandler);
 };
 
 }  // namespace chromeos

@@ -14,6 +14,12 @@ namespace multidevice_setup {
 class FakeAndroidSmsPairingStateTracker : public AndroidSmsPairingStateTracker {
  public:
   FakeAndroidSmsPairingStateTracker();
+
+  FakeAndroidSmsPairingStateTracker(const FakeAndroidSmsPairingStateTracker&) =
+      delete;
+  FakeAndroidSmsPairingStateTracker& operator=(
+      const FakeAndroidSmsPairingStateTracker&) = delete;
+
   ~FakeAndroidSmsPairingStateTracker() override;
   void SetPairingComplete(bool is_pairing_complete);
 
@@ -22,8 +28,6 @@ class FakeAndroidSmsPairingStateTracker : public AndroidSmsPairingStateTracker {
 
  private:
   bool is_pairing_complete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAndroidSmsPairingStateTracker);
 };
 
 }  // namespace multidevice_setup

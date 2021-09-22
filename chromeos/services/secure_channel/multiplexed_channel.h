@@ -29,6 +29,9 @@ class MultiplexedChannel {
         const ConnectionDetails& connection_details) = 0;
   };
 
+  MultiplexedChannel(const MultiplexedChannel&) = delete;
+  MultiplexedChannel& operator=(const MultiplexedChannel&) = delete;
+
   virtual ~MultiplexedChannel();
 
   virtual bool IsDisconnecting() const = 0;
@@ -54,8 +57,6 @@ class MultiplexedChannel {
  private:
   Delegate* delegate_;
   const ConnectionDetails connection_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiplexedChannel);
 };
 
 }  // namespace secure_channel

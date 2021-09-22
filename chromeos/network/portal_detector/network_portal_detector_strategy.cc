@@ -27,6 +27,10 @@ class LoginScreenStrategy : public PortalDetectorStrategy {
 
   explicit LoginScreenStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  LoginScreenStrategy(const LoginScreenStrategy&) = delete;
+  LoginScreenStrategy& operator=(const LoginScreenStrategy&) = delete;
+
   ~LoginScreenStrategy() override = default;
 
  protected:
@@ -44,9 +48,6 @@ class LoginScreenStrategy : public PortalDetectorStrategy {
     }
     return base::TimeDelta::FromSeconds(kBaseAttemptTimeoutSec);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenStrategy);
 };
 
 class ErrorScreenStrategy : public PortalDetectorStrategy {
@@ -55,6 +56,10 @@ class ErrorScreenStrategy : public PortalDetectorStrategy {
 
   explicit ErrorScreenStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  ErrorScreenStrategy(const ErrorScreenStrategy&) = delete;
+  ErrorScreenStrategy& operator=(const ErrorScreenStrategy&) = delete;
+
   ~ErrorScreenStrategy() override = default;
 
  protected:
@@ -63,9 +68,6 @@ class ErrorScreenStrategy : public PortalDetectorStrategy {
   base::TimeDelta GetNextAttemptTimeoutImpl() override {
     return base::TimeDelta::FromSeconds(kAttemptTimeoutSec);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ErrorScreenStrategy);
 };
 
 class SessionStrategy : public PortalDetectorStrategy {
@@ -76,6 +78,10 @@ class SessionStrategy : public PortalDetectorStrategy {
 
   explicit SessionStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  SessionStrategy(const SessionStrategy&) = delete;
+  SessionStrategy& operator=(const SessionStrategy&) = delete;
+
   ~SessionStrategy() override = default;
 
  protected:
@@ -88,9 +94,6 @@ class SessionStrategy : public PortalDetectorStrategy {
       timeout = kSlowAttemptTimeoutSec;
     return base::TimeDelta::FromSeconds(timeout);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionStrategy);
 };
 
 }  // namespace

@@ -20,6 +20,10 @@ namespace secure_channel {
 class FakeClientChannel : public ClientChannel {
  public:
   FakeClientChannel();
+
+  FakeClientChannel(const FakeClientChannel&) = delete;
+  FakeClientChannel& operator=(const FakeClientChannel&) = delete;
+
   ~FakeClientChannel() override;
 
   using ClientChannel::NotifyDisconnected;
@@ -51,8 +55,6 @@ class FakeClientChannel : public ClientChannel {
       get_connection_metadata_callback_queue_;
   std::vector<std::pair<std::string, base::OnceClosure>> sent_messages_;
   base::OnceClosure destructor_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientChannel);
 };
 
 }  // namespace secure_channel

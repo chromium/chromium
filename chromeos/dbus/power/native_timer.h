@@ -31,6 +31,9 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
  public:
   explicit NativeTimer(const std::string& tag);
 
+  NativeTimer(const NativeTimer&) = delete;
+  NativeTimer& operator=(const NativeTimer&) = delete;
+
   ~NativeTimer();
 
   // Starts a timer to expire at |absolute_expiration_time|. Runs
@@ -93,8 +96,6 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NativeTimer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeTimer);
 };
 
 }  // namespace chromeos

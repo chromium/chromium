@@ -21,6 +21,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) FakeSmbProviderClient
  public:
   FakeSmbProviderClient();
   explicit FakeSmbProviderClient(bool should_run_synchronously);
+
+  FakeSmbProviderClient(const FakeSmbProviderClient&) = delete;
+  FakeSmbProviderClient& operator=(const FakeSmbProviderClient&) = delete;
+
   ~FakeSmbProviderClient() override;
 
   // Adds an entry in the |netbios_parse_results_| map for <packetid,
@@ -74,8 +78,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) FakeSmbProviderClient
 
   // Mapping of a server url to its shares.
   std::map<std::string, ShareResult> shares_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSmbProviderClient);
 };
 
 }  // namespace chromeos

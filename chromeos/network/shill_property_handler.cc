@@ -76,6 +76,9 @@ class ShillPropertyObserver : public ShillPropertyChangedObserver {
     }
   }
 
+  ShillPropertyObserver(const ShillPropertyObserver&) = delete;
+  ShillPropertyObserver& operator=(const ShillPropertyObserver&) = delete;
+
   ~ShillPropertyObserver() override {
     switch (type_) {
       case ManagedState::MANAGED_TYPE_NETWORK:
@@ -99,8 +102,6 @@ class ShillPropertyObserver : public ShillPropertyChangedObserver {
   ManagedState::ManagedType type_;
   std::string path_;
   Handler handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillPropertyObserver);
 };
 
 //------------------------------------------------------------------------------

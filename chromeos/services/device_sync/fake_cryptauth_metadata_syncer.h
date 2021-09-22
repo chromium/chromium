@@ -30,6 +30,11 @@ class CryptAuthKey;
 class FakeCryptAuthMetadataSyncer : public CryptAuthMetadataSyncer {
  public:
   FakeCryptAuthMetadataSyncer();
+
+  FakeCryptAuthMetadataSyncer(const FakeCryptAuthMetadataSyncer&) = delete;
+  FakeCryptAuthMetadataSyncer& operator=(const FakeCryptAuthMetadataSyncer&) =
+      delete;
+
   ~FakeCryptAuthMetadataSyncer() override;
 
   // The RequestContext passed to SyncMetadata(). Returns null if
@@ -70,14 +75,18 @@ class FakeCryptAuthMetadataSyncer : public CryptAuthMetadataSyncer {
   absl::optional<cryptauthv2::BetterTogetherDeviceMetadata>
       local_device_metadata_;
   absl::optional<const CryptAuthKey*> initial_group_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthMetadataSyncer);
 };
 
 class FakeCryptAuthMetadataSyncerFactory
     : public CryptAuthMetadataSyncerImpl::Factory {
  public:
   FakeCryptAuthMetadataSyncerFactory();
+
+  FakeCryptAuthMetadataSyncerFactory(
+      const FakeCryptAuthMetadataSyncerFactory&) = delete;
+  FakeCryptAuthMetadataSyncerFactory& operator=(
+      const FakeCryptAuthMetadataSyncerFactory&) = delete;
+
   ~FakeCryptAuthMetadataSyncerFactory() override;
 
   // Returns a vector of all FakeCryptAuthMetadataSyncer instances created
@@ -104,8 +113,6 @@ class FakeCryptAuthMetadataSyncerFactory
   std::vector<FakeCryptAuthMetadataSyncer*> instances_;
   CryptAuthClientFactory* last_client_factory_ = nullptr;
   PrefService* last_pref_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthMetadataSyncerFactory);
 };
 
 }  // namespace device_sync

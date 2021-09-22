@@ -29,6 +29,10 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
   AssistantAudioDecoder(
       mojo::PendingRemote<mojom::AssistantAudioDecoderClient> client,
       mojo::PendingRemote<mojom::AssistantMediaDataSource> data_source);
+
+  AssistantAudioDecoder(const AssistantAudioDecoder&) = delete;
+  AssistantAudioDecoder& operator=(const AssistantAudioDecoder&) = delete;
+
   ~AssistantAudioDecoder() override;
 
   // Called by |client_| on main thread.
@@ -74,8 +78,6 @@ class AssistantAudioDecoder : public mojom::AssistantAudioDecoder {
   std::unique_ptr<base::Thread> media_thread_;
 
   base::WeakPtrFactory<AssistantAudioDecoder> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAudioDecoder);
 };
 
 }  // namespace assistant

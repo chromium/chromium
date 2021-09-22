@@ -17,6 +17,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) FakeCecServiceClient
     : public CecServiceClient {
  public:
   FakeCecServiceClient();
+
+  FakeCecServiceClient(const FakeCecServiceClient&) = delete;
+  FakeCecServiceClient& operator=(const FakeCecServiceClient&) = delete;
+
   ~FakeCecServiceClient() override;
 
   // CecServiceClient
@@ -45,8 +49,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) FakeCecServiceClient
   int wake_up_call_count_ = 0;
 
   std::vector<PowerState> tv_power_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCecServiceClient);
 };
 
 }  // namespace chromeos

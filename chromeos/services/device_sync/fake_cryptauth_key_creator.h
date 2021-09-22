@@ -20,6 +20,10 @@ namespace device_sync {
 class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
  public:
   FakeCryptAuthKeyCreator();
+
+  FakeCryptAuthKeyCreator(const FakeCryptAuthKeyCreator&) = delete;
+  FakeCryptAuthKeyCreator& operator=(const FakeCryptAuthKeyCreator&) = delete;
+
   ~FakeCryptAuthKeyCreator() override;
 
   // CryptAuthKeyCreator:
@@ -43,13 +47,17 @@ class FakeCryptAuthKeyCreator : public CryptAuthKeyCreator {
   base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData> keys_to_create_;
   absl::optional<CryptAuthKey> server_ephemeral_dh_;
   CreateKeysCallback create_keys_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyCreator);
 };
 
 class FakeCryptAuthKeyCreatorFactory : public CryptAuthKeyCreatorImpl::Factory {
  public:
   FakeCryptAuthKeyCreatorFactory();
+
+  FakeCryptAuthKeyCreatorFactory(const FakeCryptAuthKeyCreatorFactory&) =
+      delete;
+  FakeCryptAuthKeyCreatorFactory& operator=(
+      const FakeCryptAuthKeyCreatorFactory&) = delete;
+
   ~FakeCryptAuthKeyCreatorFactory() override;
 
   FakeCryptAuthKeyCreator* instance() { return instance_; }
@@ -59,8 +67,6 @@ class FakeCryptAuthKeyCreatorFactory : public CryptAuthKeyCreatorImpl::Factory {
   std::unique_ptr<CryptAuthKeyCreator> CreateInstance() override;
 
   FakeCryptAuthKeyCreator* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyCreatorFactory);
 };
 
 }  // namespace device_sync

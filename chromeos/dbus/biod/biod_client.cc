@@ -40,6 +40,10 @@ void OnVoidResponse(VoidDBusMethodCallback callback, dbus::Response* response) {
 class BiodClientImpl : public BiodClient {
  public:
   BiodClientImpl() = default;
+
+  BiodClientImpl(const BiodClientImpl&) = delete;
+  BiodClientImpl& operator=(const BiodClientImpl&) = delete;
+
   ~BiodClientImpl() override = default;
 
   // BiodClient overrides:
@@ -408,8 +412,6 @@ class BiodClientImpl : public BiodClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BiodClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BiodClientImpl);
 };
 
 BiodClient::BiodClient() {

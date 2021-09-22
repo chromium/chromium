@@ -23,6 +23,10 @@ namespace multidevice_setup {
 class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
  public:
   FakeMultiDeviceSetup();
+
+  FakeMultiDeviceSetup(const FakeMultiDeviceSetup&) = delete;
+  FakeMultiDeviceSetup& operator=(const FakeMultiDeviceSetup&) = delete;
+
   ~FakeMultiDeviceSetup() override;
 
   void FlushForTesting();
@@ -141,8 +145,6 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
       std::pair<std::string,
                 mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback>>
       set_host_without_auth_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiDeviceSetup);
 };
 
 }  // namespace multidevice_setup

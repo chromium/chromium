@@ -28,6 +28,10 @@ class BleAdvertisementGenerator {
       multidevice::RemoteDeviceRef remote_device,
       const std::string& local_device_public_key);
 
+  BleAdvertisementGenerator(const BleAdvertisementGenerator&) = delete;
+  BleAdvertisementGenerator& operator=(const BleAdvertisementGenerator&) =
+      delete;
+
   virtual ~BleAdvertisementGenerator();
 
  protected:
@@ -50,8 +54,6 @@ class BleAdvertisementGenerator {
       std::unique_ptr<ForegroundEidGenerator> test_eid_generator);
 
   std::unique_ptr<ForegroundEidGenerator> eid_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleAdvertisementGenerator);
 };
 
 }  // namespace secure_channel

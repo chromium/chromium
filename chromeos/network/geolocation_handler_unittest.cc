@@ -25,6 +25,9 @@ class GeolocationHandlerTest : public testing::Test {
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
+  GeolocationHandlerTest(const GeolocationHandlerTest&) = delete;
+  GeolocationHandlerTest& operator=(const GeolocationHandlerTest&) = delete;
+
   ~GeolocationHandlerTest() override = default;
 
   void SetUp() override {
@@ -94,9 +97,6 @@ class GeolocationHandlerTest : public testing::Test {
   ShillManagerClient::TestInterface* manager_test_ = nullptr;
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GeolocationHandlerTest);
 };
 
 TEST_F(GeolocationHandlerTest, NoAccessPoints) {

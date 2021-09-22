@@ -21,6 +21,10 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
       public SystemClockClient::TestInterface {
  public:
   FakeSystemClockClient();
+
+  FakeSystemClockClient(const FakeSystemClockClient&) = delete;
+  FakeSystemClockClient& operator=(const FakeSystemClockClient&) = delete;
+
   ~FakeSystemClockClient() override;
 
   // TestInterface
@@ -46,8 +50,6 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
   std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback>
       callbacks_;
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSystemClockClient);
 };
 
 }  // namespace chromeos

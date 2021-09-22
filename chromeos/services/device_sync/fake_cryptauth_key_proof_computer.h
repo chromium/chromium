@@ -21,6 +21,11 @@ class CryptAuthKey;
 class FakeCryptAuthKeyProofComputer : public CryptAuthKeyProofComputer {
  public:
   FakeCryptAuthKeyProofComputer();
+
+  FakeCryptAuthKeyProofComputer(const FakeCryptAuthKeyProofComputer&) = delete;
+  FakeCryptAuthKeyProofComputer& operator=(
+      const FakeCryptAuthKeyProofComputer&) = delete;
+
   ~FakeCryptAuthKeyProofComputer() override;
 
   // CryptAuthKeyProofComputer:
@@ -38,8 +43,6 @@ class FakeCryptAuthKeyProofComputer : public CryptAuthKeyProofComputer {
  private:
   // If true, ComputeKeyProof() returns absl::nullopt.
   bool should_return_null_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyProofComputer);
 };
 
 }  // namespace device_sync

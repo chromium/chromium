@@ -22,6 +22,11 @@ class AuthenticatedChannel;
 class ConnectionAttemptDelegate {
  public:
   ConnectionAttemptDelegate() = default;
+
+  ConnectionAttemptDelegate(const ConnectionAttemptDelegate&) = delete;
+  ConnectionAttemptDelegate& operator=(const ConnectionAttemptDelegate&) =
+      delete;
+
   virtual ~ConnectionAttemptDelegate() = default;
 
   // Invoked when a ConnectionAttempt has successfully resulted in a connection.
@@ -37,9 +42,6 @@ class ConnectionAttemptDelegate {
   // ConnectionAttempt::attempt_id().
   virtual void OnConnectionAttemptFinishedWithoutConnection(
       const ConnectionAttemptDetails& connection_attempt_details) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttemptDelegate);
 };
 
 }  // namespace secure_channel

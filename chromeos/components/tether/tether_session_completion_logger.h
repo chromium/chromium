@@ -31,6 +31,11 @@ class TetherSessionCompletionLogger {
   };
 
   TetherSessionCompletionLogger();
+
+  TetherSessionCompletionLogger(const TetherSessionCompletionLogger&) = delete;
+  TetherSessionCompletionLogger& operator=(
+      const TetherSessionCompletionLogger&) = delete;
+
   virtual ~TetherSessionCompletionLogger();
 
   virtual void RecordTetherSessionCompletion(
@@ -38,8 +43,6 @@ class TetherSessionCompletionLogger {
 
  private:
   friend class TetherSessionCompletionLoggerTest;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherSessionCompletionLogger);
 };
 
 }  // namespace tether

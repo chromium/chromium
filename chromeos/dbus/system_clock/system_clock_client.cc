@@ -57,6 +57,9 @@ class SystemClockClientImpl : public SystemClockClient {
     InitDBus(bus);
   }
 
+  SystemClockClientImpl(const SystemClockClientImpl&) = delete;
+  SystemClockClientImpl& operator=(const SystemClockClientImpl&) = delete;
+
   ~SystemClockClientImpl() override = default;
 
   void AddObserver(Observer* observer) override {
@@ -187,8 +190,6 @@ class SystemClockClientImpl : public SystemClockClient {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<SystemClockClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemClockClientImpl);
 };
 
 SystemClockClient::SystemClockClient() {

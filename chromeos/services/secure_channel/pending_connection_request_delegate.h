@@ -27,6 +27,12 @@ class PendingConnectionRequestDelegate {
   };
 
   PendingConnectionRequestDelegate();
+
+  PendingConnectionRequestDelegate(const PendingConnectionRequestDelegate&) =
+      delete;
+  PendingConnectionRequestDelegate& operator=(
+      const PendingConnectionRequestDelegate&) = delete;
+
   virtual ~PendingConnectionRequestDelegate();
 
   // Invoked when a PendingConnectionRequest fails to establish a connection.
@@ -35,9 +41,6 @@ class PendingConnectionRequestDelegate {
   virtual void OnRequestFinishedWithoutConnection(
       const base::UnguessableToken& request_id,
       FailedConnectionReason reason) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PendingConnectionRequestDelegate);
 };
 
 std::ostream& operator<<(

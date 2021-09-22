@@ -35,6 +35,9 @@ class PendingConnectionRequest {
     return request->ExtractClientConnectionParameters();
   }
 
+  PendingConnectionRequest(const PendingConnectionRequest&) = delete;
+  PendingConnectionRequest& operator=(const PendingConnectionRequest&) = delete;
+
   virtual ~PendingConnectionRequest() = default;
 
   ConnectionPriority connection_priority() const {
@@ -66,8 +69,6 @@ class PendingConnectionRequest {
  private:
   PendingConnectionRequestDelegate* delegate_;
   ConnectionPriority connection_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingConnectionRequest);
 };
 
 }  // namespace secure_channel

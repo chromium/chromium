@@ -20,6 +20,11 @@ namespace device_sync {
 class FakeCryptAuthDeviceManager : public CryptAuthDeviceManager {
  public:
   FakeCryptAuthDeviceManager();
+
+  FakeCryptAuthDeviceManager(const FakeCryptAuthDeviceManager&) = delete;
+  FakeCryptAuthDeviceManager& operator=(const FakeCryptAuthDeviceManager&) =
+      delete;
+
   ~FakeCryptAuthDeviceManager() override;
 
   bool has_started() { return has_started_; }
@@ -123,8 +128,6 @@ class FakeCryptAuthDeviceManager : public CryptAuthDeviceManager {
   std::vector<cryptauth::ExternalDeviceInfo> pixel_unlock_keys_;
   std::vector<cryptauth::ExternalDeviceInfo> tether_hosts_;
   std::vector<cryptauth::ExternalDeviceInfo> pixel_tether_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthDeviceManager);
 };
 
 }  // namespace device_sync

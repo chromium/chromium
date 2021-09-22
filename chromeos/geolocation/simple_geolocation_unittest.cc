@@ -311,6 +311,10 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
  public:
   SimpleGeolocationWirelessTest() : manager_test_(nullptr) {}
 
+  SimpleGeolocationWirelessTest(const SimpleGeolocationWirelessTest&) = delete;
+  SimpleGeolocationWirelessTest& operator=(
+      const SimpleGeolocationWirelessTest&) = delete;
+
   ~SimpleGeolocationWirelessTest() override = default;
 
   void SetUp() override {
@@ -375,9 +379,6 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
   ShillManagerClient::TestInterface* manager_test_;
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleGeolocationWirelessTest);
 };
 
 // Parameter is enable/disable sending of WiFi data.

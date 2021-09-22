@@ -29,6 +29,9 @@ class ConnectToDeviceOperation {
   using ConnectionFailedCallback =
       base::RepeatingCallback<void(FailureDetailType)>;
 
+  ConnectToDeviceOperation(const ConnectToDeviceOperation&) = delete;
+  ConnectToDeviceOperation& operator=(const ConnectToDeviceOperation&) = delete;
+
   virtual ~ConnectToDeviceOperation() {
     if (has_finished_)
       return;
@@ -107,8 +110,6 @@ class ConnectToDeviceOperation {
   ConnectionSuccessCallback success_callback_;
   ConnectionFailedCallback failure_callback_;
   ConnectionPriority connection_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectToDeviceOperation);
 };
 
 }  // namespace secure_channel

@@ -24,6 +24,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporter {
   typedef base::OnceCallback<void(bool success)> DoneCallback;
 
   CertificateImporter() {}
+
+  CertificateImporter(const CertificateImporter&) = delete;
+  CertificateImporter& operator=(const CertificateImporter&) = delete;
+
   virtual ~CertificateImporter() {}
 
   // This is intended for user-initiated ONC imports.
@@ -49,9 +53,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporter {
       const std::vector<OncParsedCertificates::ClientCertificate>&
           client_certificates,
       DoneCallback done_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CertificateImporter);
 };
 
 }  // namespace onc

@@ -17,15 +17,16 @@ namespace tether {
 class PersistentHostScanCache : virtual public HostScanCache {
  public:
   PersistentHostScanCache() {}
+
+  PersistentHostScanCache(const PersistentHostScanCache&) = delete;
+  PersistentHostScanCache& operator=(const PersistentHostScanCache&) = delete;
+
   ~PersistentHostScanCache() override {}
 
   // Returns the cache entries that are currently stored in user prefs as a map
   // from Tether network GUID to entry.
   virtual std::unordered_map<std::string, HostScanCacheEntry>
   GetStoredCacheEntries() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PersistentHostScanCache);
 };
 
 }  // namespace tether

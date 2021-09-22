@@ -20,6 +20,11 @@ class FakeCryptAuthEciesEncryptor : public CryptAuthEciesEncryptor {
   enum class Action { kUndefined, kEncryption, kDecryption };
 
   FakeCryptAuthEciesEncryptor();
+
+  FakeCryptAuthEciesEncryptor(const FakeCryptAuthEciesEncryptor&) = delete;
+  FakeCryptAuthEciesEncryptor& operator=(const FakeCryptAuthEciesEncryptor&) =
+      delete;
+
   ~FakeCryptAuthEciesEncryptor() override;
 
   void FinishAttempt(Action expected_action,
@@ -33,14 +38,18 @@ class FakeCryptAuthEciesEncryptor : public CryptAuthEciesEncryptor {
   void OnBatchDecryptionStarted() override;
 
   Action action_ = Action::kUndefined;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthEciesEncryptor);
 };
 
 class FakeCryptAuthEciesEncryptorFactory
     : public CryptAuthEciesEncryptorImpl::Factory {
  public:
   FakeCryptAuthEciesEncryptorFactory();
+
+  FakeCryptAuthEciesEncryptorFactory(
+      const FakeCryptAuthEciesEncryptorFactory&) = delete;
+  FakeCryptAuthEciesEncryptorFactory& operator=(
+      const FakeCryptAuthEciesEncryptorFactory&) = delete;
+
   ~FakeCryptAuthEciesEncryptorFactory() override;
 
   FakeCryptAuthEciesEncryptor* instance() { return instance_; }
@@ -50,8 +59,6 @@ class FakeCryptAuthEciesEncryptorFactory
   std::unique_ptr<CryptAuthEciesEncryptor> CreateInstance() override;
 
   FakeCryptAuthEciesEncryptor* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthEciesEncryptorFactory);
 };
 
 }  // namespace device_sync

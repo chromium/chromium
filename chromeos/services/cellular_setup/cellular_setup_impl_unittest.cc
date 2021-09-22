@@ -29,6 +29,10 @@ namespace {
 class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
  public:
   FakeOtaActivatorFactory() = default;
+
+  FakeOtaActivatorFactory(const FakeOtaActivatorFactory&) = delete;
+  FakeOtaActivatorFactory& operator=(const FakeOtaActivatorFactory&) = delete;
+
   ~FakeOtaActivatorFactory() override = default;
 
   std::vector<FakeOtaActivator*>& created_instances() {
@@ -58,8 +62,6 @@ class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
   }
 
   std::vector<FakeOtaActivator*> created_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOtaActivatorFactory);
 };
 
 }  // namespace

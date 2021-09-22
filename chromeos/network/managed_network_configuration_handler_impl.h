@@ -38,6 +38,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       public NetworkProfileObserver,
       public PolicyApplicator::ConfigurationHandler {
  public:
+  ManagedNetworkConfigurationHandlerImpl(
+      const ManagedNetworkConfigurationHandlerImpl&) = delete;
+  ManagedNetworkConfigurationHandlerImpl& operator=(
+      const ManagedNetworkConfigurationHandlerImpl&) = delete;
+
   ~ManagedNetworkConfigurationHandlerImpl() override;
 
   // ManagedNetworkConfigurationHandler overrides
@@ -265,8 +270,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   // For Shill client callbacks
   base::WeakPtrFactory<ManagedNetworkConfigurationHandlerImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedNetworkConfigurationHandlerImpl);
 };
 
 }  // namespace chromeos

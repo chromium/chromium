@@ -25,6 +25,9 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
  public:
   ImageBurnerClientImpl() : proxy_(nullptr) {}
 
+  ImageBurnerClientImpl(const ImageBurnerClientImpl&) = delete;
+  ImageBurnerClientImpl& operator=(const ImageBurnerClientImpl&) = delete;
+
   ~ImageBurnerClientImpl() override = default;
 
   // ImageBurnerClient override.
@@ -131,8 +134,6 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ImageBurnerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageBurnerClientImpl);
 };
 
 }  // namespace

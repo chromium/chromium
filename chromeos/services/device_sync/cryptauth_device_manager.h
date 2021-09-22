@@ -58,6 +58,10 @@ class CryptAuthDeviceManager {
   };
 
   CryptAuthDeviceManager();
+
+  CryptAuthDeviceManager(const CryptAuthDeviceManager&) = delete;
+  CryptAuthDeviceManager& operator=(const CryptAuthDeviceManager&) = delete;
+
   virtual ~CryptAuthDeviceManager();
 
   void AddObserver(Observer* observer);
@@ -114,8 +118,6 @@ class CryptAuthDeviceManager {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceManager);
 };
 
 }  // namespace device_sync

@@ -30,6 +30,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
     : public AssistantManagerService {
  public:
   FakeAssistantManagerServiceImpl();
+
+  FakeAssistantManagerServiceImpl(const FakeAssistantManagerServiceImpl&) =
+      delete;
+  FakeAssistantManagerServiceImpl& operator=(
+      const FakeAssistantManagerServiceImpl&) = delete;
+
   ~FakeAssistantManagerServiceImpl() override;
 
   void FinishStart();
@@ -99,8 +105,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   absl::optional<std::string> access_token_;
   FakeAssistantSettingsImpl assistant_settings_;
   base::ObserverList<StateObserver> state_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAssistantManagerServiceImpl);
 };
 
 }  // namespace assistant

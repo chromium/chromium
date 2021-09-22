@@ -21,6 +21,12 @@ class FakeErrorTolerantBleAdvertisement : public ErrorTolerantBleAdvertisement {
   FakeErrorTolerantBleAdvertisement(
       const DeviceIdPair& device_id_pair,
       base::OnceCallback<void(const DeviceIdPair&)> destructor_callback);
+
+  FakeErrorTolerantBleAdvertisement(const FakeErrorTolerantBleAdvertisement&) =
+      delete;
+  FakeErrorTolerantBleAdvertisement& operator=(
+      const FakeErrorTolerantBleAdvertisement&) = delete;
+
   ~FakeErrorTolerantBleAdvertisement() override;
 
   const base::UnguessableToken& id() const { return id_; }
@@ -36,8 +42,6 @@ class FakeErrorTolerantBleAdvertisement : public ErrorTolerantBleAdvertisement {
   base::OnceCallback<void(const DeviceIdPair&)> destructor_callback_;
   base::OnceClosure stop_callback_;
   bool stopped_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeErrorTolerantBleAdvertisement);
 };
 
 }  // namespace secure_channel

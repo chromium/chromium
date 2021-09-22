@@ -25,6 +25,9 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
  public:
   FakeAudioOutputDelegate() : thread_("assistant") { thread_.Start(); }
 
+  FakeAudioOutputDelegate(const FakeAudioOutputDelegate&) = delete;
+  FakeAudioOutputDelegate& operator=(const FakeAudioOutputDelegate&) = delete;
+
   ~FakeAudioOutputDelegate() override = default;
 
   // assistant_client::AudioOutput::Delegate overrides:
@@ -81,8 +84,6 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
   std::unique_ptr<base::RunLoop> run_loop_;
   int num_bytes_to_fill_ = 0;
   bool end_of_stream_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioOutputDelegate);
 };
 
 class FakeAudioOutputDelegateMojom
@@ -110,12 +111,14 @@ class AssistantAudioDeviceOwnerTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::DEFAULT,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
+  AssistantAudioDeviceOwnerTest(const AssistantAudioDeviceOwnerTest&) = delete;
+  AssistantAudioDeviceOwnerTest& operator=(
+      const AssistantAudioDeviceOwnerTest&) = delete;
+
   ~AssistantAudioDeviceOwnerTest() override { task_env_.RunUntilIdle(); }
 
  private:
   base::test::TaskEnvironment task_env_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAudioDeviceOwnerTest);
 };
 
 TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {

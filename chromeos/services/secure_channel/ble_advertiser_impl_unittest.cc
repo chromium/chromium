@@ -35,6 +35,12 @@ class FakeErrorTolerantBleAdvertisementFactory
       BleSynchronizerBase* ble_synchronizer_base)
       : bluetooth_helper_(bluetooth_helper),
         ble_synchronizer_base_(ble_synchronizer_base) {}
+
+  FakeErrorTolerantBleAdvertisementFactory(
+      const FakeErrorTolerantBleAdvertisementFactory&) = delete;
+  FakeErrorTolerantBleAdvertisementFactory& operator=(
+      const FakeErrorTolerantBleAdvertisementFactory&) = delete;
+
   ~FakeErrorTolerantBleAdvertisementFactory() override = default;
 
   const absl::optional<DeviceIdPair>& last_created_device_id_pair() const {
@@ -89,8 +95,6 @@ class FakeErrorTolerantBleAdvertisementFactory
   base::flat_map<DeviceIdPair, FakeErrorTolerantBleAdvertisement*>
       device_id_pair_to_active_advertisement_map_;
   size_t num_instances_created_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeErrorTolerantBleAdvertisementFactory);
 };
 
 const int64_t kDefaultStartTimestamp = 1337;

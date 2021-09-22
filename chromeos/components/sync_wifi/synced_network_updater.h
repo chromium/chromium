@@ -22,6 +22,9 @@ class NetworkIdentifier;
 // Applies updates to synced networks to the local networking stack.
 class SyncedNetworkUpdater {
  public:
+  SyncedNetworkUpdater(const SyncedNetworkUpdater&) = delete;
+  SyncedNetworkUpdater& operator=(const SyncedNetworkUpdater&) = delete;
+
   virtual ~SyncedNetworkUpdater() = default;
 
   virtual void AddOrUpdateNetwork(
@@ -31,9 +34,6 @@ class SyncedNetworkUpdater {
 
  protected:
   SyncedNetworkUpdater() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncedNetworkUpdater);
 };
 
 }  // namespace sync_wifi

@@ -36,6 +36,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) SmbProviderClient
   using ParseNetBiosPacketCallback =
       base::OnceCallback<void(const std::vector<std::string>&)>;
 
+  SmbProviderClient(const SmbProviderClient&) = delete;
+  SmbProviderClient& operator=(const SmbProviderClient&) = delete;
+
   ~SmbProviderClient() override;
 
   // Factory function, creates a new instance and returns ownership.
@@ -65,9 +68,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) SmbProviderClient
  protected:
   // Create() should be used instead.
   SmbProviderClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmbProviderClient);
 };
 
 }  // namespace chromeos

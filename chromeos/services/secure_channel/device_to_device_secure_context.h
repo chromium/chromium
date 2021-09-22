@@ -34,6 +34,10 @@ class DeviceToDeviceSecureContext : public SecureContext {
       const std::string& responder_auth_message_,
       ProtocolVersion protocol_version);
 
+  DeviceToDeviceSecureContext(const DeviceToDeviceSecureContext&) = delete;
+  DeviceToDeviceSecureContext& operator=(const DeviceToDeviceSecureContext&) =
+      delete;
+
   ~DeviceToDeviceSecureContext() override;
 
   // SecureContext:
@@ -75,8 +79,6 @@ class DeviceToDeviceSecureContext : public SecureContext {
   int last_decode_sequence_number_;
 
   base::WeakPtrFactory<DeviceToDeviceSecureContext> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceSecureContext);
 };
 
 }  // namespace secure_channel

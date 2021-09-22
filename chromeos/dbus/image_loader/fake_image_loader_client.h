@@ -24,6 +24,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_LOADER) FakeImageLoaderClient
     : public ImageLoaderClient {
  public:
   FakeImageLoaderClient();
+
+  FakeImageLoaderClient(const FakeImageLoaderClient&) = delete;
+  FakeImageLoaderClient& operator=(const FakeImageLoaderClient&) = delete;
+
   ~FakeImageLoaderClient() override;
 
   // Sets intended mount path for a component.
@@ -77,8 +81,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_LOADER) FakeImageLoaderClient
 
   // Maps a loaded component to the path from which it was loaded.
   std::map<std::string, base::FilePath> component_install_paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeImageLoaderClient);
 };
 
 }  // namespace chromeos

@@ -14,6 +14,10 @@ namespace multidevice_setup {
 // A delegate class used to install the Messages for Web PWA.
 class AndroidSmsAppHelperDelegate {
  public:
+  AndroidSmsAppHelperDelegate(const AndroidSmsAppHelperDelegate&) = delete;
+  AndroidSmsAppHelperDelegate& operator=(const AndroidSmsAppHelperDelegate&) =
+      delete;
+
   virtual ~AndroidSmsAppHelperDelegate() = default;
 
   // Sets up the Messages for Web PWA. Handles retries and errors internally.
@@ -38,9 +42,6 @@ class AndroidSmsAppHelperDelegate {
 
  protected:
   AndroidSmsAppHelperDelegate() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppHelperDelegate);
 };
 
 }  // namespace multidevice_setup

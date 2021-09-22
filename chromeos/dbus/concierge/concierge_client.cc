@@ -37,6 +37,9 @@ class ConciergeClientImpl : public ConciergeClient {
  public:
   ConciergeClientImpl() = default;
 
+  ConciergeClientImpl(const ConciergeClientImpl&) = delete;
+  ConciergeClientImpl& operator=(const ConciergeClientImpl&) = delete;
+
   ~ConciergeClientImpl() override = default;
 
   void AddObserver(Observer* observer) override {
@@ -460,8 +463,6 @@ class ConciergeClientImpl : public ConciergeClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ConciergeClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConciergeClientImpl);
 };
 
 ConciergeClient::ConciergeClient() {

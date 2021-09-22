@@ -34,6 +34,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
     : public ShillPropertyChangedObserver {
  public:
+  GeolocationHandler(const GeolocationHandler&) = delete;
+  GeolocationHandler& operator=(const GeolocationHandler&) = delete;
+
   ~GeolocationHandler() override;
 
   // This sends a request for geolocation (both wifi AP and cell tower) data.
@@ -91,8 +94,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
 
   // For Shill client callbacks
   base::WeakPtrFactory<GeolocationHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationHandler);
 };
 
 }  // namespace chromeos

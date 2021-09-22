@@ -78,6 +78,10 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
       : window_(window), size_button_(size_button) {
     window_->AddObserver(this);
   }
+
+  SnappingWindowObserver(const SnappingWindowObserver&) = delete;
+  SnappingWindowObserver& operator=(const SnappingWindowObserver&) = delete;
+
   ~SnappingWindowObserver() override {
     if (window_) {
       window_->RemoveObserver(this);
@@ -109,8 +113,6 @@ class FrameSizeButton::SnappingWindowObserver : public aura::WindowObserver {
  private:
   aura::Window* window_;
   FrameSizeButton* size_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnappingWindowObserver);
 };
 
 FrameSizeButton::FrameSizeButton(PressedCallback callback,

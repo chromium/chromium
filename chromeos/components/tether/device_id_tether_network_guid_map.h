@@ -21,6 +21,11 @@ namespace tether {
 class DeviceIdTetherNetworkGuidMap {
  public:
   DeviceIdTetherNetworkGuidMap();
+
+  DeviceIdTetherNetworkGuidMap(const DeviceIdTetherNetworkGuidMap&) = delete;
+  DeviceIdTetherNetworkGuidMap& operator=(const DeviceIdTetherNetworkGuidMap&) =
+      delete;
+
   virtual ~DeviceIdTetherNetworkGuidMap();
 
   // Returns the device ID for a given tether network GUID.
@@ -30,9 +35,6 @@ class DeviceIdTetherNetworkGuidMap {
   // Returns the tether network GUID for a given device ID.
   virtual std::string GetTetherNetworkGuidForDeviceId(
       const std::string& device_id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceIdTetherNetworkGuidMap);
 };
 
 }  // namespace tether

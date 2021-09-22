@@ -26,6 +26,10 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) SuspendUnmountManager
  public:
   // The ownership of these raw pointers still remains with the caller.
   explicit SuspendUnmountManager(DiskMountManager* disk_mount_manager);
+
+  SuspendUnmountManager(const SuspendUnmountManager&) = delete;
+  SuspendUnmountManager& operator=(const SuspendUnmountManager&) = delete;
+
   ~SuspendUnmountManager() override;
 
  private:
@@ -46,8 +50,6 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) SuspendUnmountManager
   base::TimeTicks block_suspend_time_;
 
   base::WeakPtrFactory<SuspendUnmountManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SuspendUnmountManager);
 };
 
 }  // namespace disks

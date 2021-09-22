@@ -88,6 +88,9 @@ class TimeZoneResolver::TimeZoneResolverImpl
  public:
   explicit TimeZoneResolverImpl(const TimeZoneResolver* resolver);
 
+  TimeZoneResolverImpl(const TimeZoneResolverImpl&) = delete;
+  TimeZoneResolverImpl& operator=(const TimeZoneResolverImpl&) = delete;
+
   ~TimeZoneResolverImpl() override;
 
   // This is called once after the object is created.
@@ -147,8 +150,6 @@ class TimeZoneResolver::TimeZoneResolverImpl
 
   base::WeakPtrFactory<TimeZoneResolver::TimeZoneResolverImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneResolverImpl);
 };
 
 namespace {
@@ -158,6 +159,9 @@ class TZRequest {
  public:
   explicit TZRequest(TimeZoneResolver::TimeZoneResolverImpl* resolver)
       : resolver_(resolver) {}
+
+  TZRequest(const TZRequest&) = delete;
+  TZRequest& operator=(const TZRequest&) = delete;
 
   ~TZRequest();
 
@@ -182,8 +186,6 @@ class TZRequest {
   TimeZoneResolver::TimeZoneResolverImpl* const resolver_;
 
   base::WeakPtrFactory<TZRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TZRequest);
 };
 
 TZRequest::~TZRequest() = default;

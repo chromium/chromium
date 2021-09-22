@@ -19,6 +19,9 @@ namespace device_sync {
 // Base DeviceSync implementation.
 class DeviceSyncBase : public mojom::DeviceSync {
  public:
+  DeviceSyncBase(const DeviceSyncBase&) = delete;
+  DeviceSyncBase& operator=(const DeviceSyncBase&) = delete;
+
   ~DeviceSyncBase() override;
 
   // mojom::DeviceSync:
@@ -46,8 +49,6 @@ class DeviceSyncBase : public mojom::DeviceSync {
 
   mojo::RemoteSet<mojom::DeviceSyncObserver> observers_;
   mojo::ReceiverSet<mojom::DeviceSync> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncBase);
 };
 
 }  // namespace device_sync

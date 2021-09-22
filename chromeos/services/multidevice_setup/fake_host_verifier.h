@@ -16,6 +16,10 @@ namespace multidevice_setup {
 class FakeHostVerifier : public HostVerifier {
  public:
   FakeHostVerifier();
+
+  FakeHostVerifier(const FakeHostVerifier&) = delete;
+  FakeHostVerifier& operator=(const FakeHostVerifier&) = delete;
+
   ~FakeHostVerifier() override;
 
   void set_is_host_verified(bool is_host_verified) {
@@ -33,14 +37,16 @@ class FakeHostVerifier : public HostVerifier {
 
   bool is_host_verified_ = false;
   size_t num_verify_now_attempts_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostVerifier);
 };
 
 // Test HostVerifier::Observer implementation.
 class FakeHostVerifierObserver : public HostVerifier::Observer {
  public:
   FakeHostVerifierObserver();
+
+  FakeHostVerifierObserver(const FakeHostVerifierObserver&) = delete;
+  FakeHostVerifierObserver& operator=(const FakeHostVerifierObserver&) = delete;
+
   ~FakeHostVerifierObserver() override;
 
   size_t num_host_verifications() { return num_host_verifications_; }
@@ -50,8 +56,6 @@ class FakeHostVerifierObserver : public HostVerifier::Observer {
   void OnHostVerified() override;
 
   size_t num_host_verifications_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostVerifierObserver);
 };
 
 }  // namespace multidevice_setup

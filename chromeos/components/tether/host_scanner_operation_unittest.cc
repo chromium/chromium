@@ -50,15 +50,16 @@ class FakeHostScanDevicePrioritizer : public HostScanDevicePrioritizer {
 class MockOperationObserver : public HostScannerOperation::Observer {
  public:
   MockOperationObserver() = default;
+
+  MockOperationObserver(const MockOperationObserver&) = delete;
+  MockOperationObserver& operator=(const MockOperationObserver&) = delete;
+
   ~MockOperationObserver() = default;
 
   MOCK_METHOD3(OnTetherAvailabilityResponse,
                void(const std::vector<HostScannerOperation::ScannedDeviceInfo>&,
                     const multidevice::RemoteDeviceRefList&,
                     bool));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOperationObserver);
 };
 
 DeviceStatus CreateFakeDeviceStatus() {

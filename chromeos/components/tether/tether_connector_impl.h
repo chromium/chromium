@@ -59,6 +59,10 @@ class TetherConnectorImpl : public TetherConnector,
       HostConnectionMetricsLogger* host_connection_metrics_logger,
       DisconnectTetheringRequestSender* disconnect_tethering_request_sender,
       WifiHotspotDisconnector* wifi_hotspot_disconnector);
+
+  TetherConnectorImpl(const TetherConnectorImpl&) = delete;
+  TetherConnectorImpl& operator=(const TetherConnectorImpl&) = delete;
+
   ~TetherConnectorImpl() override;
 
   void ConnectToNetwork(const std::string& tether_network_guid,
@@ -120,8 +124,6 @@ class TetherConnectorImpl : public TetherConnector,
   std::unique_ptr<ConnectTetheringOperation> connect_tethering_operation_;
   base::Time connect_to_host_start_time_;
   base::WeakPtrFactory<TetherConnectorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherConnectorImpl);
 };
 
 }  // namespace tether

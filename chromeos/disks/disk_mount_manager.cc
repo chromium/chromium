@@ -78,6 +78,9 @@ class DiskMountManagerImpl : public DiskMountManager,
     cros_disks_client_->AddObserver(this);
   }
 
+  DiskMountManagerImpl(const DiskMountManagerImpl&) = delete;
+  DiskMountManagerImpl& operator=(const DiskMountManagerImpl&) = delete;
+
   ~DiskMountManagerImpl() override { cros_disks_client_->RemoveObserver(this); }
 
   // DiskMountManager override.
@@ -1065,8 +1068,6 @@ class DiskMountManagerImpl : public DiskMountManager,
   AccessModeMap access_modes_;
 
   base::WeakPtrFactory<DiskMountManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiskMountManagerImpl);
 };
 
 }  // namespace

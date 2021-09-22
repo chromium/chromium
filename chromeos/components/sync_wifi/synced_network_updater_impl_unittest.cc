@@ -74,6 +74,10 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
         remote_cros_network_config_.BindNewPipeAndPassReceiver());
   }
 
+  SyncedNetworkUpdaterImplTest(const SyncedNetworkUpdaterImplTest&) = delete;
+  SyncedNetworkUpdaterImplTest& operator=(const SyncedNetworkUpdaterImplTest&) =
+      delete;
+
   ~SyncedNetworkUpdaterImplTest() override { local_test_helper_.reset(); }
 
   void SetUp() override {
@@ -132,8 +136,6 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
 
   NetworkIdentifier fred_network_id_ = GeneratePskNetworkId(kFredSsid);
   NetworkIdentifier mango_network_id_ = GeneratePskNetworkId(kMangoSsid);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedNetworkUpdaterImplTest);
 };
 
 TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_OneNetwork) {

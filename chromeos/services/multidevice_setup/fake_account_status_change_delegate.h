@@ -19,6 +19,12 @@ class FakeAccountStatusChangeDelegate
     : public mojom::AccountStatusChangeDelegate {
  public:
   FakeAccountStatusChangeDelegate();
+
+  FakeAccountStatusChangeDelegate(const FakeAccountStatusChangeDelegate&) =
+      delete;
+  FakeAccountStatusChangeDelegate& operator=(
+      const FakeAccountStatusChangeDelegate&) = delete;
+
   ~FakeAccountStatusChangeDelegate() override;
 
   mojo::PendingRemote<mojom::AccountStatusChangeDelegate> GenerateRemote();
@@ -60,8 +66,6 @@ class FakeAccountStatusChangeDelegate
   size_t num_eligible_for_wifi_sync_events_handled_ = 0u;
 
   mojo::ReceiverSet<mojom::AccountStatusChangeDelegate> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAccountStatusChangeDelegate);
 };
 
 }  // namespace multidevice_setup

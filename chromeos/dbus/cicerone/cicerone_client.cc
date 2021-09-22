@@ -41,6 +41,9 @@ class CiceroneClientImpl : public CiceroneClient {
  public:
   CiceroneClientImpl() = default;
 
+  CiceroneClientImpl(const CiceroneClientImpl&) = delete;
+  CiceroneClientImpl& operator=(const CiceroneClientImpl&) = delete;
+
   ~CiceroneClientImpl() override = default;
 
   void AddObserver(Observer* observer) override {
@@ -1100,8 +1103,6 @@ class CiceroneClientImpl : public CiceroneClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CiceroneClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CiceroneClientImpl);
 };
 
 CiceroneClient::CiceroneClient() {

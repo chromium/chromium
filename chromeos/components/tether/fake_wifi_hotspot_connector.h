@@ -18,6 +18,10 @@ namespace tether {
 class FakeWifiHotspotConnector : public WifiHotspotConnector {
  public:
   FakeWifiHotspotConnector(NetworkStateHandler* network_state_handler);
+
+  FakeWifiHotspotConnector(const FakeWifiHotspotConnector&) = delete;
+  FakeWifiHotspotConnector& operator=(const FakeWifiHotspotConnector&) = delete;
+
   ~FakeWifiHotspotConnector() override;
 
   // Pass an empty string for |wifi_guid| to signify a failed connection.
@@ -43,8 +47,6 @@ class FakeWifiHotspotConnector : public WifiHotspotConnector {
   std::string most_recent_password_;
   std::string most_recent_tether_network_guid_;
   WifiHotspotConnector::WifiConnectionCallback most_recent_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWifiHotspotConnector);
 };
 
 }  // namespace tether

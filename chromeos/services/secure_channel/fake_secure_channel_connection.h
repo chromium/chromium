@@ -19,6 +19,11 @@ namespace secure_channel {
 class FakeSecureChannelConnection : public SecureChannel {
  public:
   FakeSecureChannelConnection(std::unique_ptr<Connection> connection);
+
+  FakeSecureChannelConnection(const FakeSecureChannelConnection&) = delete;
+  FakeSecureChannelConnection& operator=(const FakeSecureChannelConnection&) =
+      delete;
+
   ~FakeSecureChannelConnection() override;
 
   void set_destructor_callback(base::OnceClosure destructor_callback) {
@@ -71,8 +76,6 @@ class FakeSecureChannelConnection : public SecureChannel {
   absl::optional<std::string> channel_binding_data_;
 
   base::OnceClosure destructor_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureChannelConnection);
 };
 
 }  // namespace secure_channel

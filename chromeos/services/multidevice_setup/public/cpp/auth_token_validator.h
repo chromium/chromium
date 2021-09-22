@@ -17,12 +17,13 @@ namespace multidevice_setup {
 class AuthTokenValidator {
  public:
   AuthTokenValidator() = default;
+
+  AuthTokenValidator(const AuthTokenValidator&) = delete;
+  AuthTokenValidator& operator=(const AuthTokenValidator&) = delete;
+
   virtual ~AuthTokenValidator() = default;
 
   virtual bool IsAuthTokenValid(const std::string& auth_token) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthTokenValidator);
 };
 
 }  // namespace multidevice_setup

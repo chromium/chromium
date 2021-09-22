@@ -26,6 +26,10 @@ namespace sync_wifi {
 class FakeTimerFactory : public TimerFactory {
  public:
   FakeTimerFactory();
+
+  FakeTimerFactory(const FakeTimerFactory&) = delete;
+  FakeTimerFactory& operator=(const FakeTimerFactory&) = delete;
+
   ~FakeTimerFactory() override;
 
   // TimerFactory:
@@ -38,8 +42,6 @@ class FakeTimerFactory : public TimerFactory {
 
   base::flat_map<base::UnguessableToken, FakeOneShotTimer*> id_to_timer_map_;
   base::WeakPtrFactory<FakeTimerFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTimerFactory);
 };
 
 }  // namespace sync_wifi

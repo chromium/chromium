@@ -18,6 +18,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) FakeImageBurnerClient
     : public ImageBurnerClient {
  public:
   FakeImageBurnerClient();
+
+  FakeImageBurnerClient(const FakeImageBurnerClient&) = delete;
+  FakeImageBurnerClient& operator=(const FakeImageBurnerClient&) = delete;
+
   ~FakeImageBurnerClient() override;
 
   // ImageBurnerClient overrides
@@ -29,9 +33,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) FakeImageBurnerClient
       BurnFinishedHandler burn_finished_handler,
       const BurnProgressUpdateHandler& burn_progress_update_handler) override;
   void ResetEventHandlers() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeImageBurnerClient);
 };
 
 }  // namespace chromeos

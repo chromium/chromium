@@ -45,6 +45,10 @@ class DeviceState;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
  public:
   explicit NetworkState(const std::string& path);
+
+  NetworkState(const NetworkState&) = delete;
+  NetworkState& operator=(const NetworkState&) = delete;
+
   ~NetworkState() override;
 
   struct VpnProviderInfo {
@@ -385,8 +389,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Set by NetworkStateHandler if Chrome detects a captive portal state.
   // See IsCaptivePortal() for details.
   bool is_chrome_captive_portal_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkState);
 };
 
 }  // namespace chromeos

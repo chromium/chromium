@@ -57,6 +57,9 @@ class ShillServiceClientImpl : public ShillServiceClient {
  public:
   explicit ShillServiceClientImpl(dbus::Bus* bus) : bus_(bus) {}
 
+  ShillServiceClientImpl(const ShillServiceClientImpl&) = delete;
+  ShillServiceClientImpl& operator=(const ShillServiceClientImpl&) = delete;
+
   ~ShillServiceClientImpl() override {
     for (HelperMap::iterator iter = helpers_.begin(); iter != helpers_.end();
          ++iter) {
@@ -302,8 +305,6 @@ class ShillServiceClientImpl : public ShillServiceClient {
   dbus::Bus* bus_;
   HelperMap helpers_;
   base::WeakPtrFactory<ShillServiceClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShillServiceClientImpl);
 };
 
 }  // namespace

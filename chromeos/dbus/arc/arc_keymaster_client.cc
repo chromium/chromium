@@ -26,6 +26,10 @@ void OnVoidDBusMethod(VoidDBusMethodCallback callback,
 class ArcKeymasterClientImpl : public ArcKeymasterClient {
  public:
   ArcKeymasterClientImpl() = default;
+
+  ArcKeymasterClientImpl(const ArcKeymasterClientImpl&) = delete;
+  ArcKeymasterClientImpl& operator=(const ArcKeymasterClientImpl&) = delete;
+
   ~ArcKeymasterClientImpl() override = default;
 
   void BootstrapMojoConnection(base::ScopedFD fd,
@@ -50,8 +54,6 @@ class ArcKeymasterClientImpl : public ArcKeymasterClient {
  private:
   // Owned by the D-Bus implementation, who outlives this class.
   dbus::ObjectProxy* proxy_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKeymasterClientImpl);
 };
 
 }  // namespace

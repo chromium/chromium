@@ -52,6 +52,9 @@ class CryptAuthEnrollmentResult;
 // call. For a new Enrollment attempt, a new object should be created.
 class CryptAuthV2Enroller {
  public:
+  CryptAuthV2Enroller(const CryptAuthV2Enroller&) = delete;
+  CryptAuthV2Enroller& operator=(const CryptAuthV2Enroller&) = delete;
+
   virtual ~CryptAuthV2Enroller();
 
   using EnrollmentAttemptFinishedCallback =
@@ -90,8 +93,6 @@ class CryptAuthV2Enroller {
 
   EnrollmentAttemptFinishedCallback callback_;
   bool was_enroll_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthV2Enroller);
 };
 
 }  // namespace device_sync

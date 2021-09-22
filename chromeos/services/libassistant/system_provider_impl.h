@@ -28,6 +28,10 @@ class SystemProviderImpl : public assistant_client::SystemProvider {
   // platform power manager provider is available.
   explicit SystemProviderImpl(
       std::unique_ptr<PowerManagerProviderImpl> power_manager_provider);
+
+  SystemProviderImpl(const SystemProviderImpl&) = delete;
+  SystemProviderImpl& operator=(const SystemProviderImpl&) = delete;
+
   ~SystemProviderImpl() override;
 
   void Initialize(
@@ -51,8 +55,6 @@ class SystemProviderImpl : public assistant_client::SystemProvider {
 
   mojo::Remote<device::mojom::BatteryMonitor> battery_monitor_;
   device::mojom::BatteryStatusPtr current_battery_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemProviderImpl);
 };
 
 }  // namespace libassistant

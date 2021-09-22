@@ -51,6 +51,10 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       NetworkConnectionHandler* network_connection_handler,
       NetworkCertificateHandler* network_certificate_handler,
       NetworkProfileHandler* network_profile_handler);
+
+  CrosNetworkConfig(const CrosNetworkConfig&) = delete;
+  CrosNetworkConfig& operator=(const CrosNetworkConfig&) = delete;
+
   ~CrosNetworkConfig() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::CrosNetworkConfig> receiver);
@@ -213,8 +217,6 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   std::vector<mojom::VpnProviderPtr> vpn_providers_;
 
   base::WeakPtrFactory<CrosNetworkConfig> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrosNetworkConfig);
 };
 
 }  // namespace network_config

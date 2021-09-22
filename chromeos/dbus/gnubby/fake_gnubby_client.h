@@ -17,6 +17,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) FakeGnubbyClient
     : public GnubbyClient {
  public:
   FakeGnubbyClient();
+
+  FakeGnubbyClient(const FakeGnubbyClient&) = delete;
+  FakeGnubbyClient& operator=(const FakeGnubbyClient&) = delete;
+
   ~FakeGnubbyClient() override;
 
   // GnubbyClient overrides
@@ -32,8 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) FakeGnubbyClient
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<FakeGnubbyClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGnubbyClient);
 };
 
 }  // namespace chromeos

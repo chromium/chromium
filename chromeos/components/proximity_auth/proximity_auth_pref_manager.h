@@ -17,6 +17,10 @@ namespace proximity_auth {
 class ProximityAuthPrefManager {
  public:
   ProximityAuthPrefManager() {}
+
+  ProximityAuthPrefManager(const ProximityAuthPrefManager&) = delete;
+  ProximityAuthPrefManager& operator=(const ProximityAuthPrefManager&) = delete;
+
   virtual ~ProximityAuthPrefManager() {}
 
   // Returns true if EasyUnlock is allowed. Note: there is no corresponding
@@ -60,9 +64,6 @@ class ProximityAuthPrefManager {
   // message on the login screen has been shown.
   virtual void SetHasShownLoginDisabledMessage(bool has_shown) = 0;
   virtual bool HasShownLoginDisabledMessage() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthPrefManager);
 };
 
 }  // namespace proximity_auth

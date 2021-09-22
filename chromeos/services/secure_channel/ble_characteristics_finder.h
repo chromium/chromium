@@ -64,6 +64,11 @@ class BluetoothLowEnergyCharacteristicsFinder
       scoped_refptr<base::TaskRunner> task_runner =
           base::ThreadTaskRunnerHandle::Get());
 
+  BluetoothLowEnergyCharacteristicsFinder(
+      const BluetoothLowEnergyCharacteristicsFinder&) = delete;
+  BluetoothLowEnergyCharacteristicsFinder& operator=(
+      const BluetoothLowEnergyCharacteristicsFinder&) = delete;
+
   ~BluetoothLowEnergyCharacteristicsFinder() override;
 
  protected:
@@ -140,8 +145,6 @@ class BluetoothLowEnergyCharacteristicsFinder
 
   base::WeakPtrFactory<BluetoothLowEnergyCharacteristicsFinder>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyCharacteristicsFinder);
 };
 
 }  // namespace secure_channel

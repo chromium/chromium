@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
       public KerberosClient::TestInterface {
  public:
   FakeKerberosClient();
+
+  FakeKerberosClient(const FakeKerberosClient&) = delete;
+  FakeKerberosClient& operator=(const FakeKerberosClient&) = delete;
+
   ~FakeKerberosClient() override;
 
   // KerberosClient:
@@ -118,8 +122,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
 
   KerberosFilesChangedCallback kerberos_files_changed_callback_;
   KerberosTicketExpiringCallback kerberos_ticket_expiring_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeKerberosClient);
 };
 
 }  // namespace chromeos

@@ -26,6 +26,10 @@ class AudioStreamHandler
       base::OnceCallback<void(const assistant_client::OutputStreamFormat&)>;
 
   AudioStreamHandler();
+
+  AudioStreamHandler(const AudioStreamHandler&) = delete;
+  AudioStreamHandler& operator=(const AudioStreamHandler&) = delete;
+
   ~AudioStreamHandler() override;
 
   void StartAudioDecoder(
@@ -98,8 +102,6 @@ class AudioStreamHandler
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AudioStreamHandler> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioStreamHandler);
 };
 
 }  // namespace libassistant

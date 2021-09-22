@@ -45,12 +45,15 @@ class TestableRemoteDeviceLifeCycleImpl : public RemoteDeviceLifeCycleImpl {
                                   secure_channel_client),
         remote_device_(remote_device) {}
 
+  TestableRemoteDeviceLifeCycleImpl(const TestableRemoteDeviceLifeCycleImpl&) =
+      delete;
+  TestableRemoteDeviceLifeCycleImpl& operator=(
+      const TestableRemoteDeviceLifeCycleImpl&) = delete;
+
   ~TestableRemoteDeviceLifeCycleImpl() override {}
 
  private:
   const chromeos::multidevice::RemoteDeviceRef remote_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestableRemoteDeviceLifeCycleImpl);
 };
 
 }  // namespace

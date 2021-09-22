@@ -101,17 +101,24 @@ class FakeLibassistantServiceHost : public LibassistantServiceHost {
 class StateObserverMock : public AssistantManagerService::StateObserver {
  public:
   StateObserverMock() = default;
+
+  StateObserverMock(const StateObserverMock&) = delete;
+  StateObserverMock& operator=(const StateObserverMock&) = delete;
+
   ~StateObserverMock() override = default;
 
   MOCK_METHOD(void, OnStateChanged, (AssistantManagerService::State new_state));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StateObserverMock);
 };
 
 class AssistantManagerServiceImplTest : public testing::Test {
  public:
   AssistantManagerServiceImplTest() = default;
+
+  AssistantManagerServiceImplTest(const AssistantManagerServiceImplTest&) =
+      delete;
+  AssistantManagerServiceImplTest& operator=(
+      const AssistantManagerServiceImplTest&) = delete;
+
   ~AssistantManagerServiceImplTest() override = default;
 
   void SetUp() override {
@@ -247,8 +254,6 @@ class AssistantManagerServiceImplTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   std::unique_ptr<AssistantManagerServiceImpl> assistant_manager_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantManagerServiceImplTest);
 };
 
 class SpeakerIdEnrollmentControllerMock

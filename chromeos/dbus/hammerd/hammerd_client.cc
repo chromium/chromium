@@ -27,6 +27,10 @@ HammerdClient* g_instance = nullptr;
 class HammerdClientImpl : public HammerdClient {
  public:
   HammerdClientImpl() = default;
+
+  HammerdClientImpl(const HammerdClientImpl&) = delete;
+  HammerdClientImpl& operator=(const HammerdClientImpl&) = delete;
+
   ~HammerdClientImpl() override = default;
 
   // HammerdClient:
@@ -153,8 +157,6 @@ class HammerdClientImpl : public HammerdClient {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<HammerdClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HammerdClientImpl);
 };
 
 }  // namespace

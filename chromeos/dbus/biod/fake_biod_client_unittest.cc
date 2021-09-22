@@ -35,6 +35,10 @@ class FakeBiodClientTest : public testing::Test {
   FakeBiodClientTest()
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_handle_(task_runner_) {}
+
+  FakeBiodClientTest(const FakeBiodClientTest&) = delete;
+  FakeBiodClientTest& operator=(const FakeBiodClientTest&) = delete;
+
   ~FakeBiodClientTest() override = default;
 
   // Returns the stored records for |user_id|. Verified to work in
@@ -105,9 +109,6 @@ class FakeBiodClientTest : public testing::Test {
   // This number is incremented each time GenerateTestFingerprint is called to
   // ensure each fingerprint is unique.
   int num_test_fingerprints_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeBiodClientTest);
 };
 
 TEST_F(FakeBiodClientTest, TestEnrollSessionWorkflow) {

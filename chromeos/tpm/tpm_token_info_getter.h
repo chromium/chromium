@@ -44,6 +44,9 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
       CryptohomePkcs11Client* cryptohome_pkcs11_client,
       const scoped_refptr<base::TaskRunner>& delayed_task_runner);
 
+  TPMTokenInfoGetter(const TPMTokenInfoGetter&) = delete;
+  TPMTokenInfoGetter& operator=(const TPMTokenInfoGetter&) = delete;
+
   ~TPMTokenInfoGetter();
 
   // Starts getting TPM token info. Should be called at most once.
@@ -117,8 +120,6 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
   CryptohomePkcs11Client* cryptohome_pkcs11_client_;
 
   base::WeakPtrFactory<TPMTokenInfoGetter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TPMTokenInfoGetter);
 };
 
 }  // namespace chromeos

@@ -21,6 +21,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
  public:
   class Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Called for any Observers whenever the certificates are loaded and any
@@ -29,9 +32,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
 
    protected:
     Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   struct Certificate {

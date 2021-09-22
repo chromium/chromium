@@ -48,6 +48,9 @@ class TestConnectionAttempt
                                      ConnectionMedium::kBluetoothLowEnergy,
                                      ConnectionRole::kListenerRole)) {}
 
+  TestConnectionAttempt(const TestConnectionAttempt&) = delete;
+  TestConnectionAttempt& operator=(const TestConnectionAttempt&) = delete;
+
   ~TestConnectionAttempt() override = default;
 
   FakeConnectToDeviceOperation<BleInitiatorFailureType>* fake_operation() {
@@ -76,8 +79,6 @@ class TestConnectionAttempt
 
   FakeConnectToDeviceOperation<BleInitiatorFailureType>* fake_operation_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectionAttempt);
 };
 
 }  // namespace

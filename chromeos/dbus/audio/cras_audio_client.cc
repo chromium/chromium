@@ -129,6 +129,9 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  CrasAudioClientImpl(const CrasAudioClientImpl&) = delete;
+  CrasAudioClientImpl& operator=(const CrasAudioClientImpl&) = delete;
+
   ~CrasAudioClientImpl() override = default;
 
   // CrasAudioClient overrides:
@@ -1017,8 +1020,6 @@ class CrasAudioClientImpl : public CrasAudioClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CrasAudioClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioClientImpl);
 };
 
 }  // namespace

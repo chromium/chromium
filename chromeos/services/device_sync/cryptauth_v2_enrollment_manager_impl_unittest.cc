@@ -73,6 +73,11 @@ class FakeCryptAuthV2EnrollerFactory : public CryptAuthV2EnrollerImpl::Factory {
       : expected_key_registry_(expected_key_registry),
         expected_client_factory_(expected_client_factory) {}
 
+  FakeCryptAuthV2EnrollerFactory(const FakeCryptAuthV2EnrollerFactory&) =
+      delete;
+  FakeCryptAuthV2EnrollerFactory& operator=(
+      const FakeCryptAuthV2EnrollerFactory&) = delete;
+
   ~FakeCryptAuthV2EnrollerFactory() override = default;
 
   const std::vector<FakeCryptAuthV2Enroller*>& created_instances() {
@@ -99,8 +104,6 @@ class FakeCryptAuthV2EnrollerFactory : public CryptAuthV2EnrollerImpl::Factory {
   const CryptAuthClientFactory* expected_client_factory_;
 
   std::vector<FakeCryptAuthV2Enroller*> created_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthV2EnrollerFactory);
 };
 
 }  // namespace

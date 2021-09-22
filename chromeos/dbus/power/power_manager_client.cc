@@ -171,6 +171,9 @@ class PowerManagerClientImpl : public PowerManagerClient {
   PowerManagerClientImpl()
       : origin_thread_id_(base::PlatformThread::CurrentId()) {}
 
+  PowerManagerClientImpl(const PowerManagerClientImpl&) = delete;
+  PowerManagerClientImpl& operator=(const PowerManagerClientImpl&) = delete;
+
   ~PowerManagerClientImpl() override {
     // Here we should unregister suspend notifications from powerd,
     // however:
@@ -1385,8 +1388,6 @@ class PowerManagerClientImpl : public PowerManagerClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<PowerManagerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerClientImpl);
 };
 
 PowerManagerClient::PowerManagerClient() {

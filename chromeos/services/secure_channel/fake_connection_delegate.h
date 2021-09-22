@@ -20,6 +20,10 @@ namespace secure_channel {
 class FakeConnectionDelegate : public mojom::ConnectionDelegate {
  public:
   FakeConnectionDelegate();
+
+  FakeConnectionDelegate(const FakeConnectionDelegate&) = delete;
+  FakeConnectionDelegate& operator=(const FakeConnectionDelegate&) = delete;
+
   ~FakeConnectionDelegate() override;
 
   mojo::PendingRemote<mojom::ConnectionDelegate> GenerateRemote();
@@ -59,8 +63,6 @@ class FakeConnectionDelegate : public mojom::ConnectionDelegate {
       connection_attempt_failure_reason_;
   mojo::Remote<mojom::Channel> channel_;
   mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionDelegate);
 };
 
 }  // namespace secure_channel

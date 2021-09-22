@@ -44,6 +44,11 @@ class FakeBleInitiatorConnectionAttemptFactory
       FakeBleConnectionManager* expected_ble_connection_manager)
       : expected_ble_connection_manager_(expected_ble_connection_manager) {}
 
+  FakeBleInitiatorConnectionAttemptFactory(
+      const FakeBleInitiatorConnectionAttemptFactory&) = delete;
+  FakeBleInitiatorConnectionAttemptFactory& operator=(
+      const FakeBleInitiatorConnectionAttemptFactory&) = delete;
+
   ~FakeBleInitiatorConnectionAttemptFactory() override = default;
 
   void set_expected_connection_attempt_details(
@@ -110,8 +115,6 @@ class FakeBleInitiatorConnectionAttemptFactory
   size_t num_instances_deleted_ = 0u;
   FakeConnectionAttempt<BleInitiatorFailureType>* last_created_instance_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleInitiatorConnectionAttemptFactory);
 };
 
 class FakeBleListenerConnectionAttemptFactory
@@ -120,6 +123,11 @@ class FakeBleListenerConnectionAttemptFactory
   FakeBleListenerConnectionAttemptFactory(
       FakeBleConnectionManager* expected_ble_connection_manager)
       : expected_ble_connection_manager_(expected_ble_connection_manager) {}
+
+  FakeBleListenerConnectionAttemptFactory(
+      const FakeBleListenerConnectionAttemptFactory&) = delete;
+  FakeBleListenerConnectionAttemptFactory& operator=(
+      const FakeBleListenerConnectionAttemptFactory&) = delete;
 
   ~FakeBleListenerConnectionAttemptFactory() override = default;
 
@@ -187,8 +195,6 @@ class FakeBleListenerConnectionAttemptFactory
   size_t num_instances_deleted_ = 0u;
   FakeConnectionAttempt<BleListenerFailureType>* last_created_instance_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleListenerConnectionAttemptFactory);
 };
 
 class FakeNearbyInitiatorConnectionAttemptFactory
@@ -198,6 +204,11 @@ class FakeNearbyInitiatorConnectionAttemptFactory
       FakeNearbyConnectionManager* expected_nearby_connection_manager)
       : expected_nearby_connection_manager_(
             expected_nearby_connection_manager) {}
+
+  FakeNearbyInitiatorConnectionAttemptFactory(
+      const FakeNearbyInitiatorConnectionAttemptFactory&) = delete;
+  FakeNearbyInitiatorConnectionAttemptFactory& operator=(
+      const FakeNearbyInitiatorConnectionAttemptFactory&) = delete;
 
   ~FakeNearbyInitiatorConnectionAttemptFactory() override = default;
 
@@ -265,14 +276,18 @@ class FakeNearbyInitiatorConnectionAttemptFactory
   size_t num_instances_deleted_ = 0u;
   FakeConnectionAttempt<NearbyInitiatorFailureType>* last_created_instance_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNearbyInitiatorConnectionAttemptFactory);
 };
 
 class FakePendingBleInitiatorConnectionRequestFactory
     : public PendingBleInitiatorConnectionRequest::Factory {
  public:
   FakePendingBleInitiatorConnectionRequestFactory() = default;
+
+  FakePendingBleInitiatorConnectionRequestFactory(
+      const FakePendingBleInitiatorConnectionRequestFactory&) = delete;
+  FakePendingBleInitiatorConnectionRequestFactory& operator=(
+      const FakePendingBleInitiatorConnectionRequestFactory&) = delete;
+
   ~FakePendingBleInitiatorConnectionRequestFactory() override = default;
 
   void SetExpectationsForNextCall(
@@ -312,14 +327,18 @@ class FakePendingBleInitiatorConnectionRequestFactory
 
   FakePendingConnectionRequest<BleInitiatorFailureType>*
       last_created_instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingBleInitiatorConnectionRequestFactory);
 };
 
 class FakePendingBleListenerConnectionRequestFactory
     : public PendingBleListenerConnectionRequest::Factory {
  public:
   FakePendingBleListenerConnectionRequestFactory() = default;
+
+  FakePendingBleListenerConnectionRequestFactory(
+      const FakePendingBleListenerConnectionRequestFactory&) = delete;
+  FakePendingBleListenerConnectionRequestFactory& operator=(
+      const FakePendingBleListenerConnectionRequestFactory&) = delete;
+
   ~FakePendingBleListenerConnectionRequestFactory() override = default;
 
   void SetExpectationsForNextCall(
@@ -359,14 +378,18 @@ class FakePendingBleListenerConnectionRequestFactory
 
   FakePendingConnectionRequest<BleListenerFailureType>* last_created_instance_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingBleListenerConnectionRequestFactory);
 };
 
 class FakePendingNearbyInitiatorConnectionRequestFactory
     : public PendingNearbyInitiatorConnectionRequest::Factory {
  public:
   FakePendingNearbyInitiatorConnectionRequestFactory() = default;
+
+  FakePendingNearbyInitiatorConnectionRequestFactory(
+      const FakePendingNearbyInitiatorConnectionRequestFactory&) = delete;
+  FakePendingNearbyInitiatorConnectionRequestFactory& operator=(
+      const FakePendingNearbyInitiatorConnectionRequestFactory&) = delete;
+
   ~FakePendingNearbyInitiatorConnectionRequestFactory() override = default;
 
   void SetExpectationsForNextCall(
@@ -406,8 +429,6 @@ class FakePendingNearbyInitiatorConnectionRequestFactory
 
   FakePendingConnectionRequest<NearbyInitiatorFailureType>*
       last_created_instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingNearbyInitiatorConnectionRequestFactory);
 };
 
 std::vector<std::unique_ptr<ClientConnectionParameters>>

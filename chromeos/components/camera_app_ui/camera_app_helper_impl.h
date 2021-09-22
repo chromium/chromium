@@ -43,6 +43,10 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
                       CameraResultCallback camera_result_callback,
                       SendBroadcastCallback send_broadcast_callback,
                       aura::Window* window);
+
+  CameraAppHelperImpl(const CameraAppHelperImpl&) = delete;
+  CameraAppHelperImpl& operator=(const CameraAppHelperImpl&) = delete;
+
   ~CameraAppHelperImpl() override;
   void Bind(mojo::PendingReceiver<mojom::CameraAppHelper> receiver);
 
@@ -139,8 +143,6 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   // Client to connect to document detection service.
   std::unique_ptr<chromeos::DocumentScannerServiceClient>
       document_scanner_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraAppHelperImpl);
 };
 
 }  // namespace chromeos_camera

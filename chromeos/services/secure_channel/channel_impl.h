@@ -36,6 +36,10 @@ class ChannelImpl : public mojom::Channel {
   };
 
   explicit ChannelImpl(Delegate* delegate);
+
+  ChannelImpl(const ChannelImpl&) = delete;
+  ChannelImpl& operator=(const ChannelImpl&) = delete;
+
   ~ChannelImpl() override;
 
   // Generates a mojo::PendingRemote<Channel> for this instance; can only be
@@ -63,8 +67,6 @@ class ChannelImpl : public mojom::Channel {
   mojo::Receiver<mojom::Channel> receiver_{this};
 
   base::WeakPtrFactory<ChannelImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelImpl);
 };
 
 }  // namespace secure_channel

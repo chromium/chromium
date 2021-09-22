@@ -29,6 +29,9 @@ class AuthenticatedChannel {
                                    const std::string& payload) = 0;
   };
 
+  AuthenticatedChannel(const AuthenticatedChannel&) = delete;
+  AuthenticatedChannel& operator=(const AuthenticatedChannel&) = delete;
+
   virtual ~AuthenticatedChannel();
 
   virtual void GetConnectionMetadata(
@@ -74,8 +77,6 @@ class AuthenticatedChannel {
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
   bool is_disconnected_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatedChannel);
 };
 
 }  // namespace secure_channel

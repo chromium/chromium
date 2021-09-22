@@ -63,6 +63,10 @@ RemoteStatusUpdate kRemoteScreenlockStateUnknown = {
 class MockMessenger : public Messenger {
  public:
   MockMessenger() {}
+
+  MockMessenger(const MockMessenger&) = delete;
+  MockMessenger& operator=(const MockMessenger&) = delete;
+
   ~MockMessenger() override {}
 
   MOCK_METHOD1(AddObserver, void(MessengerObserver* observer));
@@ -72,9 +76,6 @@ class MockMessenger : public Messenger {
   MOCK_METHOD0(RequestUnlock, void());
   MOCK_CONST_METHOD0(GetConnection, chromeos::secure_channel::Connection*());
   MOCK_CONST_METHOD0(GetChannel, chromeos::secure_channel::ClientChannel*());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMessenger);
 };
 
 class MockProximityMonitor : public ProximityMonitor {
@@ -83,6 +84,10 @@ class MockProximityMonitor : public ProximityMonitor {
       : destroy_callback_(std::move(destroy_callback)), started_(false) {
     ON_CALL(*this, IsUnlockAllowed()).WillByDefault(Return(true));
   }
+
+  MockProximityMonitor(const MockProximityMonitor&) = delete;
+  MockProximityMonitor& operator=(const MockProximityMonitor&) = delete;
+
   ~MockProximityMonitor() override { std::move(destroy_callback_).Run(); }
 
   void Start() override { started_ = true; }
@@ -95,8 +100,6 @@ class MockProximityMonitor : public ProximityMonitor {
  private:
   base::OnceClosure destroy_callback_;
   bool started_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockProximityMonitor);
 };
 
 class TestUnlockManager : public UnlockManagerImpl {
@@ -104,6 +107,10 @@ class TestUnlockManager : public UnlockManagerImpl {
   TestUnlockManager(ProximityAuthSystem::ScreenlockType screenlock_type,
                     ProximityAuthClient* proximity_auth_client)
       : UnlockManagerImpl(screenlock_type, proximity_auth_client) {}
+
+  TestUnlockManager(const TestUnlockManager&) = delete;
+  TestUnlockManager& operator=(const TestUnlockManager&) = delete;
+
   ~TestUnlockManager() override {}
 
   using MessengerObserver::OnDecryptResponse;
@@ -134,8 +141,6 @@ class TestUnlockManager : public UnlockManagerImpl {
   // Owned by the super class.
   MockProximityMonitor* proximity_monitor_ = nullptr;
   bool proximity_monitor_destroyed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUnlockManager);
 };
 
 // Creates a mock Bluetooth adapter and sets it as the global adapter for

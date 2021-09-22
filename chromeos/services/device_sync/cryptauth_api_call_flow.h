@@ -35,6 +35,10 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
   typedef base::OnceCallback<void(NetworkRequestError error)> ErrorCallback;
 
   CryptAuthApiCallFlow();
+
+  CryptAuthApiCallFlow(const CryptAuthApiCallFlow&) = delete;
+  CryptAuthApiCallFlow& operator=(const CryptAuthApiCallFlow&) = delete;
+
   ~CryptAuthApiCallFlow() override;
 
   // Starts the API POST request call.
@@ -119,8 +123,6 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
 
   std::unique_ptr<net::PartialNetworkTrafficAnnotationTag>
       partial_network_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthApiCallFlow);
 };
 
 }  // namespace device_sync

@@ -75,6 +75,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       const absl::optional<std::string>& shill_error_name = absl::nullopt);
 
   CellularMetricsLogger();
+
+  CellularMetricsLogger(const CellularMetricsLogger&) = delete;
+  CellularMetricsLogger& operator=(const CellularMetricsLogger&) = delete;
+
   ~CellularMetricsLogger() override;
 
   void Init(NetworkStateHandler* network_state_handler,
@@ -382,8 +386,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // Tracks ESim feature usage for the Standard Feature Usage Logging Framework.
   std::unique_ptr<ESimFeatureUsageMetrics> esim_feature_usage_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(CellularMetricsLogger);
 };
 
 }  // namespace chromeos

@@ -30,6 +30,10 @@ class FakePendingConnectionRequest
                                                     connection_priority),
         id_(base::UnguessableToken::Create()) {}
 
+  FakePendingConnectionRequest(const FakePendingConnectionRequest&) = delete;
+  FakePendingConnectionRequest& operator=(const FakePendingConnectionRequest&) =
+      delete;
+
   ~FakePendingConnectionRequest() override = default;
 
   const std::vector<FailureDetailType>& handled_failure_details() const {
@@ -65,8 +69,6 @@ class FakePendingConnectionRequest
   std::vector<FailureDetailType> handled_failure_details_;
 
   std::unique_ptr<ClientConnectionParameters> client_data_for_extraction_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePendingConnectionRequest);
 };
 
 }  // namespace secure_channel

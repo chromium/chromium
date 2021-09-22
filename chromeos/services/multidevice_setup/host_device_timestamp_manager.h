@@ -17,6 +17,10 @@ namespace multidevice_setup {
 // on this device.
 class HostDeviceTimestampManager {
  public:
+  HostDeviceTimestampManager(const HostDeviceTimestampManager&) = delete;
+  HostDeviceTimestampManager& operator=(const HostDeviceTimestampManager&) =
+      delete;
+
   virtual ~HostDeviceTimestampManager() = default;
 
   // Returns true when there is a host set (not necessarily verified) for the
@@ -37,9 +41,6 @@ class HostDeviceTimestampManager {
 
  protected:
   HostDeviceTimestampManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostDeviceTimestampManager);
 };
 
 }  // namespace multidevice_setup

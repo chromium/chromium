@@ -57,6 +57,9 @@ class ShillClientHelper {
 
   explicit ShillClientHelper(dbus::ObjectProxy* proxy);
 
+  ShillClientHelper(const ShillClientHelper&) = delete;
+  ShillClientHelper& operator=(const ShillClientHelper&) = delete;
+
   virtual ~ShillClientHelper();
 
   // Sets |released_callback_|. This is optional and should only be called at
@@ -160,8 +163,6 @@ class ShillClientHelper {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ShillClientHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShillClientHelper);
 };
 
 }  // namespace chromeos

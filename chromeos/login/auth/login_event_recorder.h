@@ -30,6 +30,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginEventRecorder {
     virtual void RecordAuthenticationFailure() = 0;
   };
   LoginEventRecorder();
+
+  LoginEventRecorder(const LoginEventRecorder&) = delete;
+  LoginEventRecorder& operator=(const LoginEventRecorder&) = delete;
+
   virtual ~LoginEventRecorder();
 
   static LoginEventRecorder* Get();
@@ -50,8 +54,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginEventRecorder {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginEventRecorder);
 };
 
 }  // namespace chromeos

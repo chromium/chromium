@@ -32,6 +32,9 @@ class HostVerifier {
     virtual void OnHostVerified() = 0;
   };
 
+  HostVerifier(const HostVerifier&) = delete;
+  HostVerifier& operator=(const HostVerifier&) = delete;
+
   virtual ~HostVerifier();
 
   // Returns whether verification for the current MultiDevice host device has
@@ -55,8 +58,6 @@ class HostVerifier {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostVerifier);
 };
 
 }  // namespace multidevice_setup

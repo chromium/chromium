@@ -22,6 +22,12 @@ namespace device_sync {
 class FakeCryptAuthEnrollmentManager : public CryptAuthEnrollmentManager {
  public:
   FakeCryptAuthEnrollmentManager();
+
+  FakeCryptAuthEnrollmentManager(const FakeCryptAuthEnrollmentManager&) =
+      delete;
+  FakeCryptAuthEnrollmentManager& operator=(
+      const FakeCryptAuthEnrollmentManager&) = delete;
+
   ~FakeCryptAuthEnrollmentManager() override;
 
   void set_last_enrollment_time(base::Time last_enrollment_time) {
@@ -92,8 +98,6 @@ class FakeCryptAuthEnrollmentManager : public CryptAuthEnrollmentManager {
   base::TimeDelta time_to_next_attempt_;
   std::string user_public_key_;
   std::string user_private_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthEnrollmentManager);
 };
 
 }  // namespace device_sync

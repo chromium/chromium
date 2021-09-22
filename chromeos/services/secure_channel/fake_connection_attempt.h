@@ -36,6 +36,9 @@ class FakeConnectionAttempt : public ConnectionAttempt<FailureDetailType> {
                                              connection_attempt_details),
         destructor_callback_(std::move(destructor_callback)) {}
 
+  FakeConnectionAttempt(const FakeConnectionAttempt&) = delete;
+  FakeConnectionAttempt& operator=(const FakeConnectionAttempt&) = delete;
+
   ~FakeConnectionAttempt() override {
     if (destructor_callback_)
       std::move(destructor_callback_).Run();
@@ -86,8 +89,6 @@ class FakeConnectionAttempt : public ConnectionAttempt<FailureDetailType> {
 
   std::vector<std::unique_ptr<ClientConnectionParameters>>
       client_data_for_extraction_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionAttempt);
 };
 
 }  // namespace secure_channel

@@ -16,6 +16,10 @@ namespace tether {
 class CrashRecoveryManager {
  public:
   CrashRecoveryManager() {}
+
+  CrashRecoveryManager(const CrashRecoveryManager&) = delete;
+  CrashRecoveryManager& operator=(const CrashRecoveryManager&) = delete;
+
   virtual ~CrashRecoveryManager() {}
 
   // Restores state which was lost by a browser crash. If a crash did not occur
@@ -27,9 +31,6 @@ class CrashRecoveryManager {
   // TetherComponent.
   virtual void RestorePreCrashStateIfNecessary(
       base::OnceClosure on_restoration_finished) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashRecoveryManager);
 };
 
 }  // namespace tether

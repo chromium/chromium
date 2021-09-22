@@ -27,6 +27,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
     : public NetworkDeviceHandler,
       public NetworkStateHandlerObserver {
  public:
+  NetworkDeviceHandlerImpl(const NetworkDeviceHandlerImpl&) = delete;
+  NetworkDeviceHandlerImpl& operator=(const NetworkDeviceHandlerImpl&) = delete;
+
   ~NetworkDeviceHandlerImpl() override;
 
   // NetworkDeviceHandler overrides
@@ -186,8 +189,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   std::unordered_set<std::string> mac_address_change_not_supported_;
 
   base::WeakPtrFactory<NetworkDeviceHandlerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkDeviceHandlerImpl);
 };
 
 }  // namespace chromeos

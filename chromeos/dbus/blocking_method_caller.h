@@ -28,6 +28,10 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS) BlockingMethodCaller {
  public:
   BlockingMethodCaller(dbus::Bus* bus, dbus::ObjectProxy* proxy);
+
+  BlockingMethodCaller(const BlockingMethodCaller&) = delete;
+  BlockingMethodCaller& operator=(const BlockingMethodCaller&) = delete;
+
   virtual ~BlockingMethodCaller();
 
   // Calls the method and blocks until it returns.
@@ -44,8 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) BlockingMethodCaller {
   dbus::Bus* bus_;
   dbus::ObjectProxy* proxy_;
   base::WaitableEvent on_blocking_method_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingMethodCaller);
 };
 
 }  // namespace chromeos

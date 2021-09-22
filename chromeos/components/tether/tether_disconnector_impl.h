@@ -33,6 +33,10 @@ class TetherDisconnectorImpl : public TetherDisconnector {
       TetherConnector* tether_connector,
       DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map,
       TetherSessionCompletionLogger* tether_session_completion_logger);
+
+  TetherDisconnectorImpl(const TetherDisconnectorImpl&) = delete;
+  TetherDisconnectorImpl& operator=(const TetherDisconnectorImpl&) = delete;
+
   ~TetherDisconnectorImpl() override;
 
   void DisconnectFromNetwork(
@@ -58,8 +62,6 @@ class TetherDisconnectorImpl : public TetherDisconnector {
   TetherSessionCompletionLogger* tether_session_completion_logger_;
 
   base::WeakPtrFactory<TetherDisconnectorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherDisconnectorImpl);
 };
 
 }  // namespace tether

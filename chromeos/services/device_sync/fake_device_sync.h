@@ -18,6 +18,10 @@ namespace device_sync {
 class FakeDeviceSync : public DeviceSyncBase {
  public:
   FakeDeviceSync();
+
+  FakeDeviceSync(const FakeDeviceSync&) = delete;
+  FakeDeviceSync& operator=(const FakeDeviceSync&) = delete;
+
   ~FakeDeviceSync() override;
 
   using DeviceSyncBase::NotifyOnEnrollmentFinished;
@@ -95,8 +99,6 @@ class FakeDeviceSync : public DeviceSyncBase {
   std::queue<GetDevicesActivityStatusCallback>
       get_devices_activity_status_callback_queue_;
   std::queue<GetDebugInfoCallback> get_debug_info_callback_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceSync);
 };
 
 }  // namespace device_sync

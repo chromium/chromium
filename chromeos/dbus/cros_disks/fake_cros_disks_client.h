@@ -27,6 +27,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) FakeCrosDisksClient
       base::RepeatingCallback<base::FilePath(const std::string&,
                                              const std::vector<std::string>&)>;
   FakeCrosDisksClient();
+
+  FakeCrosDisksClient(const FakeCrosDisksClient&) = delete;
+  FakeCrosDisksClient& operator=(const FakeCrosDisksClient&) = delete;
+
   ~FakeCrosDisksClient() override;
 
   // CrosDisksClient overrides
@@ -195,8 +199,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) FakeCrosDisksClient
   bool block_mount_ = false;
 
   base::WeakPtrFactory<FakeCrosDisksClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrosDisksClient);
 };
 
 }  // namespace chromeos

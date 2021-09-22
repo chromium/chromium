@@ -36,6 +36,10 @@ class MessageTransferOperation {
       secure_channel::ConnectionPriority connection_priority,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client);
+
+  MessageTransferOperation(const MessageTransferOperation&) = delete;
+  MessageTransferOperation& operator=(const MessageTransferOperation&) = delete;
+
   virtual ~MessageTransferOperation();
 
   // Initializes the operation by registering device connection listeners with
@@ -201,8 +205,6 @@ class MessageTransferOperation {
                  std::unique_ptr<base::OneShotTimer>>
       remote_device_to_timer_map_;
   base::WeakPtrFactory<MessageTransferOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageTransferOperation);
 };
 
 }  // namespace tether

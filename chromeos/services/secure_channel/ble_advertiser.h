@@ -33,6 +33,9 @@ class BleAdvertiser {
         const DeviceIdPair& device_id_pair) = 0;
   };
 
+  BleAdvertiser(const BleAdvertiser&) = delete;
+  BleAdvertiser& operator=(const BleAdvertiser&) = delete;
+
   virtual ~BleAdvertiser();
 
   // Adds a request for the given DeviceIdPair to advertise at the given
@@ -66,8 +69,6 @@ class BleAdvertiser {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleAdvertiser);
 };
 
 }  // namespace secure_channel

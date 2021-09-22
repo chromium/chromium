@@ -107,6 +107,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       std::unique_ptr<LibassistantServiceHost> libassistant_service_host =
           nullptr);
 
+  AssistantManagerServiceImpl(const AssistantManagerServiceImpl&) = delete;
+  AssistantManagerServiceImpl& operator=(const AssistantManagerServiceImpl&) =
+      delete;
+
   ~AssistantManagerServiceImpl() override;
 
   // assistant::AssistantManagerService overrides:
@@ -270,8 +274,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   base::ObserverList<AssistantManagerService::StateObserver> state_observers_;
 
   base::WeakPtrFactory<AssistantManagerServiceImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantManagerServiceImpl);
 };
 
 }  // namespace assistant

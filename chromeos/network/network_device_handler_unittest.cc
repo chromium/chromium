@@ -45,6 +45,10 @@ class NetworkDeviceHandlerTest : public testing::Test {
   NetworkDeviceHandlerTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+
+  NetworkDeviceHandlerTest(const NetworkDeviceHandlerTest&) = delete;
+  NetworkDeviceHandlerTest& operator=(const NetworkDeviceHandlerTest&) = delete;
+
   ~NetworkDeviceHandlerTest() override = default;
 
   void SetUp() override {
@@ -140,9 +144,6 @@ class NetworkDeviceHandlerTest : public testing::Test {
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<base::DictionaryValue> properties_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkDeviceHandlerTest);
 };
 
 TEST_F(NetworkDeviceHandlerTest, GetDeviceProperties) {

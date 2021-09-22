@@ -25,6 +25,11 @@ class FakeSingleClientMessageProxy : public SingleClientMessageProxy {
       base::OnceCallback<void(const base::UnguessableToken&)>
           destructor_callback =
               base::OnceCallback<void(const base::UnguessableToken&)>());
+
+  FakeSingleClientMessageProxy(const FakeSingleClientMessageProxy&) = delete;
+  FakeSingleClientMessageProxy& operator=(const FakeSingleClientMessageProxy&) =
+      delete;
+
   ~FakeSingleClientMessageProxy() override;
 
   bool was_remote_device_disconnection_handled() {
@@ -54,8 +59,6 @@ class FakeSingleClientMessageProxy : public SingleClientMessageProxy {
 
   std::vector<std::pair<std::string, std::string>> processed_messages_;
   bool was_remote_device_disconnection_handled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSingleClientMessageProxy);
 };
 
 // Test SingleClientMessageProxy::Delegate implementation.
@@ -63,6 +66,12 @@ class FakeSingleClientMessageProxyDelegate
     : public SingleClientMessageProxy::Delegate {
  public:
   FakeSingleClientMessageProxyDelegate();
+
+  FakeSingleClientMessageProxyDelegate(
+      const FakeSingleClientMessageProxyDelegate&) = delete;
+  FakeSingleClientMessageProxyDelegate& operator=(
+      const FakeSingleClientMessageProxyDelegate&) = delete;
+
   ~FakeSingleClientMessageProxyDelegate() override;
 
   std::vector<std::tuple<std::string, std::string, base::OnceClosure>>&
@@ -99,8 +108,6 @@ class FakeSingleClientMessageProxyDelegate
   mojom::ConnectionMetadataPtr connection_metadata_for_next_call_;
   base::OnceClosure on_client_disconnected_closure_;
   base::UnguessableToken disconnected_proxy_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSingleClientMessageProxyDelegate);
 };
 
 }  // namespace secure_channel

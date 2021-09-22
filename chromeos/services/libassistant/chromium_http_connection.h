@@ -136,6 +136,11 @@ class ChromiumHttpConnectionFactory
   explicit ChromiumHttpConnectionFactory(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory);
+
+  ChromiumHttpConnectionFactory(const ChromiumHttpConnectionFactory&) = delete;
+  ChromiumHttpConnectionFactory& operator=(
+      const ChromiumHttpConnectionFactory&) = delete;
+
   ~ChromiumHttpConnectionFactory() override;
 
   // assistant_client::HttpConnectionFactory implementation:
@@ -144,8 +149,6 @@ class ChromiumHttpConnectionFactory
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromiumHttpConnectionFactory);
 };
 
 }  // namespace libassistant

@@ -19,15 +19,16 @@ namespace secure_channel {
 class RawEidGeneratorImpl : public RawEidGenerator {
  public:
   RawEidGeneratorImpl();
+
+  RawEidGeneratorImpl(const RawEidGeneratorImpl&) = delete;
+  RawEidGeneratorImpl& operator=(const RawEidGeneratorImpl&) = delete;
+
   ~RawEidGeneratorImpl() override;
 
   // RawEidGenerator:
   std::string GenerateEid(const std::string& eid_seed,
                           int64_t start_of_period_timestamp_ms,
                           std::string const* extra_entropy) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RawEidGeneratorImpl);
 };
 
 }  // namespace secure_channel

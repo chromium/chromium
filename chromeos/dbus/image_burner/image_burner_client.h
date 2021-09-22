@@ -23,6 +23,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) ImageBurnerClient
     : public DBusClient {
  public:
+  ImageBurnerClient(const ImageBurnerClient&) = delete;
+  ImageBurnerClient& operator=(const ImageBurnerClient&) = delete;
+
   ~ImageBurnerClient() override;
 
   // A callback to be called when DBus method call fails.
@@ -64,9 +67,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_BURNER) ImageBurnerClient
  protected:
   // Create() should be used instead.
   ImageBurnerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageBurnerClient);
 };
 
 }  // namespace chromeos

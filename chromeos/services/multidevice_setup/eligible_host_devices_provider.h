@@ -16,6 +16,10 @@ namespace multidevice_setup {
 // Provides all remote devices which are eligible to be MultiDevice hosts.
 class EligibleHostDevicesProvider {
  public:
+  EligibleHostDevicesProvider(const EligibleHostDevicesProvider&) = delete;
+  EligibleHostDevicesProvider& operator=(const EligibleHostDevicesProvider&) =
+      delete;
+
   virtual ~EligibleHostDevicesProvider() = default;
 
   // Returns all eligible host devices sorted by the last time they were updated
@@ -34,9 +38,6 @@ class EligibleHostDevicesProvider {
 
  protected:
   EligibleHostDevicesProvider() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EligibleHostDevicesProvider);
 };
 
 }  // namespace multidevice_setup

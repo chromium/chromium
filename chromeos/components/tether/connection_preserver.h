@@ -20,15 +20,16 @@ namespace tether {
 class ConnectionPreserver {
  public:
   ConnectionPreserver();
+
+  ConnectionPreserver(const ConnectionPreserver&) = delete;
+  ConnectionPreserver& operator=(const ConnectionPreserver&) = delete;
+
   virtual ~ConnectionPreserver();
 
   // Should be called after each successful host scan result, to request that
   // the Connection with that device be preserved.
   virtual void HandleSuccessfulTetherAvailabilityResponse(
       const std::string& device_id) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConnectionPreserver);
 };
 
 }  // namespace tether

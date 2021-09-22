@@ -21,6 +21,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) TestAttemptState
  public:
   explicit TestAttemptState(const UserContext& credentials);
 
+  TestAttemptState(const TestAttemptState&) = delete;
+  TestAttemptState& operator=(const TestAttemptState&) = delete;
+
   ~TestAttemptState() override;
 
   // Act as though an online login attempt completed already.
@@ -33,9 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) TestAttemptState
   bool online_complete() override;
   bool cryptohome_complete() override;
   cryptohome::MountError cryptohome_code() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAttemptState);
 };
 
 }  // namespace chromeos

@@ -25,6 +25,10 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
  public:
   OobeConfigurationClientImpl() {}
 
+  OobeConfigurationClientImpl(const OobeConfigurationClientImpl&) = delete;
+  OobeConfigurationClientImpl& operator=(const OobeConfigurationClientImpl&) =
+      delete;
+
   ~OobeConfigurationClientImpl() override = default;
 
   // OobeConfigurationClient override:
@@ -83,8 +87,6 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<OobeConfigurationClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationClientImpl);
 };
 
 // static

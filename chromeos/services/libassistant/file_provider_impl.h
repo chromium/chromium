@@ -17,6 +17,10 @@ namespace libassistant {
 class FileProviderImpl : public assistant_client::FileProvider {
  public:
   FileProviderImpl();
+
+  FileProviderImpl(const FileProviderImpl&) = delete;
+  FileProviderImpl& operator=(const FileProviderImpl&) = delete;
+
   ~FileProviderImpl() override;
 
   // assistant_client::FileProvider overrides:
@@ -31,8 +35,6 @@ class FileProviderImpl : public assistant_client::FileProvider {
  private:
   // Root path which other paths are relative to.
   const base::FilePath root_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileProviderImpl);
 };
 
 }  // namespace libassistant

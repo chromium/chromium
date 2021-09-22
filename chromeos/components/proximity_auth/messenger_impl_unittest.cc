@@ -37,6 +37,10 @@ class MockMessengerObserver : public MessengerObserver {
   explicit MockMessengerObserver(Messenger* messenger) : messenger_(messenger) {
     messenger_->AddObserver(this);
   }
+
+  MockMessengerObserver(const MockMessengerObserver&) = delete;
+  MockMessengerObserver& operator=(const MockMessengerObserver&) = delete;
+
   virtual ~MockMessengerObserver() { messenger_->RemoveObserver(this); }
 
   MOCK_METHOD1(OnUnlockEventSent, void(bool success));
@@ -54,8 +58,6 @@ class MockMessengerObserver : public MessengerObserver {
  private:
   // The messenger that |this| instance observes.
   Messenger* const messenger_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessengerObserver);
 };
 
 class TestMessenger : public MessengerImpl {
@@ -63,10 +65,11 @@ class TestMessenger : public MessengerImpl {
   TestMessenger(
       std::unique_ptr<chromeos::secure_channel::ClientChannel> channel)
       : MessengerImpl(std::move(channel)) {}
-  ~TestMessenger() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMessenger);
+  TestMessenger(const TestMessenger&) = delete;
+  TestMessenger& operator=(const TestMessenger&) = delete;
+
+  ~TestMessenger() override {}
 };
 
 }  // namespace

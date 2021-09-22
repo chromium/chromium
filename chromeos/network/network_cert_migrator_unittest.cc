@@ -46,6 +46,10 @@ class NetworkCertMigratorTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::DEFAULT,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
         service_test_(nullptr) {}
+
+  NetworkCertMigratorTest(const NetworkCertMigratorTest&) = delete;
+  NetworkCertMigratorTest& operator=(const NetworkCertMigratorTest&) = delete;
+
   ~NetworkCertMigratorTest() override = default;
 
   void SetUp() override {
@@ -220,8 +224,6 @@ class NetworkCertMigratorTest : public testing::Test {
  private:
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkCertMigrator> network_cert_migrator_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCertMigratorTest);
 };
 
 // Test that migration of user profile networks is deferred until the user's NSS

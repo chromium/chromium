@@ -24,6 +24,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) CecServiceClient
     : public DBusClient {
  public:
+  CecServiceClient(const CecServiceClient&) = delete;
+  CecServiceClient& operator=(const CecServiceClient&) = delete;
+
   ~CecServiceClient() override;
 
   enum class PowerState {
@@ -72,9 +75,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) CecServiceClient
   friend class CecServiceClientTest;
 
   CecServiceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CecServiceClient);
 };
 
 }  // namespace chromeos
