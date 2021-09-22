@@ -15,9 +15,6 @@ const base::Feature kWebPageDefaultZoomFromDynamicType{
 const base::Feature kWebPageAlternativeTextZoom{
     "WebPageAlternativeTextZoom", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kMobileGoogleSRP{"MobileGoogleSRP",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kRestoreSessionFromCache{"RestoreSessionFromCache",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -177,13 +177,6 @@ class WebClient {
   // Enables the logic to handle long press context menu with UIContextMenu.
   virtual bool EnableLongPressUIContextMenu() const;
 
-  // This method is used when the user didn't express any preference for the
-  // version of |url|. Returning true allows to make sure that for |url|, the
-  // mobile version will be used, unless the user explicitly requested the
-  // desktop version. This method can be overriden to avoid having specific URL
-  // being requested in desktop mode when the default mode is desktop.
-  virtual bool ForceMobileVersionByDefault(const GURL& url);
-
   // Returns the UserAgentType that should be used by default for the web
   // content, based on the size class of |web_view| and the |url|.
   virtual UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,

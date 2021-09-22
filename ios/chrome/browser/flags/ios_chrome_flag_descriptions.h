@@ -101,10 +101,10 @@ extern const char kDefaultPromoTailoredDescription[];
 extern const char kDefaultPromoNonModalName[];
 extern const char kDefaultPromoNonModalDescription[];
 
-// Title and description for the flag to request the desktop version of web site
-// by default on iPad
-extern const char kDefaultToDesktopOnIPadName[];
-extern const char kDefaultToDesktopOnIPadDescription[];
+// Title and description for the flag to have the web client choosing the
+// default user agent.
+extern const char kUseDefaultUserAgentInWebClientName[];
+extern const char kUseDefaultUserAgentInWebClientDescription[];
 
 // Title and description for the flag to use default WebKit context menu in web
 // content.
@@ -277,11 +277,6 @@ extern const char kMetrickitCrashReportDescription[];
 // Title and description for the flag to enable MICE web sign-in.
 extern const char kMICEWebSignInName[];
 extern const char kMICEWebSignInDescription[];
-
-// Title and description for the flag where the Google SRP is requested in
-// mobile mode by default.
-extern const char kMobileGoogleSRPName[];
-extern const char kMobileGoogleSRPDescription[];
 
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished.

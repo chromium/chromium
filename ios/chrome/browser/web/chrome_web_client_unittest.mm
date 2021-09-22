@@ -493,15 +493,9 @@ TEST_F(ChromeWebClientTest,
 
 // Tests the default user agent for different views.
 TEST_F(ChromeWebClientTest, DefaultUserAgent) {
-  if (@available(iOS 13, *)) {
-  } else {
-    // The feature is only available on iOS 13.
-    return;
-  }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {web::features::kUseDefaultUserAgentInWebClient, web::kMobileGoogleSRP},
-      {});
+      {web::features::kUseDefaultUserAgentInWebClient}, {});
 
   ChromeWebClient web_client;
   const GURL google_url = GURL("https://www.google.com/search?q=test");
@@ -544,7 +538,7 @@ TEST_F(ChromeWebClientTest, DefaultUserAgent) {
   id mock_regular_regular_view = OCMClassMock([UIView class]);
   OCMStub([mock_regular_regular_view traitCollection])
       .andReturn(regular_regular);
-  EXPECT_EQ(web::UserAgentType::DESKTOP,
+  EXPECT_EQ(web::UserAgentType::MOBILE,
             web_client.GetDefaultUserAgent(mock_regular_regular_view,
                                            non_google_url));
 

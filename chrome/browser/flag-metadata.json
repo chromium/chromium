@@ -1032,6 +1032,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "default-user-agent",
+    "owners": [ "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "default-wkwebview-context-menu",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 100
@@ -1067,11 +1072,6 @@
     "name": "desktop-restructured-language-settings",
     "owners": [ "chrome-language@google.com" ],
     "expiry_milestone": 97
-  },
-  {
-    "name": "desktop-version-default",
-    "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 100
   },
   {
     "name": "destroy-profile-on-browser-close",
@@ -3896,11 +3896,6 @@
     "name": "mixed-forms-interstitial",
     "owners": [ "carlosil" ],
     "expiry_milestone": 92
-  },
-  {
-    "name": "mobile-google-srp",
-    "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 100
   },
   {
     "name": "mobile-identity-consistency",

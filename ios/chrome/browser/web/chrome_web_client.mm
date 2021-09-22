@@ -403,26 +403,11 @@ bool ChromeWebClient::EnableLongPressUIContextMenu() const {
   return web::features::UseWebViewNativeContextMenuSystem();
 }
 
-bool ChromeWebClient::ForceMobileVersionByDefault(const GURL& url) {
-  DCHECK(web::features::UseWebClientDefaultUserAgent());
-  if (base::FeatureList::IsEnabled(web::kMobileGoogleSRP)) {
-    return google_util::IsGoogleSearchUrl(url);
-  }
-  return false;
-}
-
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
     id<UITraitEnvironment> web_view,
     const GURL& url) {
   DCHECK(web::features::UseWebClientDefaultUserAgent());
-  if (ForceMobileVersionByDefault(url))
-    return web::UserAgentType::MOBILE;
-  BOOL isRegularRegular = web_view.traitCollection.horizontalSizeClass ==
-                              UIUserInterfaceSizeClassRegular &&
-                          web_view.traitCollection.verticalSizeClass ==
-                              UIUserInterfaceSizeClassRegular;
-  return isRegularRegular ? web::UserAgentType::DESKTOP
-                          : web::UserAgentType::MOBILE;
+  return web::UserAgentType::MOBILE;
 }
 
 bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {

@@ -20,10 +20,6 @@ extern const base::Feature kWebPageDefaultZoomFromDynamicType;
 // Used to enable a different method of zooming web pages.
 extern const base::Feature kWebPageAlternativeTextZoom;
 
-// Feature flag to keep the mobile version for Google SRP. Should be used when
-// the desktop version is requested by default.
-extern const base::Feature kMobileGoogleSRP;
-
 // Feature flag for to use native session restoration.
 extern const base::Feature kRestoreSessionFromCache;
 

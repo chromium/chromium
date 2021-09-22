@@ -110,10 +110,6 @@ bool WebClient::EnableLongPressUIContextMenu() const {
   return false;
 }
 
-bool WebClient::ForceMobileVersionByDefault(const GURL&) {
-  return false;
-}
-
 bool WebClient::RestoreSessionFromCache(web::WebState* web_state) const {
   return false;
 }

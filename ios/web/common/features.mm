@@ -56,10 +56,7 @@ const base::Feature kDisableNonHTMLScreenshotOnIOS15{
     "DisableNonHTMLScreenshotOnIOS15", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool UseWebClientDefaultUserAgent() {
-  if (@available(iOS 13, *)) {
-    return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);
 }
 
 bool UseWebViewNativeContextMenuWeb() {

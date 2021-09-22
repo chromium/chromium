@@ -108,10 +108,11 @@ const char kDefaultPromoTailoredName[] =
 const char kDefaultPromoTailoredDescription[] =
     "When enabled the selected tailored fullscreen promo can be triggered.";
 
-const char kDefaultToDesktopOnIPadName[] = "Request desktop version by default";
-const char kDefaultToDesktopOnIPadDescription[] =
-    "By default, on iPad, the desktop version of the web sites will be "
-    "requested";
+const char kUseDefaultUserAgentInWebClientName[] =
+    "[Refactoring] Let the client choose default mode";
+const char kUseDefaultUserAgentInWebClientDescription[] =
+    "When enabled, the web client will choose the default mode. It is a "
+    "refactoring, no visible impact.";
 
 const char kDefaultBrowserFullscreenPromoExperimentName[] =
     "Default Browser Fullscreen modal experiment";
@@ -325,11 +326,6 @@ const char kMetrickitCrashReportDescription[] =
 
 const char kMICEWebSignInName[] = "MICE Web Sign-in";
 const char kMICEWebSignInDescription[] = "Enables MICE web sign-in.";
-
-const char kMobileGoogleSRPName[] = "Mobile version of Google SRP by default";
-const char kMobileGoogleSRPDescription[] =
-    "Request the Mobile version of Google SRP by default when the desktop mode "
-    "is requested by default.";
 
 const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =

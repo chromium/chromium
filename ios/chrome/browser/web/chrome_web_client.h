@@ -52,7 +52,6 @@ class ChromeWebClient : public web::WebClient {
   UIView* GetWindowedContainer() override;
   bool EnableLongPressAndForceTouchHandling() const override;
   bool EnableLongPressUIContextMenu() const override;
-  bool ForceMobileVersionByDefault(const GURL& url) override;
   web::UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
                                          const GURL& url) override;
   bool RestoreSessionFromCache(web::WebState* web_state) const override;
