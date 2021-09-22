@@ -51045,6 +51045,7 @@ from previous Chrome versions.
   <int value="767543730" label="DoubleTapToZoomInTabletMode:enabled"/>
   <int value="767549069" label="ScreenTime:enabled"/>
   <int value="767970385" label="ResamplingScrollEvents:enabled"/>
+  <int value="768855962" label="PaymentRequestBasicCard:enabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
   <int value="772272625" label="simplify-https-indicator"/>
   <int value="772348426" label="AffiliationBasedMatching:enabled"/>
@@ -51873,6 +51874,7 @@ from previous Chrome versions.
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:enabled"/>
   <int value="1420007919" label="SyncTrustedVaultPassphrasePromo:disabled"/>
   <int value="1421620678" label="simple-clear-browsing-data-support-string"/>
+  <int value="1422462035" label="PaymentRequestBasicCard:disabled"/>
   <int value="1424775876" label="ToolbarIphAndroid:enabled"/>
   <int value="1425103276" label="SharedHighlightingV2:enabled"/>
   <int value="1427427985"

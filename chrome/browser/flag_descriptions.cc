@@ -2756,6 +2756,11 @@ const char kWebPaymentsExperimentalFeaturesName[] =
 const char kWebPaymentsExperimentalFeaturesDescription[] =
     "Enable experimental Web Payments API features";
 
+const char kPaymentRequestBasicCardName[] =
+    "PaymentRequest API 'basic-card' method";
+const char kPaymentRequestBasicCardDescription[] =
+    "The 'basic-card' payment method of the PaymentRequest API.";
+
 const char kAppStoreBillingDebugName[] =
     "Web Payments App Store Billing Debug Mode";
 const char kAppStoreBillingDebugDescription[] =
