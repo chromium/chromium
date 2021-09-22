@@ -1164,7 +1164,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4825507807291741242">Tehokas</translation>
 <translation id="4827402517081186284">Incognito ei muuta sinua näkymättömäksi verkossa:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Sivustot tietävät, kun vierailet niillä<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Sivustot tietävät, kun käyt niillä<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Työnantajat tai koulut voivat seurata selaustoimintaa<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internetpalveluntarjoajat voivat valvoa verkkoliikennettä<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
@@ -2177,11 +2177,11 @@ Lisätietoja:
 <translation id="831207732689920588">Tämä sivu on epäilyttävä (Chromen merkitsemä).</translation>
 <translation id="831997045666694187">Ilta</translation>
 <translation id="8321476692217554900">ilmoitukset</translation>
-<translation id="8328484624016508118">Kun olet sulkenut kaikki incognito-välilehdet, Chrome poistaa nämä:
+<translation id="8328484624016508118">Suljettuasi kaikki incognito-välilehdet Chrome poistaa:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Selaustoimintasi tältä laitteelta<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Hakuhistoriasi tältä laitteelta<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Lomakkeisiin lisätyt tiedot<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Lomakkeisiin lisäämäsi tiedot<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Sivuston <ph name="HOST_NAME" /> käyttöoikeus evättiin</translation>
 <translation id="833262891116910667">Korosta</translation>

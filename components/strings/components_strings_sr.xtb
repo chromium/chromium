@@ -2179,7 +2179,7 @@
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />активности прегледања са овог уређаја<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />историју претраге са овог уређаја<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />информације унесене помоћу образаца<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />информације унесене преко образаца<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Приступ хосту <ph name="HOST_NAME" /> је одбијен</translation>
 <translation id="833262891116910667">Истицање</translation>

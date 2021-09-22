@@ -332,7 +332,6 @@
 <translation id="1354045473509304750">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt</translation>
 <translation id="1355088139103479645">Alle gegevens verwijderen?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> wordt geblokkeerd</translation>
-<translation id="1356178530321889280">Klik met de rechtermuisknop en selecteer 'Deel van de pagina zoeken met Google Lens' om te zoeken op basis van een gedeelte van de site voor meer informatie over de visuele content die je ziet als je op internet surft en shopt.</translation>
 <translation id="1358741672408003399">Spelling en grammatica</translation>
 <translation id="1359923111303110318">Je apparaat kan worden ontgrendeld met Smart Lock. Druk op Enter om te ontgrendelen.</translation>
 <translation id="1361164813881551742">Handmatig toevoegen</translation>
@@ -2273,6 +2272,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="339178315942519818">Meldingen van je chat-apps bekijken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Documentanalyse van Chrome</translation>
 <translation id="3394850431319394743">Toestemming om ID's te gebruiken om beveiligde content af te spelen</translation>
+<translation id="3396744558790608201">Klik met de rechtermuisknop en selecteer 'Afbeeldingen zoeken met Google Lens' om te zoeken op basis van een gedeelte van de site voor meer informatie over de visuele content die je ziet als je op internet surft en shopt.</translation>
 <translation id="3396800784455899911">Door op de knop 'Accepteren en doorgaan' te klikken, ga je akkoord met de bovengenoemde verwerking voor deze Google-services.</translation>
 <translation id="339722927132407568">Loopt vast</translation>
 <translation id="3399432415385675819">Meldingen worden uitgezet</translation>
@@ -3182,6 +3182,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deelt een venster.</translation>
 <translation id="4364830672918311045">Meldingen weergeven</translation>
 <translation id="4366138410738374926">Afdrukken gestart</translation>
+<translation id="4369121877634339065">Sleep over een afbeelding om te zoeken</translation>
 <translation id="4370975561335139969">Het opgegeven e-mailadres en wachtwoord komen niet overeen</translation>
 <translation id="4371452868325715552">Kan geen verbinding maken met de server. Check de netwerkverbinding en probeer het opnieuw. Als je nog steeds problemen ondervindt, start je de Chromebook opnieuw op. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Bureaublad casten</translation>
@@ -4794,7 +4795,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="6144938890088808325">Help ons Chromebooks te verbeteren</translation>
 <translation id="6146409560350811147">Synchronisatie werkt niet. Probeer opnieuw in te loggen.</translation>
 <translation id="6147020289383635445">Kan afdrukvoorbeeld niet tonen.</translation>
-<translation id="6148576794665275391">Nu geopend</translation>
+<translation id="6148576794665275391">Nu openen</translation>
 <translation id="6149015141270619212">Kan geen verbinding maken met internet</translation>
 <translation id="6150116777338468525">Audiokwaliteit</translation>
 <translation id="6150278227694566734">Sommige contacten</translation>

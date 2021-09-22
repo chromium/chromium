@@ -334,7 +334,6 @@
 <translation id="1354045473509304750">Continue allowing <ph name="HOST" /> to use and move your camera</translation>
 <translation id="1355088139103479645">Delete all data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> is blocked</translation>
-<translation id="1356178530321889280">Right-click and select ‘Search part of the page with Google Lens’ to search any region of the site to learn more about the visual content that you see while you browse and shop on the web.</translation>
 <translation id="1358741672408003399">Spelling and Grammar</translation>
 <translation id="1359923111303110318">Your device can be unlocked with Smart Lock. Press enter to unlock.</translation>
 <translation id="1361164813881551742">Add Manually</translation>
@@ -2289,6 +2288,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="339178315942519818">View notifications from your chat apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Chrome document analysis</translation>
 <translation id="3394850431319394743">Allowed to use identifiers to play protected content</translation>
+<translation id="3396744558790608201">Right-click and select 'Search images with Google Lens' to search any region of the site to learn more about the visual content that you see while you browse and shop on the web.</translation>
 <translation id="3396800784455899911">By clicking the 'Accept and continue' button, you agree to the processing described above for these Google services.</translation>
 <translation id="339722927132407568">Freezes</translation>
 <translation id="3399432415385675819">Notifications will be disabled</translation>
@@ -3198,6 +3198,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> is sharing a window.</translation>
 <translation id="4364830672918311045">Display notifications</translation>
 <translation id="4366138410738374926">Printing started</translation>
+<translation id="4369121877634339065">Drag over any image to search</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
 <translation id="4371452868325715552">Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Casting desktop</translation>

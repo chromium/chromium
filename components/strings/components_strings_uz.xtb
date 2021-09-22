@@ -285,7 +285,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
 <translation id="1839551713262164453">Parametr qiymatlari tekshiruvida xato yuz berdi</translation>
 <translation id="1842969606798536927">To‘lash</translation>
-<translation id="1856713167556118146">Inkognito nima qila olmaydi</translation>
+<translation id="1856713167556118146">Inkognito rejimida nima qilinmaydi</translation>
 <translation id="1871208020102129563">Proksi-serverlar PAC fayli manzil orqali emas, o‘zgarmas manzil orqali sozlangan.</translation>
 <translation id="1871284979644508959">Kiritilishi shart</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1052,7 +1052,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4465818729556336129">Bu maxfiy hujjat va uning chop etilishi administrator tomonidan tavsiya etilmaydi.</translation>
 <translation id="4476953670630786061">Bu shakl xavfsiz emas. Avtomatik kiritish faolsizlantirildi.</translation>
 <translation id="4477350412780666475">Keyingi trek</translation>
-<translation id="4481251927743463293">Inkognito nimalarga qodir</translation>
+<translation id="4481251927743463293">Inkognito rejimida nima qilinadi</translation>
 <translation id="4481394504112738036">Maxfiy fayl</translation>
 <translation id="4482953324121162758">Bu sayt tarjima qilinmaydi</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1156,11 +1156,11 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4819347708020428563">Izohlar standart shaklda tahrirlansinmi?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Google Sheetda yangi jadvalni tez yaratish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="4825507807291741242">Qudratli</translation>
-<translation id="4827402517081186284">Inkognito internetda toʻliq koʻrinmaslikni bermaydi:
+<translation id="4827402517081186284">Inkognito rejimida ayrim axborotlar yashirilmaydi:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Saytlarga tashriflaringiz koʻrinadi<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Saytlar ularga qilgan tashrifingizni biladi<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Ishxona va maktablarda brauzer tarixi kuzatilishi mumkin<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internet provayderlari ham mijozlarining internet trafigini kuzatishi mumkin<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internet provayderlari ham trafikni kuzatishi mumkin<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Xayolparast</translation>
 <translation id="4840250757394056958">Chrome tarixini koʻrish</translation>
@@ -2174,7 +2174,7 @@ Batafsil axborot:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Bu qurilmadagi bauzer faoliyati tarixi<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Bu qurilmadagi qidiruv tarixi<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Shakllarda toʻldirilgan axborot<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Shakllarda kiritilgan axborotlar<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
 <translation id="833262891116910667">Ajratib belgilash</translation>

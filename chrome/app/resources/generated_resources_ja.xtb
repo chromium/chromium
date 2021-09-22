@@ -332,7 +332,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> によるカメラの使用と移動を引き続き許可する</translation>
 <translation id="1355088139103479645">すべてのデータを削除しますか？</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> はブロックされています</translation>
-<translation id="1356178530321889280">右クリックして、[Google レンズでページの一部を検索] を選択すると、ブラウジング中やショッピング中にサイトの一部の領域を検索して、ビジュアル コンテンツの詳細を確認できます。</translation>
 <translation id="1358741672408003399">スペルと文法</translation>
 <translation id="1359923111303110318">Smart Lock でデバイスのロックを解除できます。解除するには Enter キーを押してください。</translation>
 <translation id="1361164813881551742">手動で追加</translation>
@@ -2273,6 +2272,7 @@
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> のチャットアプリの通知を表示します</translation>
 <translation id="3393554941209044235">Chrome ドキュメント解析</translation>
 <translation id="3394850431319394743">識別子の使用と保護されたコンテンツの再生を許可するサイト</translation>
+<translation id="3396744558790608201">ブラウジング中やショッピング中にサイトのビジュアル コンテンツを右クリックして、[Google レンズで画像を検索] を選択すると、その詳細を検索して確認できます。</translation>
 <translation id="3396800784455899911">[同意して続行] をクリックすると、これらの Google サービスに関する上記の処理内容に同意したことになります。</translation>
 <translation id="339722927132407568">固まる</translation>
 <translation id="3399432415385675819">通知が無効になります</translation>
@@ -3182,6 +3182,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
 <translation id="4364830672918311045">通知を表示</translation>
 <translation id="4366138410738374926">印刷を開始しました</translation>
+<translation id="4369121877634339065">画像をドラッグして検索</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4371452868325715552">サーバーに接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。引き続き問題が解決しない場合は、Chromebook を再起動してみてください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="4373966964907728675">デスクトップをキャスト中</translation>

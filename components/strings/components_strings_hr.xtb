@@ -286,7 +286,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
 <translation id="1839551713262164453">Potvrđivanje vrijednosti pravila nije uspjelo zbog pogrešaka</translation>
 <translation id="1842969606798536927">Plaćanje</translation>
-<translation id="1856713167556118146">Što anonimni način neće učiniti</translation>
+<translation id="1856713167556118146">Što anonimni način ne znači</translation>
 <translation id="1871208020102129563">Proxy poslužitelj postavljen je na upotrebu fiksnih proxy poslužitelja, a ne URL .pac skripte.</translation>
 <translation id="1871284979644508959">Obavezno polje</translation>
 <translation id="1875512691959384712">Google obrasci</translation>
@@ -1057,7 +1057,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4465818729556336129">Dokument je povjerljiv i administrator ne preporučuje ispis.</translation>
 <translation id="4476953670630786061">Ovaj obrazac nije siguran. Automatsko popunjavanje je isključeno.</translation>
 <translation id="4477350412780666475">Sljedeća pjesma</translation>
-<translation id="4481251927743463293">Kako funkcionira anonimni način</translation>
+<translation id="4481251927743463293">Što anonimni način znači</translation>
 <translation id="4481394504112738036">Povjerljiva datoteka</translation>
 <translation id="4482953324121162758">Ova web-lokacija neće biti prevedena.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1165,7 +1165,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />web-lokacije znaju kada ih posjećujete<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />poslodavci ili škole mogu pratiti vašu aktivnost pregledavanja<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />davatelji internetskih usluga mogu nadzirati web-promet.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />davatelji internetskih usluga mogu nadzirati web-promet<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Sanjivo</translation>
 <translation id="4840250757394056958">Pregledaj povijest na Chromeu</translation>
@@ -2180,7 +2180,7 @@ Dodatne pojedinosti:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />vašu aktivnost pregledavanja na ovom uređaju<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />vašu povijest pretraživanja na ovom uređaju<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />podatke unesene u obrasce.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />podatke unesene u obrasce<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Pristup hostu <ph name="HOST_NAME" /> je odbijen</translation>
 <translation id="833262891116910667">Istakni</translation>

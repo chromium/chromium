@@ -333,7 +333,6 @@
 <translation id="1354045473509304750">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra</translation>
 <translation id="1355088139103479645">Supprimer toutes les données ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> est bloqué</translation>
-<translation id="1356178530321889280">Effectuez un clic droit et sélectionnez "Rechercher sur une partie de la page avec Google Lens" pour faire une recherche sur une zone du site afin d'en savoir plus sur le contenu visuel que vous voyez lorsque vous surfez ou faites des achats sur le Web.</translation>
 <translation id="1358741672408003399">Grammaire et orthographe</translation>
 <translation id="1359923111303110318">Votre appareil peut être déverrouillé avec Smart Lock. Appuyez sur Entrée pour le déverrouiller.</translation>
 <translation id="1361164813881551742">Ajouter manuellement</translation>
@@ -2275,6 +2274,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="339178315942519818">Afficher sur votre <ph name="DEVICE_TYPE" /> les notifications de vos applications de chat</translation>
 <translation id="3393554941209044235">Analyse de documents Chrome</translation>
 <translation id="3394850431319394743">Sites autorisés à utiliser des ID pour lire du contenu protégé</translation>
+<translation id="3396744558790608201">Effectuez un clic droit et sélectionnez "Rechercher à l'aide d'images avec Google Lens" pour faire une recherche sur une zone du site afin d'en savoir plus sur le contenu visuel qui s'affiche lorsque vous surfez ou faites des achats sur le Web.</translation>
 <translation id="3396800784455899911">En cliquant sur le bouton "Accepter et continuer", vous acceptez le processus décrit ci-dessus pour ces services Google.</translation>
 <translation id="339722927132407568">Se fige</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
@@ -3184,6 +3184,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4366138410738374926">L'impression a commencé</translation>
+<translation id="4369121877634339065">Faites glisser une image pour rechercher</translation>
 <translation id="4370975561335139969">L'adresse e-mail et le mot de passe saisis ne correspondent pas.</translation>
 <translation id="4371452868325715552">Impossible de se connecter au serveur. Veuillez vérifier votre connexion réseau, puis réessayer. Si le problème persiste, essayez de redémarrer votre Chromebook. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Diffusion du Bureau en cours…</translation>

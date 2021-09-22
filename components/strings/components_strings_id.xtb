@@ -2164,11 +2164,11 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="831207732689920588">Halaman ini mencurigakan (ditandai oleh Chrome).</translation>
 <translation id="831997045666694187">Sore</translation>
 <translation id="8321476692217554900">notifikasi</translation>
-<translation id="8328484624016508118">Setelah menutup semua tab Samaran, Chrome akan menghapus:
+<translation id="8328484624016508118">Setelah semua tab Samaran ditutup, Chrome akan menghapus:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Aktivitas penjelajahan Anda dari perangkat ini<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Histori penelusuran Anda di perangkat ini<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Informasi yang dimasukkan di formulir<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Informasi yang dimasukkan ke formulir web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Akses ke <ph name="HOST_NAME" /> ditolak</translation>
 <translation id="833262891116910667">Sorotan</translation>

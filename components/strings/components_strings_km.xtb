@@ -1165,11 +1165,11 @@
 <translation id="4819347708020428563">កែចំណារនៅក្នុងទិដ្ឋភាពលំនាំដើមឬ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បី​បង្កើត​បញ្ជី Google ថ្មីបានរហ័ស</translation>
 <translation id="4825507807291741242">មាន​ឥទ្ធិពល​ខ្លាំង</translation>
-<translation id="4827402517081186284">មុខងារឯកជន​មិនធ្វើឱ្យគេ​មើលអ្នកមិនឃើញ​លើអ៊ីនធឺណិតទេ៖
+<translation id="4827402517081186284">មុខងារឯកជន​មិនមែនធ្វើឱ្យគេ​មើលមិនឃើញអ្នក​នៅលើអ៊ីនធឺណិតនោះទេ៖
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />គេហទំព័រនានា​ដឹងថាពេលណា​ដែលអ្នកចូលមើល​គេហទំព័រទាំងនោះ<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />និយោជក ឬសាលារៀន​អាចតាមដាន​សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ក្រុមហ៊ុន​ផ្ដល់​សេវាកម្ម​អ៊ីនធឺណិត​អាចតាមដាន​ចរាចរណ៍បណ្ដាញ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ក្រុមហ៊ុន​ផ្ដល់​សេវាកម្ម​អ៊ីនធឺណិត​អាចពិនិត្យតាមដាន​ចរាចរណ៍បណ្ដាញ<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">ដូចក្ដី​សុបិន</translation>
 <translation id="4840250757394056958">មើលប្រវត្តិ Chrome របស់អ្នក</translation>

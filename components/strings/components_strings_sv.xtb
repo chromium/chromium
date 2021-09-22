@@ -2179,7 +2179,7 @@ Mer information.
 <translation id="8328484624016508118">När du har stängt alla inkognitoflikar i Chrome raderas följande:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Din webbaktivitet från den här enheten<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Din sökaktivitet från den här enheten<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Din sökhistorik från den här enheten<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Information som angetts i formulär<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Åtkomst nekades till <ph name="HOST_NAME" />.</translation>

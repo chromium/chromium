@@ -286,7 +286,7 @@
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
 <translation id="1839551713262164453">ભૂલના લીધે પૉલિસી મૂલ્યોની માન્યતા નિષ્ફળ થઈ</translation>
 <translation id="1842969606798536927">ચુકવણી કરો</translation>
-<translation id="1856713167556118146">છૂપો મોડ, શું કરતું નથી</translation>
+<translation id="1856713167556118146">છૂપો મોડ શું કરતો નથી</translation>
 <translation id="1871208020102129563">પ્રૉક્સી નક્કી કરેલા પ્રૉક્સી સર્વરનો ઉપયોગ કરવા માટે સેટ કરેલી છે, .pac સ્ક્રિપ્ટ URL નથી.</translation>
 <translation id="1871284979644508959">જરૂરી ફીલ્ડ</translation>
 <translation id="1875512691959384712">Google Forms</translation>
@@ -1163,7 +1163,7 @@
 <translation id="4827402517081186284">છૂપા મોડથી તમે ઑનલાઇન અદ્રશ્ય બની જતા નથી:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />સાઇટ તમારી મુલાકાત વિશે જાણી શકે છે<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />નિયોક્તા કે સ્કૂલ બ્રાઉઝિંગ પ્રવૃત્તિ ટ્રૅક કરી શકે છે<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />નોકરીદાતા કે સ્કૂલ, બ્રાઉઝિંગ પ્રવૃત્તિ ટ્રૅક કરી શકે છે<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ઇન્ટરનેટ સેવા આપનાર કંપની વેબ ટ્રાફિક મૉનિટર કરી શકે છે<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">સ્વપ્નશીલ</translation>
@@ -2175,7 +2175,7 @@
 <translation id="831207732689920588">આ પેજ શંકાસ્પદ છે (Chrome દ્વારા ચિહ્નિત કરાયું છે).</translation>
 <translation id="831997045666694187">સાંજ</translation>
 <translation id="8321476692217554900">નોટિફિકેશન</translation>
-<translation id="8328484624016508118">બધી છૂપી ટૅબ બંધ કરવા પછી, Chrome આ સાફ કરશે:
+<translation id="8328484624016508118">બધી છૂપી ટૅબ બંધ કર્યા પછી, Chrome આ સાફ કરશે:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />આ ડિવાઇસમાંની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />આ ડિવાઇસમાંનો તમારો શોધ ઇતિહાસ<ph name="END_LIST_ITEM" />

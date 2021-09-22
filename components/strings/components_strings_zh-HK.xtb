@@ -282,7 +282,7 @@
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839551713262164453">發生錯誤，政策值驗證失敗</translation>
 <translation id="1842969606798536927">支付</translation>
-<translation id="1856713167556118146">無痕模式不支援的功能</translation>
+<translation id="1856713167556118146">無痕模式不會做什麼</translation>
 <translation id="1871208020102129563">Proxy 設定為使用固定的 Proxy 伺服器，而非 .pac 指令碼網址。</translation>
 <translation id="1871284979644508959">必填欄位</translation>
 <translation id="1875512691959384712">Google 表格</translation>
@@ -1047,7 +1047,7 @@
 <translation id="4465818729556336129">這是機密文件，管理員不建議列印。</translation>
 <translation id="4476953670630786061">此表格不安全，自動填入功能已關閉。</translation>
 <translation id="4477350412780666475">下一首曲目</translation>
-<translation id="4481251927743463293">無痕模式的作用</translation>
+<translation id="4481251927743463293">無痕模式會做什麼</translation>
 <translation id="4481394504112738036">機密檔案</translation>
 <translation id="4482953324121162758">系統不會翻譯此網站。</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1151,7 +1151,7 @@
 <translation id="4819347708020428563">要在預設檢視模式中編輯註解嗎？</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以快速建立新嘅 Google 試算表</translation>
 <translation id="4825507807291741242">強大</translation>
-<translation id="4827402517081186284">無痕模式無法讓您在網絡上不留痕跡：
+<translation id="4827402517081186284">無痕模式不會令您在網絡上隱身：
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />網站會知道您在瀏覽<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />僱主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />

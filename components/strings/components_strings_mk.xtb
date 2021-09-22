@@ -1165,7 +1165,7 @@
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />сајтовите знаат кога ги посетувате<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />работодавачите или училиштата може да ја следат вашата активност од прелистувањето<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />интернет-операторите можеби го следат интернет-сообраќајот<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />интернет-операторите може да го следат сообраќајот на интернет<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Нереален</translation>
 <translation id="4840250757394056958">Прикажи ја историјата на Chrome</translation>

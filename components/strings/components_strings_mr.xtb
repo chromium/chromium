@@ -1056,7 +1056,7 @@
 <translation id="4465818729556336129">हा दस्तऐवज गोपनीय आहे आणि तुमच्या अ‍ॅडमिनिस्ट्रेटरने तो प्रिंट न करण्याचा सल्ला दिला आहे.</translation>
 <translation id="4476953670630786061">हा फॉर्म सुरक्षित नाही. ऑटोफिल बंद केले आहे.</translation>
 <translation id="4477350412780666475">पुढील ट्रॅक</translation>
-<translation id="4481251927743463293">गुप्त मोड काय करते</translation>
+<translation id="4481251927743463293">गुप्त मोड काय करतो</translation>
 <translation id="4481394504112738036">गोपनीय फाइल</translation>
 <translation id="4482953324121162758">या साइटचे भाषांतर केले जाणार नाही.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -2178,8 +2178,8 @@
 <translation id="8321476692217554900">सूचना</translation>
 <translation id="8328484624016508118">सर्व गुप्त टॅब बंद केल्यानंतर, Chrome हे साफ करते:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />या डिव्हाइसवरून तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />या डिव्हाइसवरून तुमचा शोध इतिहास<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />या डिव्हाइसवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />या डिव्हाइसवरील तुमचा शोध इतिहास<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> चा ॲक्सेस नाकारला</translation>

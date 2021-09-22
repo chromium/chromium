@@ -334,7 +334,6 @@
 <translation id="1354045473509304750">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru a hýbať ňou</translation>
 <translation id="1355088139103479645">Chcete odstrániť všetky údaje?</translation>
 <translation id="1355466263109342573">Doplnok <ph name="PLUGIN_NAME" /> je blokovaný</translation>
-<translation id="1356178530321889280">Ak chcete vyhľadať ľubovoľnú oblasť webu a dozvedieť sa viac o vizuálnom obsahu, ktorý sa zobrazuje pri prehliadaní a nakupovaní, kliknite pravým tlačidlom a vyberte „Vyhľadať časť stránky pomocou funkcie Google Lens“.</translation>
 <translation id="1358741672408003399">Pravopis a gramatika</translation>
 <translation id="1359923111303110318">Zariadenie môžete odomykať pomocou funkcie Smart Lock. Odomknete ho stlačením tlačidla Enter.</translation>
 <translation id="1361164813881551742">Pridať ručne</translation>
@@ -2276,6 +2275,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="339178315942519818">Zobrazte si upozornenia z četových aplikácií v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Analýza dokumentov Chromu</translation>
 <translation id="3394850431319394743">Prehrávanie chráneného obsahu pomocou identifikátorov je povolené</translation>
+<translation id="3396744558790608201">Ak chcete vyhľadať ktorýkoľvek región webu a dozvedieť sa viac o vizuálnom obsahu, ktorý sa zobrazuje pri prehliadaní tohto webu a nakupovaní na ňom, kliknite pravým tlačidlom a vyberte Vyhľadať časť stránky pomocou funkcie Google Lens.</translation>
 <translation id="3396800784455899911">Kliknutím na tlačidlo „Súhlasím, pokračovať“ vyjadrujete súhlas so spracovaním uvedeným vyššie v rámci týchto služieb Googlu.</translation>
 <translation id="339722927132407568">Zamŕza</translation>
 <translation id="3399432415385675819">Upozornenia budú zakázané</translation>
@@ -3185,6 +3185,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4364567974334641491"><ph name="APP_NAME" /> zdieľa okno.</translation>
 <translation id="4364830672918311045">Zobrazovať upozornenia</translation>
 <translation id="4366138410738374926">Tlač sa začala</translation>
+<translation id="4369121877634339065">Vyhľadávajte presunutím cez ľubovoľný obrázok</translation>
 <translation id="4370975561335139969">Zadaný e-mail a heslo nesúhlasia.</translation>
 <translation id="4371452868325715552">K serveru sa nepodarilo pripojiť. Skontrolujte pripojenie k sieti a skúste to znova. Ak problémy pretrvávajú, skúste reštartovať Chromebook. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Prenáša sa pracovná plocha</translation>

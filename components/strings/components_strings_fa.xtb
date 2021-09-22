@@ -1163,7 +1163,7 @@
 <translation id="4825507807291741242">نیرومند</translation>
 <translation id="4827402517081186284">«حالت ناشناس» شما را در دنیای آنلاین نامرئی نمی‌کند:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />سایت‌ها متوجه بازدید شما می‌شوند<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />وب‌سایت‌ها داده‌های بازدید شما را می‌بینند<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />کارفرما یا کارکنان مدرسه می‌توانند فعالیت مرور را ردیابی کنند<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />«رسانندگان خدمات اینترنتی» می‌توانند ترافیک وب را پایش کنند<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>

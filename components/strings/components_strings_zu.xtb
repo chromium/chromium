@@ -1161,7 +1161,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4827402517081186284">I-Incognito ayikwenzi ukuthi ubonakale ku-inthanethi:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Amasayithi ayabona lapho uwavakashela<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Abaqashi noma izikole bangakwazi ukulandelela umsebenzi wokuphequlula<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Abaqashi noma izikole bangakwazi ukulandelela umsebenzi woku-browser<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Abahlinzeki nge-inthanethi bangase bagade ithrafikhi yewebhu<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">I-Dreamy</translation>
@@ -2175,7 +2175,7 @@ Imininingwane engeziwe:
 <translation id="8321476692217554900">izaziso</translation>
 <translation id="8328484624016508118">Ngemva kokuvala wonke amathebhu we-Incognito, i-Chrome isula:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Umsebenzi wakho wokuphequlula kule divayisi<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Umsebenzi wakho woku-browser kule divayisi<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Umlando wakho wokusesha kule divayisi<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Ulwazi olufakwe kumafomu<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>

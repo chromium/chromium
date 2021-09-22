@@ -1163,7 +1163,7 @@
 <translation id="4827402517081186284">Инкогнито режимі интернеттегі іс-әрекетіңізді жасырмайды:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Сайттар қашан кіргеніңізді біледі.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Қызметкерлер немесе мектептер браузерді қолдану мәліметін қарай алады.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Жұмыс берушілер немесе мектептер браузерді қолдану мәліметін қарай алады.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Интернет провайдерлері трафикті бақылай алады.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Арманшыл</translation>

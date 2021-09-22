@@ -1153,9 +1153,9 @@
 <translation id="4825507807291741242">Мощный</translation>
 <translation id="4827402517081186284">В режиме инкогнито доступна информация о некоторых действиях:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Сайты узнают, когда вы на них заходите.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Работодатели и образовательные учреждения могут отслеживать действия пользователей в браузере.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Интернет-провайдеры могут отслеживать трафик.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />сайты узнают, когда вы на них заходите;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />работодатели и образовательные учреждения могут отслеживать действия пользователей в браузере;<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />интернет-провайдеры могут отслеживать трафик.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Сказочный</translation>
 <translation id="4840250757394056958">Посмотреть историю Chrome</translation>

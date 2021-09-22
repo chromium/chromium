@@ -1153,10 +1153,10 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4819347708020428563">¿Quieres editar anotaciones en la vista predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva hoja de cálculo de Google rápidamente</translation>
 <translation id="4825507807291741242">Powerful</translation>
-<translation id="4827402517081186284">El modo Incógnito no hace que seas invisible en línea:
+<translation id="4827402517081186284">El modo Incógnito no te hace invisible en línea:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Los sitios saben cuándo los visitas.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Los empleadores o instituciones educativas pueden rastrear tu actividad de navegación.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Los sitios saben que los visitas.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Las empresas o instituciones educativas pueden rastrear tu actividad de navegación.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Los proveedores de servicios de Internet pueden supervisar el tráfico web.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Dreamy</translation>
@@ -2170,8 +2170,8 @@ Detalles adicionales:
 <translation id="8321476692217554900">notificaciones</translation>
 <translation id="8328484624016508118">Después de cerrar todas las pestañas de incógnito, Chrome borrará lo siguiente:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Tu actividad de navegación de este dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Tu historial de búsqueda de este dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />La actividad de navegación de este dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />El historial de búsqueda de este dispositivo<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />La información que hayas ingresado en formularios<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Se denegó el acceso a <ph name="HOST_NAME" /></translation>
