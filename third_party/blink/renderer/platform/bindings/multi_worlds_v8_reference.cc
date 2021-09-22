@@ -10,14 +10,35 @@
 namespace blink {
 
 MultiWorldsV8Reference::MultiWorldsV8Reference(v8::Isolate* isolate,
-                                               v8::Local<v8::Object> object)
-    : object_(isolate, object),
-      script_state_(ScriptState::From(object->CreationContext())) {}
+                                               v8::Local<v8::Value> value)
+    : value_(isolate, value) {
+  if (value->IsObject()) {
+    script_state_ =
+        ScriptState::From(value.As<v8::Object>()->CreationContext());
+  } else {
+    script_state_ = nullptr;
+  }
+}
+
+v8::Local<v8::Value> MultiWorldsV8Reference::GetValue(
+    ScriptState* script_state) {
+  v8::Local<v8::Value> value = value_.NewLocal(script_state->GetIsolate());
+  if (value->IsObject()) {
+    return GetObject(script_state);
+  } else {
+    return value;
+  }
+}
+
+void MultiWorldsV8Reference::Trace(Visitor* visitor) const {
+  visitor->Trace(value_);
+  visitor->Trace(script_state_);
+}
 
 v8::Local<v8::Object> MultiWorldsV8Reference::GetObject(
     ScriptState* script_state) {
   if (&script_state->World() == &script_state_->World()) {
-    return object_.NewLocal(script_state_->GetIsolate());
+    return value_.NewLocal(script_state->GetIsolate()).As<v8::Object>();
   }
 
   V8ObjectDataStore& map = script_state->World().GetV8ObjectDataStore();
@@ -33,11 +54,6 @@ v8::Local<v8::Object> MultiWorldsV8Reference::GetObject(
       copy_object;  // Suppose it contains a copy of the object.
   map.Set(script_state_->GetIsolate(), this, copy_object);
   return copy_object;
-}
-
-void MultiWorldsV8Reference::Trace(Visitor* visitor) const {
-  visitor->Trace(object_);
-  visitor->Trace(script_state_);
 }
 
 }  // namespace blink

@@ -13,14 +13,16 @@ namespace blink {
 
 class MultiWorldsV8Reference : public GarbageCollected<MultiWorldsV8Reference> {
  public:
-  MultiWorldsV8Reference(v8::Isolate* isolate, v8::Local<v8::Object> object);
+  MultiWorldsV8Reference(v8::Isolate* isolate, v8::Local<v8::Value> value);
 
-  v8::Local<v8::Object> GetObject(ScriptState* script_state);
+  v8::Local<v8::Value> GetValue(ScriptState* script_state);
 
   virtual void Trace(Visitor*) const;
 
  private:
-  TraceWrapperV8Reference<v8::Object> object_;
+  v8::Local<v8::Object> GetObject(ScriptState* script_state);
+
+  TraceWrapperV8Reference<v8::Value> value_;
   Member<ScriptState> script_state_;
 };
 
