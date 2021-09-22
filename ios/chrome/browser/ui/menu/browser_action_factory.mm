@@ -126,7 +126,7 @@
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE)
                 image:[UIImage imageNamed:@"open"]
-                 type:MenuActionType::OpenInCurrentTab
+                 type:MenuActionType::OpenImageInCurrentTab
                 block:^{
                   loadingAgent->Load(UrlLoadParams::InCurrentTab(URL));
                   if (completion) {
@@ -145,7 +145,7 @@
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB)
                       image:[UIImage imageNamed:@"open_image_in_new_tab"]
-                       type:MenuActionType::OpenInNewTab
+                       type:MenuActionType::OpenImageInNewTab
                       block:^{
                         loadingAgent->Load(params);
                         if (completion) {

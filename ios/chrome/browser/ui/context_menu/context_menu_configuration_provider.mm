@@ -147,8 +147,6 @@ const CGFloat kFaviconWidthHeight = 24;
   if (!isLink && !isImage)
     return nil;
 
-  base::RecordAction(
-      base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
   DCHECK(self.browser->GetBrowserState());
 
   __weak __typeof(self) weakSelf = self;
@@ -167,6 +165,8 @@ const CGFloat kFaviconWidthHeight = 24;
                                            scenario:menuScenario];
 
   if (isLink) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
     if (web::UrlHasWebScheme(link)) {
       // Open in New Tab.
       UrlLoadParams loadParams = UrlLoadParams::InNewTab(link);
@@ -232,6 +232,8 @@ const CGFloat kFaviconWidthHeight = 24;
   }
 
   if (isImage) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileWebContextMenuImageImpression"));
     // Save Image.
     UIAction* saveImage = [actionFactory actionSaveImageWithBlock:^{
       if (!weakSelf || !weakBaseViewController)

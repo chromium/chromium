@@ -54,7 +54,7 @@ TEST_F(ActionFactoryTest, CreateActionWithParameters) {
 
     UIAction* action = [factory actionWithTitle:test_title_
                                           image:mockImage
-                                           type:MenuActionType::Copy
+                                           type:MenuActionType::CopyURL
                                           block:^{
                                           }];
 

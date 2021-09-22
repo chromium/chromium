@@ -13,7 +13,7 @@ enum class MenuActionType {
   OpenInNewIncognitoTab = 1,
   OpenInNewWindow = 2,
   OpenAllInNewTabs = 3,
-  Copy = 4,
+  CopyURL = 4,
   Edit = 5,
   Move = 6,
   Share = 7,
@@ -28,12 +28,14 @@ enum class MenuActionType {
   AddToBookmarks = 16,
   CloseTab = 17,
   EditBookmark = 18,
-  Save = 19,
-  OpenInCurrentTab = 20,
+  SaveImage = 19,
+  OpenImageInCurrentTab = 20,
   SearchImage = 21,
   CloseAllTabs = 22,
   SelectTabs = 23,
-  kMaxValue = SelectTabs
+  OpenImageInNewTab = 24,
+  CopyImage = 25,
+  kMaxValue = CopyImage
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_ACTION_TYPE_H_
