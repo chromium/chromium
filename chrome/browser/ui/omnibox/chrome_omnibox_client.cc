@@ -33,7 +33,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
-#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -44,7 +43,6 @@
 #include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -56,7 +54,6 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -398,48 +395,6 @@ void ChromeOmniboxClient::OpenUpdateChromeDialog() {
       // See comments at https://crrev.com/c/1281162 for context.
       base::RecordAction(base::UserMetricsAction("UpdateChrome"));
       browser->window()->ShowUpdateChromeDialog();
-    }
-  }
-}
-
-void ChromeOmniboxClient::OpenSharingHub() {
-  controller_->command_updater()->ExecuteCommand(IDC_SHARING_HUB);
-}
-
-void ChromeOmniboxClient::NewIncognitoWindow() {
-  chrome::NewIncognitoWindow(profile_);
-}
-
-void ChromeOmniboxClient::OpenIncognitoClearBrowsingDataDialog() {
-  content::WebContents* contents = controller_->GetWebContents();
-  Browser* browser =
-      (contents) ? chrome::FindBrowserWithWebContents(contents) : nullptr;
-  if (browser) {
-    if (!base::FeatureList::IsEnabled(
-            features::kIncognitoClearBrowsingDataDialogForDesktop)) {
-      chrome::ShowClearBrowsingDataDialog(browser);
-    } else {
-      chrome::ShowIncognitoClearBrowsingDataDialog(browser);
-    }
-  }
-}
-
-void ChromeOmniboxClient::CloseIncognitoWindows() {
-  if (profile_->IsIncognitoProfile()) {
-    BrowserList::CloseAllBrowsersWithIncognitoProfile(
-        profile_, base::DoNothing(), base::DoNothing(), true);
-  }
-}
-
-void ChromeOmniboxClient::PromptPageTranslation() {
-  content::WebContents* contents = controller_->GetWebContents();
-  if (contents) {
-    ChromeTranslateClient* translate_client =
-        ChromeTranslateClient::FromWebContents(contents);
-    if (translate_client) {
-      DCHECK_NE(nullptr, translate_client->GetTranslateManager());
-      translate_client->GetTranslateManager()->ShowTranslateUI(
-          /*auto_translate=*/true, /*triggered_from_menu=*/true);
     }
   }
 }

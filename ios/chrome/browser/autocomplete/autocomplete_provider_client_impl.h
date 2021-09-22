@@ -77,6 +77,13 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   bool IsTabOpenWithURL(const GURL& url,
                         const AutocompleteInput* input) override;
 
+  // OmniboxAction::Client implementation.
+  void OpenSharingHub() override {}
+  void NewIncognitoWindow() override {}
+  void OpenIncognitoClearBrowsingDataDialog() override {}
+  void CloseIncognitoWindows() override {}
+  void PromptPageTranslation() override {}
+
  private:
   ChromeBrowserState* browser_state_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;

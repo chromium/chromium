@@ -40,7 +40,7 @@ using FaviconFetchedCallback =
 // (e.g., getting information about the current page, retrieving objects
 // associated with the current tab, or performing operations that rely on such
 // objects under the hood).
-class OmniboxClient : public OmniboxAction::Client {
+class OmniboxClient {
  public:
   virtual ~OmniboxClient() {}
 
@@ -170,24 +170,6 @@ class OmniboxClient : public OmniboxAction::Client {
 
   // Presents prompt to update Chrome.
   virtual void OpenUpdateChromeDialog() {}
-
-  // OmniboxAction::Client:
-
-  // Opens the Sharing Hub as if the "Share this page" airplane button
-  // were clicked.
-  void OpenSharingHub() override {}
-
-  // Opens and shows a new incognito browser window.
-  void NewIncognitoWindow() override {}
-
-  // Opens an Incognito clear browsing data dialog.
-  void OpenIncognitoClearBrowsingDataDialog() override {}
-
-  // Closes incognito browser windows.
-  void CloseIncognitoWindows() override {}
-
-  // Presents translation prompt for current tab web contents.
-  void PromptPageTranslation() override {}
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CLIENT_H_

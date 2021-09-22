@@ -20,5 +20,4 @@ MockAutocompleteProviderClient::MockAutocompleteProviderClient() {
       std::make_unique<OmniboxTriggeredFeatureService>();
 }
 
-MockAutocompleteProviderClient::~MockAutocompleteProviderClient() {
-}
+MockAutocompleteProviderClient::~MockAutocompleteProviderClient() = default;

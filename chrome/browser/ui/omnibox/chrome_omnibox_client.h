@@ -88,13 +88,6 @@ class ChromeOmniboxClient : public OmniboxClient {
   void DiscardNonCommittedNavigations() override;
   void OpenUpdateChromeDialog() override;
 
-  // OmniboxAction::Client:
-  void OpenSharingHub() override;
-  void NewIncognitoWindow() override;
-  void OpenIncognitoClearBrowsingDataDialog() override;
-  void CloseIncognitoWindows() override;
-  void PromptPageTranslation() override;
-
  private:
   // Performs prerendering for |match|.
   void DoPrerender(const AutocompleteMatch& match);

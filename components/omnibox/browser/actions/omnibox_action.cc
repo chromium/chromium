@@ -47,6 +47,20 @@ size_t EstimateMemoryUsage(const OmniboxAction::LabelStrings& self) {
 
 // =============================================================================
 
+OmniboxAction::ExecutionContext::ExecutionContext(
+    Client& client,
+    OpenUrlCallback callback,
+    base::TimeTicks match_selection_timestamp,
+    WindowOpenDisposition disposition)
+    : client_(client),
+      open_url_callback_(std::move(callback)),
+      match_selection_timestamp_(match_selection_timestamp),
+      disposition_(disposition) {}
+
+OmniboxAction::ExecutionContext::~ExecutionContext() = default;
+
+// =============================================================================
+
 OmniboxAction::OmniboxAction(LabelStrings strings, GURL url)
     : strings_(strings), url_(url) {}
 
@@ -87,14 +101,9 @@ int32_t OmniboxAction::GetID() const {
 
 void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
                             const GURL& url) const {
-  // Set `match_type` as if the user just typed |url| verbatim.
-  // `destination_url_entered_without_scheme` is used to determine whether
-  // navigations typed without a scheme and upgraded to HTTPS should fall back
-  // to HTTP. The URL might have been entered without a scheme, but Action
-  // destination URLs don't need a fallback so it's fine to pass false here.
-  context.controller_.OnAutocompleteAccept(
-      url, nullptr, context.disposition_, ui::PAGE_TRANSITION_GENERATED,
-      /*match_type=*/AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-      context.match_selection_timestamp_,
-      /*destination_url_entered_without_scheme=*/false);
+  std::move(context.open_url_callback_)
+      .Run(url, nullptr, context.disposition_, ui::PAGE_TRANSITION_GENERATED,
+           /*match_type=*/AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+           context.match_selection_timestamp_,
+           /*destination_url_entered_without_scheme=*/false);
 }

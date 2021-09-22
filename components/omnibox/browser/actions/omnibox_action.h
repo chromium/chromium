@@ -7,10 +7,14 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
+#include "components/search_engines/template_url.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -22,7 +26,6 @@ struct VectorIcon;
 
 class AutocompleteInput;
 class AutocompleteProviderClient;
-class OmniboxEditController;
 
 // Omnibox Actions are additional actions associated with matches. They appear
 // in the suggestion button row and are not matches themselves.
@@ -81,16 +84,27 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // of boilerplate required is greatly reduced.
   class ExecutionContext {
    public:
+    // Set `match_type` as if the user just typed url verbatim.
+    // `destination_url_entered_without_scheme` is used to determine whether
+    // navigations typed without a scheme and upgraded to HTTPS should fall back
+    // to HTTP. The URL might have been entered without a scheme, but Action
+    // destination URLs don't need a fallback so it's fine to pass false here.
+    using OpenUrlCallback =
+        base::OnceCallback<void(const GURL& destination_url,
+                                TemplateURLRef::PostContent* post_content,
+                                WindowOpenDisposition disposition,
+                                ui::PageTransition transition,
+                                AutocompleteMatchType::Type match_type,
+                                base::TimeTicks match_selection_timestamp,
+                                bool destination_url_entered_without_scheme)>;
+
     ExecutionContext(Client& client,
-                     OmniboxEditController& controller,
+                     OpenUrlCallback callback,
                      base::TimeTicks match_selection_timestamp,
-                     WindowOpenDisposition disposition)
-        : client_(client),
-          controller_(controller),
-          match_selection_timestamp_(match_selection_timestamp),
-          disposition_(disposition) {}
+                     WindowOpenDisposition disposition);
+    ~ExecutionContext();
     Client& client_;
-    OmniboxEditController& controller_;
+    OpenUrlCallback open_url_callback_;
     base::TimeTicks match_selection_timestamp_;
     WindowOpenDisposition disposition_;
   };

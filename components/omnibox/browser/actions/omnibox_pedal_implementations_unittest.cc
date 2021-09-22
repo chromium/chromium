@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 
+#include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -20,8 +22,8 @@
 class OmniboxPedalImplementationsTest : public testing::Test {
  protected:
   OmniboxPedalImplementationsTest()
-      : omnibox_client_(new TestOmniboxClient),
-        omnibox_edit_controller_(new TestOmniboxEditController) {}
+      : omnibox_edit_controller_(
+            std::make_unique<TestOmniboxEditController>()) {}
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
@@ -30,10 +32,13 @@ class OmniboxPedalImplementationsTest : public testing::Test {
         {});
   }
 
-  GURL ExecuteContextAndReturnResult(const OmniboxPedal* pedal) {
-    OmniboxPedal::ExecutionContext context(*omnibox_client_,
-                                           *omnibox_edit_controller_, {},
-                                           WindowOpenDisposition::CURRENT_TAB);
+  GURL ExecuteContextAndReturnResult(const OmniboxPedal* pedal,
+                                     OmniboxAction::Client& client) {
+    OmniboxPedal::ExecutionContext context(
+        client,
+        base::BindOnce(&TestOmniboxEditController::OnAutocompleteAccept,
+                       omnibox_edit_controller_->AsWeakPtr()),
+        {}, WindowOpenDisposition::CURRENT_TAB);
     pedal->Execute(context);
     return omnibox_edit_controller_->destination_url();
   }
@@ -17520,7 +17525,7 @@ TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
 
   EXPECT_EQ(GURL("chrome://settings/clearBrowserData"),
-            ExecuteContextAndReturnResult(pedal));
+            ExecuteContextAndReturnResult(pedal, client));
 }
 
 TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
@@ -17532,7 +17537,7 @@ TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
 
   EXPECT_EQ(GURL("chrome://settings/clearBrowserData"),
-            ExecuteContextAndReturnResult(pedal));
+            ExecuteContextAndReturnResult(pedal, client));
 }
 
 TEST_F(OmniboxPedalImplementationsTest,
@@ -17546,7 +17551,7 @@ TEST_F(OmniboxPedalImplementationsTest,
   // differently depending on incognito status. The incognito behavior does
   // not navigate but the non-incognito behavior does navigate.
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
-  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
+  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal, client));
 }
 
 TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
@@ -17560,7 +17565,7 @@ TEST_F(OmniboxPedalImplementationsWithoutTranslationConsoleTest,
   // differently depending on incognito status. The incognito behavior does
   // not navigate but the non-incognito behavior does navigate.
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
-  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
+  EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal, client));
 }
 
 TEST_F(OmniboxPedalImplementationsTest,

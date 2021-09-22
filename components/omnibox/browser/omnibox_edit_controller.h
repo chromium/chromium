@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_CONTROLLER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_CONTROLLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/search_engines/template_url.h"
@@ -14,7 +15,8 @@
 
 class LocationBarModel;
 
-class OmniboxEditController {
+class OmniboxEditController
+    : public base::SupportsWeakPtr<OmniboxEditController> {
  public:
   virtual void OnAutocompleteAccept(
       const GURL& destination_url,

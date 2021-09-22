@@ -136,6 +136,12 @@ class MockAutocompleteProviderClient
     return &test_url_loader_factory_;
   }
 
+  MOCK_METHOD0(OpenSharingHub, void());
+  MOCK_METHOD0(NewIncognitoWindow, void());
+  MOCK_METHOD0(OpenIncognitoClearBrowsingDataDialog, void());
+  MOCK_METHOD0(CloseIncognitoWindows, void());
+  MOCK_METHOD0(PromptPageTranslation, void());
+
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;

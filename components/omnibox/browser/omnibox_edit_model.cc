@@ -10,9 +10,11 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -740,8 +742,11 @@ void OmniboxEditModel::ExecuteAction(const AutocompleteMatch& match,
   RecordActionShownForAllActions(result());
 
   match.action->RecordActionExecuted(match_position);
-  OmniboxPedal::ExecutionContext context(
-      *client_, *controller_, match_selection_timestamp, disposition);
+  OmniboxAction::ExecutionContext context(
+      *(autocomplete_controller()->autocomplete_provider_client()),
+      base::BindOnce(&OmniboxEditController::OnAutocompleteAccept,
+                     controller_->AsWeakPtr()),
+      match_selection_timestamp, disposition);
   match.action->Execute(context);
 
   {
