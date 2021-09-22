@@ -58,12 +58,6 @@ const base::Feature kAppStoreBillingDebug{"AppStoreBillingDebug",
 const base::Feature kStrictHasEnrolledAutofillInstrument{
     "StrictHasEnrolledAutofillInstrument", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kPaymentRequestSkipToGPay{
-    "PaymentRequestSkipToGPay", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPaymentRequestSkipToGPayIfNoCard{
-    "PaymentRequestSkipToGPayIfNoCard", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDownRankJustInTimePaymentApp{
     "DownRankJustInTimePaymentApp", base::FEATURE_DISABLED_BY_DEFAULT};
 

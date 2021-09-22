@@ -1747,41 +1747,6 @@
       },
     },
   },
-  'hybrid_browsertest': {
-    'remove_from': [
-      # Remove from CQ bots due to capacity.
-      'android-lollipop-arm-rel',
-    ],
-   'modifications': {
-     'android-11-x86-rel': {
-       'swarming': {
-         'shards': 2,
-       },
-     },
-     'android-marshmallow-x86-rel': {
-       'swarming': {
-         'shards': 2,
-       },
-     },
-     'android-pie-arm64-rel': {
-       # TODO(crbug.com/1111436): Move this back to walleye if/when additional
-       # capacity has been deployed.
-       'swarming': {
-         'dimension_sets': [
-           {
-             'device_type': 'sailfish',
-           },
-         ],
-         'shards': 2,
-       },
-     },
-     'android-pie-x86-rel': {
-       'swarming': {
-         'shards': 2,
-       },
-     },
-   },
-  },
   'info_collection_tests': {
     'remove_from': [
       # The Mac ASAN swarming bot runs tests on two different GPU

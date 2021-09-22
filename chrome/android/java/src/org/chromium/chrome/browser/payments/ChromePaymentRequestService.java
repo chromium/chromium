@@ -9,7 +9,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -38,7 +37,6 @@ import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
-import org.chromium.components.payments.SkipToGPayHelper;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PayerDetail;
@@ -50,7 +48,6 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
-import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -87,9 +84,6 @@ public class ChromePaymentRequestService
     private boolean mHideServerAutofillCards;
     private PaymentHandlerHost mPaymentHandlerHost;
 
-    /** A helper to manage the Skip-to-GPay experimental flow. */
-    private SkipToGPayHelper mSkipToGPayHelper;
-    private boolean mIsGooglePayBridgeActivated;
     /**
      * True if the browser has skipped showing the app selector UI (PaymentRequest UI).
      *
@@ -253,14 +247,6 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
-            WebContents webContents, PaymentMethodData[] rawMethodData) {
-        mIsGooglePayBridgeActivated = googlePayBridgeEligible
-                && SkipToGPayHelperUtil.canActivateExperiment(mWebContents, rawMethodData);
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
     public void onSpecValidated(PaymentRequestSpec spec) {
         mSpec = spec;
         mPaymentUiService.initialize(mSpec.getPaymentDetails());
@@ -273,11 +259,6 @@ public class ChromePaymentRequestService
             PaymentOptions options) {
         assert methodData != null;
         assert details != null;
-
-        if (mIsGooglePayBridgeActivated) {
-            PaymentMethodData data = methodData.get(MethodStrings.GOOGLE_PAY);
-            mSkipToGPayHelper = new SkipToGPayHelper(options, data.gpayBridgeData);
-        }
 
         if (!parseAndValidateDetailsFurtherIfNeeded(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
@@ -348,7 +329,6 @@ public class ChromePaymentRequestService
                 && !mSpec.isSecurePaymentConfirmationRequested()) {
             shouldSkipAppSelector = false;
         }
-        if (mSkipToGPayHelper != null) shouldSkipAppSelector = true;
 
         if (shouldSkipAppSelector) {
             mHasSkippedAppSelector = true;
@@ -391,28 +371,6 @@ public class ChromePaymentRequestService
             mPaymentUiService.createShippingSectionIfNeeded(context);
         }
         return null;
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodDataMap) {
-        if (!mIsGooglePayBridgeActivated || methodDataMap == null) return;
-        Map<String, PaymentMethodData> result = new ArrayMap<>();
-        for (PaymentMethodData methodData : methodDataMap.values()) {
-            String method = methodData.supportedMethod;
-            assert !TextUtils.isEmpty(method);
-            // If skip-to-GPay flow is activated, ignore all other payment methods, which can be
-            // either "basic-card" or "https://android.com/pay". The latter is safe to ignore
-            // because merchant has already requested Google Pay.
-            if (!method.equals(MethodStrings.GOOGLE_PAY)) continue;
-            if (methodData.gpayBridgeData != null
-                    && !methodData.gpayBridgeData.stringifiedData.isEmpty()) {
-                methodData.stringifiedData = methodData.gpayBridgeData.stringifiedData;
-            }
-            result.put(method, methodData);
-        }
-        methodDataMap.clear();
-        methodDataMap.putAll(result);
     }
 
     // Implements BrowserPaymentRequest:
@@ -471,12 +429,6 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public boolean parseAndValidateDetailsFurtherIfNeeded(PaymentDetails details) {
-        return mSkipToGPayHelper == null || mSkipToGPayHelper.setShippingOptionIfValid(details);
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
     public void onInstrumentDetailsLoading() {
         assert mPaymentUiService.getSelectedPaymentApp() == null
                 || mPaymentUiService.getSelectedPaymentApp().getPaymentAppType()
@@ -493,7 +445,7 @@ public class ChromePaymentRequestService
         PaymentResponseHelperInterface paymentResponseHelper =
                 new ChromePaymentResponseHelper(selectedShippingAddress, selectedShippingOption,
                         mPaymentUiService.getSelectedContact(), selectedPaymentApp,
-                        mSpec.getPaymentOptions(), mSkipToGPayHelper != null);
+                        mSpec.getPaymentOptions());
         mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
         return selectedPaymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
     }
@@ -654,12 +606,6 @@ public class ChromePaymentRequestService
         if (mHasSkippedAppSelector) {
             mPaymentUiService.showProcessingMessageAfterUiSkip();
         }
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public boolean patchPaymentResponseIfNeeded(PaymentResponse response) {
-        return mSkipToGPayHelper == null || mSkipToGPayHelper.patchPaymentResponse(response);
     }
 
     // Implements BrowserPaymentRequest:

@@ -59,13 +59,6 @@ blink_modules_sources("payments") {
     "update_payment_details_function.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "skip_to_gpay_utils.cc",
-      "skip_to_gpay_utils.h",
-    ]
-  }
-
   deps = [
     "//components/payments/mojom:mojom_blink",
     "//third_party/blink/renderer/modules/credentialmanager",

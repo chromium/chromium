@@ -174,7 +174,6 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/PaymentResponseHelperInterface.java",
     "java/src/org/chromium/components/payments/PaymentUiServiceTestInterface.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
-    "java/src/org/chromium/components/payments/SkipToGPayHelper.java",
     "java/src/org/chromium/components/payments/SslValidityChecker.java",
     "java/src/org/chromium/components/payments/SupportedDelegations.java",
     "java/src/org/chromium/components/payments/UrlUtil.java",

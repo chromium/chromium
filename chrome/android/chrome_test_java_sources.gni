@@ -458,7 +458,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestTabTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestUpdateWithTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestUseStatsTest.java",
-  "javatests/src/org/chromium/chrome/browser/payments/SkipToGPayHelperTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/WebPaymentIntentHelperTest.java",
   "javatests/src/org/chromium/chrome/browser/permissions/AutomaticEmbargoTest.java",
   "javatests/src/org/chromium/chrome/browser/permissions/GeolocationTest.java",

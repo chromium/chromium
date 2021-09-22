@@ -44,7 +44,6 @@ public class PaymentRequestServiceBuilder implements Delegate {
     private PaymentMethodData[] mMethodData;
     private PaymentDetails mDetails;
     private PaymentOptions mOptions;
-    private boolean mGooglePayBridgeEligible;
     private boolean mPrefsCanMakePayment;
     private String mInvalidSslCertificateErrorMessage;
     private boolean mIsOriginSecure = true;
@@ -232,11 +231,6 @@ public class PaymentRequestServiceBuilder implements Delegate {
         return this;
     }
 
-    public PaymentRequestServiceBuilder setGooglePayBridgeEligible(boolean eligible) {
-        mGooglePayBridgeEligible = eligible;
-        return this;
-    }
-
     public PaymentRequestServiceBuilder setWebContents(WebContents webContents) {
         mWebContents = webContents;
         return this;
@@ -276,7 +270,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
     public PaymentRequestService build() {
         PaymentRequestService service = new PaymentRequestService(
                 mRenderFrameHost, mClient, mOnClosedListener, /*delegate=*/this, () -> null);
-        boolean success = service.init(mMethodData, mDetails, mOptions, mGooglePayBridgeEligible);
+        boolean success = service.init(mMethodData, mDetails, mOptions);
         return success ? service : null;
     }
 }

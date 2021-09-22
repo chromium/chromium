@@ -30,9 +30,8 @@ class HasEnrolledInstrumentTest
  public:
   HasEnrolledInstrumentTest() {
     if (GetParam() == STRICT_HAS_ENROLLED_INSTRUMENT) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kStrictHasEnrolledAutofillInstrument},
-          /*disabled_features=*/{features::kPaymentRequestSkipToGPay});
+      feature_list_.InitAndEnableFeature(
+          features::kStrictHasEnrolledAutofillInstrument);
     }
   }
 

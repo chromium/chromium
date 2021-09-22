@@ -102,9 +102,6 @@ public interface BrowserPaymentRequest {
      */
     void addPaymentAppFactories(PaymentAppService service, PaymentAppFactoryDelegate delegate);
 
-    default void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
-            WebContents webContents, PaymentMethodData[] rawMethodData) {}
-
     /**
      * @return Whether at least one payment app (including basic-card payment app) is available
      *         (excluding the pending apps).

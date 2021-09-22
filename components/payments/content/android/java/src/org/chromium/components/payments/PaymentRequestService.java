@@ -436,14 +436,10 @@ public class PaymentRequestService
      *        usage, can be null.
      * @param options The payment options specified by the merchant, need validation before
      *        usage, can be null.
-     * @param googlePayBridgeEligible True when the renderer process deems the current request
-     *        eligible for the skip-to-GPay experimental flow. It is ultimately up to the
-     *        browser process to determine whether to trigger it.
      * @return Whether the initialization is successful.
      */
     public boolean init(@Nullable PaymentMethodData[] rawMethodData,
-            @Nullable PaymentDetails details, @Nullable PaymentOptions options,
-            boolean googlePayBridgeEligible) {
+            @Nullable PaymentDetails details, @Nullable PaymentOptions options) {
         if (mRenderFrameHost.getLastCommittedOrigin() == null
                 || mRenderFrameHost.getLastCommittedURL() == null) {
             abortForInvalidDataFromRenderer(ErrorStrings.NO_FRAME);
@@ -526,8 +522,6 @@ public class PaymentRequestService
         }
 
         mBrowserPaymentRequest = mDelegate.createBrowserPaymentRequest(this);
-        mBrowserPaymentRequest.onWhetherGooglePayBridgeEligible(
-                googlePayBridgeEligible, mWebContents, rawMethodData);
         @Nullable
         Map<String, PaymentMethodData> methodData = getValidatedMethodData(rawMethodData);
         if (methodData == null) {
