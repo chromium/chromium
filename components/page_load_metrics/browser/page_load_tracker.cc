@@ -1049,8 +1049,10 @@ void PageLoadTracker::OnRestoreFromBackForwardCache(
   }
 
   // Reset the page end reason to END_NONE. The page has been restored, its
-  // previous end reason is no longer relevant.
+  // previous end reason is no longer relevant. Similarly, its page end time is
+  // no longer accurate, so reset that as well.
   page_end_reason_ = END_NONE;
+  page_end_time_ = base::TimeTicks();
 }
 
 void PageLoadTracker::OnV8MemoryChanged(
