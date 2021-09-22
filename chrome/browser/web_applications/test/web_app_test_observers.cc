@@ -80,15 +80,9 @@ void WebAppTestRegistryObserverAdapter::SetWebAppLastBadgingTimeChangedDelegate(
 }
 
 void WebAppTestRegistryObserverAdapter::
-    SetWebAppApprovedProtocolsChangedDelegate(
-        WebAppApprovedProtocolsChangedDelegate delegate) {
-  app_approved_protocols_changed_delegate_ = delegate;
-}
-
-void WebAppTestRegistryObserverAdapter::
-    SetWebAppDisallowedProtocolsChangedDelegate(
-        WebAppDisallowedProtocolsChangedDelegate delegate) {
-  app_disallowed_protocols_changed_delegate_ = delegate;
+    SetWebAppProtocolSettingsChangedDelegate(
+        WebAppProtocolSettingsChangedDelegate delegate) {
+  app_protocol_settings_changed_delegate_ = delegate;
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppInstalled(const AppId& app_id) {
@@ -140,14 +134,9 @@ void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
     app_last_badging_time_changed_delegate_.Run(app_id, time);
 }
 
-void WebAppTestRegistryObserverAdapter::OnWebAppApprovedProtocolsChanged() {
-  if (app_approved_protocols_changed_delegate_)
-    app_approved_protocols_changed_delegate_.Run();
-}
-
-void WebAppTestRegistryObserverAdapter::OnWebAppDisallowedProtocolsChanged() {
-  if (app_disallowed_protocols_changed_delegate_)
-    app_disallowed_protocols_changed_delegate_.Run();
+void WebAppTestRegistryObserverAdapter::OnWebAppProtocolSettingsChanged() {
+  if (app_protocol_settings_changed_delegate_)
+    app_protocol_settings_changed_delegate_.Run();
 }
 
 void WebAppTestRegistryObserverAdapter::SignalRunLoopAndStoreAppId(

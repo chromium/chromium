@@ -2506,7 +2506,7 @@ IN_PROC_BROWSER_TEST_F(
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
   bool approved_protocols_notified = false;
   web_app::WebAppTestRegistryObserverAdapter observer(browser()->profile());
-  observer.SetWebAppApprovedProtocolsChangedDelegate(base::BindLambdaForTesting(
+  observer.SetWebAppProtocolSettingsChangedDelegate(base::BindLambdaForTesting(
       [&]() { approved_protocols_notified = true; }));
 
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(

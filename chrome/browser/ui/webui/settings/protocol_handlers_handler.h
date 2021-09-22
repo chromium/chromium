@@ -11,14 +11,19 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/common/custom_handlers/protocol_handler.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ProtocolHandlersHandler
 
-// Listen for changes to protocol handlers (i.e. registerProtocolHandler()).
-// This get triggered whenever a user allows a specific website or application
-// to handle clicks on a link with a specified protocol (i.e. mailto: -> Gmail).
+// Listen for changes to protocol handlers registrations.
+// This get triggered whenever a user allows or disallows a specific website or
+// application to handle clicks on a link with a specified protocol (i.e.
+// mailto: -> Gmail).
 
 namespace base {
 class DictionaryValue;
@@ -29,7 +34,8 @@ using content::ProtocolHandler;
 namespace settings {
 
 class ProtocolHandlersHandler : public SettingsPageUIHandler,
-                                public ProtocolHandlerRegistry::Observer {
+                                public ProtocolHandlerRegistry::Observer,
+                                public web_app::AppRegistrarObserver {
  public:
   ProtocolHandlersHandler();
 
@@ -45,6 +51,10 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
 
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override;
+
+  // web_app::AppRegistrarObserver:
+  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppProtocolSettingsChanged() override;
 
  private:
   // Called to fetch the state of the protocol handlers. If the full list of
@@ -90,6 +100,34 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
   base::ScopedObservation<ProtocolHandlerRegistry,
                           ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
+
+  // Web App Protocol Handler specific functions:
+
+  // Called to fetch the state of the app protocol handlers.
+  void HandleObserveAppProtocolHandlers(base::Value::ConstListView args);
+
+  // Parses an App ProtocolHandler out of |args|, which is a list of [protocol,
+  // url, app_id].
+  content::ProtocolHandler ParseAppHandlerFromArgs(
+      base::Value::ConstListView args) const;
+
+  // Returns a DictionaryValue describing the set of app protocol handlers for
+  // the given |protocol|.
+  std::unique_ptr<base::DictionaryValue> GetAppHandlersForProtocol(
+      const std::string& protocol);
+
+  // Called when OnWebAppProtocolSettingsChanged() is notified or on page load.
+  void UpdateAllApprovedLaunchProtocols();
+
+  // Remove a handler.
+  // |args| is a list of [protocol, url, app_id].
+  void HandleRemoveApprovedAppHandler(base::Value::ConstListView args);
+
+  web_app::WebAppProvider* GetWebAppProvider();
+
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::AppRegistrarObserver>
+      app_observation_{this};
 };
 
 }  // namespace settings

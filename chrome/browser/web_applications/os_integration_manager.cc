@@ -340,6 +340,15 @@ std::vector<ProtocolHandler> OsIntegrationManager::GetAppProtocolHandlers(
   return protocol_handler_manager_->GetAppProtocolHandlers(app_id);
 }
 
+std::vector<ProtocolHandler>
+OsIntegrationManager::GetApprovedHandlersForProtocol(
+    const std::string& protocol) {
+  if (!protocol_handler_manager_)
+    return std::vector<ProtocolHandler>();
+
+  return protocol_handler_manager_->GetApprovedHandlersForProtocol(protocol);
+}
+
 WebAppFileHandlerManager&
 OsIntegrationManager::file_handler_manager_for_testing() {
   DCHECK(file_handler_manager_);

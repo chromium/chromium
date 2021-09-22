@@ -155,6 +155,8 @@ class OsIntegrationManager {
       const std::string& protocol);
   virtual std::vector<ProtocolHandler> GetAppProtocolHandlers(
       const AppId& app_id);
+  virtual std::vector<ProtocolHandler> GetApprovedHandlersForProtocol(
+      const std::string& protocol);
 
   // Getter for testing WebAppFileHandlerManager
   WebAppFileHandlerManager& file_handler_manager_for_testing();

@@ -52,9 +52,30 @@ export type ProtocolEntry = {
   protocol_display_name: string,
 };
 
+export type AppHandlerEntry = {
+  host: string,
+  protocol: string,
+  protocol_display_name: string,
+  spec: string,
+  app_id: string,
+};
+
+export type AppProtocolEntry = {
+  handlers: Array<AppHandlerEntry>,
+  protocol: string,
+  protocol_display_name: string,
+};
+
+
 interface RepeaterEvent extends Event {
   model: {
     item: HandlerEntry,
+  }
+}
+
+interface AppRepeaterEvent extends Event {
+  model: {
+    item: AppHandlerEntry,
   }
 }
 
@@ -79,6 +100,19 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
        * Array of protocols and their handlers.
        */
       protocols: Array,
+
+      /**
+       * Array of approved app protocols and their handlers.
+       */
+      appApprovedProtocols: Array,
+
+      /**
+       * Used to determine if the apps title should be shown.
+       */
+      showAppsProtocolHandlersTitle_: {
+        type: Boolean,
+        value: false,
+      },
 
       /**
        * The targeted object for menu operations.
@@ -108,6 +142,8 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   }
 
   protocols: Array<ProtocolEntry>;
+  appApprovedProtocols: Array<AppProtocolEntry>;
+  private showAppsProtocolHandlersTitle_: boolean;
   private actionMenuModel_: HandlerEntry|null;
   toggleOffLabel: string;
   toggleOnLabel: string;
@@ -129,6 +165,12 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
         (ignoredProtocols: Array<HandlerEntry>) =>
             this.setIgnoredProtocolHandlers_(ignoredProtocols));
     this.browserProxy.observeProtocolHandlers();
+
+    // Web App Observer
+    this.addWebUIListener(
+        'setAppApprovedProtocolHandlers',
+        this.setAppApprovedProtocolHandlers_.bind(this));
+    this.browserProxy.observeAppProtocolHandlers();
   }
 
   /**
@@ -165,6 +207,17 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   }
 
   /**
+   * Updates the list of approved app protocol handlers.
+   * @param appApprovedProtocols The new approved app protocol handler list.
+   */
+  private setAppApprovedProtocolHandlers_(appApprovedProtocols:
+                                              Array<AppProtocolEntry>) {
+    this.appApprovedProtocols = appApprovedProtocols;
+    this.showAppsProtocolHandlersTitle_ =
+        (this.appApprovedProtocols && this.appApprovedProtocols.length > 0);
+  }
+
+  /**
    * Closes action menu and resets action menu model
    */
   private closeActionMenu_() {
@@ -196,6 +249,15 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     const item = this.actionMenuModel_!;
     this.browserProxy.removeProtocolHandler(item.protocol, item.spec);
     this.closeActionMenu_();
+  }
+
+  /**
+   * Handler for removing web app protocol handlers that were approved.
+   */
+  private onRemoveAppApprovedHandlerButtonClick_(event: AppRepeaterEvent) {
+    const item = event.model.item;
+    this.browserProxy.removeAppApprovedHandler(
+        item.protocol, item.spec, item.app_id);
   }
 
   /**

@@ -40,8 +40,12 @@ class WebAppProtocolHandlerManager {
   absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
                                             const GURL& protocol_url) const;
 
-  // Get the list of handlers for the given protocol.
+  // Gets the list of handlers for a given protocol.
   std::vector<ProtocolHandler> GetHandlersFor(
+      const std::string& protocol) const;
+
+  // Gets the list of handlers with launch permissions for a given protocol.
+  std::vector<ProtocolHandler> GetApprovedHandlersForProtocol(
       const std::string& protocol) const;
 
   // Gets the protocol handlers for `app_id`. Any protocols that the user

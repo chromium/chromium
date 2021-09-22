@@ -114,6 +114,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
   bool IsDisallowedLaunchProtocol(const AppId& app_id,
                                   std::string protocol_scheme) const;
 
+  // Gets all approved launch protocols from all installed apps.
+  base::flat_set<std::string> GetAllApprovedLaunchProtocols() const;
+
   // Count a number of all apps which are installed by user (non-default).
   // Requires app registry to be in a ready state.
   int CountUserInstalledApps() const;
@@ -227,11 +230,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void AddObserver(AppRegistrarObserver* observer);
   void RemoveObserver(AppRegistrarObserver* observer);
 
-  void NotifyWebAppApprovedProtocolsChanged();
-  void NotifyWebAppDisallowedProtocolsChanged();
   void NotifyWebAppInstalled(const AppId& app_id);
   void NotifyWebAppManifestUpdated(const AppId& app_id,
                                    base::StringPiece old_name);
+  void NotifyWebAppProtocolSettingsChanged();
   void NotifyWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state);
   void NotifyWebAppUninstalled(const AppId& app_id);

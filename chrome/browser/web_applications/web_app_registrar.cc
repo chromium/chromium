@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -78,14 +79,9 @@ void WebAppRegistrar::RemoveObserver(AppRegistrarObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void WebAppRegistrar::NotifyWebAppApprovedProtocolsChanged() {
+void WebAppRegistrar::NotifyWebAppProtocolSettingsChanged() {
   for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppApprovedProtocolsChanged();
-}
-
-void WebAppRegistrar::NotifyWebAppDisallowedProtocolsChanged() {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppDisallowedProtocolsChanged();
+    observer.OnWebAppProtocolSettingsChanged();
 }
 
 void WebAppRegistrar::NotifyWebAppInstalled(const AppId& app_id) {
@@ -475,6 +471,16 @@ bool WebAppRegistrar::IsDisallowedLaunchProtocol(
   const WebApp* web_app = GetAppById(app_id);
   return web_app && base::Contains(web_app->disallowed_launch_protocols(),
                                    protocol_scheme);
+}
+
+base::flat_set<std::string> WebAppRegistrar::GetAllApprovedLaunchProtocols()
+    const {
+  base::flat_set<std::string> protocols;
+  for (const WebApp& web_app : GetApps()) {
+    protocols.insert(web_app.approved_launch_protocols().begin(),
+                     web_app.approved_launch_protocols().end());
+  }
+  return protocols;
 }
 
 int WebAppRegistrar::CountUserInstalledApps() const {

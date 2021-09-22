@@ -34,8 +34,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
       'getOriginPermissions',
       'isOriginValid',
       'isPatternValidForType',
+      'observeAppProtocolHandlers',
       'observeProtocolHandlers',
       'observeProtocolHandlersEnabledState',
+      'removeAppApprovedHandler',
       'removeIgnoredHandler',
       'removeProtocolHandler',
       'removeZoomLevel',
@@ -94,6 +96,9 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
 
     /** @private {!Array<ZoomLevelEntry>} */
     this.zoomList_ = [];
+
+    /** @private {!Array<!AppProtocolEntry>} */
+    this.appApprovedProtocolHandlers_ = [];
 
     /** @private {!Array<!ProtocolEntry>} */
     this.protocolHandlers_ = [];
@@ -199,6 +204,16 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
   setProtocolHandlers(list) {
     // Shallow copy of the passed-in array so mutation won't impact the source
     this.protocolHandlers_ = list.slice();
+  }
+
+  /**
+   * Sets the prefs to use when testing.
+   * @param {!Array<AppProtocolEntry>} list The web app protocol handlers
+   *    list to set.
+   */
+   setAppApprovedProtocolHandlers(list) {
+    // Shallow copy of the passed-in array so mutation won't impact the source
+    this.appApprovedProtocolHandlers_ = list.slice();
   }
 
   /**
@@ -487,6 +502,14 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
+  observeAppProtocolHandlers() {
+    webUIListenerCallback(
+        'setAppApprovedProtocolHandlers',
+        this.appApprovedProtocolHandlers_);
+    this.methodCalled('observeAppProtocolHandlers');
+  }
+
+  /** @override */
   observeProtocolHandlersEnabledState() {
     webUIListenerCallback('setHandlersEnabled', true);
     this.methodCalled('observeProtocolHandlersEnabledState');
@@ -500,6 +523,10 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy {
   /** @override */
   removeProtocolHandler() {
     this.methodCalled('removeProtocolHandler', arguments);
+  }
+  /** @override */
+  removeAppApprovedHandler() {
+    this.methodCalled('removeAppApprovedHandler', arguments);
   }
 
   /** @override */

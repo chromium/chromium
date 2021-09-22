@@ -2530,6 +2530,12 @@
   <message name="IDS_SETTINGS_COOKIES_BLOCK_EXCEPTIONS" desc="Title of the list containing site exceptions always blocking them from using cookies">
     Sites that can never use cookies
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_APP_PROTOCOL_HANDLERS" desc="Label for the app protocol handlers (e.g. mailto) in site settings.">
+    Apps
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_APP_APPROVED_PROTOCOL_HANDLERS_DESCRIPTION" desc="Description of the approved protocol handlers list registered with the OS, where the user has previously permitted the app to handle the protocol.">
+    Apps listed below can handle protocol links as well. Other apps will ask for permission.
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK" desc="The ask label for HID devices in site settings.">
     Ask when a site wants to access HID devices
   </message>

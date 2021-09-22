@@ -55,7 +55,43 @@ suite('ProtocolHandlers', function() {
   ];
 
   /**
-   * A list of IngnoredProtocolEntry fixtures.
+   * A list of AppProtocolEntry fixtures.
+   * @type {!Array<!AppProtocolEntry>}
+   */
+  const appProtocols = [
+    {
+      handlers: [{
+        host: 'www.google.com',
+        protocol: 'mailto',
+        protocol_name: 'email',
+        spec: 'http://www.google.com/%s',
+        app_id: 'testID'
+      }],
+      protocol: 'mailto'
+    },
+    {
+      handlers: [
+        {
+          host: 'www.google1.com',
+          protocol: 'webcal',
+          protocol_name: 'web calendar',
+          spec: 'http://www.google1.com/%s',
+          app_id: 'testID1'
+        },
+        {
+          host: 'www.google2.com',
+          protocol: 'webcal',
+          protocol_name: 'web calendar',
+          spec: 'http://www.google2.com/%s',
+          app_id: 'testID2'
+        }
+      ],
+      protocol: 'webcal'
+    }
+  ];
+
+  /**
+   * A list of IgnoredProtocolEntry fixtures.
    * @type {!Array<!HandlerEntry}>}
    */
   const ignoredProtocols = [{
@@ -88,9 +124,10 @@ suite('ProtocolHandlers', function() {
     PolymerTest.clearBody();
     testElement = document.createElement('protocol-handlers');
     document.body.appendChild(testElement);
-    return browserProxy.whenCalled('observeProtocolHandlers').then(function() {
-      flush();
-    });
+    return browserProxy.whenCalled('observeAppProtocolHandlers')
+        .then(function() {
+          flush();
+        });
   }
 
   test('set protocol handlers default called', () => {
@@ -226,5 +263,36 @@ suite('ProtocolHandlers', function() {
           assertEquals(ignoredProtocols[0].protocol, protocol);
           assertEquals(ignoredProtocols[0].spec, url);
         });
+  });
+
+  test('non-empty web app protocols', async () => {
+    browserProxy.setAppApprovedProtocolHandlers(appProtocols);
+    await initPage();
+    const listFrames = testElement.root.querySelectorAll('.list-frame');
+    const listItems = testElement.root.querySelectorAll('.list-item');
+    // There are two protocols: ["mailto", "webcal"].
+    assertEquals(2, listFrames.length);
+    // There are three total handlers within the two protocols.
+    assertEquals(3, listItems.length);
+
+    // Check that item hosts are rendered correctly.
+    const hosts = testElement.root.querySelectorAll('.protocol-host');
+    assertEquals('www.google.com', hosts[0].textContent.trim());
+    assertEquals('www.google1.com', hosts[1].textContent.trim());
+    assertEquals('www.google2.com', hosts[2].textContent.trim());
+  });
+
+  test('remove web app protocols', async () => {
+    browserProxy.setAppApprovedProtocolHandlers(appProtocols);
+    await initPage();
+    // Remove the first app protocol
+    testElement.$$('#removeAppHandlerButton').click();
+    const args = await browserProxy.whenCalled('removeAppApprovedHandler');
+
+    // BrowserProxy's handler is expected to be called with
+    // arguments as [protocol, url, app_id].
+    assertEquals(appProtocols[0].protocol, args[0]);
+    assertEquals(appProtocols[0].handlers[0].spec, args[1]);
+    assertEquals(appProtocols[0].handlers[0].app_id, args[2]);
   });
 });

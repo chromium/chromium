@@ -349,57 +349,77 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
 void WebAppSyncBridge::AddApprovedLaunchProtocol(
     const AppId& app_id,
     const std::string& protocol_scheme) {
-  ScopedRegistryUpdate update(this);
-  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
-  base::flat_set<std::string> protocol_handlers(
-      app_to_update->approved_launch_protocols());
+  // Use a scope here, so that the web app registry is updated when
+  // `update` goes out of scope. If it doesn't then observers will
+  // examine stale data.
+  {
+    ScopedRegistryUpdate update(this);
+    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    base::flat_set<std::string> protocol_handlers(
+        app_to_update->approved_launch_protocols());
 
-  DCHECK(!base::Contains(protocol_handlers, protocol_scheme));
-  protocol_handlers.insert(protocol_scheme);
-  app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+    DCHECK(!base::Contains(protocol_handlers, protocol_scheme));
+    protocol_handlers.insert(protocol_scheme);
+    app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+  }
   // Notify observers that the list of approved protocols was updated.
-  registrar_->NotifyWebAppApprovedProtocolsChanged();
+  registrar_->NotifyWebAppProtocolSettingsChanged();
 }
 
 void WebAppSyncBridge::RemoveApprovedLaunchProtocol(
     const AppId& app_id,
     const std::string& protocol_scheme) {
-  ScopedRegistryUpdate update(this);
-  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
-  base::flat_set<std::string> protocol_handlers(
-      app_to_update->approved_launch_protocols());
-  protocol_handlers.erase(protocol_scheme);
-  app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+  // Use a scope here, so that the web app registry is updated when
+  // `update` goes out of scope. If it doesn't then observers will
+  // examine stale data.
+  {
+    ScopedRegistryUpdate update(this);
+    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    base::flat_set<std::string> protocol_handlers(
+        app_to_update->approved_launch_protocols());
+    protocol_handlers.erase(protocol_scheme);
+    app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+  }
   // Notify observers that the list of approved protocols was updated.
-  registrar_->NotifyWebAppApprovedProtocolsChanged();
+  registrar_->NotifyWebAppProtocolSettingsChanged();
 }
 
 void WebAppSyncBridge::AddDisallowedLaunchProtocol(
     const AppId& app_id,
     const std::string& protocol_scheme) {
-  ScopedRegistryUpdate update(this);
-  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
-  base::flat_set<std::string> protocol_handlers(
-      app_to_update->disallowed_launch_protocols());
+  // Use a scope here, so that the web app registry is updated when
+  // `update` goes out of scope. If it doesn't then observers will
+  // examine stale data.
+  {
+    ScopedRegistryUpdate update(this);
+    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    base::flat_set<std::string> protocol_handlers(
+        app_to_update->disallowed_launch_protocols());
 
-  DCHECK(!base::Contains(protocol_handlers, protocol_scheme));
-  protocol_handlers.insert(protocol_scheme);
-  app_to_update->SetDisallowedLaunchProtocols(std::move(protocol_handlers));
+    DCHECK(!base::Contains(protocol_handlers, protocol_scheme));
+    protocol_handlers.insert(protocol_scheme);
+    app_to_update->SetDisallowedLaunchProtocols(std::move(protocol_handlers));
+  }
   // Notify observers that the list of disallowed protocols was updated.
-  registrar_->NotifyWebAppDisallowedProtocolsChanged();
+  registrar_->NotifyWebAppProtocolSettingsChanged();
 }
 
 void WebAppSyncBridge::RemoveDisallowedLaunchProtocol(
     const AppId& app_id,
     const std::string& protocol_scheme) {
-  ScopedRegistryUpdate update(this);
-  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
-  base::flat_set<std::string> protocol_handlers(
-      app_to_update->disallowed_launch_protocols());
-  protocol_handlers.erase(protocol_scheme);
-  app_to_update->SetDisallowedLaunchProtocols(std::move(protocol_handlers));
+  // Use a scope here, so that the web app registry is updated when
+  // `update` goes out of scope. If it doesn't then observers will
+  // examine stale data.
+  {
+    ScopedRegistryUpdate update(this);
+    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    base::flat_set<std::string> protocol_handlers(
+        app_to_update->disallowed_launch_protocols());
+    protocol_handlers.erase(protocol_scheme);
+    app_to_update->SetDisallowedLaunchProtocols(std::move(protocol_handlers));
+  }
   // Notify observers that the list of disallowed protocols was updated.
-  registrar_->NotifyWebAppDisallowedProtocolsChanged();
+  registrar_->NotifyWebAppProtocolSettingsChanged();
 }
 
 void WebAppSyncBridge::CheckRegistryUpdateData(

@@ -327,6 +327,12 @@ export interface SiteSettingsPrefsBrowserProxy {
   observeProtocolHandlers(): void;
 
   /**
+   * observes _all_ of the the app protocol handler state, which includes a
+   * list that is returned through 'setAppApprovedProtocolHandlers' events.
+   */
+  observeAppProtocolHandlers(): void;
+
+  /**
    * Observes one aspect of the protocol handler so that updates to the
    * enabled/disabled state are sent. A 'setHandlersEnabled' will be sent
    * from C++ immediately after receiving this observe request and updates
@@ -357,6 +363,14 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param url The url to delete.
    */
   removeProtocolHandler(protocol: string, url: string): void;
+
+  /**
+   * Deletes a protocol handler by url from the app approved list.
+   * @param protocol The protocol to delete the url from.
+   * @param url The url to delete.
+   * @param appId The web app's ID to delete.
+   */
+  removeAppApprovedHandler(protocol: string, url: string, appId: string): void;
 
   /**
    * Fetches the incognito status of the current profile (whether an incognito
@@ -494,6 +508,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('observeProtocolHandlers');
   }
 
+  observeAppProtocolHandlers() {
+    chrome.send('observeAppProtocolHandlers');
+  }
+
   observeProtocolHandlersEnabledState() {
     chrome.send('observeProtocolHandlersEnabledState');
   }
@@ -508,6 +526,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   removeProtocolHandler(protocol: string, url: string) {
     chrome.send('removeHandler', [protocol, url]);
+  }
+
+  removeAppApprovedHandler(protocol: string, url: string, appId: string) {
+    chrome.send('removeAppApprovedHandler', [protocol, url, appId]);
   }
 
   updateIncognitoStatus() {
