@@ -202,6 +202,14 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
 // on other platforms.
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
+  // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
+  // drivers support them.
+  const auto implementation = VaapiWrapper::GetImplementationType();
+  if (implementation != VAImplementation::kIntelI965 &&
+      implementation != VAImplementation::kIntelIHD) {
+    GTEST_SKIP() << "Skip temporal layer test on AMD devices";
+  }
+
   const uint8_t num_temporal_layers = GetParam();
   const bool initialize_success = num_temporal_layers <= 3;
   // Initialize.

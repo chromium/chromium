@@ -1479,7 +1479,12 @@ std::vector<SVCScalabilityMode> VaapiWrapper::GetSupportedScalabilityModes(
   }
 
   if (media_profile >= H264PROFILE_MIN && media_profile <= H264PROFILE_MAX) {
-    if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding)) {
+    // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
+    // drivers support them.
+    VAImplementation implementation = VaapiWrapper::GetImplementationType();
+    if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding) &&
+        (implementation == VAImplementation::kIntelI965 ||
+         implementation == VAImplementation::kIntelIHD)) {
       scalability_modes.push_back(SVCScalabilityMode::kL1T2);
       scalability_modes.push_back(SVCScalabilityMode::kL1T3);
     }

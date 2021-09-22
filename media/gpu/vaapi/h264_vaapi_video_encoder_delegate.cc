@@ -245,8 +245,13 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   if (config.HasTemporalLayer()) {
     bool support_temporal_layer = false;
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+    VAImplementation implementation = VaapiWrapper::GetImplementationType();
+    // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
+    // drivers support them.
     support_temporal_layer =
-        base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding);
+        base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding) &&
+        (implementation == VAImplementation::kIntelI965 ||
+         implementation == VAImplementation::kIntelIHD);
 #endif
     if (!support_temporal_layer) {
       DVLOGF(1) << "Temporal layer encoding is not supported";
