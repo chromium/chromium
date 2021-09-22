@@ -467,10 +467,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkCutDisabledForReadOnlyFolder"),
         TestCase("checkPasteIntoFolderEnabledForReadWriteFolder"),
         TestCase("checkPasteIntoFolderDisabledForReadOnlyFolder"),
-        TestCase("checkInstallWithLinuxDisabledForDebianFile"),
+        // TODO(crbug.com/1251932): Fix broken test
+        // TestCase("checkInstallWithLinuxDisabledForDebianFile"),
         TestCase("checkInstallWithLinuxEnabledForDebianFile"),
         TestCase("checkImportCrostiniImageEnabled"),
-        TestCase("checkImportCrostiniImageDisabled"),
+        // TODO(crbug.com/1251932): Fix broken test
+        // TestCase("checkImportCrostiniImageDisabled"),
         TestCase("checkNewFolderEnabledInsideReadWriteFolder"),
         TestCase("checkNewFolderDisabledInsideReadOnlyFolder"),
         TestCase("checkPasteEnabledInsideReadWriteFolder"),
