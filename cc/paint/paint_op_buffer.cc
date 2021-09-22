@@ -2968,7 +2968,6 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
 bool PaintOpBuffer::Deserialize(const volatile void* input,
                                 size_t input_size,
                                 const PaintOp::DeserializeOptions& options) {
-  Reset();
   size_t total_bytes_read = 0u;
   while (total_bytes_read < input_size) {
     const volatile void* next_op =
