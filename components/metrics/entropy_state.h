@@ -36,8 +36,9 @@ class EntropyState final {
   // randomize field trials and must not be empty.
   std::string GetHighEntropySource(const std::string& initial_client_id);
 
-  // Returns the low entropy source for this client. Generates a new value if
-  // there is none. See the |low_entropy_source_| comment for more info.
+  // Returns the low entropy source that is used to randomize field trials on
+  // startup for this client. Generates a new value if there is none. See the
+  // |low_entropy_source_| comment for more info.
   int GetLowEntropySource();
 
   // Returns the pseudo low entropy source for this client. Generates a new
@@ -86,6 +87,10 @@ class EntropyState final {
   // only for statistical validation. (Since it's not used for experiment
   // diversion, it won't be subject to drift over time as experiment effects
   // accumulate in actual low entropy source buckets.)
+  //
+  // During startup these are set to the values used for randomizing field
+  // trials and won't be changed within the session even after calling
+  // |ClearPrefs|
   int low_entropy_source_ = kLowEntropySourceNotSet;
   int old_low_entropy_source_ = kLowEntropySourceNotSet;
   int pseudo_low_entropy_source_ = kLowEntropySourceNotSet;

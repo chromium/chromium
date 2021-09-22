@@ -13,7 +13,8 @@ class PrefService;
 namespace metrics {
 
 // EntropyStateProvider adds information about low entropy sources in the system
-// profile. This includes |low_entropy_source| and |old_low_entropy_source|.
+// profile. This includes |low_entropy_source|, |old_low_entropy_source| and
+// |pseudo_low_entropy_source|.
 class EntropyStateProvider : public MetricsProvider {
  public:
   explicit EntropyStateProvider(PrefService* local_state);
@@ -22,6 +23,9 @@ class EntropyStateProvider : public MetricsProvider {
   EntropyStateProvider(const EntropyStateProvider&) = delete;
   EntropyStateProvider& operator=(const EntropyStateProvider&) = delete;
 
+  // Provides low entropy sources values to system profile in the client's
+  // report. This function always provides the same low entropy source values
+  // that are used for randomizing field trials throughout the session.
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
 
