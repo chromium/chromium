@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_WORKER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -14,9 +15,14 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_number.h"
 #include "printing/printing_context.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom-forward.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -118,6 +124,13 @@ class PrintJobWorker {
   // notification from the right thread. All NOTIFY_PRINT_JOB_EVENT
   // notifications are sent this way.
   class NotificationTask;
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Local callback wrapper for Print Backend Service mojom call.
+  void OnDidUpdatePrintSettings(const std::string& device_name,
+                                SettingsCallback callback,
+                                mojom::PrintSettingsResultPtr print_settings);
+#endif
 
   // Posts a task to call OnNewPage(). Used to wait for pages/document to be
   // available.

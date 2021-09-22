@@ -16,9 +16,12 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
@@ -31,6 +34,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -50,6 +54,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "printing/backend/test_print_backend.h"
@@ -57,8 +62,10 @@
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
 #include "printing/printing_context_factory_for_test.h"
+#include "printing/printing_features.h"
 #include "printing/test_printing_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
@@ -68,8 +75,15 @@ namespace printing {
 
 namespace {
 
+// TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
+// hooked up to make use of `TestPrintingContext` yet.
+#if !defined(OS_CHROMEOS)
 constexpr int kPrinterCapabilitiesMaxCopies = 99;
 constexpr int kPrintSettingsCopies = 42;
+
+const PrinterBasicInfoOptions kPrintInfoOptions{{"opt1", "123"},
+                                                {"opt2", "456"}};
+#endif  // !defined(OS_CHROMEOS)
 
 constexpr int kDefaultDocumentCookie = 1234;
 
@@ -505,13 +519,13 @@ class BackForwardCachePrintBrowserTest : public PrintBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
+        {{::features::kBackForwardCache,
           // Set a very long TTL before expiration (longer than the test
           // timeout) so tests that are expecting deletion don't pass when
           // they shouldn't.
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        {::features::kBackForwardCacheMemoryControls});
 
     PrintBrowserTest::SetUpCommandLine(command_line);
   }
@@ -1254,12 +1268,23 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   EXPECT_EQ(1u, console_observer.messages().size());
 }
 
-class PrintBackendPrintBrowserTest : public PrintBrowserTest {
+// TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
+// hooked up to make use of `TestPrintingContext` yet.
+#if !defined(OS_CHROMEOS)
+class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
  public:
-  PrintBackendPrintBrowserTest() = default;
-  ~PrintBackendPrintBrowserTest() override = default;
+  PrintBackendPrintBrowserTestBase() = default;
+  ~PrintBackendPrintBrowserTestBase() override = default;
+
+  virtual bool UseService() = 0;
 
   void SetUp() override {
+    if (UseService()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          features::kEnableOopPrintDrivers,
+          {{features::kEnableOopPrintDriversJobPrint.name, "true"}});
+    }
+
     test_backend_ = base::MakeRefCounted<TestPrintBackend>();
     PrintBackend::SetPrintBackendForTesting(test_backend_.get());
     PrintingContext::SetPrintingContextFactoryForTest(
@@ -1267,9 +1292,18 @@ class PrintBackendPrintBrowserTest : public PrintBrowserTest {
     PrintBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    if (UseService()) {
+      print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
+          test_remote_, test_backend_, /*sandboxed=*/true);
+    }
+    PrintBrowserTest::SetUpOnMainThread();
+  }
+
   void TearDown() override {
     PrintBrowserTest::TearDown();
     PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
+    PrintBackendServiceManager::ResetForTesting();
     PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
   }
 
@@ -1279,8 +1313,7 @@ class PrintBackendPrintBrowserTest : public PrintBrowserTest {
         /*display_name=*/"test printer",
         /*printer_description=*/"A printer for testing.",
         /*printer_status=*/0,
-        /*is_default=*/true,
-        /*options=*/{});
+        /*is_default=*/true, kPrintInfoOptions);
 
     auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     default_caps->copies_max = kPrinterCapabilitiesMaxCopies;
@@ -1319,15 +1352,26 @@ class PrintBackendPrintBrowserTest : public PrintBrowserTest {
     std::string printer_name_;
   };
 
+  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<TestPrintBackend> test_backend_;
   TestPrintingContextDelegate test_printing_context_delegate_;
   PrintBackendPrintingContextFactoryForTest test_printing_context_factory_;
+  mojo::Remote<mojom::PrintBackendService> test_remote_;
+  std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 };
 
-// TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
-// hooked up to make use of `TestPrintingContext` yet.
-#if !defined(OS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
+class PrintBackendPrintBrowserTest : public PrintBackendPrintBrowserTestBase,
+                                     public testing::WithParamInterface<bool> {
+ public:
+  PrintBackendPrintBrowserTest() = default;
+  ~PrintBackendPrintBrowserTest() override = default;
+
+  bool UseService() override { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, PrintBackendPrintBrowserTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
 
@@ -1346,6 +1390,21 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTest, UpdatePrintSettings) {
   ASSERT_TRUE(print_view_manager.snooped_settings());
   EXPECT_EQ(print_view_manager.snooped_settings()->copies(),
             kPrintSettingsCopies);
+#if defined(OS_LINUX) && defined(USE_CUPS)
+  // Collect just the keys to compare the info options vs. advanced settings.
+  std::vector<std::string> advanced_setting_keys;
+  std::vector<std::string> print_info_options_keys;
+  const PrintSettings::AdvancedSettings& advanced_settings =
+      print_view_manager.snooped_settings()->advanced_settings();
+  for (const auto& advanced_setting : advanced_settings) {
+    advanced_setting_keys.push_back(advanced_setting.first);
+  }
+  for (const auto& option : kPrintInfoOptions) {
+    print_info_options_keys.push_back(option.first);
+  }
+  EXPECT_THAT(advanced_setting_keys,
+              testing::UnorderedElementsAreArray(print_info_options_keys));
+#endif  // defined(OS_LINUX) && defined(USE_CUPS)
 }
 #endif  // !defined(OS_CHROMEOS)
 
