@@ -80,13 +80,15 @@ TEST_F(UpdateClientSettingsActionTest, LocaleWithNoStringsIsInvalid) {
   Run(proto);
 }
 
-TEST_F(UpdateClientSettingsActionTest,
-       LocaleWithIncompleteStringsSetIsInvalid) {
+TEST_F(UpdateClientSettingsActionTest, LocaleWithOneLessStringIsInvalid) {
   UpdateClientSettingsProto proto;
-  ClientSettingsProto::DisplayString* display_string =
-      proto.mutable_client_settings()->add_display_strings();
-  display_string->set_id(ClientSettingsProto::GIVE_UP);
-  display_string->set_value("give_up");
+  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX; i++) {
+    ClientSettingsProto::DisplayString* display_string =
+        proto.mutable_client_settings()->add_display_strings();
+    display_string->set_id(
+        static_cast<ClientSettingsProto::DisplayStringId>(i));
+    display_string->set_value("test");
+  }
   proto.mutable_client_settings()->set_display_strings_locale("en-US");
   EXPECT_CALL(mock_action_delegate_, SetClientSettings(_)).Times(0);
   EXPECT_CALL(
@@ -95,9 +97,9 @@ TEST_F(UpdateClientSettingsActionTest,
   Run(proto);
 }
 
-TEST_F(UpdateClientSettingsActionTest, LocaleWithCompleteStringsSet) {
+TEST_F(UpdateClientSettingsActionTest, LocaleWithCompleteStringsSetIsValid) {
   UpdateClientSettingsProto proto;
-  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX; i++) {
+  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX + 1; i++) {
     ClientSettingsProto::DisplayString* display_string =
         proto.mutable_client_settings()->add_display_strings();
     display_string->set_id(
