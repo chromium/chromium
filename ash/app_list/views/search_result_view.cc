@@ -155,8 +155,6 @@ SearchResultView::SearchResultView(SearchResultListView* list_view,
       CONTEXT_SEARCH_RESULT_VIEW, STYLE_PRODUCTIVITY_LAUNCHER));
   separator_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   separator_label_->SetVisible(false);
-  separator_label_->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
   separator_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
