@@ -677,13 +677,13 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
   }
 
   // If the previous page is an NTP, enable leading edge swipe.
-  web::NavigationItemList backItems =
+  std::vector<web::NavigationItem*> backItems =
       webState->GetNavigationManager()->GetBackwardItems();
   if (backItems.size() > 0 && UseNativeSwipe(backItems[0]))
     self.leadingEdgeNavigationEnabled = YES;
 
   // If the next page is an NTP, enable trailing edge swipe.
-  web::NavigationItemList fordwardItems =
+  std::vector<web::NavigationItem*> fordwardItems =
       webState->GetNavigationManager()->GetForwardItems();
   if (fordwardItems.size() > 0 && UseNativeSwipe(fordwardItems[0]))
     self.trailingEdgeNavigationEnabled = YES;

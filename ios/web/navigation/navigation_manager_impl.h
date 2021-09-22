@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #include "ios/web/navigation/time_smoother.h"
-#import "ios/web/public/deprecated/navigation_item_list.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/reload_type.h"
 #include "ui/base/page_transition_types.h"
@@ -249,8 +248,8 @@ class NavigationManagerImpl : public NavigationManager {
   void GoToIndex(int index) final;
   void Reload(ReloadType reload_type, bool check_for_reposts) final;
   void ReloadWithUserAgentType(UserAgentType user_agent_type) final;
-  NavigationItemList GetBackwardItems() const final;
-  NavigationItemList GetForwardItems() const final;
+  std::vector<NavigationItem*> GetBackwardItems() const final;
+  std::vector<NavigationItem*> GetForwardItems() const final;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) final;
   bool IsRestoreSessionInProgress() const final;

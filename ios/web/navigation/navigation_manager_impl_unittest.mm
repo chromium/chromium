@@ -17,7 +17,7 @@
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
-#include "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/reload_type.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -1550,7 +1550,8 @@ TEST_F(NavigationManagerTest, TestBackwardForwardItems) {
   navigation_manager()->CommitPendingItem();
 
   EXPECT_EQ(2, navigation_manager()->GetLastCommittedItemIndex());
-  NavigationItemList back_items = navigation_manager()->GetBackwardItems();
+  std::vector<NavigationItem*> back_items =
+      navigation_manager()->GetBackwardItems();
   EXPECT_EQ(2U, back_items.size());
   EXPECT_EQ("http://www.url.com/1", back_items[0]->GetURL().spec());
   EXPECT_EQ("http://www.url.com/0", back_items[1]->GetURL().spec());
@@ -1561,7 +1562,8 @@ TEST_F(NavigationManagerTest, TestBackwardForwardItems) {
   back_items = navigation_manager()->GetBackwardItems();
   EXPECT_EQ(1U, back_items.size());
   EXPECT_EQ("http://www.url.com/0", back_items[0]->GetURL().spec());
-  NavigationItemList forward_items = navigation_manager()->GetForwardItems();
+  std::vector<NavigationItem*> forward_items =
+      navigation_manager()->GetForwardItems();
   EXPECT_EQ(1U, forward_items.size());
   EXPECT_EQ("http://www.url.com/2", forward_items[0]->GetURL().spec());
 }
@@ -1686,7 +1688,8 @@ TEST_F(NavigationManagerTest, NewPendingItemIsHiddenFromHistory) {
   EXPECT_EQ(1, navigation_manager()->GetLastCommittedItemIndex());
   EXPECT_TRUE(navigation_manager()->GetPendingItem());
 
-  NavigationItemList back_items = navigation_manager()->GetBackwardItems();
+  std::vector<NavigationItem*> back_items =
+      navigation_manager()->GetBackwardItems();
   EXPECT_EQ(1U, back_items.size());
   EXPECT_EQ("http://www.url.com/0", back_items[0]->GetURL().spec());
 }
@@ -2867,11 +2870,11 @@ TEST_F(NavigationManagerDetachedModeTest, CachedSessionHistory) {
   EXPECT_EQ(1, manager_->GetIndexForOffset(0));
   EXPECT_EQ(2, manager_->GetIndexForOffset(1));
 
-  NavigationItemList backward_items = manager_->GetBackwardItems();
+  std::vector<NavigationItem*> backward_items = manager_->GetBackwardItems();
   EXPECT_EQ(1UL, backward_items.size());
   EXPECT_EQ(url0_, backward_items[0]->GetURL());
 
-  NavigationItemList forward_items = manager_->GetForwardItems();
+  std::vector<NavigationItem*> forward_items = manager_->GetForwardItems();
   EXPECT_EQ(1UL, forward_items.size());
   EXPECT_EQ(url2_, forward_items[0]->GetURL());
 }

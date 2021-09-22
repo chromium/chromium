@@ -13,6 +13,7 @@
 #import "ios/web/navigation/navigation_item_storage_builder.h"
 #include "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_client.h"
@@ -91,7 +92,7 @@ void SessionStorageBuilder::ExtractSessionState(
   DCHECK(storage);
   web_state->created_with_opener_ = storage.hasOpener;
   NSArray* item_storages = storage.itemStorages;
-  web::ScopedNavigationItemList items(item_storages.count);
+  std::vector<std::unique_ptr<NavigationItem>> items(item_storages.count);
   NavigationItemStorageBuilder item_storage_builder;
   for (size_t index = 0; index < item_storages.count; ++index) {
     std::unique_ptr<NavigationItemImpl> item_impl =

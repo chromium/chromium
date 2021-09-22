@@ -22,9 +22,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
-#include "ios/web/navigation/navigation_item_impl_list.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
@@ -448,7 +448,7 @@ void NavigationManagerImpl::ApplyWKWebViewForwardHistoryClobberWorkaround() {
   for (size_t i = 0; i < forward_items.size(); i++) {
     const NavigationItemImpl* item =
         GetNavigationItemImplAtIndex(i + current_item_index);
-    forward_items[i] = std::make_unique<web::NavigationItemImpl>(*item);
+    forward_items[i] = std::make_unique<NavigationItemImpl>(*item);
   }
 
   DiscardNonCommittedItems();
@@ -920,8 +920,8 @@ void NavigationManagerImpl::ReloadWithUserAgentType(
   LoadURLWithParams(params);
 }
 
-NavigationItemList NavigationManagerImpl::GetBackwardItems() const {
-  NavigationItemList items;
+std::vector<NavigationItem*> NavigationManagerImpl::GetBackwardItems() const {
+  std::vector<NavigationItem*> items;
 
   if (is_restore_session_in_progress_)
     return items;
@@ -934,8 +934,8 @@ NavigationItemList NavigationManagerImpl::GetBackwardItems() const {
   return items;
 }
 
-NavigationItemList NavigationManagerImpl::GetForwardItems() const {
-  NavigationItemList items;
+std::vector<NavigationItem*> NavigationManagerImpl::GetForwardItems() const {
+  std::vector<NavigationItem*> items;
 
   if (is_restore_session_in_progress_)
     return items;
