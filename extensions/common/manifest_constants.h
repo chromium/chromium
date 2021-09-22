@@ -440,7 +440,6 @@ extern const char kOneUISurfaceOnly[];
 extern const char kPageCaptureNeeded[];
 extern const char kPermissionCannotBeOptional[];
 extern const char kPermissionMarkedOptionalAndRequired[];
-extern const char kPermissionMustBeOptional[];
 extern const char kPermissionNotAllowed[];
 extern const char kPermissionNotAllowedInManifest[];
 extern const char kPermissionUnknownOrMalformed[];
