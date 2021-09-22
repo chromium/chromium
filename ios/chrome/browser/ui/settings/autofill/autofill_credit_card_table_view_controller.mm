@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/application_context.h"
@@ -99,7 +100,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_AUTOFILL_PAYMENT_METHODS);
-    self.shouldHideDoneButton = YES;
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kSupportForAddPasswordsInSettings)) {
+      self.shouldDisableDoneButtonOnEdit = YES;
+    } else {
+      self.shouldHideDoneButton = YES;
+    }
     _browser = browser;
     _personalDataManager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
@@ -122,10 +128,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.tableView.accessibilityIdentifier = kAutofillCreditCardTableViewId;
   self.navigationController.toolbar.accessibilityIdentifier =
       kAutofillPaymentMethodsToolbarId;
-
-  self.addPaymentMethodButton.enabled = [self isAutofillCreditCardEnabled];
-  [self setToolbarItems:@[ [self flexibleSpace], self.addPaymentMethodButton ]
-               animated:YES];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.shouldShowAddButtonInToolbar = YES;
+    self.addButtonInToolbar.enabled = [self isAutofillCreditCardEnabled];
+  } else {
+    self.addPaymentMethodButton.enabled = [self isAutofillCreditCardEnabled];
+    [self setToolbarItems:@[ [self flexibleSpace], self.addPaymentMethodButton ]
+                 animated:YES];
+  }
   [self updateUIForEditState];
   [self loadModel];
 }
@@ -134,10 +145,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super setEditing:editing animated:animated];
   if (editing) {
     self.deleteButton.enabled = NO;
-    [self showDeleteButton];
+    if (!base::FeatureList::IsEnabled(
+            password_manager::features::kSupportForAddPasswordsInSettings)) {
+      [self showDeleteButton];
+    }
     [self setSwitchItemEnabled:NO itemType:ItemTypeAutofillCardSwitch];
   } else {
-    [self hideDeleteButton];
+    if (!base::FeatureList::IsEnabled(
+            password_manager::features::kSupportForAddPasswordsInSettings)) {
+      [self hideDeleteButton];
+    }
     [self setSwitchItemEnabled:YES itemType:ItemTypeAutofillCardSwitch];
   }
   [self updateUIForEditState];
@@ -146,16 +163,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   self.navigationController.toolbarHidden = NO;
-}
-
-- (BOOL)shouldHideToolbar {
-  // There is a bug from apple that this method might be called in this view
-  // controller even if it is not the top view controller.
-  if (self.navigationController.topViewController == self) {
-    return NO;
-  }
-
-  return [super shouldHideToolbar];
 }
 
 #pragma mark - ChromeTableViewController
@@ -274,17 +281,52 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    // The edit button is put in the toolbar instead of the navigation bar.
+    return NO;
+  }
   return YES;
 }
 
 - (BOOL)editButtonEnabled {
-  DCHECK([self shouldShowEditButton]);
   return [self localCreditCardsExist];
 }
 
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
   // Do not call super as this also deletes the section if it is empty.
   [self deleteItemAtIndexPaths:indexPaths];
+}
+
+- (BOOL)shouldHideToolbar {
+  // There is a bug from apple that this method might be called in this view
+  // controller even if it is not the top view controller.
+  if (self.navigationController.topViewController == self) {
+    return NO;
+  }
+
+  return [super shouldHideToolbar];
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    // The "Done" button in the navigation bar closes the sheet.
+    return NO;
+  }
+  return YES;
+}
+
+- (void)updateUIForEditState {
+  [super updateUIForEditState];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    [self updatedToolbarForEditState];
+  }
+}
+
+- (void)addButtonCallback {
+  [self handleAddPayment];
 }
 
 #pragma mark - Actions
@@ -348,7 +390,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)autofillCardSwitchChanged:(UISwitch*)switchView {
   [self setSwitchItemOn:[switchView isOn] itemType:ItemTypeAutofillCardSwitch];
   [self setAutofillCreditCardEnabled:[switchView isOn]];
-  self.addPaymentMethodButton.enabled = [self isAutofillCreditCardEnabled];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.addButtonInToolbar.enabled = [self isAutofillCreditCardEnabled];
+  } else {
+    self.addPaymentMethodButton.enabled = [self isAutofillCreditCardEnabled];
+  }
 }
 
 #pragma mark - Switch Helpers
@@ -502,7 +549,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Opens new view controller |AutofillAddCreditCardViewController| for fillig
 // credit card details.
-- (void)handleAddPayment:(id)sender {
+- (void)handleAddPayment {
   base::RecordAction(
       base::UserMetricsAction("MobileAddCreditCard.AddPaymentMethodButton"));
 
@@ -541,13 +588,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (UIBarButtonItem*)addPaymentMethodButton {
+  DCHECK(!base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings));
   if (!_addPaymentMethodButton) {
     _addPaymentMethodButton = [[UIBarButtonItem alloc]
         initWithTitle:l10n_util::GetNSString(
                           IDS_IOS_MANUAL_FALLBACK_ADD_PAYMENT_METHOD)
                 style:UIBarButtonItemStylePlain
                target:self
-               action:@selector(handleAddPayment:)];
+               action:@selector(handleAddPayment)];
     _addPaymentMethodButton.accessibilityIdentifier =
         kSettingsAddPaymentMethodButtonId;
   }
@@ -558,6 +607,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Create a flexible space item to be used in the toolbar.
 - (UIBarButtonItem*)flexibleSpace {
+  DCHECK(!base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings));
   return [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
@@ -566,6 +617,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Adds delete button to the bottom toolbar.
 - (void)showDeleteButton {
+  DCHECK(!base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings));
   if ([self isAutofillCreditCardEnabled]) {
     [self setToolbarItems:@[
       self.deleteButton, [self flexibleSpace], self.addPaymentMethodButton
@@ -579,6 +632,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Removes delete button from the bottom toolbar.
 - (void)hideDeleteButton {
+  DCHECK(!base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings));
   NSArray* customToolbarItems =
       @[ [self flexibleSpace], self.addPaymentMethodButton ];
   [self setToolbarItems:customToolbarItems animated:YES];
