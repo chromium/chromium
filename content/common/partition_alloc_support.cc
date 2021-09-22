@@ -199,8 +199,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
   CHECK(base::FeatureList::GetInstance());
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
   bool enable_brp = false;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
     // No specified process type means this is the Browser process.
@@ -216,6 +216,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::ReconfigurePartitionAllocLazyCommit();
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  // Don't enable PCScan if BRP is enabled.
+  if (enable_brp)
+    return;
 
   bool scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
   // No specified process type means this is the Browser process.
