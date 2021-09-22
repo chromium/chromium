@@ -84,7 +84,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
       VaapiDependenciesFactory* dep_factory) override;
 
  private:
-  friend class SharedImageRepresentationGLOzone;
+  friend class SharedImageRepresentationGLOzoneShared;
   friend class SharedImageRepresentationDawnOzone;
   class SharedImageRepresentationVaapiOzone;
   class SharedImageRepresentationOverlayOzone;

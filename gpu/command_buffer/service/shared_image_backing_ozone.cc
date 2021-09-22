@@ -155,16 +155,16 @@ SharedImageBackingOzone::ProduceDawn(SharedImageManager* manager,
 std::unique_ptr<SharedImageRepresentationGLTexture>
 SharedImageBackingOzone::ProduceGLTexture(SharedImageManager* manager,
                                           MemoryTypeTracker* tracker) {
-  return SharedImageRepresentationGLOzone::Create(manager, this, tracker,
-                                                  pixmap_, format());
+  return SharedImageRepresentationGLTextureOzone::Create(manager, this, tracker,
+                                                         pixmap_, format());
 }
 
 std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
 SharedImageBackingOzone::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return SharedImageRepresentationGLTexturePassthroughOzone::Create(
+      manager, this, tracker, pixmap_, format());
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
