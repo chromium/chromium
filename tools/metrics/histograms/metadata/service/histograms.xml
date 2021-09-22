@@ -301,18 +301,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.FetchEvent.Fallback.Time" units="ms"
-    expires_after="2021-08-01">
-  <owner>falken@chromium.org</owner>
+    expires_after="2022-09-01">
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time taken between dispatching a FetchEvent to a Service Worker and
     receiving a fallback-to-network reply.
+
+    This histogram was expired between roughly 2021-08-01 and 2021-09-31.
   </summary>
 </histogram>
 
 <histogram name="ServiceWorker.FetchEvent.HasResponse.Time" units="ms"
-    expires_after="2021-10-17">
-  <owner>falken@chromium.org</owner>
+    expires_after="2022-09-01">
+  <owner>wanderview@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The time taken between dispatching a FetchEvent to a Service Worker and
@@ -356,6 +360,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.FetchEvent.WaitUntil.Time" units="ms"
     expires_after="2021-06-30">
+  <obsolete>
+    Removed in September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

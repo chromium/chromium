@@ -317,8 +317,7 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
       }
       break;
     case EventType::FETCH_WAITUNTIL:
-      UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.FetchEvent.WaitUntil.Time",
-                                 time);
+      // Do nothing: the histogram has been removed.
       break;
     case EventType::SYNC:
       UMA_HISTOGRAM_MEDIUM_TIMES("ServiceWorker.BackgroundSyncEvent.Time",
