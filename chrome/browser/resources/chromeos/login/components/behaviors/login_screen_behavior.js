@@ -160,4 +160,9 @@ LoginScreenBehavior.Proto;
   initializeLoginScreen(screenName, attributes) {}
 
   userActed(action_id) {}
+
+  /** return {!Array<string>} */
+  get EXTERNAL_API() {
+    return [];
+  }
 }

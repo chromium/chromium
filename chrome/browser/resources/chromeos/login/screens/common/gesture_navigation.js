@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+/* #js_imports_placeholder */
 
 /**
  * Enum to represent each page in the gesture navigation screen.
@@ -15,33 +15,51 @@ const GesturePage = {
   BACK: 'gestureBack'
 };
 
-Polymer({
-  is: 'gesture-navigation-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const GestureScreenElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+    Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior
-  ],
+class GestureNavigation extends GestureScreenElementBase {
+  static get is() {
+    return 'gesture-navigation-element';
+  }
 
-  UI_STEPS: GesturePage,
+  /* #html_template_placeholder */
 
+  static get properties() {
+    return {};
+  }
+
+  constructor() {
+    super();
+    this.UI_STEPS = GesturePage;
+  }
+
+  /** @override */
+  get EXTERNAL_API() {
+    return [];
+  }
+
+  /** @override */
   defaultUIStep() {
     return GesturePage.INTRO;
-  },
+  }
 
   /** @override */
   ready() {
-    this.initializeLoginScreen('GestureNavigationScreen', {
-      commonScreenSize: true,
-      resetAllowed: true,
-    });
-  },
+    super.ready();
+    this.initializeLoginScreen('GestureNavigationScreen', {resetAllowed: true});
+  }
 
   /**
    * This is the 'on-tap' event handler for the 'next' or 'get started' button.
    * @private
-   *
    */
   onNext_() {
     switch (this.uiStep) {
@@ -62,7 +80,7 @@ Polymer({
         this.userActed('exit');
         break;
     }
-  },
+  }
 
   /**
    * This is the 'on-tap' event handler for the 'back' button.
@@ -80,7 +98,7 @@ Polymer({
         this.setCurrentPage_(GesturePage.OVERVIEW);
         break;
     }
-  },
+  }
 
   /**
    * Set the new page, making sure to stop the animation for the old page and
@@ -93,7 +111,7 @@ Polymer({
     this.setUIStep(newPage);
     chrome.send('handleGesturePageChange', [newPage]);
     this.setPlayCurrentScreenAnimation(true);
-  },
+  }
 
   /**
    * This will play or stop the current screen's lottie animation.
@@ -105,6 +123,7 @@ Polymer({
     if (animation) {
       animation.setPlay(enabled);
     }
-  },
-});
-})();
+  }
+}
+
+customElements.define(GestureNavigation.is, GestureNavigation);
