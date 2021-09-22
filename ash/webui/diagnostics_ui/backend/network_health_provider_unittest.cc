@@ -1377,8 +1377,8 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   AssociateWifi();
   EXPECT_TRUE(list_observer.active_guid().empty());
 
-  // No active network, log is empty.
-  EXPECT_TRUE(log.GetContents().empty());
+  // The non-active network still appears in the log.
+  EXPECT_FALSE(log.GetContents().empty());
 
   // Put wifi into online state.
   SetWifiOnline();

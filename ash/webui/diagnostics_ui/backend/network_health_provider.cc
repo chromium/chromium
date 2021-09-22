@@ -643,6 +643,10 @@ void NetworkHealthProvider::NotifyNetworkListObservers() {
   for (auto& observer : network_list_observers_) {
     observer->OnNetworkListChanged(mojo::Clone(observer_guids), active_guid_);
   }
+
+  if (IsLoggingEnabled()) {
+    networking_log_ptr_->UpdateNetworkList(observer_guids, active_guid_);
+  }
 }
 
 void NetworkHealthProvider::NotifyNetworkStateObserver(
@@ -654,9 +658,8 @@ void NetworkHealthProvider::NotifyNetworkStateObserver(
   network_info.observer->OnNetworkStateChanged(
       mojo::Clone(network_info.network));
 
-  if (IsLoggingEnabled() &&
-      network_info.network->observer_guid == active_guid_) {
-    networking_log_ptr_->UpdateContents(network_info.network.Clone());
+  if (IsLoggingEnabled()) {
+    networking_log_ptr_->UpdateNetworkState(network_info.network.Clone());
   }
 }
 

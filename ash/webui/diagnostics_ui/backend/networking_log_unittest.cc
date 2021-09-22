@@ -95,31 +95,33 @@ TEST_F(NetworkingLogTest, DetailedLogContentsWiFi) {
 
   NetworkingLog log;
 
-  log.UpdateContents(test_info.Clone());
+  log.UpdateNetworkList({expected_guid}, expected_guid);
+  log.UpdateNetworkState(test_info.Clone());
 
   const std::string log_as_string = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
-  // Expect one title line and 13 content lines.
-  EXPECT_EQ(14u, log_lines.size());
+  // Expect one title line and 14 content lines.
+  EXPECT_EQ(15u, log_lines.size());
   EXPECT_EQ("--- Networking Info ---", log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: WiFi", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
-  EXPECT_EQ("MAC Address: " + expected_mac_address, log_lines[4]);
+  EXPECT_EQ("Active: True", log_lines[4]);
+  EXPECT_EQ("MAC Address: " + expected_mac_address, log_lines[5]);
   EXPECT_EQ(
       "Signal Strength: " + base::NumberToString(expected_signal_strength),
-      log_lines[5]);
+      log_lines[6]);
   EXPECT_EQ("Frequency: " + base::NumberToString(expected_frequency),
-            log_lines[6]);
-  EXPECT_EQ("SSID: " + expected_ssid, log_lines[7]);
-  EXPECT_EQ("BSSID: " + expected_bssid, log_lines[8]);
-  EXPECT_EQ("Security: " + expected_security_type, log_lines[9]);
-  EXPECT_EQ("Gateway: " + expected_gateway, log_lines[10]);
-  EXPECT_EQ("IP Address: " + expected_ip_address, log_lines[11]);
+            log_lines[7]);
+  EXPECT_EQ("SSID: " + expected_ssid, log_lines[8]);
+  EXPECT_EQ("BSSID: " + expected_bssid, log_lines[9]);
+  EXPECT_EQ("Security: " + expected_security_type, log_lines[10]);
+  EXPECT_EQ("Gateway: " + expected_gateway, log_lines[11]);
+  EXPECT_EQ("IP Address: " + expected_ip_address, log_lines[12]);
   EXPECT_EQ("Name Servers: " + name_server1 + ", " + name_server2,
-            log_lines[12]);
-  EXPECT_EQ("Subnet Mask: " + expected_subnet_mask, log_lines[13]);
+            log_lines[13]);
+  EXPECT_EQ("Subnet Mask: " + expected_subnet_mask, log_lines[14]);
 }
 
 TEST_F(NetworkingLogTest, DetailedLogContentsEthernet) {
@@ -134,19 +136,21 @@ TEST_F(NetworkingLogTest, DetailedLogContentsEthernet) {
 
   NetworkingLog log;
 
-  log.UpdateContents(test_info.Clone());
+  log.UpdateNetworkList({expected_guid}, expected_guid);
+  log.UpdateNetworkState(test_info.Clone());
 
   const std::string log_as_string = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
-  // Expect one title line and 9 content lines.
-  EXPECT_EQ(10u, log_lines.size());
+  // Expect one title line and 10 content lines.
+  EXPECT_EQ(11u, log_lines.size());
   EXPECT_EQ("--- Networking Info ---", log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: Ethernet", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
-  EXPECT_EQ("MAC Address: " + expected_mac_address, log_lines[4]);
-  EXPECT_EQ("Authentication: " + expected_authentication, log_lines[5]);
+  EXPECT_EQ("Active: True", log_lines[4]);
+  EXPECT_EQ("MAC Address: " + expected_mac_address, log_lines[5]);
+  EXPECT_EQ("Authentication: " + expected_authentication, log_lines[6]);
 }
 
 // TODO(michaelcheco): Update test when Cellular type properties are added.
@@ -159,18 +163,20 @@ TEST_F(NetworkingLogTest, DetailedLogContentsCellular) {
 
   NetworkingLog log;
 
-  log.UpdateContents(test_info.Clone());
+  log.UpdateNetworkList({expected_guid}, expected_guid);
+  log.UpdateNetworkState(test_info.Clone());
 
   const std::string log_as_string = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
-  // Expect one title line and 8 content lines.
-  EXPECT_EQ(9u, log_lines.size());
+  // Expect one title line and 9 content lines.
+  EXPECT_EQ(10u, log_lines.size());
   EXPECT_EQ("--- Networking Info ---", log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: Cellular", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
-  EXPECT_EQ("MAC Address: " + expected_mac_address, log_lines[4]);
+  EXPECT_EQ("Active: True", log_lines[4]);
+  EXPECT_EQ("MAC Address: " + expected_mac_address, log_lines[5]);
 }
 
 }  // namespace diagnostics

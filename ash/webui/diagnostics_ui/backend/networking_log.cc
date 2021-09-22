@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,6 +27,7 @@ const char kNetworkingInfoSectionName[] = "--- Networking Info ---";
 const char kNetworkNameTitle[] = "Name: ";
 const char kNetworkTypeTitle[] = "Type: ";
 const char kNetworkStateTitle[] = "State: ";
+const char kActiveTitle[] = "Active: ";
 const char kMacAddressTitle[] = "MAC Address: ";
 
 // EthernetStateProperties constants:
@@ -140,13 +142,20 @@ void AddIPConfigPropertiesToLog(const mojom::IPConfigProperties& ip_config,
 }
 
 std::string GetNetworkStateString(mojom::NetworkState state) {
-  DCHECK(state == mojom::NetworkState::kOnline ||
-         state == mojom::NetworkState::kConnected);
-  if (state == mojom::NetworkState::kOnline) {
-    return "Online";
+  switch (state) {
+    case mojom::NetworkState::kOnline:
+      return "Online";
+    case mojom::NetworkState::kConnected:
+      return "Connected";
+    case mojom::NetworkState::kConnecting:
+      return "Connecting";
+    case mojom::NetworkState::kNotConnected:
+      return "Not Connected";
+    case mojom::NetworkState::kDisabled:
+      return "Disabled";
+    case mojom::NetworkState::kPortal:
+      return "Portal";
   }
-
-  return "Connected";
 }
 
 std::string GetNetworkType(mojom::NetworkType type) {
@@ -171,30 +180,49 @@ NetworkingLog::~NetworkingLog() = default;
 std::string NetworkingLog::GetContents() const {
   std::stringstream output;
 
-  if (latest_network_info_) {
-    output << kNetworkingInfoSectionName << kNewline << kNetworkNameTitle
-           << latest_network_info_->name << kNewline << kNetworkTypeTitle
-           << GetNetworkType(latest_network_info_->type) << kNewline
-           << kNetworkStateTitle
-           << GetNetworkStateString(latest_network_info_->state) << kNewline
-           << kMacAddressTitle << latest_network_info_->mac_address.value_or("")
+  output << kNetworkingInfoSectionName << kNewline;
+  for (const auto& pair : latest_network_states_) {
+    const mojom::NetworkPtr& network = pair.second;
+
+    output << kNewline << kNetworkNameTitle << network->name << kNewline
+           << kNetworkTypeTitle << GetNetworkType(network->type) << kNewline
+           << kNetworkStateTitle << GetNetworkStateString(network->state)
+           << kNewline << kActiveTitle
+           << (network->observer_guid == active_guid_ ? "True" : "False")
+           << kNewline << kMacAddressTitle << network->mac_address.value_or("")
            << kNewline;
 
-    if (latest_network_info_->type_properties) {
-      AddTypePropertiesToLog(*latest_network_info_->type_properties,
-                             latest_network_info_->type, output);
+    if (network->type_properties) {
+      AddTypePropertiesToLog(*network->type_properties, network->type, output);
     }
 
-    if (latest_network_info_->ip_config) {
-      AddIPConfigPropertiesToLog(*latest_network_info_->ip_config, output);
+    if (network->ip_config) {
+      AddIPConfigPropertiesToLog(*network->ip_config, output);
     }
   }
 
   return output.str();
 }
 
-void NetworkingLog::UpdateContents(mojom::NetworkPtr latest_network_info) {
-  latest_network_info_ = std::move(latest_network_info);
+void NetworkingLog::UpdateNetworkList(
+    const std::vector<std::string>& observer_guids,
+    std::string active_guid) {
+  // If a network is no longer valid, remove it from the map.
+  for (auto iter = latest_network_states_.begin();
+       iter != latest_network_states_.end();) {
+    if (!base::Contains(observer_guids, iter->first)) {
+      iter = latest_network_states_.erase(iter);
+      continue;
+    }
+
+    ++iter;
+  }
+
+  active_guid_ = active_guid;
+}
+
+void NetworkingLog::UpdateNetworkState(mojom::NetworkPtr network) {
+  latest_network_states_[network->observer_guid] = std::move(network);
 }
 
 }  // namespace diagnostics
