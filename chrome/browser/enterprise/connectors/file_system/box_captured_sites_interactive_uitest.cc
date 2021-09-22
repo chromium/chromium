@@ -17,6 +17,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/test_switches.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/history/core/browser/download_row.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
@@ -352,7 +353,8 @@ class WebPageReplayUtil {
 class DownloadManagerObserver : public content::DownloadManager::Observer {
  public:
   explicit DownloadManagerObserver(Browser* browser)
-      : download_manager_(browser->profile()->GetDownloadManager()) {
+      : browser_(browser),
+        download_manager_(browser->profile()->GetDownloadManager()) {
     download_manager_->AddObserver(this);
   }
 
@@ -389,6 +391,20 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
     observer.WaitForFinished();
   }
 
+  std::vector<history::DownloadRow> WaitForDownloadHistoryInfo() {
+    std::vector<history::DownloadRow> results;
+    base::RunLoop run_loop;
+    HistoryServiceFactory::GetForProfile(browser_->profile(),
+                                         ServiceAccessType::EXPLICIT_ACCESS)
+        ->QueryDownloads(base::BindLambdaForTesting(
+            [&](std::vector<history::DownloadRow> rows) {
+              results = std::move(rows);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return results;
+  }
+
   download::DownloadItem* GetLatestDownloadItem() {
     DCHECK(!download_items_.empty());
     return download_items_.back();
@@ -401,6 +417,7 @@ class DownloadManagerObserver : public content::DownloadManager::Observer {
   content::DownloadManager* download_manager() { return download_manager_; }
 
  private:
+  Browser* browser_ = nullptr;
   content::DownloadManager* download_manager_ = nullptr;
   std::vector<download::DownloadItem*> download_items_;
   base::OnceClosure stop_waiting_for_download_;
@@ -605,6 +622,14 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                 l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX)),
             item_view->GetStatusTextForTesting());
 
+  // Check the in-progress download database.
+  std::vector<download::DownloadItem*> downloads_in_progress;
+  browser()->profile()->GetDownloadManager()->GetAllDownloads(
+      &downloads_in_progress);
+  EXPECT_EQ(1u, downloads_in_progress.size());
+  EXPECT_EQ(download::DownloadItem::IN_PROGRESS,
+            downloads_in_progress.front()->GetState());
+
   ASSERT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   download_manager_observer()->WaitForDownloadToFinish();
@@ -617,6 +642,11 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                 IDS_DOWNLOAD_STATUS_UPLOADED,
                 l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX)),
             item_view->GetStatusTextForTesting());
+
+  // Check the history database.
+  auto downloads_in_history =
+      download_manager_observer()->WaitForDownloadHistoryInfo();
+  EXPECT_EQ(1u, downloads_in_history.size());
 
   // Open the downloaded item.
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
