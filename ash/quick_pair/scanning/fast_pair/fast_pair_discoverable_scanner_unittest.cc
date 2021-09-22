@@ -117,6 +117,18 @@ class FastPairDiscoverableScannerTest : public testing::Test {
   base::MockCallback<DeviceCallback> lost_device_callback_;
 };
 
+TEST_F(FastPairDiscoverableScannerTest, NoServiceData) {
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  std::unique_ptr<device::BluetoothDevice> device =
+      base::WrapUnique(static_cast<device::BluetoothDevice*>(
+          new testing::NiceMock<device::MockBluetoothDevice>(
+              adapter_.get(), 0, "test_name", "test_address", /*paired=*/false,
+              /*connected=*/false)));
+
+  scanner_->NotifyDeviceFound(device.get());
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(FastPairDiscoverableScannerTest, NoModelId) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   std::unique_ptr<device::BluetoothDevice> device =
