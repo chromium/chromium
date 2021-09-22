@@ -70,6 +70,34 @@ MediaQueryExp PairExp(String feature,
   return MediaQueryExp::Create(feature, MediaQueryExpBounds(left, right));
 }
 
+std::unique_ptr<MediaQueryExpNode> FeatureNode(MediaQueryExp expr) {
+  return std::make_unique<MediaQueryFeatureExpNode>(expr);
+}
+
+std::unique_ptr<MediaQueryExpNode> NestedNode(
+    std::unique_ptr<MediaQueryExpNode> child) {
+  return std::make_unique<MediaQueryNestedExpNode>(std::move(child));
+}
+
+std::unique_ptr<MediaQueryExpNode> NotNode(
+    std::unique_ptr<MediaQueryExpNode> operand) {
+  return std::make_unique<MediaQueryNotExpNode>(std::move(operand));
+}
+
+std::unique_ptr<MediaQueryExpNode> AndNode(
+    std::unique_ptr<MediaQueryExpNode> left,
+    std::unique_ptr<MediaQueryExpNode> right) {
+  return std::make_unique<MediaQueryAndExpNode>(std::move(left),
+                                                std::move(right));
+}
+
+std::unique_ptr<MediaQueryExpNode> OrNode(
+    std::unique_ptr<MediaQueryExpNode> left,
+    std::unique_ptr<MediaQueryExpNode> right) {
+  return std::make_unique<MediaQueryOrExpNode>(std::move(left),
+                                               std::move(right));
+}
+
 }  // namespace
 
 TEST(MediaQueryExpTest, ValuesType) {
@@ -175,6 +203,43 @@ TEST(MediaQueryExpTest, Serialize) {
   EXPECT_EQ(
       "(20px > width >= 10px)",
       PairExp("width", GtCmp(PxValue(20.0)), GeCmp(PxValue(10.0))).Serialize());
+}
+
+TEST(MediaQueryExpTest, SerializeNode) {
+  EXPECT_EQ("(width < 10px)",
+            FeatureNode(RightExp("width", LtCmp(PxValue(10))))->Serialize());
+
+  EXPECT_EQ(
+      "(width < 10px) and (11px >= thing) and (height = 12px)",
+      AndNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))),
+              AndNode(FeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
+                      FeatureNode(RightExp("height", EqCmp(PxValue(12))))))
+          ->Serialize());
+
+  // Same as previous, but with 'or' instead:
+  EXPECT_EQ("(width < 10px) or (11px >= thing) or (height = 12px)",
+            OrNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))),
+                   OrNode(FeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
+                          FeatureNode(RightExp("height", EqCmp(PxValue(12))))))
+                ->Serialize());
+
+  EXPECT_EQ(
+      "not (width < 10px)",
+      NotNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))))->Serialize());
+
+  EXPECT_EQ("((width < 10px))",
+            NestedNode(FeatureNode(RightExp("width", LtCmp(PxValue(10)))))
+                ->Serialize());
+  EXPECT_EQ(
+      "(((width < 10px)))",
+      NestedNode(NestedNode(FeatureNode(RightExp("width", LtCmp(PxValue(10))))))
+          ->Serialize());
+
+  EXPECT_EQ("not ((11px >= thing) and (height = 12px))",
+            NotNode(NestedNode(AndNode(
+                        FeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
+                        FeatureNode(RightExp("height", EqCmp(PxValue(12)))))))
+                ->Serialize());
 }
 
 }  // namespace blink

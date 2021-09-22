@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -255,6 +256,157 @@ class CORE_EXPORT MediaQueryExp {
 
   String media_feature_;
   MediaQueryExpBounds bounds_;
+};
+
+// MediaQueryExpNode representing a tree of MediaQueryExp objects capable of
+// nested/compound expressions.
+class CORE_EXPORT MediaQueryExpNode {
+  USING_FAST_MALLOC(MediaQueryExpNode);
+
+ public:
+  virtual ~MediaQueryExpNode() = default;
+
+  enum class Type { kFeature, kNested, kNot, kAnd, kOr };
+
+  String Serialize() const;
+
+  virtual Type GetType() const = 0;
+  virtual void SerializeTo(StringBuilder&) const = 0;
+  virtual std::unique_ptr<MediaQueryExpNode> Copy() const = 0;
+};
+
+class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
+  USING_FAST_MALLOC(MediaQueryFeatureExpNode);
+
+ public:
+  explicit MediaQueryFeatureExpNode(const MediaQueryExp& exp) : exp_(exp) {}
+
+  MediaQueryExp Expression() const { return exp_; }
+
+  Type GetType() const override { return Type::kFeature; }
+  void SerializeTo(StringBuilder&) const override;
+  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+
+ private:
+  MediaQueryExp exp_;
+};
+
+class CORE_EXPORT MediaQueryNestedExpNode : public MediaQueryExpNode {
+  USING_FAST_MALLOC(MediaQueryNestedExpNode);
+
+ public:
+  explicit MediaQueryNestedExpNode(std::unique_ptr<MediaQueryExpNode> child)
+      : child_(std::move(child)) {
+    DCHECK(child_);
+  }
+
+  const MediaQueryExpNode& Child() const { return *child_; }
+
+  Type GetType() const override { return Type::kNested; }
+  void SerializeTo(StringBuilder&) const override;
+  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+
+ private:
+  std::unique_ptr<MediaQueryExpNode> child_;
+};
+
+class CORE_EXPORT MediaQueryNotExpNode : public MediaQueryExpNode {
+  USING_FAST_MALLOC(MediaQueryNotExpNode);
+
+ public:
+  explicit MediaQueryNotExpNode(std::unique_ptr<MediaQueryExpNode> operand)
+      : operand_(std::move(operand)) {
+    DCHECK(operand_);
+  }
+
+  const MediaQueryExpNode& Operand() const { return *operand_; }
+
+  Type GetType() const override { return Type::kNot; }
+  void SerializeTo(StringBuilder&) const override;
+  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+
+ private:
+  std::unique_ptr<MediaQueryExpNode> operand_;
+};
+
+class CORE_EXPORT MediaQueryCompoundExpNode : public MediaQueryExpNode {
+  USING_FAST_MALLOC(MediaQueryCompoundExpNode);
+
+ public:
+  MediaQueryCompoundExpNode(std::unique_ptr<MediaQueryExpNode> left,
+                            std::unique_ptr<MediaQueryExpNode> right)
+      : left_(std::move(left)), right_(std::move(right)) {
+    DCHECK(left_);
+    DCHECK(right_);
+  }
+
+  const MediaQueryExpNode& Left() const { return *left_; }
+  const MediaQueryExpNode& Right() const { return *right_; }
+
+ private:
+  std::unique_ptr<MediaQueryExpNode> left_;
+  std::unique_ptr<MediaQueryExpNode> right_;
+};
+
+class CORE_EXPORT MediaQueryAndExpNode : public MediaQueryCompoundExpNode {
+  USING_FAST_MALLOC(MediaQueryAndExpNode);
+
+ public:
+  MediaQueryAndExpNode(std::unique_ptr<MediaQueryExpNode> left,
+                       std::unique_ptr<MediaQueryExpNode> right)
+      : MediaQueryCompoundExpNode(std::move(left), std::move(right)) {}
+
+  Type GetType() const override { return Type::kAnd; }
+  void SerializeTo(StringBuilder&) const override;
+  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+};
+
+class CORE_EXPORT MediaQueryOrExpNode : public MediaQueryCompoundExpNode {
+  USING_FAST_MALLOC(MediaQueryOrExpNode);
+
+ public:
+  MediaQueryOrExpNode(std::unique_ptr<MediaQueryExpNode> left,
+                      std::unique_ptr<MediaQueryExpNode> right)
+      : MediaQueryCompoundExpNode(std::move(left), std::move(right)) {}
+
+  Type GetType() const override { return Type::kOr; }
+  void SerializeTo(StringBuilder&) const override;
+  std::unique_ptr<MediaQueryExpNode> Copy() const override;
+};
+
+template <>
+struct DowncastTraits<MediaQueryFeatureExpNode> {
+  static bool AllowFrom(const MediaQueryExpNode& node) {
+    return node.GetType() == MediaQueryExpNode::Type::kFeature;
+  }
+};
+
+template <>
+struct DowncastTraits<MediaQueryNestedExpNode> {
+  static bool AllowFrom(const MediaQueryExpNode& node) {
+    return node.GetType() == MediaQueryExpNode::Type::kNested;
+  }
+};
+
+template <>
+struct DowncastTraits<MediaQueryNotExpNode> {
+  static bool AllowFrom(const MediaQueryExpNode& node) {
+    return node.GetType() == MediaQueryExpNode::Type::kNot;
+  }
+};
+
+template <>
+struct DowncastTraits<MediaQueryAndExpNode> {
+  static bool AllowFrom(const MediaQueryExpNode& node) {
+    return node.GetType() == MediaQueryExpNode::Type::kAnd;
+  }
+};
+
+template <>
+struct DowncastTraits<MediaQueryOrExpNode> {
+  static bool AllowFrom(const MediaQueryExpNode& node) {
+    return node.GetType() == MediaQueryExpNode::Type::kOr;
+  }
 };
 
 }  // namespace blink

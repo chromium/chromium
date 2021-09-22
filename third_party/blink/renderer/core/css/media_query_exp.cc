@@ -535,4 +535,57 @@ String MediaQueryExpValue::CssText() const {
   return output.ToString();
 }
 
+String MediaQueryExpNode::Serialize() const {
+  StringBuilder builder;
+  SerializeTo(builder);
+  return builder.ToString();
+}
+
+void MediaQueryFeatureExpNode::SerializeTo(StringBuilder& builder) const {
+  builder.Append(exp_.Serialize());
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryFeatureExpNode::Copy() const {
+  return std::make_unique<MediaQueryFeatureExpNode>(exp_);
+}
+
+void MediaQueryNestedExpNode::SerializeTo(StringBuilder& builder) const {
+  builder.Append("(");
+  child_->SerializeTo(builder);
+  builder.Append(")");
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryNestedExpNode::Copy() const {
+  return std::make_unique<MediaQueryNestedExpNode>(child_->Copy());
+}
+
+void MediaQueryNotExpNode::SerializeTo(StringBuilder& builder) const {
+  builder.Append("not ");
+  operand_->SerializeTo(builder);
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryNotExpNode::Copy() const {
+  return std::make_unique<MediaQueryNestedExpNode>(operand_->Copy());
+}
+
+void MediaQueryAndExpNode::SerializeTo(StringBuilder& builder) const {
+  Left().SerializeTo(builder);
+  builder.Append(" and ");
+  Right().SerializeTo(builder);
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryAndExpNode::Copy() const {
+  return std::make_unique<MediaQueryAndExpNode>(Left().Copy(), Right().Copy());
+}
+
+void MediaQueryOrExpNode::SerializeTo(StringBuilder& builder) const {
+  Left().SerializeTo(builder);
+  builder.Append(" or ");
+  Right().SerializeTo(builder);
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryOrExpNode::Copy() const {
+  return std::make_unique<MediaQueryOrExpNode>(Left().Copy(), Right().Copy());
+}
+
 }  // namespace blink
