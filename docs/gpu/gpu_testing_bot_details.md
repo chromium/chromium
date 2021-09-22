@@ -717,7 +717,7 @@ seems worthwhile to continuously test the "next" version of graphics drivers as
 well as the current stable ones.
 
 [sample driver cl]: https://chromium-review.googlesource.com/c/chromium/src/+/1726875
-[updating gold baselines]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/gpu/pixel_wrangling.md#how-to-keep-the-bots-green
+[updating gold baselines]: http://go/gpu-pixel-wrangler-info#how-to-keep-the-bots-green
 
 ## Credentials for various servers
 

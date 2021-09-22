@@ -86,7 +86,7 @@ overview of this documentation and links back to various portions.
 Please see the [GPU Pixel Wrangling instructions] for links to dashboards
 showing the status of various bots in the GPU fleet.
 
-[GPU Pixel Wrangling instructions]: pixel_wrangling.md#Fleet-Status
+[GPU Pixel Wrangling instructions]: http://go/gpu-pixel-wrangler#fleet-status
 
 ## Using the GPU Bots
 
@@ -565,7 +565,7 @@ you will have to approve new images. Simply run your CL through the CQ and
 follow the steps outline [here][pixel wrangling triage] under the "Check if any
 pixel test failures are actual failures or need to be rebaselined." step.
 
-[pixel wrangling triage]: pixel_wrangling.md#How-to-Keep-the-Bots-Green
+[pixel wrangling triage]: http://go/gpu-pixel-wrangler-info#how-to-keep-the-bots-green
 
 If you are adding a new pixel test, it is beneficial to set the
 `grace_period_end` argument in the test's definition. This will allow the test
@@ -674,4 +674,4 @@ include links to the failing builds and copies of the logs, since the logs
 expire after a few days. [GPU pixel wranglers] should give the highest priority
 to eliminating flakiness on the tree.
 
-[GPU pixel wranglers]: pixel_wrangling.md
+[GPU pixel wranglers]: http://go/gpu-pixel-wrangler
