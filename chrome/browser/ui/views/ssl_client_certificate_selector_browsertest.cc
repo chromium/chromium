@@ -334,7 +334,14 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, SelectSecond) {
   EXPECT_CALL(*auth_requestor_, CancelCertificateSelection());
 }
 
-IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest, Escape) {
+// TODO(crbug.com/1249827): Test is flaky on Mac, Linux and Lacros.
+#if defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_Escape DISABLED_Escape
+#else
+#define MAYBE_Escape Escape
+#endif
+IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest,
+                       MAYBE_Escape) {
   EXPECT_CALL(*auth_requestor_1_, CertificateSelected(nullptr, nullptr));
 
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -349,8 +356,8 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest, Escape) {
   EXPECT_CALL(*auth_requestor_, CancelCertificateSelection());
 }
 
-// TODO(crbug.com/1249869): Test is flaky on Linux.
-#if defined(OS_LINUX)
+// TODO(crbug.com/1249705): Test is flaky on Mac, Linux and Lacros.
+#if defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SelectDefault DISABLED_SelectDefault
 #else
 #define MAYBE_SelectDefault SelectDefault
