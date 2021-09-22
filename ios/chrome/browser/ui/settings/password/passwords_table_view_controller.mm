@@ -249,9 +249,6 @@ void RemoveFormsToBeDeleted(
 // Number of compromised passwords.
 @property(assign) NSInteger compromisedPasswordsCount;
 
-// Button to add new password profile in the toolbar.
-@property(nonatomic, strong) UIBarButtonItem* addPasswordButton;
-
 // Stores the most recently created or updated password form.
 @property(nonatomic, assign) absl::optional<password_manager::PasswordForm>
     mostRecentlyUpdatedPassword;
@@ -357,6 +354,17 @@ void RemoveFormsToBeDeleted(
   [self.scrimView addTarget:self
                      action:@selector(dismissSearchController:)
            forControlEvents:UIControlEventTouchUpInside];
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    // If the settings are managed by enterprise policy and the password manager
+    // is not enabled, there won't be any add functionality.
+    if (!(_browserState->GetPrefs()->IsManagedPreference(
+              password_manager::prefs::kCredentialsEnableService) &&
+          ![_passwordManagerEnabled value])) {
+      self.shouldShowAddButtonInToolbar = YES;
+    }
+  }
 
   [self loadModel];
 
@@ -537,11 +545,7 @@ void RemoveFormsToBeDeleted(
 - (BOOL)shouldHideToolbar {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
-    // There is a bug from apple that this method might be called in this view
-    // controller even if it is not the top view controller.
-    if (self.navigationController.topViewController == self) {
       return NO;
-    }
   }
 
   return [super shouldHideToolbar];
@@ -560,8 +564,13 @@ void RemoveFormsToBeDeleted(
   [super updateUIForEditState];
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
-    [self setToolbarItemsWithEditing:self.tableView.editing];
+    self.addButtonInToolbar.enabled = [_passwordManagerEnabled value];
+    [self updatedToolbarForEditState];
   }
+}
+
+- (void)addButtonCallback {
+  [self.handler showAddPasswordSheet];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -737,7 +746,7 @@ void RemoveFormsToBeDeleted(
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
     // Disable the "Add" button if the password manager is not enabled.
-    self.addPasswordButton.enabled = [_passwordManagerEnabled value];
+    self.addButtonInToolbar.enabled = [_passwordManagerEnabled value];
   }
 }
 
@@ -782,13 +791,6 @@ void RemoveFormsToBeDeleted(
   [self presentViewController:errorInfoPopover animated:YES completion:nil];
 }
 
-- (void)handleAddPassword:(id)sender {
-  [self.handler showAddPasswordSheet];
-}
-
-- (void)editOrDoneButtonPressed {
-  [self setEditing:!self.tableView.editing animated:YES];
-}
 
 #pragma mark - PasswordsConsumer
 
@@ -1011,41 +1013,6 @@ void RemoveFormsToBeDeleted(
   }
 
   [self searchForTerm:searchText];
-}
-
-#pragma mark - Toolbar Buttons
-
-// Returns "Add Password" button, to be added to the toolbar.
-- (UIBarButtonItem*)addPasswordButton {
-  if (!_addPasswordButton) {
-    // TODO(crbug.com/1226006): Use i18n string for the add password button.
-    _addPasswordButton =
-        [[UIBarButtonItem alloc] initWithTitle:@"Add"
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(handleAddPassword:)];
-    _addPasswordButton.accessibilityIdentifier = kPasswordsAddPasswordButtonId;
-  }
-  _addPasswordButton.enabled = [_passwordManagerEnabled value];
-  return _addPasswordButton;
-}
-
-// Creates and returns "Edit" or "Done" button based on |editing|, to be added
-// to the toolbar.
-- (UIBarButtonItem*)editOrDoneButtonWithEditing:(BOOL)editing {
-  // TODO(crbug.com/1226006): Create separate accessibility identifiers for the
-  // toolbar "Edit" and "Done" buttons.
-  NSString* title =
-      l10n_util::GetNSString(editing ? IDS_IOS_NAVIGATION_BAR_DONE_BUTTON
-                                     : IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
-  UIBarButtonItem* button = [[UIBarButtonItem alloc]
-      initWithTitle:title
-              style:(editing ? UIBarButtonItemStyleDone
-                             : UIBarButtonItemStylePlain)
-             target:self
-             action:@selector(editOrDoneButtonPressed)];
-  button.enabled = editing || [self editButtonEnabled];
-  return button;
 }
 
 #pragma mark - Private methods
@@ -1488,37 +1455,6 @@ void RemoveFormsToBeDeleted(
   [self.handler showCompromisedPasswords];
   password_manager::LogPasswordCheckReferrer(
       password_manager::PasswordCheckReferrer::kPasswordSettings);
-}
-
-// Sets toolbar items based on |editing|.
-- (void)setToolbarItemsWithEditing:(BOOL)editing {
-  UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
-
-  if (_browserState->GetPrefs()->IsManagedPreference(
-          password_manager::prefs::kCredentialsEnableService) &&
-      ![_passwordManagerEnabled value]) {
-    // Add functionality is not available.
-    if (!editing) {
-      [self setToolbarItems:@[
-        flexibleSpace, [self editOrDoneButtonWithEditing:editing], flexibleSpace
-      ]
-                   animated:YES];
-      return;
-    }
-  }
-
-  UIBarButtonItem* toolbarLeftButton =
-      editing ? self.deleteButton : self.addPasswordButton;
-  [self setToolbarItems:@[
-    toolbarLeftButton, flexibleSpace, [self editOrDoneButtonWithEditing:editing]
-  ]
-               animated:YES];
-  if (editing) {
-    self.deleteButton.enabled = NO;
-  }
 }
 
 // Scrolls the password lists such that most recently updated

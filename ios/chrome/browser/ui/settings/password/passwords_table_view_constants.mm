@@ -12,7 +12,6 @@ NSString* const kPasswordsTableViewId = @"PasswordsTableViewId";
 NSString* const kPasswordsExportConfirmViewId = @"PasswordsExportConfirmViewId";
 NSString* const kPasswordsSearchBarId = @"PasswordsSearchBar";
 NSString* const kPasswordsScrimViewId = @"PasswordsScrimViewId";
-NSString* const kPasswordsAddPasswordButtonId = @"PasswordsAddPasswordButtonId";
 
 NSString* const kPasswordDetailsTableViewId = @"PasswordDetailsTableViewId";
 NSString* const kPasswordDetailsDeletionAlertViewId =

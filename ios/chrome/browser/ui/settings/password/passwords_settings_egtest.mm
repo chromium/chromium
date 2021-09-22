@@ -261,7 +261,7 @@ id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
 // Returns matcher for the "Add Password" button located at the bottom of the
 // screen.
 id<GREYMatcher> AddPasswordButton() {
-  return grey_accessibilityID(kPasswordsAddPasswordButtonId);
+  return grey_accessibilityID(kSettingsToolbarAddButtonId);
 }
 
 // Returns matcher for the "Save" button in the "Add Password" view.
