@@ -13,9 +13,9 @@
 namespace blink {
 
 class ComputedStyle;
+class SimpleFontData;
 enum class FontVerticalPositionType;
 enum class ResolvedUnderlinePosition;
-class FontMetrics;
 
 class CORE_EXPORT TextDecorationOffsetBase {
   STACK_ALLOCATED();
@@ -27,12 +27,13 @@ class CORE_EXPORT TextDecorationOffsetBase {
   virtual int ComputeUnderlineOffsetForUnder(
       const Length& style_underline_offset,
       float computed_font_size,
+      const SimpleFontData* font_data,
       float text_decoration_thickness,
       FontVerticalPositionType) const = 0;
 
   int ComputeUnderlineOffset(ResolvedUnderlinePosition,
                              float computed_font_size,
-                             const FontMetrics&,
+                             const SimpleFontData* font_data,
                              const Length& style_underline_offset,
                              float text_decoration_thickness) const;
 

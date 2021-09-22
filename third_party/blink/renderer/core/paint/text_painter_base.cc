@@ -268,8 +268,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
       const int paint_underline_offset =
           decoration_offset.ComputeUnderlineOffset(
               underline_position, decoration_info.ComputedFontSize(),
-              decoration_info.FontData()->GetFontMetrics(), line_offset,
-              resolved_thickness);
+              decoration_info.FontData(), line_offset, resolved_thickness);
       decoration_info.SetPerLineData(
           TextDecoration::kUnderline, paint_underline_offset,
           TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness), 1);
@@ -288,7 +287,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
       const int paint_overline_offset =
           decoration_offset.ComputeUnderlineOffsetForUnder(
               line_offset, decoration_info.ComputedFontSize(),
-              resolved_thickness, position);
+              decoration_info.FontData(), resolved_thickness, position);
       decoration_info.SetPerLineData(
           TextDecoration::kOverline, paint_overline_offset,
           -TextDecorationInfo::DoubleOffsetFromThickness(resolved_thickness),
