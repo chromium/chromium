@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/system_monitor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "media/capture/video/fuchsia/video_capture_device_fuchsia.h"
@@ -285,6 +286,14 @@ void VideoCaptureDeviceFactoryFuchsia::
     MaybeResolvePendingDeviceInfoCallbacks() {
   if (num_pending_device_info_requests_ > 0)
     return;
+
+  // Notify system monitor if devices have changed. This will indirectly update
+  // media device manager and the web app eventually.
+  auto* system_monitor = base::SystemMonitor::Get();
+  if (system_monitor) {
+    system_monitor->ProcessDevicesChanged(
+        base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  }
 
   std::vector<GetDevicesInfoCallback> callbacks;
   callbacks.swap(pending_devices_info_requests_);
