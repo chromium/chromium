@@ -30,6 +30,46 @@ MediaQueryExpValue InvalidValue() {
   return MediaQueryExpValue();
 }
 
+MediaQueryExpComparison NoCmp(MediaQueryExpValue v) {
+  return MediaQueryExpComparison(v);
+}
+
+MediaQueryExpComparison LtCmp(MediaQueryExpValue v) {
+  return MediaQueryExpComparison(v, MediaQueryOperator::kLt);
+}
+
+MediaQueryExpComparison LeCmp(MediaQueryExpValue v) {
+  return MediaQueryExpComparison(v, MediaQueryOperator::kLe);
+}
+
+MediaQueryExpComparison GtCmp(MediaQueryExpValue v) {
+  return MediaQueryExpComparison(v, MediaQueryOperator::kGt);
+}
+
+MediaQueryExpComparison GeCmp(MediaQueryExpValue v) {
+  return MediaQueryExpComparison(v, MediaQueryOperator::kGe);
+}
+
+MediaQueryExpComparison EqCmp(MediaQueryExpValue v) {
+  return MediaQueryExpComparison(v, MediaQueryOperator::kEq);
+}
+
+MediaQueryExp LeftExp(String feature, MediaQueryExpComparison cmp) {
+  return MediaQueryExp::Create(feature,
+                               MediaQueryExpBounds(cmp, NoCmp(InvalidValue())));
+}
+
+MediaQueryExp RightExp(String feature, MediaQueryExpComparison cmp) {
+  return MediaQueryExp::Create(feature,
+                               MediaQueryExpBounds(NoCmp(InvalidValue()), cmp));
+}
+
+MediaQueryExp PairExp(String feature,
+                      MediaQueryExpComparison left,
+                      MediaQueryExpComparison right) {
+  return MediaQueryExp::Create(feature, MediaQueryExpBounds(left, right));
+}
+
 }  // namespace
 
 TEST(MediaQueryExpTest, ValuesType) {
@@ -62,6 +102,79 @@ TEST(MediaQueryExpTest, ValueEquality) {
   EXPECT_NE(PxValue(10), InvalidValue());
   EXPECT_NE(PxValue(0), InvalidValue());
   EXPECT_NE(RatioValue(0, 1), InvalidValue());
+}
+
+TEST(MediaQueryExpTest, ComparisonEquality) {
+  auto px1 = PxValue(10.0);
+  auto px2 = PxValue(20.0);
+
+  EXPECT_EQ(LtCmp(px1), LtCmp(px1));
+
+  EXPECT_NE(LtCmp(px1), LeCmp(px1));
+  EXPECT_NE(LtCmp(px1), LtCmp(px2));
+}
+
+TEST(MediaQueryExpTest, BoundaryEquality) {
+  auto px1 = PxValue(10.0);
+  auto px2 = PxValue(20.0);
+
+  EXPECT_EQ(MediaQueryExpBounds(LtCmp(px1), LeCmp(px1)),
+            MediaQueryExpBounds(LtCmp(px1), LeCmp(px1)));
+
+  EXPECT_NE(MediaQueryExpBounds(LtCmp(px1), LeCmp(px1)),
+            MediaQueryExpBounds(GtCmp(px1), LeCmp(px1)));
+  EXPECT_NE(MediaQueryExpBounds(LtCmp(px1), LeCmp(px1)),
+            MediaQueryExpBounds(LtCmp(px1), GeCmp(px1)));
+  EXPECT_NE(MediaQueryExpBounds(LtCmp(px1), LeCmp(px2)),
+            MediaQueryExpBounds(LtCmp(px1), LeCmp(px1)));
+}
+
+TEST(MediaQueryExpTest, ExpEquality) {
+  auto px1 = PxValue(10.0);
+  auto px2 = PxValue(20.0);
+
+  EXPECT_EQ(LeftExp("width", LtCmp(px1)), LeftExp("width", LtCmp(px1)));
+
+  EXPECT_NE(LeftExp("width", LtCmp(px1)), LeftExp("height", LtCmp(px1)));
+  EXPECT_NE(LeftExp("width", LtCmp(px2)), LeftExp("width", LtCmp(px1)));
+  EXPECT_NE(LeftExp("width", LtCmp(px1)), RightExp("width", LtCmp(px1)));
+  EXPECT_NE(LeftExp("width", LtCmp(px1)), LeftExp("width", GtCmp(px1)));
+}
+
+TEST(MediaQueryExpTest, Serialize) {
+  // Boolean feature:
+  EXPECT_EQ("(color)", RightExp("color", NoCmp(InvalidValue())).Serialize());
+
+  auto px = PxValue(10.0);
+
+  // Plain feature:
+  EXPECT_EQ("(width: 10px)", RightExp("width", NoCmp(px)).Serialize());
+
+  // Ranges:
+  EXPECT_EQ("(width = 10px)", RightExp("width", EqCmp(px)).Serialize());
+  EXPECT_EQ("(width < 10px)", RightExp("width", LtCmp(px)).Serialize());
+  EXPECT_EQ("(width <= 10px)", RightExp("width", LeCmp(px)).Serialize());
+  EXPECT_EQ("(width > 10px)", RightExp("width", GtCmp(px)).Serialize());
+  EXPECT_EQ("(width >= 10px)", RightExp("width", GeCmp(px)).Serialize());
+
+  EXPECT_EQ("(10px = width)", LeftExp("width", EqCmp(px)).Serialize());
+  EXPECT_EQ("(10px < width)", LeftExp("width", LtCmp(px)).Serialize());
+  EXPECT_EQ("(10px <= width)", LeftExp("width", LeCmp(px)).Serialize());
+  EXPECT_EQ("(10px > width)", LeftExp("width", GtCmp(px)).Serialize());
+  EXPECT_EQ("(10px >= width)", LeftExp("width", GeCmp(px)).Serialize());
+
+  EXPECT_EQ(
+      "(10px < width < 20px)",
+      PairExp("width", LtCmp(PxValue(10.0)), LtCmp(PxValue(20.0))).Serialize());
+  EXPECT_EQ(
+      "(20px > width > 10px)",
+      PairExp("width", GtCmp(PxValue(20.0)), GtCmp(PxValue(10.0))).Serialize());
+  EXPECT_EQ(
+      "(10px <= width <= 20px)",
+      PairExp("width", LeCmp(PxValue(10.0)), LeCmp(PxValue(20.0))).Serialize());
+  EXPECT_EQ(
+      "(20px > width >= 10px)",
+      PairExp("width", GtCmp(PxValue(20.0)), GeCmp(PxValue(10.0))).Serialize());
 }
 
 }  // namespace blink

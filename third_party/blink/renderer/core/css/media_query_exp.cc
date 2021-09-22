@@ -321,11 +321,16 @@ bool MediaQueryExp::IsHeightDependent() const {
 }
 
 MediaQueryExp::MediaQueryExp(const MediaQueryExp& other)
-    : media_feature_(other.MediaFeature()), exp_value_(other.ExpValue()) {}
+    : media_feature_(other.MediaFeature()), bounds_(other.bounds_) {}
 
 MediaQueryExp::MediaQueryExp(const String& media_feature,
-                             const MediaQueryExpValue& exp_value)
-    : media_feature_(media_feature), exp_value_(exp_value) {}
+                             const MediaQueryExpValue& value)
+    : MediaQueryExp(media_feature,
+                    MediaQueryExpBounds(MediaQueryExpComparison(value))) {}
+
+MediaQueryExp::MediaQueryExp(const String& media_feature,
+                             const MediaQueryExpBounds& bounds)
+    : media_feature_(media_feature), bounds_(bounds) {}
 
 MediaQueryExp MediaQueryExp::Create(const String& media_feature,
                                     CSSParserTokenRange& range,
@@ -434,21 +439,71 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
   return Invalid();
 }
 
+namespace {
+
+const char* MediaQueryOperatorToString(MediaQueryOperator op) {
+  switch (op) {
+    case MediaQueryOperator::kNone:
+      return "";
+    case MediaQueryOperator::kEq:
+      return "=";
+    case MediaQueryOperator::kLt:
+      return "<";
+    case MediaQueryOperator::kLe:
+      return "<=";
+    case MediaQueryOperator::kGt:
+      return ">";
+    case MediaQueryOperator::kGe:
+      return ">=";
+  }
+
+  NOTREACHED();
+  return "";
+}
+
+}  // namespace
+
+MediaQueryExp MediaQueryExp::Create(const String& media_feature,
+                                    const MediaQueryExpBounds& bounds) {
+  return MediaQueryExp(media_feature, bounds);
+}
+
 MediaQueryExp::~MediaQueryExp() = default;
 
 bool MediaQueryExp::operator==(const MediaQueryExp& other) const {
-  return (other.media_feature_ == media_feature_) &&
-         (exp_value_ == other.exp_value_);
+  return (other.media_feature_ == media_feature_) && (bounds_ == other.bounds_);
 }
 
 String MediaQueryExp::Serialize() const {
+  String name = media_feature_.LowerASCII();
+
   StringBuilder result;
   result.Append('(');
-  result.Append(media_feature_.LowerASCII());
-  if (exp_value_.IsValid()) {
-    result.Append(": ");
-    result.Append(exp_value_.CssText());
+
+  // <mf-boolean> e.g. (color)
+  // <mf-plain>  e.g. (width: 100px)
+  if (!bounds_.IsRange()) {
+    result.Append(name);
+    if (ExpValue().IsValid()) {
+      result.Append(": ");
+      result.Append(ExpValue().CssText());
+    }
+  } else {
+    if (bounds_.left.IsValid()) {
+      result.Append(bounds_.left.value.CssText());
+      result.Append(" ");
+      result.Append(MediaQueryOperatorToString(bounds_.left.op));
+      result.Append(" ");
+    }
+    result.Append(name);
+    if (bounds_.right.IsValid()) {
+      result.Append(" ");
+      result.Append(MediaQueryOperatorToString(bounds_.right.op));
+      result.Append(" ");
+      result.Append(bounds_.right.value.CssText());
+    }
   }
+
   result.Append(')');
 
   return result.ToString();

@@ -124,6 +124,86 @@ class CORE_EXPORT MediaQueryExpValue {
   };
 };
 
+// https://drafts.csswg.org/mediaqueries-4/#mq-syntax
+enum class MediaQueryOperator {
+  // Used for <mf-plain>, <mf-boolean>
+  kNone,
+
+  // Used for <mf-range>
+  kEq,
+  kLt,
+  kLe,
+  kGt,
+  kGe,
+};
+
+// This represents the following part of a <media-feature> (example):
+//
+//  (width >= 10px)
+//         ^^^^^^^
+//
+struct CORE_EXPORT MediaQueryExpComparison {
+  DISALLOW_NEW();
+  MediaQueryExpComparison() = default;
+  explicit MediaQueryExpComparison(const MediaQueryExpValue& value)
+      : value(value) {}
+  MediaQueryExpComparison(const MediaQueryExpValue& value,
+                          MediaQueryOperator op)
+      : value(value), op(op) {}
+
+  bool operator==(const MediaQueryExpComparison& o) const {
+    return value == o.value && op == o.op;
+  }
+  bool operator!=(const MediaQueryExpComparison& o) const {
+    return !(*this == o);
+  }
+
+  bool IsValid() const { return value.IsValid(); }
+
+  MediaQueryExpValue value;
+  MediaQueryOperator op = MediaQueryOperator::kNone;
+};
+
+// There exists three types of <media-feature>s.
+//
+//  1) Boolean features, which is just the feature name, e.g. (color)
+//  2) Plain features, which can appear in two different forms:
+//       - Feature with specific value, e.g. (width: 100px)
+//       - Feature with min/max prefix, e.g. (min-width: 100px)
+//  3) Range features, which can appear in three different forms:
+//       - Feature compared with value, e.g. (width >= 100px)
+//       - Feature compared with value (reversed), e.g. (100px <= width)
+//       - Feature within a certain range, e.g. (100px < width < 200px)
+//
+// In the first case, both |left| and |right| values are not set.
+// In the second case, only |right| is set.
+// In the third case, either |left| is set, |right| is set, or both, depending
+// on the form.
+//
+// https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
+struct CORE_EXPORT MediaQueryExpBounds {
+  DISALLOW_NEW();
+  MediaQueryExpBounds() = default;
+  explicit MediaQueryExpBounds(const MediaQueryExpComparison& right)
+      : right(right) {}
+  MediaQueryExpBounds(const MediaQueryExpComparison& left,
+                      const MediaQueryExpComparison& right)
+      : left(left), right(right) {}
+
+  bool IsRange() const {
+    return left.op != MediaQueryOperator::kNone ||
+           right.op != MediaQueryOperator::kNone;
+  }
+
+  bool operator==(const MediaQueryExpBounds& o) const {
+    return left == o.left && right == o.right;
+  }
+  bool operator!=(const MediaQueryExpBounds& o) const { return !(*this == o); }
+
+  MediaQueryExpComparison left;
+  MediaQueryExpComparison right;
+};
+
 class CORE_EXPORT MediaQueryExp {
   DISALLOW_NEW();
 
@@ -133,6 +213,8 @@ class CORE_EXPORT MediaQueryExp {
                               CSSParserTokenRange&,
                               const CSSParserContext&,
                               const ExecutionContext*);
+  static MediaQueryExp Create(const String& media_feature,
+                              const MediaQueryExpBounds&);
   static MediaQueryExp Invalid() {
     return MediaQueryExp(String(), MediaQueryExpValue());
   }
@@ -142,11 +224,18 @@ class CORE_EXPORT MediaQueryExp {
 
   const String& MediaFeature() const { return media_feature_; }
 
-  MediaQueryExpValue ExpValue() const { return exp_value_; }
+  // TODO(crbug.com/1034465): Replace with MediaQueryExpBounds.
+  MediaQueryExpValue ExpValue() const {
+    DCHECK(!bounds_.left.IsValid());
+    return bounds_.right.value;
+  }
 
   bool IsValid() const { return !media_feature_.IsNull(); }
 
   bool operator==(const MediaQueryExp& other) const;
+  bool operator!=(const MediaQueryExp& other) const {
+    return !(*this == other);
+  }
 
   bool IsViewportDependent() const;
 
@@ -160,9 +249,10 @@ class CORE_EXPORT MediaQueryExp {
 
  private:
   MediaQueryExp(const String&, const MediaQueryExpValue&);
+  MediaQueryExp(const String&, const MediaQueryExpBounds&);
 
   String media_feature_;
-  MediaQueryExpValue exp_value_;
+  MediaQueryExpBounds bounds_;
 };
 
 }  // namespace blink
