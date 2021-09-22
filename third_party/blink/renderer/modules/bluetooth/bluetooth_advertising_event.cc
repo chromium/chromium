@@ -4,9 +4,6 @@
 
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_advertising_event.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_manufacturer_data_map.h"
