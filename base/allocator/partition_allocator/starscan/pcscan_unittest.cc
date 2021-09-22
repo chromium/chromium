@@ -213,7 +213,7 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReference(PartitionAllocPCScanTest& test,
                            SourceList* source,
                            ValueList* value) {
-  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
+  auto* value_root = ThreadSafePartitionRoot::FromPointerInFirstSuperpage(
       reinterpret_cast<char*>(value));
   {
     // Free |value| and leave the dangling reference in |source|.
@@ -241,7 +241,7 @@ void TestDanglingReference(PartitionAllocPCScanTest& test,
 
 void TestDanglingReferenceNotVisited(PartitionAllocPCScanTest& test,
                                      void* value) {
-  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
+  auto* value_root = ThreadSafePartitionRoot::FromPointerInFirstSuperpage(
       reinterpret_cast<char*>(value));
   value_root->Free(value);
   // Check that |value| is in the quarantine now.
@@ -294,7 +294,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceDifferentBucketsAligned) {
   // Double check the setup -- make sure that exactly two slot spans were
   // allocated, within the same super page, with a gap in between.
   {
-    auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
+    auto* value_root = ThreadSafePartitionRoot::FromPointerInFirstSuperpage(
         reinterpret_cast<char*>(value));
     ScopedGuard<ThreadSafe> guard{value_root->lock_};
 
@@ -537,7 +537,7 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
                                         SourceList* source,
                                         ValueList* value) {
-  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
+  auto* value_root = ThreadSafePartitionRoot::FromPointerInFirstSuperpage(
       reinterpret_cast<char*>(value));
   {
     // Free |value| and leave the dangling reference in |source|.

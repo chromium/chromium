@@ -342,7 +342,14 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSuperPage(char* super_page);
-  ALWAYS_INLINE static PartitionRoot* FromPointerInNormalBuckets(char* ptr);
+  // Works for any pointer inside a normal bucket allocation.
+  //
+  // For direct-mapped allocations, only works for a pointer which is inside the
+  // first SuperPage of a given allocation, that is the first "2MiB minus a
+  // bit". In particular always works for a pointer at the start of an
+  // allocation.  See partition_alloc_constants.h to see the layout of a
+  // direct-mapped allocation.
+  ALWAYS_INLINE static PartitionRoot* FromPointerInFirstSuperpage(char* ptr);
 
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
@@ -1013,6 +1020,16 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   PA_CHECK(IsManagedByPartitionAlloc(ptr));
 #endif
 
+  // Fetch the root from the pointer, and not the SlotSpan. This is important,
+  // as getting to the SlotSpan is a slow operation (looking into the metadata
+  // area, and following a pointer), and SlotSpans can induce cache coherency
+  // traffic (since they're read on every free(), and written to on any
+  // malloc()/free() that is not a hit in the thread cache). This way we change
+  // the critical path from ptr -> slot_span -> root into two *parallel* ones:
+  // 1. ptr -> root
+  // 2. ptr -> slot_span
+  auto* root = FromPointerInFirstSuperpage(reinterpret_cast<char*>(ptr));
+
   // Call FromSlotInnerPtr instead of FromSlotStartPtr because the pointer
   // hasn't been adjusted yet.
   SlotSpan* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
@@ -1029,7 +1046,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
 
   // TODO(palmer): See if we can afford to make this a CHECK.
   PA_DCHECK(IsValidSlotSpan(slot_span));
-  auto* root = FromSlotSpan(slot_span);
+  PA_DCHECK(FromSlotSpan(slot_span) == root);
 
   // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
   // default.
@@ -1259,10 +1276,10 @@ PartitionRoot<thread_safe>::FromSuperPage(char* super_page) {
 
 template <bool thread_safe>
 ALWAYS_INLINE PartitionRoot<thread_safe>*
-PartitionRoot<thread_safe>::FromPointerInNormalBuckets(char* ptr) {
-  PA_DCHECK(internal::IsManagedByNormalBuckets(ptr));
+PartitionRoot<thread_safe>::FromPointerInFirstSuperpage(char* ptr) {
   char* super_page = reinterpret_cast<char*>(reinterpret_cast<uintptr_t>(ptr) &
                                              kSuperPageBaseMask);
+  PA_DCHECK(internal::IsReservationStart(super_page));
   return FromSuperPage(super_page);
 }
 

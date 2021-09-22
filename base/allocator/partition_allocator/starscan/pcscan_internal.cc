@@ -633,8 +633,9 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // Beyond this point, we know that |maybe_ptr| is a pointer within a
   // normal-bucket super page.
   PA_SCAN_DCHECK(IsManagedByNormalBuckets(reinterpret_cast<void*>(maybe_ptr)));
+  // Pointer from a normal bucket is always in the first superpage.
   auto* root =
-      Root::FromPointerInNormalBuckets(reinterpret_cast<char*>(maybe_ptr));
+      Root::FromPointerInFirstSuperpage(reinterpret_cast<char*>(maybe_ptr));
 
 #if !PA_STARSCAN_USE_CARD_TABLE
   // Without the card table, we must make sure that |maybe_ptr| doesn't point to
