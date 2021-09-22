@@ -3879,6 +3879,7 @@ if (!is_android && !is_fuchsia) {
           "../browser/service_process/service_process_control_browsertest.cc",
         ]
       }
+      deps += [ "//printing:test_support" ]
     }
     if (enable_paint_preview) {
       sources += [

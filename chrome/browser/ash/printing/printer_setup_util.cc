@@ -20,13 +20,17 @@
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
-#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/print_backend_service_manager.h"
+#endif
 
 namespace ash {
 namespace printing {
@@ -108,6 +112,7 @@ FetchCapabilitiesOnBlockingTaskRunner(const std::string& printer_id,
   return caps;
 }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
 void CapabilitiesFetchedFromService(
     const std::string& printer_id,
     bool elevated_privileges,
@@ -146,11 +151,13 @@ void CapabilitiesFetchedFromService(
           << printer_id;
   std::move(cb).Run(printer_caps->get_printer_caps());
 }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 void FetchCapabilities(const std::string& printer_id,
                        GetPrinterCapabilitiesCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (base::FeatureList::IsEnabled(
           ::printing::features::kEnableOopPrintDrivers)) {
     VLOG(1) << "Fetching printer capabilities via service";
@@ -162,15 +169,17 @@ void FetchCapabilities(const std::string& printer_id,
             &CapabilitiesFetchedFromService, printer_id,
             service_mgr.PrinterDriverRequiresElevatedPrivilege(printer_id),
             std::move(cb)));
-  } else {
-    VLOG(1) << "Fetching printer capabilities in-process";
-    // USER_VISIBLE because the result is displayed in the print preview dialog.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(FetchCapabilitiesOnBlockingTaskRunner, printer_id,
-                       g_browser_process->GetApplicationLocale()),
-        std::move(cb));
+    return;
   }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
+  VLOG(1) << "Fetching printer capabilities in-process";
+  // USER_VISIBLE because the result is displayed in the print preview dialog.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(FetchCapabilitiesOnBlockingTaskRunner, printer_id,
+                     g_browser_process->GetApplicationLocale()),
+      std::move(cb));
 }
 
 void OnPrinterInstalled(

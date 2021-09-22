@@ -15,6 +15,11 @@
 #include "base/values.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "printing/buildflags/buildflags.h"
+
+#if !BUILDFLAG(ENABLE_OOP_PRINTING)
+#error "Out-of-process printing must be enabled."
+#endif
 
 namespace crash_keys {
 class ScopedPrinterInfo;

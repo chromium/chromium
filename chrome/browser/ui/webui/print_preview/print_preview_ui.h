@@ -23,6 +23,7 @@
 #include "components/printing/common/print.mojom.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -278,8 +279,10 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // GetIDForPrintPreviewUI() everywhere.
   absl::optional<int32_t> id_;
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   // This UI's client ID with the print backend service manager.
   uint32_t service_manager_client_id_;
+#endif
 
   // Weak pointer to the WebUI handler.
   PrintPreviewHandler* const handler_;

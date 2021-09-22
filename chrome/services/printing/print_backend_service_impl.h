@@ -19,10 +19,15 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/backend/print_backend.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
 #include "printing/printing_context.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if !BUILDFLAG(ENABLE_OOP_PRINTING)
+#error "Out-of-process printing must be enabled."
+#endif
 
 namespace crash_keys {
 class ScopedPrinterInfo;
