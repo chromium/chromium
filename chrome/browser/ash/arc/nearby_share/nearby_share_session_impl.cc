@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/progress_bar_dialog_view.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -89,6 +90,7 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (arc_window) {
     VLOG(1) << "ARC window found";
+    UpdateNearbyShareWindowFound(true);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
                                   weak_ptr_factory_.GetWeakPtr(), arc_window));
@@ -383,6 +385,7 @@ void NearbyShareSessionImpl::OnTimerFired() {
   // TODO(b/191232397): Handle error case and add UMA metric.
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second(s)";
+  UpdateNearbyShareWindowFound(false);
   CleanupSession(/*should_cleanup_files=*/true);
 }
 

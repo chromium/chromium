@@ -829,6 +829,8 @@ source_set("chromeos") {
     "../ash/arc/metrics/arc_metrics_service_proxy.h",
     "../ash/arc/nearby_share/arc_nearby_share_bridge.cc",
     "../ash/arc/nearby_share/arc_nearby_share_bridge.h",
+    "../ash/arc/nearby_share/arc_nearby_share_uma.cc",
+    "../ash/arc/nearby_share/arc_nearby_share_uma.h",
     "../ash/arc/nearby_share/nearby_share_session_impl.cc",
     "../ash/arc/nearby_share/nearby_share_session_impl.h",
     "../ash/arc/nearby_share/share_info_file_handler.cc",

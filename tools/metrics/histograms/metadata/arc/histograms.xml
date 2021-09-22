@@ -1018,6 +1018,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.NearbyShare.WindowFound" units="units"
+    expires_after="2022-03-09">
+  <owner>ttefera@google.com</owner>
+  <owner>arc-app-dev@google.com</owner>
+  <summary>
+    Records the success or failure of attempts to find NearbyShare window. ARC
+    NearbyShare finds a window after the &quot;nearby share&quot; button is
+    clicked in an app. If NearbyShare successfully finds a window,
+    &quot;true&quot; is recorded onto the histogram. &quot;false&quot; is
+    recorded in the case a window is not found.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Net.DnsQuery.AndroidApi" enum="BooleanSuccess"
     expires_after="2022-07-22">
   <owner>mhasank@google.com</owner>
