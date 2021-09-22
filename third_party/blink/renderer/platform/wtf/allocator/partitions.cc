@@ -77,20 +77,26 @@ void Partitions::Initialize() {
 
 // static
 bool Partitions::InitializeOnce() {
+  bool enable_brp =
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocBackupRefPtr) &&
+      base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
+          base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
+#else
+      false;
+#endif
+
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
-  fast_malloc_allocator->init({
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kEnabled,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookie::kAllowed,
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::BackupRefPtr::kEnabled,
-#else
-        base::PartitionOptions::BackupRefPtr::kDisabled,
-#endif
-        base::PartitionOptions::UseConfigurablePool::kNo
-  });
+  fast_malloc_allocator->init(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kEnabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       base::PartitionOptions::Cookie::kAllowed,
+       (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
+                   : base::PartitionOptions::BackupRefPtr::kDisabled),
+       base::PartitionOptions::UseConfigurablePool::kNo});
 
   fast_malloc_root_ = fast_malloc_allocator->root();
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -101,18 +107,14 @@ bool Partitions::InitializeOnce() {
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  buffer_allocator->init({
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kDisabled,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookie::kAllowed,
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::BackupRefPtr::kEnabled,
-#else
-        base::PartitionOptions::BackupRefPtr::kDisabled,
-#endif
-        base::PartitionOptions::UseConfigurablePool::kNo
-  });
+  buffer_allocator->init(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       base::PartitionOptions::Cookie::kAllowed,
+       (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
+                   : base::PartitionOptions::BackupRefPtr::kDisabled),
+       base::PartitionOptions::UseConfigurablePool::kNo});
   // RefCount disallowed because layout code will be excluded from raw_ptr<T>
   // rewrite due to performance.
   layout_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,

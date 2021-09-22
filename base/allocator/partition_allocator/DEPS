@@ -19,6 +19,7 @@ include_rules = [
     "+base/debug/alias.h",
     "+base/debug/proc_maps_linux.h",
     "+base/feature_list.h",
+    "+base/metrics/field_trial_params.h",
     "+base/fuchsia/fuchsia_logging.h",
     "+base/gtest_prod_util.h",
     "+base/immediate_crash.h",

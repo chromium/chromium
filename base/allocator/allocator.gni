@@ -75,7 +75,6 @@ declare_args() {
   #   BRP-pool block list
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
   #   are too expensive to have on by default.
-  enable_backup_ref_ptr_in_renderer_process = false
   put_ref_count_in_previous_slot = false
   never_remove_from_brp_pool_blocklist = false
   enable_backup_ref_ptr_slow_checks = false
@@ -113,12 +112,6 @@ if (!is_nacl) {
   assert(!use_backup_ref_ptr || use_allocator == "partition",
          "Can't use BackupRefPtr without PartitionAlloc-Everywhere")
 }
-
-# enable_backup_ref_ptr_in_renderer_process can only be used if
-# use_backup_ref_ptr is true.
-assert(
-    use_backup_ref_ptr || !enable_backup_ref_ptr_in_renderer_process,
-    "Can't enable BackupRefPtr in Renderer process if it isn't enabled at all")
 
 # put_ref_count_in_previous_slot can only be used if use_backup_ref_ptr
 # is true.

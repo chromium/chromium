@@ -102,32 +102,13 @@ bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
   return false;
 }
 
-// This function should be executed as early as possible once we can get the
-// command line arguments and determine whether the process needs BRP support.
-// Until that moment, all heap allocations end up in a slower temporary
-// partition with no thread cache and cause heap fragmentation.
-//
-// Furthermore, since the function has to allocate a new partition, it must
-// only run once.
-void ConfigurePartitionBackupRefPtrSupportIfNeeded(bool enable_backup_refptr) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
-  base::allocator::ConfigurePartitionBackupRefPtrSupport(enable_backup_refptr);
-#endif
-}
+}  // namespace
 
 void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
   DCHECK_NE(process_type, switches::kZygoteProcess);
-
-  // No specified process type means this is the Browser process.
-  ConfigurePartitionBackupRefPtrSupportIfNeeded(
-      process_type.empty()
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-      || process_type == switches::kRendererProcess
-#endif
-  );
+  // TODO(keishi): Move the code to enable BRP back here after Finch
+  // experiments.
 }
-
-}  // namespace
 
 PartitionAllocSupport::PartitionAllocSupport() = default;
 
@@ -217,6 +198,20 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   DCHECK_NE(process_type, switches::kZygoteProcess);
   // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
   CHECK(base::FeatureList::GetInstance());
+
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  bool enable_brp = false;
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocBackupRefPtr)) {
+    // No specified process type means this is the Browser process.
+    enable_brp = process_type.empty();
+    if (base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
+        base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer) {
+      enable_brp |= process_type == switches::kRendererProcess;
+    }
+    base::allocator::ConfigurePartitionBackupRefPtrSupport(enable_brp);
+  }
+#endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::ReconfigurePartitionAllocLazyCommit();

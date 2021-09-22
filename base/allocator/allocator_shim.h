@@ -165,7 +165,9 @@ BASE_EXPORT void InitializeAllocatorShim();
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
 BASE_EXPORT void ReconfigurePartitionAllocLazyCommit();
+#endif
 
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 BASE_EXPORT void ConfigurePartitionBackupRefPtrSupport(bool enable_brp);
 #endif
 
