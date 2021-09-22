@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.ui.frebottomgroup;
+package org.chromium.chrome.browser.signin.ui.fre;
 
 import android.accounts.Account;
 import android.content.Context;
@@ -16,8 +16,8 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.ui.R;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogCoordinator;
-import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupCoordinator.Listener;
-import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupProperties.FrePolicy;
+import org.chromium.chrome.browser.signin.ui.fre.SigninFirstRunCoordinator.Listener;
+import org.chromium.chrome.browser.signin.ui.fre.SigninFirstRunProperties.FrePolicy;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -30,7 +30,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache.Observer,
+class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache.Observer,
                                         AccountPickerCoordinator.Listener {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
@@ -41,13 +41,13 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
     private AccountPickerDialogCoordinator mDialogCoordinator;
     private String mSelectedAccountName;
 
-    FREBottomGroupMediator(
+    SigninFirstRunMediator(
             Context context, ModalDialogManager modalDialogManager, Listener listener) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mListener = listener;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
-        mModel = FREBottomGroupProperties.createModel(
+        mModel = SigninFirstRunProperties.createModel(
                 this::onSelectedAccountClicked, this::onContinueAsClicked, this::onDismissClicked);
 
         mProfileDataCache.addObserver(this);
@@ -68,8 +68,8 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     void onNativeAndPolicyLoaded(boolean hasPolicies) {
-        mModel.set(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
-        mModel.set(FREBottomGroupProperties.FRE_POLICY, hasPolicies ? new FrePolicy() : null);
+        mModel.set(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
+        mModel.set(SigninFirstRunProperties.FRE_POLICY, hasPolicies ? new FrePolicy() : null);
     }
 
     /**
@@ -101,7 +101,7 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
 
     /**
      * Callback for the PropertyKey
-     * {@link FREBottomGroupProperties#ON_SELECTED_ACCOUNT_CLICKED}.
+     * {@link SigninFirstRunProperties#ON_SELECTED_ACCOUNT_CLICKED}.
      */
     private void onSelectedAccountClicked() {
         mDialogCoordinator =
@@ -109,17 +109,17 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     /**
-     * Callback for the PropertyKey {@link FREBottomGroupProperties#ON_CONTINUE_AS_CLICKED}.
+     * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_CONTINUE_AS_CLICKED}.
      */
     private void onContinueAsClicked() {
         if (mSelectedAccountName == null) {
             mListener.addAccount();
             return;
-        } else if (mModel.get(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
+        } else if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
             mListener.advanceToNextPage();
             return;
         }
-        assert mModel.get(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED)
+        assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The continue button shouldn't be visible before the native is not initialized!";
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
@@ -145,10 +145,10 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     /**
-     * Callback for the PropertyKey {@link FREBottomGroupProperties#ON_DISMISS_CLICKED}.
+     * Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}.
      */
     private void onDismissClicked() {
-        assert mModel.get(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED)
+        assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The dismiss button shouldn't be visible before the native is not initialized!";
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
@@ -169,7 +169,7 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
 
     private void updateSelectedAccountData(String accountEmail) {
         if (TextUtils.equals(mSelectedAccountName, accountEmail)) {
-            mModel.set(FREBottomGroupProperties.SELECTED_ACCOUNT_DATA,
+            mModel.set(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA,
                     mProfileDataCache.getProfileDataOrDefault(accountEmail));
         }
     }
@@ -177,7 +177,7 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
     private void updateAccounts(List<Account> accounts) {
         if (accounts.isEmpty()) {
             mSelectedAccountName = null;
-            mModel.set(FREBottomGroupProperties.SELECTED_ACCOUNT_DATA, null);
+            mModel.set(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA, null);
         } else if (mSelectedAccountName == null
                 || AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null) {
             setSelectedAccountName(accounts.get(0).name);
@@ -186,7 +186,7 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
         if (accounts.size() == 1) {
             mAccountManagerFacade.checkChildAccountStatus(accounts.get(0), status -> {
                 final boolean isChild = ChildAccountStatus.isChild(status);
-                mModel.set(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
+                mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
                 if (isChild && mDialogCoordinator != null) {
                     mDialogCoordinator.dismissDialog();
                 }
@@ -195,7 +195,7 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
             });
         } else {
             mProfileDataCache.setBadge(0);
-            mModel.set(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED, false);
+            mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, false);
         }
     }
 }

@@ -66,10 +66,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/ExistingAccountRowViewBinder.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/OnClickListenerViewBinder.java",
     "java/src/org/chromium/chrome/browser/signin/ui/fre/FreUMADialogCoordinator.java",
-    "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupCoordinator.java",
-    "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupMediator.java",
-    "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupProperties.java",
-    "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupViewBinder.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/fre/SigninFirstRunCoordinator.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/fre/SigninFirstRunMediator.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/fre/SigninFirstRunProperties.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/fre/SigninFirstRunViewBinder.java",
   ]
   resources_package = "org.chromium.chrome.browser.signin.ui"
 }

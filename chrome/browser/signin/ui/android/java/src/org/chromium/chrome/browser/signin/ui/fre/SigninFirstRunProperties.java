@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.ui.frebottomgroup;
+package org.chromium.chrome.browser.signin.ui.fre;
 
 import android.view.View.OnClickListener;
 
@@ -13,7 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-class FREBottomGroupProperties {
+class SigninFirstRunProperties {
     /** This class regroups the policies supported by FRE. */
     static class FrePolicy {
         // TODO(crbug/1246960): Support the policy |BrowserSignin|
@@ -66,5 +66,5 @@ class FREBottomGroupProperties {
                 .build();
     }
 
-    private FREBottomGroupProperties() {}
+    private SigninFirstRunProperties() {}
 }

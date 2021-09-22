@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.ui.frebottomgroup;
+package org.chromium.chrome.browser.signin.ui.fre;
 
 import android.view.View;
 
@@ -19,21 +19,21 @@ import org.chromium.ui.widget.ButtonCompat;
  * Stateless FREBottomGroup view binder.
  * TODO(crbug/1248083): Create a customised view class for the view here
  */
-class FREBottomGroupViewBinder {
+class SigninFirstRunViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == FREBottomGroupProperties.ON_CONTINUE_AS_CLICKED) {
+        if (propertyKey == SigninFirstRunProperties.ON_CONTINUE_AS_CLICKED) {
             view.findViewById(R.id.signin_fre_continue_button)
-                    .setOnClickListener(model.get(FREBottomGroupProperties.ON_CONTINUE_AS_CLICKED));
-        } else if (propertyKey == FREBottomGroupProperties.ON_DISMISS_CLICKED) {
+                    .setOnClickListener(model.get(SigninFirstRunProperties.ON_CONTINUE_AS_CLICKED));
+        } else if (propertyKey == SigninFirstRunProperties.ON_DISMISS_CLICKED) {
             view.findViewById(R.id.signin_fre_dismiss_button)
-                    .setOnClickListener(model.get(FREBottomGroupProperties.ON_DISMISS_CLICKED));
-        } else if (propertyKey == FREBottomGroupProperties.ON_SELECTED_ACCOUNT_CLICKED) {
+                    .setOnClickListener(model.get(SigninFirstRunProperties.ON_DISMISS_CLICKED));
+        } else if (propertyKey == SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED) {
             view.findViewById(R.id.signin_fre_selected_account)
                     .setOnClickListener(
-                            model.get(FREBottomGroupProperties.ON_SELECTED_ACCOUNT_CLICKED));
-        } else if (propertyKey == FREBottomGroupProperties.SELECTED_ACCOUNT_DATA) {
+                            model.get(SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED));
+        } else if (propertyKey == SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) {
             final @Nullable DisplayableProfileData profileData =
-                    model.get(FREBottomGroupProperties.SELECTED_ACCOUNT_DATA);
+                    model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA);
             if (profileData == null) {
                 ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
                 button.setText(R.string.signin_add_account_to_device);
@@ -45,17 +45,17 @@ class FREBottomGroupViewBinder {
                         profileData.getGivenNameOrFullNameOrEmail()));
             }
             updateVisibility(view, model);
-        } else if (propertyKey == FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED) {
+        } else if (propertyKey == SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED) {
             final boolean isSelectedAccountSupervised =
-                    model.get(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+                    model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
             view.findViewById(R.id.signin_fre_selected_account)
                     .setEnabled(!isSelectedAccountSupervised);
             updateVisibility(view, model);
-        } else if (propertyKey == FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED) {
+        } else if (propertyKey == SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED) {
             updateVisibility(view, model);
-        } else if (propertyKey == FREBottomGroupProperties.FRE_POLICY) {
+        } else if (propertyKey == SigninFirstRunProperties.FRE_POLICY) {
             view.findViewById(R.id.fre_browser_managed_by_organization)
-                    .setVisibility(model.get(FREBottomGroupProperties.FRE_POLICY) != null
+                    .setVisibility(model.get(SigninFirstRunProperties.FRE_POLICY) != null
                                     ? View.VISIBLE
                                     : View.GONE);
         } else {
@@ -65,18 +65,18 @@ class FREBottomGroupViewBinder {
 
     private static void updateVisibility(View view, PropertyModel model) {
         final boolean areNativeAndPolicyLoaded =
-                model.get(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED);
+                model.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED);
         view.findViewById(R.id.signin_fre_progress_spinner)
                 .setVisibility(areNativeAndPolicyLoaded ? View.GONE : View.VISIBLE);
 
         if (areNativeAndPolicyLoaded) {
             view.findViewById(R.id.signin_fre_selected_account)
-                    .setVisibility(model.get(FREBottomGroupProperties.SELECTED_ACCOUNT_DATA) == null
+                    .setVisibility(model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) == null
                                     ? View.GONE
                                     : View.VISIBLE);
             view.findViewById(R.id.signin_fre_dismiss_button)
                     .setVisibility(
-                            model.get(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
+                            model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
                                     ? View.GONE
                                     : View.VISIBLE);
         } else {
@@ -88,5 +88,5 @@ class FREBottomGroupViewBinder {
         view.findViewById(R.id.signin_fre_footer).setVisibility(otherElementsVisibility);
     }
 
-    private FREBottomGroupViewBinder() {}
+    private SigninFirstRunViewBinder() {}
 }

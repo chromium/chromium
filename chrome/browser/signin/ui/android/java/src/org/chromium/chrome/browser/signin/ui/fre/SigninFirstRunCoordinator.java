@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.ui.frebottomgroup;
+package org.chromium.chrome.browser.signin.ui.fre;
 
 import android.content.Context;
 import android.view.View;
@@ -14,12 +14,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * The coordinator handles the update and interaction of the bottom group of the FRE sign-in
- * screen. It is composed of a selected account, a continue button and a dismiss button.
+ * The coordinator handles the update and interaction of the FRE sign-in screen.
  */
 @MainThread
-public class FREBottomGroupCoordinator {
-    /** Listener for FREBottomGroup. */
+public class SigninFirstRunCoordinator {
+    /** Listener for srignin fist run MVC. */
     public interface Listener {
         /** Notifies when the user clicked the "add account" button. */
         void addAccount();
@@ -28,7 +27,7 @@ public class FREBottomGroupCoordinator {
         void advanceToNextPage();
     }
 
-    private final FREBottomGroupMediator mMediator;
+    private final SigninFirstRunMediator mMediator;
 
     /**
      * Constructs a coordinator instance.
@@ -39,11 +38,11 @@ public class FREBottomGroupCoordinator {
      * @param modalDialogManager is used to open dialogs like account picker dialog and uma dialog.
      * @param listener is invoked to interact with classes outside the module.
      */
-    public FREBottomGroupCoordinator(
+    public SigninFirstRunCoordinator(
             Context context, View view, ModalDialogManager modalDialogManager, Listener listener) {
-        mMediator = new FREBottomGroupMediator(context, modalDialogManager, listener);
+        mMediator = new SigninFirstRunMediator(context, modalDialogManager, listener);
         PropertyModelChangeProcessor.create(
-                mMediator.getModel(), view, FREBottomGroupViewBinder::bind);
+                mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
     }
 
     /**

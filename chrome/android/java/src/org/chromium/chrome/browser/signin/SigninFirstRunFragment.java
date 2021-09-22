@@ -23,7 +23,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
 import org.chromium.chrome.browser.signin.ui.SigninUtils;
 import org.chromium.chrome.browser.signin.ui.fre.FreUMADialogCoordinator;
-import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupCoordinator;
+import org.chromium.chrome.browser.signin.ui.fre.SigninFirstRunCoordinator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -35,7 +35,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * This fragment handles the sign-in without sync consent during the FRE.
  */
 public class SigninFirstRunFragment
-        extends Fragment implements FirstRunFragment, FREBottomGroupCoordinator.Listener {
+        extends Fragment implements FirstRunFragment, SigninFirstRunCoordinator.Listener {
     private static final String FOOTER_LINK_OPEN = "<LINK>";
     private static final String FOOTER_LINK_CLOSE = "</LINK>";
 
@@ -43,8 +43,7 @@ public class SigninFirstRunFragment
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
     private ModalDialogManager mModalDialogManager;
-    // TODO(crbug/1186595): Rename the class FREBottomGroupCoordinator to FreBottomGroupCoordinator
-    private @Nullable FREBottomGroupCoordinator mFREBottomGroupCoordinator;
+    private @Nullable SigninFirstRunCoordinator mSigninFirstRunCoordinator;
     private @Nullable FreUMADialogCoordinator mFreUMADialogCoordinator;
     private boolean mNativeInitialized;
 
@@ -62,8 +61,8 @@ public class SigninFirstRunFragment
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.signin_first_run_view, container, false);
-        mFREBottomGroupCoordinator =
-                new FREBottomGroupCoordinator(requireContext(), view, mModalDialogManager, this);
+        mSigninFirstRunCoordinator =
+                new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
         final NoUnderlineClickableSpan footerLinkSpan =
                 new NoUnderlineClickableSpan(getResources(), this::onFooterLinkClicked);
         final SpannableString footerString = SpanApplier.applySpans(
@@ -79,7 +78,7 @@ public class SigninFirstRunFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mFREBottomGroupCoordinator.destroy();
+        mSigninFirstRunCoordinator.destroy();
     }
 
     /**
@@ -98,7 +97,7 @@ public class SigninFirstRunFragment
     }
 
     /**
-     * Implements {@link FREBottomGroupCoordinator.Listener}.
+     * Implements {@link SigninFirstRunCoordinator.Listener}.
      */
     @Override
     public void addAccount() {
@@ -121,23 +120,21 @@ public class SigninFirstRunFragment
                 && data != null) {
             String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             if (addedAccountName != null) {
-                mFREBottomGroupCoordinator.onAccountSelected(addedAccountName);
+                mSigninFirstRunCoordinator.onAccountSelected(addedAccountName);
             }
         }
     }
 
-    /**
-     * Implements {@link FREBottomGroupCoordinator.Listener}.
-     */
+    /** Implements {@link SigninFirstRunCoordinator.Listener}. */
     @Override
     public void advanceToNextPage() {
         getPageDelegate().acceptTermsOfService(true);
     }
 
     private void notifyCoordinatorWhenNativeAndPolicyAreLoaded() {
-        if (mFREBottomGroupCoordinator != null && mNativeInitialized
+        if (mSigninFirstRunCoordinator != null && mNativeInitialized
                 && getPageDelegate().getPolicyLoadListener().get() != null) {
-            mFREBottomGroupCoordinator.onNativeAndPolicyLoaded(
+            mSigninFirstRunCoordinator.onNativeAndPolicyLoaded(
                     getPageDelegate().getPolicyLoadListener().get());
         }
     }
