@@ -80,6 +80,7 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
   std::atomic<size_t> hashes_bitwise_or;
   std::atomic<size_t> hashes_bitwise_and;
   std::atomic<size_t> hashes_bitwise_xor;
+  std::atomic<size_t> max_reserve;
 
   // All of the fields below are set by `PrepareForSampling`, they must not be
   // mutated in `Record*` functions.  They are logically `const` in that sense.
@@ -105,6 +106,18 @@ inline void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
   info->num_rehashes.store(
       1 + info->num_rehashes.load(std::memory_order_relaxed),
       std::memory_order_relaxed);
+}
+
+inline void RecordReservationSlow(HashtablezInfo* info,
+                                  size_t target_capacity) {
+  info->max_reserve.store(
+      (std::max)(info->max_reserve.load(std::memory_order_relaxed),
+                 target_capacity),
+      std::memory_order_relaxed);
+}
+
+inline void RecordClearedReservationSlow(HashtablezInfo* info) {
+  info->max_reserve.store(0, std::memory_order_relaxed);
 }
 
 inline void RecordStorageChangedSlow(HashtablezInfo* info, size_t size,
@@ -170,6 +183,16 @@ class HashtablezInfoHandle {
     RecordRehashSlow(info_, total_probe_length);
   }
 
+  inline void RecordReservation(size_t target_capacity) {
+    if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
+    RecordReservationSlow(info_, target_capacity);
+  }
+
+  inline void RecordClearedReservation() {
+    if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
+    RecordClearedReservationSlow(info_);
+  }
+
   inline void RecordInsert(size_t hash, size_t distance_from_desired) {
     if (ABSL_PREDICT_TRUE(info_ == nullptr)) return;
     RecordInsertSlow(info_, hash, distance_from_desired);
@@ -199,6 +222,8 @@ class HashtablezInfoHandle {
 
   inline void RecordStorageChanged(size_t /*size*/, size_t /*capacity*/) {}
   inline void RecordRehash(size_t /*total_probe_length*/) {}
+  inline void RecordReservation(size_t /*target_capacity*/) {}
+  inline void RecordClearedReservation() {}
   inline void RecordInsert(size_t /*hash*/, size_t /*distance_from_desired*/) {}
   inline void RecordErase() {}
 

@@ -2049,15 +2049,31 @@ TEST(RawHashSamplerTest, Sample) {
   std::vector<IntTable> tables;
   for (int i = 0; i < 1000000; ++i) {
     tables.emplace_back();
+
+    const bool do_reserve = (i % 10 > 5);
+    const bool do_rehash = !do_reserve && (i % 10 > 0);
+
+    if (do_reserve) {
+      // Don't reserve on all tables.
+      tables.back().reserve(10 * (i % 10));
+    }
+
     tables.back().insert(1);
     tables.back().insert(i % 5);
+
+    if (do_rehash) {
+      // Rehash some other tables.
+      tables.back().rehash(10 * (i % 10));
+    }
   }
   size_t end_size = 0;
   std::unordered_map<size_t, int> observed_checksums;
+  std::unordered_map<ssize_t, int> reservations;
   end_size += sampler.Iterate([&](const HashtablezInfo& info) {
     if (preexisting_info.count(&info) == 0) {
       observed_checksums[info.hashes_bitwise_xor.load(
           std::memory_order_relaxed)]++;
+      reservations[info.max_reserve.load(std::memory_order_relaxed)]++;
     }
     ++end_size;
   });
@@ -2067,6 +2083,15 @@ TEST(RawHashSamplerTest, Sample) {
   EXPECT_EQ(observed_checksums.size(), 5);
   for (const auto& [_, count] : observed_checksums) {
     EXPECT_NEAR((100 * count) / static_cast<double>(tables.size()), 0.2, 0.05);
+  }
+
+  EXPECT_EQ(reservations.size(), 10);
+  for (const auto& [reservation, count] : reservations) {
+    EXPECT_GE(reservation, 0);
+    EXPECT_LT(reservation, 100);
+
+    EXPECT_NEAR((100 * count) / static_cast<double>(tables.size()), 0.1, 0.05)
+        << reservation;
   }
 }
 #endif  // ABSL_INTERNAL_HASHTABLEZ_SAMPLE

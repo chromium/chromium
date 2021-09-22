@@ -68,6 +68,7 @@ void HashtablezInfo::PrepareForSampling() {
   hashes_bitwise_or.store(0, std::memory_order_relaxed);
   hashes_bitwise_and.store(~size_t{}, std::memory_order_relaxed);
   hashes_bitwise_xor.store(0, std::memory_order_relaxed);
+  max_reserve.store(0, std::memory_order_relaxed);
 
   create_time = absl::Now();
   // The inliner makes hardcoded skip_count difficult (especially when combined

@@ -91,6 +91,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0);
   EXPECT_EQ(info.hashes_bitwise_and.load(), ~size_t{});
   EXPECT_EQ(info.hashes_bitwise_xor.load(), 0);
+  EXPECT_EQ(info.max_reserve.load(), 0);
   EXPECT_GE(info.create_time, test_start);
 
   info.capacity.store(1, std::memory_order_relaxed);
@@ -101,6 +102,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   info.hashes_bitwise_or.store(1, std::memory_order_relaxed);
   info.hashes_bitwise_and.store(1, std::memory_order_relaxed);
   info.hashes_bitwise_xor.store(1, std::memory_order_relaxed);
+  info.max_reserve.store(1, std::memory_order_relaxed);
   info.create_time = test_start - absl::Hours(20);
 
   info.PrepareForSampling();
@@ -113,6 +115,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   EXPECT_EQ(info.hashes_bitwise_or.load(), 0);
   EXPECT_EQ(info.hashes_bitwise_and.load(), ~size_t{});
   EXPECT_EQ(info.hashes_bitwise_xor.load(), 0);
+  EXPECT_EQ(info.max_reserve.load(), 0);
   EXPECT_GE(info.create_time, test_start);
 }
 
@@ -185,6 +188,22 @@ TEST(HashtablezInfoTest, RecordRehash) {
   EXPECT_EQ(info.total_probe_length.load(), 3);
   EXPECT_EQ(info.num_erases.load(), 0);
   EXPECT_EQ(info.num_rehashes.load(), 1);
+}
+
+TEST(HashtablezInfoTest, RecordReservation) {
+  HashtablezInfo info;
+  absl::MutexLock l(&info.init_mu);
+  info.PrepareForSampling();
+  RecordReservationSlow(&info, 3);
+  EXPECT_EQ(info.max_reserve.load(), 3);
+
+  RecordReservationSlow(&info, 2);
+  // High watermark does not change
+  EXPECT_EQ(info.max_reserve.load(), 3);
+
+  RecordReservationSlow(&info, 10);
+  // High watermark does change
+  EXPECT_EQ(info.max_reserve.load(), 10);
 }
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)

@@ -41,7 +41,6 @@ namespace profiling_internal {
 // samples maintained by the SampleRecorder.  Type T defines the sampled data.
 template <typename T>
 struct Sample {
- public:
   // Guards the ability to restore the sample to a pristine state.  This
   // prevents races with sampling and resurrecting an object.
   absl::Mutex init_mu;

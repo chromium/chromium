@@ -708,8 +708,8 @@ void Cord::InlineRep::AppendArray(absl::string_view src,
   if (btree_enabled()) {
     // TODO(b/192061034): keep legacy 10% growth rate: consider other rates.
     rep = ForceBtree(rep);
-    const size_t alloc_hint = (std::min)(kMaxFlatLength, rep->length / 10);
-    rep = CordRepBtree::Append(rep->btree(), src, alloc_hint);
+    const size_t min_growth = std::max<size_t>(rep->length / 10, src.size());
+    rep = CordRepBtree::Append(rep->btree(), src, min_growth - src.size());
   } else {
     // Use new block(s) for any remaining bytes that were not handled above.
     // Alloc extra memory only if the right child of the root of the new tree

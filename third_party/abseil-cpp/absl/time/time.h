@@ -480,8 +480,9 @@ Duration Hours(T n) {
 // ToInt64Hours()
 //
 // Helper functions that convert a Duration to an integral count of the
-// indicated unit. These functions are shorthand for the `IDivDuration()`
-// function above; see its documentation for details about overflow, etc.
+// indicated unit. These return the same results as the `IDivDuration()`
+// function, though they usually do so more efficiently; see the
+// documentation of `IDivDuration()` for details about overflow, etc.
 //
 // Example:
 //

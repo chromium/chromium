@@ -96,7 +96,8 @@ void DumpAll(const CordRep* rep, bool include_contents, std::ostream& stream,
     maybe_dump_data(rep);
     DumpAll(substring->child, include_contents, stream, depth + 1);
   } else if (rep->tag >= FLAT) {
-    stream << "Flat, len = " << rep->length;
+    stream << "Flat, len = " << rep->length
+           << ", cap = " << rep->flat()->Capacity();
     maybe_dump_data(rep);
   } else if (rep->tag == EXTERNAL) {
     stream << "Extn, len = " << rep->length;

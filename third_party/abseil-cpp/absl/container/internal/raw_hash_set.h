@@ -1069,6 +1069,8 @@ class raw_hash_set {
     // past that we simply deallocate the array.
     if (capacity_ > 127) {
       destroy_slots();
+
+      infoz().RecordClearedReservation();
     } else if (capacity_) {
       for (size_t i = 0; i != capacity_; ++i) {
         if (IsFull(ctrl_[i])) {
@@ -1382,14 +1384,20 @@ class raw_hash_set {
     if (n == 0 && size_ == 0) {
       destroy_slots();
       infoz().RecordStorageChanged(0, 0);
+      infoz().RecordClearedReservation();
       return;
     }
+
     // bitor is a faster way of doing `max` here. We will round up to the next
     // power-of-2-minus-1, so bitor is good enough.
     auto m = NormalizeCapacity(n | GrowthToLowerboundCapacity(size()));
     // n == 0 unconditionally rehashes as per the standard.
     if (n == 0 || m > capacity_) {
       resize(m);
+
+      // This is after resize, to ensure that we have completed the allocation
+      // and have potentially sampled the hashtable.
+      infoz().RecordReservation(n);
     }
   }
 
@@ -1397,6 +1405,10 @@ class raw_hash_set {
     if (n > size() + growth_left()) {
       size_t m = GrowthToLowerboundCapacity(n);
       resize(NormalizeCapacity(m));
+
+      // This is after resize, to ensure that we have completed the allocation
+      // and have potentially sampled the hashtable.
+      infoz().RecordReservation(n);
     }
   }
 
@@ -1638,6 +1650,7 @@ class raw_hash_set {
         PolicyTraits::destroy(&alloc_ref(), slots_ + i);
       }
     }
+
     // Unpoison before returning the memory to the allocator.
     SanitizerUnpoisonMemoryRegion(slots_, sizeof(slot_type) * capacity_);
     Deallocate<alignof(slot_type)>(
