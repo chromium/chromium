@@ -976,6 +976,16 @@ Decision CrossOriginReadBlocking::CorbResponseAnalyzer::Sniff(
   return GetCorbDecision();
 }
 
+Decision CrossOriginReadBlocking::CorbResponseAnalyzer::
+    HandleEndOfSniffableResponseBody() {
+  // If CORB reached the end of sniffable response body, then it means that the
+  // HTML, XML, and JSON confirmation sniffers weren't able to confirm that the
+  // response body contains HTML, XML, or JSON.  In this case CORB fails open,
+  // by assuming that the response body might contain an allowed resource (e.g.
+  // an image, or a script).
+  return Decision::kAllow;
+}
+
 bool CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldAllow() const {
   // If we're in hypothetical mode then CORB must have decided to kAllow (see
   // comment in ShouldBlock). Thus we just need to wait until the sniffers are

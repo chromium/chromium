@@ -371,7 +371,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     // processing the request (e.g. by calling ReadMore as necessary).
     kContinueRequest,
   };
-  BlockResponseForCorbResult BlockResponseForCorb();
+  BlockResponseForCorbResult BlockResponseForCorb(
+      bool should_report_corb_blocking);
 
   void ReportFlaggedResponseCookies();
   void StartReading();

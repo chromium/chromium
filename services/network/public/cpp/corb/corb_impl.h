@@ -116,6 +116,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
                   mojom::RequestMode request_mode,
                   const network::mojom::URLResponseHead& response) override;
     Decision Sniff(base::StringPiece data) override;
+    Decision HandleEndOfSniffableResponseBody() override;
     bool ShouldReportBlockedResponse() const override;
 
     // true if either 1) ShouldBlockBasedOnHeaders decided to allow the response

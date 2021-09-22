@@ -1365,12 +1365,20 @@ void URLLoader::ContinueOnResponseStarted() {
         corb_analyzer_->Init(url_request_->url(), url_request_->initiator(),
                              request_mode_, *response_);
     switch (decision) {
-      case network::corb::ResponseAnalyzer::Decision::kBlock:
-        if (BlockResponseForCorb() == kWillCancelRequest)
+      case network::corb::ResponseAnalyzer::Decision::kBlock: {
+        bool should_report_corb_blocking =
+            corb_analyzer_->ShouldReportBlockedResponse();
+        corb_analyzer_.reset();
+        is_more_corb_sniffing_needed_ = false;
+        if (BlockResponseForCorb(should_report_corb_blocking) ==
+            kWillCancelRequest)
           return;
         break;
+      }
 
       case network::corb::ResponseAnalyzer::Decision::kAllow:
+        corb_analyzer_.reset();
+        is_more_corb_sniffing_needed_ = false;
         break;
 
       case network::corb::ResponseAnalyzer::Decision::kSniffMore:
@@ -1513,6 +1521,9 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
         data_length = net::kMaxBytesToSniff;
 
       base::StringPiece data(pending_write_->buffer(), data_length);
+      bool stop_sniffing_after_processing_current_data =
+          (num_bytes <= 0 ||
+           pending_write_buffer_offset_ >= net::kMaxBytesToSniff);
 
       if (is_more_mime_sniffing_needed_) {
         const std::string& type_hint = response_->mime_type;
@@ -1525,31 +1536,46 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
         // returns a new type that is probably better than the current one.
         response_->mime_type.assign(new_type);
         response_->did_mime_sniff = true;
+
+        if (stop_sniffing_after_processing_current_data)
+          is_more_mime_sniffing_needed_ = false;
       }
 
-      // `has_new_data_to_sniff` can be false at the end-of-stream.
-      bool has_new_data_to_sniff = new_data_offset < data.length();
-      if (is_more_corb_sniffing_needed_ && has_new_data_to_sniff) {
-        switch (corb_analyzer_->Sniff(data)) {
-          case network::corb::ResponseAnalyzer::Decision::kBlock:
+      if (is_more_corb_sniffing_needed_) {
+        corb::ResponseAnalyzer::Decision corb_decision =
+            corb::ResponseAnalyzer::Decision::kSniffMore;
+
+        // `has_new_data_to_sniff` can be false at the end-of-stream.
+        bool has_new_data_to_sniff = new_data_offset < data.length();
+        if (has_new_data_to_sniff)
+          corb_decision = corb_analyzer_->Sniff(data);
+
+        if (corb_decision == corb::ResponseAnalyzer::Decision::kSniffMore &&
+            stop_sniffing_after_processing_current_data) {
+          corb_decision = corb_analyzer_->HandleEndOfSniffableResponseBody();
+          DCHECK_NE(corb::ResponseAnalyzer::Decision::kSniffMore,
+                    corb_decision);
+        }
+
+        switch (corb_decision) {
+          case network::corb::ResponseAnalyzer::Decision::kBlock: {
+            bool should_report_corb_blocking =
+                corb_analyzer_->ShouldReportBlockedResponse();
+            corb_analyzer_.reset();
             is_more_corb_sniffing_needed_ = false;
-            if (BlockResponseForCorb() == kWillCancelRequest)
+            if (BlockResponseForCorb(should_report_corb_blocking) ==
+                kWillCancelRequest)
               return;
             break;
+          }
           case network::corb::ResponseAnalyzer::Decision::kAllow:
+            corb_analyzer_.reset();
             is_more_corb_sniffing_needed_ = false;
             break;
           case network::corb::ResponseAnalyzer::Decision::kSniffMore:
             break;
         }
       }
-    }
-
-    if (num_bytes <= 0 ||
-        pending_write_buffer_offset_ >= net::kMaxBytesToSniff) {
-      is_more_mime_sniffing_needed_ = false;
-      is_more_corb_sniffing_needed_ = false;
-      corb_analyzer_.reset();
     }
 
     if (!is_more_mime_sniffing_needed_ && !is_more_corb_sniffing_needed_) {
@@ -2043,7 +2069,8 @@ void URLLoader::CompleteBlockedResponse(
   url_loader_client_.reset();
 }
 
-URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
+URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(
+    bool should_report_corb_blocking) {
   // CORB should only do work after the response headers have been received.
   DCHECK(has_received_response_);
 
@@ -2065,8 +2092,6 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
   url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   // Tell the real URLLoaderClient that the response has been completed.
-  bool should_report_corb_blocking =
-      corb_analyzer_->ShouldReportBlockedResponse();
   if (corb_detachable_) {
     // TODO(lukasza): https://crbug.com/827633#c5: Consider passing net::ERR_OK
     // instead.  net::ERR_ABORTED was chosen for consistency with the old CORB

@@ -158,21 +158,39 @@ void CrossOriginReadBlockingChecker::OnReadComplete(
     OnNetError(net_error);
     return;
   }
+
   base::StringPiece data(buffer->data(), bytes_read);
-  switch (corb_analyzer_->Sniff(data)) {
+  network::corb::ResponseAnalyzer::Decision corb_decision =
+      corb_analyzer_->Sniff(data);
+
+  // At OnReadComplete we are out of data, so fall back to
+  // HandleEndOfSniffableResponseBody if no allow/block `corb_decision` has been
+  // reached yet.
+  if (corb_decision == network::corb::ResponseAnalyzer::Decision::kSniffMore) {
+    corb_decision = corb_analyzer_->HandleEndOfSniffableResponseBody();
+    DCHECK_NE(network::corb::ResponseAnalyzer::Decision::kSniffMore,
+              corb_decision);
+  }
+
+  switch (corb_decision) {
     case network::corb::ResponseAnalyzer::Decision::kBlock:
       OnBlocked();
       return;
 
-    // When there is no more data to sniff (this is the case here), CORB treats
-    // kSniffMore as kAllow (for CORB kSniffMore at this point means that the
-    // response body didn't sniff as sensitive html/json/xml).
     case network::corb::ResponseAnalyzer::Decision::kAllow:
-    case network::corb::ResponseAnalyzer::Decision::kSniffMore:
       OnAllowed();
       return;
+
+    case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+      // This should be impossible after going through
+      // HandleEndOfSniffableResponseBody above.
+      NOTREACHED();
+      break;
   }
-  NOTREACHED();  // Unrecognized `decision` value?
+  // Fall back to blocking after encountering an unexpected or unrecognized
+  // `corb_decision` in the `switch` statement above.
+  NOTREACHED();
+  OnBlocked();
 }
 
 }  // namespace content

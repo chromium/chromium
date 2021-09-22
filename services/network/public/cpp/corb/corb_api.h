@@ -43,8 +43,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
   // The Init method should be called exactly once after getting the
   // ResponseAnalyzer from the Create method.  The Init method attempts to
   // calculate the `Decision` based on the HTTP response headers.  If
-  // `kSniffMore` is returned, then Sniff needs to be called to reach the
-  // `Decision`.
+  // `kSniffMore` is returned, then Sniff or HandleEndOfSniffableResponseBody
+  // needs to be called to reach the `Decision`.
   //
   // Implementations of this method can assume that callers pass a trustworthy
   // |request_initiator| (e.g. one that can't be spoofed by a compromised
@@ -60,6 +60,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
   // returned Decision::kSniffMore.  This method will attempt to calculate the
   // `Decision` based on the (prefix of the) HTTP response body.
   virtual Decision Sniff(base::StringPiece response_body) = 0;
+
+  // The HandleEndOfSniffableResponseBody should be called if earlier calls to
+  // Init/Sniff returned kSniffMore, but there is nothing more to sniff (because
+  // the end of the response body was reached, or because we've reached the
+  // maximum number of bytes to sniff).  This method will return kAllow or
+  // kBlock (and should not return kSniffMore).
+  virtual Decision HandleEndOfSniffableResponseBody() = 0;
 
   // True if the analyzed response should report the blocking decision in a
   // warning message written to the DevTools console.
