@@ -21,6 +21,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -30,10 +32,9 @@ class IntentPickerBubbleViewBrowserTest
     : public web_app::WebAppNavigationBrowserTest,
       public ::testing::WithParamInterface<std::string> {
  public:
-  void SetUp() override {
+  IntentPickerBubbleViewBrowserTest() {
     // TODO(schenney): Stop disabling Paint Holding. crbug.com/1001189
     scoped_feature_list_.InitAndDisableFeature(blink::features::kPaintHolding);
-    web_app::WebAppNavigationBrowserTest::SetUp();
   }
 
   void OpenNewTab(const GURL& url) {
@@ -290,4 +291,76 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTest, DoubleClickOpensApp) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerBubbleViewBrowserTest,
+    testing::Values("", "noopener", "noreferrer", "nofollow"));
+
+class IntentPickerBubbleViewPrerenderingBrowserTest
+    : public IntentPickerBubbleViewBrowserTest {
+ public:
+  IntentPickerBubbleViewPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &IntentPickerBubbleViewPrerenderingBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~IntentPickerBubbleViewPrerenderingBrowserTest() override = default;
+  IntentPickerBubbleViewPrerenderingBrowserTest(
+      const IntentPickerBubbleViewPrerenderingBrowserTest&) = delete;
+
+  IntentPickerBubbleViewPrerenderingBrowserTest& operator=(
+      const IntentPickerBubbleViewPrerenderingBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    IntentPickerBubbleViewBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    IntentPickerBubbleViewBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewPrerenderingBrowserTest,
+                       PrerenderingShouldNotShowIntentPicker) {
+  InstallTestWebApp();
+
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  const GURL initial_url =
+      https_server().GetURL(GetAppUrlHost(), "/empty.html");
+  OpenNewTab(initial_url);
+  EXPECT_FALSE(intent_picker_view->GetVisible());
+
+  // Load a prerender page and prerendering should not try to show the
+  // intent picker.
+  const GURL prerender_url = https_server().GetURL(
+      GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
+  int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  EXPECT_FALSE(intent_picker_view->GetVisible());
+
+  // Activate the prerender page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // After activation, IntentPickerTabHelper should show the
+  // intent picker.
+  EXPECT_TRUE(intent_picker_view->GetVisible());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IntentPickerBubbleViewPrerenderingBrowserTest,
     testing::Values("", "noopener", "noreferrer", "nofollow"));
