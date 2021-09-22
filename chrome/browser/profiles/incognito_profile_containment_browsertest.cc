@@ -30,9 +30,12 @@ namespace {
 
 // List of file or directory prefixes that are known to be modified during an
 // Incognito session.
+// For ChromeOS, a copy of all members of |kAllowListPrefixesForAllPlatforms|
+// that start with "/Default" is added to the allow list, replacing "/Default"
+// with "/test-user".
 // TODO(http://crbug.com/1234755): Add audit message (or fix the issue) for all
 // paths that do not have a comment.
-constexpr std::array<const char*, 11> kAllowListPrefixesForAllPlatforms = {
+const char* kAllowListPrefixesForAllPlatforms[] = {
     "/Default/data_reduction_proxy_leveldb",
     "/Default/Extension State",
     "/Default/GCM Store/",
@@ -42,34 +45,27 @@ constexpr std::array<const char*, 11> kAllowListPrefixesForAllPlatforms = {
     "/Default/Reporting and NEL",
     "/Default/shared_proto_db",
     "/Default/Trust Tokens",
+    "/Default/Shortcuts",
     "/GrShaderCache/GPUCache",
     "/Local State"};
 #if defined(OS_MAC)
-constexpr std::array<const char*, 2> kAllowListPrefixesForPlatform = {
-    "/Default/Shortcuts", "/Default/Visited Links"};
+const char* kAllowListPrefixesForPlatform[] = {"/Default/Visited Links"};
 #elif defined(OS_WIN)
-constexpr std::array<const char*, 6> kAllowListPrefixesForPlatform = {
+const char* kAllowListPrefixesForPlatform[] = {
     "/Default/databases-off-the-record",
-    "/Default/heavy_ad_intervention_opt_out.db", "/Default/Shortcuts",
-    "/Default/Top Sites", "/GrShaderCache/old_GPUCache",
+    "/Default/heavy_ad_intervention_opt_out.db", "/Default/Top Sites",
+    "/GrShaderCache/old_GPUCache",
 
     // This file only contains the path to the latest executable of Chrome,
     // therefore it's safe to be written in Incognito.
     "/Last Browser"};
 #elif defined(OS_CHROMEOS)
-constexpr std::array<const char*, 7> kAllowListPrefixesForPlatform = {
-    "/test-user/.variations-list.txt",
-    "/test-user/GCM Store",
-    "/test-user/Network Action Predictor",
-    "/test-user/PreferredApps",
-    "/test-user/shared_proto_db",
-    "/test-user/Shortcuts",
-    "/test-user/Trust Tokens"};
+const char* kAllowListPrefixesForPlatform[] = {
+    "/test-user/.variations-list.txt"};
 #elif defined(OS_LINUX)
-constexpr std::array<const char*, 1> kAllowListPrefixesForPlatform = {
-    "/Default/Web Data"};
+const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
 #else
-constexpr std::array<const char*, 0> kAllowListPrefixesForPlatform = {};
+const char* kAllowListPrefixesForPlatform[] = {};
 #endif
 
 // Structure that keeps data about a snapshotted file.
@@ -139,7 +135,7 @@ bool IsFileModified(FileData& before, FileData& after) {
 
 bool IsDiskStateModified(Snapshot& snapshot_before,
                          Snapshot& snapshot_after,
-                         std::set<const char*>& allow_list) {
+                         std::set<std::string>& allow_list) {
   bool modified = false;
   // TODO(http://crbug.com/1234755): Consider deleted files as well. Currently
   // we only look for added and modified files, but file deletion is also
@@ -151,7 +147,7 @@ bool IsDiskStateModified(Snapshot& snapshot_before,
         fd.second.last_modified_time != before->second.last_modified_time) {
       // Ignore allow-listed paths.
       if (std::any_of(allow_list.begin(), allow_list.end(),
-                      [&fd](const char* prefix) {
+                      [&fd](std::string prefix) {
                         return fd.first.find(prefix) == 0;
                       })) {
         continue;
@@ -183,6 +179,19 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
   IncognitoProfileContainmentBrowserTest()
       : allow_list_(std::begin(kAllowListPrefixesForAllPlatforms),
                     std::end(kAllowListPrefixesForAllPlatforms)) {
+#if defined(OS_CHROMEOS)
+    // These prefixes are allowed twice, once under "Default" and once under
+    // "test-user".
+    std::set<std::string> test_folder;
+    const int offset = strlen("/Default");
+    for (std::string prefix : allow_list_) {
+      if (prefix.find("/Default/") == 0) {
+        test_folder.insert(std::string("/test-user") + prefix.substr(offset));
+      }
+    }
+    allow_list_.insert(test_folder.begin(), test_folder.end());
+#endif
+
     allow_list_.insert(std::begin(kAllowListPrefixesForPlatform),
                        std::end(kAllowListPrefixesForPlatform));
   }
@@ -201,7 +210,7 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::set<const char*> allow_list_;
+  std::set<std::string> allow_list_;
 };
 
 // Open a page in a separate session to ensure all files that are created
