@@ -11,17 +11,24 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
+#include "ash/system/unified/top_shortcut_button.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -38,9 +45,8 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
   CreateTitleRow(IDS_ASH_STATUS_TRAY_BLUETOOTH);
   CreateTitleRowButtons();
   CreateScrollableList();
-  AddScrollListSubHeader(kSystemMenuBluetoothPlusIcon,
-                         IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
   CreateDisabledView();
+  CreatePairNewDeviceView();
   UpdateBluetoothEnabledState(/*enabled=*/false);
 }
 
@@ -52,6 +58,7 @@ views::View* BluetoothDetailedViewImpl::GetAsView() {
 
 void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
   disabled_view_->SetVisible(!enabled);
+  pair_new_device_view_->SetVisible(enabled);
   scroller()->SetVisible(enabled);
 
   const std::u16string toggle_tooltip =
@@ -94,6 +101,74 @@ const char* BluetoothDetailedViewImpl::GetClassName() const {
   return "BluetoothDetailedViewImpl";
 }
 
+void BluetoothDetailedViewImpl::CreateDisabledView() {
+  DCHECK(!disabled_view_);
+
+  // Check that the views::ScrollView has already been created so that we can
+  // insert the disabled view before it to avoid the unnecessary bottom border
+  // spacing of views::ScrollView when it is not the last child.
+  DCHECK(scroller());
+
+  disabled_view_ =
+      AddChildViewAt(new BluetoothDisabledDetailedView, GetIndexOf(scroller()));
+  disabled_view_->SetID(
+      static_cast<int>(BluetoothDetailedViewChildId::kDisabledView));
+
+  // Make |disabled_panel_| fill the entire space below the title row so that
+  // the inner contents can be placed correctly.
+  box_layout()->SetFlexForView(disabled_view_, 1);
+}
+
+void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
+  DCHECK(!pair_new_device_view_);
+
+  // Check that the views::ScrollView has already been created so that we can
+  // insert the "pair new device" before it.
+  DCHECK(scroller());
+
+  pair_new_device_view_ =
+      AddChildViewAt(new views::View(), GetIndexOf(scroller()));
+  pair_new_device_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  pair_new_device_view_->SetID(
+      static_cast<int>(BluetoothDetailedViewChildId::kPairNewDeviceView));
+
+  std::unique_ptr<ash::TriView> row_view =
+      base::WrapUnique(TrayPopupUtils::CreateDefaultRowView());
+
+  std::unique_ptr<ash::TopShortcutButton> button =
+      std::make_unique<ash::TopShortcutButton>(
+          base::BindRepeating(
+              &BluetoothDetailedViewImpl::OnPairNewDeviceRequested,
+              weak_factory_.GetWeakPtr()),
+          kSystemMenuBluetoothPlusIcon,
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
+  button->SetID(
+      static_cast<int>(BluetoothDetailedViewChildId::kPairNewDeviceButton));
+  row_view->AddView(TriView::Container::START, button.release());
+
+  std::unique_ptr<views::Label> label =
+      base::WrapUnique(TrayPopupUtils::CreateDefaultLabel());
+  label->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE));
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  TrayPopupUtils::SetLabelFontList(label.get(),
+                                   TrayPopupUtils::FontStyle::kSubHeader);
+  row_view->AddView(TriView::Container::CENTER, label.release());
+
+  const gfx::Insets padding =
+      pair_new_device_view_->AddChildView(CreateListSubHeaderSeparator())
+          ->GetInsets();
+
+  // The "pair new device" button does not have top padding by default, so add
+  // top padding equal to the top padding of the following separator so that the
+  // button becomes centered between the preceding and following separators.
+  row_view->SetInsets(gfx::Insets(padding.top(), 0, 0, 0));
+
+  pair_new_device_view_->AddChildViewAt(row_view.release(), 0);
+}
+
 void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
   // TODO(crbug.com/1010321): Once we are able to determine whether we are
   // authorized to turn Bluetooth on or off using the API we should update this
@@ -123,22 +198,8 @@ void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
   tri_view()->AddView(TriView::Container::END, settings.release());
 }
 
-void BluetoothDetailedViewImpl::CreateDisabledView() {
-  DCHECK(!disabled_view_);
-
-  // Check that the views::ScrollView has already been created and insert the
-  // disabled view before it to avoid the unnecessary bottom border spacing of
-  // views::ScrollView when it is not the last child.
-  DCHECK(scroller());
-
-  disabled_view_ =
-      AddChildViewAt(new BluetoothDisabledDetailedView, GetIndexOf(scroller()));
-  disabled_view_->SetID(
-      static_cast<int>(BluetoothDetailedViewChildId::kDisabledView));
-
-  // Make |disabled_panel_| fill the entire space below the title row so that
-  // the inner contents can be placed correctly.
-  box_layout()->SetFlexForView(disabled_view_, 1);
+void BluetoothDetailedViewImpl::OnPairNewDeviceRequested() {
+  delegate()->OnPairNewDeviceRequested();
 }
 
 void BluetoothDetailedViewImpl::OnSettingsClicked() {

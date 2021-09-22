@@ -6,9 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
+#include "ash/public/cpp/system_tray_client.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/check.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
@@ -66,7 +70,10 @@ void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
   remote_cros_bluetooth_config_->SetBluetoothEnabledState(new_state);
 }
 
-void BluetoothDetailedViewController::OnPairNewDeviceRequested() {}
+void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
+  Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
+      /*device_address=*/absl::nullopt);
+}
 
 void BluetoothDetailedViewController::OnDeviceListItemSelected(
     const chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&

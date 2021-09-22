@@ -17,7 +17,9 @@ void TestSystemTrayClient::ShowBluetoothSettings() {
 }
 
 void TestSystemTrayClient::ShowBluetoothPairingDialog(
-    absl::optional<base::StringPiece> device_address) {}
+    absl::optional<base::StringPiece> device_address) {
+  show_bluetooth_pairing_dialog_count_++;
+}
 
 void TestSystemTrayClient::ShowDateSettings() {}
 

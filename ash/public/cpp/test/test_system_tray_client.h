@@ -61,9 +61,15 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;
   }
+
+  int show_bluetooth_pairing_dialog_count() const {
+    return show_bluetooth_pairing_dialog_count_;
+  }
+
   int show_multi_device_setup_count() const {
     return show_multi_device_setup_count_;
   }
+
   int show_connected_devices_settings_count() const {
     return show_connected_devices_settings_count_;
   }
@@ -82,6 +88,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
 
  private:
   int show_bluetooth_settings_count_ = 0;
+  int show_bluetooth_pairing_dialog_count_ = 0;
   int show_multi_device_setup_count_ = 0;
   int show_connected_devices_settings_count_ = 0;
   int show_os_settings_privacy_and_security_count_ = 0;

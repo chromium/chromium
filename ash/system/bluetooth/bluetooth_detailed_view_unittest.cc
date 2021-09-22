@@ -12,13 +12,19 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -104,8 +110,8 @@ class BluetoothDetailedViewTest : public AshTestBase {
     bluetooth_detailed_view_ = bluetooth_detailed_view.get();
 
     widget_ = CreateFramelessTestWidget();
-    widget_->SetContentsView(bluetooth_detailed_view.release()->GetAsView());
     widget_->SetFullscreen(true);
+    widget_->SetContentsView(bluetooth_detailed_view.release()->GetAsView());
 
     base::RunLoop().RunUntilIdle();
   }
@@ -126,20 +132,32 @@ class BluetoothDetailedViewTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  ash::TopShortcutButton* FindPairNewDeviceButton() {
+    return FindViewById<ash::TopShortcutButton*>(
+        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
+            kPairNewDeviceButton);
+  }
+
   views::ToggleButton* FindBluetoothToggleButton() {
     return FindViewById<views::ToggleButton*>(
         BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::kToggleButton);
-  }
-
-  BluetoothDisabledDetailedView* FindBluetoothDisabledView() {
-    return FindViewById<BluetoothDisabledDetailedView*>(
-        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::kDisabledView);
   }
 
   views::Button* FindSettingsButton() {
     return FindViewById<views::Button*>(
         BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
             kSettingsButton);
+  }
+
+  views::View* FindPairNewDeviceView() {
+    return FindViewById<views::View*>(
+        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
+            kPairNewDeviceView);
+  }
+
+  BluetoothDisabledDetailedView* FindBluetoothDisabledView() {
+    return FindViewById<BluetoothDisabledDetailedView*>(
+        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::kDisabledView);
   }
 
   BluetoothDetailedView* bluetooth_detailed_view() {
@@ -187,19 +205,23 @@ TEST_F(BluetoothDetailedViewTest, PressingSettingsButtonOpensSettings) {
 TEST_F(BluetoothDetailedViewTest,
        BluetoothEnabledStateChangesUpdateChildrenViewState) {
   views::ToggleButton* toggle_button = FindBluetoothToggleButton();
+  views::View* pair_new_device_view = FindPairNewDeviceView();
   BluetoothDisabledDetailedView* disabled_view = FindBluetoothDisabledView();
 
   EXPECT_FALSE(toggle_button->GetIsOn());
+  EXPECT_FALSE(pair_new_device_view->GetVisible());
   EXPECT_TRUE(disabled_view->GetVisible());
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
 
   EXPECT_TRUE(toggle_button->GetIsOn());
+  EXPECT_TRUE(pair_new_device_view->GetVisible());
   EXPECT_FALSE(disabled_view->GetVisible());
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(false);
 
   EXPECT_FALSE(toggle_button->GetIsOn());
+  EXPECT_FALSE(pair_new_device_view->GetVisible());
   EXPECT_TRUE(disabled_view->GetVisible());
 }
 
@@ -231,6 +253,45 @@ TEST_F(BluetoothDetailedViewTest, BluetoothToggleHasCorrectTooltipText) {
                 l10n_util::GetStringUTF16(
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)),
             toggle_button->GetTooltipText());
+}
+
+TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
+  ash::TopShortcutButton* pair_new_device_button = FindPairNewDeviceButton();
+  views::View* pair_new_device_view = FindPairNewDeviceView();
+
+  EXPECT_FALSE(pair_new_device_view->GetVisible());
+  EXPECT_EQ(0u, bluetooth_detailed_view_delegate()
+                    ->on_pair_new_device_requested_call_count());
+
+  bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
+  ClickOnAndWait(pair_new_device_button);
+  EXPECT_EQ(1u, bluetooth_detailed_view_delegate()
+                    ->on_pair_new_device_requested_call_count());
+}
+
+TEST_F(BluetoothDetailedViewTest, PairNewDeviceButtonIsCentered) {
+  ash::TopShortcutButton* pair_new_device_button = FindPairNewDeviceButton();
+  views::View* pair_new_device_view = FindPairNewDeviceView();
+
+  bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
+
+  EXPECT_EQ(2u, pair_new_device_view->children().size());
+  EXPECT_STREQ("Separator",
+               pair_new_device_view->children().at(1)->GetClassName());
+
+  views::View* separator = pair_new_device_view->children().at(1);
+
+  const gfx::Point button_center =
+      pair_new_device_button->GetBoundsInScreen().CenterPoint();
+  const gfx::Rect& view_bounds = pair_new_device_view->GetBoundsInScreen();
+  const int separator_height = separator->GetContentsBounds().height();
+
+  // When determining the center of the view we should not consider the content
+  // of the following separator, and only its top padding.
+  const int view_center =
+      view_bounds.y() + (view_bounds.height() - separator_height + 1) / 2;
+
+  EXPECT_EQ(view_center, button_center.y());
 }
 
 }  // namespace tray

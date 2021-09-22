@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
@@ -190,6 +191,13 @@ TEST_F(BluetoothDetailedViewControllerTest,
   bluetooth_detailed_view_delegate()->OnToggleClicked(/*new_state=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothSystemState::kEnabling, GetBluetoothAdapterState());
+}
+
+TEST_F(BluetoothDetailedViewControllerTest,
+       OnPairNewDeviceRequestedOpensBluetoothDialog) {
+  EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
+  bluetooth_detailed_view_delegate()->OnPairNewDeviceRequested();
+  EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_pairing_dialog_count());
 }
 
 }  // namespace tray
