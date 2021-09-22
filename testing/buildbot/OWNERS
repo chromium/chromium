@@ -58,3 +58,6 @@ per-file chromium.fyi.json=chonggu@google.com
 per-file chromium.linux.json=chonggu@google.com
 per-file chromium.perf.fyi.json=chonggu@google.com
 per-file *.pyl=chonggu@google.com
+
+# Rust owners
+per-file chromium.rust.json=file://build/rust/OWNERS

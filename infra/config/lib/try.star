@@ -374,6 +374,7 @@ def chromium_rust_builder(
     return try_builder(
         name = name,
         builder_group = "tryserver.chromium.rust",
+        goma_backend = builders.goma.backend.RBE_PROD,
         **kwargs
     )
 

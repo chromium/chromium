@@ -766,6 +766,7 @@ def rust_builder(
     return ci.builder(
         name = name,
         builder_group = "chromium.rust",
+        goma_backend = builders.goma.backend.RBE_PROD,
         **kwargs
     )
 
