@@ -17,11 +17,13 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -32,13 +34,19 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kPreferredTitleHorizontalMargins = 16;
+constexpr int kPreferredTitleTopMargins = 12;
+constexpr int kPreferredTitleBottomMargins = 4;
 
 constexpr base::TimeDelta kImpressionThreshold =
     base::TimeDelta::FromSeconds(3);
@@ -73,8 +81,20 @@ SearchResultListView::SearchResultListView(AppListMainView* main_view,
       main_view_(main_view),
       view_delegate_(view_delegate),
       results_container_(new views::View) {
-  results_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  auto* layout = results_container_->SetLayoutManager(
+      std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
+  title_label_ = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_BEST_MATCH),
+      CONTEXT_SEARCH_RESULT_CATEGORY_LABEL, STYLE_PRODUCTIVITY_LAUNCHER));
+  title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label_->SetBorder(views::CreateEmptyBorder(
+      kPreferredTitleTopMargins, kPreferredTitleHorizontalMargins,
+      kPreferredTitleBottomMargins, kPreferredTitleHorizontalMargins));
+  title_label_->SetVisible(true);
+  results_container_->AddChildView(title_label_);
 
   size_t result_count =
       GetMaxSearchResultListItems() +
@@ -94,6 +114,22 @@ SearchResultListView::SearchResultListView(AppListMainView* main_view,
 }
 
 SearchResultListView::~SearchResultListView() = default;
+
+void SearchResultListView::SetListType(SearchResultListType list_type) {
+  list_type_ = list_type;
+  switch (list_type_) {
+    case SearchResultListType::kUnified:
+      // Classic SearchResultListView does not have category labels.
+      title_label_->SetVisible(false);
+      break;
+    case SearchResultListType::kBestMatch:
+      title_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_BEST_MATCH));
+      title_label_->SetVisible(true);
+      break;
+  }
+  DoUpdate();
+}
 
 void SearchResultListView::ListItemsRemoved(size_t start, size_t count) {
   size_t last = std::min(start + count, search_result_views_.size());
@@ -181,6 +217,13 @@ const char* SearchResultListView::GetClassName() const {
 
 int SearchResultListView::GetHeightForWidth(int w) const {
   return results_container_->GetHeightForWidth(w);
+}
+
+void SearchResultListView::OnThemeChanged() {
+  SearchResultContainerView::OnThemeChanged();
+  title_label_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          kDeprecatedSearchBoxTextDefaultColor));
 }
 
 void SearchResultListView::SearchResultActivated(SearchResultView* view,

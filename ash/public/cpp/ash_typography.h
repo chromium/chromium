@@ -47,6 +47,10 @@ enum AshTextContext {
   // Used when productivity launcher is enabled.
   CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS,
 
+  // Label text for search result view categories. Usually 13 pt. Appears above
+  // one or more search result views.
+  CONTEXT_SEARCH_RESULT_CATEGORY_LABEL,
+
   ASH_TEXT_CONTEXT_END
 };
 

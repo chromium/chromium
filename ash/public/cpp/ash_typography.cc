@@ -15,6 +15,10 @@ void ApplyAshFontStyles(int context,
     case CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY:
       details.size_delta = 1;
       break;
+    case CONTEXT_SEARCH_RESULT_CATEGORY_LABEL:
+      details.size_delta = 1;
+      details.typeface = "Google Sans";
+      break;
     case CONTEXT_LAUNCHER_BUTTON:
     case CONTEXT_SHARESHEET_BUBBLE_BODY:
       details.size_delta = 2;

@@ -229,6 +229,10 @@ void SearchResultPageView::InitializeContainers(
   search_result_list_view_ =
       AddSearchResultContainerView(std::make_unique<SearchResultListView>(
           app_list_main_view, view_delegate));
+  search_result_list_view_->SetListType(
+      features::IsAppListBubbleEnabled()
+          ? SearchResultListView::SearchResultListType::kBestMatch
+          : SearchResultListView::SearchResultListType::kUnified);
 }
 
 void SearchResultPageView::AddSearchResultContainerViewInternal(
