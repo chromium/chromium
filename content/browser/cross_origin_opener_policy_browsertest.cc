@@ -2251,8 +2251,9 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
   EXPECT_NE(group_4, group_1);
 }
 
-// This test is flaky on Win: https://crbug.com/1125998.
-#if defined(OS_WIN)
+// This test is flaky on Win, Mac, Linux and ChromeOS: https://crbug.com/1125998
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
 #define MAYBE_CrossOriginIsolatedSiteInstance_MainFrame \
   DISABLED_CrossOriginIsolatedSiteInstance_MainFrame
 #else
