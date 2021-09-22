@@ -1462,6 +1462,10 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
       this, url, bubble_type, std::move(bubble_first_hide_callback));
 }
 
+bool BrowserView::IsExclusiveAccessBubbleDisplayed() const {
+  return exclusive_access_bubble_ && exclusive_access_bubble_->IsShowing();
+}
+
 void BrowserView::OnExclusiveAccessUserInput() {
   if (exclusive_access_bubble_.get())
     exclusive_access_bubble_->OnUserInput();
@@ -3431,8 +3435,8 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   // TODO(crbug.com/1034783): Implement at lower layers to avoid transitions.
 #if defined(OS_MAC)
   bool entering_cross_screen_fullscreen = false;
-  bool swapping_screens_during_fullscreen = false;
 #endif  // OS_MAC
+  bool swapping_screens_during_fullscreen = false;
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
@@ -3446,9 +3450,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
 
       // Fullscreen windows must exit fullscreen to move to another display.
       if (IsFullscreen()) {
-#if defined(OS_MAC)
         swapping_screens_during_fullscreen = true;
-#endif  // OS_MAC
         frame_->SetFullscreen(false);
 
         // Activate the window to give it input focus and bring it to the front
@@ -3525,9 +3527,9 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   browser_->WindowFullscreenStateChanged();
 
   if (fullscreen && !chrome::IsRunningInAppMode()) {
-    UpdateExclusiveAccessExitBubbleContent(url, bubble_type,
-                                           ExclusiveAccessBubbleHideCallback(),
-                                           /*force_update=*/false);
+    UpdateExclusiveAccessExitBubbleContent(
+        url, bubble_type, ExclusiveAccessBubbleHideCallback(),
+        /*force_update=*/swapping_screens_during_fullscreen);
   }
 
   // Undo our anti-jankiness hacks and force a re-layout.

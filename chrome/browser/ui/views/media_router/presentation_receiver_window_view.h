@@ -98,6 +98,7 @@ class PresentationReceiverWindowView final
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
       bool force_update) final;
+  bool IsExclusiveAccessBubbleDisplayed() const final;
   void OnExclusiveAccessUserInput() final;
   content::WebContents* GetActiveWebContents() final;
   bool CanUserExitFullscreen() const final;

@@ -66,6 +66,7 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
       bool force_update) override;
+  bool IsExclusiveAccessBubbleDisplayed() const override;
   void OnExclusiveAccessUserInput() override;
   bool CanUserExitFullscreen() const override;
 
@@ -186,6 +187,10 @@ void FullscreenControllerTestWindow::UpdateExclusiveAccessExitBubbleContent(
     ExclusiveAccessBubbleType bubble_type,
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
     bool force_update) {}
+
+bool FullscreenControllerTestWindow::IsExclusiveAccessBubbleDisplayed() const {
+  return false;
+}
 
 void FullscreenControllerTestWindow::OnExclusiveAccessUserInput() {}
 

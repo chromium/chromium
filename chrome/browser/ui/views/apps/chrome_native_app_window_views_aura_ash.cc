@@ -409,6 +409,11 @@ void ChromeNativeAppWindowViewsAuraAsh::UpdateExclusiveAccessExitBubbleContent(
       this, url, bubble_type, std::move(bubble_first_hide_callback));
 }
 
+bool ChromeNativeAppWindowViewsAuraAsh::IsExclusiveAccessBubbleDisplayed()
+    const {
+  return exclusive_access_bubble_ && exclusive_access_bubble_->IsShowing();
+}
+
 void ChromeNativeAppWindowViewsAuraAsh::OnExclusiveAccessUserInput() {
   if (exclusive_access_bubble_)
     exclusive_access_bubble_->OnUserInput();

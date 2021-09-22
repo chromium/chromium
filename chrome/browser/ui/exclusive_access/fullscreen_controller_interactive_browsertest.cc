@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -928,6 +929,49 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 
   ExitContentFullscreen();
   EXPECT_EQ(original_bounds, browser()->window()->GetBounds());
+}
+
+// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
+// display::Screen configuration used in this test. Disabled on Mac and Linux,
+// where the window server's async handling of the fullscreen window state may
+// transition the window into fullscreen on the actual (non-mocked) display
+// bounds before or after the window bounds checks, yielding flaky results.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_SwapShowsBubble DISABLED_SwapShowsBubble
+#else
+#define MAYBE_SwapShowsBubble SwapShowsBubble
+#endif
+// Test requesting fullscreen on the current display and then swapping displays.
+IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+                       MAYBE_SwapShowsBubble) {
+  SetUpTestScreenAndWindowPlacementTab();
+
+  // Execute JS to request fullscreen on the current display (on the left).
+  RequestContentFullscreen();
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 800), browser()->window()->GetBounds());
+
+  // Explicitly check for, and destroy, the exclusive access bubble.
+  EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
+  base::RunLoop run_loop;
+  ExclusiveAccessBubbleHideCallback callback = base::BindLambdaForTesting(
+      [&run_loop](ExclusiveAccessBubbleHideReason) { run_loop.Quit(); });
+  browser()
+      ->exclusive_access_manager()
+      ->context()
+      ->UpdateExclusiveAccessExitBubbleContent(
+          browser()->exclusive_access_manager()->GetExclusiveAccessBubbleURL(),
+          EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, std::move(callback),
+          /*force_update=*/false);
+  run_loop.Run();
+  EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
+
+  // Execute JS to request fullscreen on the other display (on the right).
+  RequestContentFullscreenOnScreen(1);
+  EXPECT_EQ(gfx::Rect(800, 0, 800, 800), browser()->window()->GetBounds());
+
+  // Ensure the exclusive access bubble is re-shown on fullscreen display swap.
+  EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
 }
 
 // TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura

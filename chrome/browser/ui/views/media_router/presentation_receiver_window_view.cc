@@ -352,6 +352,10 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
       this, url, bubble_type, std::move(bubble_first_hide_callback));
 }
 
+bool PresentationReceiverWindowView::IsExclusiveAccessBubbleDisplayed() const {
+  return exclusive_access_bubble_ && exclusive_access_bubble_->IsShowing();
+}
+
 void PresentationReceiverWindowView::OnExclusiveAccessUserInput() {}
 
 content::WebContents* PresentationReceiverWindowView::GetActiveWebContents() {
