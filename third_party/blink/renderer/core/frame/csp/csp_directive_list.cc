@@ -485,11 +485,19 @@ bool CheckSourceAndReportViolation(
   if (!directive.source_list)
     return true;
 
-  // We ignore URL-based allowlists if we're allowing dynamic script injection.
+  String suffix = String();
   if (CheckSource(policy, directive.source_list, *csp.self_origin, url,
-                  redirect_status) &&
-      !CheckDynamic(directive.source_list, effective_type))
-    return true;
+                  redirect_status)) {
+    // We ignore URL-based allowlists if we're allowing dynamic script
+    // injection.
+    if (!CheckDynamic(directive.source_list, effective_type)) {
+      return true;
+    } else {
+      suffix =
+          " Note that 'strict-dynamic' is present, so host-based allowlisting "
+          "is disabled.";
+    }
+  }
 
   // We should never have a violation against `child-src` or `default-src`
   // directly; the effective directive should always be one of the explicit
@@ -526,12 +534,6 @@ bool CheckSourceAndReportViolation(
     prefix = prefix + "load the stylesheet '";
   else if (CSPDirectiveName::NavigateTo == effective_type)
     prefix = prefix + "navigate to '";
-
-  String suffix = String();
-  if (CheckDynamic(directive.source_list, effective_type)) {
-    suffix =
-        " 'strict-dynamic' is present, so host-based allowlisting is disabled.";
-  }
 
   String directive_name =
       ContentSecurityPolicy::GetDirectiveName(directive.type);
