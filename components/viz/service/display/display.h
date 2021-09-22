@@ -125,6 +125,10 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void SetVisible(bool visible);
   void Resize(const gfx::Size& new_size);
 
+  // Sets the current SurfaceId to an invalid value. Additionally, the display
+  // will fail to draw until SetLocalSurfaceId() is called.
+  void InvalidateCurrentSurfaceId();
+
   // This disallows resource provider to access GPU thread to unlock resources
   // outside of Initialize, DrawAndSwap and dtor.
   void DisableGPUAccessByDefault();
@@ -145,7 +149,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       const gfx::DisplayColorSpaces& display_color_spaces);
   void SetOutputIsSecure(bool secure);
 
-  const SurfaceId& CurrentSurfaceId();
+  const SurfaceId& CurrentSurfaceId() const;
 
   // DisplaySchedulerClient implementation.
   bool DrawAndSwap(base::TimeTicks expected_display_time) override;

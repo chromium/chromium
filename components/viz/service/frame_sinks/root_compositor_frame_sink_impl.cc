@@ -187,6 +187,17 @@ RootCompositorFrameSinkImpl::~RootCompositorFrameSinkImpl() {
       begin_frame_source());
 }
 
+void RootCompositorFrameSinkImpl::DidEvictSurface(const SurfaceId& surface_id) {
+  if (display_->CurrentSurfaceId() != surface_id)
+    return;
+
+  display_->InvalidateCurrentSurfaceId();
+}
+
+const SurfaceId& RootCompositorFrameSinkImpl::CurrentSurfaceId() const {
+  return display_->CurrentSurfaceId();
+}
+
 void RootCompositorFrameSinkImpl::SetDisplayVisible(bool visible) {
   display_->SetVisible(visible);
 }

@@ -477,6 +477,10 @@ void Display::Resize(const gfx::Size& size) {
   damage_tracker_->DisplayResized();
 }
 
+void Display::InvalidateCurrentSurfaceId() {
+  current_surface_id_ = SurfaceId();
+}
+
 void Display::DisableSwapUntilResize(
     base::OnceClosure no_pending_swaps_callback) {
   TRACE_EVENT0("viz", "Display::DisableSwapUntilResize");
@@ -1118,7 +1122,7 @@ void Display::OnObservingBeginFrameSourceChanged(bool observing) {
     skia_output_surface_->OnObservingBeginFrameSourceChanged(observing);
 }
 
-const SurfaceId& Display::CurrentSurfaceId() {
+const SurfaceId& Display::CurrentSurfaceId() const {
   return current_surface_id_;
 }
 

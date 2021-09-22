@@ -64,6 +64,11 @@ class FrameSinkManagerTest : public testing::Test {
       : manager_(&shared_bitmap_manager_, &output_surface_provider_) {}
   ~FrameSinkManagerTest() override = default;
 
+  RootCompositorFrameSinkImpl* GetRootCompositorFrameSinkImpl() {
+    auto it = manager_.root_sink_map_.find(kFrameSinkIdRoot);
+    return it == manager_.root_sink_map_.end() ? nullptr : it->second.get();
+  }
+
   std::unique_ptr<CompositorFrameSinkSupport> CreateCompositorFrameSinkSupport(
       const FrameSinkId& frame_sink_id) {
     return std::make_unique<CompositorFrameSinkSupport>(nullptr, &manager_,
@@ -571,6 +576,26 @@ TEST_F(FrameSinkManagerTest, ThrottleUponHierarchyChange) {
                                         client_a->frame_sink_id());
   manager_.UnregisterFrameSinkHierarchy(client_a->frame_sink_id(),
                                         client_b->frame_sink_id());
+}
+
+TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
+  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
+
+  // Create a RootCompositorFrameSinkImpl.
+  RootCompositorFrameSinkData root_data;
+  manager_.CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+  manager_.EvictSurfaces({surface_id});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
 namespace {
