@@ -347,16 +347,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
                      ColorScheme color_scheme = ColorScheme::kDefault,
                      const absl::optional<SkColor>& accent_color = 0) const = 0;
 
-  // Paint part during state transition, used for overlay scrollbar state
-  // transition animation.
-  virtual void PaintStateTransition(cc::PaintCanvas* canvas,
-                                    Part part,
-                                    State startState,
-                                    State endState,
-                                    double progress,
-                                    const gfx::Rect& rect,
-                                    ScrollbarOverlayColorTheme theme) const {}
-
   // Returns whether the theme uses a nine-patch resource for the given part.
   // If true, calling code should always paint into a canvas the size of which
   // can be gotten from GetNinePatchCanvasSize.
