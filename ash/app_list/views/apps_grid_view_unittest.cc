@@ -3068,7 +3068,11 @@ TEST_P(AppsGridViewCardifiedStateTest, PeekingCardOnLastPage) {
                                      paged_apps_grid_view_);
 
   EXPECT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  EXPECT_EQ(2, paged_apps_grid_view_->BackgroundCardCountForTesting());
+
+  const int kExpectedBackgroundCardCount =
+      features::IsAppListBubbleEnabled() ? 1 : 2;
+  EXPECT_EQ(kExpectedBackgroundCardCount,
+            paged_apps_grid_view_->BackgroundCardCountForTesting());
 
   EndDrag(paged_apps_grid_view_, false /*cancel*/);
 }
@@ -3081,7 +3085,11 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
   InitiateDragForItemAtCurrentPageAt(AppsGridView::TOUCH, 0, 0,
                                      paged_apps_grid_view_);
   ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  ASSERT_EQ(3, paged_apps_grid_view_->BackgroundCardCountForTesting());
+
+  const int kExpectedBackgroundCardCount =
+      features::IsAppListBubbleEnabled() ? 2 : 3;
+  ASSERT_EQ(kExpectedBackgroundCardCount,
+            paged_apps_grid_view_->BackgroundCardCountForTesting());
 
   // Verify that all items in the current page fit within the background card.
   gfx::Rect background_card_bounds =
@@ -3108,7 +3116,8 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
   UpdateDisplay("1024x768/r");
 
   ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  ASSERT_EQ(3, paged_apps_grid_view_->BackgroundCardCountForTesting());
+  ASSERT_EQ(kExpectedBackgroundCardCount,
+            paged_apps_grid_view_->BackgroundCardCountForTesting());
 
   // Verify that all items in the current page fit within the background card.
   background_card_bounds =
@@ -3154,7 +3163,10 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
                                      paged_apps_grid_view_);
 
   ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  ASSERT_EQ(3, paged_apps_grid_view_->BackgroundCardCountForTesting());
+  const int kExpectedBackgroundCardCount =
+      features::IsAppListBubbleEnabled() ? 2 : 3;
+  ASSERT_EQ(kExpectedBackgroundCardCount,
+            paged_apps_grid_view_->BackgroundCardCountForTesting());
 
   // Verify that all items in the current page fit within the background card.
   gfx::Rect background_card_bounds =
@@ -3181,7 +3193,8 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
   UpdateDisplay("1024x768/r");
 
   ASSERT_TRUE(paged_apps_grid_view_->cardified_state_for_testing());
-  ASSERT_EQ(3, paged_apps_grid_view_->BackgroundCardCountForTesting());
+  ASSERT_EQ(kExpectedBackgroundCardCount,
+            paged_apps_grid_view_->BackgroundCardCountForTesting());
 
   // Verify that all items in the current page fit within the background card.
   background_card_bounds =

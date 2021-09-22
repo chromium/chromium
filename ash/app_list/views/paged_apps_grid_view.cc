@@ -1035,9 +1035,11 @@ void PagedAppsGridView::StartAppsGridCardifiedView() {
   RemoveAllBackgroundCards();
   // Calculate background bounds for a normal grid so it animates from the
   // normal to the cardified bounds with the icons.
-  // Add an extra card for the peeking page in the last page. This hints users
-  // that apps can be dragged past the last existing page.
-  for (int i = 0; i < pagination_model_.total_pages() + 1; i++)
+  // Add an extra card for the peeking page in the last page if item drag is
+  // allowed to create new pages. This hints users that apps can be dragged past
+  // the last existing page.
+  const int peeking_card_count = features::IsAppListBubbleEnabled() ? 0 : 1;
+  for (int i = 0; i < pagination_model_.total_pages() + peeking_card_count; i++)
     AppendBackgroundCard();
   cardified_state_ = true;
   UpdateTilePadding();
