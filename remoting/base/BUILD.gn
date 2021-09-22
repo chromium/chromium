@@ -27,6 +27,8 @@ source_set("base") {
     "compound_buffer.h",
     "constants.cc",
     "constants.h",
+    "cpu_utils.cc",
+    "cpu_utils.h",
     "directory_service_client.cc",
     "directory_service_client.h",
     "leaky_bucket.cc",

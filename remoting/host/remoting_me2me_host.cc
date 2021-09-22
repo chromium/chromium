@@ -41,6 +41,7 @@
 #include "net/url_request/url_fetcher.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/cpu_utils.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
@@ -847,7 +848,14 @@ void HostProcess::StartOnUiThread() {
     return;
   }
 
-  HostSettings::Initialize();
+  // Determine if the CPU this host is running on meets a set of minimum
+  // requirements. Note that this isn't a perfect solution as it is possible
+  // that the host will have crashed prior to reaching this point in the code,
+  // however this is the earliest time we can log an offline reason to the
+  // directory if it is unsupported.
+  if (!IsCpuSupported()) {
+    report_offline_reason_ = ExitCodeToString(kCpuNotSupported);
+  }
 
   if (!report_offline_reason_.empty()) {
     // Don't need to do any UI initialization.
@@ -855,6 +863,8 @@ void HostProcess::StartOnUiThread() {
         FROM_HERE, base::BindOnce(&HostProcess::StartOnNetworkThread, this));
     return;
   }
+
+  HostSettings::Initialize();
 
   policy_watcher_ = PolicyWatcher::CreateWithTaskRunner(
       context_->file_task_runner(), context_->management_service());
