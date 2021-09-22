@@ -2319,7 +2319,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3433621910545056227">El sistema no ha pogut establir el bloqueig dels atributs del temps d'instal·lació del dispositiu.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google. Per obtenir més informació sobre aquestes opcions de configuració i sobre com pots modificar-les, ves a families.google.com.</translation>
-<translation id="3435541101098866721">Afegeix un telèfon nou</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" sol·licita el teu codi <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="343578350365773421">No queda paper</translation>
@@ -4227,6 +4226,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{No s'ha pogut rebre el contingut següent del dispositiu <ph name="DEVICE_NAME" />: <ph name="ATTACHMENTS" />}other{No s'ha pogut rebre el contingut següent del dispositiu <ph name="DEVICE_NAME" />: <ph name="ATTACHMENTS" />}}</translation>
 <translation id="5502500733115278303">Importat de Firefox</translation>
 <translation id="5502915260472117187">Un nen</translation>
+<translation id="5503356662318814623">Envia un missatge</translation>
 <translation id="5503982651688210506">Continua permetent que <ph name="HOST" /> utilitzi i mogui la càmera i utilitzi el micròfon</translation>
 <translation id="5504909642107847870">Revisió de privadesa i seguretat</translation>
 <translation id="5505264765875738116">Els llocs web no poden demanar-te permís per enviar-te notificacions</translation>
@@ -4484,6 +4484,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5794414402486823030">Obre sempre amb el visualitzador del sistema</translation>
 <translation id="5794700615121138172">Carpetes compartides de Linux</translation>
 <translation id="5794786537412027208">Surt de totes les aplicacions de Chrome</translation>
+<translation id="5796485699458186843">Pestanya &amp;d'incògnit nova</translation>
 <translation id="5797521893972859201">Esborra l'historial, inclòs el del quadre de cerca</translation>
 <translation id="5798079537501238810">Els llocs web poden instal·lar gestors de pagament</translation>
 <translation id="579915268381781820">La clau de seguretat s'ha tret.</translation>
@@ -5734,7 +5735,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>
 <translation id="7171000599584840888">Afegeix un perfil...</translation>
 <translation id="7171259390164035663">No inscriguis</translation>
-<translation id="7171746271229206319">Llegir informació i dades del dispositiu Chrome OS. Pot ser que aquesta informació es comparteixi amb el fabricant del dispositiu. Les dades gestionades per organitzacions que no siguin Google seguiran les seves polítiques de privadesa independents.</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Afegeix una pestanya al grup nou}other{Afegeix pestanyes al grup nou}}</translation>
 <translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7174199383876220879">Novetat! Controla la música, els vídeos i molt més.</translation>
@@ -6456,7 +6456,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7901914889562552258">S'ha millorat Chrome amb mètriques de la pàgina</translation>
 <translation id="7903345046358933331">La pàgina no respon. Podeu esperar que respongui o tancar-la.</translation>
 <translation id="7903742244674067440">Tens certificats arxivats que identifiquen aquestes entitats emissores de certificats</translation>
-<translation id="7903859912536385558">estable (verificador de confiança)</translation>
 <translation id="7903925330883316394">Utilitat: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">L'administrador d'aquest compte no ha permès l'inici de sessió múltiple.</translation>
 <translation id="7904526211178107182">Fes que els ports de Linux estiguin disponibles per a altres dispositius de la xarxa.</translation>
@@ -6507,10 +6506,12 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7952904276017482715">L'identificador esperat era "<ph name="EXPECTED_ID" />", però el que hi havia era "<ph name="NEW_ID" />"</translation>
 <translation id="7953669802889559161">Introducció de text</translation>
 <translation id="7953955868932471628">Gestiona les dreceres</translation>
+<translation id="7955105108888461311">Pregunta en persona</translation>
 <translation id="7956373551960864128">Les teves impressores desades</translation>
 <translation id="7957074856830851026">Mostra la informació del dispositiu, com ara el número de sèrie o l'identificador de recurs</translation>
 <translation id="7957615753207896812">Obre la configuració del teclat</translation>
 <translation id="7959074893852789871">El fitxer contenia certificats múltiples, però alguns no s'han importat:</translation>
+<translation id="7959665254555683862">Pestanya &amp;d'incògnit nova</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7963001036288347286">Acceleració del ratolí tàctil</translation>
 <translation id="7963608432878156675">Altres dispositius poden veure aquest nom per a les connexions Bluetooth i a la xarxa</translation>
@@ -6543,7 +6544,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7986295104073916105">Llegir i canviar la configuració de les contrasenyes desades</translation>
 <translation id="7987814697832569482">Connecta't sempre a través d'aquesta VPN</translation>
 <translation id="7988355189918024273">Activa les funcions d'accessibilitat</translation>
-<translation id="7990394755527173834">Per configurar per primera vegada un telèfon Android perquè funcioni com a clau de seguretat amb aquest ordinador, obre Chrome al telèfon i ves a Configuració &gt; Contrasenyes &gt; Fes servir el telèfon com a clau de seguretat. A continuació, toca Connecta un dispositiu nou i escaneja aquest codi QR.</translation>
 <translation id="7991296728590311172">Configuració d'accés amb interruptors</translation>
 <translation id="7997826902155442747">Prioritat del procés</translation>
 <translation id="7999229196265990314">S'han creat els fitxers següents:

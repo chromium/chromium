@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Niepowodzenie – drukarka została zatrzymana</translation>
 <translation id="3102119246920354026">Pamięć podręczna</translation>
 <translation id="3122464029669770682">Procesor</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Usunąć stronę?}=1{Usunąć stronę {PAGE_NUMBER}?}few{Usunąć stronę {PAGE_NUMBER}?}many{Usunąć stronę {PAGE_NUMBER}?}other{Usunąć stronę {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
 <translation id="3156846309055100599">Skanuję stronę <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Wykryto portal przechwytujący</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">Karta SIM zablokowana (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nazwa grupy</translation>
+<translation id="5051044138948155788">To jedyna strona. Pojawi się ekran rozpoczęcia skanowania.</translation>
 <translation id="5088172560898466307">Nazwa hosta serwera</translation>
 <translation id="5089810972385038852">Stan</translation>
 <translation id="5142961317498132443">Uwierzytelnianie</translation>
@@ -269,6 +271,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5499114900554609492">Nie udało się zeskanować</translation>
 <translation id="5502931783115429516">Android nie działa</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Zeskanuj ponownie</translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodzina</translation>
@@ -319,6 +322,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="641081527798843608">Dopasowanie do tematu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Dobry</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Przeskanować ponownie stronę?}=1{Przeskanować ponownie stronę {PAGE_NUMBER}?}few{Przeskanować ponownie stronę {PAGE_NUMBER}?}many{Przeskanować ponownie stronę {PAGE_NUMBER}?}other{Przeskanować ponownie stronę {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Hasło jednorazowe</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>

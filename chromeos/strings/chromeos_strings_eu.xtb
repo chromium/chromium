@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Hutsegitea - Gelditu egin da</translation>
 <translation id="3102119246920354026">Cachea</translation>
 <translation id="3122464029669770682">PUZ</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Orria kendu nahi duzu?}=1{{PAGE_NUMBER}. orria kendu nahi duzu?}other{{PAGE_NUMBER}. orria kendu nahi duzu?}}</translation>
 <translation id="315116470104423982">Datu-konexioa</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. orria eskaneatzen…</translation>
 <translation id="315738237743207937">Sare-zerbitzuaren atari bat hauteman da</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIMa blokeatuta dago (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Taldearen izena</translation>
+<translation id="5051044138948155788">Orri bakarra da hau. Eskaneatzeko prozesuaren hasierako orrira joango zara.</translation>
 <translation id="5088172560898466307">Zerbitzariaren ostalari-izena</translation>
 <translation id="5089810972385038852">Estatua</translation>
 <translation id="5142961317498132443">Autentifikazioa</translation>
@@ -269,6 +271,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5499114900554609492">Ezin izan da eskaneatu</translation>
 <translation id="5502931783115429516">Android-ek ez du funtzionatzen</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Eskaneatu berriro</translation>
 <translation id="5669267381087807207">Aktibatzen</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -319,6 +322,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="641081527798843608">Gaiaren bat-etortzea</translation>
 <translation id="6423239382391657905">VPN irekia</translation>
 <translation id="6456394469623773452">Normala</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Berriro eskaneatu nahi duzu orria?}=1{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}other{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}}</translation>
 <translation id="6472207088655375767">EBP</translation>
 <translation id="6480327114083866287">Kudeatzailea: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Geldituta: papera trabatuta dago</translation>

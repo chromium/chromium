@@ -2322,7 +2322,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3433621910545056227">Hmm... Sistēma nevarēja iestatīt ierīces instalēšanas laika atribūta bloķēšanu.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ja jūsu bērnam ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā. Plašāku informāciju par šiem iestatījumiem un to pielāgošanu skatiet vietnē families.google.com.</translation>
-<translation id="3435541101098866721">Pievienot jaunu telefonu</translation>
 <translation id="3435688026795609344">Paplašinājumā <ph name="EXTENSION_NAME" /> tiek pieprasīts jūsu <ph name="CODE_TYPE" />.</translation>
 <translation id="3435738964857648380">Drošība</translation>
 <translation id="343578350365773421">Beidzies papīrs</translation>
@@ -4230,6 +4229,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5501809658163361512">{COUNT,plural, =1{Neizdevās saņemt saturu (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}zero{Neizdevās saņemt saturu (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}one{Neizdevās saņemt saturu (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}other{Neizdevās saņemt saturu (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importēts no Firefox</translation>
 <translation id="5502915260472117187">Bērns</translation>
+<translation id="5503356662318814623">Sūtīt ziņojumu</translation>
 <translation id="5503982651688210506">Lapa <ph name="HOST" /> drīkst arī turpmāk izmantot un kustināt jūsu kameru, kā arī izmantot jūsu mikrofonu</translation>
 <translation id="5504909642107847870">Konfidencialitātes un drošības pārskatīšana</translation>
 <translation id="5505264765875738116">Vietnēs nevar lūgt atļauju sūtīt paziņojumus</translation>
@@ -4486,6 +4486,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5794414402486823030">Vienmēr atvērt, izmantojot sistēmas skatītāju</translation>
 <translation id="5794700615121138172">Linux koplietotās mapes</translation>
 <translation id="5794786537412027208">Aizvērt visas Chrome lietotnes</translation>
+<translation id="5796485699458186843">Jauna inkognito &amp;cilne</translation>
 <translation id="5797521893972859201">Tiek notīrīta vēsture, tostarp arī meklēšanas lodziņā</translation>
 <translation id="5798079537501238810">Atļaut vietnēm instalēt maksājumu apdarinātājus</translation>
 <translation id="579915268381781820">Drošības atslēga tika noņemta.</translation>
@@ -5736,7 +5737,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7170236477717446850">Profila attēls</translation>
 <translation id="7171000599584840888">Pievienot profilu...</translation>
 <translation id="7171259390164035663">Nereģistrēties</translation>
-<translation id="7171746271229206319">Lasīt informāciju par Chrome OS ierīci un ierīces datus. Šī informācija var tikt kopīgota ar ierīces ražotāju. Apstrādājot datus, citas organizācijas (kas nav Google) ievēros savas konfidencialitātes politikas.</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Pievienot cilni jaunai grupai}zero{Pievienot cilnes jaunai grupai}one{Pievienot cilnes jaunai grupai}other{Pievienot cilnes jaunai grupai}}</translation>
 <translation id="7173114856073700355">Atvērt iestatījumus</translation>
 <translation id="7174199383876220879">Jaunums! Pārvaldiet savu mūziku, videoklipus un citu saturu.</translation>
@@ -6457,7 +6457,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7901914889562552258">Uzlabota Chrome darbība, izmantojot lapas rādītājus</translation>
 <translation id="7903345046358933331">Lapa vairs nereaģē. Varat uzgaidīt, līdz tā atsāks reaģēt, vai aizvērt to.</translation>
 <translation id="7903742244674067440">Sistēmā ir sertifikāti, kas identificē šīs sertifikātu izdevējiestādes</translation>
-<translation id="7903859912536385558">stabils (uzticams testētājs)</translation>
 <translation id="7903925330883316394">Utilīta: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Šī konta administrators nav atļāvis vairākkārtēju pierakstīšanos.</translation>
 <translation id="7904526211178107182">Padariet Linux portus pieejamus citām ierīcēm jūsu tīklā.</translation>
@@ -6508,10 +6507,12 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7952904276017482715">Paredzētais ID bija <ph name="EXPECTED_ID" />, bet faktiskais ID bija <ph name="NEW_ID" />.</translation>
 <translation id="7953669802889559161">Ievades metodes</translation>
 <translation id="7953955868932471628">Pārvaldīt saīsnes</translation>
+<translation id="7955105108888461311">Jautāt personiski</translation>
 <translation id="7956373551960864128">Jūsu saglabātie printeri</translation>
 <translation id="7957074856830851026">Skatīt informāciju par ierīci, piemēram, sērijas numuru vai īpašuma ID</translation>
 <translation id="7957615753207896812">Atvērt tastatūras ierīces iestatījumus</translation>
 <translation id="7959074893852789871">Failā bija iekļauti vairāki sertifikāti, no kuriem daži netika importēti:</translation>
+<translation id="7959665254555683862">Jauna inkognito &amp;cilne</translation>
 <translation id="7961015016161918242">Nekad</translation>
 <translation id="7963001036288347286">Skārienpaliktņa darbības paātrināšana</translation>
 <translation id="7963608432878156675">Šis nosaukums ir redzams citām ierīcēm, iestatot Bluetooth un tīkla savienojumus</translation>
@@ -6544,7 +6545,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7986295104073916105">Lasīt un mainīt saglabātos paroļu iestatījumus</translation>
 <translation id="7987814697832569482">Savienojuma izveidei vienmēr izmantot šo VPN</translation>
 <translation id="7988355189918024273">Iespējot pieejamības funkcijas</translation>
-<translation id="7990394755527173834">Lai iestatītu Android tālruni, kas šajā datorā pirmo reizi tiks izmantots kā drošības atslēga, tālrunī atveriet pārlūkprogrammu Chrome un pārejiet uz sadaļu Iestatījumi &gt; Paroles &gt; Izmantot tālruni kā drošības atslēgu. Pēc tam pieskarieties vienumam “Savienojuma izveide ar jaunu ierīci” un noskenējiet šo QR kodu.</translation>
 <translation id="7991296728590311172">Slēdžu piekļuves iestatījumi</translation>
 <translation id="7997826902155442747">Procesa prioritāte</translation>
 <translation id="7999229196265990314">Tika izveidoti šādi faili:

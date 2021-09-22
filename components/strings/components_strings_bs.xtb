@@ -1315,6 +1315,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5252000469029418751">C7 (koverta)</translation>
 <translation id="5254043433801397071">Optimiziranje sadržaja za štampanje</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">Ipak snimi</translation>
 <translation id="5265446478903775694">Upravljaj mojom privatnošću na Googleu</translation>
 <translation id="5266128565379329178">Povezivanje gornje strane</translation>
 <translation id="5269225904387178860">Četverostruko bušenje donje strane</translation>
@@ -1839,6 +1840,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7153618581592392745">Svijetloljubičasta</translation>
 <translation id="7156870133441232244">Server se treba nagodgraditi na verziju TLS 1.2 ili noviju.</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
+<translation id="7173920250514487165">Snimanje povjerljivog sadržaja na ekranu</translation>
 <translation id="7174545416324379297">Spojeno</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Sačuvajte i popunite načine plaćanja</translation>
@@ -2098,6 +2100,7 @@ Dodatni detalji:
 <translation id="7977538094055660992">Izlazni uređaj</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">Može tražiti da koristi uređaje i podatke virtuelne realnosti</translation>
+<translation id="7984699858161118573">Administrator ne preporučuje snimanje ekrana ili videozapisa zbog povjerljivog sadržaja na ekranu</translation>
 <translation id="7984945080620862648">Trenutačno ne možete posjetiti <ph name="SITE" /> jer je web-lokacija poslala kodirane vjerodajnice koje Chrome ne može obraditi. Mrežne pogreške i napadi uglavnom su privremeni, tako da će ta stranica vjerojatno kasnije funkcionirati.</translation>
 <translation id="79859296434321399">Instalirajte ARCore da vidite sadržaj proširene realnosti</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2155,7 +2158,6 @@ Dodatni detalji:
 <translation id="8176440868214972690">Administrator ovog uređaja je poslao određene informacije web lokacijama u nastavku, naprimjer postavke ili pravila.</translation>
 <translation id="8184538546369750125">Koristi opću zadanu postavku (dozvoli)</translation>
 <translation id="8190193880870196235">Upravlja ekstenzija</translation>
-<translation id="8193086767630290324">Radnje poduzete s podacima koji su označeni kao povjerljivi</translation>
 <translation id="8194797478851900357">&amp;Opozovi premještanje</translation>
 <translation id="8201077131113104583">Nevažeći URL za ažuriranje za ekstenziju koja ima ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Sažetak narudžbe</translation>

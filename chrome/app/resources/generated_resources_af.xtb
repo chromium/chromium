@@ -2335,7 +2335,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3433621910545056227">Oeps! Die stelsel kon nie die toestel se kenmerkeslot by installering vasmaak nie.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">As die bykomende Web- en Programaktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. Kom by families.google.com meer te wete oor hierdie instellings en hoe om hulle te verstel.</translation>
-<translation id="3435541101098866721">Voeg nuwe foon by</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" versoek tans jou <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="343578350365773421">Papier is op</translation>
@@ -4244,6 +4243,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kon nie <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> af ontvang nie}other{Kon nie <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> af ontvang nie}}</translation>
 <translation id="5502500733115278303">Van Firefox af ingevoer</translation>
 <translation id="5502915260472117187">'n Kind</translation>
+<translation id="5503356662318814623">Stuur 'n boodskap</translation>
 <translation id="5503982651688210506">Hou aan om <ph name="HOST" /> toe te laat om jou kamera te gebruik en te beweeg, en om jou mikrofoon te gebruik</translation>
 <translation id="5504909642107847870">Privaatheid- en sekuriteitoorsig</translation>
 <translation id="5505264765875738116">Werwe kan nie vra om kennisgewings te stuur nie</translation>
@@ -4501,6 +4501,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5794414402486823030">Altyd oop met die stelselkyker</translation>
 <translation id="5794700615121138172">Linux- gedeelde lêers</translation>
 <translation id="5794786537412027208">Beëindig alle Chrome-programme</translation>
+<translation id="5796485699458186843">Nuwe Incognito-oortjie</translation>
 <translation id="5797521893972859201">Vee geskiedenis uit, ook in die soekkassie</translation>
 <translation id="5798079537501238810">Werwe kan betalinghanteerders installeer</translation>
 <translation id="579915268381781820">Jou sekuriteitsleutel is verwyder.</translation>
@@ -5751,7 +5752,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7170236477717446850">Profielprent</translation>
 <translation id="7171000599584840888">Voeg profiel by …</translation>
 <translation id="7171259390164035663">Moenie inskryf nie</translation>
-<translation id="7171746271229206319">Lees Chrome-bedryfstelselinligting en -toesteldata. Hierdie inligting sal dalk met jou toestelvervaardiger gedeel word. Organisasies buiten Google wat data hanteer, sal hul eie afsonderlike privaatheidsbeleide volg</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Voeg oortjie by nuwe groep}other{Voeg oortjies by nuwe groep}}</translation>
 <translation id="7173114856073700355">Maak Instellings oop</translation>
 <translation id="7174199383876220879">Nuut! Beheer jou musiek, video's en meer.</translation>
@@ -6473,7 +6473,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7901914889562552258">Chrome is verbeter met gebruik van bladsymaatstawwe</translation>
 <translation id="7903345046358933331">Die bladsy het ophou reageer. Jy kan wag tot dit reageer of dit toemaak.</translation>
 <translation id="7903742244674067440">Jy het sertifikate op lêer wat hierdie sertifikaatoutoriteite identifiseer</translation>
-<translation id="7903859912536385558">stabiel (vertroude toetser)</translation>
 <translation id="7903925330883316394">Nutsding: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Die administrateur vir hierdie rekening laat nie meer veelvuldige aanmeldings toe nie.</translation>
 <translation id="7904526211178107182">Maak Linux-poorte aan ander toestelle op jou netwerk beskikbaar.</translation>
@@ -6524,10 +6523,12 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7952904276017482715">Het ID "<ph name="EXPECTED_ID" />" verwag, maar ID was "<ph name="NEW_ID" />"</translation>
 <translation id="7953669802889559161">Invoere</translation>
 <translation id="7953955868932471628">Bestuur kortpaaie</translation>
+<translation id="7955105108888461311">Vra persoonlik</translation>
 <translation id="7956373551960864128">Jou gestoorde drukkers</translation>
 <translation id="7957074856830851026">Sien toestelinligting soos sy reeksnommer of bate-ID</translation>
 <translation id="7957615753207896812">Maak sleutelbordtoestelinstellings oop</translation>
 <translation id="7959074893852789871">Die lêer bevat veelvuldige sertifikate, waarvan sommige nie ingevoer is nie:</translation>
+<translation id="7959665254555683862">Nuwe Incognito-oortjie</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7963001036288347286">Raakpaneelversnelling</translation>
 <translation id="7963608432878156675">Ander toestelle kan hierdie naam sien vir Bluetooth- en netwerkverbindings</translation>
@@ -6560,7 +6561,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7986295104073916105">Lees en verander instellings vir gestoorde wagwoorde</translation>
 <translation id="7987814697832569482">Koppel altyd deur hierdie VPN</translation>
 <translation id="7988355189918024273">Aktiveer toeganklikheidkenmerke</translation>
-<translation id="7990394755527173834">Om 'n Android-foon vir die eerste keer op te stel om as 'n sekuriteitsleutel saam met hierdie rekenaar gebruik te word, moet jy Chrome op jou foon oopmaak en gaan na "Instellings &gt; Wagwoorde &gt; Gebruik foon as 'n sekuriteitsleutel". Tik dan op "Koppel nuwe toestel" en skandeer hierdie QR-kode.</translation>
 <translation id="7991296728590311172">Skakelaartoegang-instellings</translation>
 <translation id="7997826902155442747">Verwerkingsprioriteit</translation>
 <translation id="7999229196265990314">Het die volgende lêers geskep:

@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
 <translation id="1930797645656624981">Dienst für die Chrome OS-Eingabemethoden</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
+<translation id="197386857804679933">Einstellungen aufrufen, um die Verbindung wiederherzustellen</translation>
 <translation id="1979103255016296513">Passwortänderung überfällig</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
 <translation id="2006864819935886708">Verbindung</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">BESTANDEN</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
+<translation id="2860473693272905224">Legen Sie eine andere Seite in den Scanner</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">Mobile Daten</translation>
 <translation id="3156846309055100599">Seite <ph name="PAGE_NUMBER" /> wird gescannt…</translation>
 <translation id="315738237743207937">Captive Portal erkannt</translation>
+<translation id="3170673040743561620">Legen Sie das Dokument in den Scanner</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
 <translation id="3226405216343213872">Suche nach Scannern läuft</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">Verbindung</translation>
 <translation id="4832079907277790330">Ordner in der Dateimanager-App auswählen...</translation>
 <translation id="4835901797422965222">Keine aktiven Netzwerke</translation>
+<translation id="484790837831576105">(Android) DNS-Auflösung</translation>
 <translation id="4848429997038228357">LÄUFT</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Noch {0} Versuch}other{<ph name="ERROR_MESSAGE" /> Noch {0} Versuche}}</translation>
 <translation id="4880328057631981605">Name des Zugangspunkts</translation>
@@ -290,6 +294,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6050189528197190982">Graustufen</translation>
 <translation id="6058625436358447366">Geben Sie zum Schluss Ihr altes und Ihr neues Passwort ein</translation>
 <translation id="6061772781719867950">Fehlgeschlagene HTTPS-Anfragen</translation>
+<translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
@@ -332,6 +337,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6704062477274546131">DNS-Auflösung</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> wurde deaktiviert</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
 <translation id="6756731097889387912">Scannen konnte nicht abgebrochen werden</translation>
 <translation id="6766275201586212568">Fehlgeschlagene DNS-Auflösungen</translation>
@@ -341,11 +347,13 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließen Sie sie und versuchen Sie es noch einmal.</translation>
 <translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
 <translation id="6957231940976260713">Name des Dienstes</translation>
+<translation id="6961170852793647506">Legen Sie zuerst das Dokument in den Scanner</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
 <translation id="6982876849933694860">Wenn Sie eine neue Verbindung einrichten möchten, <ph name="BEGIN_LINK" />gehen Sie zu den Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7039041976777695848">Tastatur (<ph name="CONNECTION_TYPE" />)</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7058278511608979688">Speichern und beenden</translation>
 <translation id="7059230779847288458">Vollständig geladen in <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ABGEBROCHEN</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -409,6 +417,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
+<translation id="811820734797650957">(Android) Gateway kann kontaktiert werden</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Traffic-Zähler anfordern</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -480,6 +489,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>
+<translation id="9126720536733509015">Mehrere Seiten in einem PDF speichern</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
 <translation id="9173638680043580060">Nur noch wenige Sekunden</translation>

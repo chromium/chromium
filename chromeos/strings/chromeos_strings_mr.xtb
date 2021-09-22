@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
 <translation id="1930797645656624981">Chrome OS इनपुट पद्धत सेवा</translation>
 <translation id="1947737735496445907">प्रिंट केले</translation>
+<translation id="197386857804679933">पुन्हा कनेक्ट करण्यासाठी सेटिंग्ज ला भेट द्या</translation>
 <translation id="1979103255016296513">पासवर्ड बदलण्याची मुदत संपली आहे</translation>
 <translation id="1999615961760456652">कॅप्टिव्ह पोर्टल</translation>
 <translation id="2006864819935886708">कनेक्टिव्हिटी</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">पास झाले</translation>
 <translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
+<translation id="2860473693272905224">स्कॅनरवर दुसरे पेज ठेवा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंदामध्ये <ph name="RATE" /> डिस्चार्ज झाले.</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे...</translation>
 <translation id="315738237743207937">कॅप्टिव्ह पोर्टल डिटेक्ट केले</translation>
+<translation id="3170673040743561620">तुमचे दस्तऐवज स्कॅनरवर ठेवा</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">कनेक्शन</translation>
 <translation id="4832079907277790330">Files अ‍ॅपमध्ये फोल्डर निवडा...</translation>
 <translation id="4835901797422965222">कोणतीही अ‍ॅक्टिव्ह नेटवर्क नाहीत</translation>
+<translation id="484790837831576105">(Android) DNS रिझोल्यूशन</translation>
 <translation id="4848429997038228357">रन होत आहे</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}other{<ph name="ERROR_MESSAGE" /> {0} प्रयत्न शिल्लक}}</translation>
 <translation id="4880328057631981605">ॲक्सेसबिंदूचे नाव</translation>
@@ -290,6 +294,7 @@
 <translation id="6050189528197190982">ग्रेस्केल</translation>
 <translation id="6058625436358447366">पूर्ण करण्यासाठी, तुमचे जुने आणि नवीन पासवर्ड एंटर करा</translation>
 <translation id="6061772781719867950">अयशस्वी HTTPS विनंत्या</translation>
+<translation id="6075872808778243331">(Android) HTTP लेटन्सी</translation>
 <translation id="6104112872696127344">स्कॅनिंग रद्द केले गेले</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
@@ -332,6 +337,7 @@
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> बंद केले आहे</translation>
 <translation id="6747215703636344499">थांबले - आउटपुट भरले आहे</translation>
 <translation id="6756731097889387912">स्कॅनिंग रद्द करता आले नाही</translation>
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
@@ -341,11 +347,13 @@
 <translation id="6910312834584889076">स्कॅनरचे कव्हर उघडे आहे. कव्हर बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6911383237894364323">मीडिया सर्व्हरशी कनेक्ट करता आले नाही</translation>
 <translation id="6957231940976260713">सेवेचे नाव</translation>
+<translation id="6961170852793647506">सुरुवात करण्यासाठी, तुमचे दस्तऐवज स्कॅनरवर ठेवा</translation>
 <translation id="6977381486153291903">फर्मवेयर पुनरावृत्ती</translation>
 <translation id="6982876849933694860">नवीन कनेक्शन सेट करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="7028979494427204405">हे डिव्हाइस <ph name="MANAGER" /> व्यवस्थापित करतो आणि भेट दिलेली वेबपेज, पासवर्ड आणि ईमेलसह सर्व वापरकर्ता अ‍ॅक्टिव्हिटीचा त्याला अ‍ॅक्सेस आहे.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> कीबोर्ड</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
+<translation id="7058278511608979688">संपवा आणि सेव्ह करा</translation>
 <translation id="7059230779847288458">चार्ज होत आहे, <ph name="TIME_VALUE" /> मध्ये पूर्ण होईल</translation>
 <translation id="708426984172631313">थांबवली</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -409,6 +417,7 @@
 <translation id="8041089156583427627">अभिप्राय पाठवा</translation>
 <translation id="8075838845814659848">शिल्लक चार्जिंग</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
+<translation id="811820734797650957">(Android) गेटवे ला पिंग केले जाऊ शकते</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8132480444149501833">ट्रॅफिक काउंटरची विनंती करा</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
@@ -480,6 +489,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
+<translation id="9126720536733509015">एका PDF मध्ये एकाहून अधिक पेज सेव्ह करा</translation>
 <translation id="9137526406337347448">Google सेवा</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
 <translation id="9173638680043580060">एका मिनिटापेक्षा कमी वेळ शिल्लक आहे</translation>

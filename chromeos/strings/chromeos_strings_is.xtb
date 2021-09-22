@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Mistókst – stöðvaðist</translation>
 <translation id="3102119246920354026">Skyndiminni</translation>
 <translation id="3122464029669770682">Örgjörvi</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Fjarlægja síðu?}=1{Fjarlægja síðu {PAGE_NUMBER}?}one{Fjarlægja síðu {PAGE_NUMBER}?}other{Fjarlægja síðu {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Farsímagögn</translation>
 <translation id="3156846309055100599">Skannar síðu <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Innskráningarsíða greind</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM læst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Heiti hóps</translation>
+<translation id="5051044138948155788">Þetta er eina síðan. Þetta opnar upphafsskjá skönnunar.</translation>
 <translation id="5088172560898466307">Hýsilheiti þjóns</translation>
 <translation id="5089810972385038852">Ríki</translation>
 <translation id="5142961317498132443">Auðkenning</translation>
@@ -269,6 +271,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5499114900554609492">Gat ekki lokið við skönnun</translation>
 <translation id="5502931783115429516">Android er ekki í gangi</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Leita aftur</translation>
 <translation id="5669267381087807207">Virkjar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Fjölskylda</translation>
@@ -319,6 +322,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="641081527798843608">Samsvörun viðfangs</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Í lagi</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skanna aftur síðu?}=1{Skanna aftur síðu {PAGE_NUMBER}?}one{Skanna aftur síðu {PAGE_NUMBER}?}other{Skanna aftur síðu {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Einnota aðgangsorð</translation>
 <translation id="6480327114083866287">Stýrt af <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stöðvað – pappírsstífla</translation>

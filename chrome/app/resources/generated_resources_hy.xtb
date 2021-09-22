@@ -100,6 +100,7 @@
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1108600514891325577">&amp;Դադարեցնել</translation>
 <translation id="1110155001042129815">Սպասել</translation>
+<translation id="1110965959145884739">Ընտրեք, թե որ լեզուները տեղադրել այս սարքում։ Սկավառակի վրա տարածքը խնայելու համար լեզվի փաթեթները հասանելի են բոլոր օգտատերերին։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">Ֆոնային ներդիրում օգտագործվում է Bluetooth-ը</translation>
 <translation id="1113892970288677790">Ընտրեք առաջարկվող պատկերներ</translation>
@@ -547,6 +548,7 @@
 <translation id="1580772913177567930">Դիմեք ձեր ադմինիստրատորին</translation>
 <translation id="1581962803218266616">Ցույց տալ Finder-ում</translation>
 <translation id="1582955169539260415">ջնջել [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276">Այս լեզվով (<ph name="LANGUAGE" />) տեքստը մշակվում է սարքում և հասանելի է առանց ինտերնետին միանալու</translation>
 <translation id="1584990664401018068">Wi-Fi ցանցը, որից օգտվում եք, (<ph name="NETWORK_ID" />) կարող է նույնականացում պահանջել:</translation>
 <translation id="1585717515139318619">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է թեմա, որը կարող է ազդել Chrome-ի աշխատանքի վրա:
 
@@ -757,6 +759,7 @@
 <translation id="177989070088644880">Հավելված (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Փակել խումբը</translation>
 <translation id="1780273119488802839">Էջանիշների ներմուծում…</translation>
+<translation id="178092663238929451">Կարգավորեք «Փոխանակում մոտակա սարքերի հետ» գործառույթը՝ մոտակայքում գտնվող օգտատերերի հետ ֆայլեր փոխանակելու համար</translation>
 <translation id="1781291988450150470">Ընթացիկ PIN կոդը</translation>
 <translation id="1781398670452016618">Տիրույթի (<ph name="DOMAIN" />) կանոնների համաձայն՝ այժմ անհրաժեշտ է միանալ Wi-Fi-ին և ներբեռնել թարմացումը։</translation>
 <translation id="1781502536226964113">Բացել նոր ներդիրի էջով</translation>
@@ -1589,6 +1592,7 @@
 <translation id="265390580714150011">Դաշտի արժեք</translation>
 <translation id="2654166010170466751">Թույլ տալ կայքերին տեղադրել վճարումների մշակիչներ</translation>
 <translation id="2654553774144920065">Տպելու հարցում</translation>
+<translation id="2658941648214598230">Ցույց տա՞լ սկզբնական բովանդակությունը</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Տարբեր սարքերում գործառույթները կարող են տարբեր լինել</translation>
 <translation id="2659971421398561408">Սկավառակի չափի փոխում Crostini-ում</translation>
 <translation id="2660779039299703961">Իրադարձություն</translation>
@@ -2317,7 +2321,6 @@
 <translation id="3433621910545056227">Համակարգին չհաջողվեց կողպել սարքի հատկությունները՝ տեղադրման ժամանակ:</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Եթե Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը միացված է, այս տվյալները կպահվեն երեխայի Google հաշվում։ Այս կարգավորումների մասին ավելին իմանալու և դրանք ըստ ձեր հայեցողության փոփոխելու համար անցեք families.google.com էջ։</translation>
-<translation id="3435541101098866721">Նոր հեռախոս ավելացրեք</translation>
 <translation id="3435688026795609344">«<ph name="EXTENSION_NAME" />» ընդլայնումը պահանջում է ձեր <ph name="CODE_TYPE" /> կոդը</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
 <translation id="343578350365773421">Թուղթ չկա</translation>
@@ -2454,6 +2457,7 @@
 <translation id="3564848315152754834">USB անվտանգության բանալի</translation>
 <translation id="3566325075220776093">Այս սարքից</translation>
 <translation id="3566721612727112615">Կայքեր չեն ավելացվել</translation>
+<translation id="3567284462585300767">Մոտակայքում գտնվող օգտատերերի հետ ֆայլեր փոխանակելու համար տեսանելի դարձրեք ձեր սարքը</translation>
 <translation id="3569382839528428029">Ուզո՞ւմ եք, որ <ph name="APP_NAME" />-ը համօգտագործի ձեր էկրանը:</translation>
 <translation id="3569407787324516067">Էկրանապահ</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> կայքը կարող է դիտել հետևյալ ֆայլերն ու պանակները</translation>
@@ -3544,6 +3548,7 @@
 <translation id="475088594373173692">Առաջին օգտատեր</translation>
 <translation id="4756378406049221019">Դադարեցնել/թարմացնել</translation>
 <translation id="4756388243121344051">&amp;Պատմություն</translation>
+<translation id="4759126501639448579">Երբեք ցույց չտալ հիշողություններ</translation>
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
 <translation id="4761104368405085019">Օգտագործել խոսափողը</translation>
 <translation id="4762718786438001384">Սարքի սկավառակում տարածքը ծայրահեղ քիչ է</translation>
@@ -3869,6 +3874,7 @@
 <translation id="51143538739122961">Տեղադրեք անվտանգության բանալին և հպեք դրան</translation>
 <translation id="5115309401544567011">Միացրեք <ph name="DEVICE_TYPE" /> սարքը հոսանքին:</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">Բոլոր հիշողությունները թաքցված են</translation>
 <translation id="5116628073786783676">Պա&amp;հել ձայնանյութը որպես…</translation>
 <translation id="5117139026559873716">Հեռախոսն անջատեք <ph name="DEVICE_TYPE" /> սարքից։ Դրանք այլևս միմյանց ավտոմատ չեն միանա։</translation>
 <translation id="5117930984404104619">Վերահսկել այլ ընդլայնումների աշխատանքի ռեժիմը, այդ թվում նաև այցելած URL-ները</translation>
@@ -5014,6 +5020,7 @@
 <translation id="6374469231428023295">Փորձել կրկին</translation>
 <translation id="6377268785556383139">«<ph name="SEARCH_TEXT" />»-ի որոնման 1 արդյունք</translation>
 <translation id="6380143666419481200">Ընդունել և շարունակել</translation>
+<translation id="6382958439467370461">Ոչ ակտիվ դյուրանցումներ չկան</translation>
 <translation id="638418309848716977">Աջակցվող հղումներ</translation>
 <translation id="6384275966486438344">Օգտագործել <ph name="SEARCH_HOST" /> որոնիչը</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Անանուն խումբ – 1 ներդիր}one{Անանուն խումբ – # ներդիր}other{Անանուն խումբ – # ներդիր}}</translation>
@@ -5730,7 +5737,6 @@
 <translation id="7170236477717446850">Պրոֆիլի նկար</translation>
 <translation id="7171000599584840888">Ավելացնել պրոֆիլ...</translation>
 <translation id="7171259390164035663">Հրաժարվել</translation>
-<translation id="7171746271229206319">Կարդալ Chrome OS սարքի մասին տեղեկություններն ու սարքի տվյալները։ Այս տեղեկությունները կարող են ուղարկվել սարքի արտադրողին։ Կողմնակի կազմակերպությունների կողմից տեղեկությունների մշակումը կարգավորվում է դրանց գաղտնիության քաղաքականությամբ։</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիրներ նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7174199383876220879">Նորո՛ւյթ։ Վերահսկեք երաժշտությունը, տեսանյութերը և այլն։</translation>
@@ -5891,6 +5897,7 @@
 <translation id="7354341762311560488">Մատնահետքերի սկաները ստեղնաշարի ձախ կողմի ստեղնն է (ներքևում)։ Ցանկացած մատով թեթևակի հպեք այդ ստեղնին։</translation>
 <translation id="7356908624372060336">Ցանցային մատյաններ</translation>
 <translation id="735745346212279324">VPN-ն ապակապակցված է</translation>
+<translation id="7358324924540718595">Հիշողություններն այսօր թաքցված են</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> էջ <ph name="PRINTER_NAME" /> տպիչով</translation>
 <translation id="7361297102842600584">Սեղմեք մկնիկի աջ կոճակը՝ <ph name="PLUGIN_NAME" /> փլագինն աշխատեցնելու համար</translation>
 <translation id="7362387053578559123">Կայքերը կարող են Bluetooth սարքերին միանալու թույլտվություն հայցել</translation>
@@ -6291,6 +6298,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> սարքից ուղարկված հաղորդագրություն</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Կարգավորեք ձեր էկրանի սահմանագծերը</translation>
+<translation id="7759276754544429366">Թաքցնել հիշողություններն այսօր</translation>
 <translation id="7760004034676677601">Սա՞ է ձեր ուզած մեկնարկման էջը:</translation>
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />՝ <ph name="DOWNLOAD_DOMAIN" />-ից</translation>
@@ -6448,7 +6456,6 @@
 <translation id="7901914889562552258">Բարելավված Chrome՝ էջերի ցուցանիշների շնորհիվ</translation>
 <translation id="7903345046358933331">Էջը չի պատասխանում: Կարող եք սպասել պատասխանին կամ փակել էջը:</translation>
 <translation id="7903742244674067440">Ձեր պահված հավաստագրերում նշված են այս հավաստագրման կենտրոնները</translation>
-<translation id="7903859912536385558">կայուն տարբերակ (վստահված փորձարկող)</translation>
 <translation id="7903925330883316394">Օժանդակ ծրագիր՝ <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Այս հաշվի ադմինիստրատորը բազմակի մուտք չի թույլատրել:</translation>
 <translation id="7904526211178107182">Հասանելի դարձրեք Լինուքսի միացքները ձեր ցանցի մյուս սարքերին։</translation>
@@ -6535,7 +6542,6 @@
 <translation id="7986295104073916105">Կարդալ և փոփոխել պահված գաղտնաբառերի կարգավորումները</translation>
 <translation id="7987814697832569482">Միշտ միանալ այս VPN-ի միջոցով</translation>
 <translation id="7988355189918024273">Միացնել մատչելիության գործառույթները</translation>
-<translation id="7990394755527173834">Եթե առաջին անգամ եք կարգավորում Android հեռախոսը՝ որպես անվտանգության բանալի այս համակարգչում օգտագործելու համար, բացեք Chrome-ը հեռախոսում և անցեք «Կարգավորումներ &gt; Գաղտնաբառեր &gt; Օգտագործել հեռախոսը որպես անվտանգության բանալի»։ Ապա հպեք «Միացնել նոր սարք» և սկանավորեք այս QR կոդը։</translation>
 <translation id="7991296728590311172">Switch Access-ի կարգավորումներ</translation>
 <translation id="7997826902155442747">Գործընթացների առաջնահերթություն</translation>
 <translation id="7999229196265990314">Ստեղծվել են հետևյալ ֆայլերը՝
@@ -6959,6 +6965,7 @@
 <translation id="8457451314607652708">Ներմուծել էջանիշներ</translation>
 <translation id="8458341576712814616">Դյուրանցում</translation>
 <translation id="8458627787104127436">Բացել բոլորը (<ph name="URL_COUNT" />) նոր պատուհանում</translation>
+<translation id="8460490661223303637">Հիշողությունը պահելու համար Chrome-ը որոշ բովանդակություն հեռացրել է</translation>
 <translation id="8460932807646981183">Որոնողական համակարգերի կառավարում և որոնում կայքերում</translation>
 <translation id="84613761564611563">Ցանցի կարգավորման միջերեսի սպասում...</translation>
 <translation id="8461914792118322307">Պրոքսի-սերվեր</translation>

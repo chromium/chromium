@@ -2329,7 +2329,6 @@
 <translation id="3433621910545056227">ውይ!  ስርዓቱ የመሣሪያ ጭነት-ሰዓት አይነታዎች ቁልፉን መመስረት አልተሳካለትም።</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል። families.google.com ላይ ስለእነዚህ ቅንብሮች እና እንዴት እነሱን ማስተካከል እንደሚችሉ የበለጠ ይረዱ።</translation>
-<translation id="3435541101098866721">አዲሰ ስልክ ያክሉ</translation>
 <translation id="3435688026795609344">«<ph name="EXTENSION_NAME" />» የእርስዎን <ph name="CODE_TYPE" /> እየጠየቀ ነው</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
 <translation id="343578350365773421">ወረቀት ጨርሷል</translation>
@@ -5741,7 +5740,6 @@
 <translation id="7170236477717446850">የመገለጫ ስዕል</translation>
 <translation id="7171000599584840888">መገለጫ አክል...</translation>
 <translation id="7171259390164035663">አትመዝገብ</translation>
-<translation id="7171746271229206319">የChrome OS መሣሪያ መረጃን እና የመሣሪያ ውሂብን ያንብቡ። ይህ መረጃ ከእርስዎ መሣሪያ አምራች ጋር ሊጋራ ይችላል። ከGoogle ውጭ ባሉ ድርጅቶች የሚተዳደሩ ውሂቦች የራሳቸውን የግላዊነት መመሪያዎች ይከተላሉ</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{ትር ወደ አዲስ ቡድን ያክሉ}one{ትሮችን ወደ አዲስ ቡድን ያክሉ}other{ትሮችን ወደ አዲስ ቡድን ያክሉ}}</translation>
 <translation id="7173114856073700355">ቅንብሮችን ክፈት</translation>
 <translation id="7174199383876220879">አዲስ! የእርስዎን ሙዚቃ፣ ቪዲዮዎች እና ተጨማሪ ነገሮች ይቆጣጠሩ።</translation>
@@ -6463,7 +6461,6 @@
 <translation id="7901914889562552258">የገጽ ልኬቶችን በመጠቀም የተሻሻለ Chrome</translation>
 <translation id="7903345046358933331">ገጹ ምላሽ የማይሰጥ ሆኗል። ምላሽ እስከሚሰጥ ሊጠብቁት ወይም ሊዘጉት ይችላሉ።</translation>
 <translation id="7903742244674067440">የእነዚህን ዕውቅና ማረጋገጫ ባለሥልጣናት የሚለዩ የዕውቅና ማረጋገጫዎች በፋይሉ ላይ አለዎት</translation>
-<translation id="7903859912536385558">የተረጋጋ (የታመነ ሞካሪ)</translation>
 <translation id="7903925330883316394">ፍጆታ፦ <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">የዚህ መለያ አስተዳዳሪ ባለብዙ መለያ መግባትን ከልክሏል።</translation>
 <translation id="7904526211178107182">በአውታረ መረብዎ ላይ የLinux ወደቦች ለሌሎች መሣሪያዎች የሚገኙ ያድርጓቸው።</translation>
@@ -6550,7 +6547,6 @@
 <translation id="7986295104073916105">የተቀመጠ የይለፍ ቃል ቅንብሮችን ያንብቡ እና ይለውጡ</translation>
 <translation id="7987814697832569482">በዚህ VPN በኩል ሁልጊዜ አገናኝ</translation>
 <translation id="7988355189918024273">የተደራሽነት ቅንብሮች ያንቁ</translation>
-<translation id="7990394755527173834">Android ስልክን እንደ የደህንነት ቁልፍ ለመጠቀም ከዚህ ኮምፒውተር ጋር ለመጀመሪያ ጊዜ ለማቀናበር በስልክዎ ላይ Chromeን ይክፈቱ እና ወደ «ቅንብሮች &gt; የይለፍ ቃላት &gt; ስልክን እንደ የደህንነት ቁልፍ ይጠቀሙ» ይሂዱ። ከዚያ «አዲስ መሣሪያ ያገናኙ» ላይ መታ ያድርጉ እና ይህን QR ኮድ ይቃኙ።</translation>
 <translation id="7991296728590311172">የመቀያየሪያ መዳረሻ ቅንብሮች</translation>
 <translation id="7997826902155442747">የቅድሚያ ሂደት</translation>
 <translation id="7999229196265990314">'የሚከተሉትን ፋይሎች ፈጥሯል፦ 

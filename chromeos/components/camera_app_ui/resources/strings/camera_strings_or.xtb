@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" />କୁ ଅନପ୍ଲଗ୍ କରାଯାଇଛି।</translation>
 <translation id="1473110567575736769">3 ସେକେଣ୍ଡର ଟାଇମର୍</translation>
 <translation id="1545749641540134597">QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">ସାଧାରଣ</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">ଡକ୍ୟୁମେଣ୍ଟ ସ୍କାନ୍ କରିବା ସୁବିଧା ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5268823927180092501">ସବୁ କ୍ୟାମେରାରେ ଡକ୍ୟୁମେଣ୍ଟ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5444515100983837161">ଡକ୍ୟୁମେଣ୍ଟର ସମସ୍ତ ଧାରକୁ ଫ୍ରେମ୍ ଭିତରେ ରଖନ୍ତୁ। ଯଦି ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ପୃଷ୍ଠପଟ ଭିନ୍ନ ରଙ୍ଗର ହୋଇଥାଏ ତେବେ ସ୍କାନିଂ ଭଲ କାମ କରେ।</translation>
+<translation id="5588258280684580073">GIF ରେକର୍ଡିଂକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5671277269877808209">ବର୍ଗାକାର</translation>
 <translation id="5746169159649715125">PDF ଭାବରେ ସେଭ୍‍ କରନ୍ତୁ</translation>
 <translation id="5753488212459587150">ଏକ୍ସପର୍ଟ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">ଭିଡିଓ ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="7337660886763914220">ଫାଇଲ୍ ସିଷ୍ଟମ୍‌ର ତ୍ରୁଟିଗୁଡ଼ିକ।</translation>
 <translation id="7450541714075000668">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
+<translation id="7488619942230388918">GIF ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7557677699350329807">ପରବର୍ତ୍ତୀ କ୍ୟାମେରାକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="7607002721634913082">ଅଚଳିତ</translation>
 <translation id="7608223098072244877">4 ଗୁଣନ 4</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">ସାଧାରଣ ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7983668134180549431">ଟେକ୍ସଟ୍ ଚିହ୍ନଟ କରାଯାଇଛି।</translation>
 <translation id="8067883171444229417">ଭିଡିଓ ଚଲାନ୍ତୁ</translation>
 <translation id="8120146556401698679">ପ୍ୟାନ୍ ଟିଲ୍ଟ ଜୁମ୍</translation>

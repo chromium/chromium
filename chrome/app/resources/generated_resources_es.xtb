@@ -2320,7 +2320,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3433621910545056227">¡Vaya! El sistema no ha podido establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo. Consulta más información sobre estos ajustes y cómo configurarlos en families.google.com.</translation>
-<translation id="3435541101098866721">Añadir nuevo teléfono</translation>
 <translation id="3435688026795609344"><ph name="EXTENSION_NAME" /> está solicitando tu <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">No hay papel</translation>
@@ -3020,7 +3019,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4142518881503042940">Guarda las impresoras detectadas en tu perfil o añade una nueva. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4144218403971135344">Disfruta de una mejor calidad de vídeo y ahorra batería. El vídeo se reproducirá solo en tu pantalla compatible con Google Cast.</translation>
 <translation id="4146026355784316281">Abrir siempre con el visor del sistema</translation>
-<translation id="4146785383423576110">Recuperar ajustes y borrar</translation>
+<translation id="4146785383423576110">Recuperar configuración y limpiar</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4147911968024186208">Inténtalo de nuevo. Si el error persiste, ponte en contacto con tu representante de asistencia.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
@@ -4031,7 +4030,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5291739252352359682">Crea subtítulos de forma automática para elementos multimedia en el navegador Chrome (actualmente está disponible en inglés). Tanto el audio como los subtítulos se procesan en el propio dispositivo y nunca se envían a otra parte.</translation>
 <translation id="529175790091471945">Formatear este dispositivo</translation>
 <translation id="529296195492126134">El modo efímero no está admitido. Ponte en contacto con tu administrador.</translation>
-<translation id="5293170712604732402">Restaura los valores predeterminados originales de la configuración</translation>
+<translation id="5293170712604732402">Restaurar los valores predeterminados originales de la configuración</translation>
 <translation id="5294097441441645251">Debe comenzar con un carácter en minúscula o un guion bajo</translation>
 <translation id="5297082477358294722">Se ha guardado la contraseña. Consulta y gestiona las contraseñas guardadas en tu <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5298219193514155779">Tema creado por</translation>
@@ -5733,7 +5732,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7170236477717446850">Imagen de perfil</translation>
 <translation id="7171000599584840888">Añadir perfil...</translation>
 <translation id="7171259390164035663">No registrar</translation>
-<translation id="7171746271229206319">Lee la información de los dispositivos Chrome OS y los datos de los dispositivos. Puede que esta información se comparta con el fabricante de tu dispositivo. Los datos gestionados por organizaciones distintas a Google seguirán sus propias políticas de privacidad independientes</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Añadir pestaña al nuevo grupo}other{Añadir pestañas al nuevo grupo}}</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7174199383876220879">¡Nuevo! Controla tu música, tus vídeos y otras muchas cosas.</translation>
@@ -6455,7 +6453,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7901914889562552258">Mejores métricas de página sobre el uso de Chrome</translation>
 <translation id="7903345046358933331">La página no responde. Puedes esperar a que vuelva a responder o cerrarla.</translation>
 <translation id="7903742244674067440">Tienes certificados registrados que identifican a estas entidades</translation>
-<translation id="7903859912536385558">estable (tester de confianza)</translation>
 <translation id="7903925330883316394">Utilidad: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">El administrador de esta cuenta ha inhabilitado el inicio de sesión múltiple.</translation>
 <translation id="7904526211178107182">Permite que los puertos de Linux estén disponibles para otros dispositivos de tu red.</translation>
@@ -6542,7 +6539,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7986295104073916105">Leer y cambiar la configuración de contraseñas guardadas</translation>
 <translation id="7987814697832569482">Conectar siempre a través de esta VPN</translation>
 <translation id="7988355189918024273">Habilita las funciones de accesibilidad</translation>
-<translation id="7990394755527173834">Para configurar por primera vez un teléfono Android como llave de seguridad de este ordenador, abre Chrome en tu teléfono y ve a Configuración &gt; Contraseñas &gt; Usar teléfono como llave de seguridad. Después, toca Conectar nuevo dispositivo y escanea este código QR.</translation>
 <translation id="7991296728590311172">Ajustes de accesibilidad con interruptores</translation>
 <translation id="7997826902155442747">Prioridad del proceso</translation>
 <translation id="7999229196265990314">Se han creado los siguientes archivos:

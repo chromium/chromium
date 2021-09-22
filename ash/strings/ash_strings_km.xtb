@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">លើស​ចំណុះ</translation>
 <translation id="1346748346194534595">ស្តាំ</translation>
 <translation id="1351937230027495976">បង្រួម​ម៉ឺនុយ​</translation>
+<translation id="1364382257761975320">ដើម្បីដោះសោ Chromebook របស់អ្នក សូមប្រើ​ស្នាមម្រាមដៃ​របស់អ្នក</translation>
 <translation id="1383597849754832576">មិនអាចទាញយក​ឯកសារនិយាយ​បានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="1391102559483454063">បើក</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">ការកំណត់ប៊ិច</translation>
 <translation id="2354174487190027830">កំពុងធ្វើសកម្មភាព <ph name="NAME" /></translation>
 <translation id="2359808026110333948">បន្ត</translation>
+<translation id="2367186422933365202">មិនអាច​ចូល Chromebook របស់អ្នក​បានទេ</translation>
 <translation id="2369165858548251131">"សួស្ដី" ជាភាសាចិន</translation>
 <translation id="2390318262976603432">ការកំណត់ភាសា</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">ការគ្រប់គ្រង​មេឌៀ</translation>
+<translation id="2402411679569069051">ដើម្បី​ដោះសោ Chromebook របស់អ្នក សូមប្រើស្នាមម្រាមដៃ​របស់អ្នក ឬដោះសោ​ទូរសព្ទរបស់អ្នក</translation>
 <translation id="2405664212338326887">មិន​បាន​ភ្ជាប់ទេ</translation>
 <translation id="2408955596600435184">បញ្ចូល​កូដ PIN របស់​អ្នក</translation>
 <translation id="2412593942846481727">មាន​កំណែថ្មី</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> ទៀត</translation>
 <translation id="324366796737464147">ការកាត់បន្ថយ​សំឡេងរំខាន</translation>
 <translation id="3249513730522716925">បានផ្លាស់ទីផ្ទាំង <ph name="WINDOW_TITLE" /> ពីតុទី <ph name="ACTIVE_DESK" /> ទៅតុទី <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">ដើម្បី​ដោះសោ Chromebook របស់អ្នក សូមបើកប៊្លូធូស​ទូរសព្ទរបស់អ្នក</translation>
 <translation id="3255483164551725916">តើអ្នក​អាច​ធ្វើអ្វី​បានខ្លះ?</translation>
 <translation id="3269597722229482060">ចុចកណ្ដុរខាងស្ដាំ</translation>
 <translation id="3289674678944039601">កំពុងសាកថ្ម​តាមរយៈឆ្នាំងសាក</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">និយមន័យ</translation>
+<translation id="3509391053705095206">រកទូរសព្ទរបស់អ្នក​មិនឃើញទេ។ សូមប្រាកដ​ថាបាន​បើកប៊្លូធូស​ទូរសព្ទ​របស់​អ្នក។</translation>
 <translation id="3510164367642747937">រំលេច​ទស្សន៍ទ្រនិច​កណ្ដុរ</translation>
 <translation id="3513798432020909783">គណនី​ស្ថិត​ក្រោមការគ្រប់គ្រង​របស់ <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">បានភ្ជាប់ជាមួយ​ឧបករណ៍ <ph name="NUM_DEVICES" /> គ្រឿង</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">មីក្រូហ្វូន​ខាងមុខ</translation>
 <translation id="3713734891607377840">បើកនៅពេលបញ្ចប់</translation>
 <translation id="3742055079367172538">រូបថតអេក្រង់ត្រូវបានថតយក</translation>
+<translation id="3744282433224562605">ដើម្បីដោះសោ Chromebook របស់អ្នក សូមបញ្ចូលពាក្យសម្ងាត់</translation>
 <translation id="3771549900096082774">មុខងារភាពដិតកម្រិតខ្ពស់</translation>
 <translation id="3773700760453577392">អ្នកគ្រប់គ្រង​បានដក​ការអនុញ្ញាត​មិនឱ្យមាន​ការចូលគណនី​ច្រើនសម្រាប់ <ph name="USER_EMAIL" /> ទេ។ អ្នកប្រើ​ប្រាស់ទាំងអស់​ត្រូវចាកចេញ​ដើម្បីបន្ត។</translation>
 <translation id="3779139509281456663">កំពុងភ្ជាប់ <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">ជំនួយការនឹង​បង្ហាញព័ត៌មាន​ដូចជា និយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត​សម្រាប់ការជ្រើសរើស​របស់អ្នក នៅពេលអ្នក​ចុចកណ្ដុរខាងស្ដាំ ឬចុចឱ្យយូរ។</translation>
 <translation id="4505050298327493054">តុសកម្ម។</translation>
 <translation id="4513946894732546136">មតិ</translation>
+<translation id="4518404433291145981">ដើម្បី​ដោះសោ Chromebook របស់អ្នក សូមដោះសោទូរសព្ទ​របស់អ្នកជាមុនសិន</translation>
 <translation id="4527045527269911712">ឧបករណ៍ប៊្លូធូស "<ph name="DEVICE_NAME" />" ចង់សុំការអនុញ្ញាតដើម្បីភ្ជាប់។</translation>
 <translation id="453661520163887813"><ph name="TIME" /> ទៀតទើបពេញ</translation>
 <translation id="4538824937723742295">ថតរូប​អេក្រង់​ពេញអេក្រង់</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">លេខសម្គាល់មិនត្រឹមត្រូវ</translation>
 <translation id="5083553833479578423">ដោះសោ​មុខងារ​ជំនួយការ​ជាច្រើនទៀត។</translation>
 <translation id="5136175204352732067">បាន​ភ្ជាប់​ក្ដារចុច​ផ្សេង</translation>
+<translation id="5147567197700016471">បានដោះសោ</translation>
 <translation id="5155897006997040331">ល្បឿននៃការអាន</translation>
 <translation id="5166918508782100047">ការកំណត់​ចម្លើយរហ័ស</translation>
 <translation id="5168181903108465623">មានឧបករណ៍ខាស</translation>
 <translation id="5170568018924773124">បង្ហាញនៅក្នុងថតឯកសារ</translation>
 <translation id="5176318573511391780">ថតវីដេអូ​អេក្រង់​ដោយផ្នែក</translation>
+<translation id="5199367439331364630">ដើម្បីចូល Chromebook របស់អ្នក សូមបញ្ចូល​ពាក្យសម្ងាត់</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ការ​ជូនដំណឹង 1 ផ្សេងទៀត}other{ការ​ជូនដំណឹង # ផ្សេងទៀត}}</translation>
 <translation id="5207949376430453814">រំលេច​សញ្ញា​អត្ថបទ</translation>
 <translation id="5208059991603368177">បើក</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">ផ្គូផ្គង​ឧបករណ៍ថ្មី</translation>
 <translation id="5322611492012084517">រកទូរសព្ទរបស់អ្នក​មិនឃើញទេ</translation>
 <translation id="5329548388331921293">កំពុង​ភ្ជាប់...</translation>
+<translation id="5330201449517439522">ប៉ះ ឬចុចដើម្បីចូល</translation>
 <translation id="5331975486040154427">ឧបករណ៍ USB-C (រន្ធក្រោយផ្នែកខាងឆ្វេង)</translation>
 <translation id="5352250171825660495">រចនាប័ទ្ម​ងងឹតបានបើក</translation>
 <translation id="5379115545237091094">ព្យាយាម​ច្រើនដងពេក</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">ការកំណត់​ឧបករណ៍ដែល​បានភ្ជាប់</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5837036133683224804">បញ្ឈប់ <ph name="ROUTE_TITLE" /> នៅលើ <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">សង្កត់ឱ្យជាប់​ដើម្បីពង្រីក</translation>
 <translation id="5860033963881614850">បិទ</translation>
 <translation id="5860491529813859533">បើក</translation>
 <translation id="5867217927013474703">កំពុងប្រមូល​ព័ត៌មានបណ្ដាញ</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">ភ្ជាប់ហតស្ប៉តរបស់ទូរសព្ទអ្នក បិទសំឡេងនិងកំណត់ទីតាំងឧបករណ៍របស់អ្នក ព្រមទាំងមើលផ្ទាំង Chrome ថ្មីៗ ដែលបើកនៅលើទូរសព្ទរបស់អ្នក</translation>
 <translation id="6670153871843998651">តុទី 3</translation>
 <translation id="6671495933530132209">ចម្លងរូបភាព</translation>
+<translation id="6671661918848783005">មិនអាច​ដោះសោ Chromebook របស់អ្នកបានទេ</translation>
 <translation id="6692996468359469499">ទទួលបានព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើស​របស់អ្នក</translation>
 <translation id="6696025732084565524">ក្ដារចុច​ដែល​អាច​ផ្ដាច់ចេញបាន​របស់អ្នក​ត្រូវ​ការ​កំណែថ្មីជា​ចាំបាច់</translation>
 <translation id="6700713906295497288">ប៊ូតុងម៉ឺនុយ IME</translation>

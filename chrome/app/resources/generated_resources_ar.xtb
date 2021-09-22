@@ -100,6 +100,7 @@
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="1108600514891325577">إي&amp;قاف</translation>
 <translation id="1110155001042129815">انتظار</translation>
+<translation id="1110965959145884739">يمكنك اختيار اللغات المطلوب تثبيتها على هذا الجهاز. وتتم مشاركة ملفات اللغات مع المستخدمين لتوفير مساحة القرص. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
 <translation id="1112420131909513020">هناك علامة تبويب خلفية تستخدم البلوتوث</translation>
 <translation id="1113892970288677790">اختَر الأعمال الفنية والصور المنظَّمة.</translation>
@@ -549,6 +550,7 @@
 <translation id="1580772913177567930">يُرجى التواصل مع المشرف.</translation>
 <translation id="1581962803218266616">إظهار في الباحث</translation>
 <translation id="1582955169539260415">حذف [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276">تتم معالجة اللغة <ph name="LANGUAGE" /> محليًّا على الجهاز وبلا اتصال بالإنترنت.</translation>
 <translation id="1584990664401018068">‏قد تتطلب شبكة اللاسلكي، Wi-Fi التي تستخدمها <ph name="NETWORK_ID" /> مصادقة.</translation>
 <translation id="1585717515139318619">‏أضاف برنامج آخر بجهاز الكمبيوتر مظهرًا قد يؤدي إلى تغيير طريقة عمل Chrome.
 
@@ -759,6 +761,7 @@
 <translation id="177989070088644880">تطبيق (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">إغلاق المجموعة</translation>
 <translation id="1780273119488802839">جار استيراد إشارات مرجعية...</translation>
+<translation id="178092663238929451">عليك إعداد ميزة "المشاركة عن قرب" لاستلام الملفات من الأشخاص من حولك وإرسالها إليهم.</translation>
 <translation id="1781291988450150470">رمز رقم التعريف الشخصي الحالي</translation>
 <translation id="1781398670452016618">‏يتطلّب <ph name="DOMAIN" /> الاتصال بشبكة Wi-Fi الآن وتنزيل تحديث.</translation>
 <translation id="1781502536226964113">فتح صفحة علامة التبويب الجديدة</translation>
@@ -1591,6 +1594,7 @@
 <translation id="265390580714150011">قيمة الحقل</translation>
 <translation id="2654166010170466751">السماح للمواقع الإلكترونية بتثبيت معالجات الدفع</translation>
 <translation id="2654553774144920065">طلب طباعة</translation>
+<translation id="2658941648214598230">هل تريد عرض محتوى الصفحة الأصلي؟</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />تختلف الميزات حسب الجهاز</translation>
 <translation id="2659971421398561408">‏تغيير حجم قرص نظام التشغيل Crostini</translation>
 <translation id="2660779039299703961">حدث</translation>
@@ -2322,7 +2326,6 @@
 <translation id="3433621910545056227">عفوًا!  تعذّر النظام في إنشاء قفل سمات وقت التثبيت بالجهاز.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">‏في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لحسابك الفرعي، قد يتم حفظ هذه البيانات في حسابك على Google. تعرّف على المزيد حول هذه الإعدادات وطريقة ضبطها من خلال families.google.com.</translation>
-<translation id="3435541101098866721">إضافة هاتف جديد</translation>
 <translation id="3435688026795609344">تطلب الإضافة "<ph name="EXTENSION_NAME" />" الرمز <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="343578350365773421">نفد الورق</translation>
@@ -2459,6 +2462,7 @@
 <translation id="3564848315152754834">‏مفتاح أمان USB</translation>
 <translation id="3566325075220776093">من هذا الجهاز</translation>
 <translation id="3566721612727112615">لم تتم إضافة أي مواقع</translation>
+<translation id="3567284462585300767">لاستلام الملفات وقبولها من الأشخاص من حولك، يجب إظهار جهازك.</translation>
 <translation id="3569382839528428029">هل تريد من <ph name="APP_NAME" /> مشاركة شاشتك؟</translation>
 <translation id="3569407787324516067">شاشة الاستراحة</translation>
 <translation id="3569682580018832495">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية:</translation>
@@ -3546,6 +3550,7 @@
 <translation id="475088594373173692">المستخدم الأول</translation>
 <translation id="4756378406049221019">إيقاف/تحديث</translation>
 <translation id="4756388243121344051">ال&amp;سجل</translation>
+<translation id="4759126501639448579">عدم عرض الذكريات مطلقًا</translation>
 <translation id="4759238208242260848">الملفات التي تم تنزيلها</translation>
 <translation id="4761104368405085019">استخدام الميكروفون</translation>
 <translation id="4762718786438001384">مساحة القرص على الجهاز منخفضة للغاية</translation>
@@ -3870,6 +3875,7 @@
 <translation id="51143538739122961">أدخِل مفتاح الأمان والمسه</translation>
 <translation id="5115309401544567011">يُرجى توصيل جهاز <ph name="DEVICE_TYPE" /> بمصدر طاقة.</translation>
 <translation id="5115338116365931134">‏الدخول المُوحَّد (SSO)</translation>
+<translation id="511632863918093828">تم إخفاء جميع الذكريات.</translation>
 <translation id="5116628073786783676">حف&amp;ظ ملف الصوت باسم...</translation>
 <translation id="5117139026559873716">يمكنك إلغاء ربط هاتفك بجهاز <ph name="DEVICE_TYPE" />. لن يتم ربطهما تلقائيًا بعد الآن.</translation>
 <translation id="5117930984404104619">‏مراقبة سلوك الإضافات الأخرى، بما في ذلك عناوين URL التي تم الانتقال إليها</translation>
@@ -4224,6 +4230,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}zero{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}two{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}few{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}many{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}other{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">تمّ الاستيراد من متصفّح فايرفوكس</translation>
 <translation id="5502915260472117187">طفل</translation>
+<translation id="5503356662318814623">إرسال رسالة</translation>
 <translation id="5503982651688210506">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها واستخدام الميكروفون</translation>
 <translation id="5504909642107847870">مراجعة إعدادات الخصوصية والأمان</translation>
 <translation id="5505264765875738116">منع المواقع الإلكترونية من طلب إرسال إشعارات</translation>
@@ -4480,6 +4487,7 @@
 <translation id="5794414402486823030">افتح دائمًا باستخدام عرض النظام</translation>
 <translation id="5794700615121138172">‏مجلدات نظام التشغيل Linux التي تمت مشاركتها</translation>
 <translation id="5794786537412027208">‏إنهاء جميع تطبيقات Chrome</translation>
+<translation id="5796485699458186843">&amp;علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="5797521893972859201">محو السجلّ، بما في ذلك السجلّ الخاص بمربّع البحث</translation>
 <translation id="5798079537501238810">السماح للمواقع الإلكترونية بتثبيت معالجات الدفع</translation>
 <translation id="579915268381781820">تمت إزالة مفتاح الأمان.</translation>
@@ -5013,6 +5021,7 @@
 <translation id="6374469231428023295">إعادة المحاولة</translation>
 <translation id="6377268785556383139">نتيجة بحث واحدة عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">القبول والمواصلة</translation>
+<translation id="6382958439467370461">ما مِن اختصارات غير نشطة.</translation>
 <translation id="638418309848716977">الروابط المتوافقة</translation>
 <translation id="6384275966486438344">تغيير إعدادات البحث لـ: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{مجموعة لم تتم تسميتها تحتوي على علامة تبويب واحدة}zero{مجموعة لم تتم تسميتها تحتوي على # علامة تبويب}two{مجموعة لم تتم تسميتها تحتوي على علامتَي تبويب}few{مجموعة لم تتم تسميتها تحتوي على # علامات تبويب}many{مجموعة لم تتم تسميتها تحتوي على # علامة تبويب}other{مجموعة لم تتم تسميتها تحتوي على # علامة تبويب}}</translation>
@@ -5729,7 +5738,6 @@
 <translation id="7170236477717446850">صورة الملف الشخصي</translation>
 <translation id="7171000599584840888">إضافة ملف شخصي...</translation>
 <translation id="7171259390164035663">عدم التسجيل</translation>
-<translation id="7171746271229206319">‏قراءة المعلومات والبيانات عن الجهاز الذي يعمل بنظام التشغيل Chrome. قد تتم مشاركة هذه المعلومات مع الشركة المصنِّعة للجهاز. وبالنسبة إلى البيانات التي تعالجها مؤسسات أخرى غير Google، فإنّها تخضع لسياسات الخصوصية السارية لدى تلك المؤسسات.</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{إضافة علامة التبويب إلى مجموعة جديدة}zero{إضافة علامات التبويب إلى مجموعة جديدة}two{إضافة علامتَي التبويب إلى مجموعة جديدة}few{إضافة علامات التبويب إلى مجموعة جديدة}many{إضافة علامات التبويب إلى مجموعة جديدة}other{إضافة علامات التبويب إلى مجموعة جديدة}}</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7174199383876220879">إليك إعداد جديد. يمكنك التحكم في الموسيقى والفيديوهات وغير ذلك.</translation>
@@ -5890,6 +5898,7 @@
 <translation id="7354341762311560488">يتوفَّر مستشعر بصمات الإصبع في الزر في أسفل يسار لوحة المفاتيح. يمكنك لمسه برفقٍ بأي إصبع.</translation>
 <translation id="7356908624372060336">سجلّات الشبكة</translation>
 <translation id="735745346212279324">تم قطع اتصال الشبكة الافتراضية الخاصة</translation>
+<translation id="7358324924540718595">تم إخفاء الذكريات لهذا اليوم.</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> صفحة على <ph name="PRINTER_NAME" /></translation>
 <translation id="7361297102842600584">انقر بزر الماوس الأيمن لتشغيل <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة تتضمّن بلوتوث</translation>
@@ -6290,6 +6299,7 @@
 <translation id="7757787379047923882">تمت مشاركة النص من <ph name="DEVICE_NAME" />.</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">ضبط حدود شاشتك</translation>
+<translation id="7759276754544429366">إخفاء الذكريات لهذا اليوم</translation>
 <translation id="7760004034676677601">هل هذه هي صفحة بدء التشغيل التي كنت تتوقع ظهورها؟</translation>
 <translation id="7764225426217299476">إضافة عنوان</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> من <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -6449,7 +6459,6 @@
 <translation id="7901914889562552258">‏تحسين التصفُّّح والبحث على Chrome باستخدام مقاييس الصفحة</translation>
 <translation id="7903345046358933331">أصبحت الصفحة غير مستجيبة. يمكنك الانتظار حتى تصبح مستجيبة أو إغلاقها.</translation>
 <translation id="7903742244674067440">لديك شهادات في الملف تحدد صلاحيات الشهادة هذه</translation>
-<translation id="7903859912536385558">ثابتة (مختبِر موثوق به)</translation>
 <translation id="7903925330883316394">الأداة: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">لقد حظر مشرف هذا الحساب إمكانية الدخول المتعدد.</translation>
 <translation id="7904526211178107182">‏اجعل منافذ نظام التشغيل Linux متاحة لأجهزة أخرى على الشبكة.</translation>
@@ -6500,10 +6509,12 @@
 <translation id="7952904276017482715">رقم التعريف المتوقَّع "<ph name="EXPECTED_ID" />"، ولكن رقم التعريف كان "<ph name="NEW_ID" />".</translation>
 <translation id="7953669802889559161">أساليب الإدخال</translation>
 <translation id="7953955868932471628">إدارة لإختصارات</translation>
+<translation id="7955105108888461311">طلب الوصول شخصيًا</translation>
 <translation id="7956373551960864128">الطابعات المحفوظة</translation>
 <translation id="7957074856830851026">الاطّلاع على معلومات الجهاز، مثل الرقم التسلسلي أو رقم تعريف مادة العرض</translation>
 <translation id="7957615753207896812">فتح إعدادات الجهاز للوحة المفاتيح</translation>
 <translation id="7959074893852789871">احتوى الملف على شهادات متعددة، لم يتم استيراد بعضها:</translation>
+<translation id="7959665254555683862">&amp;علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
 <translation id="7963001036288347286">تسريع لوحة اللمس</translation>
 <translation id="7963608432878156675">هذا الاسم مرئي للأجهزة الأخرى حتى تتمكّن من الاتصال بالبلوتوث والشبكة.</translation>
@@ -6536,7 +6547,6 @@
 <translation id="7986295104073916105">قراءة وتغيير إعدادات كلمة المرور المحفوظة</translation>
 <translation id="7987814697832569482">‏الاتِّصال دائمًا من خلال الشبكة الظاهرية الخاصة (VPN) هذه</translation>
 <translation id="7988355189918024273">تفعيل ميزات إمكانية الدخول</translation>
-<translation id="7990394755527173834">‏لإعداد هاتف يعمل بنظام التشغيل Android واستخدامه كمفتاح أمان للوصول إلى جهاز الكمبيوتر هذا للمرة الأولى، افتح متصفِّح Chrome على هاتفك وانتقِل إلى الإعدادات &gt; كلمات المرور &gt; استخدام الهاتف كمفتاح أمان. بعد ذلك، انقر على "توصيل جهاز جديد" وامسح رمز الاستجابة السريعة التالي ضوئيًا.</translation>
 <translation id="7991296728590311172">إعدادات الوصول عبر مفتاح التحويل</translation>
 <translation id="7997826902155442747">أولوية المعالجة</translation>
 <translation id="7999229196265990314">تم إنشاء الملفات التالية:
@@ -6961,6 +6971,7 @@
 <translation id="8457451314607652708">استيراد الإشارات المرجعية</translation>
 <translation id="8458341576712814616">الاختصار</translation>
 <translation id="8458627787104127436">فتح كل الـ (<ph name="URL_COUNT" />) عنوان في نافذة جديدة</translation>
+<translation id="8460490661223303637">‏أزال متصفِّح Chrome بعضًا من محتوى الصفحة بهدف توفير مساحة من الذاكرة.</translation>
 <translation id="8460932807646981183">إدارة محركات البحث والبحث في المواقع الإلكترونية</translation>
 <translation id="84613761564611563">تم طلب واجهة المستخدم لإعداد الشبكة، يُرجى الانتظار...</translation>
 <translation id="8461914792118322307">الخادم الوكيل</translation>

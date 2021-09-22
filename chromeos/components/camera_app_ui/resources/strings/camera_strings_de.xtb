@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Verbindung zu <ph name="CAMERA" /> wurde getrennt.</translation>
 <translation id="1473110567575736769">3-Sekunden-Timer</translation>
 <translation id="1545749641540134597">QR-Code scannen</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Scannen von Dokumenten jetzt verfügbar</translation>
 <translation id="5268823927180092501">Dokumentmodus auf allen Kameras aktivieren</translation>
 <translation id="5444515100983837161">Alle Ränder des Dokuments müssen sich innerhalb des Rahmens befinden. Die besten Ergebnisse erzielen Sie, wenn das Dokument und der Hintergrund unterschiedliche Farben haben.</translation>
+<translation id="5588258280684580073">GIF-Aufnahme aktivieren</translation>
 <translation id="5671277269877808209">Quadrat</translation>
 <translation id="5746169159649715125">Als PDF speichern</translation>
 <translation id="5753488212459587150">Einstellungen für Fortgeschrittene aktivieren</translation>
@@ -98,12 +100,14 @@ Falls sich Ihr Feedback auf die Bild- oder Videoqualität bezieht, hängen Sie b
 <translation id="7243947652761655814">Videoauflösung</translation>
 <translation id="7337660886763914220">Fehler im Dateisystem.</translation>
 <translation id="7450541714075000668">Text kopiert</translation>
+<translation id="7488619942230388918">GIF-Video aufzeichnen</translation>
 <translation id="7557677699350329807">Zur nächsten Kamera wechseln</translation>
 <translation id="7607002721634913082">Angehalten</translation>
 <translation id="7608223098072244877">4 mal 4</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Normales Video aufzeichnen</translation>
 <translation id="7983668134180549431">Text erkannt.</translation>
 <translation id="8067883171444229417">Video ansehen</translation>
 <translation id="8120146556401698679">Schwenken Neigen Zoomen</translation>

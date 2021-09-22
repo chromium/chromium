@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Napaka – ustavljeno</translation>
 <translation id="3102119246920354026">Predpomnilnik</translation>
 <translation id="3122464029669770682">CPE</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Želite odstrani stran?}=1{Želite odstraniti {PAGE_NUMBER}. stran?}one{Želite odstraniti {PAGE_NUMBER}. stran?}two{Želite odstraniti {PAGE_NUMBER}. stran?}few{Želite odstraniti {PAGE_NUMBER}. stran?}other{Želite odstraniti {PAGE_NUMBER}. stran?}}</translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
 <translation id="3156846309055100599">Optično branje <ph name="PAGE_NUMBER" />. strani ...</translation>
 <translation id="315738237743207937">Zaznan je bil prestrezni portal</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">Kartica SIM je zaklenjena (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Ime skupine</translation>
+<translation id="5051044138948155788">To je edina stran. S tem se bo odprla stran za začetek optičnega branja.</translation>
 <translation id="5088172560898466307">Gostiteljsko Ime strežnika</translation>
 <translation id="5089810972385038852">Država:</translation>
 <translation id="5142961317498132443">Preverjanje pristnosti</translation>
@@ -269,6 +271,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5499114900554609492">Optičnega branja ni bilo mogoče dokončati</translation>
 <translation id="5502931783115429516">Android se ne izvaja</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Znova optično preberi</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Družina</translation>
@@ -319,6 +322,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="641081527798843608">Ujemanje zadeve</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Dober</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite znova optično prebrati stran?}=1{Želite znova optično prebrati {PAGE_NUMBER}. stran?}one{Želite znova optično prebrati {PAGE_NUMBER}. stran?}two{Želite znova optično prebrati {PAGE_NUMBER}. stran?}few{Želite znova optično prebrati {PAGE_NUMBER}. stran?}other{Želite znova optično prebrati {PAGE_NUMBER}. stran?}}</translation>
 <translation id="6472207088655375767">Enkratno geslo</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>

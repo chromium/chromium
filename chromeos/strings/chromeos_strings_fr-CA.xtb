@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">Échecs des demandes UDP</translation>
 <translation id="1930797645656624981">Service de méthode d'entrée Chrome OS</translation>
 <translation id="1947737735496445907">Imprimée</translation>
+<translation id="197386857804679933">Accédez aux paramètres pour vous reconnecter</translation>
 <translation id="1979103255016296513">Le mot de passe est expiré; vous devez le changer</translation>
 <translation id="1999615961760456652">Portail captif</translation>
 <translation id="2006864819935886708">Connectivité</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">TEST RÉUSSI</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
+<translation id="2860473693272905224">Placez une autre page sur le numériseur</translation>
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">Données mobiles</translation>
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="315738237743207937">Un portail captif a été détecté</translation>
+<translation id="3170673040743561620">Placez votre document sur le numériseur</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">Connexion</translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
+<translation id="484790837831576105">Résolution DNS (Android)</translation>
 <translation id="4848429997038228357">EXÉCUTION EN COURS…</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
 <translation id="4880328057631981605">Nom du point d'accès</translation>
@@ -290,6 +294,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6050189528197190982">Échelle de gris</translation>
 <translation id="6058625436358447366">Pour terminer cette opération, entrez votre ancien mot de passe et le nouveau</translation>
 <translation id="6061772781719867950">Requêtes HTTP échouées</translation>
+<translation id="6075872808778243331">Latence HTTP (Android)</translation>
 <translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer cette opération, entrez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Impossible d'atteindre la passerelle</translation>
@@ -332,6 +337,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
+<translation id="6714650824879092633">Le réseau <ph name="NETWORK_NAME" /> a été désactivé</translation>
 <translation id="6747215703636344499">Tâche arrêtée : le plateau de sortie est plein</translation>
 <translation id="6756731097889387912">Impossible d'annuler la numérisation</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
@@ -341,11 +347,13 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6910312834584889076">Le couvercle du numériseur est ouvert. Fermez le couvercle, puis réessayez.</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
 <translation id="6957231940976260713">Nom du service</translation>
+<translation id="6961170852793647506">Pour commencer, placez le document sur le numériseur</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="6982876849933694860">Pour configurer une nouvelle connexion, accédez aux <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="7039041976777695848">Clavier <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Opérateur</translation>
+<translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">En recharge : <ph name="TIME_VALUE" /> avant que la pile soit rechargée</translation>
 <translation id="708426984172631313">ARRÊTÉ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -409,6 +417,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8075838845814659848">Charge restante</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
+<translation id="811820734797650957">La passerelle peut faire l'objet d'un ping (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
@@ -480,6 +489,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="910415269708673980">Actualiser le ticket pour <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="9111102763498581341">Déverrouiller</translation>
+<translation id="9126720536733509015">Enregistrer plusieurs pages en un seul PDF</translation>
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
 <translation id="9173638680043580060">Il reste moins d'une minute</translation>

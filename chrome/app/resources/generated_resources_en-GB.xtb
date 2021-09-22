@@ -2335,7 +2335,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3433621910545056227">Oops!  The system failed to establish the device installation-time attributes lock.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. Find out more about these settings and how to adjust them at families.google.com.</translation>
-<translation id="3435541101098866721">Add new phone</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" is requesting your <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="343578350365773421">Out of paper</translation>
@@ -4244,6 +4243,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Imported From Firefox</translation>
 <translation id="5502915260472117187">A child</translation>
+<translation id="5503356662318814623">Send a message</translation>
 <translation id="5503982651688210506">Continue allowing <ph name="HOST" /> to use and move your camera, and use your microphone</translation>
 <translation id="5504909642107847870">Privacy and security review</translation>
 <translation id="5505264765875738116">Sites can't ask to send notifications</translation>
@@ -4500,6 +4500,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5794414402486823030">Always open with system viewer</translation>
 <translation id="5794700615121138172">Linux shared folders</translation>
 <translation id="5794786537412027208">Quit all Chrome Apps</translation>
+<translation id="5796485699458186843">New incognito tab</translation>
 <translation id="5797521893972859201">Clears history, including in the search box</translation>
 <translation id="5798079537501238810">Sites can install payment handlers</translation>
 <translation id="579915268381781820">Your security key was removed.</translation>
@@ -5750,7 +5751,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7170236477717446850">Profile picture</translation>
 <translation id="7171000599584840888">Add profile…</translation>
 <translation id="7171259390164035663">Don't enrol</translation>
-<translation id="7171746271229206319">Read Chrome OS device information and device data. This information may be shared with your device manufacturer. Data handled by organisations other than Google will follow their separate privacy policies</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7174199383876220879">New! Control your music, videos and more.</translation>
@@ -6472,7 +6472,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7901914889562552258">Improved Chrome using page metrics</translation>
 <translation id="7903345046358933331">The page has become unresponsive. You can wait for it to become responsive or close it.</translation>
 <translation id="7903742244674067440">You have certificates on file that identify these certificate authorities</translation>
-<translation id="7903859912536385558">stable (trusted tester)</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
 <translation id="7904526211178107182">Make Linux ports available to other devices on your network.</translation>
@@ -6523,10 +6522,12 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7952904276017482715">Expected ID '<ph name="EXPECTED_ID" />', but ID was '<ph name="NEW_ID" />'</translation>
 <translation id="7953669802889559161">Inputs</translation>
 <translation id="7953955868932471628">Manage shortcuts</translation>
+<translation id="7955105108888461311">Ask in person</translation>
 <translation id="7956373551960864128">Your saved printers</translation>
 <translation id="7957074856830851026">See device information, such as its serial number or asset ID</translation>
 <translation id="7957615753207896812">Open keyboard device settings</translation>
 <translation id="7959074893852789871">The file contained multiple certificates, some of which were not imported:</translation>
+<translation id="7959665254555683862">New incognito tab</translation>
 <translation id="7961015016161918242">Never</translation>
 <translation id="7963001036288347286">Touchpad acceleration</translation>
 <translation id="7963608432878156675">This name is visible to other devices for Bluetooth and network connections</translation>
@@ -6559,7 +6560,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7986295104073916105">Read and change saved password settings</translation>
 <translation id="7987814697832569482">Always connect through this VPN</translation>
 <translation id="7988355189918024273">Enable accessibility features</translation>
-<translation id="7990394755527173834">To set up an Android phone to be used as a security key with this computer for the first time, open Chrome on your phone and go to Settings &gt; Passwords &gt; Use phone as a security key. Then tap 'Connect new device' and scan this QR code.</translation>
 <translation id="7991296728590311172">Switch Access settings</translation>
 <translation id="7997826902155442747">Process Priority</translation>
 <translation id="7999229196265990314">Created the following files:

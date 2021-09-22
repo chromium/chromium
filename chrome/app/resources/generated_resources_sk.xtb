@@ -2322,7 +2322,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3433621910545056227">Ojoj! Systému sa nepodarilo nastaviť zámku pre inštaláciu atribútov v zariadení.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Ak pre dieťa zapnete nastavenie ďalšej aktivity na internete a v aplikáciách, tieto údaje sa môžu uložiť do jeho účtu Google. Viac o týchto nastaveniach a o tom, ako ich upraviť, sa dozviete na families.google.com.</translation>
-<translation id="3435541101098866721">Pridať nový telefón</translation>
 <translation id="3435688026795609344">Rozšírenie <ph name="EXTENSION_NAME" /> požaduje <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Bezpečnosť</translation>
 <translation id="343578350365773421">Minul sa papier</translation>
@@ -4230,6 +4229,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5501809658163361512">{COUNT,plural, =1{Nepodarilo sa prijať prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}few{Nepodarilo sa prijať prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}many{Nepodarilo sa prijať prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}other{Nepodarilo sa prijať prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importované z Firefoxu</translation>
 <translation id="5502915260472117187">Dieťa</translation>
+<translation id="5503356662318814623">Odoslať správu</translation>
 <translation id="5503982651688210506">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru aj hýbať ňou a používať mikrofón</translation>
 <translation id="5504909642107847870">Kontrola ochrany súkromia a zabezpečenia</translation>
 <translation id="5505264765875738116">Weby nemôžu žiadať o odosielanie upozornení</translation>
@@ -4486,6 +4486,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5794414402486823030">Vždy otvárať pomocou systémového zobrazovača</translation>
 <translation id="5794700615121138172">Zdieľané priečinky v systéme Linux</translation>
 <translation id="5794786537412027208">Ukončiť všetky aplikácie Chrome</translation>
+<translation id="5796485699458186843">Nová karta inkognito</translation>
 <translation id="5797521893972859201">Vymaže históriu (aj vo vyhľadávacom poli)</translation>
 <translation id="5798079537501238810">Weby môžu inštalovať obslužné nástroje platieb</translation>
 <translation id="579915268381781820">Bezpečnostný kľúč bol odstránený.</translation>
@@ -5736,7 +5737,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7170236477717446850">Profilová fotka</translation>
 <translation id="7171000599584840888">Pridať profil…</translation>
 <translation id="7171259390164035663">Nezaregistrovať</translation>
-<translation id="7171746271229206319">Prečítajte si informácie zo zariadení so systémom Chrome OS a údaje o zariadeniach. Môžu byť zdieľané s výrobcom vášho zariadenia. Údaje spracúvané organizáciami inými ako Google budú dodržiavať svoje samostatné pravidlá ochrany súkromia</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Pridať kartu do novej skupiny}few{Pridať karty do novej skupiny}many{Pridať karty do novej skupiny}other{Pridať karty do novej skupiny}}</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
 <translation id="7174199383876220879">Novinka! Ovládajte svoju hudbu, videá a ďalší obsah.</translation>
@@ -6457,7 +6457,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7901914889562552258">Zlepšený Chrome pomocou metrík stránok</translation>
 <translation id="7903345046358933331">Stránka prestala reagovať. Môžete počkať, kým začne reagovať, alebo ju ukončite.</translation>
 <translation id="7903742244674067440">V súbore máte certifikáty, ktoré identifikujú tieto certifikačné autority</translation>
-<translation id="7903859912536385558">stabilný (dôveryhodný tester)</translation>
 <translation id="7903925330883316394">Pomôcka: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Správca tohto účtu zakázal viacnásobné prihlásenie.</translation>
 <translation id="7904526211178107182">Sprístupnite porty Linux ďalším zariadeniam vo vašej sieti.</translation>
@@ -6508,10 +6507,12 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7952904276017482715">Očakávané ID bolo „<ph name="EXPECTED_ID" />“. Skutočné ID bolo „<ph name="NEW_ID" />“.</translation>
 <translation id="7953669802889559161">Vstupy</translation>
 <translation id="7953955868932471628">Spravovať skratky</translation>
+<translation id="7955105108888461311">Požiadať osobne</translation>
 <translation id="7956373551960864128">Vaše uložené tlačiarne</translation>
 <translation id="7957074856830851026">Zobrazte si informácie o zariadení, napríklad sériové číslo alebo identifikátor diela</translation>
 <translation id="7957615753207896812">Otvoriť nastavenia klávesnice</translation>
 <translation id="7959074893852789871">Súbor obsahoval viacero certifikátov a niektoré z nich neboli importované:</translation>
+<translation id="7959665254555683862">Nová karta inkognito</translation>
 <translation id="7961015016161918242">Nikdy</translation>
 <translation id="7963001036288347286">Zrýchlenie touchpadu</translation>
 <translation id="7963608432878156675">Tento názov sa zobrazuje ostatným zariadeniam v rámci pripojenia cez Bluetooth alebo sieť</translation>
@@ -6544,7 +6545,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7986295104073916105">Čítať a meniť nastavenia uložených hesiel</translation>
 <translation id="7987814697832569482">Vždy pripájať cez túto sieť VPN</translation>
 <translation id="7988355189918024273">Povoliť funkcie zjednodušeného ovládania</translation>
-<translation id="7990394755527173834">Ak chcete prvýkrát nastaviť, aby sa nejaký telefón Android používal s týmto počítačom ako bezpečnostný kľúč, otvorte Chrome v danom telefóne a prejdite do sekcie Nastavenia &gt; Heslá &gt; Používať telefón ako bezpečnostný kľúč. Potom klepnite na Pripojiť nové zariadenie a naskenujte tento QR kód.</translation>
 <translation id="7991296728590311172">Nastavenia ovládania prepínačmi</translation>
 <translation id="7997826902155442747">Priorita procesov</translation>
 <translation id="7999229196265990314">Boli vytvorené nasledujúce súbory:

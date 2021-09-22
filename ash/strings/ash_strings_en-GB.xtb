@@ -64,6 +64,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
+<translation id="1364382257761975320">To unlock your Chromebook, use your fingerprint</translation>
 <translation id="1383597849754832576">Can't download speech files. Try again later.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">On</translation>
@@ -186,10 +187,12 @@ Here are some things that you can try to get started.</translation>
 <translation id="2352467521400612932">Stylus settings</translation>
 <translation id="2354174487190027830">Activating <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2367186422933365202">Can't sign in to your Chromebook</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
 <translation id="2390318262976603432">Locale settings</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Media controls</translation>
+<translation id="2402411679569069051">To unlock your Chromebook, use your fingerprint or unlock your phone</translation>
 <translation id="2405664212338326887">Not connected</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2412593942846481727">Update available</translation>
@@ -290,6 +293,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> more</translation>
 <translation id="324366796737464147">Noise cancellation</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">To unlock your Chromebook, turn on your phone's Bluetooth</translation>
 <translation id="3255483164551725916">What can you do?</translation>
 <translation id="3269597722229482060">Right-click</translation>
 <translation id="3289674678944039601">Charging via adaptor</translation>
@@ -323,6 +327,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definition</translation>
+<translation id="3509391053705095206">Can’t find your phone. Make sure that your phone’s Bluetooth is on.</translation>
 <translation id="3510164367642747937">Highlight mouse cursor</translation>
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Connected to <ph name="NUM_DEVICES" /> devices</translation>
@@ -358,6 +363,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="371370241367527062">Front microphone</translation>
 <translation id="3713734891607377840">Open when complete</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
+<translation id="3744282433224562605">To unlock your Chromebook, enter password</translation>
 <translation id="3771549900096082774">High contrast mode</translation>
 <translation id="3773700760453577392">An administrator has disallowed multiple sign-in for <ph name="USER_EMAIL" />. All users must sign out to continue.</translation>
 <translation id="3779139509281456663">Connecting <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4485060137115666462">With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.</translation>
 <translation id="4505050298327493054">Active desk.</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518404433291145981">To unlock your Chromebook, first unlock your phone</translation>
 <translation id="4527045527269911712">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> until full</translation>
 <translation id="4538824937723742295">Take full-screen screenshot</translation>
@@ -551,11 +558,13 @@ Here are some things that you can try to get started.</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
+<translation id="5147567197700016471">Unlocked</translation>
 <translation id="5155897006997040331">Reading speed</translation>
 <translation id="5166918508782100047">Quick Answers settings</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5176318573511391780">Record partial screen</translation>
+<translation id="5199367439331364630">To sign in to your Chromebook, enter password</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 other notification}other{# other notifications}}</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
 <translation id="5208059991603368177">On</translation>
@@ -576,6 +585,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5319712128756744240">Pair new device</translation>
 <translation id="5322611492012084517">Can't find your phone</translation>
 <translation id="5329548388331921293">Connecting…</translation>
+<translation id="5330201449517439522">Tap or click to enter</translation>
 <translation id="5331975486040154427">USB-C device (left side back port)</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
@@ -633,6 +643,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5825969630400862129">Connected devices settings</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Hold to maximise</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5867217927013474703">Collecting network information</translation>
@@ -738,6 +749,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6667908387435388584">Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Copy image</translation>
+<translation id="6671661918848783005">Can't unlock your Chromebook</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6696025732084565524">Your detachable keyboard needs a critical update</translation>
 <translation id="6700713906295497288">IME menu button</translation>

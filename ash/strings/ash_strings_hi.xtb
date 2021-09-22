@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">ओवरफ़्लो</translation>
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1351937230027495976">मेन्यू छोटा करें</translation>
+<translation id="1364382257761975320">Chromebook अनलॉक करने के लिए, अपना फ़िंगरप्रिंट इस्तेमाल करें</translation>
 <translation id="1383597849754832576">स्पीच फ़ाइलें डाउनलोड नहीं की जा सकतीं. कुछ देर बाद कोशिश करें.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">चालू है</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">स्टाइलस की सेटिंग</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> सक्रिय हो रहा है</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
+<translation id="2367186422933365202">आपके Chromebook में साइन इन नहीं हो पाया</translation>
 <translation id="2369165858548251131">चाइनीज़ भाषा में "नमस्ते" कैसे बोलते हैं</translation>
 <translation id="2390318262976603432">स्थान-भाषा की सेटिंग</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">मीडिया कंट्रोल</translation>
+<translation id="2402411679569069051">Chromebook अनलॉक करने के लिए, अपना फ़िंगरप्रिंट इस्तेमाल करें या अपना फ़ोन अनलॉक करें</translation>
 <translation id="2405664212338326887">कनेक्ट नहीं है</translation>
 <translation id="2408955596600435184">अपना पिन डालें</translation>
 <translation id="2412593942846481727">अपडेट मौजूद है</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> और</translation>
 <translation id="324366796737464147">ग़ैर-ज़रूरी आवाज़ें कम करने की सुविधा</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> को डेस्क <ph name="ACTIVE_DESK" /> से डेस्क <ph name="TARGET_DESK" /> पर सेट कर दिया गया है</translation>
+<translation id="3252248118006571685">अपना Chromebook अनलॉक करने के लिए, फ़ोन का ब्लूटूथ चालू करें</translation>
 <translation id="3255483164551725916">तुम क्या-क्या कर सकती हो?</translation>
 <translation id="3269597722229482060">दायां क्लिक करें</translation>
 <translation id="3289674678944039601">अडैप्टर से चार्ज हो रहा है</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">परिभाषा</translation>
+<translation id="3509391053705095206">आपका फ़ोन नहीं मिला. पक्का करें कि आपके फ़ोन का ब्लूटूथ चालू है.</translation>
 <translation id="3510164367642747937">माउस कर्सर को हाइलाइट करें</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> खाता संभालते हैं</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ब्लूटूथ डिवाइसों से कनेक्ट किया गया है</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">सामने वाला माइक्रोफ़ोन</translation>
 <translation id="3713734891607377840">पूरा होने पर खोलें</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट लिया गया</translation>
+<translation id="3744282433224562605">अपना Chromebook अनलॉक करने के लिए, पासवर्ड डालें</translation>
 <translation id="3771549900096082774">उच्च कंट्रास्ट मोड</translation>
 <translation id="3773700760453577392">किसी एडमिन ने <ph name="USER_EMAIL" /> के लिए एक से ज़्यादा 'साइन इन' नामंज़ूर कर दिए हैं.
 जारी रखने के लिए सभी उपयोगकर्ताओं को साइन आउट करना होगा.</translation>
@@ -469,6 +475,7 @@
 <translation id="4485060137115666462">दायां क्लिक करने या दबाकर रखने पर, Assistant आपको स्क्रीन पर चुने गए कॉन्टेंट की जानकारी दिखाती है, जैसे कि परिभाषा, अनुवाद या एक यूनिट से दूसरी यूनिट में बदलकर दिखाना.</translation>
 <translation id="4505050298327493054">चालू डेस्क.</translation>
 <translation id="4513946894732546136">सुझाव/राय दें</translation>
+<translation id="4518404433291145981">Chromebook अनलॉक करने के लिए, पहले अपना फ़ोन अनलॉक करें</translation>
 <translation id="4527045527269911712">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" युग्मित करने की अनुमति चाहता है.</translation>
 <translation id="453661520163887813">पूरी तरह चार्ज होने में <ph name="TIME" /></translation>
 <translation id="4538824937723742295">फ़ुल स्क्रीन का स्क्रीनशॉट लें</translation>
@@ -552,11 +559,13 @@
 <translation id="5078796286268621944">गलत पिन</translation>
 <translation id="5083553833479578423">Assistant की और भी सुविधाओं के बारे में जानें.</translation>
 <translation id="5136175204352732067">अलग कीबोर्ड कनेक्ट किया गया</translation>
+<translation id="5147567197700016471">अनलॉक हो गया</translation>
 <translation id="5155897006997040331">पढ़े जाने की रफ़्तार</translation>
 <translation id="5166918508782100047">हाज़िर जवाब की सेटिंग</translation>
 <translation id="5168181903108465623">कास्ट डिवाइस उपलब्ध हैं</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5176318573511391780">स्क्रीन के कुछ हिस्से को रिकॉर्ड करें</translation>
+<translation id="5199367439331364630">अपने Chromebook में साइन इन करने के लिए, पासवर्ड डालें</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 अन्य सूचना}one{# अन्य सूचना}other{# अन्य सूचनाएं}}</translation>
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
 <translation id="5208059991603368177">चालू करें</translation>
@@ -577,6 +586,7 @@
 <translation id="5319712128756744240">नया डिवाइस जोड़ें</translation>
 <translation id="5322611492012084517">आपका फ़ोन नहीं मिला</translation>
 <translation id="5329548388331921293">कनेक्ट हो रहा है...</translation>
+<translation id="5330201449517439522">Chromebook में जाने लिए टैप करें या क्लिक करें</translation>
 <translation id="5331975486040154427">USB-C डिवाइस (बायां पिछला पोर्ट)</translation>
 <translation id="5352250171825660495">गहरे रंग वाली थीम चालू है</translation>
 <translation id="5379115545237091094">कई बार कोशिश की जा चुकी है</translation>
@@ -634,6 +644,7 @@
 <translation id="5825969630400862129">जुड़े हुए डिवाइस की सेटिंग</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
+<translation id="584525477304726060">बड़ा करने के लिए होल्ड करें</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">चालू करें</translation>
 <translation id="5867217927013474703">नेटवर्क की जानकारी इकट्ठा की जा रही है</translation>
@@ -739,6 +750,7 @@
 <translation id="6667908387435388584">फ़ोन हब को अपने फ़ोन के हॉटस्पॉट से कनेक्ट करें, अपने डिवाइस की आवाज़ बंद करें और जगह की जानकारी का पता लगाने वाली सेटिंग चालू करें. साथ ही, अपने फ़ोन पर हाल ही में खोले गए Chrome टैब देखें</translation>
 <translation id="6670153871843998651">डेस्क 3</translation>
 <translation id="6671495933530132209">चित्र की कॉपी बनाएं</translation>
+<translation id="6671661918848783005">आपका Chromebook अनलॉक नहीं किया जा सका</translation>
 <translation id="6692996468359469499">चुनी हुई सामग्री से जुड़ी जानकारी पाएं</translation>
 <translation id="6696025732084565524">आपके अलग किए जाने लायक कीबोर्ड में एक महत्वपूर्ण अपडेट ज़रूरी है</translation>
 <translation id="6700713906295497288">IME मेन्यू बटन</translation>

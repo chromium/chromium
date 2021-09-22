@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
 <translation id="1930797645656624981">Shërbimi i metodës së hyrjes së Chrome OS</translation>
 <translation id="1947737735496445907">Printuar</translation>
+<translation id="197386857804679933">Vizito "Cilësimet" për t'u rilidhur</translation>
 <translation id="1979103255016296513">Afati i ndryshimit të fjalëkalimit ka kaluar</translation>
 <translation id="1999615961760456652">Portal izolues</translation>
 <translation id="2006864819935886708">Lidhshmëria</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">KALOI</translation>
 <translation id="2789486458103222910">Në rregull</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
+<translation id="2860473693272905224">Vendos një faqe tjetër në skaner</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2878387241690264070">U shkarkua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">Të dhëna celulare</translation>
 <translation id="3156846309055100599">Po skanon faqen <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">U zbulua portal izolues</translation>
+<translation id="3170673040743561620">Vendos dokumentin tënd në skaner</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">Lidhja</translation>
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4835901797422965222">Nuk ka asnjë rrjet aktiv</translation>
+<translation id="484790837831576105">(Android) Zgjidhja e DNS-së</translation>
 <translation id="4848429997038228357">NË EKZEKUTIM</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} përpjekje e mbetur}other{<ph name="ERROR_MESSAGE" /> {0} përpjekje të mbetura}}</translation>
 <translation id="4880328057631981605">Emri i pikës së qasjes</translation>
@@ -289,6 +293,7 @@
 <translation id="6050189528197190982">Shkalla gri</translation>
 <translation id="6058625436358447366">Për të përfunduar, fut fjalëkalimet e vjetra dhe të reja</translation>
 <translation id="6061772781719867950">Kërkesa të dështuara në HTTP</translation>
+<translation id="6075872808778243331">(Android) Vonesa e HTTP-së</translation>
 <translation id="6104112872696127344">Skanimi është anuluar</translation>
 <translation id="6106186594183574873">Për të përfunduar, fut fjalëkalimin tënd të vjetër</translation>
 <translation id="6108689792487843350">Porta e kalimit është e paarritshme</translation>
@@ -331,6 +336,7 @@
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> është çaktivizuar</translation>
 <translation id="6747215703636344499">Ndaloi - Dalja është plot</translation>
 <translation id="6756731097889387912">Skanimi nuk mund të anulohej</translation>
 <translation id="6766275201586212568">Rezolucione të dështuara të DNS-së</translation>
@@ -340,11 +346,13 @@
 <translation id="6910312834584889076">Kapaku i skanerit është i hapur. Mbylle kapakun dhe provo përsëri.</translation>
 <translation id="6911383237894364323">Nuk mund të lidhet me serverët e medias.</translation>
 <translation id="6957231940976260713">Emri i shërbimit</translation>
+<translation id="6961170852793647506">Për të filluar, vendose dokumentin tënd në skaner</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
 <translation id="6982876849933694860">Për të konfiguruar një lidhje të re, shko te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7039041976777695848">Tastiera <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operatori</translation>
+<translation id="7058278511608979688">Mbaro dhe ruaj</translation>
 <translation id="7059230779847288458">Po karikohet, <ph name="TIME_VALUE" /> derisa të mbushet</translation>
 <translation id="708426984172631313">NDALOI</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -408,6 +416,7 @@
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
+<translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Kërko matësit e trafikut</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
@@ -479,6 +488,7 @@
 <translation id="910415269708673980">Rifresko biletën për <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Po skanon faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>
+<translation id="9126720536733509015">Ruaj shumë faqe në një skedar PDF</translation>
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
 <translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>

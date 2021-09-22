@@ -64,6 +64,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1341651618736211726">Presežek</translation>
 <translation id="1346748346194534595">V desno</translation>
 <translation id="1351937230027495976">Strni meni</translation>
+<translation id="1364382257761975320">Če želite odkleniti Chromebook, uporabite prstni odtis.</translation>
 <translation id="1383597849754832576">Datotek za govor ni mogoče prenesti. Poskusite pozneje.</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1391102559483454063">Vklopljeno</translation>
@@ -186,10 +187,12 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2352467521400612932">Nastavitve pisala</translation>
 <translation id="2354174487190027830">Aktiviranje omrežja <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Naprej</translation>
+<translation id="2367186422933365202">Prijava v Chromebook ni mogoča.</translation>
 <translation id="2369165858548251131">»Živijo« po kitajsko</translation>
 <translation id="2390318262976603432">Nastavitve jezika</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Kontrolniki predstavnosti</translation>
+<translation id="2402411679569069051">Če želite odkleniti Chromebook, uporabite prstni odtis ali odklenite telefon.</translation>
 <translation id="2405664212338326887">Ni povezano</translation>
 <translation id="2408955596600435184">Vnos kode PIN</translation>
 <translation id="2412593942846481727">Na voljo je posodobitev</translation>
@@ -290,6 +293,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3226991577105957773">in še <ph name="COUNT" /></translation>
 <translation id="324366796737464147">Izločanje hrupa</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> je bilo premaknjeno iz namizja <ph name="ACTIVE_DESK" /> v namizje <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Če želite odkleniti Chromebook, vklopite Bluetooth v telefonu.</translation>
 <translation id="3255483164551725916">Kakšne možnosti so na voljo?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289674678944039601">Polnjenje prek napajalnika</translation>
@@ -323,6 +327,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3477079411857374384">Control + Shift + preslednica</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">opredelitev</translation>
+<translation id="3509391053705095206">Telefona ni mogoče najti. Bluetooth v telefonu mora biti vklopljen.</translation>
 <translation id="3510164367642747937">Označitev miškinega kazalca</translation>
 <translation id="3513798432020909783">Račun upravlja <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Vzpostavljena je povezava s toliko napravami: <ph name="NUM_DEVICES" /></translation>
@@ -358,6 +363,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="371370241367527062">Sprednji mikrofon</translation>
 <translation id="3713734891607377840">Odpri ob dokončanju</translation>
 <translation id="3742055079367172538">Posnetek zaslona je narejen</translation>
+<translation id="3744282433224562605">Če želite odkleniti Chromebook, vnesite geslo.</translation>
 <translation id="3771549900096082774">Visokokontrastni način</translation>
 <translation id="3773700760453577392">Skrbnik je prepovedal prijavo z več računi za <ph name="USER_EMAIL" />. Če želite nadaljevati, morajo biti odjavljeni vsi uporabniki.</translation>
 <translation id="3779139509281456663">Povezovanje z napravo <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4485060137115666462">Če kliknete z desnim gumbom ali pridržite, vam Pomočnik pokaže informacije, kot je definicija, prevod ali pretvorba enot za izbor.</translation>
 <translation id="4505050298327493054">Aktivno namizje.</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
+<translation id="4518404433291145981">Če želite odkleniti Chromebook, najprej odklenite telefon.</translation>
 <translation id="4527045527269911712">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do napolnjenosti</translation>
 <translation id="4538824937723742295">Snemanje celozaslonskega posnetka zaslona</translation>
@@ -551,11 +558,13 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
+<translation id="5147567197700016471">Odklenjeno</translation>
 <translation id="5155897006997040331">Hitrost branja</translation>
 <translation id="5166918508782100047">Nastavitve hitrih odgovorov</translation>
 <translation id="5168181903108465623">Naprave za predvajanje so na voljo</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5176318573511391780">Snemanje delnega zaslona</translation>
+<translation id="5199367439331364630">Če se želite prijaviti v Chromebook, vnesite geslo.</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 drugo obvestilo}one{# drugo obvestilo}two{# drugi obvestili}few{# druga obvestila}other{# drugih obvestil}}</translation>
 <translation id="5207949376430453814">Označitev kazalke v besedilu</translation>
 <translation id="5208059991603368177">Vklopljeno</translation>
@@ -576,6 +585,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5319712128756744240">Seznanite novo napravo</translation>
 <translation id="5322611492012084517">Telefona ni mogoče najti</translation>
 <translation id="5329548388331921293">Vzpostavljanje povezave …</translation>
+<translation id="5330201449517439522">Dotaknite se ali kliknite za dostop.</translation>
 <translation id="5331975486040154427">Naprava USB-C (vrata levo zadaj)</translation>
 <translation id="5352250171825660495">Temna tema je vklopljena</translation>
 <translation id="5379115545237091094">Preveč poskusov</translation>
@@ -633,6 +643,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5825969630400862129">Nastavitve povezanih naprav</translation>
 <translation id="583281660410589416">Neznano</translation>
 <translation id="5837036133683224804">Ustavi zavihek <ph name="ROUTE_TITLE" /> v sprejemniku <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Pridržite, če želite maksimirati</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
 <translation id="5867217927013474703">Zbiranje podatkov o omrežju</translation>
@@ -738,6 +749,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6667908387435388584">Vzpostavite povezavo z dostopno točko telefona, utišajte in najdite napravo ter si oglejte nedavno odprte zavihke v Chromu v telefonu.</translation>
 <translation id="6670153871843998651">Namizje 3</translation>
 <translation id="6671495933530132209">Kopiraj sliko</translation>
+<translation id="6671661918848783005">Chromebooka ni mogoče odkleniti.</translation>
 <translation id="6692996468359469499">Prejemanje podatkov, povezanih z izborom</translation>
 <translation id="6696025732084565524">Snemljiva tipkovnica potrebuje nujno posodobitev</translation>
 <translation id="6700713906295497288">Menijski gumb UNV-ja</translation>

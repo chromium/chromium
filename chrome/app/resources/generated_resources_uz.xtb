@@ -2322,7 +2322,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3433621910545056227">Ana xolos! Tizim qurilma atributlarini o‘rnatish vaqtida qulflay olmadi.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Agar farzandingiz uchun Veb va ilovalardagi kengaytirilgan faoliyat tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi. Bu parametr va uni sozlash haqidagi batafsil axborotni families.google.com sahifasidan olish mumkin.</translation>
-<translation id="3435541101098866721">Yangi telefon kiritish</translation>
 <translation id="3435688026795609344">“<ph name="EXTENSION_NAME" />” kengaytmasi <ph name="CODE_TYPE" /> kod turini so‘rayapti</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="343578350365773421">Qogʻoz tugagan</translation>
@@ -4231,6 +4230,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilinmadi}other{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilinmadi}}</translation>
 <translation id="5502500733115278303">Firefox brauzeridan import qilinganlar</translation>
 <translation id="5502915260472117187">Bola</translation>
+<translation id="5503356662318814623">Xabar yuborish</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> saytiga kameradan foydalanish va siljitish, mikrofondan foydalanish uchun ruxsat berish</translation>
 <translation id="5504909642107847870">Maxfiylik va xavfsizlik sozlamalarini tekshirish</translation>
 <translation id="5505264765875738116">Saytlar bildirishnoma chiqarishga ruxsat soʻray olmaydi</translation>
@@ -4487,6 +4487,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5794414402486823030">Doim tizimdagi birlamchi ko‘rish dasturida ochish</translation>
 <translation id="5794700615121138172">Linux umumiy jildlari</translation>
 <translation id="5794786537412027208">Barcha Chrome ilovalarini yopish</translation>
+<translation id="5796485699458186843">Yangi inkognito &amp;varaq</translation>
 <translation id="5797521893972859201">Qidiruv maydonchasidagi tarixni tozalaydi</translation>
 <translation id="5798079537501238810">Saytlar toʻlov vositalarini oʻrnatishi mumkin</translation>
 <translation id="579915268381781820">Elektron kalitingiz chiqarib olindi.</translation>
@@ -5738,7 +5739,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7170236477717446850">Profil rasmi</translation>
 <translation id="7171000599584840888">Profil kiritish</translation>
 <translation id="7171259390164035663">Rad etish</translation>
-<translation id="7171746271229206319">Chrome OS qurilmasi axboroti va qurilmadagi maʼlumotlarni oʻqish. Bu axborot qurilma ishlab chiqaruvchisiga yuborilishi mumkin. Googledan tashqari tashkilotlar maʼlumotlarni oʻz maxfiylik siyosatlari asosida qayta ishlaydi</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Varaqni yangi guruhga kiritish}other{Varaqlarni yangi guruhga kiritish}}</translation>
 <translation id="7173114856073700355">Sozlamalarni ochish</translation>
 <translation id="7174199383876220879">Yangi! Musiqa, video va boshqa media kontent ijrosini boshqaring.</translation>
@@ -6459,7 +6459,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7901914889562552258">Sahifa metrikalari yordamida yaxshilangan Chrome</translation>
 <translation id="7903345046358933331">Quyidagi sahifa javob bermayapti. Uning javob berishini kutishingiz yoki uni majburan yopishingiz mumkin.</translation>
 <translation id="7903742244674067440">Sizda quyidagi sertifikatlash markazlari haqiqiyligini tasdiqlovchi sertifikatlar bor</translation>
-<translation id="7903859912536385558">barqaror (trusted tester)</translation>
 <translation id="7903925330883316394">Vosita: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Administrator bu hisobga boshqa hisoblar bilan birdaniga kirishni taqiqlab qo‘ygan.</translation>
 <translation id="7904526211178107182">Tarmoqdagi boshqa qurilmalarga Linux portlariga ulanish imkoniyatini bering</translation>
@@ -6510,10 +6509,12 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7952904276017482715">Kutilgan identifikator: “<ph name="EXPECTED_ID" />”, qabul qilingan identifikator: “<ph name="NEW_ID" />”</translation>
 <translation id="7953669802889559161">Manbalar</translation>
 <translation id="7953955868932471628">Yorliqlarni boshqarish</translation>
+<translation id="7955105108888461311">Shaxsan soʻrash</translation>
 <translation id="7956373551960864128">Saqlangan printerlar</translation>
 <translation id="7957074856830851026">Seriya raqami va obyekt identifikatori kabi qurilma axborotini koʻrish</translation>
 <translation id="7957615753207896812">Klaviatura sozlamalarini ochish</translation>
 <translation id="7959074893852789871">Faylda import qilinmagan bir necha sertifikatlar mavjud:</translation>
+<translation id="7959665254555683862">Yangi inkognito &amp;varaq</translation>
 <translation id="7961015016161918242">Hech qachon</translation>
 <translation id="7963001036288347286">Sensorli panelni tezlatish</translation>
 <translation id="7963608432878156675">Nomi Bluetooth va boshqa tarmoqdagi qurilmalarga koʻrinadi</translation>
@@ -6546,7 +6547,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7986295104073916105">Saqlangan parol sozlamalarini o‘qish va o‘zgartirish</translation>
 <translation id="7987814697832569482">Har doim VPN orqali ulanish</translation>
 <translation id="7988355189918024273">Maxsus imkoniyatlarni yoqish</translation>
-<translation id="7990394755527173834">Bu kompyuterda Android telefonini birinchi marta elektron kalit sifatida ishlatishni sozlash uchun telefonda Chromeni oching va “Sozlamalar &gt; Parollar &gt; Telefonni elektron kalit sifatida ishlatish” sahifasini oching. Keyin “Yangi qurilmani ulash” ustiga bosib, mana bu QR kodni skanerlang.</translation>
 <translation id="7991296728590311172">Switch Access sozlamalari</translation>
 <translation id="7997826902155442747">Jarayonlarning muhimligi</translation>
 <translation id="7999229196265990314">Quyidagi fayllar yaratildi:

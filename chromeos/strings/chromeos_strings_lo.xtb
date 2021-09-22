@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">ບໍ່ສຳເລັດ, ຢຸດແລ້ວ</translation>
 <translation id="3102119246920354026">ແຄ​ຊ໌</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ລຶບໜ້າອອກບໍ?}=1{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}other{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}}</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
 <translation id="3156846309055100599">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ກວດພົບຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">ລັອກຊິມແລ້ວ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ຊື່​ກຸ່ມ​</translation>
+<translation id="5051044138948155788">ນີ້ແມ່ນໜ້າດຽວເທົ່ານັ້ນ. ນີ້ຈະພາທ່ານໄປໜ້າຈໍເລີ່ມຕົ້ນການສະແກນ.</translation>
 <translation id="5088172560898466307">ຊື່ໂຮ​ສເຊີບເວີ</translation>
 <translation id="5089810972385038852">ລັດ</translation>
 <translation id="5142961317498132443">ການຮັບຮອງຄວາມຖືກຕ້ອງ</translation>
@@ -269,6 +271,7 @@
 <translation id="5499114900554609492">ບໍ່ສາມາດສະແກນໃຫ້ສຳເລັດໄດ້</translation>
 <translation id="5502931783115429516">Android ບໍ່ໄດ້ຖືກເອີ້ນໃຊ້ຢູ່</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">ສະແກນຄືນໃໝ່</translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ຄອບຄົວ</translation>
@@ -319,6 +322,7 @@
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>
 <translation id="6423239382391657905">ເປີດVPN</translation>
 <translation id="6456394469623773452">ດີ</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ສະແກນໜ້າຄືນໃໝ່ບໍ?}=1{ສະແກນ {PAGE_NUMBER} ໜ້າຄືນໃໝ່ບໍ?}other{ສະແກນ {PAGE_NUMBER} ໜ້າຄືນໃໝ່ບໍ?}}</translation>
 <translation id="6472207088655375767">OTP​:</translation>
 <translation id="6480327114083866287">ຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">ຢຸດພິມ - ເຈ້ຍຕິດ</translation>

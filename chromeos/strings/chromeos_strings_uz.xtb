@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Bajarilmadi - Toʻxtatildi</translation>
 <translation id="3102119246920354026">Kesh</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Sahifa olib tashlansinmi?}=1{{PAGE_NUMBER} ta sahifa olib tashlansinmi?}other{{PAGE_NUMBER} ta sahifa olib tashlansinmi?}}</translation>
 <translation id="315116470104423982">Mobil internet</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi...</translation>
 <translation id="315738237743207937">Kirish portali aniqlandi</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">Qulflangan SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Guruh nomi</translation>
+<translation id="5051044138948155788">Faqat shu sahifa bor. Skanerlash boshlanadigan ekran ochiladi.</translation>
 <translation id="5088172560898466307">Server hosti nomi</translation>
 <translation id="5089810972385038852">Shtat</translation>
 <translation id="5142961317498132443">Autentifikatsiya</translation>
@@ -269,6 +271,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5499114900554609492">Skanerlash tugallanmadi</translation>
 <translation id="5502931783115429516">Android orqali bajarilmadi</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Qayta skanerlash</translation>
 <translation id="5669267381087807207">Faollashmoqda</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Oilaviy</translation>
@@ -319,6 +322,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="641081527798843608">Mavzu mosligi</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Yaxshi</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Sahifa qayta skanerlansinmi?}=1{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}other{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}}</translation>
 <translation id="6472207088655375767">Bir martalik kod</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>
 <translation id="649050271426829538">Toʻxtatildi – Qogʻoz tiqilib qoldi</translation>

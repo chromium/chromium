@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Misluk – Gestop</translation>
 <translation id="3102119246920354026">Kas</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Verwyder bladsy?}=1{Verwyder bladsy {PAGE_NUMBER}?}other{Verwyder bladsy {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Skandeer tans bladsy <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Kontroleringsportaal is bespeur</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM is gesluit (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepnaam</translation>
+<translation id="5051044138948155788">Dit is die enigste bladsy Dit sal jou na die skandering se beginskerm toe neem.</translation>
 <translation id="5088172560898466307">Bediener se gasheernaam</translation>
 <translation id="5089810972385038852">Deelstaat</translation>
 <translation id="5142961317498132443">Stawing</translation>
@@ -269,6 +271,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5499114900554609492">Kon nie skandering voltooi nie</translation>
 <translation id="5502931783115429516">Android werk tans nie</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Herskandeer</translation>
 <translation id="5669267381087807207">Aktiveer tans</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -319,6 +322,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="641081527798843608">Voorwerppassing</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Goed</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Herskandeer bladsy?}=1{Herskandeer bladsy {PAGE_NUMBER}?}other{Herskandeer bladsy {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">EW</translation>
 <translation id="6480327114083866287">Bestuur deur <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Gestop – papierknoop</translation>

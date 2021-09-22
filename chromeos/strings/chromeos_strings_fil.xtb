@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Alisin ang page?}=1{Alisin ang page {PAGE_NUMBER}?}one{Alisin ang page {PAGE_NUMBER}?}other{Alisin ang page {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Data sa mobile</translation>
 <translation id="3156846309055100599">Sina-scan ang page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">May na-detect na captive portal</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">Na-lock ang SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Pangalan ng pangkat</translation>
+<translation id="5051044138948155788">Ito lang ang page. Dadalhin ka nito sa screen ng pagsisimula ng pag-scan.</translation>
 <translation id="5088172560898466307">Hostname ng server</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Pag-authenticate</translation>
@@ -269,6 +271,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5499114900554609492">Hindi makumpleto ang pag-scan</translation>
 <translation id="5502931783115429516">Hindi tumatakbo ang Android</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Mag-scan ulit</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Pamilya</translation>
@@ -319,6 +322,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="641081527798843608">Pagtugma ng paksa</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Maayos</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{I-scan ulit ang page?}=1{I-scan ulit ang page {PAGE_NUMBER}?}one{I-scan ulit ang page {PAGE_NUMBER}?}other{I-scan ulit ang page {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Pinapamahalaan ng <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Huminto - Nagka-paper jam</translation>

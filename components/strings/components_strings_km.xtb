@@ -1181,11 +1181,11 @@
 <translation id="4819347708020428563">កែចំណារនៅក្នុងទិដ្ឋភាពលំនាំដើមឬ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បី​បង្កើត​បញ្ជី Google ថ្មីបានរហ័ស</translation>
 <translation id="4825507807291741242">មាន​ឥទ្ធិពល​ខ្លាំង</translation>
-<translation id="4827402517081186284">មុខងារឯកជន​មិនធ្វើឱ្យគេ​មើលអ្នកមិនឃើញ​លើអ៊ីនធឺណិតទេ៖
+<translation id="4827402517081186284">មុខងារឯកជន​មិនមែនធ្វើឱ្យគេ​មើលមិនឃើញអ្នក​នៅលើអ៊ីនធឺណិតនោះទេ៖
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />គេហទំព័រនានា​ដឹងថាពេលណា​ដែលអ្នកចូលមើល​គេហទំព័រទាំងនោះ<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />និយោជក ឬសាលារៀន​អាចតាមដាន​សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ក្រុមហ៊ុន​ផ្ដល់​សេវាកម្ម​អ៊ីនធឺណិត​អាចតាមដាន​ចរាចរណ៍បណ្ដាញ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />ក្រុមហ៊ុន​ផ្ដល់​សេវាកម្ម​អ៊ីនធឺណិត​អាចពិនិត្យតាមដាន​ចរាចរណ៍បណ្ដាញ<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">បើក​ការព្រមាន</translation>
 <translation id="4838327282952368871">ដូចក្ដី​សុបិន</translation>
@@ -1319,6 +1319,7 @@
 <translation id="5252000469029418751">C7 (ស្រោម​សំបុត្រ)</translation>
 <translation id="5254043433801397071">បង្កើនប្រសិទ្ធភាព​ខ្លឹមសារបោះពុម្ព</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">មិនអីទេ ថតចុះ</translation>
 <translation id="5265446478903775694">គ្រប់គ្រង​ឯកជនភាព​របស់ខ្ញុំនៅលើ Google</translation>
 <translation id="5266128565379329178">ភ្ជាប់​ខាងលើ</translation>
 <translation id="5269225904387178860">ចោះ​បួនរន្ធ​ខាងក្រោម</translation>
@@ -1843,6 +1844,7 @@
 <translation id="7153618581592392745">ឡាវិនឌ័រ</translation>
 <translation id="7156870133441232244">ម៉ាស៊ីនមេគួរតែដំឡើង​កំណែទៅ TLS 1.2 ឬខ្ពស់ជាងនេះ។</translation>
 <translation id="717330890047184534">លេខ​សម្គាល់ Gaia៖</translation>
+<translation id="7173920250514487165">ថតខ្លឹមសារសម្ងាត់​នៅលើអេក្រង់របស់អ្នក</translation>
 <translation id="7174545416324379297">បានបញ្ចូលគ្នា</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ទៀត}other{<ph name="SHIPPING_OPTION_PREVIEW" /> និង <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ទៀត}}</translation>
 <translation id="7179323680825933600">រក្សាទុក និងបំពេញ​វិធីបង់ប្រាក់</translation>
@@ -2103,6 +2105,7 @@
 <translation id="7977538094055660992">ឧបករណ៍នៃធាតុបញ្ចេញ</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">អាចស្នើសុំ​ប្រើទិន្នន័យ និងឧបករណ៍ VR</translation>
+<translation id="7984699858161118573">អ្នកគ្រប់គ្រង​មិនណែនាំឱ្យ​ថតអេក្រង់ ឬថតវីដេអូអេក្រង់ទេ ដោយសារមាន​ខ្លឹមសារសម្ងាត់នៅលើអេក្រង់</translation>
 <translation id="7984945080620862648">អ្នកមិនអាចទៅកាន់ <ph name="SITE" /> ឥឡូវនេះទេ ពីព្រោះគេហទំព័ររបស់អ្នកបានផ្ញើអត្តសញ្ញាណសម្គាល់រញេរញៃដែល Chrome មិនអាចដំណើរការបាន។ ជាធម្មតាកំហុសឆ្គងបណ្តាញ
 និងការវាយប្រហារជារឿងបណ្ណោះអាសន្ន ដូច្នេះទំព័រនេះនឹងអាចដំណើរពេលក្រោយ។</translation>
 <translation id="79859296434321399">ដើម្បី​មើលខ្លឹមសារ AR សូមដំឡើង ARCore</translation>
@@ -2161,7 +2164,6 @@
 <translation id="8176440868214972690">អ្នកគ្រប់គ្រងឧបករណ៍នេះបានបញ្ជូនព័ត៌មានមួយចំនួនទៅគេហទំព័រខាងក្រោមដូចជា ការកំណត់ ឬគោលការណ៍ជាដើម។</translation>
 <translation id="8184538546369750125">ប្រើលំនាំដើមជាសកល (អនុញ្ញាត)</translation>
 <translation id="8190193880870196235">គ្រប់គ្រងដោយកម្មវិធីបន្ថែម​</translation>
-<translation id="8193086767630290324">សកម្មភាព​ដែលបានធ្វើឡើង ពាក់ព័ន្ធនឹង​ទិន្នន័យដែលបាន​សម្គាល់ថា​ជាការសម្ងាត់</translation>
 <translation id="8194797478851900357">បកក្រោយការផ្លាស់ទី</translation>
 <translation id="8201077131113104583">URL បច្ចុប្បន្នភាពគ្មានសុពលភាពសម្រាប់កម្មវិធីបន្ថែមដែលមានលេខសម្គាល់ "<ph name="EXTENSION_ID" />"។</translation>
 <translation id="8202097416529803614">សង្ខេបនៃការបញ្ជាទិញ</translation>

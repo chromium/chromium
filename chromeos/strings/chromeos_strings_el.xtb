@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Σφάλμα - Σταμάτησε</translation>
 <translation id="3102119246920354026">Κρυφή μνήμη</translation>
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Κατάργηση σελίδας;}=1{Κατάργηση σελίδας {PAGE_NUMBER};}other{Κατάργηση σελίδας {PAGE_NUMBER};}}</translation>
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
 <translation id="3156846309055100599">Σάρωση σελίδας <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Εντοπίστηκε πύλη υποδοχής</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">Κλειδωμένη SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Όνομα ομάδας</translation>
+<translation id="5051044138948155788">Αυτή είναι η μοναδική σελίδα. Θα μεταβείτε στην οθόνη έναρξης σάρωσης.</translation>
 <translation id="5088172560898466307">Όνομα κεντρικού υπολογιστή διακομιστή</translation>
 <translation id="5089810972385038852">Πολιτεία</translation>
 <translation id="5142961317498132443">Έλεγχος ταυτότητας</translation>
@@ -269,6 +271,7 @@
 <translation id="5499114900554609492">Δεν ήταν δυνατή η ολοκλήρωση της σάρωσης</translation>
 <translation id="5502931783115429516">Το Android δεν εκτελείται</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Επανάληψη σάρωσης</translation>
 <translation id="5669267381087807207">Ενεργοπ.</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Οικογένεια</translation>
@@ -319,6 +322,7 @@
 <translation id="641081527798843608">Αντιστοιχία θέματος</translation>
 <translation id="6423239382391657905">Άνοιγμα VPN</translation>
 <translation id="6456394469623773452">Καλό</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Επανάληψη σάρωσης σελίδας;}=1{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}other{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Διαχείριση από τον τομέα <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Διακοπή - Εμπλοκή χαρτιού</translation>

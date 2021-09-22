@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">ვერ მოხერხდა — შეწყვიტა მუშაობა</translation>
 <translation id="3102119246920354026">ქეში</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{გსურთ გვერდის ამოშლა?}=1{გსურთ გვერდი {PAGE_NUMBER}-ის ამოშლა?}other{გსურთ გვერდი {PAGE_NUMBER}-ის ამოშლა?}}</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
 <translation id="3156846309055100599">სკანირდება გვერდი <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">აღმოჩენილია ავტორიზაციის პორტალი</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM-ბარათი ჩაკეტილია (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ჯგუფის სახელი</translation>
+<translation id="5051044138948155788">ეს ერთადერთი გვერდია. ეს ქმედება სკანირების საწყის ეკრანზე გადაგიყვანთ.</translation>
 <translation id="5088172560898466307">სერვერის სახელი</translation>
 <translation id="5089810972385038852">შტატი</translation>
 <translation id="5142961317498132443">ავტორიზაცია</translation>
@@ -269,6 +271,7 @@
 <translation id="5499114900554609492">სკანირება ვერ შესრულდა</translation>
 <translation id="5502931783115429516">Android არ არის გაშვებული</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">ხელახლა სკანირება</translation>
 <translation id="5669267381087807207">გააქტიურება</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ოჯახი</translation>
@@ -319,6 +322,7 @@
 <translation id="641081527798843608">თემის თანხვედრა</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">კარგი</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{გსურთ გვერდის ხელახლა სკანირება?}=1{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}other{გსურთ გვერდი {PAGE_NUMBER}-ის ხელახლა სკანირება?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">გაჩერდა — ქაღალდი გაიჭედა</translation>

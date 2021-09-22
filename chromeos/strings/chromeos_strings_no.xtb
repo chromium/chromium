@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Mislykket – stoppet</translation>
 <translation id="3102119246920354026">Buffer</translation>
 <translation id="3122464029669770682">Prosessor</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vil du fjerne siden?}=1{Vil du fjerne side {PAGE_NUMBER}?}other{Vil du fjerne side {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Skanner side <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Oppdaget en obligatorisk side</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
+<translation id="5051044138948155788">Dette er den eneste siden. Dette medfører at du blir sendt til startskjermbildet for skanning.</translation>
 <translation id="5088172560898466307">Vertsnavn for tjener</translation>
 <translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5142961317498132443">Autentisering</translation>
@@ -269,6 +271,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5499114900554609492">Kunne ikke fullføre skanningen</translation>
 <translation id="5502931783115429516">Android kjører ikke</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Skann på nytt</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -319,6 +322,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="641081527798843608">Emnetreff</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Grei</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vil du skanne siden på nytt?}=1{Vil du skanne side {PAGE_NUMBER} på nytt?}other{Vil du skanne side {PAGE_NUMBER} på nytt?}}</translation>
 <translation id="6472207088655375767">Engangspassord</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stoppet – papirstopp</translation>

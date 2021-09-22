@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Nepavyko – sustabdyta</translation>
 <translation id="3102119246920354026">Talpykla</translation>
 <translation id="3122464029669770682">Centrinis procesorius</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pašalinti puslapį?}=1{Pašalinti {PAGE_NUMBER} puslapį?}one{Pašalinti {PAGE_NUMBER} puslapį?}few{Pašalinti {PAGE_NUMBER} puslapį?}many{Pašalinti {PAGE_NUMBER} puslapį?}other{Pašalinti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
 <translation id="3156846309055100599">Nuskaitomas <ph name="PAGE_NUMBER" /> puslapis...</translation>
 <translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM kortelė užrakinta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupės pavadinimas</translation>
+<translation id="5051044138948155788">Tai vienintelis puslapis. Būsite nukreipti į nuskaitymo pradžios ekraną.</translation>
 <translation id="5088172560898466307">Prieglobos serverio pavadinimas</translation>
 <translation id="5089810972385038852">Valstija</translation>
 <translation id="5142961317498132443">Autentifikavimas</translation>
@@ -269,6 +271,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5499114900554609492">Nepavyko užbaigti nuskaitymo</translation>
 <translation id="5502931783115429516">„Android“ neveikia</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Nuskaityti iš naujo</translation>
 <translation id="5669267381087807207">Aktyvinama</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Šeima</translation>
@@ -319,6 +322,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="641081527798843608">Temos atitiktis</translation>
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6456394469623773452">Geras</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Iš naujo nuskaityti puslapį?}=1{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}one{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}few{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}many{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}other{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="6472207088655375767">Vienk. slaptažodis</translation>
 <translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Sustabdyta – įstrigęs popierius</translation>

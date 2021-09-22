@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Nije uspjelo – zaustavljeno</translation>
 <translation id="3102119246920354026">Predmemorija</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Ukloniti stranicu?}=1{Ukloniti {PAGE_NUMBER}. stranicu?}one{Ukloniti {PAGE_NUMBER}. stranicu?}few{Ukloniti {PAGE_NUMBER}. stranicu?}other{Ukloniti {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
 <translation id="3156846309055100599">Skenira se <ph name="PAGE_NUMBER" />. stranica...</translation>
 <translation id="315738237743207937">Otkriven je zaštitni portal</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
+<translation id="5051044138948155788">Ovo je jedina stranica. Ovo će vas odvesti na početni ekran za skeniranje.</translation>
 <translation id="5088172560898466307">Naziv host računara servera</translation>
 <translation id="5089810972385038852">Država</translation>
 <translation id="5142961317498132443">Autentifikacija</translation>
@@ -269,6 +271,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5499114900554609492">Dovršavanje skeniranja nije uspjelo</translation>
 <translation id="5502931783115429516">Android nije pokrenut</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Skeniraj ponovo</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Porodica</translation>
@@ -319,6 +322,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="641081527798843608">Podudaranje predmeta</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Solidan</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ponovo skenirati stranicu?}=1{Ponovo skenirati {PAGE_NUMBER}. stranicu?}one{Ponovo skenirati {PAGE_NUMBER}. stranicu?}few{Ponovo skenirati {PAGE_NUMBER}. stranicu?}other{Ponovo skenirati {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>

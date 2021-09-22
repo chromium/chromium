@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">UDP сұрауының ақаулары</translation>
 <translation id="1930797645656624981">Chrome OS енгізу әдісі қызметі</translation>
 <translation id="1947737735496445907">Басып шығарылған</translation>
+<translation id="197386857804679933">Қайта қосылу үшін параметрлерге өтіңіз.</translation>
 <translation id="1979103255016296513">Құпия сөзді өзгертуге берілген мерзім аяқталды</translation>
 <translation id="1999615961760456652">Адаптивті портал</translation>
 <translation id="2006864819935886708">Қосылу мүмкіндігі</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">ӨТТІ</translation>
 <translation id="2789486458103222910">Жарайды</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
+<translation id="2860473693272905224">Сканерге басқа бет қойыңыз.</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2878387241690264070">Заряд <ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> азайды.</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">Мобильді деректер</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-бет сканерленуде…</translation>
 <translation id="315738237743207937">Адаптивті портал анықталды.</translation>
+<translation id="3170673040743561620">Құжатты сканерге қойыңыз.</translation>
 <translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3199982728237701504">Құжат беруші (екі жақты)</translation>
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">Байланыс</translation>
 <translation id="4832079907277790330">Files қолданбасында қалта таңдау...</translation>
 <translation id="4835901797422965222">Ешқандай белсенді желі жоқ.</translation>
+<translation id="484790837831576105">DNS ажыратымдылығы (Android)</translation>
 <translation id="4848429997038228357">ТЕКСЕРІЛУДЕ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
 <translation id="4880328057631981605">Кіру нүктесінің атауы</translation>
@@ -289,6 +293,7 @@
 <translation id="6050189528197190982">Сұр шкаласы</translation>
 <translation id="6058625436358447366">Аяқтау үшін ескі және жаңа құпия сөздерді енгізіңіз.</translation>
 <translation id="6061772781719867950">HTTP сұраулары сәтсіз аяқталды.</translation>
+<translation id="6075872808778243331">HTTP кідірісі (Android)</translation>
 <translation id="6104112872696127344">Сканерлеу тоқтатылды.</translation>
 <translation id="6106186594183574873">Аяқтау үшін ескі құпия сөзді енгізіңіз.</translation>
 <translation id="6108689792487843350">Шлюзбен байланыс орнату мүмкін емес.</translation>
@@ -331,6 +336,7 @@
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> өшірілген.</translation>
 <translation id="6747215703636344499">Тоқтатылды: шығыс науа толып кетті</translation>
 <translation id="6756731097889387912">Сканерлеуді тоқтату мүмкін болмады.</translation>
 <translation id="6766275201586212568">DNS ажыратымдылықтары сәтсіз болды.</translation>
@@ -340,11 +346,13 @@
 <translation id="6910312834584889076">Сканердің жапқышы ашық. Оның жапқышын жауып, әрекетті қайталаңыз.</translation>
 <translation id="6911383237894364323">Медиасерверлерге қосылмады.</translation>
 <translation id="6957231940976260713">Қызмет атауы</translation>
+<translation id="6961170852793647506">Бастау үшін құжатты сканерге қойыңыз.</translation>
 <translation id="6977381486153291903">Микробағдарлама нұсқасы</translation>
 <translation id="6982876849933694860">Жаңа байланысты орнату үшін <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөліміне өтіңіз.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> пернетақтасы</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7058278511608979688">Аяқтау және сақтау</translation>
 <translation id="7059230779847288458">Зарядталуда, толғанға дейінгі уақыт: <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ТОҚТАТЫЛДЫ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -408,6 +416,7 @@
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8075838845814659848">Қалған заряд</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
+<translation id="811820734797650957">Шлюз байланысы тексеріледі (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Трафик есептегіштерін сұрау</translation>
 <translation id="8206859287963243715">Ұялы</translation>
@@ -479,6 +488,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
+<translation id="9126720536733509015">Бірнеше бетті бір PDF файлына сақтау</translation>
 <translation id="9137526406337347448">Google қызметтері</translation>
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
 <translation id="9173638680043580060">Бір минутқа жетпейтін уақыт қалды.</translation>

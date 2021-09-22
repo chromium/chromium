@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Nepodarilo sa – zastavené</translation>
 <translation id="3102119246920354026">Vyrovnávacia pamäť</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Chcete stranu odstrániť?}=1{Chcete odstrániť {PAGE_NUMBER} stranu?}few{Chcete odstrániť {PAGE_NUMBER} strany?}many{Chcete odstrániť {PAGE_NUMBER} strany?}other{Chcete odstrániť {PAGE_NUMBER} strán?}}</translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
 <translation id="3156846309055100599">Skenuje sa <ph name="PAGE_NUMBER" />. strana…</translation>
 <translation id="315738237743207937">Bol rozpoznaný prihlasovací portál</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM karta je uzamknutá (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Názov skupiny</translation>
+<translation id="5051044138948155788">Toto je jediná strana. Prejdete na úvodnú obrazovku skenovania.</translation>
 <translation id="5088172560898466307">Názov hostiteľského servera</translation>
 <translation id="5089810972385038852">Štát</translation>
 <translation id="5142961317498132443">Overenie totožnosti</translation>
@@ -269,6 +271,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5499114900554609492">Skenovanie sa nepodarilo dokončiť</translation>
 <translation id="5502931783115429516">Android nefunguje</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Skenovať znova</translation>
 <translation id="5669267381087807207">Aktivuje sa</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodina</translation>
@@ -319,6 +322,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="641081527798843608">Zhoda predmetu</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Dobré</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Chcete stranu naskenovať znova?}=1{Chcete {PAGE_NUMBER} stranu naskenovať znova?}few{Chcete {PAGE_NUMBER} strany naskenovať znova?}many{Chcete {PAGE_NUMBER} strany naskenovať znova?}other{Chcete {PAGE_NUMBER} strán naskenovať znova?}}</translation>
 <translation id="6472207088655375767">Jednorazové heslo</translation>
 <translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>

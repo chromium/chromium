@@ -64,6 +64,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1341651618736211726">Yfirflæði</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1351937230027495976">Draga valmynd saman</translation>
+<translation id="1364382257761975320">Notaðu fingrafar til að taka Chromebook úr lás</translation>
 <translation id="1383597849754832576">Ekki er hægt að sækja talskrár. Reyndu aftur síðar.</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1391102559483454063">Kveikt</translation>
@@ -186,10 +187,12 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2352467521400612932">Stillingar penna</translation>
 <translation id="2354174487190027830">Virkjar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Halda áfram</translation>
+<translation id="2367186422933365202">Ekki tókst að skrá þig inn á Chromebook</translation>
 <translation id="2369165858548251131">„Halló“ á kínversku</translation>
 <translation id="2390318262976603432">Stillingar tungumálskóða</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Efnisstýringar</translation>
+<translation id="2402411679569069051">Notaðu fingrafar eða taktu símann þinn úr lás til að taka Chromebook úr lás</translation>
 <translation id="2405664212338326887">Ekki tengt</translation>
 <translation id="2408955596600435184">Sláðu inn PIN-númerið þitt</translation>
 <translation id="2412593942846481727">Uppfærsla í boði</translation>
@@ -290,6 +293,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3226991577105957773">+<ph name="COUNT" /> í viðbót</translation>
 <translation id="324366796737464147">Hávaðavörn</translation>
 <translation id="3249513730522716925">Gluggi <ph name="WINDOW_TITLE" /> færður af skjáborði <ph name="ACTIVE_DESK" /> yfir á skjáborð <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Kveiktu á Bluetooth í símanum þínum til að taka Chromebook úr lás</translation>
 <translation id="3255483164551725916">Hvað geturðu gert?</translation>
 <translation id="3269597722229482060">Hægrismella</translation>
 <translation id="3289674678944039601">Hleður með hleðslutæki</translation>
@@ -323,6 +327,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3477079411857374384">Control-Shift-bilslá</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> sendistyrkur</translation>
 <translation id="3486220673238053218">skilgreining</translation>
+<translation id="3509391053705095206">Ekki tókst að finna símann þinn. Gakktu úr skugga um að kveikt sé á Bluetooth í símanum.</translation>
 <translation id="3510164367642747937">Auðkenna músarbendil</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> stjórnar þessum reikningi</translation>
 <translation id="353086728817903341">Tengdist við <ph name="NUM_DEVICES" /> tæki</translation>
@@ -358,6 +363,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
 <translation id="3713734891607377840">Opna þegar niðurhali lýkur</translation>
 <translation id="3742055079367172538">Skjámynd tekin</translation>
+<translation id="3744282433224562605">Sláðu inn aðgangsorð til að taka Chromebook úr lás</translation>
 <translation id="3771549900096082774">Mikil birtuskil</translation>
 <translation id="3773700760453577392">Stjórnandi hefur lokað á innskráningu fleiri en eins notanda fyrir <ph name="USER_EMAIL" />. Allir notendur verða að skrá sig út til að halda áfram.</translation>
 <translation id="3779139509281456663">Tengist <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4485060137115666462">Þegar þú hægrismellir eða heldur inni sýnir Hjálparinn þér upplýsingar á borð við skilgreiningu, þýðingu eða umbreytingu mælieininga fyrir valið þitt.</translation>
 <translation id="4505050298327493054">Virkt svæði.</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
+<translation id="4518404433291145981">Taktu símann þinn fyrst úr lás áður en þú tekur Chromebook úr lás</translation>
 <translation id="4527045527269911712">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ vill fá heimild til að parast.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> fram að fullri hleðslu</translation>
 <translation id="4538824937723742295">Taka skjámynd af öllum skjánum</translation>
@@ -551,11 +558,13 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5078796286268621944">Rangt PIN-númer</translation>
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
+<translation id="5147567197700016471">Ólæst</translation>
 <translation id="5155897006997040331">Leshraði</translation>
 <translation id="5166918508782100047">Stillingar skjótra svara</translation>
 <translation id="5168181903108465623">Útsendingartæki í boði</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5176318573511391780">Upptaka á hluta skjás</translation>
+<translation id="5199367439331364630">Sláðu inn aðgangsorð til að skrá þig inn á Chromebook</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 tilkynning í viðbót}one{# tilkynning í viðbót}other{# tilkynningar í viðbót}}</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="5208059991603368177">Kveikt</translation>
@@ -576,6 +585,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5319712128756744240">Para nýtt tæki</translation>
 <translation id="5322611492012084517">Síminn þinn finnst ekki</translation>
 <translation id="5329548388331921293">Tengist...</translation>
+<translation id="5330201449517439522">Ýttu eða smelltu til að opna</translation>
 <translation id="5331975486040154427">USB-C tæki (tengi vinstra megin að aftan)</translation>
 <translation id="5352250171825660495">Kveikt er á dökku þema</translation>
 <translation id="5379115545237091094">Of margar tilraunir</translation>
@@ -633,6 +643,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5825969630400862129">Stillingar tengdra tækja</translation>
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5837036133683224804">Stöðva <ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Haltu til að stækka</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
 <translation id="5867217927013474703">Safnar upplýsingum um netkerfi</translation>
@@ -738,6 +749,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6667908387435388584">Tengstu heitum reit símans, þaggaðu niður í og finndu tækið þitt og skoðaðu nýlega Chrome flipa sem eru opnir í símanum þínum</translation>
 <translation id="6670153871843998651">Skrifborð 3</translation>
 <translation id="6671495933530132209">Afrita mynd</translation>
+<translation id="6671661918848783005">Ekki er hægt að taka Chromebook úr lás</translation>
 <translation id="6692996468359469499">Fá upplýsingar í tengslum við val þitt</translation>
 <translation id="6696025732084565524">Lausa lyklaborðið þarf að fá áríðandi uppfærslu</translation>
 <translation id="6700713906295497288">IME-valmyndarhnappur</translation>

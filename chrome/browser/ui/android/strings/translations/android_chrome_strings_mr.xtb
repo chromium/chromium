@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">साइन आउट करून सिंक बंद करायचे आहे का?</translation>
 <translation id="1373696734384179344">निवडलेला आशय डाउनलोड करण्यासाठी अपुरी मेमरी.</translation>
 <translation id="1376578503827013741">गणना करत आहे...</translation>
+<translation id="1382912999714108023">तुमची सध्याची माहिती दिसत नाही? कृपया ती अपडेट करण्यासाठी तुमच्या बँकशी संपर्क साधा.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">Google Lens <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> सह इमेजचे भाषांतर करा</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK1" />शोध इतिहास<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK2" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.</translation>
 <translation id="321773570071367578">तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">तुमचे पासवर्ड सिंक करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
+<translation id="3223522355830797639">हे तुम्हीच असल्याचे तुमच्या बॅंकला कंफर्म करायचे आहे.</translation>
 <translation id="3227557059438308877">सिक्युरिटी की म्हणून Google Chrome</translation>
 <translation id="3232754137068452469">वेब अ‍ॅप</translation>
 <translation id="3234978181857588512">डिव्हाइसमध्ये सेव्ह करा</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
 <translation id="6069177176307973611">गोपनीयता आणि सुरक्षा सेटिंग्जचे पुनरावलोकन करा</translation>
+<translation id="6070730414166672373">तुमच्या बँकशी संपर्क करत आहे\u2026</translation>
 <translation id="6085886413119427067">वेबसाइटशी सुरक्षित कनेक्शनवरून कसे कनेक्ट करावे ते निर्धारित करते</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> तास शिल्लक</translation>
 <translation id="6108923351542677676">सेटअप प्रगती पथावर आहे...</translation>
@@ -950,6 +953,7 @@
 <translation id="6802555630140434547">विंडो बंद केली जाईल</translation>
 <translation id="6811034713472274749">पेज पाहाण्यासाठी तयार आहे</translation>
 <translation id="6813446258015311409">Chrome मध्ये साइन इन करा, उघडले.</translation>
+<translation id="6814033694018386318">तुम्ही Google सोबत काय शेअर करता</translation>
 <translation id="6817747507826986771">हे पेज झटपट शेअर करा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> हा टॅब निवडला</translation>
@@ -1278,6 +1282,7 @@
 <translation id="867767487203716855">पुढील अपडेट</translation>
 <translation id="8683039184091909753">इमेज</translation>
 <translation id="8683081248374354009">गट रीसेट करा</translation>
+<translation id="8683526617475118045">तुम्हाला काय मिळते</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>

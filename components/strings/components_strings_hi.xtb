@@ -1315,6 +1315,7 @@
 <translation id="5252000469029418751">सी7 (एन्वेलप)</translation>
 <translation id="5254043433801397071">प्रिंट सामग्री को ऑप्टिमाइज़ करें</translation>
 <translation id="5254958791078852567">ई1</translation>
+<translation id="5255690596502591079">फिर भी कैप्चर करें</translation>
 <translation id="5265446478903775694">Google पर अपनी निजता मैनेज करें</translation>
 <translation id="5266128565379329178">सबसे ऊपर बाइंड</translation>
 <translation id="5269225904387178860">नीचे की ओर क्वाड पंच</translation>
@@ -1839,6 +1840,7 @@
 <translation id="7153618581592392745">हल्का बैंगनी</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
 <translation id="717330890047184534">Gaia आईडी:</translation>
+<translation id="7173920250514487165">अपनी स्क्रीन पर मौजूद गोपनीय कॉन्टेंट को कैप्चर करें</translation>
 <translation id="7174545416324379297">आपस में मिला दिया गया</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
 <translation id="7179323680825933600">भुगतान के तरीके सेव करें और भरें</translation>
@@ -2098,6 +2100,7 @@
 <translation id="7977538094055660992">आउटपुट डिवाइस</translation>
 <translation id="7977894662897852582">ईडीपी</translation>
 <translation id="798134797138789862">साइट, वर्चुअल रिएलिटी डिवाइस और डेटा का इस्तेमाल करने की अनुमति मांग सकती है</translation>
+<translation id="7984699858161118573">स्क्रीन पर गोपनीय कॉन्टेंट होने की वजह से, एडमिन स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देता है</translation>
 <translation id="7984945080620862648">आप इस समय <ph name="SITE" /> पर विज़िट नहीं कर सकते हैं क्योंकि वेबसाइट ने ऐसे अव्यवस्थित प्रमाणिकता भेजे हैं जिन्हें Chrome संसाधित नहीं कर सकता. नेटवर्क की त्रुटियां और हमले आमतौर पर अस्थायी होते हैं, इसलिए संभवत: यह पेज बाद में काम करेगा.</translation>
 <translation id="79859296434321399">'बढ़ी हुई वास्तविकता' की सामग्री देखने के लिए, ARCore इंस्टॉल करें</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2155,7 +2158,6 @@
 <translation id="8176440868214972690">इस डिवाइस के एडमिन ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
 <translation id="8184538546369750125">वैश्विक डिफ़ॉल्ट का उपयोग करें (अनुमति दें)</translation>
 <translation id="8190193880870196235">इसे उपयोगकर्ता के किसी एक्सटेंशन से मैनेज किया जाता है</translation>
-<translation id="8193086767630290324">गोपनीय के तौर पर फ़्लैग किए गए डेटा पर कार्रवाई की गई</translation>
 <translation id="8194797478851900357">&amp;ले जाना वापस लाएं</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" आईडी वाले एक्‍सटेंशन का अमान्‍य अपडेट URL.</translation>
 <translation id="8202097416529803614">ऑर्डर की जानकारी</translation>

@@ -64,6 +64,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1341651618736211726">Overflyt</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
+<translation id="1364382257761975320">For å låse opp Chromebooken, bruk fingeravtrykket</translation>
 <translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv igjen senere.</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1391102559483454063">På</translation>
@@ -186,10 +187,12 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2352467521400612932">Innstillinger for pekepenn</translation>
 <translation id="2354174487190027830">Aktiverer <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsett</translation>
+<translation id="2367186422933365202">Kan ikke logge på Chromebooken</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
 <translation id="2390318262976603432">Lokalitetsinnstillinger</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
+<translation id="2402411679569069051">For å låse opp Chromebooken, bruk fingeravtrykket eller lås opp telefonen</translation>
 <translation id="2405664212338326887">Ikke tilkoblet</translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
 <translation id="2412593942846481727">En oppdatering er tilgjengelig</translation>
@@ -290,6 +293,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> til</translation>
 <translation id="324366796737464147">Støyreduksjon</translation>
 <translation id="3249513730522716925">Vinduet <ph name="WINDOW_TITLE" /> ble flyttet fra skrivebord <ph name="ACTIVE_DESK" /> til skrivebord <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">For å låse opp Chromebooken, slå på Bluetooth på telefonen</translation>
 <translation id="3255483164551725916">Hva kan du gjøre?</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
 <translation id="3289674678944039601">Lader via adapter</translation>
@@ -323,6 +327,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3477079411857374384">Ctrl+Shift+Mellomrom</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definisjon</translation>
+<translation id="3509391053705095206">Finner ikke telefonen. Kontrollér at Bluetooth på telefonen er slått på.</translation>
 <translation id="3510164367642747937">Fremhev musemarkøren</translation>
 <translation id="3513798432020909783">Kontoen er administrert av <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Koblet til <ph name="NUM_DEVICES" /> enheter</translation>
@@ -358,6 +363,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="371370241367527062">Mikrofon foran</translation>
 <translation id="3713734891607377840">Åpne når nedlastingen er fullført</translation>
 <translation id="3742055079367172538">Skjermdump tatt</translation>
+<translation id="3744282433224562605">For å låse opp Chromebooken, skriv inn passordet</translation>
 <translation id="3771549900096082774">Høykontrastmodus</translation>
 <translation id="3773700760453577392">En administrator har slått av multipålogging for <ph name="USER_EMAIL" />. Alle brukere må logge av for å fortsette.</translation>
 <translation id="3779139509281456663">Kobler til <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4485060137115666462">Med et høyreklikk eller langt trykk viser assistenten informasjon, som for eksempel definisjonen, oversettelsen eller enhetsomregningen for det du har merket.</translation>
 <translation id="4505050298327493054">Aktivt skrivebord.</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
+<translation id="4518404433291145981">For å låse opp Chromebooken, lås opp telefonen først</translation>
 <translation id="4527045527269911712">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> til batteriet er fulladet</translation>
 <translation id="4538824937723742295">Ta skjermdump i fullskjerm</translation>
@@ -551,11 +558,13 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
+<translation id="5147567197700016471">Ulåst</translation>
 <translation id="5155897006997040331">Lesehastighet</translation>
 <translation id="5166918508782100047">Innstillinger for Hurtiginfo</translation>
 <translation id="5168181903108465623">Cast-enheter er tilgjengelige</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5176318573511391780">Ta opp en del av skjermen</translation>
+<translation id="5199367439331364630">For å logge på Chromebooken, skriv inn passordet</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 annet varsel}other{# andre varsler}}</translation>
 <translation id="5207949376430453814">Fremhev tekstinnsettingspunktet</translation>
 <translation id="5208059991603368177">På</translation>
@@ -576,6 +585,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5319712128756744240">Koble til en ny enhet</translation>
 <translation id="5322611492012084517">Finner ikke telefonen</translation>
 <translation id="5329548388331921293">Kobler til …</translation>
+<translation id="5330201449517439522">Trykk eller klikk for å fortsette</translation>
 <translation id="5331975486040154427">USB-C-enhet (porten bak på venstre side)</translation>
 <translation id="5352250171825660495">Mørkt tema er på</translation>
 <translation id="5379115545237091094">For mange forsøk</translation>
@@ -633,6 +643,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5825969630400862129">Innstillinger for tilkoblede enheter</translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Hold for å maksimere</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5867217927013474703">Samler inn nettverksinformasjon</translation>
@@ -738,6 +749,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6667908387435388584">Koble til telefonens Wi-Fi-sone, demp og finn enheten, og se nylige Chrome-faner som er åpne på telefonen</translation>
 <translation id="6670153871843998651">Skrivebord 3</translation>
 <translation id="6671495933530132209">Kopiér bildet</translation>
+<translation id="6671661918848783005">Kan ikke låse opp Chromebooken</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
 <translation id="6696025732084565524">Det avtakbare tastaturet trenger en kritisk oppdatering</translation>
 <translation id="6700713906295497288">IME-menyknappen</translation>

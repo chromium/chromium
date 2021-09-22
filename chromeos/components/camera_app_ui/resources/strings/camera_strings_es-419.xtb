@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">La cámara <ph name="CAMERA" /> está desconectada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -71,6 +72,7 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="520537883758714667">La función para escanear documentos ya está disponible.</translation>
 <translation id="5268823927180092501">Habilitar el modo de documento en todas las cámaras</translation>
 <translation id="5444515100983837161">Coloca todos los bordes del documento dentro del cuadro. El escaneado funciona mejor si el documento tiene un color diferente al del fondo.</translation>
+<translation id="5588258280684580073">Habilitar grabación de GIF</translation>
 <translation id="5671277269877808209">Cuadrado</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5753488212459587150">Habilitar el modo experto</translation>
@@ -98,12 +100,14 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="7243947652761655814">Resolución de video</translation>
 <translation id="7337660886763914220">Errores en el sistema de archivos</translation>
 <translation id="7450541714075000668">Se copió el texto.</translation>
+<translation id="7488619942230388918">Grabar video de GIF</translation>
 <translation id="7557677699350329807">Cambiar a la siguiente cámara</translation>
 <translation id="7607002721634913082">Detenido</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Grabar video en modo normal</translation>
 <translation id="7983668134180549431">Se detectó texto.</translation>
 <translation id="8067883171444229417">Reproducir video</translation>
 <translation id="8120146556401698679">Desplazamiento inclinación ampliación</translation>

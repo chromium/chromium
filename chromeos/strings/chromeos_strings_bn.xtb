@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
 <translation id="1930797645656624981">Chrome OS ইনপুট পদ্ধতি পরিষেবা</translation>
 <translation id="1947737735496445907">প্রিন্ট করা হয়েছে</translation>
+<translation id="197386857804679933">আবার কানেক্ট করতে সেটিংস দেখুন</translation>
 <translation id="1979103255016296513">পাসওয়ার্ড পরিবর্তন করার সময় পেরিয়ে গেছে</translation>
 <translation id="1999615961760456652">ক্যাপটিভ পোর্টাল</translation>
 <translation id="2006864819935886708">সংযোজকতা</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">পাস করেছে</translation>
 <translation id="2789486458103222910">ঠিক আছে</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
+<translation id="2860473693272905224">স্ক্যানারে অন্য একটি পৃষ্ঠা রাখুন</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ শেষ হয়েছে।</translation>
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে...</translation>
 <translation id="315738237743207937">অন্তরীণ পোর্টাল শনাক্ত করা হয়েছে</translation>
+<translation id="3170673040743561620">স্ক্যানারে আপনার ডকুমেন্ট রাখুন</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">কানেকশন</translation>
 <translation id="4832079907277790330">Files অ্যাপে ফোল্ডার বেছে নিন...</translation>
 <translation id="4835901797422965222">কোনও অ্যাক্টিভ নেটওয়ার্ক নেই</translation>
+<translation id="484790837831576105">(Android) DNS রেজোলিউশন</translation>
 <translation id="4848429997038228357">টেস্ট করা হচ্ছে</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}one{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}other{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}}</translation>
 <translation id="4880328057631981605">অ্যাক্সেস পয়েন্ট নাম</translation>
@@ -289,6 +293,7 @@
 <translation id="6050189528197190982">গ্রেস্কেল</translation>
 <translation id="6058625436358447366">সম্পূর্ণ করতে, আপনার পুরনো ও নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6061772781719867950">HTTP অনুরোধ সফল হয়নি</translation>
+<translation id="6075872808778243331">(Android) HTTP লেটেন্সি</translation>
 <translation id="6104112872696127344">স্ক্যানিং বাতিল করা হয়েছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
@@ -331,6 +336,7 @@
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> বন্ধ করা হয়েছে</translation>
 <translation id="6747215703636344499">বন্ধ হয়ে গেছে - আউটপুট ট্রে ভর্তি হয়ে গেছে</translation>
 <translation id="6756731097889387912">স্ক্যানিং বাতিল করা যায়নি</translation>
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
@@ -340,11 +346,13 @@
 <translation id="6910312834584889076">স্ক্যানারের কভার খোলা আছে। কভার বন্ধ করে আবার চেষ্টা করুন।</translation>
 <translation id="6911383237894364323">মিডিয়া সার্ভারে কানেক্ট করা যায়নি</translation>
 <translation id="6957231940976260713">পরিষেবার নাম</translation>
+<translation id="6961170852793647506">শুরু করার জন্য, স্ক্যানারে ডকুমেন্ট রাখুন</translation>
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
 <translation id="6982876849933694860">নতুন কানেকশন সেট আপ করতে <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> কীবোর্ড</translation>
 <translation id="7040230719604914234">অপারেটর</translation>
+<translation id="7058278511608979688">সম্পূর্ণ করে সেভ করুন</translation>
 <translation id="7059230779847288458">চার্জ করা হচ্ছে, সম্পূর্ণ চার্জ হতে <ph name="TIME_VALUE" /> সময় লাগবে</translation>
 <translation id="708426984172631313">থেমে গেছে</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -408,6 +416,7 @@
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
+<translation id="811820734797650957">(Android) গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8132480444149501833">ট্রাফিক কাউন্টার্স-এর অনুরোধ করুন</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
@@ -479,6 +488,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">আনলক</translation>
+<translation id="9126720536733509015">একাধিক পৃষ্ঠা সেভ করে একটি পিডিএফ ফাইল তৈরি করুন</translation>
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9149391708638971077">মেমরি টেস্ট করুন</translation>
 <translation id="9173638680043580060">এক মিনিটেরও কম সময় বাকি আছে</translation>

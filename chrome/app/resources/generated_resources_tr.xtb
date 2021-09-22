@@ -100,6 +100,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="1108600514891325577">D&amp;urdur</translation>
 <translation id="1110155001042129815">Bekle</translation>
+<translation id="1110965959145884739">Bu cihaza yüklenecek dilleri seçin. Disk alanından tasarruf etmek için dil dosyaları kullanıcılar arasında paylaşılır. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektör</translation>
 <translation id="1112420131909513020">Arka plan sekmesi Bluetooth bağlantısını kullanıyor</translation>
 <translation id="1113892970288677790">Seçilmiş sanat eserlerini ve resimleri belirleyin</translation>
@@ -545,6 +546,7 @@
 <translation id="1580772913177567930">Yöneticinizle iletişim kurun</translation>
 <translation id="1581962803218266616">Finder'da Göster</translation>
 <translation id="1582955169539260415">sil: [<ph name="FINGERPRINT_NAME" />]</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" />, yerel olarak işlenir ve çevrimdışı olarak çalışır</translation>
 <translation id="1584990664401018068">Kullandığınız kablosuz ağ (<ph name="NETWORK_ID" />) kimlik doğrulaması gerektirebilir.</translation>
 <translation id="1585717515139318619">Bilgisayarınızdaki başka bir program, Chrome'un çalışma şeklini değiştirebilecek bir tema ekledi.
 
@@ -755,6 +757,7 @@
 <translation id="177989070088644880">Uygulama (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Grubu Kapat</translation>
 <translation id="1780273119488802839">Yer işaretleri alınıyor...</translation>
+<translation id="178092663238929451">Etrafınızdaki kişilerle dosya alışverişi yapmak için Yakındakilerle Paylaş'ı kurun</translation>
 <translation id="1781291988450150470">Mevcut PIN</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" />, şimdi kablosuz ağa bağlanarak bir güncelleme indirmenizi gerektiriyor.</translation>
 <translation id="1781502536226964113">Yeni Sekme sayfasını aç</translation>
@@ -1586,6 +1589,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="265390580714150011">Alan Değeri</translation>
 <translation id="2654166010170466751">Sitelerin ödeme işleyici yüklemesine izin ver</translation>
 <translation id="2654553774144920065">Yazdırma isteği</translation>
+<translation id="2658941648214598230">Orijinal içerik gösterilsin mi?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Özellikler cihaza göre değişiklik gösterir</translation>
 <translation id="2659971421398561408">Crostini diski yeniden boyutlandırma</translation>
 <translation id="2660779039299703961">Etkinlik</translation>
@@ -2314,7 +2318,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3433621910545056227">Hata! Sistem, cihaz yükleme zamanı özellikleri kilidini oluşturamadı.</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3434272557872943250">Çocuğunuz için ek Web ve Uygulama Etkinliği açıksa bu veriler çocuğunuzun Google Hesabına kaydedilebilir. Bu ayarlar hakkında daha fazla bilgiyi ve nasıl düzenleneceklerini families.google.com sayfasında bulabilirsiniz.</translation>
-<translation id="3435541101098866721">Yeni telefon ekle</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" uzantısı sizden <ph name="CODE_TYPE" /> istiyor.</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="343578350365773421">Kağıt bitti</translation>
@@ -2451,6 +2454,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3564848315152754834">USB güvenlik anahtarı</translation>
 <translation id="3566325075220776093">Bu cihazdan</translation>
 <translation id="3566721612727112615">Site eklenmedi</translation>
+<translation id="3567284462585300767">Etrafınızdaki kişilerden dosya alıp kabul etmek için görünür olun</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" /> uygulamasının ekranınızı paylaşmasını istiyor musunuz?</translation>
 <translation id="3569407787324516067">Ekran koruyucu</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> şu dosya ve klasörleri görüntüleyebilir:</translation>
@@ -3541,6 +3545,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="475088594373173692">İlk kullanıcı</translation>
 <translation id="4756378406049221019">Durdur/Tekrar yükle</translation>
 <translation id="4756388243121344051">&amp;Geçmiş</translation>
+<translation id="4759126501639448579">Hiçbir zaman anıları gösterme</translation>
 <translation id="4759238208242260848">İndirilenler</translation>
 <translation id="4761104368405085019">Mikrofonunuzu kullanma</translation>
 <translation id="4762718786438001384">Cihazdaki boş disk alanı kritik düzeyde</translation>
@@ -3865,6 +3870,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="51143538739122961">Güvenlik anahtarınızı takın ve anahtara dokunun</translation>
 <translation id="5115309401544567011">Lütfen <ph name="DEVICE_TYPE" /> cihazınızı bir güç kaynağına takın.</translation>
 <translation id="5115338116365931134">TOA</translation>
+<translation id="511632863918093828">Tüm anılar gizlendi</translation>
 <translation id="5116628073786783676">Sesi Farklı Kay&amp;det...</translation>
 <translation id="5117139026559873716">Telefonunuzun <ph name="DEVICE_TYPE" /> cihazınızla olan bağlantısını kesin. Bundan böyle otomatik olarak bağlanmazlar.</translation>
 <translation id="5117930984404104619">Ziyaret edilen URL'ler de dahil olmak üzere diğer uzantıların davranışını izleme</translation>
@@ -5009,6 +5015,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6374469231428023295">Tekrar Dene</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" için bulunan 1 sonuç gösteriliyor</translation>
 <translation id="6380143666419481200">Kabul et ve devam et</translation>
+<translation id="6382958439467370461">Etkin olmayan kısayol yok</translation>
 <translation id="638418309848716977">Desteklenen bağlantılar</translation>
 <translation id="6384275966486438344">Arama ayarlarınızı <ph name="SEARCH_HOST" /> olarak değiştirme</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Adsız grup - 1 sekme}other{Adsız grup - # sekme}}</translation>
@@ -5725,7 +5732,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7170236477717446850">Profil resmi</translation>
 <translation id="7171000599584840888">Profil Ekle...</translation>
 <translation id="7171259390164035663">Kaydolma</translation>
-<translation id="7171746271229206319">Chrome OS cihaz bilgilerini ve cihaz verilerini okur. Bu bilgiler cihazınızın üreticisiyle paylaşılabilir. Veriler, Google dışı kuruluşlar tarafından kendi gizlilik politikaları doğrultusunda işlenir.</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Sekmeyi yeni gruba ekle}other{Sekmeleri yeni gruba ekle}}</translation>
 <translation id="7173114856073700355">Ayarları Aç</translation>
 <translation id="7174199383876220879">Yeni! Müzik, video ve diğer içeriklerinizi kontrol edin.</translation>
@@ -5886,6 +5892,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7354341762311560488">Parmak izi sensörü, klavyenizin sol altındaki tuştur. Bir parmağınızla bu tuşa hafifçe dokunun.</translation>
 <translation id="7356908624372060336">Ağ günlükleri</translation>
 <translation id="735745346212279324">VPN bağlantısı kesildi</translation>
+<translation id="7358324924540718595">Bugün için anılar gizlendi</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> adlı yazıcıya <ph name="PAGE_NUMBER" /> sayfa</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> eklentisini çalıştırmak için sağ tıklayın</translation>
 <translation id="7362387053578559123">Siteler, Bluetooth cihazlarına bağlanmak isteyebilir</translation>
@@ -6286,6 +6293,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7757787379047923882">Metin, <ph name="DEVICE_NAME" /> cihazından paylaşıldı</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ekranınızın sınırlarını ayarlayın</translation>
+<translation id="7759276754544429366">Bugün için anıları gizle</translation>
 <translation id="7760004034676677601">Bu beklediğiniz başlangıç sayfası mı?</translation>
 <translation id="7764225426217299476">Adres ekle</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> alan adından <ph name="DOWNLOAD_RECEIVED" /></translation>
@@ -6443,7 +6451,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7901914889562552258">Sayfa metriklerini kullanan iyileştirilmiş Chrome</translation>
 <translation id="7903345046358933331">Sayfa yanıt vermiyor. Yanıt vermesini bekleyebilir veya kapatabilirsiniz.</translation>
 <translation id="7903742244674067440">Dosyada şu sertifika yetkililerini tanımlayan sertifikalarınız var</translation>
-<translation id="7903859912536385558">mevcut kanal (güvenilir test kullanıcısı)</translation>
 <translation id="7903925330883316394">Yardımcı Program: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
 <translation id="7904526211178107182">Linux bağlantı noktalarını ağınızdaki diğer cihazların kullanımına sunun.</translation>
@@ -6530,7 +6537,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7986295104073916105">Kaydedilmiş şifre ayarlarını okuma ve değiştirme</translation>
 <translation id="7987814697832569482">Her zaman bu VPN üzerinden bağlan</translation>
 <translation id="7988355189918024273">Erişilebilirlik özelliklerini etkinleştir</translation>
-<translation id="7990394755527173834">Bu bilgisayarda güvenlik anahtarı olarak kullanmak istediğiniz Android telefonu ilk kez ayarlamak için; telefonunuzda Chrome'u açın ve "Ayarlar &gt; Şifreler &gt; Telefonu güvenlik anahtarı olarak kullan" bölümüne gidin. Daha sonra "Yeni cihaz bağla"ya dokunun ve bu QR Kodunu tarayın.</translation>
 <translation id="7991296728590311172">Anahtar Erişimi ayarları</translation>
 <translation id="7997826902155442747">Süreç Önceliği</translation>
 <translation id="7999229196265990314">Aşağıdaki dosyalar oluşturuldu:
@@ -6955,6 +6961,7 @@ Atamayı kaldırmak için atanmış bir anahtara basın</translation>
 <translation id="8457451314607652708">Yer işaretlerini içe aktar</translation>
 <translation id="8458341576712814616">Kısayol</translation>
 <translation id="8458627787104127436">Tümünü (<ph name="URL_COUNT" />) yeni pencerede aç</translation>
+<translation id="8460490661223303637">Chrome, bellekten tasarruf etmek için bazı içerikleri kaldırdı</translation>
 <translation id="8460932807646981183">Arama motorlarını ve site aramalarını yönetin</translation>
 <translation id="84613761564611563">Ağ yapılandırma kullanıcı arayüzü istendi, lütfen bekleyin...</translation>
 <translation id="8461914792118322307">Proxy</translation>

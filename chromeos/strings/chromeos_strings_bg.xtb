@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Неуспешно – отпечатването спря</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">Процесор</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Да се премахне ли страницата?}=1{Да се премахне ли страница {PAGE_NUMBER}?}other{Да се премахне ли страница {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Мобилни данни</translation>
 <translation id="3156846309055100599">Страница <ph name="PAGE_NUMBER" /> се сканира...</translation>
 <translation id="315738237743207937">Открит е портал за удостоверяване</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM картата е заключена (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Име на групата</translation>
+<translation id="5051044138948155788">Това е единствената страница. Ще се покаже екранът за стартиране на сканирането.</translation>
 <translation id="5088172560898466307">Име на хоста за сървъра</translation>
 <translation id="5089810972385038852">Щат</translation>
 <translation id="5142961317498132443">Удостоверяване</translation>
@@ -269,6 +271,7 @@
 <translation id="5499114900554609492">Сканирането не бе изпълнено</translation>
 <translation id="5502931783115429516">Android не работи</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Повторно сканиране</translation>
 <translation id="5669267381087807207">Активира се</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семейство</translation>
@@ -319,6 +322,7 @@
 <translation id="641081527798843608">Съвпадение на субекта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Добър</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се сканира ли повторно страницата?}=1{Да се сканира ли повторно страница {PAGE_NUMBER}?}other{Да се сканира ли повторно страница {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Еднократна парола</translation>
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>

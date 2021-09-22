@@ -2336,7 +2336,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3433621910545056227">Naku! Nabigo ang system na itatag ang lock sa mga katangian sa oras ng pag-install.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account. Matuto pa tungkol sa mga setting na ito at kung paano isaayos ang mga ito sa families.google.com.</translation>
-<translation id="3435541101098866721">Magdagdag ng bagong telepono</translation>
 <translation id="3435688026795609344">Hinihiling ng "<ph name="EXTENSION_NAME" />" ang iyong <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">Wala nang papel</translation>
@@ -4245,6 +4244,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5501809658163361512">{COUNT,plural, =1{Hindi natanggap ang <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}one{Hindi natanggap ang <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}other{Hindi natanggap ang <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Nai-import Mula sa Firefox</translation>
 <translation id="5502915260472117187">Bata</translation>
+<translation id="5503356662318814623">Magpadala ng mensahe</translation>
 <translation id="5503982651688210506">Patuloy na payagan ang <ph name="HOST" /> na gamitin at galawin ang iyong camera, at gamitin ang mikropono mo</translation>
 <translation id="5504909642107847870">Pagsusuri sa privacy at seguridad</translation>
 <translation id="5505264765875738116">Hindi puwedeng humiling ang mga site na magpadala ng mga notification</translation>
@@ -4501,6 +4501,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5794414402486823030">Palaging buksan gamit ang system viewer</translation>
 <translation id="5794700615121138172">Mga nakabahaging folder ng Linux</translation>
 <translation id="5794786537412027208">Umalis sa lahat ng Chrome Apps</translation>
+<translation id="5796485699458186843">Bagong tab na Incognito</translation>
 <translation id="5797521893972859201">Kini-clear ang history, kasama ang nasa box para sa paghahanap</translation>
 <translation id="5798079537501238810">Puwedeng mag-install ang mga site ng mga tagapangasiwa ng pagbabayad</translation>
 <translation id="579915268381781820">Inalis ang iyong security key.</translation>
@@ -5751,7 +5752,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7170236477717446850">Larawan sa profile</translation>
 <translation id="7171000599584840888">Magdagdag ng Profile...</translation>
 <translation id="7171259390164035663">Huwag i-enroll</translation>
-<translation id="7171746271229206319">Basahin ang impormasyon ng device at data ng device ng Chrome OS. Puwedeng ibahagi sa manufacturer ng iyong device ang impormasyong ito. Ang data na pinapangasiwaan ng mga organisasyon bukod pa sa Google ay susunod sa kani-kanilang mga patakaran sa privacy</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Magdagdag ng tab sa bagong grupo}one{Magdagdag ng mga tab sa bagong grupo}other{Magdagdag ng mga tab sa bagong grupo}}</translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>
 <translation id="7174199383876220879">Bago! Kontrolin ang iyong musika, mga video, at higit pa.</translation>
@@ -6473,7 +6473,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7901914889562552258">Pinahusay na Chrome gamit ang mga sukatan ng page</translation>
 <translation id="7903345046358933331">Hindi na tumutugon ang page. Maaari mong hintaying tumugon ito o isara ito.</translation>
 <translation id="7903742244674067440">Mayroon kang mga certificate sa file na tutukoy sa mga certificate authority na ito</translation>
-<translation id="7903859912536385558">stable (trusted tester)</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Hindi pinayagan ng administrator para sa account na ito ang multiple na pag-sign in.</translation>
 <translation id="7904526211178107182">Gawing available ang mga port ng Linux sa iba pang device na nasa iyong network.</translation>
@@ -6524,10 +6523,12 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7952904276017482715">"<ph name="EXPECTED_ID" />" ang inaasahang ID, ngunit "<ph name="NEW_ID" />" ang ID</translation>
 <translation id="7953669802889559161">Mga Input</translation>
 <translation id="7953955868932471628">Pamahalaan ang mga shortcut</translation>
+<translation id="7955105108888461311">Magtanong nang personal</translation>
 <translation id="7956373551960864128">Mga naka-save mong printer</translation>
 <translation id="7957074856830851026">Tingnan ang impormasyon ng device, gaya ng serial number o asset ID nito</translation>
 <translation id="7957615753207896812">Buksan ang mga setting ng keyboard device</translation>
 <translation id="7959074893852789871">Naglaman ang file ng maramihang certificate, ilan sa mga ito ang na-import:</translation>
+<translation id="7959665254555683862">Bagong Tab na Incognito</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7963001036288347286">Pag-accelerate ng touchpad</translation>
 <translation id="7963608432878156675">Nakikita ang pangalang ito sa iba pang device para sa Bluetooth at mga koneksyon ng network</translation>
@@ -6560,7 +6561,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7986295104073916105">Basahin at baguhin ang mga setting ng naka-save na password</translation>
 <translation id="7987814697832569482">Palaging kumonekta sa pamamagitan ng VPN na ito</translation>
 <translation id="7988355189918024273">Paganahin ang mga feature sa pagiging accessible</translation>
-<translation id="7990394755527173834">Para mag-set up ng Android phone na gagamitin bilang security key sa computer na ito sa unang pagkakataon, buksan ang Chrome sa iyong telepono at pumunta sa "Mga Setting &gt; Mga Password &gt; Gamitin ang telepono bilang security key." Pagkatapos ay i-tap ang "Magkonekta ng bagong device" at i-scan ang QR Code na ito.</translation>
 <translation id="7991296728590311172">Mga setting ng Switch Access</translation>
 <translation id="7997826902155442747">Priority ng Proseso</translation>
 <translation id="7999229196265990314">Nilkha ang mga sumusunod na file:

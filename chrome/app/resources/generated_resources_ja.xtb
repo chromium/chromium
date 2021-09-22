@@ -2315,7 +2315,6 @@
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。これらの設定の詳細と変更方法については、families.google.com をご覧ください。</translation>
-<translation id="3435541101098866721">新しい電話番号を追加</translation>
 <translation id="3435688026795609344">「<ph name="EXTENSION_NAME" />」が <ph name="CODE_TYPE" /> をリクエストしています</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="343578350365773421">用紙がありません</translation>
@@ -5725,7 +5724,6 @@
 <translation id="7170236477717446850">プロフィール写真</translation>
 <translation id="7171000599584840888">プロファイルを追加...</translation>
 <translation id="7171259390164035663">登録しない</translation>
-<translation id="7171746271229206319">Chrome OS のデバイス情報とデバイスデータを読み取ります。この情報はデバイスのメーカーと共有されることがあります。なお、Google 以外の組織によってデータが処理される場合は、その組織のプライバシー ポリシーに沿って処理されます。</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
 <translation id="7173114856073700355">設定を開く</translation>
 <translation id="7174199383876220879">New! 音楽や動画などを操作できます。</translation>
@@ -6444,7 +6442,6 @@
 <translation id="7901914889562552258">ページの各種指標に基づいて Chrome の機能が強化されます</translation>
 <translation id="7903345046358933331">ページが応答していません。応答があるまで待つか、終了することができます。</translation>
 <translation id="7903742244674067440">これらの認証局を識別する証明書がファイルに格納されています</translation>
-<translation id="7903859912536385558">安定版（Trusted Tester）</translation>
 <translation id="7903925330883316394">ユーティリティ: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
 <translation id="7904526211178107182">Linux ポートをネットワーク上の他のデバイスが利用できるようにします。</translation>
@@ -6531,7 +6528,6 @@
 <translation id="7986295104073916105">保存されたパスワード設定の読み取りと変更</translation>
 <translation id="7987814697832569482">この VPN で常に接続する</translation>
 <translation id="7988355189918024273">ユーザー補助機能を有効にします</translation>
-<translation id="7990394755527173834">このパソコンで、Android スマートフォンをセキュリティ キーとして使用できるように初めて設定する際は、スマートフォンで Chrome を開き、[設定] &gt; [パスワード] &gt; [スマートフォンをセキュリティ キーとして使用する] に移動します。そして、[新しいデバイスへの接続] をタップし、この QR コードをスキャンします。</translation>
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
 <translation id="7997826902155442747">プロセスの優先値</translation>
 <translation id="7999229196265990314">次のファイルを作成しました:

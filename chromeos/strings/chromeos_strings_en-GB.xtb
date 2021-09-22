@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Failed – Stopped</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{Remove page {PAGE_NUMBER}?}other{Remove page {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Captive portal detected</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Group name</translation>
+<translation id="5051044138948155788">This is the only page. This will take you to the scanning start screen.</translation>
 <translation id="5088172560898466307">Server hostname</translation>
 <translation id="5089810972385038852">State</translation>
 <translation id="5142961317498132443">Authentication</translation>
@@ -269,6 +271,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5499114900554609492">Couldn't complete scan</translation>
 <translation id="5502931783115429516">Android not running</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Rescan</translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Family</translation>
@@ -319,6 +322,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="641081527798843608">Subject match</translation>
 <translation id="6423239382391657905">Open VPN</translation>
 <translation id="6456394469623773452">Fine</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{Rescan page {PAGE_NUMBER}?}other{Rescan page {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stopped – paper jam</translation>

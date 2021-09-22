@@ -64,6 +64,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1341651618736211726">Suplimentar</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1351937230027495976">Restrânge meniul</translation>
+<translation id="1364382257761975320">Pentru a debloca Chromebookul, folosește amprenta</translation>
 <translation id="1383597849754832576">Nu se pot descărca fișierele de redare în scris a vorbirii. Încearcă din nou mai târziu.</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1391102559483454063">Activată</translation>
@@ -186,10 +187,12 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2352467521400612932">Setările creionului</translation>
 <translation id="2354174487190027830">Se activează <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuă</translation>
+<translation id="2367186422933365202">Nu te poți conecta la Chromebook</translation>
 <translation id="2369165858548251131">„Bună” în chineză</translation>
 <translation id="2390318262976603432">Setări de limbă</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Comenzi media</translation>
+<translation id="2402411679569069051">Pentru a debloca Chromebookul, folosește amprenta sau deblochează telefonul</translation>
 <translation id="2405664212338326887">Nu s-a conectat</translation>
 <translation id="2408955596600435184">Introdu codul PIN</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
@@ -290,6 +293,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3226991577105957773">+ încă <ph name="COUNT" /></translation>
 <translation id="324366796737464147">Anularea zgomotului</translation>
 <translation id="3249513730522716925">Fereastra <ph name="WINDOW_TITLE" /> a fost mutată de pe desktopul <ph name="ACTIVE_DESK" /> pe desktopul <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Pentru a debloca Chromebookul, activează funcția Bluetooth a telefonului</translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
 <translation id="3289674678944039601">Se încarcă prin adaptor</translation>
@@ -323,6 +327,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definiție</translation>
+<translation id="3509391053705095206">Telefonul nu a fost găsit. Asigură-te că funcția Bluetooth a telefonului este activată.</translation>
 <translation id="3510164367642747937">Evidențiază cursorul mouse-ului</translation>
 <translation id="3513798432020909783">Cont gestionat de <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">S-a conectat la <ph name="NUM_DEVICES" /> dispozitive</translation>
@@ -358,6 +363,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="371370241367527062">Microfonul din față</translation>
 <translation id="3713734891607377840">Deschide după finalizare</translation>
 <translation id="3742055079367172538">Captură de ecran efectuată</translation>
+<translation id="3744282433224562605">Pentru a debloca Chromebookul, introdu parola</translation>
 <translation id="3771549900096082774">Mod de contrast ridicat</translation>
 <translation id="3773700760453577392">Un administrator a interzis conectarea multiplă pentru <ph name="USER_EMAIL" />. Toți utilizatorii trebuie să se deconecteze pentru a continua.</translation>
 <translation id="3779139509281456663">Se conectează <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4485060137115666462">Dacă dai clic dreapta sau apeși lung, Asistentul îți arată informații cum ar fi definiția, traducerea sau conversia unităților pentru selecția ta.</translation>
 <translation id="4505050298327493054">Desktop activ.</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518404433291145981">Pentru a te conecta la Chromebook, mai întâi deblochează telefonul</translation>
 <translation id="4527045527269911712">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> până la încărcare completă</translation>
 <translation id="4538824937723742295">Capturează ecranul complet</translation>
@@ -551,11 +558,13 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
+<translation id="5147567197700016471">Deblocat</translation>
 <translation id="5155897006997040331">Viteza de citire</translation>
 <translation id="5166918508782100047">Setări pentru Răspunsuri rapide</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5176318573511391780">Înregistrează ecranul parțial</translation>
+<translation id="5199367439331364630">Pentru a te conecta la Chromebook, introdu parola</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Încă o notificare}few{Încă # notificări}other{Încă # de notificări}}</translation>
 <translation id="5207949376430453814">Evidențiază cursorul pentru text</translation>
 <translation id="5208059991603368177">Activată</translation>
@@ -576,6 +585,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5319712128756744240">Asociază un nou dispozitiv</translation>
 <translation id="5322611492012084517">Telefonul nu a fost găsit</translation>
 <translation id="5329548388331921293">Se conectează…</translation>
+<translation id="5330201449517439522">Atinge sau dă clic pentru acces</translation>
 <translation id="5331975486040154427">Dispozitiv USB-C (portul din stânga spate)</translation>
 <translation id="5352250171825660495">Tema întunecată este activată</translation>
 <translation id="5379115545237091094">Prea multe încercări</translation>
@@ -633,6 +643,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5825969630400862129">Setări pentru dispozitivele conectate</translation>
 <translation id="583281660410589416">Necunoscut</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Apasă lung pentru a maximiza</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
 <translation id="5867217927013474703">Se colectează informații despre rețea</translation>
@@ -738,6 +749,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6667908387435388584">Conectează-te la hotspotul telefonului, localizează dispozitivul și dezactivează-i sunetul și vezi filele Chrome recente deschise pe telefon</translation>
 <translation id="6670153871843998651">Desktop 3</translation>
 <translation id="6671495933530132209">Copiați imaginea</translation>
+<translation id="6671661918848783005">Chromebookul nu a putut fi deblocat</translation>
 <translation id="6692996468359469499">Obține informații despre selecție</translation>
 <translation id="6696025732084565524">Tastatura detașabilă necesită o actualizare esențială</translation>
 <translation id="6700713906295497288">Butonul de meniu IME</translation>

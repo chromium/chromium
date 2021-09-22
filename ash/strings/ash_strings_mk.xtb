@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">Прелевање</translation>
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1351937230027495976">Собери го менито</translation>
+<translation id="1364382257761975320">За да го отклучите вашиот Chromebook, користете го отпечатокот</translation>
 <translation id="1383597849754832576">Не може да се преземат датотеките за говор. Обидете се повторно подоцна.</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1391102559483454063">Вклучено</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">Поставки за пенкало</translation>
 <translation id="2354174487190027830">Се активира <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Продолжи</translation>
+<translation id="2367186422933365202">Не може да се најавите на вашиот Chromebook</translation>
 <translation id="2369165858548251131">„Здраво“ на кинески</translation>
 <translation id="2390318262976603432">Поставки за локален стандард</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Контроли за аудиовизуелни содржини</translation>
+<translation id="2402411679569069051">За да го отклучите вашиот Chromebook, користете го отпечатокот или отклучете го телефонот</translation>
 <translation id="2405664212338326887">Не е поврзано</translation>
 <translation id="2408955596600435184">Внесете го вашиот PIN</translation>
 <translation id="2412593942846481727">Достапно е ажурирање</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">и уште <ph name="COUNT" /></translation>
 <translation id="324366796737464147">Исклучи бучава</translation>
 <translation id="3249513730522716925">Прозорецот <ph name="WINDOW_TITLE" /> се премести од работен простор <ph name="ACTIVE_DESK" /> на работен простор <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">За да го отклучите вашиот Chromebook, вклучете го Bluetooth на телефонот</translation>
 <translation id="3255483164551725916">Што можеш да направиш?</translation>
 <translation id="3269597722229482060">Десен клик</translation>
 <translation id="3289674678944039601">Се полни преку адаптер</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">дефиниција</translation>
+<translation id="3509391053705095206">Не може да се најде телефонот. Проверете дали ви е вклучен Bluetooth на телефонот.</translation>
 <translation id="3510164367642747937">Нагласи го покажувачот на глувчето</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> управува со сметката</translation>
 <translation id="353086728817903341">Поврзано со <ph name="NUM_DEVICES" /> уреди</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отвори кога ќе заврши преземањето</translation>
 <translation id="3742055079367172538">Направена е слика од екранот</translation>
+<translation id="3744282433224562605">За да го отклучите вашиот Chromebook, внесете лозинка</translation>
 <translation id="3771549900096082774">Режим на голем контраст</translation>
 <translation id="3773700760453577392">Администраторот оневозможил повеќекратно најавување за <ph name="USER_EMAIL" />.
 За продолжување, сите корисници треба да се одјават.</translation>
@@ -469,6 +475,7 @@
 <translation id="4485060137115666462">Со кликнување со десното копче или со долго притискање, „Помошникот“ ви прикажува информации, како дефиниција, превод или конверзија на единиците за вашиот избор.</translation>
 <translation id="4505050298327493054">Активен работен простор.</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
+<translation id="4518404433291145981">За да го отклучите вашиот Chromebook, прво отклучете го телефонот</translation>
 <translation id="4527045527269911712">Уредот Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> додека да се наполни</translation>
 <translation id="4538824937723742295">Слика од целиот екран</translation>
@@ -552,11 +559,13 @@
 <translation id="5078796286268621944">Неточен PIN</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
+<translation id="5147567197700016471">Отклучено</translation>
 <translation id="5155897006997040331">Брзина на читање</translation>
 <translation id="5166918508782100047">Поставки за „Брзи одговори“</translation>
 <translation id="5168181903108465623">Достапни се уреди за емитување</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5176318573511391780">Делумно снимање екран</translation>
+<translation id="5199367439331364630">За да се најавите на вашиот Chromebook, внесете лозинка</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 друго известување}one{# друго известување}other{# други известувања}}</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="5208059991603368177">Вклучено</translation>
@@ -577,6 +586,7 @@
 <translation id="5319712128756744240">Спарете нов уред</translation>
 <translation id="5322611492012084517">Не може да се најде телефонот</translation>
 <translation id="5329548388331921293">Се поврзува…</translation>
+<translation id="5330201449517439522">Допрете или кликнете за да влезете</translation>
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
@@ -634,6 +644,7 @@
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Задржете за максимирање</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="5867217927013474703">Се прибираат податоци за мрежата</translation>
@@ -739,6 +750,7 @@
 <translation id="6667908387435388584">Поврзете се со точката на пристап на телефонот, исклучете го звукот на уредот, лоцирајте го уредот и прегледувајте ги неодамнешните картички на Chrome што ви се отворени на телефонот</translation>
 <translation id="6670153871843998651">Биро 3</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
+<translation id="6671661918848783005">Не може да се отклучи вашиот Chromebook</translation>
 <translation id="6692996468359469499">Добивајте информации поврзани со вашиот избор</translation>
 <translation id="6696025732084565524">Отстранливата тастатура има потреба од важно ажурирање</translation>
 <translation id="6700713906295497288">Копче за мени на IME</translation>
@@ -771,6 +783,7 @@
 <translation id="6919251195245069855">Не можевме да ја препознаеме вашата паметна картичка. Обидете се повторно.</translation>
 <translation id="6921188888306725546">Кратенките од тастатура се подобрени</translation>
 <translation id="6929655271276551705">Поставки за датум</translation>
+<translation id="6931576957638141829">Зачувај во</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6961121602502368900">Стишувањето на телефонот не е достапно на работен профил</translation>
 <translation id="6961840794482373852">Кратенката од тастатура Alt + Стрелка нагоре се промени. За да го користите копчето Page Up, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка нагоре.</translation>
@@ -907,6 +920,7 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /> управуваат со сметката</translation>
 <translation id="793716872548410480">Притиснете <ph name="SHORTCUT_KEY_NAME" /> + V за да ја видите привремената меморија. Последните 5 ставки што сте ги копирале се зачувани во привремената меморија.</translation>
 <translation id="7955885781510802139">Режим на висок контраст</translation>
+<translation id="7968693143708939792">Изберете папка…</translation>
 <translation id="7977927628060636163">Се пребаруваат мобилни мрежи…</translation>
 <translation id="7980780401175799550">Испробајте нови начини на навигација низ Chrome OS</translation>
 <translation id="7982789257301363584">Мрежа</translation>

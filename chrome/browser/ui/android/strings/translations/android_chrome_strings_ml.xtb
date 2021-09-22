@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കണോ?</translation>
 <translation id="1373696734384179344">തിരഞ്ഞെടുത്ത ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിന് ആവശ്യമായ മെമ്മറിയില്ല.</translation>
 <translation id="1376578503827013741">കണക്കാക്കുന്നു…</translation>
+<translation id="1382912999714108023">നിങ്ങളുടെ നിലവിലെ വിവരങ്ങൾ കാണുന്നില്ലേ? അപ്ഡേറ്റ് ചെയ്യാൻ നിങ്ങളുടെ ബാങ്കിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">Google Lens-ൽ ചിത്രം വിവർത്തനം ചെയ്യൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ <ph name="BEGIN_LINK1" />തിരയൽ ചരിത്രവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റിയും<ph name="END_LINK2" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. അവ ഏതുസമയത്തും നിങ്ങൾക്ക് ഇല്ലാതാക്കാം.</translation>
 <translation id="321773570071367578">നിങ്ങൾ പാസ്‌ഫ്രെയ്‌സ് മറന്നുപോയെങ്കിലോ ഈ ക്രമീകരണം മാറ്റണമെങ്കിലോ, <ph name="BEGIN_LINK" />സമന്വയം റീസെറ്റ് ചെയ്യുക<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
+<translation id="3223522355830797639">ഇത് നിങ്ങളാണെന്ന് ബാങ്കിന് സ്ഥിരീകരിക്കേണ്ടതുണ്ട്.</translation>
 <translation id="3227557059438308877">സുരക്ഷാ കീ ആയി Google Chrome</translation>
 <translation id="3232754137068452469">വെബ് ആപ്പ്</translation>
 <translation id="3234978181857588512">ഉപകരണത്തിൽ സംരക്ഷിക്കുക</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
 <translation id="6069177176307973611">സ്വകാര്യതാ, സുരക്ഷാ ക്രമീകരണങ്ങൾ അവലോകനം ചെയ്യുക</translation>
+<translation id="6070730414166672373">നിങ്ങളുടെ ബാങ്കിനെ ബന്ധപ്പെടുന്നു</translation>
 <translation id="6085886413119427067">സുരക്ഷിത കണക്ഷനിലൂടെ വെബ്‌സൈറ്റുകളിലേക്ക് എങ്ങനെ കണക്റ്റ് ചെയ്യാമെന്ന് നിർണ്ണയിക്കുന്നു</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> മണിക്കൂർ ശേഷിക്കുന്നു</translation>
 <translation id="6108923351542677676">സജ്ജീകരണം പുരോഗതിയിലാണ്...</translation>
@@ -950,6 +953,7 @@
 <translation id="6802555630140434547">വിൻഡോ അടയ്ക്കും</translation>
 <translation id="6811034713472274749">പേജ്, കാണാൻ തയ്യാറാണ്</translation>
 <translation id="6813446258015311409">Chrome-ലേക്ക് സെെൻ ഇൻ ചെയ്യുക, തുറന്നു.</translation>
+<translation id="6814033694018386318">Google-മായി നിങ്ങൾ പങ്കിടുന്നത്</translation>
 <translation id="6817747507826986771">ഈ പേജ് വേഗത്തിൽ പങ്കിടുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ടാബ്, തിരഞ്ഞെടുത്തു</translation>
@@ -1278,6 +1282,7 @@
 <translation id="867767487203716855">അടുത്ത അപ്ഡേറ്റ്</translation>
 <translation id="8683039184091909753">ചിത്രം</translation>
 <translation id="8683081248374354009">ഗ്രൂപ്പ് റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="8683526617475118045">നിങ്ങൾക്ക് ലഭിക്കുന്ന കാര്യങ്ങൾ</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
 <translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>

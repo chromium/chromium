@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">Препълване</translation>
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1351937230027495976">Свиване на менюто</translation>
+<translation id="1364382257761975320">За да отключите своя Chromebook, използвайте отпечатъка си</translation>
 <translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1391102559483454063">Включено</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">Настройки за писалката</translation>
 <translation id="2354174487190027830">„<ph name="NAME" />“ се активира</translation>
 <translation id="2359808026110333948">Напред</translation>
+<translation id="2367186422933365202">Не можете да влезете в своя Chromebook</translation>
 <translation id="2369165858548251131">„Hello“ in Chinese</translation>
 <translation id="2390318262976603432">Настройки на локала</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Контроли за мултимедия</translation>
+<translation id="2402411679569069051">За да отключите своя Chromebook, използвайте отпечатъка си или отключете телефона си</translation>
 <translation id="2405664212338326887">Няма връзка</translation>
 <translation id="2408955596600435184">Въведете своя ПИН</translation>
 <translation id="2412593942846481727">Налице е актуализация</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">+ още <ph name="COUNT" /></translation>
 <translation id="324366796737464147">Потискане на шума</translation>
 <translation id="3249513730522716925">Прозорецът <ph name="WINDOW_TITLE" /> бе преместен от работен кът <ph name="ACTIVE_DESK" /> в работен кът <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">За да отключите своя Chromebook, включете Bluetooth на телефона си</translation>
 <translation id="3255483164551725916">„What can you do?“ („Какво можеш да правиш?“)</translation>
 <translation id="3269597722229482060">Кликване с десния бутон</translation>
 <translation id="3289674678944039601">Зарежда се през адаптера</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">дефиниция</translation>
+<translation id="3509391053705095206">Телефонът ви не е намерен. Уверете се, че функцията му за Bluetooth е включена.</translation>
 <translation id="3510164367642747937">Открояване на курсора на мишката</translation>
 <translation id="3513798432020909783">Профилът се управлява от <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Установена е връзка с(ъс) <ph name="NUM_DEVICES" /> устройства</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отваряне, когато е завършено</translation>
 <translation id="3742055079367172538">Направена бе екранна снимка</translation>
+<translation id="3744282433224562605">За да отключите своя Chromebook, въведете паролата си</translation>
 <translation id="3771549900096082774">Режим на висок контраст</translation>
 <translation id="3773700760453577392">Администратор е деактивирал централизирания вход за <ph name="USER_EMAIL" />. За да се продължи, всички потребители трябва да излязат от профилите си.</translation>
 <translation id="3779139509281456663">Установява се връзка с(ъс) <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">Когато кликнете с десния бутон на мишката или натиснете продължително, Асистент ви показва информация за избраното от вас, като например определение или преобразуване на мерни единици.</translation>
 <translation id="4505050298327493054">Активен работен кът.</translation>
 <translation id="4513946894732546136">Отзиви</translation>
+<translation id="4518404433291145981">За да отключите своя Chromebook, първо отключете телефона си</translation>
 <translation id="4527045527269911712">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до пълно зареждане</translation>
 <translation id="4538824937723742295">Правене на екранна снимка на целия екран</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
+<translation id="5147567197700016471">Отключено</translation>
 <translation id="5155897006997040331">Скорост на четене</translation>
 <translation id="5166918508782100047">Настройки за „Бързи отговори“</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5176318573511391780">Записване на част от екрана</translation>
+<translation id="5199367439331364630">За да влезете в своя Chromebook, въведете паролата си</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Още 1 известие}other{Още # известия}}</translation>
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="5208059991603368177">Вкл.</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">Сдвояване на ново устройство</translation>
 <translation id="5322611492012084517">Телефонът ви не е намерен</translation>
 <translation id="5329548388331921293">Установява се връзка...</translation>
+<translation id="5330201449517439522">Докоснете или кликнете, за да влезете</translation>
 <translation id="5331975486040154427">Устройство с USB-C (задният ляв порт)</translation>
 <translation id="5352250171825660495">Тъмната тема е включена</translation>
 <translation id="5379115545237091094">Твърде много опити</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">Настройки за свързани устройства</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="584525477304726060">Задръжте за увеличаване</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
 <translation id="5867217927013474703">Събира се информация за мрежата</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">Свързвайте се с точката за достъп на телефона си, заглушавайте и намирайте устройството си и преглеждайте наскоро отворените на телефона ви раздели на Chrome</translation>
 <translation id="6670153871843998651">Работен кът 3</translation>
 <translation id="6671495933530132209">Копиране на изображението</translation>
+<translation id="6671661918848783005">Chromebook не се отключи</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6696025732084565524">Вашата отделяща се клавиатура се нуждае от критична актуализация</translation>
 <translation id="6700713906295497288">Бутон за меню на редактора за метод на въвеждане</translation>

@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Falha - Ação interrompida</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remover página?}=1{Remover página {PAGE_NUMBER}?}one{Remover página {PAGE_NUMBER}?}other{Remover página {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Dados do celular</translation>
 <translation id="3156846309055100599">Digitalizando a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portal cativo detectado</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">Chip bloqueado (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
+<translation id="5051044138948155788">Essa é a única página. Se você removê-la, a tela inicial de digitalização será aberta.</translation>
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Autenticação</translation>
@@ -269,6 +271,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5499114900554609492">Não foi possível concluir a digitalização</translation>
 <translation id="5502931783115429516">O Android não está funcionando</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Digitalizar novamente</translation>
 <translation id="5669267381087807207">Ativando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -319,6 +322,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Bom</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Digitalizar a página novamente?}=1{Digitalizar a página {PAGE_NUMBER} novamente?}one{Digitalizar a página {PAGE_NUMBER} novamente?}other{Digitalizar a página {PAGE_NUMBER} novamente?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Parado (atolamento de papel)</translation>

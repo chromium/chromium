@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">Alınmayan UDP sorğuları</translation>
 <translation id="1930797645656624981">Chrome OS Daxiletmə Metodu Xidməti</translation>
 <translation id="1947737735496445907">Çap edilib</translation>
+<translation id="197386857804679933">Yenidən qoşulmaq üçün Ayarlara keçin</translation>
 <translation id="1979103255016296513">Parol dəyişikliyinin gecikməsi</translation>
 <translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2006864819935886708">Bağlantı</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">KEÇDİ</translation>
 <translation id="2789486458103222910">Oldu</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
+<translation id="2860473693272905224">Başqa bir səhifəni skanerə yerləşdirin</translation>
 <translation id="2872961005593481000">Qapadın</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> deşarj edilib.</translation>
 <translation id="3008341117444806826">YENİLƏYİN</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">Mobil data</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır...</translation>
 <translation id="315738237743207937">Avtorizasiya portalı aşkarlanıb</translation>
+<translation id="3170673040743561620">Sənədinizi skanerə yerləşdirin</translation>
 <translation id="3188257591659621405">Fayllarım</translation>
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">Bağlantı</translation>
 <translation id="4832079907277790330">Fayllar tətbiqində qovluq seçin...</translation>
 <translation id="4835901797422965222">Aktiv şəbəkə yoxdur</translation>
+<translation id="484790837831576105">(Android) DNS ayırdetmə dəqiqliyi</translation>
 <translation id="4848429997038228357">İCRA EDİLİR</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}other{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}}</translation>
 <translation id="4880328057631981605">Giriş nöqtəsi adı</translation>
@@ -289,6 +293,7 @@
 <translation id="6050189528197190982">Boz çalar</translation>
 <translation id="6058625436358447366">Tamamlamaq üçün yeni və köhnə parolları yazın</translation>
 <translation id="6061772781719867950">HTTP sorğuları alınmadı</translation>
+<translation id="6075872808778243331">(Android) HTTP Gecikməsi</translation>
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
@@ -331,6 +336,7 @@
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> deaktiv edilib</translation>
 <translation id="6747215703636344499">Dayanıb - Çıxış doludur</translation>
 <translation id="6756731097889387912">Skanlamanı ləğv etmək mümkün olmadı</translation>
 <translation id="6766275201586212568">DNS həlləri alınmadı</translation>
@@ -340,11 +346,13 @@
 <translation id="6910312834584889076">Skanerin qapağı açıqdır. Qapağı bağlayıb yenidən sınayın.</translation>
 <translation id="6911383237894364323">Media serverlərinə qoşulmaq olmur</translation>
 <translation id="6957231940976260713">Xidmət adı</translation>
+<translation id="6961170852793647506">Başlamaq üçün sənədinizi skanerə yerləşdirin</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
 <translation id="6982876849933694860">Yeni bağlantı qurmaq üçün <ph name="BEGIN_LINK" />Ayarlara<ph name="END_LINK" /> keçin.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> klaviaturası</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7058278511608979688">Bitirin və yadda saxlayın</translation>
 <translation id="7059230779847288458">Şarj edilir, tam dolana qədər <ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="708426984172631313">DAYANDIRILIB</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -408,6 +416,7 @@
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
+<translation id="811820734797650957">(Android) Giriş test edilə bilər</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Nəqliyyat Sayğacları Sorğulayın</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -479,6 +488,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>
 <translation id="9111102763498581341">Kiliddən çıxarın</translation>
+<translation id="9126720536733509015">Birdən çox səhifəni bir PDF-də saxlayın</translation>
 <translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
 <translation id="9173638680043580060">Bir dəqiqədən az qalıb</translation>

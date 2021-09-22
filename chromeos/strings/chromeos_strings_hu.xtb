@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Sikertelen – Leállítva</translation>
 <translation id="3102119246920354026">Gyorsítótár</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Eltávolítja az oldalt?}=1{Eltávolítja a(z) {PAGE_NUMBER}. oldalt?}other{Eltávolítja a(z) {PAGE_NUMBER}. oldalt?}}</translation>
 <translation id="315116470104423982">Mobiladatok</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
 <translation id="315738237743207937">Hitelesítési portál észlelve</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM zárolva (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Csoport neve</translation>
+<translation id="5051044138948155788">Ez az egy oldal van csak. A művelet végrehajtása esetén a beolvasás indítóképernyőjére jut.</translation>
 <translation id="5088172560898466307">Szerver gépneve</translation>
 <translation id="5089810972385038852">Állam</translation>
 <translation id="5142961317498132443">Hitelesítés</translation>
@@ -269,6 +271,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5499114900554609492">Nem sikerült befejezni a szkennelést</translation>
 <translation id="5502931783115429516">Az Android nem fut</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Újbóli beolvasás</translation>
 <translation id="5669267381087807207">Aktiválás</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Család</translation>
@@ -319,6 +322,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Jó</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Beolvassa újra az oldalt?}=1{Beolvassa újra a(z) {PAGE_NUMBER}. oldalt?}other{Beolvassa újra a(z) {PAGE_NUMBER}. oldalt?}}</translation>
 <translation id="6472207088655375767">Egyszer használatos jelszó</translation>
 <translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Leállt – Papírelakadás</translation>

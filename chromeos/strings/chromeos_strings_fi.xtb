@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Epäonnistui – Pysäytetty</translation>
 <translation id="3102119246920354026">Välimuisti</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Poistetaanko sivu?}=1{Poistetaanko sivu {PAGE_NUMBER}?}other{Poistetaanko sivu {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Mobiilitiedonsiirto</translation>
 <translation id="3156846309055100599">Skannataan sivu <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Captive portal havaittu</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM-kortti lukittu (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Ryhmän nimi</translation>
+<translation id="5051044138948155788">Tämä on ainoa sivu. Sinut ohjataan skannauksen aloitusnäytölle.</translation>
 <translation id="5088172560898466307">Palvelimen isäntänimi</translation>
 <translation id="5089810972385038852">Osavaltio/alue</translation>
 <translation id="5142961317498132443">Todennus</translation>
@@ -269,6 +271,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5499114900554609492">Skannausta ei voi suorittaa loppuun</translation>
 <translation id="5502931783115429516">Android ei käynnissä</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Skannaa uudelleen</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Perhe</translation>
@@ -319,6 +322,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="641081527798843608">Aiheen vastaavuus</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Hyväksyttävä</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Skannataanko uudelleen?}=1{Skannataanko sivu {PAGE_NUMBER} uudelleen?}other{Skannataanko sivu {PAGE_NUMBER} uudelleen?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Ylläpitäjä: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Pysähtynyt – Paperitukos</translation>

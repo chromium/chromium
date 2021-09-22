@@ -2334,7 +2334,6 @@
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。您可以前往 families.google.com 詳細瞭解這些設定及其調整方式</translation>
-<translation id="3435541101098866721">新增電話</translation>
 <translation id="3435688026795609344">「<ph name="EXTENSION_NAME" />」正在要求取得您的 <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="343578350365773421">紙張用完</translation>
@@ -5749,7 +5748,6 @@
 <translation id="7170236477717446850">個人檔案相片</translation>
 <translation id="7171000599584840888">新增設定檔…</translation>
 <translation id="7171259390164035663">不要註冊</translation>
-<translation id="7171746271229206319">閱讀 Chrome 作業系統裝置資訊和裝置資料。這些資料可能會與您的裝置製造商分享。Google 以外的機構會按另行訂定的私隱權政策處理資料</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{在新群組中加入分頁}other{在新群組中加入分頁}}</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7174199383876220879">新功能！控制音樂、影片及其他內容。</translation>
@@ -6471,7 +6469,6 @@
 <translation id="7901914889562552258">根據網頁數據改善 Chrome</translation>
 <translation id="7903345046358933331">網頁沒有回應。您可以等待網頁回應或關閉網頁。</translation>
 <translation id="7903742244674067440">您的檔案具備可以識別這些憑證授權的憑證</translation>
-<translation id="7903859912536385558">穩定版 (可信任的測試人員)</translation>
 <translation id="7903925330883316394">程式：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>
 <translation id="7904526211178107182">將 Linux 連接埠提供給網絡上的其他裝置使用。</translation>
@@ -6558,7 +6555,6 @@
 <translation id="7986295104073916105">讀取及變更已儲存的密碼設定</translation>
 <translation id="7987814697832569482">永遠透過此 VPN 連接</translation>
 <translation id="7988355189918024273">啟用無障礙功能</translation>
-<translation id="7990394755527173834">如果這是您首次設定 Android 手機作為此電腦的安全密鑰，請在手機上開啟 Chrome，並前往「設定 &gt; 密碼 &gt; 使用手機作為安全密鑰」，然後輕按「連接新裝置」並掃瞄此 QR 碼。</translation>
 <translation id="7991296728590311172">「按鈕控制」設定</translation>
 <translation id="7997826902155442747">處理優先次序</translation>
 <translation id="7999229196265990314">已建立下列檔案：

@@ -2312,7 +2312,6 @@
 <translation id="3433621910545056227">糟糕！系统无法建立设备安装时间属性锁定。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。您可在 families.google.com 上详细了解这些设置以及如何调整它们。</translation>
-<translation id="3435541101098866721">添加新的电话号码</translation>
 <translation id="3435688026795609344">“<ph name="EXTENSION_NAME" />”正在请求您提供 <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="343578350365773421">纸张已用完</translation>
@@ -5721,7 +5720,6 @@
 <translation id="7170236477717446850">个人资料照片</translation>
 <translation id="7171000599584840888">添加个人资料…</translation>
 <translation id="7171259390164035663">不注册</translation>
-<translation id="7171746271229206319">读取 Chrome 操作系统设备信息和设备数据。系统可能会与您的设备制造商分享此信息。如果数据由特定组织（而非 Google）处理，则须遵循相应组织自设的隐私权政策</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7174199383876220879">新功能！控制您的音乐、视频等媒体内容。</translation>
@@ -6440,7 +6438,6 @@
 <translation id="7901914889562552258">使用网页指标改进后的 Chrome</translation>
 <translation id="7903345046358933331">该页面已停止响应。您可以等待该页面恢复响应，也可以将其关闭。</translation>
 <translation id="7903742244674067440">您有证书可标识以下证书授权中心</translation>
-<translation id="7903859912536385558">稳定版（受信任的测试人员）</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">此帐号的管理员已停用多帐号登录。</translation>
 <translation id="7904526211178107182">使 Linux 端口可供您网络上的其他设备使用。</translation>
@@ -6527,7 +6524,6 @@
 <translation id="7986295104073916105">读取和更改已保存的密码设置</translation>
 <translation id="7987814697832569482">始终通过此 VPN 连接</translation>
 <translation id="7988355189918024273">启用辅助功能</translation>
-<translation id="7990394755527173834">如果这是您首次将 Android 手机设为与此计算机搭配使用的安全密钥，请在手机上打开 Chrome，然后依次转到“设置”&gt;“密码”&gt;“使用手机作为安全密钥”。然后，点按“连接新设备”并扫描此二维码。</translation>
 <translation id="7991296728590311172">开关控制设置</translation>
 <translation id="7997826902155442747">进程优先级</translation>
 <translation id="7999229196265990314">已创建以下文件：

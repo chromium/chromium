@@ -2314,7 +2314,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3433621910545056227">O sistema non puido establecer o bloqueo de atributos do tempo de instalación do dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa Conta de Google Obtén máis información acerca desta opción de configuración e sobre como axustala en families.google.com.</translation>
-<translation id="3435541101098866721">Engadir un teléfono novo</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" solicita o teu <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="343578350365773421">Non hai papel</translation>
@@ -5724,7 +5723,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7170236477717446850">Imaxe do perfil</translation>
 <translation id="7171000599584840888">Engadir perfil…</translation>
 <translation id="7171259390164035663">Non inscribirse</translation>
-<translation id="7171746271229206319">Consultar a información do dispositivo e os datos do dispositivo Chrome OS. É posible que esta información se comparta co fabricante do dispositivo. Os datos que xestionen outras organizacións que non sexan de Google seguirán políticas de privacidade independentes</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7174199383876220879">Novidade! Controla a túa música, os vídeos e moito máis.</translation>
@@ -6443,7 +6441,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7901914889562552258">Melloras en Chrome grazas a distintas métricas das páxinas</translation>
 <translation id="7903345046358933331">A páxina deixou de responder. Podes esperar a que volva responder ou ben podes pechala.</translation>
 <translation id="7903742244674067440">Tes certificados arquivados que identifican estas entidades de certificación</translation>
-<translation id="7903859912536385558">estable (probador de confianza)</translation>
 <translation id="7903925330883316394">Utilidade: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">O administrador desta conta non permitiu o inicio de sesión múltiple.</translation>
 <translation id="7904526211178107182">Fai que estean dispoñibles os portos Linux para outros dispositivos da túa rede.</translation>
@@ -6530,7 +6527,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7986295104073916105">Ler e cambiar a configuración dos contrasinais gardados</translation>
 <translation id="7987814697832569482">Conectarse sempre a través desta VPN</translation>
 <translation id="7988355189918024273">Activa funcións de accesibilidade</translation>
-<translation id="7990394755527173834">Se queres configurar un teléfono Android para utilizalo como chave de seguranza con este ordenador por primeira vez, abre Chrome no teléfono e vai a Configuración &gt; Contrasinais &gt; Usar o teléfono como chave de seguranza. A continuación, toca Conectar un novo dispositivo e, despois, escanea este código QR.</translation>
 <translation id="7991296728590311172">Acceso con interruptores</translation>
 <translation id="7997826902155442747">Prioridade do proceso</translation>
 <translation id="7999229196265990314">Creáronse os ficheiros seguintes:

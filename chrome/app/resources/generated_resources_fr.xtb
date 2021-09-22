@@ -2321,7 +2321,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3433621910545056227">Petit problème… Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Si vous avez activé le paramètre "Activité supplémentaire sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google. Découvrez plus en détail ces paramètres et comment les ajuster sur le site families.google.com.</translation>
-<translation id="3435541101098866721">Ajouter un nouveau téléphone</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" demande votre <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="343578350365773421">À court de papier</translation>
@@ -5736,7 +5735,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7170236477717446850">Photo de profil</translation>
 <translation id="7171000599584840888">Ajouter un profil…</translation>
 <translation id="7171259390164035663">Ne pas enregistrer</translation>
-<translation id="7171746271229206319">Lire les informations provenant de l'appareil Chrome OS et ses données. Ces informations peuvent être partagées avec le fabricant de votre appareil. Les données traitées par les organisations autres que Google sont soumises à leurs règles de confidentialité.</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Ajouter l'onglet à un nouveau groupe}one{Ajouter l'onglet à un nouveau groupe}other{Ajouter les onglets à un nouveau groupe}}</translation>
 <translation id="7173114856073700355">Paramètres</translation>
 <translation id="7174199383876220879">Nouveau ! Contrôlez votre musique, vos vidéos et d'autres contenus.</translation>
@@ -6458,7 +6456,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7901914889562552258">Amélioration de Chrome grâce aux métriques sur les pages</translation>
 <translation id="7903345046358933331">La page ne répond plus. Vous pouvez attendre qu'elle soit de nouveau accessible ou la fermer.</translation>
 <translation id="7903742244674067440">Certains de vos certificats enregistrés identifient ces autorités de certification.</translation>
-<translation id="7903859912536385558">stable (testeur de confiance)</translation>
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
 <translation id="7904526211178107182">Rendre les ports Linux disponibles pour les autres appareils de votre réseau.</translation>
@@ -6545,7 +6542,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7986295104073916105">Consulter et modifier les paramètres relatifs aux mots de passe enregistrés</translation>
 <translation id="7987814697832569482">Toujours se connecter via ce VPN</translation>
 <translation id="7988355189918024273">Activer les fonctionnalités d'accessibilité</translation>
-<translation id="7990394755527173834">Lorsque vous configurez pour la première fois un téléphone Android en vue de l'utiliser comme clé de sécurité pour accéder à cet ordinateur, ouvrez Chrome sur le téléphone, puis sélectionnez Paramètres &gt; Mots de passe &gt; Utiliser un téléphone comme clé de sécurité. Appuyez ensuite sur "Associer un nouvel appareil" et scannez ce code QR.</translation>
 <translation id="7991296728590311172">Paramètres Switch Access</translation>
 <translation id="7997826902155442747">Priorité de traitement</translation>
 <translation id="7999229196265990314">Les fichiers suivants ont été créés :

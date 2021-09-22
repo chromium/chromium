@@ -1146,7 +1146,7 @@
 <translation id="4819347708020428563">ಡೀಫಾಲ್ಟ್ ವೀಕ್ಷಣೆಯಲ್ಲಿ ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಹೊಸ Google Sheet ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="4825507807291741242">ಪ್ರಬಲ</translation>
-<translation id="4827402517081186284">ಅಜ್ಞಾತ ಮೋಡ್, ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಇಲ್ಲ ಎಂಬಂತೆ ಮಾಡುವುದಿಲ್ಲ:
+<translation id="4827402517081186284">ಅಜ್ಞಾತ ಮೋಡ್ ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಅಗೋಚರವಾಗಿರುವಂತೆ ಮಾಡುವುದಿಲ್ಲ:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />ನೀವು ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿದಾಗ ಅವುಗಳಿಗೆ ತಿಳಿಯುತ್ತದೆ<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ಉದ್ಯೋಗದಾತರು ಅಥವಾ ಶಾಲೆಗಳು ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಬಹುದು<ph name="END_LIST_ITEM" />
@@ -2107,7 +2107,6 @@
 <translation id="8176440868214972690">ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅಥವಾ ಕಾರ್ಯನೀತಿಗಳಂತಹ ಕೆಲವು ಮಾಹಿತಿಯನ್ನು ಈ ಕೆಳಗಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಕಳುಹಿಸಿದ್ದಾರೆ.</translation>
 <translation id="8184538546369750125">ಜಾಗತಿಕ ಡಿಫಾಲ್ಟ್ ಬಳಸಿ (ಅನುಮತಿಸಿ)</translation>
 <translation id="8190193880870196235">ವಿಸ್ತರಣೆ ಬಳಸಿಕೊಂಡು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
-<translation id="8193086767630290324">ಡೇಟಾದೊಂದಿಗೆ ತೆಗೆದುಕೊಂಡ ಕ್ರಮಗಳನ್ನು ಗೌಪ್ಯವೆಂದು ಫ್ಲ್ಯಾಗ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8194797478851900357">&amp;ಸರಿಸುವುದನ್ನು ರದ್ದುಗೊಳಿಸು</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ಜೊತೆಗಿನ ವಿಸ್ತರಣೆಗೆ ಅಮಾನ್ಯವಾದ ಅಪ್‌ಡೇಟ್‌‌ URL.</translation>
 <translation id="8202097416529803614">ಆರ್ಡರ್ ಸಾರಾಂಶ</translation>

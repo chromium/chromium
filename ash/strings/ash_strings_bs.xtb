@@ -64,6 +64,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1341651618736211726">Preklopni meni</translation>
 <translation id="1346748346194534595">Desno</translation>
 <translation id="1351937230027495976">Sužavanje menija</translation>
+<translation id="1364382257761975320">Da otključate Chromebook, koristite otisak prsta</translation>
 <translation id="1383597849754832576">Nije moguće preuzeti fajlove govora. Pokušajte ponovo kasnije.</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1391102559483454063">Uključeno</translation>
@@ -186,10 +187,12 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2352467521400612932">Postavke stilosa</translation>
 <translation id="2354174487190027830">Aktiviranje mreže <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
+<translation id="2367186422933365202">Nije se moguće prijaviti na Chromebook</translation>
 <translation id="2369165858548251131">"Zdravo" na kineskom</translation>
 <translation id="2390318262976603432">Postavke jezika/zemlje</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Kontrole medija</translation>
+<translation id="2402411679569069051">Da otključate Chromebook, koristite otisak prsta ili otključate telefon</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Ažuriranje je dostupno</translation>
@@ -290,6 +293,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3226991577105957773">i još <ph name="COUNT" /></translation>
 <translation id="324366796737464147">Poništavanje buke</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> je premješten s radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Da otključate Chromebook, uključite Bluetooth na telefonu</translation>
 <translation id="3255483164551725916">Šta sve možete uraditi?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289674678944039601">Punjenje putem adaptera</translation>
@@ -323,6 +327,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3477079411857374384">Ctrl + Shift + razmak</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definicija</translation>
+<translation id="3509391053705095206">Nije moguće pronaći vaš telefon. Provjerite je li Bluetooth na telefonu uključen.</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
 <translation id="3513798432020909783">Računom upravlja <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Povezano je sa sljedećim brojem uređaja: <ph name="NUM_DEVICES" /></translation>
@@ -358,6 +363,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="3713734891607377840">Otvori kada se završi</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
+<translation id="3744282433224562605">Da otključate Chromebook, unesite lozinku</translation>
 <translation id="3771549900096082774">Način rada visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator nije dozvolio višestruku prijavu za korisnika <ph name="USER_EMAIL" />. Svi korisnici se moraju odjaviti kako bi se nastavilo.</translation>
 <translation id="3779139509281456663">Povezivanje s uređajem <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4485060137115666462">Desnim klikom ili dugim pritiskom, Asistent vam prikazuje informacije kao što su definicija, prijevod ili pretvaranje mjerne jedinice za vaš odabir.</translation>
 <translation id="4505050298327493054">Aktivna radna površina.</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
+<translation id="4518404433291145981">Da otključate Chromebook, najprije otključajte telefon</translation>
 <translation id="4527045527269911712">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje.</translation>
 <translation id="453661520163887813">Do potpune napunjenosti je preostalo <ph name="TIME" /></translation>
 <translation id="4538824937723742295">Snimanje cijelog ekrana</translation>
@@ -551,11 +558,13 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5078796286268621944">Pogrešan PIN</translation>
 <translation id="5083553833479578423">Otključajte više funkcija Asistenta.</translation>
 <translation id="5136175204352732067">Povezana je drugačija tastatura</translation>
+<translation id="5147567197700016471">Otključano</translation>
 <translation id="5155897006997040331">Brzina čitanja</translation>
 <translation id="5166918508782100047">Postavke brzih odgovora</translation>
 <translation id="5168181903108465623">Dostupni su "cast" uređaji</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5176318573511391780">Snimanje dijela ekrana</translation>
+<translation id="5199367439331364630">Da se prijavite na Chromebook, unesite lozinku</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Još 1 obavještenje}one{Još # obavještenje}few{Još # obavještenja}other{Još # obavještenja}}</translation>
 <translation id="5207949376430453814">Istakni kursor u tekstu</translation>
 <translation id="5208059991603368177">Uključeno</translation>
@@ -576,6 +585,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5319712128756744240">Uparivanje novog uređaja</translation>
 <translation id="5322611492012084517">Nije moguće pronaći vaš telefon</translation>
 <translation id="5329548388331921293">Povezivanje…</translation>
+<translation id="5330201449517439522">Dodirnite ili kliknite da uđete</translation>
 <translation id="5331975486040154427">USB-C uređaj (lijevi priključak na zadnjem dijelu)</translation>
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
@@ -633,6 +643,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5825969630400862129">Postavke povezanih uređaja</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na primaocu <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Držite da maksimizirate</translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5867217927013474703">Prikupljanje informacija o mreži</translation>
@@ -738,6 +749,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6667908387435388584">Povežite se s pristupnom tačkom telefona, utišajte i pronađite svoj uređaj i pregledajte Chromeove kartice nedavno otvorene na vašem telefonu</translation>
 <translation id="6670153871843998651">Radna površina 3</translation>
 <translation id="6671495933530132209">Kopiraj sliku</translation>
+<translation id="6671661918848783005">Nije moguće otključati Chromebook</translation>
 <translation id="6692996468359469499">Primajte informacije u vezi s vašim odabirom</translation>
 <translation id="6696025732084565524">Vašoj odvojivoj tastaturi je potrebno važno ažuriranje</translation>
 <translation id="6700713906295497288">IME dugme menija</translation>

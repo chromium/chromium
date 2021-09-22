@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Se déconnecter et désactiver la synchro?</translation>
 <translation id="1373696734384179344">Mémoire insuffisante pour télécharger le contenu sélectionné.</translation>
 <translation id="1376578503827013741">Calcul en cours…</translation>
+<translation id="1382912999714108023">Vous ne voyez pas vos renseignements actuels? Veuillez communiquer avec votre banque pour les mettre à jour.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384704387250346179">Traduire l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
@@ -351,6 +352,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3214996641768123781">L'<ph name="BEGIN_LINK1" />historique de recherche<ph name="END_LINK1" /> et d'<ph name="BEGIN_LINK2" />autres formes d'activités<ph name="END_LINK2" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="321773570071367578">Si vous avez oublié votre phrase de passe ou souhaitez modifier ce paramètre, veuillez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Confirmez votre identité pour synchroniser vos mots de passe</translation>
+<translation id="3223522355830797639">Votre banque veut confirmer votre identité.</translation>
 <translation id="3227557059438308877">Google Chrome comme clé de sécurité</translation>
 <translation id="3232754137068452469">Application Web</translation>
 <translation id="3234978181857588512">Enregistrer sur l'appareil</translation>
@@ -817,6 +819,7 @@ Les versions d'essai du bac à sable de confidentialité sont toujours en cours 
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
 <translation id="6069177176307973611">Examinez les paramètres de confidentialité et de sécurité</translation>
+<translation id="6070730414166672373">Communication avec votre banque en cours\u2026</translation>
 <translation id="6085886413119427067">Détermine la manière de communiquer avec des sites Web par connexion sécurisée</translation>
 <translation id="60923314841986378">Il reste <ph name="HOURS" /> heures</translation>
 <translation id="6108923351542677676">Configuration en cours...</translation>
@@ -950,6 +953,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6811034713472274749">La page est prête pour consultation</translation>
 <translation id="6813446258015311409">Se connecter à Chrome, ouvert.</translation>
+<translation id="6814033694018386318">Ce que vous partagez avec Google</translation>
 <translation id="6817747507826986771">Partagez rapidement cette page. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, onglet, sélectionné</translation>
@@ -1278,6 +1282,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="867767487203716855">Prochaine mise à jour</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8683081248374354009">Réinitialiser le groupe</translation>
+<translation id="8683526617475118045">Ce que vous obtenez</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8725066075913043281">Réessayer</translation>

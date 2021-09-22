@@ -1316,6 +1316,7 @@
 <translation id="5252000469029418751">C7 (စာအိတ်)</translation>
 <translation id="5254043433801397071">ပုံနှိပ်ရန် အကြောင်းအရာကို အကောင်းဆုံးလုပ်ရန်</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">မည်သို့ပင်ဖြစ်စေ ဖမ်းယူရန်</translation>
 <translation id="5265446478903775694">Google တွင် ကျွန်ုပ်၏ကန့်သတ်ဆက်တင်ကို စီမံရန်</translation>
 <translation id="5266128565379329178">ထိပ်တွင် တွဲချုပ်ရန်</translation>
 <translation id="5269225904387178860">အောက်ခြေတွင် လေးချက်ဖောက်ရန်</translation>
@@ -1839,6 +1840,7 @@
 <translation id="7153618581592392745">လာဗင်ဒါ</translation>
 <translation id="7156870133441232244">ဆာဗာကို TLS 1.2 နှင့်နောက်ပိုင်းသို့ အဆင့်မြှင့်တင်ရမည်။</translation>
 <translation id="717330890047184534">Gaia ID−</translation>
+<translation id="7173920250514487165">သင့်ဖန်သားပြင်ပေါ်တွင် လျှို့ဝှက်အကြောင်းအရာကို ပုံဖမ်းခြင်း</translation>
 <translation id="7174545416324379297">ပေါင်းစည်းထားသည်</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
 <translation id="7179323680825933600">ငွေပေးချေနည်းလမ်းများကို သိမ်းပြီး ဖြည့်ရန်</translation>
@@ -2099,6 +2101,7 @@
 <translation id="7977538094055660992">ထုတ်ယူမည့်စက်</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">ပကတိအသွင် စက်နှင့် ဒေတာများ သုံးရန် ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="7984699858161118573">ဖန်သားပြင်ပေါ်ရှိ လျှို့ဝှက်အကြောင်းအရာကြောင့် စီမံခန့်ခွဲသူသည် ဖန်သားပြင်ဓာတ်ပုံရိုက်ခြင်း (သို့) မှတ်တမ်းတင်ခြင်းကို အကြံပြုမထားပါ</translation>
 <translation id="7984945080620862648">ဝက်ဘ်ဆိုက်က ပို့ပေးခဲ့သည့် စိတ်ချရသည့် အချက်အလက်များမှာ ရောနှောနေ၍ Chrome အနေနှင့် စီမံလုပ်ကိုင် မရသောကြောင့် သင်သည် <ph name="SITE" />ကို ယခုချက်ချင်း ဝင်ကြည့် မရနိုင်ပါ။ ကွန်ရက် အမှားများ နှင့် တိုက်ခိုက်မှုများမှာ အများအားဖြင့် ခဏယာယီပါ၊ သို့ဖြစ်၍ ဒီစာမျက်နှာသည်
 နောက်ပိုင်းတွင် အလုပ်လုပ် နိုင်ဖွယ် ရှိပါသည်။</translation>
 <translation id="79859296434321399">လွန်ကဲပကတိအသွင်ကို ကြည့်ရန် ARCore ကို ထည့်ပါ</translation>
@@ -2157,7 +2160,6 @@
 <translation id="8176440868214972690">ဤစက်စီမံခန့်ခွဲသူသည် ဆက်တင်များ (သို့) မူဝါဒများကဲ့သို့ အချက်အလက်အချို့ကို အောက်ပါဝဘ်ဆိုက်များသို့ ပို့လိုက်သည်။</translation>
 <translation id="8184538546369750125">အထွေထွေ ပုံသေကို သုံးရန် (ခွင့်ပြုရန်)</translation>
 <translation id="8190193880870196235">နောက်ဆက်တွဲက စီမံခန့်ခွဲသည်</translation>
-<translation id="8193086767630290324">လျှို့ဝှက်အဖြစ် အလံပြထားသော ဒေတာအတွက် လုပ်ဆောင်ချက်များ</translation>
 <translation id="8194797478851900357">&amp;ရွေ့ရှားမှုကို တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="8201077131113104583">ID "<ph name="EXTENSION_ID" />" တိုးချဲ့လိုင်းအတွက် အဆင့်မြှင့်ထားသော URL သည် သုံးမရပါ။</translation>
 <translation id="8202097416529803614">မှာယူမှု စုစုပေါင်း</translation>

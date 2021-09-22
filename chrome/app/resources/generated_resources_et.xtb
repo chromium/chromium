@@ -2326,7 +2326,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3433621910545056227">Vabandust! Süsteemil ei õnnestunud määrata seadme installiaegsete atribuutide lukustust.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. Seadete ja nende kohandamise kohta leiate lisateavet saidilt families.google.com.</translation>
-<translation id="3435541101098866721">Lisa uus telefon</translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />” taotleb koodi <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Turvalisus</translation>
 <translation id="343578350365773421">Paber on otsas</translation>
@@ -4234,6 +4233,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5501809658163361512">{COUNT,plural, =1{Andmeid (<ph name="ATTACHMENTS" />) ei saanud seadmest <ph name="DEVICE_NAME" /> vastu võtta}other{Andmeid (<ph name="ATTACHMENTS" />) ei saanud seadmest <ph name="DEVICE_NAME" /> vastu võtta}}</translation>
 <translation id="5502500733115278303">Imporditud Firefoxist</translation>
 <translation id="5502915260472117187">Laps</translation>
+<translation id="5503356662318814623">Saada sõnum</translation>
 <translation id="5503982651688210506">Luba hostil <ph name="HOST" /> ka edaspidi minu kaamerat kasutada ja liigutada ning mikrofoni kasutada</translation>
 <translation id="5504909642107847870">Privaatsuse ja turvalisuse ülevaatamine</translation>
 <translation id="5505264765875738116">Saidid ei saa küsida luba märguannete saatmiseks</translation>
@@ -4490,6 +4490,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5794414402486823030">Ava alati süsteemivaaturiga</translation>
 <translation id="5794700615121138172">Linuxi jagatud kaustad</translation>
 <translation id="5794786537412027208">Sule kõik Chrome'i rakendused</translation>
+<translation id="5796485699458186843">Uus inkognito &amp;vaheleht</translation>
 <translation id="5797521893972859201">Tühjendab ajaloo, sh otsingukasti ajaloo</translation>
 <translation id="5798079537501238810">Saidid saavad installida maksete töötlejaid</translation>
 <translation id="579915268381781820">Teie turvavõti eemaldati.</translation>
@@ -5740,7 +5741,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7170236477717446850">Profiilipilt</translation>
 <translation id="7171000599584840888">Lisa profiil …</translation>
 <translation id="7171259390164035663">Ära registreeri</translation>
-<translation id="7171746271229206319">Chrome OS-i seadme teabe ja andmete lugemine. Seda teavet võidakse jagada teie seadme tootjaga. Organisatsioonid peale Google'i kes andmeid töötlevad, järgivad oma privaatsuseeskirju</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>
 <translation id="7173114856073700355">Ava seaded</translation>
 <translation id="7174199383876220879">Uus! Juhtige muusikat, videoid ja muudki.</translation>
@@ -6462,7 +6462,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7901914889562552258">Lehemõõdikute abil täiustatud Chrome</translation>
 <translation id="7903345046358933331">Leht ei reageeri. Võite oodata lehe reageerimist või selle sulgeda.</translation>
 <translation id="7903742244674067440">Teil on neid sertimisorganeid tuvastavad sertifikaadid</translation>
-<translation id="7903859912536385558">stabiilne (usaldusväärne testija)</translation>
 <translation id="7903925330883316394">Utiliit: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Selle konto administraator on mitmesse kontosse sisselogimise keelanud.</translation>
 <translation id="7904526211178107182">Muutke Linuxi pordid teistele teie võrgus olevatele seadmetele kättesaadavaks.</translation>
@@ -6513,10 +6512,12 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7952904276017482715">Eeldatav ID oli „<ph name="EXPECTED_ID" />”, kuid ID oli „<ph name="NEW_ID" />”</translation>
 <translation id="7953669802889559161">Sisestusmeetodid</translation>
 <translation id="7953955868932471628">Otseteede haldamine</translation>
+<translation id="7955105108888461311">Küsi isiklikult</translation>
 <translation id="7956373551960864128">Teie salvestatud printerid</translation>
 <translation id="7957074856830851026">Seadme teabe (nt seerianumbri või vara ID) vaatamine</translation>
 <translation id="7957615753207896812">Klaviatuuriseadme seadete avamine</translation>
 <translation id="7959074893852789871">Fail sisaldas mitut sertifikaati, mõnda neist ei imporditud:</translation>
+<translation id="7959665254555683862">Uus inkognito &amp;vaheleht</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>
 <translation id="7963001036288347286">Puuteplaadi kiirendamine</translation>
 <translation id="7963608432878156675">See nimi on teistele seadmetele Bluetoothi ja võrguühenduste jaoks nähtav</translation>
@@ -6549,7 +6550,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7986295104073916105">Salvestatud parooli seadete lugemine ja muutmine</translation>
 <translation id="7987814697832569482">Loo alati ühendus selle VPN-i kaudu</translation>
 <translation id="7988355189918024273">Luba juurdepääsetavuse funktsioonid</translation>
-<translation id="7990394755527173834">Selleks et seadistada Android-telefon, mida selle arvuti puhul esmakordselt turvavõtmena kasutada, avage telefonis Chrome ja tehke valikud „Seaded &gt; Paroolid &gt; Telefoni kasutamine turvavõtmena”. Seejärel puudutage valikut „Ühenda uus seade” ja skannige see QR-kood.</translation>
 <translation id="7991296728590311172">Lülitiga juurdepääsu seaded</translation>
 <translation id="7997826902155442747">Protsessi prioriteet</translation>
 <translation id="7999229196265990314">Loodi järgmised failid:

@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
 <translation id="1930797645656624981">Chrome OS-ում ներածման եղանակի ծառայություն</translation>
 <translation id="1947737735496445907">Տպված է</translation>
+<translation id="197386857804679933">Անցեք կարգավորումներ՝ նորից միանալու համար</translation>
 <translation id="1979103255016296513">Գաղտնաբառի փոփոխման ժամկետն անցել է</translation>
 <translation id="1999615961760456652">Մուտքի էջ</translation>
 <translation id="2006864819935886708">Կապ</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">ԱՆՑԱԾ Է</translation>
 <translation id="2789486458103222910">Եղավ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
+<translation id="2860473693272905224">Մյուս էջը դրեք սկաների վրա</translation>
 <translation id="2872961005593481000">Անջատել</translation>
 <translation id="2878387241690264070">Լիցքաթափվել է <ph name="RATE" /> <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
 <translation id="3156846309055100599">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը...</translation>
 <translation id="315738237743207937">Հայտնաբերվել է մուտքի էջ</translation>
+<translation id="3170673040743561620">Փաստաթուղթը դրեք սկաների վրա</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3199982728237701504">Փաստաթղթերի մատակարար (երկկողմանի)</translation>
 <translation id="3226405216343213872">Սկաներների որոնում</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">Միացում</translation>
 <translation id="4832079907277790330">Ընտրել պանակ «Ֆայլեր» հավելվածում…</translation>
 <translation id="4835901797422965222">Ակտիվ ցանցեր չկան</translation>
+<translation id="484790837831576105">DNS-ի լուծաչափ (Android)</translation>
 <translation id="4848429997038228357">ՓՈՐՁԱՐԿՎՈՒՄ Է</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}one{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}other{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}}</translation>
 <translation id="4880328057631981605">Մուտքի կետի անունը</translation>
@@ -290,6 +294,7 @@
 <translation id="6050189528197190982">Գորշասանդղակ</translation>
 <translation id="6058625436358447366">Ավարտելու համար մուտքագրեք ձեր հին և նոր գաղտնաբառերը</translation>
 <translation id="6061772781719867950">Անհաջող HTTP հարցումներ</translation>
+<translation id="6075872808778243331">HTTP-ի հապաղում (Android)</translation>
 <translation id="6104112872696127344">Սկանավորումը չեղարկվել է</translation>
 <translation id="6106186594183574873">Ավարտելու համար մուտքագրեք ձեր հին գաղտնաբառը</translation>
 <translation id="6108689792487843350">Անցախուցն անհասանելի է</translation>
@@ -332,6 +337,7 @@
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
+<translation id="6714650824879092633">«<ph name="NETWORK_NAME" />» ցանցն անջատված է</translation>
 <translation id="6747215703636344499">Դադարեցվել է – Ելքային դարակը լցված է</translation>
 <translation id="6756731097889387912">Չհաջողվեց չեղարկել սկանավորումը</translation>
 <translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
@@ -341,11 +347,13 @@
 <translation id="6910312834584889076">Սկաների կափարիչը բաց է։ Փակեք այն և նորից փորձեք։</translation>
 <translation id="6911383237894364323">Չհաջողվեց միանալ մեդիա սերվերներին</translation>
 <translation id="6957231940976260713">Ծառայության անվանումը</translation>
+<translation id="6961170852793647506">Սկսելու համար փաստաթուղթը դրեք սկաների վրա</translation>
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
 <translation id="6982876849933694860">Նոր միացում ստեղծելու համար անցեք <ph name="BEGIN_LINK" />Կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> ստեղնաշար</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
+<translation id="7058278511608979688">Ավարտել և պահել</translation>
 <translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -409,6 +417,7 @@
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
+<translation id="811820734797650957">Անցախուցը պատասխանում է փինգ հարցմանը (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Հայցել թրաֆիկի հաշվիչներ</translation>
 <translation id="8206859287963243715">Բջջային</translation>
@@ -480,6 +489,7 @@
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
+<translation id="9126720536733509015">Պահեք մի քանի էջ մեկ PDF ֆայլում</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>
 <translation id="9149391708638971077">Փորձարկել հիշողությունը</translation>
 <translation id="9173638680043580060">Մնացել է մեկ րոպեից քիչ</translation>

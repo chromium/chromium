@@ -770,6 +770,7 @@
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="6921188888306725546">কীবোর্ড শর্টকার্ট উন্নত করা হয়েছে</translation>
 <translation id="6929655271276551705">তারিখের সেটিংস</translation>
+<translation id="6931576957638141829">এখানে সেভ করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6961121602502368900">অফিস প্রোফাইলে 'সাইলেন্স ফোন' ফিচার উপলভ্য নেই</translation>
 <translation id="6961840794482373852">Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Up কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Up Arrow কী প্রেস করুন।</translation>
@@ -906,6 +907,7 @@
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="793716872548410480">আপনার ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V প্রেস করুন। আপনার কপি করা শেষ ৫টি আইটেম ক্লিপবোর্ডে সেভ করা হয়েছে।</translation>
 <translation id="7955885781510802139">হাই-কনট্রাস্ট মোড</translation>
+<translation id="7968693143708939792">ফোল্ডার বেছে নিন...</translation>
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>
 <translation id="7980780401175799550">Chrome OS নেভিগেট করার নতুন পদ্ধতিগুলি ব্যবহার করে দেখুন</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>

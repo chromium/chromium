@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> ਅਨਪਲੱਗਡ ਹੈ।</translation>
 <translation id="1473110567575736769">3 ਸਕਿੰਟਾਂ ਦਾ ਟਾਈਮਰ</translation>
 <translation id="1545749641540134597">QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">ਸਧਾਰਨ</translation>
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">ਦਸਤਾਵੇਜ਼ ਸਕੈਨਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾ ਹੁਣ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="5268823927180092501">ਸਾਰੇ ਕੈਮਰਿਆਂ ਵਿੱਚ ਦਸਤਾਵੇਜ਼ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5444515100983837161">ਦਸਤਾਵੇਜ਼ ਦੇ ਸਾਰੇ ਕਿਨਾਰਿਆਂ ਨੂੰ ਫ੍ਰੇਮ ਦੇ ਅੰਦਰ ਹੀ ਰੱਖੋ। ਜੇ ਦਸਤਾਵੇਜ਼ ਅਤੇ ਬੈਕਗ੍ਰਾਊਂਡ ਵੱਖਰੇ ਰੰਗ ਦੇ ਹੋਣ ਤਾਂ ਸਕੈਨਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾ ਬਿਹਤਰੀਨ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਦੀ ਹੈ।</translation>
+<translation id="5588258280684580073">GIF ਰਿਕਾਰਡਿੰਗ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5671277269877808209">ਵਰਗ</translation>
 <translation id="5746169159649715125">PDF ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5753488212459587150">ਮਾਹਰ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">ਵੀਡੀਓ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="7337660886763914220">ਫ਼ਾਈਲ ਸਿਸਟਮ ਗੜਬੜੀਆਂ।</translation>
 <translation id="7450541714075000668">ਲਿਖਤ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
+<translation id="7488619942230388918">GIF ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="7557677699350329807">ਅਗਲੇ ਕੈਮਰੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="7607002721634913082">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="7608223098072244877">4 ਗੁਣਾ 4</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">ਸਧਾਰਨ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="7983668134180549431">ਲਿਖਤ ਦਾ ਪਤਾ ਲੱਗਾ।</translation>
 <translation id="8067883171444229417">ਵੀਡੀਓ ਚਲਾਓ</translation>
 <translation id="8120146556401698679">ਪੈਨ ਕਰੋ ਟੇਢਾ ਕਰੋ ਜ਼ੂਮ ਕਰੋ</translation>

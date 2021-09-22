@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Амжилтгүй болсон - Зогссон</translation>
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Хуудсыг хасах уу?}=1{{PAGE_NUMBER}-р хуудсыг хасах уу?}other{{PAGE_NUMBER}-р хуудсыг хасах уу?}}</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна...</translation>
 <translation id="315738237743207937">Дамжих портал илэрсэн</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM-г түгжсэн (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Бүлгийн нэр</translation>
+<translation id="5051044138948155788">Энэ нь цорын ганц хуудас байна. Энэ нь таныг скан хийхийг эхлүүлэх дэлгэц рүү аваачна.</translation>
 <translation id="5088172560898466307">Серверийн хостын нэр</translation>
 <translation id="5089810972385038852">Муж</translation>
 <translation id="5142961317498132443">Баталгаажуулалт</translation>
@@ -269,6 +271,7 @@
 <translation id="5499114900554609492">Скан хийхийг гүйцээж чадсангүй</translation>
 <translation id="5502931783115429516">Android ажиллахгүй байна</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Дахин скан хийх</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Гэр бүл</translation>
@@ -319,6 +322,7 @@
 <translation id="641081527798843608">Субъект тохируулах</translation>
 <translation id="6423239382391657905">VPN-г нээх</translation>
 <translation id="6456394469623773452">Сайн</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Хуудсыг дахин скан хийх үү?}=1{{PAGE_NUMBER}-р хуудсыг дахин скан хийх үү?}other{{PAGE_NUMBER}-р хуудсыг дахин скан хийх үү?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> удирддаг</translation>
 <translation id="649050271426829538">Зогссон - Цаас гацсан</translation>

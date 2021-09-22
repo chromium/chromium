@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> е исклучена.</translation>
 <translation id="1473110567575736769">Тајмер од 3 секунди</translation>
 <translation id="1545749641540134597">Скенирајте QR код</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Нормален</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">Отсега е достапно скенирање документи</translation>
 <translation id="5268823927180092501">Овозможи режим на документ за сите камери</translation>
 <translation id="5444515100983837161">Поставете ги сите рабови на документот во рамката. Скенирањето функционира најдобро кога документот и заднината имаат различни бои.</translation>
+<translation id="5588258280684580073">Овозможи GIF-снимање</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5746169159649715125">Зачувај како ПДФ</translation>
 <translation id="5753488212459587150">Овозможи режим на експерт</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">Видеорезолуција</translation>
 <translation id="7337660886763914220">Грешки во системот со датотеки.</translation>
 <translation id="7450541714075000668">Текстот е копиран</translation>
+<translation id="7488619942230388918">Снимете GIF-видео</translation>
 <translation id="7557677699350329807">Префрли на следната камера</translation>
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Снимете нормално видео</translation>
 <translation id="7983668134180549431">Препознаен е текст.</translation>
 <translation id="8067883171444229417">Пушти го видеото</translation>
 <translation id="8120146556401698679">Движи Навали Зумирај</translation>

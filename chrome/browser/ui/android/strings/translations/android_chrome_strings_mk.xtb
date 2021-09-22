@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Одјавете се и исклучете синхронизација?</translation>
 <translation id="1373696734384179344">Недоволно меморија за да се преземе избраната содржина.</translation>
 <translation id="1376578503827013741">Се пресметува…</translation>
+<translation id="1382912999714108023">Ова не се вашите тековни податоци? Контактирајте со вашата банка за да ги ажурирате.</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384704387250346179">Преведете слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Активен пред <ph name="LAST_UPDATED" /> дена</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Историјата на пребарување<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други форми на активност<ph name="END_LINK2" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="321773570071367578">Ако сте ја заборавиле лозинката или сакате да ја измените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">За да ги синхронизирате лозинките, потврдете дека сте вие</translation>
+<translation id="3223522355830797639">Вашата банка сака да потврди дека сте вие.</translation>
 <translation id="3227557059438308877">Google Chrome како безбедносен клуч</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
 <translation id="3234978181857588512">Зачувај на уредот</translation>
@@ -817,6 +819,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
 <translation id="6069177176307973611">Прегледајте ги поставките за приватност и безбедност</translation>
+<translation id="6070730414166672373">Се контактира со банката\u2026</translation>
 <translation id="6085886413119427067">Определува како да се поврзуваат веб-сајтовите преку безбедна врска</translation>
 <translation id="60923314841986378">Останаа <ph name="HOURS" /> часа</translation>
 <translation id="6108923351542677676">Поставувањето е во тек…</translation>
@@ -950,6 +953,7 @@
 <translation id="6802555630140434547">Прозорецот ќе се затвори</translation>
 <translation id="6811034713472274749">Страницата е спремна за прикажување</translation>
 <translation id="6813446258015311409">Најавете се на Chrome, отворено.</translation>
+<translation id="6814033694018386318">Што споделувате со Google</translation>
 <translation id="6817747507826986771">Брзо споделете ја страницава. За да ја измените сликава од екранот, допрете и задржете.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Избрана е картичката <ph name="TAB_TITLE" /></translation>
@@ -1278,6 +1282,7 @@
 <translation id="867767487203716855">Следно ажурирање</translation>
 <translation id="8683039184091909753">слика</translation>
 <translation id="8683081248374354009">Ресетирај група</translation>
+<translation id="8683526617475118045">Што ќе добиете</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>

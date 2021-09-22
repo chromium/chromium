@@ -1318,6 +1318,7 @@
 <translation id="5252000469029418751">C7 (Φάκελος)</translation>
 <translation id="5254043433801397071">Βελτιστοποίηση περιεχομένου εκτύπωσης</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">Λήψη ούτως ή άλλως</translation>
 <translation id="5265446478903775694">Διαχείριση του απορρήτου μου στο Google</translation>
 <translation id="5266128565379329178">Βιβλιοδεσία στο επάνω μέρος</translation>
 <translation id="5269225904387178860">Τετραπλό τρύπημα στο κάτω μέρος</translation>
@@ -1843,6 +1844,7 @@
 <translation id="7153618581592392745">Λιλά</translation>
 <translation id="7156870133441232244">Ο διακομιστής θα πρέπει να αναβαθμιστεί σε έκδοση TLS 1.2 ή μεταγενέστερη.</translation>
 <translation id="717330890047184534">Αναγνωριστικό Gaia:</translation>
+<translation id="7173920250514487165">Λήψη εμπιστευτικού περιεχομένου στην οθόνη σας</translation>
 <translation id="7174545416324379297">Έγινε συγχώνευση</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="7179323680825933600">Αποθήκευση και συμπλήρωση τρόπων πληρωμής</translation>
@@ -2102,6 +2104,7 @@
 <translation id="7977538094055660992">Συσκευή εξόδου</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">Μπορεί να ζητά να χρησιμοποιεί συσκευές και δεδομένα εικονικής πραγματικότητας.</translation>
+<translation id="7984699858161118573">Ο διαχειριστής δεν συνιστά τη λήψη στιγμιότυπων οθόνης ή εγγραφών λόγω εμπιστευτικού περιεχομένου στην οθόνη.</translation>
 <translation id="7984945080620862648">Δεν μπορείτε να επισκεφτείτε το <ph name="SITE" /> αυτήν τη στιγμή επειδή ο ιστότοπος έστειλε κωδικοποιημένα διαπιστευτήρια τα οποία δεν μπορεί να επεξεργαστεί το Chrome. Τα σφάλματα δικτύου και οι επιθέσεις είναι συνήθως προσωρινά, συνεπώς αυτή η σελίδα πιθανότατα θα λειτουργήσει αργότερα.</translation>
 <translation id="79859296434321399">Για να δείτε περιεχόμενο επαυξημένης πραγματικότητας, εγκαταστήστε το ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2159,7 +2162,6 @@
 <translation id="8176440868214972690">Ο διαχειριστής αυτής της συσκευής έστειλε ορισμένες πληροφορίες στους παρακάτω ιστοτόπους, όπως ρυθμίσεις ή πολιτικές.</translation>
 <translation id="8184538546369750125">Χρήση καθολικής προεπιλεγμένης ρύθμισης (Επιτρέπεται)</translation>
 <translation id="8190193880870196235">Υπό τη διαχείριση μιας επέκτασης</translation>
-<translation id="8193086767630290324">Ενέργειες με δεδομένα που έχουν επισημανθεί ως εμπιστευτικά</translation>
 <translation id="8194797478851900357">&amp;Αναίρεση μετακίνησης</translation>
 <translation id="8201077131113104583">Η διεύθυνση URL ενημέρωσης για την επέκταση με αναγνωριστικό ID "<ph name="EXTENSION_ID" />", δεν είναι έγκυρη.</translation>
 <translation id="8202097416529803614">Σύνοψη παραγγελίας</translation>

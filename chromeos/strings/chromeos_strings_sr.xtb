@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Није успело – заустављено је</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Желите да уклоните страницу?}=1{Желите да уклоните {PAGE_NUMBER}. страницу?}one{Желите да уклоните {PAGE_NUMBER}. страницу?}few{Желите да уклоните {PAGE_NUMBER}. страницу?}other{Желите да уклоните {PAGE_NUMBER}. страницу?}}</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
 <translation id="3156846309055100599">Скенира се <ph name="PAGE_NUMBER" />. страница...</translation>
 <translation id="315738237743207937">Откривен је улазни портал</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM је закључан (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Назив групе</translation>
+<translation id="5051044138948155788">Ово је једина страница. Ово ће вас одвести на почетни екран за скенирање.</translation>
 <translation id="5088172560898466307">Име хоста сервера</translation>
 <translation id="5089810972385038852">Држава</translation>
 <translation id="5142961317498132443">Потврда идентитета</translation>
@@ -269,6 +271,7 @@
 <translation id="5499114900554609492">Нисмо успели да довршимо скенирање</translation>
 <translation id="5502931783115429516">Android није покренут</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Скенирај поново</translation>
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Породица</translation>
@@ -319,6 +322,7 @@
 <translation id="641081527798843608">Подударање наслова</translation>
 <translation id="6423239382391657905">Отворена VPN</translation>
 <translation id="6456394469623773452">Добар</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Желите да поново скенирате страницу?}=1{Желите да поново скенирате {PAGE_NUMBER}. страницу?}one{Желите да поново скенирате {PAGE_NUMBER}. страницу?}few{Желите да поново скенирате {PAGE_NUMBER}. страницу?}other{Желите да поново скенирате {PAGE_NUMBER}. страницу?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Управља <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Заустављено – папир је заглављен</translation>

@@ -109,6 +109,7 @@
 <translation id="3091839911843451378">Ebaõnnestus – peatatud</translation>
 <translation id="3102119246920354026">Vahemälu</translation>
 <translation id="3122464029669770682">Protsessor</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Kas eemaldada leht?}=1{Kas eemaldada {PAGE_NUMBER}. leht?}other{Kas eemaldada {PAGE_NUMBER}. leht?}}</translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. lehe skannimine …</translation>
 <translation id="315738237743207937">Tuvastati hõiveportaal</translation>
@@ -232,6 +233,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM on lukus (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupi nimi</translation>
+<translation id="5051044138948155788">See on ainus leht. See suunab teid skannimise avakuvale.</translation>
 <translation id="5088172560898466307">Serveri hosti nimi</translation>
 <translation id="5089810972385038852">Osariik/Maakond</translation>
 <translation id="5142961317498132443">Autentimine</translation>
@@ -269,6 +271,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5499114900554609492">Skannimist ei saanud lõpetada</translation>
 <translation id="5502931783115429516">Android ei tööta</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Skanni uuesti</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Perekond</translation>
@@ -319,6 +322,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="641081527798843608">Teema vaste</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Hea</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Kas skannida leht uuesti?}=1{Kas skannida {PAGE_NUMBER}. leht uuesti?}other{Kas skannida {PAGE_NUMBER}. leht uuesti?}}</translation>
 <translation id="6472207088655375767">Ühekordne parool</translation>
 <translation id="6480327114083866287">Haldab <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Peatatud – paberiummistus</translation>

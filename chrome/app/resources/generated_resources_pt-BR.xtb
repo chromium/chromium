@@ -2337,7 +2337,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3433621910545056227">Ops! O sistema falhou ao estabelecer o bloqueio de atributos da hora de instalação do dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Se a configuração "Atividade na Web e de apps adicional" estiver ativada para a criança, esses dados poderão ser salvos na Conta do Google dela. Saiba mais sobre essas configurações e como ajustá-las em families.google.com.</translation>
-<translation id="3435541101098866721">Adicionar novo telefone</translation>
 <translation id="3435688026795609344">A extensão "<ph name="EXTENSION_NAME" />" está solicitando seu <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="343578350365773421">Sem papel</translation>
@@ -4246,6 +4245,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Falha ao receber <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}one{Falha ao receber <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}other{Falha ao receber <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importado do Firefox</translation>
 <translation id="5502915260472117187">Uma criança</translation>
+<translation id="5503356662318814623">Enviar uma mensagem</translation>
 <translation id="5503982651688210506">Continuar permitindo que <ph name="HOST" /> use e mova sua câmera e use seu microfone</translation>
 <translation id="5504909642107847870">Revisão de privacidade e segurança</translation>
 <translation id="5505264765875738116">Os sites não podem pedir para enviar notificações</translation>
@@ -4503,6 +4503,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5794414402486823030">Sempre abrir com visualizador do sistema</translation>
 <translation id="5794700615121138172">Pastas compartilhadas do Linux</translation>
 <translation id="5794786537412027208">Sair de todos os aplicativos do Google Chrome</translation>
+<translation id="5796485699458186843">Nova guia anônima</translation>
 <translation id="5797521893972859201">Limpa o histórico, inclusive da caixa de pesquisa</translation>
 <translation id="5798079537501238810">Os sites podem instalar gerenciadores de pagamento</translation>
 <translation id="579915268381781820">Sua chave de segurança foi removida.</translation>
@@ -5753,7 +5754,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7170236477717446850">Foto do perfil</translation>
 <translation id="7171000599584840888">Adicionar perfil…</translation>
 <translation id="7171259390164035663">Não se inscrever</translation>
-<translation id="7171746271229206319">Ler os dados e as informações do dispositivo Chrome OS. Essas informações podem ser compartilhadas com o fabricante do dispositivo. Os dados processados por organizações terceiras seguirão Políticas de Privacidade diferentes</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>
 <translation id="7173114856073700355">Abrir "Configurações"</translation>
 <translation id="7174199383876220879">Novo! Controle suas músicas, vídeos e muito mais.</translation>
@@ -6475,7 +6475,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7901914889562552258">Métricas de uso aprimoradas para o Chrome</translation>
 <translation id="7903345046358933331">A página deixou de responder. Espere até ela voltar a responder ou feche-a.</translation>
 <translation id="7903742244674067440">Você tem certificados no arquivo que identificam estas autoridades de certificação</translation>
-<translation id="7903859912536385558">Stable (trusted tester)</translation>
 <translation id="7903925330883316394">Utilitário: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">O administrador desta conta bloqueou o login múltiplo.</translation>
 <translation id="7904526211178107182">Disponibilize portas do Linux para outros dispositivos na sua rede.</translation>
@@ -6526,10 +6525,12 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7952904276017482715">O código esperado era "<ph name="EXPECTED_ID" />", mas o instalado foi "<ph name="NEW_ID" />"</translation>
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7953955868932471628">Gerenciar atalhos</translation>
+<translation id="7955105108888461311">Perguntar diretamente</translation>
 <translation id="7956373551960864128">Suas impressoras salvas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o número de série ou o ID do recurso</translation>
 <translation id="7957615753207896812">Abrir configurações do teclado do dispositivo</translation>
 <translation id="7959074893852789871">O arquivo continha vários certificados e alguns deles não foram importados:</translation>
+<translation id="7959665254555683862">Nova guia anônima</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7963001036288347286">Aceleração do touchpad</translation>
 <translation id="7963608432878156675">Este nome fica visível para outros dispositivos em conexões de rede e Bluetooth</translation>
@@ -6562,7 +6563,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7986295104073916105">Ler e alterar as configurações de senhas salvas</translation>
 <translation id="7987814697832569482">Sempre se conectar usando esta VPN</translation>
 <translation id="7988355189918024273">Ativa os recursos de acessibilidade</translation>
-<translation id="7990394755527173834">Para configurar um smartphone Android para ser usado como uma chave de segurança neste computador pela primeira vez, abra o Chrome no dispositivo e acesse Configurações &gt; Senhas &gt; Usar o smartphone como chave de segurança. Depois, toque em "Conectar novo dispositivo" e leia este código QR.</translation>
 <translation id="7991296728590311172">Configurações do acesso com interruptor</translation>
 <translation id="7997826902155442747">Prioridade de processo</translation>
 <translation id="7999229196265990314">Os seguintes arquivos foram criados:

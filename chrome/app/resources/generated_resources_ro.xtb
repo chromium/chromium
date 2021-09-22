@@ -2321,7 +2321,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3433621910545056227">Hopa! Sistemul nu a reușit să blocheze atributele la instalarea pe gadget.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. Află mai multe despre aceste setări și cum să le modifici la families.google.com.</translation>
-<translation id="3435541101098866721">Adăugați un telefon nou</translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />” solicită <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="343578350365773421">Lipsă hârtie</translation>
@@ -4229,6 +4228,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nu s-a primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}few{Nu s-au primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}other{Nu s-au primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importate din Firefox</translation>
 <translation id="5502915260472117187">Un copil</translation>
+<translation id="5503356662318814623">Trimite un mesaj</translation>
 <translation id="5503982651688210506">Permite în continuare ca <ph name="HOST" /> să folosească și să miște camera și să folosească microfonul</translation>
 <translation id="5504909642107847870">Examinarea confidențialității și a securității</translation>
 <translation id="5505264765875738116">Site-urile nu îți pot solicita să îți trimită notificări</translation>
@@ -4485,6 +4485,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5794414402486823030">Deschide întotdeauna cu Utilitarul de vizualizare al sistemului</translation>
 <translation id="5794700615121138172">Dosare comune în Linux</translation>
 <translation id="5794786537412027208">Ieși din toate aplicațiile Chrome</translation>
+<translation id="5796485699458186843">Filă incognito &amp;nouă</translation>
 <translation id="5797521893972859201">Șterge istoricul, inclusiv din caseta de căutare</translation>
 <translation id="5798079537501238810">Site-urile pot instala handlere pentru plăți</translation>
 <translation id="579915268381781820">Cheia de securitate a fost eliminată.</translation>
@@ -5735,7 +5736,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7170236477717446850">Fotografie de profil</translation>
 <translation id="7171000599584840888">Adaugă un profil...</translation>
 <translation id="7171259390164035663">Nu doresc să mă înregistrez</translation>
-<translation id="7171746271229206319">Citește informațiile de pe dispozitivul cu sistem de operare Chrome și datele dispozitivului. Aceste informații pot fi trimise la producătorul dispozitivului. Datele gestionate de alte organizații decât Google vor respecta politicile de confidențialitate respective.</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Adaugă fila într-un grup nou}few{Adaugă filele într-un grup nou}other{Adaugă filele într-un grup nou}}</translation>
 <translation id="7173114856073700355">Deschide Setările</translation>
 <translation id="7174199383876220879">Nou! Gestionează muzica, videoclipurile și altele.</translation>
@@ -6456,7 +6456,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7901914889562552258">Un browser Chrome îmbunătățit care folosește valori privind paginile</translation>
 <translation id="7903345046358933331">Pagina a devenit inactivă. Poți aștepta să devină activă sau o poți închide.</translation>
 <translation id="7903742244674067440">Ai certificate stocate care identifică aceste autorități de certificare</translation>
-<translation id="7903859912536385558">stabil (tester de încredere)</translation>
 <translation id="7903925330883316394">Utilitar: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Administratorul acestui cont a dezactivat conectarea multiplă.</translation>
 <translation id="7904526211178107182">Fă porturile Linux disponibile pentru alte dispozitive din rețea.</translation>
@@ -6507,10 +6506,12 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7952904276017482715">ID-ul așteptat era „<ph name="EXPECTED_ID" />”, dar ID-ul a fost „<ph name="NEW_ID" />”</translation>
 <translation id="7953669802889559161">Metode de introducere a textului</translation>
 <translation id="7953955868932471628">Gestionați comenzile rapide</translation>
+<translation id="7955105108888461311">Întreabă în persoană</translation>
 <translation id="7956373551960864128">Imprimante salvate</translation>
 <translation id="7957074856830851026">Vezi informații despre dispozitiv, cum ar fi numărul de serie sau ID-ul de material</translation>
 <translation id="7957615753207896812">Deschide setările dispozitivului privind tastatura</translation>
 <translation id="7959074893852789871">Fișierul a conținut mai multe certificate, unele dintre acestea nefiind importate:</translation>
+<translation id="7959665254555683862">Filă incognito &amp;nouă</translation>
 <translation id="7961015016161918242">Niciodată</translation>
 <translation id="7963001036288347286">Accelerarea touchpadului</translation>
 <translation id="7963608432878156675">Acest nume este vizibil pentru alte dispozitive pentru conexiuni Bluetooth și la rețea</translation>
@@ -6543,7 +6544,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7986295104073916105">Citește și modifică setările parolelor salvate</translation>
 <translation id="7987814697832569482">Conectează-te mereu prin această rețea VPN</translation>
 <translation id="7988355189918024273">Activați funcțiile de accesibilitate</translation>
-<translation id="7990394755527173834">Pentru a configura un telefon Android ca să poată fi folosit ca o cheie de securitate pe acest computer pentru prima dată, deschide Chrome pe telefon și accesează „Setări &gt; Parole &gt; Folosește telefonul ca pe o cheie de securitate”. Apoi atinge „Conectează un nou dispozitiv” și scanează acest cod QR.</translation>
 <translation id="7991296728590311172">Setările pentru Accesul prin comutare</translation>
 <translation id="7997826902155442747">Prioritatea procesului</translation>
 <translation id="7999229196265990314">Au fost create următoarele fișiere:

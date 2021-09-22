@@ -2335,7 +2335,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3433621910545056227">Úbbs! Kerfinu mistókst að koma á eigindalás við uppsetningu tækisins.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google reikningi barnsins. Fáðu frekari upplýsingar um þessar stillingar og hvernig þær eru stilltar á families.google.com.</translation>
-<translation id="3435541101098866721">Bæta við nýjum síma</translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />“ biður um <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="343578350365773421">Enginn pappír</translation>
@@ -4244,6 +4243,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5501809658163361512">{COUNT,plural, =1{Ekki tókst að taka við <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}one{Ekki tókst að taka við <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}other{Ekki tókst að taka við <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Flutt inn úr Firefox</translation>
 <translation id="5502915260472117187">Barn</translation>
+<translation id="5503356662318814623">Senda skilaboð</translation>
 <translation id="5503982651688210506">Halda áfram að leyfa <ph name="HOST" /> að nota og hreyfa myndavélina og nota hljóðnemann</translation>
 <translation id="5504909642107847870">Persónuverndar- og öryggisyfirferð</translation>
 <translation id="5505264765875738116">Vefsvæði geta ekki óskað eftir því að senda tilkynningar</translation>
@@ -4500,6 +4500,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5794414402486823030">Opna alltaf með skoðara kerfis</translation>
 <translation id="5794700615121138172">Sameiginlegar möppur í Linux</translation>
 <translation id="5794786537412027208">Loka öllum Chrome forritum</translation>
+<translation id="5796485699458186843">Nýr huliðsflipi</translation>
 <translation id="5797521893972859201">Hreinsar feril, einnig í leitarreitnum</translation>
 <translation id="5798079537501238810">Vefsvæði mega setja upp greiðslumiðlara</translation>
 <translation id="579915268381781820">Öryggislykillinn var fjarlægður.</translation>
@@ -5750,7 +5751,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7170236477717446850">Prófílmynd</translation>
 <translation id="7171000599584840888">Bæta prófíl við...</translation>
 <translation id="7171259390164035663">Ekki skrá</translation>
-<translation id="7171746271229206319">Lesa upplýsingar og gögn Chrome OS tækis. Þessum upplýsingum kann að vera deilt með framleiðanda tækisins. Önnur fyrirtæki en Google fylgja eigin persónuverndarstefnum við úrvinnslu gagna</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Bæta flipa við nýjan hóp}one{Bæta flipum við nýjan hóp}other{Bæta flipum við nýjan hóp}}</translation>
 <translation id="7173114856073700355">Opna stillingar</translation>
 <translation id="7174199383876220879">Nýtt! Stjórnaðu tónlistinni, myndskeiðunum og fleiru.</translation>
@@ -6472,7 +6472,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7901914889562552258">Betri Chrome sem notar mæligildi síðu</translation>
 <translation id="7903345046358933331">Síðan er hætt að svara. Þú getur beðið eftir að hún lagist eða lokað henni.</translation>
 <translation id="7903742244674067440">Þú ert með skráð vottorð sem bera kennsl á þessar vottunarstöðvar</translation>
-<translation id="7903859912536385558">stöðug (traustur prófandi)</translation>
 <translation id="7903925330883316394">Hjálparferli: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Stjórnandi þessa reiknings hefur gert innskráningu á marga reikninga óvirka.</translation>
 <translation id="7904526211178107182">Gerðu Linux-gáttir tiltækar fyrir önnur tæki í netkerfinu þínu.</translation>
@@ -6523,10 +6522,12 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7952904276017482715">Búist var við auðkenninu „<ph name="EXPECTED_ID" />“ en auðkennið er „<ph name="NEW_ID" />“</translation>
 <translation id="7953669802889559161">Innsláttur</translation>
 <translation id="7953955868932471628">Stjórna flýtileiðum</translation>
+<translation id="7955105108888461311">Spyrja í eigin persónu</translation>
 <translation id="7956373551960864128">Vistaðir prentarar þínir</translation>
 <translation id="7957074856830851026">Sjá upplýsingar um tæki, svo sem raðnúmer eða eignarauðkenni</translation>
 <translation id="7957615753207896812">Opna lyklaborðsstillingar tækisins</translation>
 <translation id="7959074893852789871">Skráin innihélt mörg vottorð en sum þeirra voru ekki flutt inn:</translation>
+<translation id="7959665254555683862">Nýr huliðsflipi</translation>
 <translation id="7961015016161918242">Aldrei</translation>
 <translation id="7963001036288347286">Hröðun snertiflatar</translation>
 <translation id="7963608432878156675">Þetta heiti er sýnilegt öðrum tækjum til að koma á Bluetooth-tengingu og nettengingum</translation>
@@ -6559,7 +6560,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7986295104073916105">Lesa og breyta stillingum vistaðra aðgangsorða</translation>
 <translation id="7987814697832569482">Tengjast alltaf í gegnum þetta VPN-net</translation>
 <translation id="7988355189918024273">Virkja aðgengiseiginleika</translation>
-<translation id="7990394755527173834">Til að setja upp Android síma sem á að nota sem öryggislykil með þessari tölvu í fyrsta sinn skaltu opna Chrome í símanum og opna „Stillingar &gt; Aðgangsorð &gt; Nota síma sem öryggislykil“. Ýttu síðan á „Tengja nýtt tæki“ og skannaðu inn þennan QR-kóða.</translation>
 <translation id="7991296728590311172">Stillingar rofaaðgangs</translation>
 <translation id="7997826902155442747">Forgangur ferla</translation>
 <translation id="7999229196265990314">Bjó til eftirfarandi skrár:

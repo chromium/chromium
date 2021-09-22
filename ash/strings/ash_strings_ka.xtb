@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">გადავსება</translation>
 <translation id="1346748346194534595">მარჯვნივ</translation>
 <translation id="1351937230027495976">მენიუს ჩაკეცვა</translation>
+<translation id="1364382257761975320">თქვენი Chromebook-ის განსაბლოკად გამოიყენეთ თქვენი თითის ანაბეჭდი</translation>
 <translation id="1383597849754832576">მეტყველების ფაილების ჩამოტვირთვა ვერ მოხერხდა. ცადეთ მოგვიანებით.</translation>
 <translation id="1383876407941801731">ძიება</translation>
 <translation id="1391102559483454063">ჩართვა</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">სტილუსის პარამეტრები</translation>
 <translation id="2354174487190027830"><ph name="NAME" />-ის გააქტიურება</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
+<translation id="2367186422933365202">თქვენს Chromebook-ში შესვლა ვერ მოხერხდა</translation>
 <translation id="2369165858548251131">„გამარჯობა“ ჩინურად</translation>
 <translation id="2390318262976603432">ლოკალის პარამეტრები</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">მედიის მართვის საშუალებები</translation>
+<translation id="2402411679569069051">თქვენი Chromebook-ის განსაბლოკად გამოიყენეთ თქვენი თითის ანაბეჭდი, ან განბლოკეთ თქვენი ტელეფონი</translation>
 <translation id="2405664212338326887">არ არის დაკავშირებული</translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="2412593942846481727">ხელმისაწვდომია განახლება</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> სხვა</translation>
 <translation id="324366796737464147">ხმაურის შემცირება</translation>
 <translation id="3249513730522716925">ფანჯარა <ph name="WINDOW_TITLE" /> გადატანილია სამუშაო მაგიდიდან <ph name="ACTIVE_DESK" /> სამუშაო მაგიდაზე <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">თქვენი Chromebook-ის განსაბლოკად ჩართეთ Bluetooth თქვენს ტელეფონზე</translation>
 <translation id="3255483164551725916">რისი გაკეთება შეგიძლია?</translation>
 <translation id="3269597722229482060">მარჯვენა დაწკაპუნება</translation>
 <translation id="3289674678944039601">იტენება ადაპტერის მეშვეობით</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control-Shift-შორისი</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">განსაზღვრება</translation>
+<translation id="3509391053705095206">თქვენი ტელეფონი ვერ მოიძებნა. დარწმუნდით, რომ თქვენს ტელეფონზე ჩართულია Bluetooth.</translation>
 <translation id="3510164367642747937">მაუსის კურსორის გამოყოფა</translation>
 <translation id="3513798432020909783">ანგარიშს მართავს <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">დაკავშირებულია <ph name="NUM_DEVICES" /> მოწყობილობასთან</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">წინა მიკროფონი</translation>
 <translation id="3713734891607377840">დასრულებისას გახსნა</translation>
 <translation id="3742055079367172538">ეკრანის ანაბეჭდი გადაღებულია</translation>
+<translation id="3744282433224562605">თქვენი Chromebook-ის განსაბლოკად შეიყვანეთ პაროლი</translation>
 <translation id="3771549900096082774">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="3773700760453577392">ადმინისტრატორმა აკრძალა მრავალჯერადი შესვლა <ph name="USER_EMAIL" />-ისთვის. გასაგრძელებლად საჭიროა ყველა მომხმარებლის გამოსვლა სისტემიდან.</translation>
 <translation id="3779139509281456663">მიმდინარეობს <ph name="NAME" />-ის დაკავშირება</translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">მარჯვენა ღილაკზე დაწკაპუნების ან ხანგრძლივად დაჭერის შემთხვევაში ასისტენტი გაჩვენებთ არჩეულ კონტენტთან დაკავშირებულ ინფორმაციას, მაგალითად, განმარტებას, თარგმანს ან საზომი ერთეულის გარდაქმნის ვარიანტს.</translation>
 <translation id="4505050298327493054">აქტიური სამუშაო მაგიდა.</translation>
 <translation id="4513946894732546136">უკუკავშირი</translation>
+<translation id="4518404433291145981">თქვენს Chromebook-ში შესასვლელად, პირველ რიგში, განბლოკეთ თქვენი ტელეფონი</translation>
 <translation id="4527045527269911712">Bluetooth მოწყობილობა „<ph name="DEVICE_NAME" />“ მოითხოვს დაწყვილების ნებართვას.</translation>
 <translation id="453661520163887813">სრულ დატენვამდე დარჩენილია <ph name="TIME" /></translation>
 <translation id="4538824937723742295">ეკრანის სრულად აღბეჭდვა</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">არასწორი პინი</translation>
 <translation id="5083553833479578423">განბლოკეთ ასისტენტის დამატებითი ფუნქციები.</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
+<translation id="5147567197700016471">განბლოკილია</translation>
 <translation id="5155897006997040331">წაკითხვის სიჩქარე</translation>
 <translation id="5166918508782100047">სწრაფი პასუხების პარამეტრები</translation>
 <translation id="5168181903108465623">ხელმისაწვდომია გადაცემის მოწყობილობები</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5176318573511391780">ეკრანის ნაწილის ჩაწერა</translation>
+<translation id="5199367439331364630">თქვენს Chromebook-ში შესასვლელად შეიყვანეთ პაროლი</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 სხვა შეტყობინება}other{# სხვა შეტყობინება}}</translation>
 <translation id="5207949376430453814">ტექსტის კურსორის გამოყოფა</translation>
 <translation id="5208059991603368177">ჩართვა</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">ახალი მოწყობილობის დაწყვილება</translation>
 <translation id="5322611492012084517">თქვენი ტელეფონი ვერ მოიძებნა</translation>
 <translation id="5329548388331921293">მიმდინარეობს დაკავშირება...</translation>
+<translation id="5330201449517439522">შესასვლელად შეეხეთ ან დააწკაპუნეთ</translation>
 <translation id="5331975486040154427">USB-C მოწყობილობა (მარცხენა უკანა პორტი)</translation>
 <translation id="5352250171825660495">მუქი თემა ჩართულია</translation>
 <translation id="5379115545237091094">დაფიქსირდა მეტისმეტად ბევრი მცდელობა</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">დაკავშირებული მოწყობილობების პარამეტრები</translation>
 <translation id="583281660410589416">უცნობი</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>
+<translation id="584525477304726060">გეჭიროთ გასაშლელად</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5860491529813859533">ჩართვა</translation>
 <translation id="5867217927013474703">გროვდება ინფორმაცია ქსელის შესახებ</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">დაუკავშირდით თქვენი ტელეფონის უსადენო ქსელს, დაადუმეთ თქვენი მოწყობილობა და იპოვეთ მისი მდებარეობა, ასევე, იხილეთ თქვენს ტელეფონზე გახსნილი ბოლოდროინდელი Chrome ჩანართები</translation>
 <translation id="6670153871843998651">დესკტოპი 3</translation>
 <translation id="6671495933530132209">გამოსახულების კოპირება</translation>
+<translation id="6671661918848783005">თქვენი Chromebook-ის განბლოკვა ვერ მოხერხდა</translation>
 <translation id="6692996468359469499">მიიღეთ თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
 <translation id="6696025732084565524">თქვენი განცალკევებადი კლავიატურა საჭიროებს კრიტიკულ განახლებას</translation>
 <translation id="6700713906295497288">IME მენიუს ღილაკი</translation>

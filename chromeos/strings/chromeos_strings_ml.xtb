@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">പരാജയപ്പെട്ട UDP അഭ്യർത്ഥനകൾ</translation>
 <translation id="1930797645656624981">Chrome OS ഇൻപുട്ട് രീതി സേവനം</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
+<translation id="197386857804679933">വീണ്ടും കണക്റ്റ് ചെയ്യാൻ ക്രമീകരണം സന്ദർശിക്കുക</translation>
 <translation id="1979103255016296513">പാസ്‌വേഡ് മാറ്റേണ്ട സമയം കഴിഞ്ഞു</translation>
 <translation id="1999615961760456652">ക്യാപ്‌റ്റീവ് പോർട്ടൽ</translation>
 <translation id="2006864819935886708">കണക്റ്റിവിറ്റി</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">വിജയിച്ചു</translation>
 <translation id="2789486458103222910">ശരി</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
+<translation id="2860473693272905224">സ്‌കാനറിൽ മറ്റൊരു പേജ് വയ്ക്കുക</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> സെക്കൻഡിൽ <ph name="RATE" /> ഡിസ്ചാർജ് ചെയ്തു.</translation>
 <translation id="3008341117444806826">പുതുക്കിയെടുക്കുക</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">മൊബൈല്‍ ഡാറ്റ</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="315738237743207937">ക്യാപ്റ്റീവ് പോർട്ടൽ തിരിച്ചറിഞ്ഞു</translation>
+<translation id="3170673040743561620">നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്ക്കുക</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3199982728237701504">ഡോക്യുമെന്റ് ഫീഡർ (രണ്ട് വശമുള്ളത്)</translation>
 <translation id="3226405216343213872">സ്‌കാനറുകൾ തിരയുന്നു</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">കണക്ഷന്‍</translation>
 <translation id="4832079907277790330">Files ആപ്പിൽ ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="4835901797422965222">സജീവമായ നെറ്റ്‌വർക്കുകളൊന്നുമില്ല</translation>
+<translation id="484790837831576105">(Android) DNS റെസല്യൂഷൻ</translation>
 <translation id="4848429997038228357">റൺ ചെയ്യുന്നു</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ശ്രമം ശേഷിക്കുന്നു}other{<ph name="ERROR_MESSAGE" /> {0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="4880328057631981605">ആ‌ക്‌സസ് പോയിന്‍റിന്‍റെ പേര്</translation>
@@ -289,6 +293,7 @@
 <translation id="6050189528197190982">ഗ്രേസ്‌കെയിൽ</translation>
 <translation id="6058625436358447366">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പഴയ പാസ്‌വേഡും പുതിയ പാസ്‌വേഡും നൽകുക</translation>
 <translation id="6061772781719867950">പരാജയപ്പെട്ട HTTP അഭ്യർത്ഥനകൾ</translation>
+<translation id="6075872808778243331">(Android) HTTP പ്രതികരണ സമയം</translation>
 <translation id="6104112872696127344">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കി</translation>
 <translation id="6106186594183574873">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പഴയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6108689792487843350">ഗേറ്റ്‌വേയിലേക്ക് എത്താനാകുന്നില്ല</translation>
@@ -331,6 +336,7 @@
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6704062477274546131">DNS റെസല്യൂഷൻ</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="6747215703636344499">പ്രിന്റ് ജോലി നിർത്തി - ഔട്ട്പുട്ട് നിറഞ്ഞിരിക്കുന്നു</translation>
 <translation id="6756731097889387912">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കാനായില്ല</translation>
 <translation id="6766275201586212568">പരാജയപ്പെട്ട DNS റെസല്യൂഷനുകൾ</translation>
@@ -340,11 +346,13 @@
 <translation id="6910312834584889076">സ്‌കാനറിന്റെ കവർ തുറന്നിരിക്കുന്നു. കവർ അടച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6911383237894364323">മീഡിയ സെർവറുകളിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6957231940976260713">സേവനത്തിന്‍റെ പേര്</translation>
+<translation id="6961170852793647506">ആരംഭിക്കാൻ, നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്ക്കുക</translation>
 <translation id="6977381486153291903">ഫേംവെയർ പുനഃപരിശോധന</translation>
 <translation id="6982876849933694860">ഒരു പുതിയ കണക്ഷൻ സജ്ജീകരിക്കാൻ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> കീബോർഡ്</translation>
 <translation id="7040230719604914234">ഓപ്പറേറ്റർ</translation>
+<translation id="7058278511608979688">അവസാനിപ്പിച്ച് സംരക്ഷിക്കുക</translation>
 <translation id="7059230779847288458">ചാർജ് ചെയ്യുന്നു, പൂർത്തിയാകാൻ <ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="708426984172631313">നിർത്തി</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -408,6 +416,7 @@
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
+<translation id="811820734797650957">(Android) ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാനാകും</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ട്രാഫിക് കൗണ്ടറുകൾ അഭ്യർത്ഥിക്കുക</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
@@ -479,6 +488,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> എന്നതിനുള്ള ടിക്കറ്റ് പുതുക്കിയെടുക്കുക</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="9111102763498581341">അണ്‍ലോക്ക് ചെയ്യുക</translation>
+<translation id="9126720536733509015">ഒരു PDF-ൽ ഒന്നിലധികം പേജുകൾ സംരക്ഷിക്കുക</translation>
 <translation id="9137526406337347448">Google സേവനങ്ങൾ</translation>
 <translation id="9149391708638971077">മെമ്മറി ടെസ്റ്റ് റണ്‍ ചെയ്യുക</translation>
 <translation id="9173638680043580060">ഒരു മിനിറ്റിലും താഴെ ശേഷിക്കുന്നു</translation>

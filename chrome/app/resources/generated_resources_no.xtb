@@ -2329,7 +2329,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3433621910545056227">Beklager. Systemet kunne ikke oppdage enhetens attributtlås for installasjonstid.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. Finn ut mer om disse innstillingene og hvordan du justerer dem, på families.google.com.</translation>
-<translation id="3435541101098866721">Legg til ny telefon</translation>
 <translation id="3435688026795609344">«<ph name="EXTENSION_NAME" />» ber om <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="343578350365773421">Tom for papir</translation>
@@ -4235,6 +4234,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kunne ikke motta <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}other{Kunne ikke motta <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importert fra Firefox</translation>
 <translation id="5502915260472117187">Et barn</translation>
+<translation id="5503356662318814623">Send melding</translation>
 <translation id="5503982651688210506">Fortsett å tillate <ph name="HOST" /> å bruke og bevege kameraet ditt og bruke mikrofonen din</translation>
 <translation id="5504909642107847870">Personvern- og sikkerhetsgjennomgang</translation>
 <translation id="5505264765875738116">Nettsteder kan ikke be om å få sende deg varsler</translation>
@@ -4491,6 +4491,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5794414402486823030">Åpne alltid med systemvisningsprogrammet</translation>
 <translation id="5794700615121138172">Delte mapper i Linux</translation>
 <translation id="5794786537412027208">Avslutt alle Chrome-apper</translation>
+<translation id="5796485699458186843">Ny inkognito&amp;fane</translation>
 <translation id="5797521893972859201">Tømmer loggen, inkludert loggen i søkefeltet</translation>
 <translation id="5798079537501238810">Nettsteder kan installere betalingsbehandlere</translation>
 <translation id="579915268381781820">Sikkerhetsnøkkelen er fjernet.</translation>
@@ -5741,7 +5742,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7170236477717446850">Profilbilde</translation>
 <translation id="7171000599584840888">Legg til profil…</translation>
 <translation id="7171259390164035663">Ikke registrer</translation>
-<translation id="7171746271229206319">Les Chrome OS-enhetsinformasjon og -enhetsdata. Det kan hende denne informasjonen deles med produsenten av enheten. Når data håndteres av andre organisasjoner enn Google, gjøres dette i tråd med disse organisasjonenes egne personvernregler</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7174199383876220879">Nyhet! Styr musikk, video og mer.</translation>
@@ -6462,7 +6462,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7901914889562552258">Forbedring av Chrome ved bruk av sidemålinger</translation>
 <translation id="7903345046358933331">Siden svarer ikke. Du kan vente til den svarer eller lukke den.</translation>
 <translation id="7903742244674067440">Du har registrerte sertifikater som identifiserer disse sertifikatinstansene</translation>
-<translation id="7903859912536385558">stabil (betrodd tester)</translation>
 <translation id="7903925330883316394">Verktøy: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Administratoren for denne kontoen har forbudt multipålogging.</translation>
 <translation id="7904526211178107182">Gjør Linux-porter tilgjengelige for andre enheter på nettverket.</translation>
@@ -6513,10 +6512,12 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7952904276017482715">Den forventede ID-en var «<ph name="EXPECTED_ID" />», men den faktiske ID-en var «<ph name="NEW_ID" />»</translation>
 <translation id="7953669802889559161">Inndatametoder</translation>
 <translation id="7953955868932471628">Administrer snarveier</translation>
+<translation id="7955105108888461311">Spør fysisk</translation>
 <translation id="7956373551960864128">Dine lagrede skrivere</translation>
 <translation id="7957074856830851026">Se informasjon om enheten, som for eksempel serienummeret eller element-ID-en</translation>
 <translation id="7957615753207896812">Åpne tastaturinnstillingene på enheten</translation>
 <translation id="7959074893852789871">Filen inneholdt flere sertifikater, og enkelte av dem ble ikke importert:</translation>
+<translation id="7959665254555683862">Ny inkognito&amp;fane</translation>
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7963001036288347286">Styreflateakselerasjon</translation>
 <translation id="7963608432878156675">Dette navnet er synlig for andre enheter for Bluetooth- og nettverkstilkoblinger</translation>
@@ -6549,7 +6550,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7986295104073916105">Les og endre de lagrede passordinnstillingene</translation>
 <translation id="7987814697832569482">Koble alltid til via dette VPN-et</translation>
 <translation id="7988355189918024273">Aktiver funksjoner for tilgjengelighet</translation>
-<translation id="7990394755527173834">For å konfigurere en Android-telefon som en sikkerhetsnøkkel for denne datamaskinen for første gang, åpne Chrome på telefonen og gå til «Innstillinger &gt; Passord &gt; Bruk telefonen som sikkerhetsnøkkel». Trykk deretter på «Koble til en ny enhet», og skann denne QR-koden.</translation>
 <translation id="7991296728590311172">Innstillinger for brytertilgang</translation>
 <translation id="7997826902155442747">Prosessprioritet</translation>
 <translation id="7999229196265990314">Opprettet følgende filer:

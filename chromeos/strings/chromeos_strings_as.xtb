@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">বিফল UDP অনুৰোধসমূহ</translation>
 <translation id="1930797645656624981">Chrome OS ইনপুট পদ্ধতি সেৱা</translation>
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
+<translation id="197386857804679933">পুনৰ সংযোগ কৰিবলৈ ছেটিঙলৈ যাওক</translation>
 <translation id="1979103255016296513">পাছৱর্ড সলনি কৰাৰ সময় উকলিছে</translation>
 <translation id="1999615961760456652">কেপ্টিভ প’ৰ্টেল</translation>
 <translation id="2006864819935886708">সংযোগ</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">পাছ কৰিছে</translation>
 <translation id="2789486458103222910">ঠিক আছে</translation>
 <translation id="2805756323405976993">এপ্</translation>
+<translation id="2860473693272905224">স্কেনাৰটোত অন্য এখন পৃষ্ঠা ৰাখক</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বৰৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে…</translation>
 <translation id="315738237743207937">কেপ্টিভ প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
+<translation id="3170673040743561620">আপোনাৰ নথি স্কেনাৰটোত ৰাখক</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="3199982728237701504">নথি ফীডাৰ (দুফাল থকা)</translation>
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">সংযোগ</translation>
 <translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="4835901797422965222">কোনো সক্ৰিয় নেটৱৰ্ক নাই</translation>
+<translation id="484790837831576105">(Android) DNS ৰিজ’লিউশ্বন</translation>
 <translation id="4848429997038228357">চলি আছে</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}one{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}other{<ph name="ERROR_MESSAGE" /> {0} টা প্ৰয়াস বাকী আছে}}</translation>
 <translation id="4880328057631981605">এক্সেছ পইণ্টৰ নাম</translation>
@@ -290,6 +294,7 @@
 <translation id="6050189528197190982">গ্ৰে’স্কে’ল</translation>
 <translation id="6058625436358447366">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি আৰু নতুন পাছৱর্ডসমূহ দিয়ক</translation>
 <translation id="6061772781719867950">HTTPৰ অনুৰোধ বিফল হৈছে</translation>
+<translation id="6075872808778243331">(Android) HTTP বিলম্বতা</translation>
 <translation id="6104112872696127344">স্কেনিং বাতিল কৰা হৈছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
@@ -332,6 +337,7 @@
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6704062477274546131">DNS ৰিজ’লিউশ্বন</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> অক্ষম কৰা হৈছে</translation>
 <translation id="6747215703636344499">বন্ধ হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
 <translation id="6756731097889387912">স্কেনিং বাতিল কৰিব পৰা নগ’ল</translation>
 <translation id="6766275201586212568">DNSৰ সমাধান বিফল হৈছে</translation>
@@ -341,11 +347,13 @@
 <translation id="6910312834584889076">স্কেনাৰৰ ঢাকনীখন খোলা আছে। ঢাকনীখন বন্ধ কৰি পুনৰ চেষ্টা কৰি চাওক।</translation>
 <translation id="6911383237894364323">মিডিয়া ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="6957231940976260713">সেৱাৰ নাম</translation>
+<translation id="6961170852793647506">আৰম্ভ কৰিবলৈ আপোনাৰ নথি স্কেনাৰটোত ৰাখক</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>
 <translation id="6982876849933694860">এটা নতুন সংযোগ ছেট আপ কৰিবলৈ, <ph name="BEGIN_LINK" />ছেটিং<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> কীব’ৰ্ড</translation>
 <translation id="7040230719604914234">অপাৰেটৰ</translation>
+<translation id="7058278511608979688">সমাপ্ত কৰি ছেভ কৰক</translation>
 <translation id="7059230779847288458">চাৰ্জ কৰি থকা হৈছে, সম্পূৰ্ণ হ’বলৈ <ph name="TIME_VALUE" /> বাকী</translation>
 <translation id="708426984172631313">বন্ধ হৈছে</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -409,6 +417,7 @@
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
 <translation id="8075838845814659848">বাকী থকা চাৰ্জ</translation>
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>
+<translation id="811820734797650957">(Android) গে’টৱে’ পিং কৰিব পাৰি</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ট্ৰেফিক কাউণ্টাৰৰ অনুৰোধ কৰক</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
@@ -480,6 +489,7 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />ৰ টিকেট ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>
 <translation id="9111102763498581341">আনলক</translation>
+<translation id="9126720536733509015">একেটা PDFত একাধিক পৃষ্ঠা ছেভ কৰক</translation>
 <translation id="9137526406337347448">Google সেৱা</translation>
 <translation id="9149391708638971077">মেম’ৰি পৰীক্ষা চলাওক</translation>
 <translation id="9173638680043580060">এক মিনিটতকৈ কম সময় বাকী আছে</translation>

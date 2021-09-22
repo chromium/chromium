@@ -2319,7 +2319,6 @@
 <translation id="3433621910545056227">Упс! Систем није успео да одреди закључавање атрибута за време инсталације уређаја.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ако за дете укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. Сазнајте више о овим подешавањима и о томе како да их прилагодите на families.google.com</translation>
-<translation id="3435541101098866721">Додај нови телефон</translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />“ захтева <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="343578350365773421">Нема папира</translation>
@@ -4227,6 +4226,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{Пријем (<ph name="ATTACHMENTS" />) са уређаја <ph name="DEVICE_NAME" /> није успео}one{Пријем (<ph name="ATTACHMENTS" />) са уређаја <ph name="DEVICE_NAME" /> није успео}few{Пријем <ph name="ATTACHMENTS" /> са уређаја <ph name="DEVICE_NAME" /> није успео}other{Пријем <ph name="ATTACHMENTS" /> са уређаја <ph name="DEVICE_NAME" /> није успео}}</translation>
 <translation id="5502500733115278303">Увезено из Firefox прегледача</translation>
 <translation id="5502915260472117187">Дете</translation>
+<translation id="5503356662318814623">Пошаљи поруку</translation>
 <translation id="5503982651688210506">Наставите да дозвољавате сајту <ph name="HOST" /> да користи и помера камеру и користи микрофон</translation>
 <translation id="5504909642107847870">Преглед приватности и безбедности</translation>
 <translation id="5505264765875738116">Сајтови не могу да траже да шаљу обавештења</translation>
@@ -4484,6 +4484,7 @@
 <translation id="5794414402486823030">Увек отварај помоћу системског приказивача</translation>
 <translation id="5794700615121138172">Дељени Linux директоријуми</translation>
 <translation id="5794786537412027208">Изађи из свих Chrome апликација</translation>
+<translation id="5796485699458186843">Нова картица без архивирања</translation>
 <translation id="5797521893972859201">Брише историју, укључујући историју у оквиру за претрагу</translation>
 <translation id="5798079537501238810">Сајтови могу да инсталирају обрађиваче плаћања</translation>
 <translation id="579915268381781820">Уклонили сте безбедносни кључ.</translation>
@@ -5734,7 +5735,6 @@
 <translation id="7170236477717446850">Слика профила</translation>
 <translation id="7171000599584840888">Додај профил…</translation>
 <translation id="7171259390164035663">Без регистрације</translation>
-<translation id="7171746271229206319">Прочитајте информације о Chrome ОС уређају и податке са уређаја. Ове информације могу да се деле са произвођачем уређаја. Подаци којима рукују организације које нису Google пратиће засебне политике приватности тих организација</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Додај картицу у нову групу}one{Додај картице у нову групу}few{Додај картице у нову групу}other{Додај картице у нову групу}}</translation>
 <translation id="7173114856073700355">Отвори Подешавања</translation>
 <translation id="7174199383876220879">Ново! Контролишите музику, видео снимке и друго.</translation>
@@ -6455,7 +6455,6 @@
 <translation id="7901914889562552258">Побољшани Chrome помоћу показатеља странице</translation>
 <translation id="7903345046358933331">Страница је престала да се одазива. Можете да сачекате да почне да се одазива или да је затворите.</translation>
 <translation id="7903742244674067440">Имате сачуване сертификате који идентификују ове ауторитете за издавање сертификата</translation>
-<translation id="7903859912536385558">стабилно (поуздани тестер)</translation>
 <translation id="7903925330883316394">Помоћни процес: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">Администратор за овај налог је забранио вишеструко пријављивање.</translation>
 <translation id="7904526211178107182">Учините Linux портове доступним за друге уређаје на својој мрежи.</translation>
@@ -6506,10 +6505,12 @@
 <translation id="7952904276017482715">Очекивао се ИД „<ph name="EXPECTED_ID" />“, али ИД је био „<ph name="NEW_ID" />“</translation>
 <translation id="7953669802889559161">Уноси</translation>
 <translation id="7953955868932471628">Управљај пречицама</translation>
+<translation id="7955105108888461311">Затражи лично</translation>
 <translation id="7956373551960864128">Сачувани штампачи</translation>
 <translation id="7957074856830851026">Преглед информација о уређају, као што је серијски број или ИД дела</translation>
 <translation id="7957615753207896812">Отвори подешавања уређаја за тастатуру</translation>
 <translation id="7959074893852789871">Датотека садржи више сертификата, од којих неки нису увезени:</translation>
+<translation id="7959665254555683862">Нова картица без архивирања</translation>
 <translation id="7961015016161918242">Никад</translation>
 <translation id="7963001036288347286">Убрзавање тачпеда</translation>
 <translation id="7963608432878156675">Ово име је видљиво другим уређајима за Bluetooth и мрежне везе</translation>
@@ -6542,7 +6543,6 @@
 <translation id="7986295104073916105">Читање и мењање сачуваних подешавања лозинке</translation>
 <translation id="7987814697832569482">Увек се повезуј преко овог VPN-а</translation>
 <translation id="7988355189918024273">Омогући функције приступачности</translation>
-<translation id="7990394755527173834">Да бисте први пут подесили коришћење Android телефона као безбедносног кључа на овом рачунару, отворите Chrome на телефону и идите у Подешавања &gt; Лозинке &gt; Користи телефон као безбедносни кључ. Затим додирните „Повежите нов уређај“ и скенирајте овај QR кôд.</translation>
 <translation id="7991296728590311172">Подешавања приступа помоћу прекидача</translation>
 <translation id="7997826902155442747">Приоритет процеса</translation>
 <translation id="7999229196265990314">Направљене су следеће датотеке:

@@ -64,6 +64,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">I-collapse ang menu</translation>
+<translation id="1364382257761975320">Para i-unlock ang iyong Chromebook, gamitin ang fingerprint mo</translation>
 <translation id="1383597849754832576">Hindi ma-download ang mga speech file. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1391102559483454063">Naka-on</translation>
@@ -186,10 +187,12 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2352467521400612932">Mga setting ng stylus</translation>
 <translation id="2354174487190027830">Ina-activate ang <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
+<translation id="2367186422933365202">Hindi makapag-sign in sa iyong Chromebook</translation>
 <translation id="2369165858548251131">"Kumusta" sa Chinese</translation>
 <translation id="2390318262976603432">Mga Setting ng Lokalidad</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Mga kontrol ng media</translation>
+<translation id="2402411679569069051">Para i-unlock ang iyong Chromebook, gamitin ang fingerprint mo o i-unlock ang iyong telepono</translation>
 <translation id="2405664212338326887">Hindi nakakonekta</translation>
 <translation id="2408955596600435184">Ilagay ang iyong PIN</translation>
 <translation id="2412593942846481727">May available na update</translation>
@@ -290,6 +293,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> pa</translation>
 <translation id="324366796737464147">Pagkansela ng ingay</translation>
 <translation id="3249513730522716925">Inilipat ang Window na <ph name="WINDOW_TITLE" /> sa Desk na <ph name="TARGET_DESK" /> mula sa <ph name="ACTIVE_DESK" /></translation>
+<translation id="3252248118006571685">Para i-unlock ang iyong Chromebook, i-on ang Bluetooth ng telepono mo</translation>
 <translation id="3255483164551725916">Ano'ng maaari mong gawin?</translation>
 <translation id="3269597722229482060">Mag-right Click</translation>
 <translation id="3289674678944039601">Nagcha-charge sa pamamagitan ng adapter</translation>
@@ -323,6 +327,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">kahulugan</translation>
+<translation id="3509391053705095206">Hindi makita ang iyong telepono. Tiyaking naka-on ang Bluetooth ng iyong telepono.</translation>
 <translation id="3510164367642747937">I-highlight ang cursor ng mouse</translation>
 <translation id="3513798432020909783">Pinamamahalaan ni <ph name="MANAGER_EMAIL" /> ang account</translation>
 <translation id="353086728817903341">Nakakonekta sa <ph name="NUM_DEVICES" /> (na) device</translation>
@@ -358,6 +363,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="371370241367527062">Mikropono sa harap</translation>
 <translation id="3713734891607377840">Buksan kapag kumpleto na</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
+<translation id="3744282433224562605">Para i-unlock ang iyong Chromebook, ilagay ang password</translation>
 <translation id="3771549900096082774">High Contrast Mode</translation>
 <translation id="3773700760453577392">Hindi pinayagan ng isang administrator ang maraming pag-sign in para sa <ph name="USER_EMAIL" />. Dapat mag-sign out ang lahat ng user para makapagpatuloy.</translation>
 <translation id="3779139509281456663">Ikinokonekta ang <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4485060137115666462">Sa pamamagitan ng pag-right click o matagal na pagpindot, magpapakita ang Assistant ng impormasyon tulad ng kahulugan, pagsasalin, o conversion ng unit para sa iyong napili.</translation>
 <translation id="4505050298327493054">Aktibong desk.</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518404433291145981">Para i-unlock ang iyong Chromebook, i-unlock muna ang telepono mo</translation>
 <translation id="4527045527269911712">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" na magpares.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> na lang bago mapuno</translation>
 <translation id="4538824937723742295">Kumuha ng screenshot ng full screen</translation>
@@ -551,11 +558,13 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5078796286268621944">Maling PIN</translation>
 <translation id="5083553833479578423">Mag-unlock ng higit pang feature ng Assistant.</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
+<translation id="5147567197700016471">Na-unlock na</translation>
 <translation id="5155897006997040331">Bilis ng pagbabasa</translation>
 <translation id="5166918508782100047">Mga setting ng instant na impormasyon</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
+<translation id="5199367439331364630">Para mag-sign in sa iyong Chromebook, ilagay ang password</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 pang notification}one{# pang notification}other{# pang notification}}</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
 <translation id="5208059991603368177">Naka-on</translation>
@@ -576,6 +585,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5319712128756744240">Magpares ng bagong device</translation>
 <translation id="5322611492012084517">Hindi makita ang iyong telepono</translation>
 <translation id="5329548388331921293">Kumokonekta...</translation>
+<translation id="5330201449517439522">Mag-tap o mag-click para pumasok</translation>
 <translation id="5331975486040154427">USB-C device (port sa kaliwang bahagi sa likod)</translation>
 <translation id="5352250171825660495">Naka-on ang Madilim na tema</translation>
 <translation id="5379115545237091094">Masyadong maraming pagtatangka</translation>
@@ -633,6 +643,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">I-hold para i-maximize</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
 <translation id="5867217927013474703">Kinokolekta ang impormasyon ng network</translation>
@@ -738,6 +749,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6667908387435388584">Kumonekta sa hotspot ng iyong telepono, i-silent at hanapin ang device mo, at tingnan ang mga kamakailang tab ng Chrome na nakabukas sa iyong telepono</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
+<translation id="6671661918848783005">Hindi ma-unlock ang iyong Chromebook</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
 <translation id="6696025732084565524">Nangangailangan ng mahalagang update ang iyong naaalis na keyboard</translation>
 <translation id="6700713906295497288">Button ng menu ng IME</translation>

@@ -289,7 +289,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
 <translation id="1839551713262164453">Parametr qiymatlari tekshiruvida xato yuz berdi</translation>
 <translation id="1842969606798536927">To‘lash</translation>
-<translation id="1856713167556118146">Inkognito nima qila olmaydi</translation>
+<translation id="1856713167556118146">Inkognito rejimida nima qilinmaydi</translation>
 <translation id="1863257867908022953">Tarnov 12</translation>
 <translation id="1871208020102129563">Proksi-serverlar PAC fayli manzil orqali emas, o‘zgarmas manzil orqali sozlangan.</translation>
 <translation id="1871284979644508959">Kiritilishi shart</translation>
@@ -1067,7 +1067,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4465818729556336129">Bu maxfiy hujjat va uning chop etilishi administrator tomonidan tavsiya etilmaydi.</translation>
 <translation id="4476953670630786061">Bu shakl xavfsiz emas. Avtomatik kiritish faolsizlantirildi.</translation>
 <translation id="4477350412780666475">Keyingi trek</translation>
-<translation id="4481251927743463293">Inkognito nimalarga qodir</translation>
+<translation id="4481251927743463293">Inkognito rejimida nima qilinadi</translation>
 <translation id="4481394504112738036">Maxfiy fayl</translation>
 <translation id="4482953324121162758">Bu sayt tarjima qilinmaydi</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1172,11 +1172,11 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4819347708020428563">Izohlar standart shaklda tahrirlansinmi?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Google Sheetda yangi jadvalni tez yaratish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="4825507807291741242">Qudratli</translation>
-<translation id="4827402517081186284">Inkognito internetda toʻliq koʻrinmaslikni bermaydi:
+<translation id="4827402517081186284">Inkognito rejimida ayrim axborotlar yashirilmaydi:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Saytlarga tashriflaringiz koʻrinadi<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Saytlar ularga qilgan tashrifingizni biladi<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Ishxona va maktablarda brauzer tarixi kuzatilishi mumkin<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internet provayderlari ham mijozlarining internet trafigini kuzatishi mumkin<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Internet provayderlari ham trafikni kuzatishi mumkin<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Ogohlantiruvlarni yoqish</translation>
 <translation id="4838327282952368871">Xayolparast</translation>
@@ -1310,6 +1310,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">Bosma kontentni takomillashtirish</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">Baribir yozib olish</translation>
 <translation id="5265446478903775694">Google xizmatlaridagi maxfiylikni boshqarish</translation>
 <translation id="5266128565379329178">Yuqoridan teshik ochish</translation>
 <translation id="5269225904387178860">Quyidan 4 ta teshik ochish</translation>
@@ -1833,6 +1834,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7153618581592392745">Och siyohrang</translation>
 <translation id="7156870133441232244">Server TLS 1.2 yoki undan yuqori versiyaga yangilanishi lozim.</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
+<translation id="7173920250514487165">Ekrandagi maxfiy maʼlumotlarni yozib olish</translation>
 <translation id="7174545416324379297">Birlashtirildi</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}other{<ph name="SHIPPING_OPTION_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}}</translation>
 <translation id="7179323680825933600">To‘lov usullarini saqlash va avtomatik kiritish</translation>
@@ -2092,6 +2094,7 @@ Batafsil axborot:
 <translation id="7977538094055660992">Chiqarish qurilmasi</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">Virtual reallik qurilmalari va axborotlardan foydalanish uchun ruxsat soʻrashi mumkin</translation>
+<translation id="7984699858161118573">Ekrandagi maxfiy maʼlumotlar tufayli skrinshot yoki video yozib olish administrator tomonidan tavsiya etilmaydi</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> saytiga o‘tib bo‘lmadi, chunki veb-sayt shifrlangan hisob ma’lumotlarini yubordi, Chrome ular bilan ishlay olmaydi. Tarmoq xatoligi yoki saytga hujumlar odatda vaqtinchalik bo‘ladi, shu sababli bu sahifa keyinroq ishga tushishi mumkin.</translation>
 <translation id="79859296434321399">Virtual reallik kontentini ochish uchun ARCore ilovasini yuklab oling</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2149,7 +2152,6 @@ Batafsil axborot:
 <translation id="8176440868214972690">Bu qurilma administratori quyidagi saytlarga sozlamalar va qoidalar kabi ayrim axborotlarni yubordi.</translation>
 <translation id="8184538546369750125">Global parametrdan foydalanish (ruxsat berish)</translation>
 <translation id="8190193880870196235">Kengaytma tomonidan boshqariladi</translation>
-<translation id="8193086767630290324">Maʼlumotlar bilan bajariladigan amallar maxfiy hisoblanadi</translation>
 <translation id="8194797478851900357">&amp;Ko‘chirib o‘tkazishni bekor qilish</translation>
 <translation id="8201077131113104583">“<ph name="EXTENSION_ID" />” identifikatoriga ega kengaytmani yangilash uchun yaroqsiz URL kiritildi</translation>
 <translation id="8202097416529803614">Buyurtma ma’lumotlari</translation>
@@ -2204,7 +2206,7 @@ Batafsil axborot:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Bu qurilmadagi bauzer faoliyati tarixi<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Bu qurilmadagi qidiruv tarixi<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Shakllarda toʻldirilgan axborot<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Shakllarda kiritilgan axborotlar<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
 <translation id="833262891116910667">Ajratib belgilash</translation>

@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">Υπερχείλιση</translation>
 <translation id="1346748346194534595">Δεξιά</translation>
 <translation id="1351937230027495976">Σύμπτυξη μενού</translation>
+<translation id="1364382257761975320">Για να ξεκλειδώσετε το Chromebook, χρησιμοποιήστε το δακτυλικό αποτύπωμά σας</translation>
 <translation id="1383597849754832576">Δεν είναι δυνατή η λήψη αρχείων ομιλίας. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1391102559483454063">Ενεργό</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">Ρυθμίσεις γραφίδας</translation>
 <translation id="2354174487190027830">Ενεργοποίηση <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
+<translation id="2367186422933365202">Δεν είναι δυνατή η σύνδεση στο Chromebook</translation>
 <translation id="2369165858548251131">"Γεια σας" στα κινεζικά</translation>
 <translation id="2390318262976603432">Τοπικές ρυθμίσεις</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Στοιχεία ελέγχου μέσων</translation>
+<translation id="2402411679569069051">Για να ξεκλειδώσετε το Chromebook, χρησιμοποιήστε το δακτυλικό αποτύπωμά σας ή ξεκλειδώστε το τηλέφωνό σας</translation>
 <translation id="2405664212338326887">Δεν συνδέθηκε</translation>
 <translation id="2408955596600435184">Εισαγάγετε το PIN</translation>
 <translation id="2412593942846481727">Υπάρχει διαθέσιμη ενημέρωση</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> ακόμη</translation>
 <translation id="324366796737464147">Εξουδετέρωση θορύβου</translation>
 <translation id="3249513730522716925">Η επιφάνεια εργασίας <ph name="WINDOW_TITLE" /> μετακινήθηκε από την επιφάνεια εργασίας <ph name="ACTIVE_DESK" /> στην επιφάνεια εργασίας <ph name="TARGET_DESK" />.</translation>
+<translation id="3252248118006571685">Για να ξεκλειδώσετε το Chromebook, ενεργοποιήστε το Bluetooth στο τηλέφωνό σας</translation>
 <translation id="3255483164551725916">Τι μπορείς να κάνεις;</translation>
 <translation id="3269597722229482060">Δεξί κλικ</translation>
 <translation id="3289674678944039601">Γίνεται φόρτιση μέσω μετασχηματιστή</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">ορισμός</translation>
+<translation id="3509391053705095206">Δεν είναι δυνατή η εύρεση του τηλεφώνου σας. Βεβαιωθείτε ότι το Bluetooth του τηλεφώνου είναι ενεργό.</translation>
 <translation id="3510164367642747937">Επισήμανση δείκτη ποντικιού</translation>
 <translation id="3513798432020909783">Ο λογαριασμός είναι διαχειριζόμενος από τον χρήστη <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Πραγματοποιήθηκε σύνδεση σε <ph name="NUM_DEVICES" /> συσκευές</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">Μπροστινό μικρόφωνο</translation>
 <translation id="3713734891607377840">Άνοιγμα όταν ολοκληρωθεί</translation>
 <translation id="3742055079367172538">Το στιγμιότυπο οθόνης έχει ληφθεί</translation>
+<translation id="3744282433224562605">Για να ξεκλειδώσετε το Chromebook, εισαγάγετε κωδικό πρόσβασης</translation>
 <translation id="3771549900096082774">Λειτουργία υψηλής αντίθεσης</translation>
 <translation id="3773700760453577392">Ένας διαχειριστής δεν επιτρέπει τη σύνδεση σε πολλούς λογαριασμούς για τον χρήστη <ph name="USER_EMAIL" />. Όλοι οι χρήστες πρέπει να αποσυνδεθούν για να συνεχίσετε.</translation>
 <translation id="3779139509281456663">Σύνδεση <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">Με δεξί κλικ ή παρατεταμένο πάτημα, ο Βοηθός σάς εμφανίζει πληροφορίες όπως τον ορισμό, τη μετάφραση ή μια μετατροπή μονάδων για την επιλογή σας.</translation>
 <translation id="4505050298327493054">Ενεργή επιφάνεια εργασίας.</translation>
 <translation id="4513946894732546136">Σχόλια</translation>
+<translation id="4518404433291145981">Για να ξεκλειδώσετε το Chromebook, ξεκλειδώστε πρώτα το τηλέφωνό σας</translation>
 <translation id="4527045527269911712">Η συσκευή Bluetooth "<ph name="DEVICE_NAME" />" ζητά δικαιώματα σύζευξης.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> για να ολοκληρωθεί η φόρτιση</translation>
 <translation id="4538824937723742295">Λήψη στιγμιότυπου ολόκληρης της οθόνης</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
 <translation id="5083553833479578423">Ξεκλειδώστε περισσότερες λειτουργίες του Βοηθού.</translation>
 <translation id="5136175204352732067">Συνδέθηκε διαφορετικό πληκτρολόγιο</translation>
+<translation id="5147567197700016471">Ξεκλειδώθηκε</translation>
 <translation id="5155897006997040331">Ταχύτητα ανάγνωσης</translation>
 <translation id="5166918508782100047">Ρυθμίσεις γρήγορων απαντήσεων</translation>
 <translation id="5168181903108465623">Διαθέσιμες συσκευές μετάδοσης</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5176318573511391780">Εγγραφή μέρους της οθόνης</translation>
+<translation id="5199367439331364630">Για να συνδεθείτε στο Chromebook, εισαγάγετε κωδικό πρόσβασης</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ακόμη ειδοποίηση}other{# ακόμη ειδοποιήσεις}}</translation>
 <translation id="5207949376430453814">Επισήμανση δρομέα κειμένου</translation>
 <translation id="5208059991603368177">Ενεργό</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">Σύζευξη νέας συσκευής</translation>
 <translation id="5322611492012084517">Δεν βρίσκετε το τηλέφωνό σας</translation>
 <translation id="5329548388331921293">Σύνδεση…</translation>
+<translation id="5330201449517439522">Πατήστε ή κάντε κλικ για είσοδο</translation>
 <translation id="5331975486040154427">Συσκευή USB-C (πίσω αριστερή θύρα)</translation>
 <translation id="5352250171825660495">Το Σκούρο θέμα είναι ενεργοποιημένο.</translation>
 <translation id="5379115545237091094">Πάρα πολλές προσπάθειες</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">Ρυθμίσεις συνδεδεμένων συσκευών</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5837036133683224804">Διακοπή <ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Κρατήστε πατημένο για μεγιστοποίηση.</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5860491529813859533">Ενεργοποίηση</translation>
 <translation id="5867217927013474703">Συλλογή πληροφοριών δικτύου</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">Συνδεθείτε στο σημείο πρόσβασης Wi-Fi του τηλεφώνου σας, θέστε σε σίγαση και εντοπίστε τη συσκευή σας και δείτε τις πρόσφατες καρτέλες Chrome που είναι ανοικτές στο τηλέφωνό σας.</translation>
 <translation id="6670153871843998651">Γραφείο 3</translation>
 <translation id="6671495933530132209">Αντιγραφή εικόνας</translation>
+<translation id="6671661918848783005">Δεν είναι δυνατό το ξεκλείδωμα του Chromebook</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
 <translation id="6696025732084565524">Απαιτείται σημαντική ενημέρωση του αποσπώμενου πληκτρολογίου σας</translation>
 <translation id="6700713906295497288">Κουμπί μενού IME</translation>

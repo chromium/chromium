@@ -57,6 +57,7 @@
 <translation id="1908234395526491708">UDP istek hataları</translation>
 <translation id="1930797645656624981">Chrome OS Giriş Yöntemi Hizmeti</translation>
 <translation id="1947737735496445907">Yazdırıldı</translation>
+<translation id="197386857804679933">Yeniden bağlanmak için Ayarlar'a gidin</translation>
 <translation id="1979103255016296513">Şifre değişikliği zamanı geçti</translation>
 <translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2006864819935886708">Bağlantı</translation>
@@ -96,6 +97,7 @@
 <translation id="2783010256799387990">BAŞARILI OLDU</translation>
 <translation id="2789486458103222910">Tamam</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
+<translation id="2860473693272905224">Tarayıcıya başka bir sayfa yerleştirin</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2878387241690264070">Şarj, <ph name="NUM_SECONDS" /> saniye içinde <ph name="RATE" /> boşaldı.</translation>
 <translation id="3008341117444806826">YENİLE</translation>
@@ -110,6 +112,7 @@
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. sayfa taranıyor...</translation>
 <translation id="315738237743207937">Giriş portalı algılandı</translation>
+<translation id="3170673040743561620">Dokümanınızı tarayıcıya yerleştirin</translation>
 <translation id="3188257591659621405">Dosyalarım</translation>
 <translation id="3199982728237701504">Doküman Besleyici (İki taraflı)</translation>
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
@@ -210,6 +213,7 @@
 <translation id="4813345808229079766">Bağlantı</translation>
 <translation id="4832079907277790330">Dosyalar uygulamasında klasör seç...</translation>
 <translation id="4835901797422965222">Etkin ağ yok</translation>
+<translation id="484790837831576105">(Android) DNS çözümleme</translation>
 <translation id="4848429997038228357">ÇALIŞIYOR</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}other{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}}</translation>
 <translation id="4880328057631981605">Erişim noktası adı</translation>
@@ -290,6 +294,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6050189528197190982">Gri Tonlama</translation>
 <translation id="6058625436358447366">Bitirmek için eski ve yeni şifrenizi girin</translation>
 <translation id="6061772781719867950">Başarısız HTTP istekleri</translation>
+<translation id="6075872808778243331">(Android) HTTP Gecikmesi</translation>
 <translation id="6104112872696127344">Tarama iptal edildi</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
 <translation id="6108689792487843350">Ağ geçidine ulaşılamıyor</translation>
@@ -332,6 +337,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6657585470893396449">Şifre</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> devre dışı bırakıldı</translation>
 <translation id="6747215703636344499">Durduruldu - Çıkış tepsisi dolu</translation>
 <translation id="6756731097889387912">Tarama iptal edilemedi</translation>
 <translation id="6766275201586212568">Başarısız DNS çözümlemeleri</translation>
@@ -341,11 +347,13 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6910312834584889076">Tarayıcının kapağı açık. Kapağı kapatıp tekrar deneyin.</translation>
 <translation id="6911383237894364323">Medya sunucularına bağlanılamadı</translation>
 <translation id="6957231940976260713">Hizmet adı</translation>
+<translation id="6961170852793647506">Başlamak için dokümanınızı tarayıcıya yerleştirin</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
 <translation id="6982876849933694860">Yeni bir bağlantı kurmak için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölümüne gidin</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> klavyesi</translation>
 <translation id="7040230719604914234">Operatör</translation>
+<translation id="7058278511608979688">Bitir ve kaydet</translation>
 <translation id="7059230779847288458">Şarj oluyor. Tamamen dolmasına <ph name="TIME_VALUE" /> var</translation>
 <translation id="708426984172631313">DURDURULDU</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -409,6 +417,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8041089156583427627">Görüş bildirin</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
+<translation id="811820734797650957">(Android) Ağ geçidi pinglenebilir</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
@@ -480,6 +489,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
+<translation id="9126720536733509015">Birden fazla sayfayı tek bir PDF'ye kaydet</translation>
 <translation id="9137526406337347448">Google Hizmetleri</translation>
 <translation id="9149391708638971077">Bellek testini çalıştır</translation>
 <translation id="9173638680043580060">Bir dakikadan az kaldı</translation>
