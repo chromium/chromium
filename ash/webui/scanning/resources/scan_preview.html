@@ -159,7 +159,7 @@
     </action-toolbar>
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
       <img class="preview-item scanned-image" src="[[url]]"
-          on-load="onScannedImageLoaded_">
+          on-load="onScannedImageLoaded_" on-click="onScannedImageClick_">
     </template>
   </div>
 </div>

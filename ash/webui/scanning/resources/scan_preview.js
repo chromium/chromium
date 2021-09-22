@@ -420,6 +420,23 @@ Polymer({
   },
 
   /**
+   * Set the focus to the clicked scanned image.
+   * @param {!Event} e
+   * @private
+   */
+  onScannedImageClick_(e) {
+    if (!this.isMultiPageScan) {
+      return;
+    }
+
+    // |e.model| is populated by the dom-repeat element. Add 1 to the index to
+    // convert it to page number.
+    const scannedImages =
+        this.$$('#scannedImages').getElementsByClassName('scanned-image');
+    this.setFocusedScannedImage_(scannedImages, e.model.index + 1);
+  },
+
+  /**
    * Set the position of the action toolbar based on the size of the scanned
    * images and the current size of the app window.
    * @private
