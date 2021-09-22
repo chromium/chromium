@@ -1680,15 +1680,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Event.PageShow.Persisted" enum="Boolean"
-    expires_after="2022-09-01">
+<histogram name="Event.PageShow.Persisted" enum="EventPageShowPersisted"
+    expires_after="2022-10-01">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
-    Records whether the pageshow event had its persisted flag set. This flag is
-    true if and only if the page is restored from back-forward cache. This flag
-    is false e.g. during the page load. This is recorded when pageshow event
-    fires on a main frame.
+    Records whether the pageshow event had its persisted flag set in renderer or
+    browser. This flag is on if and only if the page is restored from
+    back-forward cache. This flag is off e.g. during the page load. This is
+    recorded when pageshow event fires on a main frame in renderer, or when
+    browser triggers this event on a main frame. This was a boolean on M95 and
+    before, is extended to an enum EventPageShoerPersisted as of M96.
   </summary>
 </histogram>
 

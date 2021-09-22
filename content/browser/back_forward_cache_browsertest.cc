@@ -101,6 +101,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
@@ -3528,13 +3529,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   // At A, a page-show event is recorded for the first loading.
   MatchEventList(rfh_a, ListValueOf("window.pageshow"));
 
-  const char kEventPageShowPersisted[] = "Event.PageShow.Persisted";
-  const int kPageShowNoPersist = 0;
-  const int kPageShowPersist = 1;
+  constexpr char kEventPageShowPersisted[] = "Event.PageShow.Persisted";
+
   content::FetchHistogramsFromChildProcesses();
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kEventPageShowPersisted),
-      testing::UnorderedElementsAre(base::Bucket(kPageShowNoPersist, 1)));
+      testing::UnorderedElementsAre(base::Bucket(
+          static_cast<int>(blink::EventPageShowPersisted::kNoInRenderer), 1)));
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -3554,7 +3555,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
   content::FetchHistogramsFromChildProcesses();
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kEventPageShowPersisted),
-      testing::UnorderedElementsAre(base::Bucket(kPageShowNoPersist, 2)));
+      testing::UnorderedElementsAre(base::Bucket(
+          static_cast<int>(blink::EventPageShowPersisted::kNoInRenderer), 2)));
 
   // 3) Go back to A. Confirm that expected events are fired.
   web_contents()->GetController().GoBack();
@@ -3572,9 +3574,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
                          "window.pageshow.persisted"));
 
   content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kEventPageShowPersisted),
-              testing::UnorderedElementsAre(base::Bucket(kPageShowNoPersist, 2),
-                                            base::Bucket(kPageShowPersist, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kEventPageShowPersisted),
+      testing::UnorderedElementsAre(
+          base::Bucket(
+              static_cast<int>(blink::EventPageShowPersisted::kNoInRenderer),
+              2),
+          base::Bucket(
+              static_cast<int>(blink::EventPageShowPersisted::kYesInRenderer),
+              1),
+          base::Bucket(
+              static_cast<int>(blink::EventPageShowPersisted::kYesInBrowser),
+              1)));
 }
 
 // Tests the events are fired for subframes when going back from the cache.

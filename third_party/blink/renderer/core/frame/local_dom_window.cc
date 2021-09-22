@@ -38,6 +38,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -145,7 +146,6 @@ namespace blink {
 namespace {
 
 constexpr size_t kMaxPostMessageUkmRecordedSourceIdsSize = 20;
-constexpr char kEventPageShowPersisted[] = "Event.PageShow.Persisted";
 
 bool ShouldRecordPostMessageIncomingFrameUkmEvent(
     ukm::SourceId source_frame_ukm_source_id,
@@ -782,7 +782,7 @@ void LocalDOMWindow::EnqueueNonPersistedPageshowEvent() {
   // there are other cases, we need to fix this code to only record the metric
   // once the event is dispatched.
   if (GetFrame() && GetFrame()->IsMainFrame()) {
-    UMA_HISTOGRAM_BOOLEAN(kEventPageShowPersisted, false);
+    RecordUMAEventPageShowPersisted(EventPageShowPersisted::kNoInRenderer);
   }
 }
 
@@ -795,7 +795,7 @@ void LocalDOMWindow::DispatchPersistedPageshowEvent(
                 document_.Get());
 
   if (GetFrame() && GetFrame()->IsMainFrame()) {
-    UMA_HISTOGRAM_BOOLEAN(kEventPageShowPersisted, true);
+    RecordUMAEventPageShowPersisted(EventPageShowPersisted::kYesInRenderer);
   }
 }
 

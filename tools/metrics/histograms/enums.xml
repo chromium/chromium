@@ -26866,6 +26866,12 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Wheel"/>
 </enum>
 
+<enum name="EventPageShowPersisted">
+  <int value="0" label="No in renderer"/>
+  <int value="1" label="Yes in renderer"/>
+  <int value="2" label="Yes in browser"/>
+</enum>
+
 <enum name="EventPreFilterResult">
   <int value="0" label="Unfiltered"/>
   <int value="1" label="Filtered due to no page handlers"/>
