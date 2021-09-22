@@ -836,7 +836,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     element = self._driver.FindElement("css selector", "#id")
     self._driver.SwitchToFrame(element)
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
-    with self.assertRaises(chromedriver.NoSuchElement):
+    with self.assertRaises(chromedriver.StaleElementReference):
       self._driver.SwitchToFrame(element)
 
   def testGetTitle(self):
@@ -888,7 +888,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     element = self._driver.FindElement('tag name', 'custom-checkbox-element')
     shadow = element.GetElementShadowRoot()
     self._driver.Refresh()
-    with self.assertRaises(chromedriver.NoSuchElement):
+    with self.assertRaises(chromedriver.DetachedShadowRoot):
       shadow.FindElement('css selector', 'input')
 
   def testFindElementsFromShadowRoot(self):
