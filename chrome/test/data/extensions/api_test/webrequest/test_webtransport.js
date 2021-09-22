@@ -59,6 +59,19 @@ chrome.tabs.getCurrent(function(tab) {
                   },
                 },
                 {
+                  label: 'onResponseStarted',
+                  event: 'onResponseStarted',
+                  details: {
+                    method: 'CONNECT',
+                    url: url,
+                    type: 'webtransport',
+                    statusCode: 200,
+                    statusLine: 'HTTP/1.1 200',
+                    fromCache: false,
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                  },
+                },
+                {
                   label: 'onCompleted',
                   event: 'onCompleted',
                   details: {
@@ -75,7 +88,7 @@ chrome.tabs.getCurrent(function(tab) {
               [  // event order
                 [
                   'onBeforeRequest', 'onBeforeSendHeaders', 'onSendHeaders',
-                  'onHeadersReceived', 'onCompleted'
+                  'onHeadersReceived', 'onResponseStarted', 'onCompleted'
                 ]
               ],
               {urls: ['https://*/*']},  // filter
@@ -191,7 +204,7 @@ chrome.tabs.getCurrent(function(tab) {
           const onBeforeSendHeaders = callbackPass((details) => {
             const headers = details.requestHeaders;
             chrome.test.assertEq([], headers);
-            headers['foo'] = 'bar';
+            headers.push({name: 'foo', value: 'bar'});
             isOnBeforeSendHeadersCalled = true;
 
             chrome.webRequest.onBeforeSendHeaders.removeListener(
@@ -378,8 +391,56 @@ chrome.tabs.getCurrent(function(tab) {
           done();
         },
 
-        // TODO((crbug.com/1240935): Add tests modifying the response headers in
-        // onHeadersReceived and viewing them with onResponseStarted.
+        // Checks headers passed to onHeadersReceived and onResponseStarted.
+        async function headersInOnHeadersReceived() {
+          // TODO(crbug.com/1240935): Have the server respond with
+          // "foo:bar" header and observe it in onHeadersReceived.
+          const url = `https://localhost:${testWebTransportPort}/echo`;
+          let isOnHeadersReceivedCalled = false;
+          const onHeadersReceived = callbackPass((details) => {
+            const headers = details.responseHeaders;
+            chrome.test.assertEq([], headers);
+            headers.push({name: 'foo', value: 'bar'});
+            isOnHeadersReceivedCalled = true;
+
+            return {responseHeaders: headers};
+          });
+          chrome.webRequest.onHeadersReceived.addListener(
+              onHeadersReceived, {urls: [url]},
+              ['blocking', 'responseHeaders']);
+
+          let isOnResponseStartedCalled = false;
+          const onResponseStarted = callbackPass((details) => {
+            const headers = details.responseHeaders;
+            chrome.test.assertEq([{name: 'foo', value: 'bar'}], headers);
+            isOnResponseStartedCalled = true;
+
+            chrome.webRequest.onHeadersReceived.removeListener(
+                onHeadersReceived);
+            chrome.webRequest.onResponseStarted.removeListener(
+                onResponseStarted);
+          });
+          chrome.webRequest.onResponseStarted.addListener(
+              onResponseStarted, {urls: [url]}, ['responseHeaders']);
+
+          const completed = new Promise((resolve) => {
+            const onCompleted = callbackPass((details) => {
+              chrome.webRequest.onCompleted.removeListener(onCompleted);
+              resolve();
+            });
+            chrome.webRequest.onCompleted.addListener(
+                onCompleted,
+                {urls: [url]},
+            );
+          });
+
+          const done = chrome.test.callbackAdded();
+          await expectSessionEstablished(url);
+          await completed;
+          chrome.test.assertTrue(isOnHeadersReceivedCalled);
+          chrome.test.assertTrue(isOnResponseStartedCalled);
+          done();
+        },
       ],
       tab);
 });

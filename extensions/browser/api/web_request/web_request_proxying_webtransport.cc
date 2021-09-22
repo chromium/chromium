@@ -180,6 +180,9 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     response.was_fetched_via_cache = false;
     info_.AddResponseInfoFromResourceResponse(response);
 
+    ExtensionWebRequestEventRouter::GetInstance()->OnResponseStarted(
+        browser_context_, &info_, net::OK);
+
     remote_->OnConnectionEstablished(std::move(pending_transport_),
                                      std::move(pending_client_),
                                      response.headers);
@@ -199,8 +202,6 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     OnError(error_code);
     // `this` is deleted.
   }
-
-  // TODO(crbug.com/1240935): Implement WebRequestAPI::onResponseStarted
 
   void OnError(int error_code) {
     DCHECK_NE(error_code, net::OK);

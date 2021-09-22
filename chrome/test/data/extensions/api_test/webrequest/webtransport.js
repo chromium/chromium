@@ -7,7 +7,7 @@ async function expectSessionEstablished(url) {
   try {
     await transport.ready;
   } catch (e) {
-    chrome.test.fail('Ready rejected: ${e}');
+    chrome.test.fail(`Ready rejected: ${e}`);
   }
 }
 
