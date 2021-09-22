@@ -590,6 +590,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // StoragePartition associated with the render process host, and is used by
   // frames and service workers via BrowserInterfaceBroker.
   void CreateOneShotSyncService(
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver) override;
 
@@ -597,6 +598,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // StoragePartition associated with the render process host, and is used by
   // frames and service workers via BrowserInterfaceBroker.
   void CreatePeriodicSyncService(
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver) override;
 

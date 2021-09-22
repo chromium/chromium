@@ -519,9 +519,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void BindVideoDecodePerfHistory(
       mojo::PendingReceiver<media::mojom::VideoDecodePerfHistory> receiver) = 0;
   virtual void CreateOneShotSyncService(
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver) = 0;
   virtual void CreatePeriodicSyncService(
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver) = 0;
   virtual void BindQuotaManagerHost(

@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -29,6 +30,7 @@ class CONTENT_EXPORT PeriodicBackgroundSyncServiceImpl
  public:
   PeriodicBackgroundSyncServiceImpl(
       BackgroundSyncContextImpl* background_sync_context,
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver);
 
@@ -55,6 +57,8 @@ class CONTENT_EXPORT PeriodicBackgroundSyncServiceImpl
 
   // |background_sync_context_| owns |this|.
   BackgroundSyncContextImpl* background_sync_context_;
+
+  url::Origin origin_;
 
   std::unique_ptr<BackgroundSyncRegistrationHelper> registration_helper_;
   mojo::Receiver<blink::mojom::PeriodicBackgroundSyncService> receiver_;

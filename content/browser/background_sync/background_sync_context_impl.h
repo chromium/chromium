@@ -54,11 +54,13 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
 
   // Creates a OneShotBackgroundSyncServiceImpl that is owned by `this`.
   void CreateOneShotSyncService(
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver);
 
   // Creates a PeriodicBackgroundSyncServiceImpl that is owned by `this`.
   void CreatePeriodicSyncService(
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver);
 

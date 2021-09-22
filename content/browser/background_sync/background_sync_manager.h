@@ -192,6 +192,10 @@ class CONTENT_EXPORT BackgroundSyncManager
   // Revive any pending periodic Background Sync registrations for |origin|.
   void RevivePeriodicSyncRegistrations(url::Origin origin);
 
+  const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context() {
+    return service_worker_context_;
+  }
+
  protected:
   BackgroundSyncManager(
       scoped_refptr<ServiceWorkerContextWrapper> context,

@@ -861,13 +861,23 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                           base::Unretained(host)));
 #endif
 
-  map->Add<blink::mojom::OneShotBackgroundSyncService>(
-      base::BindRepeating(&RenderProcessHost::CreateOneShotSyncService,
-                          base::Unretained(host->GetProcess())));
+  map->Add<blink::mojom::OneShotBackgroundSyncService>(base::BindRepeating(
+      [](RenderFrameHostImpl* host,
+         mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
+             receiver) {
+        host->GetProcess()->CreateOneShotSyncService(
+            host->storage_key().origin(), std::move(receiver));
+      },
+      base::Unretained(host)));
 
-  map->Add<blink::mojom::PeriodicBackgroundSyncService>(
-      base::BindRepeating(&RenderProcessHost::CreatePeriodicSyncService,
-                          base::Unretained(host->GetProcess())));
+  map->Add<blink::mojom::PeriodicBackgroundSyncService>(base::BindRepeating(
+      [](RenderFrameHostImpl* host,
+         mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
+             receiver) {
+        host->GetProcess()->CreatePeriodicSyncService(
+            host->storage_key().origin(), std::move(receiver));
+      },
+      base::Unretained(host)));
 
   map->Add<media::mojom::VideoDecodePerfHistory>(
       base::BindRepeating(&RenderProcessHost::BindVideoDecodePerfHistory,
@@ -1265,12 +1275,6 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindServiceWorkerReceiver(
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
-  map->Add<blink::mojom::OneShotBackgroundSyncService>(
-      BindServiceWorkerReceiver(
-          &RenderProcessHostImpl::CreateOneShotSyncService, host));
-  map->Add<blink::mojom::PeriodicBackgroundSyncService>(
-      BindServiceWorkerReceiver(
-          &RenderProcessHostImpl::CreatePeriodicSyncService, host));
   map->Add<blink::mojom::PushMessaging>(BindServiceWorkerReceiver(
       &RenderProcessHostImpl::BindPushMessaging, host));
 }
@@ -1301,6 +1305,12 @@ void PopulateBinderMapWithContext(
           host));
   map->Add<blink::mojom::BucketManagerHost>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
+  map->Add<blink::mojom::OneShotBackgroundSyncService>(
+      BindServiceWorkerReceiverForOrigin(
+          &RenderProcessHostImpl::CreateOneShotSyncService, host));
+  map->Add<blink::mojom::PeriodicBackgroundSyncService>(
+      BindServiceWorkerReceiverForOrigin(
+          &RenderProcessHostImpl::CreatePeriodicSyncService, host));
 
   // RenderProcessHost binders taking a storage key
   map->Add<blink::mojom::NativeIOHost>(BindServiceWorkerReceiverForStorageKey(

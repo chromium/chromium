@@ -10,13 +10,16 @@
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
+#include "url/origin.h"
 
 namespace content {
 
 PeriodicBackgroundSyncServiceImpl::PeriodicBackgroundSyncServiceImpl(
     BackgroundSyncContextImpl* background_sync_context,
+    const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService> receiver)
     : background_sync_context_(background_sync_context),
+      origin_(origin),
       receiver_(this, std::move(receiver)) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(background_sync_context_);
@@ -51,6 +54,13 @@ void PeriodicBackgroundSyncServiceImpl::Register(
     return;
   }
 
+  if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
+                                                      origin_)) {
+    std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
+                            /* options= */ nullptr);
+    return;
+  }
+
   registration_helper_->Register(std::move(options), sw_registration_id,
                                  std::move(callback));
 }
@@ -60,6 +70,12 @@ void PeriodicBackgroundSyncServiceImpl::Unregister(
     const std::string& tag,
     UnregisterCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+
+  if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
+                                                      origin_)) {
+    std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE);
+    return;
+  }
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();
@@ -74,6 +90,13 @@ void PeriodicBackgroundSyncServiceImpl::GetRegistrations(
     int64_t sw_registration_id,
     GetRegistrationsCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+
+  if (!registration_helper_->ValidateSWRegistrationID(sw_registration_id,
+                                                      origin_)) {
+    std::move(callback).Run(blink::mojom::BackgroundSyncError::STORAGE,
+                            /* registrations= */ {});
+    return;
+  }
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();

@@ -21,6 +21,8 @@
 
 namespace content {
 
+const char kServiceWorkerOrigin[] = "https://example.com/";
+
 class BackgroundSyncServiceImplTestHarness : public testing::Test {
  public:
   static void RegisterServiceWorkerCallback(
