@@ -144,6 +144,13 @@
 #   'default_for_managed_devices_doc_only', which documents an explicitly
 #   implemented default policy value for managed devices.
 #
+#   'items' is used to outline the behavior of each state the policy can take.
+#   This field is only used for policies of type 'main', 'int-enum', or
+#   'string-enum'. For 'main' policies, it describes how the policy behaves when
+#   set to True or False, and whether the unset state is different from the
+#   enabled/disabled states. For 'enum' policies, it lists all possible values
+#   the policy can be set to along with a brief description.
+#
 #   Additional information is specified under the 'features' key:
 #   'dynamic_refresh' controls if the generated documentation should state that
 #   the policy supports dynamic refresh or not. Supporting dynamic refresh means
