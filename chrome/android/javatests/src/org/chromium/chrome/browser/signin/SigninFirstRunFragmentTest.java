@@ -180,6 +180,24 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    public void testFragmentWhenRemovingChildAccountDynamically() {
+        mAccountManagerTestRule.addAccount(
+                CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+
+        mAccountManagerTestRule.removeAccount(CHILD_EMAIL);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
+        });
+        onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
     public void testFragmentWithDefaultAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
