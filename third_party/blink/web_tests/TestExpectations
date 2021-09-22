@@ -4912,8 +4912,6 @@ crbug.com/535738 external/wpt/media-source/mediasource-changetype-play-implicit.
 crbug.com/535738 external/wpt/media-source/mediasource-changetype-play-negative.html [ Failure ]
 crbug.com/535738 external/wpt/media-source/mediasource-changetype-play-without-codecs-parameter.html [ Failure ]
 
-crbug.com/974675 http/tests/devtools/sources/debugger-frameworks/frameworks-jquery.js [ Crash Pass ]
-
 # Sheriff 2019-06-26
 crbug.com/978966 [ Mac ] paint/markers/ellipsis-mixed-text-in-ltr-flow-with-markers.html [ Failure Pass ]
 
