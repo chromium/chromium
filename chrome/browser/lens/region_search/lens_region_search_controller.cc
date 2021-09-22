@@ -37,7 +37,7 @@ LensRegionSearchController::~LensRegionSearchController() {
   CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 
-void LensRegionSearchController::Start() {
+void LensRegionSearchController::Start(bool use_fullscreen_capture) {
   if (!web_contents() || !browser_)
     return;
 
@@ -54,7 +54,11 @@ void LensRegionSearchController::Start() {
   base::OnceCallback<void(const image_editor::ScreenshotCaptureResult&)>
       callback = base::BindOnce(&LensRegionSearchController::OnCaptureCompleted,
                                 weak_this_);
-  screenshot_flow_->Start(std::move(callback));
+  if (use_fullscreen_capture) {
+    screenshot_flow_->StartFullscreenCapture(std::move(callback));
+  } else {
+    screenshot_flow_->Start(std::move(callback));
+  }
 }
 
 gfx::Image LensRegionSearchController::ResizeImageIfNecessary(

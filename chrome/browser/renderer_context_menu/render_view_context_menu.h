@@ -261,7 +261,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   void ExecCopyLinkText();
   void ExecCopyImageAt();
   void ExecSearchLensForImage();
-  void ExecLensRegionSearch();
+  void ExecLensRegionSearch(int event_flags);
   void ExecSearchWebForImage();
   void ExecLoadImage();
   void ExecPlayPause();

@@ -32,8 +32,9 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // Creates and runs the drag and capture flow. When run, the user enters into
   // a screenshot capture mode with the ability to draw a rectagular region
   // around the web contents. When finished with selection, the region is
-  // converted into a PNG and sent to Lens.
-  void Start();
+  // converted into a PNG and sent to Lens. If `use_fullscreen_capture` is set
+  // to true, the whole screen will automatically be captured.
+  void Start(bool use_fullscreen_capture);
 
   // Closes the UI overlay and user education bubble if currently being shown.
   // The closed reason for this method is defaulted to the close button being

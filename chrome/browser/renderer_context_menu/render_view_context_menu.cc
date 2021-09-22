@@ -616,6 +616,19 @@ bool ShouldUseShareMenu() {
   return base::FeatureList::IsEnabled(share::kShareMenu);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||    \
+    (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
+        BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ui::MenuSourceType GetMenuSourceType(int event_flags) {
+  if (event_flags & ui::EF_LEFT_MOUSE_BUTTON)
+    return ui::MENU_SOURCE_MOUSE;
+  else if (event_flags & ui::EF_FROM_TOUCH)
+    return ui::MENU_SOURCE_TOUCH;
+  else
+    return ui::MENU_SOURCE_KEYBOARD;
+}
+#endif
+
 }  // namespace
 
 // static
@@ -2517,7 +2530,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
-      ExecLensRegionSearch();
+      ExecLensRegionSearch(event_flags);
       break;
 
     case IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB:
@@ -2751,13 +2764,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       anchor_point_in_screen.Offset(params_.x, params_.y);
 
       // Calculate the menu source type from `event_flags`.
-      ui::MenuSourceType source_type;
-      if (event_flags & ui::EF_LEFT_MOUSE_BUTTON)
-        source_type = ui::MENU_SOURCE_MOUSE;
-      else if (event_flags & ui::EF_FROM_TOUCH)
-        source_type = ui::MENU_SOURCE_TOUCH;
-      else
-        source_type = ui::MENU_SOURCE_KEYBOARD;
+      ui::MenuSourceType source_type = GetMenuSourceType(event_flags);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       ash::ClipboardHistoryController::Get()->ShowMenu(
@@ -3311,14 +3318,16 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
       lens::features::kEnableSidePanelForLensImageSearch.Get());
 }
 
-void RenderViewContextMenu::ExecLensRegionSearch() {
+void RenderViewContextMenu::ExecLensRegionSearch(int event_flags) {
 #if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!lens_region_search_controller_)
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>(source_web_contents_,
                                                            GetBrowser());
-  lens_region_search_controller_->Start();
+  bool use_fullscreen_capture =
+      GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD;
+  lens_region_search_controller_->Start(use_fullscreen_capture);
 #endif
 }
 
