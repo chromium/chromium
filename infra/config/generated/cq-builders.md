@@ -444,14 +444,8 @@ as required builders.
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-pie-arm64-coverage-experimental-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-pie-arm64-coverage-experimental-rel))
   * Experiment percentage: 3.0
 
-* [chromeos-amd64-generic-rel-rts](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromeos-amd64-generic-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromeos-amd64-generic-rel-rts))
+* [android-pie-arm64-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-pie-arm64-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-pie-arm64-rel-rts))
   * Experiment percentage: 5.0
-
-* [fuchsia_x64_rts](https://ci.chromium.org/p/chromium/builders/try/fuchsia_x64_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+fuchsia_x64_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+fuchsia_x64_rts))
-  * Experiment percentage: 5.0
-
-* [ios-simulator-rts](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+ios-simulator-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+ios-simulator-rts))
-  * Experiment percentage: 1.0
 
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-1mbu-compile-fyi-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-1mbu-compile-fyi-rel))
   * Experiment percentage: 5.0
@@ -478,12 +472,12 @@ as required builders.
 * [linux-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-rts))
   * Experiment percentage: 5.0
 
-* [mac-rel-rts](https://ci.chromium.org/p/chromium/builders/try/mac-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac-rel-rts))
-  * Experiment percentage: 1.0
+* [linux_chromium_asan_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_asan_rel_ng_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_asan_rel_ng_rts))
+  * Experiment percentage: 5.0
+
+* [linux_chromium_tsan_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_tsan_rel_ng_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_tsan_rel_ng_rts))
+  * Experiment percentage: 5.0
 
 * [win10-rel-orchestrator](https://ci.chromium.org/p/chromium/builders/try/win10-rel-orchestrator) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win10-rel-orchestrator)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win10-rel-orchestrator))
   * Experiment percentage: 15.0
-
-* [win10_chromium_x64_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win10_chromium_x64_rel_ng_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win10_chromium_x64_rel_ng_rts))
-  * Experiment percentage: 5.0
 

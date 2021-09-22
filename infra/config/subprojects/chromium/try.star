@@ -411,6 +411,9 @@ try_.chromium_android_builder(
     ),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
+    experiments = {
+        "chromium.chromium_tests.use_isolate": 50,
+    },
 )
 
 try_.chromium_android_builder(
@@ -502,6 +505,20 @@ try_.chromium_android_builder(
     ssd = True,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug/1202741)
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
+)
+
+try_.chromium_android_builder(
+    name = "android-pie-arm64-rel-rts",
+    builderless = not settings.is_main,
+    cores = 16,
+    goma_jobs = goma.jobs.J300,
+    ssd = True,
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
@@ -1420,6 +1437,20 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux_chromium_asan_rel_ng_rts",
+    goma_jobs = goma.jobs.J150,
+    ssd = True,
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+    # TODO(crbug.com/1143122): remove this after migration.
+    experiments = {
+        "chromium.chromium_tests.use_isolate": 50,
+    },
+)
+
+try_.chromium_linux_builder(
     name = "linux_chromium_cfi_rel_ng",
     cores = 32,
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
@@ -1501,6 +1532,20 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug.com/1143122): remove this after migration.
+    experiments = {
+        "chromium.chromium_tests.use_isolate": 50,
+    },
+)
+
+try_.chromium_linux_builder(
+    name = "linux_chromium_tsan_rel_ng_rts",
+    builderless = not settings.is_main,
+    goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
     # TODO(crbug.com/1143122): remove this after migration.
     experiments = {
         "chromium.chromium_tests.use_isolate": 50,
@@ -2149,9 +2194,6 @@ try_.chromium_mac_builder(
     builderless = False,
     use_clang_coverage = True,
     goma_jobs = goma.jobs.J150,
-    tryjob = try_.job(
-        experiment_percentage = 1,
-    ),
 )
 
 try_.chromium_win_builder(
@@ -2160,9 +2202,6 @@ try_.chromium_win_builder(
     use_clang_coverage = True,
     builderless = False,
     cores = 16,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
 )
 
 try_.chromium_android_builder(
@@ -2180,18 +2219,12 @@ try_.chromium_android_builder(
 try_.chromium_linux_builder(
     name = "fuchsia_x64_rts",
     builderless = False,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
 try_.chromium_chromiumos_builder(
     name = "chromeos-amd64-generic-rel-rts",
     builderless = False,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
@@ -2201,9 +2234,6 @@ try_.chromium_mac_ios_builder(
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["unit"],
     builderless = False,
-    tryjob = try_.job(
-        experiment_percentage = 1,
-    ),
 )
 
 try_.infra_builder(
