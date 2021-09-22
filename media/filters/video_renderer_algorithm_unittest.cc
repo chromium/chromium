@@ -81,6 +81,11 @@ class VideoRendererAlgorithmTest : public testing::Test {
     tick_clock_->Advance(base::TimeDelta::FromMicroseconds(10000));
     time_source_.SetTickClockForTesting(tick_clock_.get());
   }
+
+  VideoRendererAlgorithmTest(const VideoRendererAlgorithmTest&) = delete;
+  VideoRendererAlgorithmTest& operator=(const VideoRendererAlgorithmTest&) =
+      delete;
+
   ~VideoRendererAlgorithmTest() override = default;
 
   scoped_refptr<VideoFrame> CreateFrame(base::TimeDelta timestamp) {
@@ -326,9 +331,6 @@ class VideoRendererAlgorithmTest : public testing::Test {
   std::unique_ptr<base::SimpleTestTickClock> tick_clock_;
   WallClockTimeSource time_source_;
   VideoRendererAlgorithm algorithm_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoRendererAlgorithmTest);
 };
 
 TEST_F(VideoRendererAlgorithmTest, Empty) {

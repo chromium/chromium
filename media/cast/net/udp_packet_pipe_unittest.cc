@@ -35,6 +35,9 @@ class UdpPacketPipeTest : public ::testing::Test {
     reader_ = std::make_unique<UdpPacketPipeReader>(std::move(consumer_handle));
   }
 
+  UdpPacketPipeTest(const UdpPacketPipeTest&) = delete;
+  UdpPacketPipeTest& operator=(const UdpPacketPipeTest&) = delete;
+
   ~UdpPacketPipeTest() override = default;
 
   void OnPacketRead(std::unique_ptr<Packet> packet) {
@@ -46,9 +49,6 @@ class UdpPacketPipeTest : public ::testing::Test {
   std::unique_ptr<UdpPacketPipeWriter> writer_;
   std::unique_ptr<UdpPacketPipeReader> reader_;
   base::circular_deque<std::unique_ptr<Packet>> packets_read_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UdpPacketPipeTest);
 };
 
 TEST_F(UdpPacketPipeTest, Normal) {

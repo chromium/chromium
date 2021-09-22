@@ -43,6 +43,10 @@ class MEDIA_EXPORT SilentSinkSuspender
                       const AudioParameters& params,
                       scoped_refptr<AudioRendererSink> sink,
                       scoped_refptr<base::SingleThreadTaskRunner> worker);
+
+  SilentSinkSuspender(const SilentSinkSuspender&) = delete;
+  SilentSinkSuspender& operator=(const SilentSinkSuspender&) = delete;
+
   ~SilentSinkSuspender() override;
 
   // AudioRendererSink::RenderCallback implementation.
@@ -125,8 +129,6 @@ class MEDIA_EXPORT SilentSinkSuspender
 
   // Time when transition to |fake_sink_| starts.
   base::TimeTicks fake_sink_transition_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SilentSinkSuspender);
 };
 
 }  // namespace media

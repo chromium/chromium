@@ -23,6 +23,10 @@ class AudioBus;
 class MEDIA_EXPORT AudioBufferQueue {
  public:
   AudioBufferQueue();
+
+  AudioBufferQueue(const AudioBufferQueue&) = delete;
+  AudioBufferQueue& operator=(const AudioBufferQueue&) = delete;
+
   ~AudioBufferQueue();
 
   // Clears the buffer queue.
@@ -77,8 +81,6 @@ class MEDIA_EXPORT AudioBufferQueue {
 
   // Number of frames available to be read in the buffer.
   int frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBufferQueue);
 };
 
 }  // namespace media

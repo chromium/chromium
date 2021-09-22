@@ -64,6 +64,10 @@ class MockAudioDebugRecordingHelper : public AudioDebugRecordingHelper {
       EXPECT_CALL(*this, DoEnableDebugRecording(_, _));
   }
 
+  MockAudioDebugRecordingHelper(const MockAudioDebugRecordingHelper&) = delete;
+  MockAudioDebugRecordingHelper& operator=(
+      const MockAudioDebugRecordingHelper&) = delete;
+
   ~MockAudioDebugRecordingHelper() override {
     if (on_destruction_closure_in_mock_)
       std::move(on_destruction_closure_in_mock_).Run();
@@ -84,8 +88,6 @@ class MockAudioDebugRecordingHelper : public AudioDebugRecordingHelper {
   // We let the mock run the destruction closure to not rely on the real
   // implementation.
   base::OnceClosure on_destruction_closure_in_mock_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudioDebugRecordingHelper);
 };
 
 // Sub-class of the manager that overrides the CreateAudioDebugRecordingHelper
@@ -95,6 +97,12 @@ class AudioDebugRecordingManagerUnderTest : public AudioDebugRecordingManager {
   AudioDebugRecordingManagerUnderTest(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : AudioDebugRecordingManager(std::move(task_runner)) {}
+
+  AudioDebugRecordingManagerUnderTest(
+      const AudioDebugRecordingManagerUnderTest&) = delete;
+  AudioDebugRecordingManagerUnderTest& operator=(
+      const AudioDebugRecordingManagerUnderTest&) = delete;
+
   ~AudioDebugRecordingManagerUnderTest() override = default;
 
  private:
@@ -106,8 +114,6 @@ class AudioDebugRecordingManagerUnderTest : public AudioDebugRecordingManager {
         params, std::move(task_runner),
         std::move(on_destruction_closure));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingManagerUnderTest);
 };
 
 // The test fixture.
@@ -115,6 +121,11 @@ class AudioDebugRecordingManagerTest : public ::testing::Test {
  public:
   AudioDebugRecordingManagerTest()
       : manager_(task_environment_.GetMainThreadTaskRunner()) {}
+
+  AudioDebugRecordingManagerTest(const AudioDebugRecordingManagerTest&) =
+      delete;
+  AudioDebugRecordingManagerTest& operator=(
+      const AudioDebugRecordingManagerTest&) = delete;
 
   ~AudioDebugRecordingManagerTest() override = default;
 
@@ -135,9 +146,6 @@ class AudioDebugRecordingManagerTest : public ::testing::Test {
   // manager uses a global running id, thus doesn't restart at each
   // instantiation.
   static uint32_t expected_next_source_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingManagerTest);
 };
 
 uint32_t AudioDebugRecordingManagerTest::expected_next_source_id_ = 1;

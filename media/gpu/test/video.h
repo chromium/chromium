@@ -33,6 +33,10 @@ class Video {
  public:
   Video(const base::FilePath& file_path,
         const base::FilePath& metadata_file_path);
+
+  Video(const Video&) = delete;
+  Video& operator=(const Video&) = delete;
+
   ~Video();
 
   // Create a new Video instance by copying and converting |data_| to NV12.
@@ -152,8 +156,6 @@ class Video {
   uint32_t num_fragments_ = 0;
   gfx::Size resolution_;
   gfx::Rect visible_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(Video);
 };
 
 }  // namespace test

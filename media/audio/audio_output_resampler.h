@@ -44,6 +44,10 @@ class MEDIA_EXPORT AudioOutputResampler : public AudioOutputDispatcher {
                        base::TimeDelta close_delay,
                        const RegisterDebugRecordingSourceCallback&
                            register_debug_recording_source_callback);
+
+  AudioOutputResampler(const AudioOutputResampler&) = delete;
+  AudioOutputResampler& operator=(const AudioOutputResampler&) = delete;
+
   ~AudioOutputResampler() override;
 
   // AudioOutputDispatcher interface.
@@ -106,7 +110,6 @@ class MEDIA_EXPORT AudioOutputResampler : public AudioOutputDispatcher {
       register_debug_recording_source_callback_;
 
   base::WeakPtrFactory<AudioOutputResampler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputResampler);
 };
 
 }  // namespace media

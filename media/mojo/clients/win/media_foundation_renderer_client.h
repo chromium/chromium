@@ -52,6 +52,10 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
       std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
       VideoRendererSink* sink);
 
+  MediaFoundationRendererClient(const MediaFoundationRendererClient&) = delete;
+  MediaFoundationRendererClient& operator=(
+      const MediaFoundationRendererClient&) = delete;
+
   ~MediaFoundationRendererClient() override;
 
   // Renderer implementation.
@@ -121,8 +125,6 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationRendererClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFoundationRendererClient);
 };
 
 }  // namespace media

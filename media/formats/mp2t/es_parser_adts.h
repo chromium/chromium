@@ -44,6 +44,9 @@ class MEDIA_EXPORT EsParserAdts : public EsParser {
                bool sbr_in_mimetype);
 #endif
 
+  EsParserAdts(const EsParserAdts&) = delete;
+  EsParserAdts& operator=(const EsParserAdts&) = delete;
+
   ~EsParserAdts() override;
 
   // EsParser implementation.
@@ -98,8 +101,6 @@ class MEDIA_EXPORT EsParserAdts : public EsParser {
   AudioDecoderConfig last_audio_decoder_config_;
 
   ADTSStreamParser adts_parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsParserAdts);
 };
 
 }  // namespace mp2t

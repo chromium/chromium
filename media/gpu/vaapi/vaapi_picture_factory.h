@@ -38,6 +38,10 @@ class MEDIA_GPU_EXPORT VaapiPictureFactory {
   };
 
   VaapiPictureFactory();
+
+  VaapiPictureFactory(const VaapiPictureFactory&) = delete;
+  VaapiPictureFactory& operator=(const VaapiPictureFactory&) = delete;
+
   virtual ~VaapiPictureFactory();
 
   // Creates a VaapiPicture of picture_buffer.size() associated with
@@ -82,8 +86,6 @@ class MEDIA_GPU_EXPORT VaapiPictureFactory {
 
   CreatePictureCB create_picture_cb_;
   bool needs_vpp_for_downloading_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiPictureFactory);
 };
 
 }  // namespace media

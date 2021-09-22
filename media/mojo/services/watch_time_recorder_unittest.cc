@@ -75,6 +75,9 @@ class WatchTimeRecorderTest : public testing::Test {
         provider_.BindNewPipeAndPassReceiver());
   }
 
+  WatchTimeRecorderTest(const WatchTimeRecorderTest&) = delete;
+  WatchTimeRecorderTest& operator=(const WatchTimeRecorderTest&) = delete;
+
   ~WatchTimeRecorderTest() override { base::RunLoop().RunUntilIdle(); }
 
   void Initialize(mojom::PlaybackPropertiesPtr properties) {
@@ -209,8 +212,6 @@ class WatchTimeRecorderTest : public testing::Test {
   const std::vector<base::StringPiece> mtbr_keys_;
   const std::vector<base::StringPiece> smooth_keys_;
   const std::vector<base::StringPiece> discard_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeRecorderTest);
 };
 
 TEST_F(WatchTimeRecorderTest, TestBasicReporting) {

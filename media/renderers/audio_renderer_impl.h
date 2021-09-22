@@ -78,6 +78,10 @@ class MEDIA_EXPORT AudioRendererImpl
       const CreateAudioDecodersCB& create_audio_decoders_cb,
       MediaLog* media_log,
       SpeechRecognitionClient* speech_recognition_client = nullptr);
+
+  AudioRendererImpl(const AudioRendererImpl&) = delete;
+  AudioRendererImpl& operator=(const AudioRendererImpl&) = delete;
+
   ~AudioRendererImpl() override;
 
   // TimeSource implementation.
@@ -383,8 +387,6 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioRendererImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererImpl);
 };
 
 }  // namespace media

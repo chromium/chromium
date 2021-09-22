@@ -33,6 +33,9 @@ class MEDIA_EXPORT AudioDebugFileWriter {
   // Write() must match |params|.
   explicit AudioDebugFileWriter(const AudioParameters& params);
 
+  AudioDebugFileWriter(const AudioDebugFileWriter&) = delete;
+  AudioDebugFileWriter& operator=(const AudioDebugFileWriter&) = delete;
+
   virtual ~AudioDebugFileWriter();
 
   // Must be called before calling Write() for the first time after creation or
@@ -70,8 +73,6 @@ class MEDIA_EXPORT AudioDebugFileWriter {
 
   AudioFileWriterUniquePtr file_writer_;
   SEQUENCE_CHECKER(client_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugFileWriter);
 };
 
 }  // namespace media

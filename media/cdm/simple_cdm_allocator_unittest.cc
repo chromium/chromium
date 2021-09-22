@@ -49,13 +49,14 @@ class TestCdmBuffer final : public cdm::Buffer {
 class SimpleCdmAllocatorTest : public testing::Test {
  public:
   SimpleCdmAllocatorTest() = default;
+
+  SimpleCdmAllocatorTest(const SimpleCdmAllocatorTest&) = delete;
+  SimpleCdmAllocatorTest& operator=(const SimpleCdmAllocatorTest&) = delete;
+
   ~SimpleCdmAllocatorTest() override = default;
 
  protected:
   SimpleCdmAllocator allocator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleCdmAllocatorTest);
 };
 
 TEST_F(SimpleCdmAllocatorTest, CreateCdmBuffer) {

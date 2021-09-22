@@ -58,6 +58,10 @@ class VideoCaptureDeviceMac
  public:
   explicit VideoCaptureDeviceMac(
       const VideoCaptureDeviceDescriptor& device_descriptor);
+
+  VideoCaptureDeviceMac(const VideoCaptureDeviceMac&) = delete;
+  VideoCaptureDeviceMac& operator=(const VideoCaptureDeviceMac&) = delete;
+
   ~VideoCaptureDeviceMac() override;
 
   // VideoCaptureDevice implementation.
@@ -132,8 +136,6 @@ class VideoCaptureDeviceMac
   // VideoCaptureDeviceMac is destroyed.
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<VideoCaptureDeviceMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceMac);
 };
 
 }  // namespace media

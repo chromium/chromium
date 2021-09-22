@@ -29,6 +29,9 @@ class MEDIA_EXPORT MemoryDumpProviderProxy final
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       MemoryDumpCB dump_cb);
 
+  MemoryDumpProviderProxy(const MemoryDumpProviderProxy&) = delete;
+  MemoryDumpProviderProxy& operator=(const MemoryDumpProviderProxy&) = delete;
+
   ~MemoryDumpProviderProxy() override;
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -36,8 +39,6 @@ class MEDIA_EXPORT MemoryDumpProviderProxy final
 
  private:
   MemoryDumpCB dump_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpProviderProxy);
 };
 
 }  // namespace media

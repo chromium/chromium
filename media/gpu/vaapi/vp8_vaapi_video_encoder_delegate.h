@@ -49,6 +49,11 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   VP8VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
                                base::RepeatingClosure error_cb);
+
+  VP8VaapiVideoEncoderDelegate(const VP8VaapiVideoEncoderDelegate&) = delete;
+  VP8VaapiVideoEncoderDelegate& operator=(const VP8VaapiVideoEncoderDelegate&) =
+      delete;
+
   ~VP8VaapiVideoEncoderDelegate() override;
 
   // VaapiVideoEncoderDelegate implementation.
@@ -86,8 +91,6 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   Vp8FrameHeader current_frame_hdr_;
   Vp8ReferenceFrameVector reference_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(VP8VaapiVideoEncoderDelegate);
 };
 
 }  // namespace media

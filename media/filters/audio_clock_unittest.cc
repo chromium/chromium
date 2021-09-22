@@ -16,6 +16,9 @@ class AudioClockTest : public testing::Test {
  public:
   AudioClockTest() { SetupClock(base::TimeDelta(), 10); }
 
+  AudioClockTest(const AudioClockTest&) = delete;
+  AudioClockTest& operator=(const AudioClockTest&) = delete;
+
   ~AudioClockTest() override = default;
 
   void WroteAudio(int frames_written,
@@ -67,9 +70,6 @@ class AudioClockTest : public testing::Test {
 
   int sample_rate_;
   std::unique_ptr<AudioClock> clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioClockTest);
 };
 
 TEST_F(AudioClockTest, FrontTimestampStartsAtStartTimestamp) {

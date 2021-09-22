@@ -24,6 +24,10 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
   class GpuHelper {
    public:
     GpuHelper() = default;
+
+    GpuHelper(const GpuHelper&) = delete;
+    GpuHelper& operator=(const GpuHelper&) = delete;
+
     virtual ~GpuHelper() = default;
 
     // Called (on the gpu thread) to handle image return.
@@ -32,9 +36,6 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
         scoped_refptr<CodecImageHolder> codec_image_holder,
         base::OnceClosure cb,
         scoped_refptr<gpu::RefCountedLock> drdc_lock) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(GpuHelper);
   };
 
   // Create a default implementation.  |provider| is the underlying provider to
@@ -44,6 +45,11 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
       GetStubCB get_stub_cb,
       std::unique_ptr<SharedImageVideoProvider> provider,
       scoped_refptr<gpu::RefCountedLock> drdc_lock);
+
+  PooledSharedImageVideoProvider(const PooledSharedImageVideoProvider&) =
+      delete;
+  PooledSharedImageVideoProvider& operator=(
+      const PooledSharedImageVideoProvider&) = delete;
 
   ~PooledSharedImageVideoProvider() override;
 
@@ -129,8 +135,6 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
   base::SequenceBound<GpuHelper> gpu_helper_;
 
   base::WeakPtrFactory<PooledSharedImageVideoProvider> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PooledSharedImageVideoProvider);
 };
 
 }  // namespace media

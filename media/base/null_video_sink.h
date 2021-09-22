@@ -30,6 +30,10 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
                 base::TimeDelta interval,
                 const NewFrameCB& new_frame_cb,
                 const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+
+  NullVideoSink(const NullVideoSink&) = delete;
+  NullVideoSink& operator=(const NullVideoSink&) = delete;
+
   ~NullVideoSink() override;
 
   // VideoRendererSink implementation.
@@ -86,8 +90,6 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
 
   // Value passed to RenderCallback::Render().
   bool background_render_;
-
-  DISALLOW_COPY_AND_ASSIGN(NullVideoSink);
 };
 
 }  // namespace media

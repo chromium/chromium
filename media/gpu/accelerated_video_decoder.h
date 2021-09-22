@@ -24,6 +24,10 @@ namespace media {
 class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
  public:
   AcceleratedVideoDecoder() {}
+
+  AcceleratedVideoDecoder(const AcceleratedVideoDecoder&) = delete;
+  AcceleratedVideoDecoder& operator=(const AcceleratedVideoDecoder&) = delete;
+
   virtual ~AcceleratedVideoDecoder() {}
 
   // Set the buffer owned by |decoder_buffer| as the current source of encoded
@@ -87,9 +91,6 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   // The number is the sweet spot which the decoder can tolerate to handle the
   // missing keyframe by itself. In addition, this situation is exceptional.
   static constexpr size_t kVPxMaxNumOfSizeChangeFailures = 75;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AcceleratedVideoDecoder);
 };
 
 }  //  namespace media

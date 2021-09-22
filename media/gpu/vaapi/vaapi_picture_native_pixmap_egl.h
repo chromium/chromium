@@ -37,6 +37,10 @@ class VaapiPictureNativePixmapEgl : public VaapiPictureNativePixmap {
       uint32_t client_texture_id,
       uint32_t texture_target);
 
+  VaapiPictureNativePixmapEgl(const VaapiPictureNativePixmapEgl&) = delete;
+  VaapiPictureNativePixmapEgl& operator=(const VaapiPictureNativePixmapEgl&) =
+      delete;
+
   ~VaapiPictureNativePixmapEgl() override;
 
   // VaapiPicture implementation.
@@ -47,8 +51,6 @@ class VaapiPictureNativePixmapEgl : public VaapiPictureNativePixmap {
 
  private:
   Status Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiPictureNativePixmapEgl);
 };
 
 }  // namespace media

@@ -335,6 +335,10 @@ bool ConfigChangeDetector::is_vp9_resilient_mode() const {
 class H264ConfigChangeDetector : public ConfigChangeDetector {
  public:
   H264ConfigChangeDetector() {}
+
+  H264ConfigChangeDetector(const H264ConfigChangeDetector&) = delete;
+  H264ConfigChangeDetector& operator=(const H264ConfigChangeDetector&) = delete;
+
   ~H264ConfigChangeDetector() override {}
 
   // Detects stream configuration changes.
@@ -360,8 +364,6 @@ class H264ConfigChangeDetector : public ConfigChangeDetector {
   bool pending_config_changed_ = false;
 
   std::unique_ptr<H264Parser> parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264ConfigChangeDetector);
 };
 
 bool H264ConfigChangeDetector::DetectConfig(const uint8_t* stream,

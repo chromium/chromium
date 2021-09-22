@@ -103,6 +103,10 @@ class UserInputMonitorLinux : public UserInputMonitorBase {
  public:
   explicit UserInputMonitorLinux(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
+
+  UserInputMonitorLinux(const UserInputMonitorLinux&) = delete;
+  UserInputMonitorLinux& operator=(const UserInputMonitorLinux&) = delete;
+
   ~UserInputMonitorLinux() override;
 
   // Public UserInputMonitor overrides.
@@ -117,8 +121,6 @@ class UserInputMonitorLinux : public UserInputMonitorBase {
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   UserInputMonitorAdapter* core_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInputMonitorLinux);
 };
 
 UserInputMonitorAdapter* CreateUserInputMonitor(

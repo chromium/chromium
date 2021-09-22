@@ -13,6 +13,10 @@ class AudioManagerFuchsia : public AudioManagerBase {
  public:
   AudioManagerFuchsia(std::unique_ptr<AudioThread> audio_thread,
                       AudioLogFactory* audio_log_factory);
+
+  AudioManagerFuchsia(const AudioManagerFuchsia&) = delete;
+  AudioManagerFuchsia& operator=(const AudioManagerFuchsia&) = delete;
+
   ~AudioManagerFuchsia() override;
 
   // Implementation of AudioManager.
@@ -45,9 +49,6 @@ class AudioManagerFuchsia : public AudioManagerBase {
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
       const AudioParameters& input_params) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerFuchsia);
 };
 
 }  // namespace media

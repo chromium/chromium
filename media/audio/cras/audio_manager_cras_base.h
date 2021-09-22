@@ -22,6 +22,10 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
  public:
   AudioManagerCrasBase(std::unique_ptr<AudioThread> audio_thread,
                    AudioLogFactory* audio_log_factory);
+
+  AudioManagerCrasBase(const AudioManagerCrasBase&) = delete;
+  AudioManagerCrasBase& operator=(const AudioManagerCrasBase&) = delete;
+
   ~AudioManagerCrasBase() override;
 
   // AudioManager implementation.
@@ -59,9 +63,6 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
   // Called by MakeLinearInputStream and MakeLowLatencyInputStream.
   AudioInputStream* MakeInputStream(const AudioParameters& params,
                                     const std::string& device_id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerCrasBase);
 };
 
 }  // namespace media

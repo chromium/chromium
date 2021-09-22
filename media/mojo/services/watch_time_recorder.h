@@ -34,6 +34,10 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
                     bool is_top_frame,
                     uint64_t player_id,
                     RecordAggregateWatchTimeCallback record_playback_cb);
+
+  WatchTimeRecorder(const WatchTimeRecorder&) = delete;
+  WatchTimeRecorder& operator=(const WatchTimeRecorder&) = delete;
+
   ~WatchTimeRecorder() override;
 
   // mojom::WatchTimeRecorder implementation:
@@ -127,8 +131,6 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   base::TimeDelta last_timestamp_ = kNoTimestamp;
   absl::optional<bool> autoplay_initiated_;
   RecordAggregateWatchTimeCallback record_playback_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeRecorder);
 };
 
 }  // namespace media

@@ -42,6 +42,9 @@ class Dav1dVideoDecoderTest : public testing::Test {
       : decoder_(new Dav1dVideoDecoder(&media_log_)),
         i_frame_buffer_(ReadTestDataFile("av1-I-frame-320x240")) {}
 
+  Dav1dVideoDecoderTest(const Dav1dVideoDecoderTest&) = delete;
+  Dav1dVideoDecoderTest& operator=(const Dav1dVideoDecoderTest&) = delete;
+
   ~Dav1dVideoDecoderTest() override { Destroy(); }
 
   void Initialize() {
@@ -191,9 +194,6 @@ class Dav1dVideoDecoderTest : public testing::Test {
 
   scoped_refptr<DecoderBuffer> i_frame_buffer_;
   OutputFrames output_frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Dav1dVideoDecoderTest);
 };
 
 TEST_F(Dav1dVideoDecoderTest, Initialize_Normal) {

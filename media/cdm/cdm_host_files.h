@@ -31,6 +31,10 @@ namespace media {
 class MEDIA_EXPORT CdmHostFiles {
  public:
   CdmHostFiles();
+
+  CdmHostFiles(const CdmHostFiles&) = delete;
+  CdmHostFiles& operator=(const CdmHostFiles&) = delete;
+
   ~CdmHostFiles();
 
   // Opens all common files and CDM specific files for the CDM at |cdm_path|.
@@ -75,8 +79,6 @@ class MEDIA_EXPORT CdmHostFiles {
 
   // Files specific to each CDM type, e.g. the CDM binary.
   ScopedFileVector cdm_specific_files_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmHostFiles);
 };
 
 }  // namespace media

@@ -78,6 +78,9 @@ class AudioInputTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  AudioInputTest(const AudioInputTest&) = delete;
+  AudioInputTest& operator=(const AudioInputTest&) = delete;
+
   ~AudioInputTest() override { audio_manager_->Shutdown(); }
 
  protected:
@@ -188,9 +191,6 @@ class AudioInputTest : public testing::Test {
   base::TestMessageLoop message_loop_;
   std::unique_ptr<AudioManager> audio_manager_;
   AudioInputStream* audio_input_stream_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioInputTest);
 };
 
 // Test create and close of an AudioInputStream without recording audio.

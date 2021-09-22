@@ -47,6 +47,9 @@ class AUHALStreamTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  AUHALStreamTest(const AUHALStreamTest&) = delete;
+  AUHALStreamTest& operator=(const AUHALStreamTest&) = delete;
+
   ~AUHALStreamTest() override { manager_->Shutdown(); }
 
   AudioOutputStream* Create() {
@@ -68,9 +71,6 @@ class AUHALStreamTest : public testing::Test {
   AudioDeviceInfoAccessorForTests manager_device_info_;
   MockAudioSourceCallback source_;
   std::string log_message_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AUHALStreamTest);
 };
 
 TEST_F(AUHALStreamTest, HardwareSampleRate) {

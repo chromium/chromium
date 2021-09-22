@@ -25,6 +25,12 @@ namespace media {
 class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
  public:
   explicit MockGpuVideoAcceleratorFactories(gpu::SharedImageInterface* sii);
+
+  MockGpuVideoAcceleratorFactories(const MockGpuVideoAcceleratorFactories&) =
+      delete;
+  MockGpuVideoAcceleratorFactories& operator=(
+      const MockGpuVideoAcceleratorFactories&) = delete;
+
   ~MockGpuVideoAcceleratorFactories() override;
 
   bool IsGpuVideoAcceleratorEnabled() override;
@@ -98,8 +104,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockGpuVideoAcceleratorFactories);
-
   base::Lock lock_;
   OutputFormat video_frame_output_format_ = OutputFormat::I420;
 

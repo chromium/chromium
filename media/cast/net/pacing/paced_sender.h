@@ -109,6 +109,9 @@ class PacedSender final : public PacedPacketSender {
       PacketTransport* external_transport,
       const scoped_refptr<base::SingleThreadTaskRunner>& transport_task_runner);
 
+  PacedSender(const PacedSender&) = delete;
+  PacedSender& operator=(const PacedSender&) = delete;
+
   ~PacedSender() final;
 
   // These must be called before non-RTCP packets are sent.
@@ -241,8 +244,6 @@ class PacedSender final : public PacedPacketSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<PacedSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PacedSender);
 };
 
 }  // namespace cast

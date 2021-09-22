@@ -139,6 +139,9 @@ class AudioRendererImplTest : public ::testing::Test, public RendererClient {
     tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
   }
 
+  AudioRendererImplTest(const AudioRendererImplTest&) = delete;
+  AudioRendererImplTest& operator=(const AudioRendererImplTest&) = delete;
+
   ~AudioRendererImplTest() override {
     SCOPED_TRACE("~AudioRendererImplTest()");
   }
@@ -595,8 +598,6 @@ class AudioRendererImplTest : public ::testing::Test, public RendererClient {
   bool expected_init_result_;
   bool enter_pending_decoder_init_;
   bool ended_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererImplTest);
 };
 
 TEST_F(AudioRendererImplTest, Initialize_Successful) {

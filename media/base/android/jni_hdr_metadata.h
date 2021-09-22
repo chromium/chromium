@@ -17,6 +17,10 @@ class JniHdrMetadata {
  public:
   JniHdrMetadata(const VideoColorSpace& color_space,
                  const gfx::HDRMetadata& hdr_metadata);
+
+  JniHdrMetadata(const JniHdrMetadata&) = delete;
+  JniHdrMetadata& operator=(const JniHdrMetadata&) = delete;
+
   ~JniHdrMetadata();
 
   base::android::ScopedJavaLocalRef<jobject> obj() { return jobject_; }
@@ -62,8 +66,6 @@ class JniHdrMetadata {
   const VideoColorSpace& color_space_;
   const gfx::HDRMetadata& hdr_metadata_;
   base::android::ScopedJavaLocalRef<jobject> jobject_;
-
-  DISALLOW_COPY_AND_ASSIGN(JniHdrMetadata);
 };
 
 }  // namespace media

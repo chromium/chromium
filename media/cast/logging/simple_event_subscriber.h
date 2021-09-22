@@ -23,6 +23,9 @@ class SimpleEventSubscriber final : public RawEventSubscriber {
  public:
   SimpleEventSubscriber();
 
+  SimpleEventSubscriber(const SimpleEventSubscriber&) = delete;
+  SimpleEventSubscriber& operator=(const SimpleEventSubscriber&) = delete;
+
   ~SimpleEventSubscriber() final;
 
   // RawEventSubscriber implementations.
@@ -43,8 +46,6 @@ class SimpleEventSubscriber final : public RawEventSubscriber {
 
   // All functions must be called on the main thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleEventSubscriber);
 };
 
 }  // namespace cast

@@ -16,6 +16,10 @@ namespace media {
 class MEDIA_EXPORT AudioThreadImpl final : public AudioThread {
  public:
   AudioThreadImpl();
+
+  AudioThreadImpl(const AudioThreadImpl&) = delete;
+  AudioThreadImpl& operator=(const AudioThreadImpl&) = delete;
+
   ~AudioThreadImpl() final;
 
   // AudioThread implementation.
@@ -33,7 +37,6 @@ class MEDIA_EXPORT AudioThreadImpl final : public AudioThread {
   AudioThreadHangMonitor::Ptr hang_monitor_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AudioThreadImpl);
 };
 
 }  // namespace media

@@ -39,6 +39,9 @@ class FakeVideoDecoder : public VideoDecoder {
                    int max_parallel_decoding_requests,
                    const BytesDecodedCB& bytes_decoded_cb);
 
+  FakeVideoDecoder(const FakeVideoDecoder&) = delete;
+  FakeVideoDecoder& operator=(const FakeVideoDecoder&) = delete;
+
   ~FakeVideoDecoder() override;
 
   // Enables encrypted config supported. Must be called before Initialize().
@@ -140,8 +143,6 @@ class FakeVideoDecoder : public VideoDecoder {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FakeVideoDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoDecoder);
 };
 
 }  // namespace media

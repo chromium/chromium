@@ -27,6 +27,10 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
                       MediaLog* media_log,
                       ComD3D11VideoDevice video_device,
                       std::unique_ptr<VideoContextWrapper> video_context);
+
+  D3D11VP9Accelerator(const D3D11VP9Accelerator&) = delete;
+  D3D11VP9Accelerator& operator=(const D3D11VP9Accelerator&) = delete;
+
   ~D3D11VP9Accelerator() override;
 
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
@@ -84,8 +88,6 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
   // Used to set |use_prev_in_find_mv_refs| properly.
   gfx::Size last_frame_size_;
   bool last_show_frame_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11VP9Accelerator);
 };
 
 }  // namespace media

@@ -25,6 +25,9 @@ class MEDIA_EXPORT Renderer {
  public:
   Renderer();
 
+  Renderer(const Renderer&) = delete;
+  Renderer& operator=(const Renderer&) = delete;
+
   // Stops rendering and fires any pending callbacks.
   virtual ~Renderer();
 
@@ -88,9 +91,6 @@ class MEDIA_EXPORT Renderer {
   virtual void OnEnabledAudioTracksChanged(
       const std::vector<DemuxerStream*>& enabled_tracks,
       base::OnceClosure change_completed_cb);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Renderer);
 };
 
 }  // namespace media

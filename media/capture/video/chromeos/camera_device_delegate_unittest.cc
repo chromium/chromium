@@ -46,6 +46,9 @@ class MockCameraDevice : public cros::mojom::Camera3DeviceOps {
  public:
   MockCameraDevice() = default;
 
+  MockCameraDevice(const MockCameraDevice&) = delete;
+  MockCameraDevice& operator=(const MockCameraDevice&) = delete;
+
   ~MockCameraDevice() = default;
 
   void Initialize(
@@ -111,9 +114,6 @@ class MockCameraDevice : public cros::mojom::Camera3DeviceOps {
   MOCK_METHOD2(DoConfigureStreamsAndGetAllocatedBuffers,
                void(cros::mojom::Camera3StreamConfigurationPtr& config,
                     ConfigureStreamsAndGetAllocatedBuffersCallback& callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCameraDevice);
 };
 
 constexpr int32_t kJpegMaxBufferSize = 1024;

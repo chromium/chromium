@@ -26,6 +26,10 @@ class MEDIA_MOJO_EXPORT MediaService final : public mojom::MediaService {
  public:
   MediaService(std::unique_ptr<MojoMediaClient> mojo_media_client,
                mojo::PendingReceiver<mojom::MediaService> receiver);
+
+  MediaService(const MediaService&) = delete;
+  MediaService& operator=(const MediaService&) = delete;
+
   ~MediaService() final;
 
  private:
@@ -47,8 +51,6 @@ class MEDIA_MOJO_EXPORT MediaService final : public mojom::MediaService {
   std::unique_ptr<MojoMediaClient> mojo_media_client_;
 
   mojo::UniqueReceiverSet<mojom::InterfaceFactory> interface_factory_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaService);
 };
 
 }  // namespace media

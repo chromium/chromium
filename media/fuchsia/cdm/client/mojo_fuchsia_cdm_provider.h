@@ -21,6 +21,10 @@ class MojoFuchsiaCdmProvider : public FuchsiaCdmProvider {
   // |interface_broker| must outlive this class.
   explicit MojoFuchsiaCdmProvider(
       blink::BrowserInterfaceBrokerProxy* interface_broker);
+
+  MojoFuchsiaCdmProvider(const MojoFuchsiaCdmProvider&) = delete;
+  MojoFuchsiaCdmProvider& operator=(const MojoFuchsiaCdmProvider&) = delete;
+
   ~MojoFuchsiaCdmProvider() override;
 
   // FuchsiaCdmProvider implementation:
@@ -33,8 +37,6 @@ class MojoFuchsiaCdmProvider : public FuchsiaCdmProvider {
   blink::BrowserInterfaceBrokerProxy* const interface_broker_;
   mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
       media_resource_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoFuchsiaCdmProvider);
 };
 
 }  // namespace media

@@ -15,6 +15,9 @@ class MockAlsaWrapper : public AlsaWrapper {
  public:
   MockAlsaWrapper();
 
+  MockAlsaWrapper(const MockAlsaWrapper&) = delete;
+  MockAlsaWrapper& operator=(const MockAlsaWrapper&) = delete;
+
   ~MockAlsaWrapper() override;
 
   MOCK_METHOD3(DeviceNameHint, int(int card, const char* iface, void*** hints));
@@ -181,9 +184,6 @@ class MockAlsaWrapper : public AlsaWrapper {
   MOCK_METHOD1(MixerSelemIdMalloc, int(snd_mixer_selem_id_t** ptr));
   MOCK_METHOD1(MixerSelemIdFree, void(snd_mixer_selem_id_t* obj));
   MOCK_METHOD1(StrError, const char*(int errnum));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAlsaWrapper);
 };
 
 }  // namespace media

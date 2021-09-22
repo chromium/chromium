@@ -36,6 +36,9 @@ class AudioSender final : public FrameSender {
               StatusChangeOnceCallback status_change_cb,
               CastTransport* const transport_sender);
 
+  AudioSender(const AudioSender&) = delete;
+  AudioSender& operator=(const AudioSender&) = delete;
+
   ~AudioSender() final;
 
   // Note: It is not guaranteed that |audio_frame| will actually be encoded and
@@ -64,8 +67,6 @@ class AudioSender final : public FrameSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSender);
 };
 
 }  // namespace cast

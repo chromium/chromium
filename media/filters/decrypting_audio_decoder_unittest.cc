@@ -67,6 +67,10 @@ class DecryptingAudioDecoderTest : public testing::Test {
         decoded_frame_(nullptr),
         decoded_frame_list_() {}
 
+  DecryptingAudioDecoderTest(const DecryptingAudioDecoderTest&) = delete;
+  DecryptingAudioDecoderTest& operator=(const DecryptingAudioDecoderTest&) =
+      delete;
+
   ~DecryptingAudioDecoderTest() override { Destroy(); }
 
   void InitializeAndExpectResult(const AudioDecoderConfig& config,
@@ -271,9 +275,6 @@ class DecryptingAudioDecoderTest : public testing::Test {
   scoped_refptr<DecoderBuffer> encrypted_buffer_;
   scoped_refptr<AudioBuffer> decoded_frame_;
   Decryptor::AudioFrames decoded_frame_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecryptingAudioDecoderTest);
 };
 
 TEST_F(DecryptingAudioDecoderTest, Initialize_Normal) {

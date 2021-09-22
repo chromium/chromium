@@ -67,6 +67,10 @@ class MEDIA_EXPORT AUAudioInputStream
       AudioDeviceID audio_device_id,
       const AudioManager::LogCallback& log_callback,
       AudioManagerBase::VoiceProcessingMode voice_processing_mode);
+
+  AUAudioInputStream(const AUAudioInputStream&) = delete;
+  AUAudioInputStream& operator=(const AUAudioInputStream&) = delete;
+
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioInputStream::Close().
   ~AUAudioInputStream() override;
@@ -271,8 +275,6 @@ class MEDIA_EXPORT AUAudioInputStream
 
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AUAudioInputStream);
 };
 
 }  // namespace media

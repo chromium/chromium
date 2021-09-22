@@ -54,6 +54,9 @@ class MockDemuxerStreamAdapter {
     demuxer_stream_adapter_->Initialize(3);
   }
 
+  MockDemuxerStreamAdapter(const MockDemuxerStreamAdapter&) = delete;
+  MockDemuxerStreamAdapter& operator=(const MockDemuxerStreamAdapter&) = delete;
+
   ~MockDemuxerStreamAdapter() {
     // Make sure unit tests that did not expect errors did not cause any errors.
     EXPECT_TRUE(errors_.empty());
@@ -110,13 +113,15 @@ class MockDemuxerStreamAdapter {
   std::vector<StopTrigger> errors_;
 
   base::WeakPtrFactory<MockDemuxerStreamAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockDemuxerStreamAdapter);
 };
 
 class DemuxerStreamAdapterTest : public ::testing::Test {
  public:
   DemuxerStreamAdapterTest() = default;
+
+  DemuxerStreamAdapterTest(const DemuxerStreamAdapterTest&) = delete;
+  DemuxerStreamAdapterTest& operator=(const DemuxerStreamAdapterTest&) = delete;
+
   ~DemuxerStreamAdapterTest() override = default;
 
   void SetUpDataPipe() {
@@ -157,9 +162,6 @@ class DemuxerStreamAdapterTest : public ::testing::Test {
   std::unique_ptr<FakeDemuxerStream> demuxer_stream_;
   std::unique_ptr<FakeRemotingDataStreamSender> data_stream_sender_;
   std::unique_ptr<MockDemuxerStreamAdapter> demuxer_stream_adapter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemuxerStreamAdapterTest);
 };
 
 TEST_F(DemuxerStreamAdapterTest, SingleReadUntil) {

@@ -30,6 +30,10 @@ class VideoColorSpace;
 class MEDIA_EXPORT VideoCodecConfig {
  public:
   VideoCodecConfig();
+
+  VideoCodecConfig(const VideoCodecConfig&) = delete;
+  VideoCodecConfig& operator=(const VideoCodecConfig&) = delete;
+
   ~VideoCodecConfig();
 
   VideoCodec codec = VideoCodec::kUnknown;
@@ -62,9 +66,6 @@ class MEDIA_EXPORT VideoCodecConfig {
   //
   // May only be used on API level 23 and higher.
   base::RepeatingClosure on_buffers_available_cb;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCodecConfig);
 };
 
 // A bridge to a Java MediaCodec.
@@ -101,6 +102,9 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   // Required for tests that wish to use a |on_buffers_available_cb| when
   // creating a MediaCodec. Does nothing unless on API level 23+.
   static void SetupCallbackHandlerForTesting();
+
+  MediaCodecBridgeImpl(const MediaCodecBridgeImpl&) = delete;
+  MediaCodecBridgeImpl& operator=(const MediaCodecBridgeImpl&) = delete;
 
   ~MediaCodecBridgeImpl() override;
 
@@ -181,8 +185,6 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
 
   // The Java MediaCodecBridge instance.
   base::android::ScopedJavaGlobalRef<jobject> j_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecBridgeImpl);
 };
 
 }  // namespace media

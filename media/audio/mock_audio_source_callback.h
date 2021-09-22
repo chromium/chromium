@@ -17,14 +17,15 @@ namespace media {
 class MockAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
  public:
   MockAudioSourceCallback();
+
+  MockAudioSourceCallback(const MockAudioSourceCallback&) = delete;
+  MockAudioSourceCallback& operator=(const MockAudioSourceCallback&) = delete;
+
   ~MockAudioSourceCallback() override;
 
   MOCK_METHOD4(OnMoreData,
                int(base::TimeDelta, base::TimeTicks, int, AudioBus*));
   MOCK_METHOD1(OnError, void(ErrorType));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAudioSourceCallback);
 };
 
 }  // namespace media

@@ -50,6 +50,9 @@ class MediaCodecLoopTest : public testing::Test {
       : task_runner_handle_(mock_task_runner_),
         client_(std::make_unique<MockMediaCodecLoopClient>()) {}
 
+  MediaCodecLoopTest(const MediaCodecLoopTest&) = delete;
+  MediaCodecLoopTest& operator=(const MediaCodecLoopTest&) = delete;
+
   ~MediaCodecLoopTest() override {}
 
  protected:
@@ -191,8 +194,6 @@ class MediaCodecLoopTest : public testing::Test {
 
   std::unique_ptr<MediaCodecLoop> codec_loop_;
   std::unique_ptr<MockMediaCodecLoopClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecLoopTest);
 };
 
 TEST_F(MediaCodecLoopTest, TestConstructionWithNullCodec) {

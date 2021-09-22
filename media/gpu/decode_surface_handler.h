@@ -20,6 +20,10 @@ template <class T>
 class DecodeSurfaceHandler {
  public:
   DecodeSurfaceHandler() = default;
+
+  DecodeSurfaceHandler(const DecodeSurfaceHandler&) = delete;
+  DecodeSurfaceHandler& operator=(const DecodeSurfaceHandler&) = delete;
+
   virtual ~DecodeSurfaceHandler() = default;
 
   // Returns a T for decoding into, if available, or nullptr.
@@ -35,9 +39,6 @@ class DecodeSurfaceHandler {
                             int32_t bitstream_id,
                             const gfx::Rect& visible_rect,
                             const VideoColorSpace& color_space) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecodeSurfaceHandler);
 };
 
 }  // namespace media

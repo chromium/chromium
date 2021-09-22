@@ -19,6 +19,10 @@ class TsSectionPat : public TsSectionPsi {
   using RegisterPmtCB = base::RepeatingCallback<void(int, int)>;
 
   explicit TsSectionPat(RegisterPmtCB register_pmt_cb);
+
+  TsSectionPat(const TsSectionPat&) = delete;
+  TsSectionPat& operator=(const TsSectionPat&) = delete;
+
   ~TsSectionPat() override;
 
   // TsSectionPsi implementation.
@@ -30,8 +34,6 @@ class TsSectionPat : public TsSectionPsi {
 
   // Parameters from the PAT.
   int version_number_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionPat);
 };
 
 }  // namespace mp2t

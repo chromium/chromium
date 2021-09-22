@@ -36,6 +36,9 @@ class MEDIA_EXPORT AudioPushFifo final {
   // |callback|.
   explicit AudioPushFifo(const OutputCallback& callback);
 
+  AudioPushFifo(const AudioPushFifo&) = delete;
+  AudioPushFifo& operator=(const AudioPushFifo&) = delete;
+
   ~AudioPushFifo();
 
   // Returns the number of frames in each AudioBus delivered to the
@@ -69,8 +72,6 @@ class MEDIA_EXPORT AudioPushFifo final {
   // Queue of frames pending for delivery.
   std::unique_ptr<AudioBus> audio_queue_;
   int queued_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPushFifo);
 };
 
 }  // namespace media

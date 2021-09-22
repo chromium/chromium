@@ -43,6 +43,10 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
       const url::Origin& top_frame_origin,
       bool allow_credentials,
       bool is_hls);
+
+  MediaUrlDemuxer(const MediaUrlDemuxer&) = delete;
+  MediaUrlDemuxer& operator=(const MediaUrlDemuxer&) = delete;
+
   ~MediaUrlDemuxer() override;
 
   // MediaResource interface.
@@ -76,8 +80,6 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
   DemuxerHost* host_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaUrlDemuxer);
 };
 
 }  // namespace media

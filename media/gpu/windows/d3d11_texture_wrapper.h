@@ -114,6 +114,10 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
                  DXGI_FORMAT dxgi_format,
                  ComD3D11Texture2D texture,
                  size_t array_slice);
+
+    GpuResources(const GpuResources&) = delete;
+    GpuResources& operator=(const GpuResources&) = delete;
+
     ~GpuResources();
 
    private:
@@ -121,8 +125,6 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
     std::vector<std::unique_ptr<gpu::SharedImageRepresentationFactoryRef>>
         shared_images_;
-
-    DISALLOW_COPY_AND_ASSIGN(GpuResources);
   };
 
   // Receive an error from |gpu_resources_| and store it in |received_error_|.

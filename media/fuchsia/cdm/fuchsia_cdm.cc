@@ -142,6 +142,9 @@ class FuchsiaCdm::CdmSession {
         fit::bind_member(this, &CdmSession::OnSessionError));
   }
 
+  CdmSession(const CdmSession&) = delete;
+  CdmSession& operator=(const CdmSession&) = delete;
+
   ~CdmSession() {
     if (!session_id_.empty()) {
       session_callbacks_->closed_cb.Run(session_id_,
@@ -273,8 +276,6 @@ class FuchsiaCdm::CdmSession {
   // `GenerateLicenseRelease` has been called and the session is waiting for
   // license release response from server.
   bool pending_release_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmSession);
 };
 
 FuchsiaCdm::SessionCallbacks::SessionCallbacks() = default;

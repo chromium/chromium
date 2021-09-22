@@ -17,15 +17,17 @@ class MockAudioDebugRecordingManager : public AudioDebugRecordingManager {
   explicit MockAudioDebugRecordingManager(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  MockAudioDebugRecordingManager(const MockAudioDebugRecordingManager&) =
+      delete;
+  MockAudioDebugRecordingManager& operator=(
+      const MockAudioDebugRecordingManager&) = delete;
+
   ~MockAudioDebugRecordingManager() override;
 
   MOCK_METHOD1(EnableDebugRecording,
                void(AudioDebugRecordingManager::CreateWavFileCallback
                         create_file_callback));
   MOCK_METHOD0(DisableDebugRecording, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAudioDebugRecordingManager);
 };
 
 }  // namespace media.

@@ -34,6 +34,10 @@ class MEDIA_EXPORT StreamProcessorHelper {
              base::TimeDelta timestamp,
              bool unit_end,
              base::OnceClosure destroy_cb);
+
+    IoPacket(const IoPacket&) = delete;
+    IoPacket& operator=(const IoPacket&) = delete;
+
     ~IoPacket();
 
     IoPacket(IoPacket&&);
@@ -60,8 +64,6 @@ class MEDIA_EXPORT StreamProcessorHelper {
     bool unit_end_;
     fuchsia::media::FormatDetails format_;
     std::forward_list<base::OnceClosure> destroy_callbacks_;
-
-    DISALLOW_COPY_AND_ASSIGN(IoPacket);
   };
 
   class Client {

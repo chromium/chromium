@@ -20,6 +20,10 @@ namespace {
 class AudioPushFifoTest : public testing::TestWithParam<int> {
  public:
   AudioPushFifoTest() = default;
+
+  AudioPushFifoTest(const AudioPushFifoTest&) = delete;
+  AudioPushFifoTest& operator=(const AudioPushFifoTest&) = delete;
+
   ~AudioPushFifoTest() override = default;
 
   int output_chunk_size() const { return GetParam(); }
@@ -161,8 +165,6 @@ class AudioPushFifoTest : public testing::TestWithParam<int> {
   }
 
   uint32_t rand_seed_ = 0x7e110;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPushFifoTest);
 };
 
 // Tests an atypical edge case: Push()ing one frame at a time.

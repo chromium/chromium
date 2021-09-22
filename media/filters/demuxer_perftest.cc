@@ -33,6 +33,10 @@ static const int kBenchmarkIterations = 100;
 class DemuxerHostImpl : public media::DemuxerHost {
  public:
   DemuxerHostImpl() = default;
+
+  DemuxerHostImpl(const DemuxerHostImpl&) = delete;
+  DemuxerHostImpl& operator=(const DemuxerHostImpl&) = delete;
+
   ~DemuxerHostImpl() override = default;
 
   // DemuxerHost implementation.
@@ -40,9 +44,6 @@ class DemuxerHostImpl : public media::DemuxerHost {
       const Ranges<base::TimeDelta>& ranges) override {}
   void SetDuration(base::TimeDelta duration) override {}
   void OnDemuxerError(media::PipelineStatus error) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemuxerHostImpl);
 };
 
 static void QuitLoopWithStatus(base::OnceClosure quit_cb,
@@ -67,6 +68,10 @@ typedef std::vector<media::DemuxerStream*> Streams;
 class StreamReader {
  public:
   StreamReader(media::Demuxer* demuxer, bool enable_bitstream_converter);
+
+  StreamReader(const StreamReader&) = delete;
+  StreamReader& operator=(const StreamReader&) = delete;
+
   ~StreamReader();
 
   // Performs a single step read.
@@ -92,8 +97,6 @@ class StreamReader {
   std::vector<bool> end_of_stream_;
   std::vector<base::TimeDelta> last_read_timestamp_;
   std::vector<int> counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamReader);
 };
 
 StreamReader::StreamReader(media::Demuxer* demuxer,

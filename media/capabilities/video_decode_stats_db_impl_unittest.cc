@@ -65,6 +65,10 @@ class VideoDecodeStatsDBImplTest : public ::testing::Test {
         std::unique_ptr<FakeDB<DecodeStatsProto>>(fake_db_)));
   }
 
+  VideoDecodeStatsDBImplTest(const VideoDecodeStatsDBImplTest&) = delete;
+  VideoDecodeStatsDBImplTest& operator=(const VideoDecodeStatsDBImplTest&) =
+      delete;
+
   ~VideoDecodeStatsDBImplTest() override {
     // Tests should always complete any pending operations
     VerifyNoPendingOps();
@@ -193,9 +197,6 @@ class VideoDecodeStatsDBImplTest : public ::testing::Test {
   std::unique_ptr<FakeDB<DecodeStatsProto>::EntryMap> fake_db_map_;
   FakeDB<DecodeStatsProto>* fake_db_;
   std::unique_ptr<VideoDecodeStatsDBImpl> stats_db_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDecodeStatsDBImplTest);
 };
 
 TEST_F(VideoDecodeStatsDBImplTest, InitializeFailed) {

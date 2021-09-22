@@ -46,6 +46,10 @@ class VideoTextureBacking;
 class MEDIA_EXPORT PaintCanvasVideoRenderer {
  public:
   PaintCanvasVideoRenderer();
+
+  PaintCanvasVideoRenderer(const PaintCanvasVideoRenderer&) = delete;
+  PaintCanvasVideoRenderer& operator=(const PaintCanvasVideoRenderer&) = delete;
+
   ~PaintCanvasVideoRenderer();
 
   // Paints |video_frame| translated and scaled to |dest_rect| on |canvas|.
@@ -278,8 +282,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     gpu::SyncToken sync_token;
   };
   YUVTextureCache yuv_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintCanvasVideoRenderer);
 };
 
 }  // namespace media

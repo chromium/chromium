@@ -34,6 +34,9 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
                   AudioManagerCrasBase* manager,
                   const std::string& device_id);
 
+  CrasInputStream(const CrasInputStream&) = delete;
+  CrasInputStream& operator=(const CrasInputStream&) = delete;
+
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioOutputStream::Close().
   ~CrasInputStream() override;
@@ -121,8 +124,6 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   double input_volume_;
 
   std::unique_ptr<AudioBus> audio_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrasInputStream);
 };
 
 }  // namespace media

@@ -35,6 +35,9 @@ class OpenSLESInputStream : public AudioInputStream {
   OpenSLESInputStream(AudioManagerAndroid* manager,
                       const AudioParameters& params);
 
+  OpenSLESInputStream(const OpenSLESInputStream&) = delete;
+  OpenSLESInputStream& operator=(const OpenSLESInputStream&) = delete;
+
   ~OpenSLESInputStream() override;
 
   // Implementation of AudioInputStream.
@@ -107,8 +110,6 @@ class OpenSLESInputStream : public AudioInputStream {
 
   // Set to true at construction if user wants to disable all audio effects.
   const bool no_effects_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenSLESInputStream);
 };
 
 }  // namespace media

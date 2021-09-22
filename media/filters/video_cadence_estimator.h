@@ -75,6 +75,10 @@ class MEDIA_EXPORT VideoCadenceEstimator {
   // be dropped or repeated to compensate for reaching the maximum acceptable
   // drift; this time length is controlled by |minimum_time_until_max_drift|.
   explicit VideoCadenceEstimator(base::TimeDelta minimum_time_until_max_drift);
+
+  VideoCadenceEstimator(const VideoCadenceEstimator&) = delete;
+  VideoCadenceEstimator& operator=(const VideoCadenceEstimator&) = delete;
+
   ~VideoCadenceEstimator();
 
   // Clears stored cadence information.
@@ -181,8 +185,6 @@ class MEDIA_EXPORT VideoCadenceEstimator {
     // Absent when a video has variable frame rate.
     absl::optional<double> perfect_cadence_;
   } bm_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCadenceEstimator);
 };
 
 }  // namespace media

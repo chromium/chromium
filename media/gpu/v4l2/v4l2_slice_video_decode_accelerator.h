@@ -53,6 +53,12 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
       EGLDisplay egl_display,
       const BindGLImageCallback& bind_image_cb,
       const MakeGLContextCurrentCallback& make_context_current_cb);
+
+  V4L2SliceVideoDecodeAccelerator(const V4L2SliceVideoDecodeAccelerator&) =
+      delete;
+  V4L2SliceVideoDecodeAccelerator& operator=(
+      const V4L2SliceVideoDecodeAccelerator&) = delete;
+
   ~V4L2SliceVideoDecodeAccelerator() override;
 
   // VideoDecodeAccelerator implementation.
@@ -512,8 +518,6 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
 
   // The WeakPtrFactory for |weak_this_|.
   base::WeakPtrFactory<V4L2SliceVideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2SliceVideoDecodeAccelerator);
 };
 
 }  // namespace media

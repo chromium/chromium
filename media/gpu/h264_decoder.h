@@ -60,6 +60,10 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     };
 
     H264Accelerator();
+
+    H264Accelerator(const H264Accelerator&) = delete;
+    H264Accelerator& operator=(const H264Accelerator&) = delete;
+
     virtual ~H264Accelerator();
 
     // Create a new H264Picture that the decoder client can use for decoding
@@ -158,14 +162,15 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     // kNotSupported.
     virtual Status SetStream(base::span<const uint8_t> stream,
                              const DecryptConfig* decrypt_config);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(H264Accelerator);
   };
 
   H264Decoder(std::unique_ptr<H264Accelerator> accelerator,
               VideoCodecProfile profile,
               const VideoColorSpace& container_color_space = VideoColorSpace());
+
+  H264Decoder(const H264Decoder&) = delete;
+  H264Decoder& operator=(const H264Decoder&) = delete;
+
   ~H264Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
@@ -405,8 +410,6 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   int last_output_poc_;
 
   const std::unique_ptr<H264Accelerator> accelerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264Decoder);
 };
 
 }  // namespace media

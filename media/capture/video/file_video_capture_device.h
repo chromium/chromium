@@ -48,6 +48,9 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
       const base::FilePath& file_path,
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support = nullptr);
 
+  FileVideoCaptureDevice(const FileVideoCaptureDevice&) = delete;
+  FileVideoCaptureDevice& operator=(const FileVideoCaptureDevice&) = delete;
+
   // VideoCaptureDevice implementation, class methods.
   ~FileVideoCaptureDevice() override;
   void AllocateAndStart(
@@ -123,8 +126,6 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
   // on the main thread and |capture_thread_|.
   base::Lock lock_;
   base::queue<TakePhotoCallback> take_photo_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVideoCaptureDevice);
 };
 
 }  // namespace media

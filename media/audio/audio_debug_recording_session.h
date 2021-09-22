@@ -14,13 +14,14 @@ namespace media {
 // are created using audio::CreateAudioDebugRecordingSession.
 class MEDIA_EXPORT AudioDebugRecordingSession {
  public:
+  AudioDebugRecordingSession(const AudioDebugRecordingSession&) = delete;
+  AudioDebugRecordingSession& operator=(const AudioDebugRecordingSession&) =
+      delete;
+
   virtual ~AudioDebugRecordingSession() = default;
 
  protected:
   AudioDebugRecordingSession() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingSession);
 };
 
 }  // namespace media

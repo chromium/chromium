@@ -33,6 +33,10 @@ class MseTrackBuffer {
   MseTrackBuffer(ChunkDemuxerStream* stream,
                  MediaLog* media_log,
                  SourceBufferParseWarningCB parse_warning_cb);
+
+  MseTrackBuffer(const MseTrackBuffer&) = delete;
+  MseTrackBuffer& operator=(const MseTrackBuffer&) = delete;
+
   ~MseTrackBuffer();
 
   // Get/set |last_decode_timestamp_|.
@@ -186,8 +190,6 @@ class MseTrackBuffer {
 
   // Counter that limits spam to |media_log_| for MseTrackBuffer warnings.
   int num_keyframe_time_greater_than_dependant_warnings_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MseTrackBuffer);
 };
 
 MseTrackBuffer::MseTrackBuffer(ChunkDemuxerStream* stream,

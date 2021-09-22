@@ -52,6 +52,12 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+
+  MojoVideoEncodeAcceleratorService(const MojoVideoEncodeAcceleratorService&) =
+      delete;
+  MojoVideoEncodeAcceleratorService& operator=(
+      const MojoVideoEncodeAcceleratorService&) = delete;
+
   ~MojoVideoEncodeAcceleratorService() override;
 
   // mojom::VideoEncodeAccelerator impl.
@@ -103,8 +109,6 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MojoVideoEncodeAcceleratorService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorService);
 };
 
 }  // namespace media

@@ -25,6 +25,9 @@ namespace test {
 // immediately, or introduce a delay to simulate actual rendering.
 class FrameRendererDummy : public FrameRenderer {
  public:
+  FrameRendererDummy(const FrameRendererDummy&) = delete;
+  FrameRendererDummy& operator=(const FrameRendererDummy&) = delete;
+
   ~FrameRendererDummy() override;
 
   // Create an instance of the dummy frame renderer. |frame_duration| specifies
@@ -95,7 +98,6 @@ class FrameRendererDummy : public FrameRenderer {
 
   SEQUENCE_CHECKER(client_sequence_checker_);
   SEQUENCE_CHECKER(renderer_sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(FrameRendererDummy);
 };
 
 }  // namespace test

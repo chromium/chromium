@@ -54,6 +54,10 @@ class MojoVideoDecoder final : public VideoDecoder,
       mojo::PendingRemote<mojom::VideoDecoder> pending_remote_decoder,
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space);
+
+  MojoVideoDecoder(const MojoVideoDecoder&) = delete;
+  MojoVideoDecoder& operator=(const MojoVideoDecoder&) = delete;
+
   ~MojoVideoDecoder() final;
 
   // Decoder implementation
@@ -168,8 +172,6 @@ class MojoVideoDecoder final : public VideoDecoder,
 
   base::WeakPtr<MojoVideoDecoder> weak_this_;
   base::WeakPtrFactory<MojoVideoDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoDecoder);
 };
 
 }  // namespace media

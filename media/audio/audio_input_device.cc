@@ -70,6 +70,10 @@ class AudioInputDevice::AudioThreadCallback
                       bool enable_uma,
                       CaptureCallback* capture_callback,
                       base::RepeatingClosure got_data_callback);
+
+  AudioThreadCallback(const AudioThreadCallback&) = delete;
+  AudioThreadCallback& operator=(const AudioThreadCallback&) = delete;
+
   ~AudioThreadCallback() override;
 
   void MapSharedMemory() override;
@@ -94,8 +98,6 @@ class AudioInputDevice::AudioThreadCallback
   const int got_data_callback_interval_in_frames_;
   int frames_since_last_got_data_callback_;
   base::RepeatingClosure got_data_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioThreadCallback);
 };
 
 AudioInputDevice::AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,

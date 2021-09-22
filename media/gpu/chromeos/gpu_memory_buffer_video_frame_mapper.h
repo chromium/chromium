@@ -18,6 +18,11 @@ class MEDIA_GPU_EXPORT GpuMemoryBufferVideoFrameMapper
   static std::unique_ptr<GpuMemoryBufferVideoFrameMapper> Create(
       VideoPixelFormat format);
 
+  GpuMemoryBufferVideoFrameMapper(const GpuMemoryBufferVideoFrameMapper&) =
+      delete;
+  GpuMemoryBufferVideoFrameMapper& operator=(
+      const GpuMemoryBufferVideoFrameMapper&) = delete;
+
   ~GpuMemoryBufferVideoFrameMapper() override = default;
 
   // VideoFrameMapper implementation.
@@ -26,8 +31,6 @@ class MEDIA_GPU_EXPORT GpuMemoryBufferVideoFrameMapper
 
  private:
   explicit GpuMemoryBufferVideoFrameMapper(VideoPixelFormat format);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferVideoFrameMapper);
 };
 
 }  // namespace media

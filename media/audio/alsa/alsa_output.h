@@ -74,6 +74,9 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
                       AlsaWrapper* wrapper,
                       AudioManagerBase* manager);
 
+  AlsaPcmOutputStream(const AlsaPcmOutputStream&) = delete;
+  AlsaPcmOutputStream& operator=(const AlsaPcmOutputStream&) = delete;
+
   ~AlsaPcmOutputStream() override;
 
   // Implementation of AudioOutputStream.
@@ -220,8 +223,6 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
   // bound by its lifetime.
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AlsaPcmOutputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AlsaPcmOutputStream);
 };
 
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,

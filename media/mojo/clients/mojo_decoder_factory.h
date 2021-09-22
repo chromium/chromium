@@ -19,6 +19,10 @@ class MojoDecoderFactory final : public DecoderFactory {
  public:
   explicit MojoDecoderFactory(
       media::mojom::InterfaceFactory* interface_factory);
+
+  MojoDecoderFactory(const MojoDecoderFactory&) = delete;
+  MojoDecoderFactory& operator=(const MojoDecoderFactory&) = delete;
+
   ~MojoDecoderFactory() final;
 
   void CreateAudioDecoders(
@@ -38,8 +42,6 @@ class MojoDecoderFactory final : public DecoderFactory {
 
  private:
   media::mojom::InterfaceFactory* interface_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecoderFactory);
 };
 
 }  // namespace media

@@ -180,6 +180,9 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
     DCHECK(cdm_host_proxy_);
   }
 
+  VideoDecoderAdapter(const VideoDecoderAdapter&) = delete;
+  VideoDecoderAdapter& operator=(const VideoDecoderAdapter&) = delete;
+
   ~VideoDecoderAdapter() final = default;
 
   // CdmVideoDecoder implementation.
@@ -298,8 +301,6 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
   VideoFrameQueue decoded_video_frames_;
 
   base::WeakPtrFactory<VideoDecoderAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderAdapter);
 };
 
 }  // namespace

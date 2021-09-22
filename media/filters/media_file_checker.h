@@ -21,6 +21,10 @@ namespace media {
 class MEDIA_EXPORT MediaFileChecker {
  public:
   explicit MediaFileChecker(base::File file);
+
+  MediaFileChecker(const MediaFileChecker&) = delete;
+  MediaFileChecker& operator=(const MediaFileChecker&) = delete;
+
   ~MediaFileChecker();
 
   // After opening |file|, up to |check_time| amount of wall-clock time is spent
@@ -30,8 +34,6 @@ class MEDIA_EXPORT MediaFileChecker {
 
  private:
   base::File file_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileChecker);
 };
 
 }  // namespace media

@@ -110,6 +110,11 @@ class PaintCanvasVideoRendererTest : public testing::Test {
   };
 
   PaintCanvasVideoRendererTest();
+
+  PaintCanvasVideoRendererTest(const PaintCanvasVideoRendererTest&) = delete;
+  PaintCanvasVideoRendererTest& operator=(const PaintCanvasVideoRendererTest&) =
+      delete;
+
   ~PaintCanvasVideoRendererTest() override;
 
   // Paints to |canvas| using |renderer_| without any frame data.
@@ -150,8 +155,6 @@ class PaintCanvasVideoRendererTest : public testing::Test {
   SkBitmap bitmap_;
   cc::SkiaPaintCanvas target_canvas_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintCanvasVideoRendererTest);
 };
 
 static SkBitmap AllocBitmap(int width, int height) {

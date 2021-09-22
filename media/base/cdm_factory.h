@@ -28,6 +28,10 @@ struct CdmConfig;
 class MEDIA_EXPORT CdmFactory {
  public:
   CdmFactory();
+
+  CdmFactory(const CdmFactory&) = delete;
+  CdmFactory& operator=(const CdmFactory&) = delete;
+
   virtual ~CdmFactory();
 
   // Creates a CDM for |key_system| and returns it through |cdm_created_cb|
@@ -40,9 +44,6 @@ class MEDIA_EXPORT CdmFactory {
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
       CdmCreatedCB cdm_created_cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmFactory);
 };
 
 }  // namespace media

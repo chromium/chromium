@@ -41,6 +41,11 @@ class ReceiverTimeOffsetEstimatorImpl final
  public:
   ReceiverTimeOffsetEstimatorImpl();
 
+  ReceiverTimeOffsetEstimatorImpl(const ReceiverTimeOffsetEstimatorImpl&) =
+      delete;
+  ReceiverTimeOffsetEstimatorImpl& operator=(
+      const ReceiverTimeOffsetEstimatorImpl&) = delete;
+
   ~ReceiverTimeOffsetEstimatorImpl() final;
 
   // RawEventSubscriber implementations.
@@ -95,7 +100,6 @@ class ReceiverTimeOffsetEstimatorImpl final
   BoundCalculator lower_bound_;
 
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(ReceiverTimeOffsetEstimatorImpl);
 };
 
 }  // namespace cast

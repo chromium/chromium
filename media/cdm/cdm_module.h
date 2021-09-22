@@ -29,6 +29,9 @@ class MEDIA_EXPORT CdmModule {
   // Reset the CdmModule instance so that each test have it's own instance.
   static void ResetInstanceForTesting();
 
+  CdmModule(const CdmModule&) = delete;
+  CdmModule& operator=(const CdmModule&) = delete;
+
   ~CdmModule();
 
   using CreateCdmFunc = decltype(&::CreateCdmInstance);
@@ -62,8 +65,6 @@ class MEDIA_EXPORT CdmModule {
   InitializeCdmModuleFunc initialize_cdm_module_func_ = nullptr;
   DeinitializeCdmModuleFunc deinitialize_cdm_module_func_ = nullptr;
   GetCdmVersionFunc get_cdm_version_func_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmModule);
 };
 
 }  // namespace media

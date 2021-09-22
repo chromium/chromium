@@ -38,6 +38,10 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
  public:
   explicit Mp2tStreamParser(base::span<const std::string> allowed_codecs,
                             bool sbr_in_mimetype);
+
+  Mp2tStreamParser(const Mp2tStreamParser&) = delete;
+  Mp2tStreamParser& operator=(const Mp2tStreamParser&) = delete;
+
   ~Mp2tStreamParser() override;
 
   // StreamParser implementation.
@@ -185,8 +189,6 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   // provide a better way to access the last values seen in a ECM packet.
   std::unique_ptr<DecryptConfig> decrypt_config_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Mp2tStreamParser);
 };
 
 }  // namespace mp2t

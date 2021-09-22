@@ -109,6 +109,10 @@ class MEDIA_EXPORT StreamParser {
       EncryptedMediaInitDataCB;
 
   StreamParser();
+
+  StreamParser(const StreamParser&) = delete;
+  StreamParser& operator=(const StreamParser&) = delete;
+
   virtual ~StreamParser();
 
   // Initializes the parser with necessary callbacks. Must be called before any
@@ -145,9 +149,6 @@ class MEDIA_EXPORT StreamParser {
   // implement ProcessChunks().
   virtual bool Parse(const uint8_t* buf, int size) = 0;
   virtual bool ProcessChunks(std::unique_ptr<BufferQueue> buffer_queue);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StreamParser);
 };
 
 // Appends to |merged_buffers| the provided buffers in decode-timestamp order.

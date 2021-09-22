@@ -38,6 +38,10 @@ class MEDIA_EXPORT TrackRunIterator {
   // Create a new TrackRunIterator. A reference to |moov| will be retained for
   // the lifetime of this object.
   TrackRunIterator(const Movie* moov, MediaLog* media_log);
+
+  TrackRunIterator(const TrackRunIterator&) = delete;
+  TrackRunIterator& operator=(const TrackRunIterator&) = delete;
+
   ~TrackRunIterator();
 
   // Sets up the iterator to handle all the runs from the current fragment.
@@ -116,8 +120,6 @@ class MEDIA_EXPORT TrackRunIterator {
   int64_t sample_dts_;
   int64_t sample_cts_;
   int64_t sample_offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackRunIterator);
 };
 
 }  // namespace mp4

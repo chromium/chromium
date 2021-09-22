@@ -32,6 +32,10 @@ class AudioDeviceListenerMacTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  AudioDeviceListenerMacTest(const AudioDeviceListenerMacTest&) = delete;
+  AudioDeviceListenerMacTest& operator=(const AudioDeviceListenerMacTest&) =
+      delete;
+
   virtual ~AudioDeviceListenerMacTest() {
     // It's important to destroy the device listener from the message loop in
     // order to ensure we don't end up with unbalanced TaskObserver calls.
@@ -100,8 +104,6 @@ class AudioDeviceListenerMacTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<AudioDeviceListenerMac> device_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerMacTest);
 };
 
 // Simulate a device change event and ensure we get the right callback.

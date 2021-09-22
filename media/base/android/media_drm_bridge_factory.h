@@ -28,6 +28,10 @@ class MEDIA_EXPORT MediaDrmBridgeFactory final : public CdmFactory {
  public:
   MediaDrmBridgeFactory(CreateFetcherCB create_fetcher_cb,
                         CreateStorageCB create_storage_cb);
+
+  MediaDrmBridgeFactory(const MediaDrmBridgeFactory&) = delete;
+  MediaDrmBridgeFactory& operator=(const MediaDrmBridgeFactory&) = delete;
+
   ~MediaDrmBridgeFactory() override;
 
   // CdmFactory implementation.
@@ -72,8 +76,6 @@ class MEDIA_EXPORT MediaDrmBridgeFactory final : public CdmFactory {
   scoped_refptr<MediaDrmBridge> media_drm_bridge_;
 
   base::WeakPtrFactory<MediaDrmBridgeFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDrmBridgeFactory);
 };
 
 }  // namespace media

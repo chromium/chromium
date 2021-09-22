@@ -33,6 +33,10 @@ class ScopedVABufferMapping {
                         VABufferID buffer_id,
                         base::OnceCallback<void(VABufferID)> release_callback =
                             base::NullCallback());
+
+  ScopedVABufferMapping(const ScopedVABufferMapping&) = delete;
+  ScopedVABufferMapping& operator=(const ScopedVABufferMapping&) = delete;
+
   ~ScopedVABufferMapping();
   bool IsValid() const { return !!va_buffer_data_; }
   void* data() const {
@@ -49,8 +53,6 @@ class ScopedVABufferMapping {
   const VABufferID buffer_id_;
 
   void* va_buffer_data_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVABufferMapping);
 };
 
 // This class tracks the VABuffer life cycle from vaCreateBuffer() to
@@ -102,6 +104,10 @@ class ScopedVAImage {
                 VASurfaceID va_surface_id,
                 VAImageFormat* format /* Needs to be a pointer for libva */,
                 const gfx::Size& size);
+
+  ScopedVAImage(const ScopedVAImage&) = delete;
+  ScopedVAImage& operator=(const ScopedVAImage&) = delete;
+
   ~ScopedVAImage();
 
   bool IsValid() const { return va_buffer_ && va_buffer_->IsValid(); }
@@ -117,8 +123,6 @@ class ScopedVAImage {
   const VADisplay va_display_ GUARDED_BY(lock_);
   std::unique_ptr<VAImage> image_;
   std::unique_ptr<ScopedVABufferMapping> va_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVAImage);
 };
 
 // A VA-API-specific surface used by video/image codec accelerators to work on.
@@ -129,6 +133,10 @@ class ScopedVASurface {
                   VASurfaceID va_surface_id,
                   const gfx::Size& size,
                   unsigned int va_rt_format);
+
+  ScopedVASurface(const ScopedVASurface&) = delete;
+  ScopedVASurface& operator=(const ScopedVASurface&) = delete;
+
   ~ScopedVASurface();
 
   bool IsValid() const;
@@ -142,8 +150,6 @@ class ScopedVASurface {
   const VASurfaceID va_surface_id_;
   const gfx::Size size_;
   const unsigned int va_rt_format_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVASurface);
 };
 
 // A combination of a numeric ID |id| and a callback to release it. This class

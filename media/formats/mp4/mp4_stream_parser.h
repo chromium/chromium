@@ -37,6 +37,10 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   MP4StreamParser(const std::set<int>& audio_object_types,
                   bool has_sbr,
                   bool has_flac);
+
+  MP4StreamParser(const MP4StreamParser&) = delete;
+  MP4StreamParser& operator=(const MP4StreamParser&) = delete;
+
   ~MP4StreamParser() override;
 
   void Init(InitCB init_cb,
@@ -150,8 +154,6 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
 
   // Tracks the number of MEDIA_LOGS for video keyframe MP4<->frame mismatch.
   int num_video_keyframe_mismatches_;
-
-  DISALLOW_COPY_AND_ASSIGN(MP4StreamParser);
 };
 
 }  // namespace mp4

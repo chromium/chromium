@@ -30,6 +30,10 @@ class MEDIA_EXPORT BitReaderCore {
 
   // Lifetime of |byte_stream_provider| must be longer than BitReaderCore.
   explicit BitReaderCore(ByteStreamProvider* byte_stream_provider);
+
+  BitReaderCore(const BitReaderCore&) = delete;
+  BitReaderCore& operator=(const BitReaderCore&) = delete;
+
   ~BitReaderCore();
 
   // Read one bit from the stream and return it as a boolean in |*out|.
@@ -117,8 +121,6 @@ class MEDIA_EXPORT BitReaderCore {
   // Note: bits are consumed from MSB to LSB.
   int nbits_next_;
   uint64_t reg_next_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitReaderCore);
 };
 
 }  // namespace media

@@ -30,6 +30,10 @@ class FrameSender {
               CastTransport* const transport_sender,
               const FrameSenderConfig& config,
               CongestionControl* congestion_control);
+
+  FrameSender(const FrameSender&) = delete;
+  FrameSender& operator=(const FrameSender&) = delete;
+
   virtual ~FrameSender();
 
   int rtp_timebase() const { return rtp_timebase_; }
@@ -202,8 +206,6 @@ class FrameSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FrameSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSender);
 };
 
 }  // namespace cast

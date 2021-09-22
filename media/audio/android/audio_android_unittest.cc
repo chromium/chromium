@@ -178,6 +178,9 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
     DVLOG(0) << "Reading from file: " << file_path.value().c_str();
   }
 
+  FileAudioSource(const FileAudioSource&) = delete;
+  FileAudioSource& operator=(const FileAudioSource&) = delete;
+
   ~FileAudioSource() override {}
 
   // AudioOutputStream::AudioSourceCallback implementation.
@@ -223,8 +226,6 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
   base::WaitableEvent* event_;
   int pos_;
   scoped_refptr<DecoderBuffer> file_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileAudioSource);
 };
 
 // Implements AudioInputStream::AudioInputCallback and writes the recorded
@@ -251,6 +252,9 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
     DLOG_IF(ERROR, !binary_file_) << "Failed to open binary PCM data file.";
     DVLOG(0) << "Writing to file: " << file_path.value().c_str();
   }
+
+  FileAudioSink(const FileAudioSink&) = delete;
+  FileAudioSink& operator=(const FileAudioSink&) = delete;
 
   ~FileAudioSink() override {
     int bytes_written = 0;
@@ -296,8 +300,6 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
   AudioParameters params_;
   std::unique_ptr<media::SeekableBuffer> buffer_;
   FILE* binary_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileAudioSink);
 };
 
 // Implements AudioInputCallback and AudioSourceCallback to support full
@@ -317,6 +319,10 @@ class FullDuplexAudioSinkSource
     fifo_ = std::make_unique<media::SeekableBuffer>(0, 2 * buffer_size);
     buffer_.reset(new uint8_t[buffer_size]);
   }
+
+  FullDuplexAudioSinkSource(const FullDuplexAudioSinkSource&) = delete;
+  FullDuplexAudioSinkSource& operator=(const FullDuplexAudioSinkSource&) =
+      delete;
 
   ~FullDuplexAudioSinkSource() override {}
 
@@ -410,8 +416,6 @@ class FullDuplexAudioSinkSource
   std::unique_ptr<media::SeekableBuffer> fifo_;
   std::unique_ptr<uint8_t[]> buffer_;
   bool started_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullDuplexAudioSinkSource);
 };
 
 // Test fixture class for tests which only exercise the output path.
@@ -427,6 +431,9 @@ class AudioAndroidOutputTest : public testing::Test {
     // Flush the message loop to ensure that AudioManager is fully initialized.
     base::RunLoop().RunUntilIdle();
   }
+
+  AudioAndroidOutputTest(const AudioAndroidOutputTest&) = delete;
+  AudioAndroidOutputTest& operator=(const AudioAndroidOutputTest&) = delete;
 
   ~AudioAndroidOutputTest() override {
     audio_manager_->Shutdown();
@@ -578,9 +585,6 @@ class AudioAndroidOutputTest : public testing::Test {
   AudioOutputStream* audio_output_stream_;
   base::TimeTicks start_time_;
   base::TimeTicks end_time_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioAndroidOutputTest);
 };
 
 // Test fixture class for tests which exercise the input path, or both input and

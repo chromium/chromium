@@ -30,6 +30,10 @@ class MEDIA_EXPORT MediaResource {
   };
 
   MediaResource();
+
+  MediaResource(const MediaResource&) = delete;
+  MediaResource& operator=(const MediaResource&) = delete;
+
   virtual ~MediaResource();
 
   virtual MediaResource::Type GetType() const;
@@ -62,9 +66,6 @@ class MEDIA_EXPORT MediaResource {
   // This method could be refactored if WMPI was aware of the concrete type of
   // Demuxer* it is dealing with.
   virtual void ForwardDurationChangeToDemuxerHost(base::TimeDelta duration);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaResource);
 };
 
 }  // namespace media

@@ -21,6 +21,10 @@ class MEDIA_MOJO_EXPORT MojoProvisionFetcher final : public ProvisionFetcher {
  public:
   explicit MojoProvisionFetcher(
       mojo::PendingRemote<mojom::ProvisionFetcher> provision_fetcher);
+
+  MojoProvisionFetcher(const MojoProvisionFetcher&) = delete;
+  MojoProvisionFetcher& operator=(const MojoProvisionFetcher&) = delete;
+
   ~MojoProvisionFetcher() final;
 
   // ProvisionFetcher implementation:
@@ -37,8 +41,6 @@ class MEDIA_MOJO_EXPORT MojoProvisionFetcher final : public ProvisionFetcher {
   mojo::Remote<mojom::ProvisionFetcher> provision_fetcher_;
 
   base::WeakPtrFactory<MojoProvisionFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoProvisionFetcher);
 };
 
 }  // namespace media

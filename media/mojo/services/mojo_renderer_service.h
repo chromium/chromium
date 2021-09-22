@@ -52,6 +52,9 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
   MojoRendererService(MojoCdmServiceContext* mojo_cdm_service_context,
                       std::unique_ptr<media::Renderer> renderer);
 
+  MojoRendererService(const MojoRendererService&) = delete;
+  MojoRendererService& operator=(const MojoRendererService&) = delete;
+
   ~MojoRendererService() final;
 
   // mojom::Renderer implementation.
@@ -135,8 +138,6 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
 
   base::WeakPtr<MojoRendererService> weak_this_;
   base::WeakPtrFactory<MojoRendererService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoRendererService);
 };
 
 }  // namespace media

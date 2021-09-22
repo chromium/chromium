@@ -48,6 +48,9 @@ class VideoFrameValidator : public VideoFrameProcessor {
   using GetModelFrameCB =
       base::RepeatingCallback<scoped_refptr<const VideoFrame>(size_t)>;
 
+  VideoFrameValidator(const VideoFrameValidator&) = delete;
+  VideoFrameValidator& operator=(const VideoFrameValidator&) = delete;
+
   ~VideoFrameValidator() override;
 
   // Prints information of frames on which the validation failed. This function
@@ -115,8 +118,6 @@ class VideoFrameValidator : public VideoFrameProcessor {
   mutable base::ConditionVariable frame_validator_cv_;
 
   SEQUENCE_CHECKER(validator_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameValidator);
 };
 
 // Validate by converting the frame to be validated to |validation_format| to

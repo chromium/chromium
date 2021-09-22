@@ -57,6 +57,9 @@ class EncodingEventSubscriber final : public RawEventSubscriber {
   // timestamp).
   EncodingEventSubscriber(EventMediaType event_media_type, size_t max_frames);
 
+  EncodingEventSubscriber(const EncodingEventSubscriber&) = delete;
+  EncodingEventSubscriber& operator=(const EncodingEventSubscriber&) = delete;
+
   ~EncodingEventSubscriber() final;
 
   // RawReventSubscriber implementations.
@@ -126,8 +129,6 @@ class EncodingEventSubscriber final : public RawEventSubscriber {
 
   // Set to RTP timestamp of first event encountered after a |Reset()|.
   RtpTimeTicks first_rtp_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncodingEventSubscriber);
 };
 
 }  // namespace cast

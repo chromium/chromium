@@ -20,6 +20,10 @@ namespace media {
 class MEDIA_EXPORT TextRanges {
  public:
   TextRanges();
+
+  TextRanges(const TextRanges&) = delete;
+  TextRanges& operator=(const TextRanges&) = delete;
+
   ~TextRanges();
 
   // Reset the current range pointer, such that we bind to a new range
@@ -88,8 +92,6 @@ class MEDIA_EXPORT TextRanges {
 
   // The time range to which we bind following a Reset().
   RangeMap::iterator curr_range_itr_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextRanges);
 };
 
 }  // namespace media

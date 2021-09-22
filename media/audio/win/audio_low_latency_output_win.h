@@ -133,6 +133,9 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
                           ERole device_role,
                           AudioManager::LogCallback log_callback);
 
+  WASAPIAudioOutputStream(const WASAPIAudioOutputStream&) = delete;
+  WASAPIAudioOutputStream& operator=(const WASAPIAudioOutputStream&) = delete;
+
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioOutputStream::Close().
   ~WASAPIAudioOutputStream() override;
@@ -281,8 +284,6 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   // thread, it's possible to end up in a state where that task would execute
   // after destruction of this class -- so use a WeakPtr to cancel safely.
   base::WeakPtrFactory<WASAPIAudioOutputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WASAPIAudioOutputStream);
 };
 
 }  // namespace media

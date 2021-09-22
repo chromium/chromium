@@ -61,6 +61,9 @@ class MEDIA_EXPORT CdmContext {
   // Callback to notify the occurrence of an Event.
   using EventCB = base::RepeatingCallback<void(Event)>;
 
+  CdmContext(const CdmContext&) = delete;
+  CdmContext& operator=(const CdmContext&) = delete;
+
   virtual ~CdmContext();
 
   // Registers a callback which will be called when an event happens in the CDM.
@@ -131,9 +134,6 @@ class MEDIA_EXPORT CdmContext {
 
  protected:
   CdmContext();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmContext);
 };
 
 // A reference holder to make sure the CdmContext is always valid as long as

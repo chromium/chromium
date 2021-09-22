@@ -453,6 +453,9 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
     base::PowerMonitor::AddPowerSuspendObserver(this);
   }
 
+  AudioPowerObserver(const AudioPowerObserver&) = delete;
+  AudioPowerObserver& operator=(const AudioPowerObserver&) = delete;
+
   ~AudioPowerObserver() override {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (!is_monitoring_)
@@ -500,8 +503,6 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
   base::TimeTicks earliest_start_time_;
   base::ThreadChecker thread_checker_;
   size_t num_resume_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPowerObserver);
 };
 
 AudioManagerMac::AudioManagerMac(std::unique_ptr<AudioThread> audio_thread,

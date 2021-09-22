@@ -19,6 +19,10 @@ namespace media {
 class MEDIA_EXPORT CdmSessionTracker {
  public:
   CdmSessionTracker();
+
+  CdmSessionTracker(const CdmSessionTracker&) = delete;
+  CdmSessionTracker& operator=(const CdmSessionTracker&) = delete;
+
   ~CdmSessionTracker();
 
   // Adds `session_id` to the list of sessions being tracked.
@@ -37,8 +41,6 @@ class MEDIA_EXPORT CdmSessionTracker {
 
  private:
   std::unordered_set<std::string> session_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmSessionTracker);
 };
 
 }  // namespace media

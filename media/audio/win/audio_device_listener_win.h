@@ -35,6 +35,10 @@ class MEDIA_EXPORT AudioDeviceListenerWin : public IMMNotificationClient {
   // thus the callee must be thread safe.  |listener_cb| is a permanent callback
   // and must outlive AudioDeviceListenerWin.
   explicit AudioDeviceListenerWin(base::RepeatingClosure listener_cb);
+
+  AudioDeviceListenerWin(const AudioDeviceListenerWin&) = delete;
+  AudioDeviceListenerWin& operator=(const AudioDeviceListenerWin&) = delete;
+
   virtual ~AudioDeviceListenerWin();
 
  private:
@@ -69,8 +73,6 @@ class MEDIA_EXPORT AudioDeviceListenerWin : public IMMNotificationClient {
   THREAD_CHECKER(thread_checker_);
 
   const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerWin);
 };
 
 }  // namespace media

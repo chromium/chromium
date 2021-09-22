@@ -50,6 +50,9 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
     vp8_encoder_.Initialize();
   }
 
+  VideoDecoderTest(const VideoDecoderTest&) = delete;
+  VideoDecoderTest& operator=(const VideoDecoderTest&) = delete;
+
   virtual ~VideoDecoderTest() {
     // Make sure all threads have stopped before the environment goes away.
     cast_environment_->Shutdown();
@@ -166,8 +169,6 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
   base::Lock lock_;
   base::ConditionVariable cond_;
   int total_video_frames_decoded_;  // Protected by |lock_|.
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderTest);
 };
 
 TEST_P(VideoDecoderTest, DecodesFrames) {

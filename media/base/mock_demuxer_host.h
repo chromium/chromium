@@ -15,15 +15,16 @@ namespace media {
 class MockDemuxerHost : public DemuxerHost {
  public:
   MockDemuxerHost();
+
+  MockDemuxerHost(const MockDemuxerHost&) = delete;
+  MockDemuxerHost& operator=(const MockDemuxerHost&) = delete;
+
   ~MockDemuxerHost() override;
 
   MOCK_METHOD1(OnBufferedTimeRangesChanged,
                void(const Ranges<base::TimeDelta>&));
   MOCK_METHOD1(SetDuration, void(base::TimeDelta duration));
   MOCK_METHOD1(OnDemuxerError, void(PipelineStatus error));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDemuxerHost);
 };
 
 }  // namespace media

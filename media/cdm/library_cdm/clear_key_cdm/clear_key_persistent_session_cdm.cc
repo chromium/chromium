@@ -31,6 +31,12 @@ class NewPersistentSessionCdmPromise : public NewSessionCdmPromise {
                                  std::unique_ptr<NewSessionCdmPromise> promise)
       : session_created_cb_(std::move(session_created_cb)),
         promise_(std::move(promise)) {}
+
+  NewPersistentSessionCdmPromise(const NewPersistentSessionCdmPromise&) =
+      delete;
+  NewPersistentSessionCdmPromise& operator=(
+      const NewPersistentSessionCdmPromise&) = delete;
+
   ~NewPersistentSessionCdmPromise() override = default;
 
   // NewSessionCdmPromise implementation.
@@ -50,8 +56,6 @@ class NewPersistentSessionCdmPromise : public NewSessionCdmPromise {
  private:
   SessionCreatedCB session_created_cb_;
   std::unique_ptr<NewSessionCdmPromise> promise_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewPersistentSessionCdmPromise);
 };
 
 // When a session has been loaded, we need to call FinishUpdate() to complete
@@ -64,6 +68,10 @@ class FinishLoadCdmPromise : public SimpleCdmPromise {
   FinishLoadCdmPromise(const std::string& session_id,
                        std::unique_ptr<NewSessionCdmPromise> promise)
       : session_id_(session_id), promise_(std::move(promise)) {}
+
+  FinishLoadCdmPromise(const FinishLoadCdmPromise&) = delete;
+  FinishLoadCdmPromise& operator=(const FinishLoadCdmPromise&) = delete;
+
   ~FinishLoadCdmPromise() override = default;
 
   // CdmSimplePromise implementation.
@@ -83,8 +91,6 @@ class FinishLoadCdmPromise : public SimpleCdmPromise {
  private:
   std::string session_id_;
   std::unique_ptr<NewSessionCdmPromise> promise_;
-
-  DISALLOW_COPY_AND_ASSIGN(FinishLoadCdmPromise);
 };
 
 }  // namespace

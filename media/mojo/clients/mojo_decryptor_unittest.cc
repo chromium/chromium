@@ -37,6 +37,10 @@ namespace media {
 class MojoDecryptorTest : public ::testing::Test {
  public:
   MojoDecryptorTest() = default;
+
+  MojoDecryptorTest(const MojoDecryptorTest&) = delete;
+  MojoDecryptorTest& operator=(const MojoDecryptorTest&) = delete;
+
   ~MojoDecryptorTest() override = default;
 
   void SetWriterCapacity(uint32_t capacity) { writer_capacity_ = capacity; }
@@ -126,9 +130,6 @@ class MojoDecryptorTest : public ::testing::Test {
 
   // The actual Decryptor object used by |mojo_decryptor_service_|.
   std::unique_ptr<StrictMock<MockDecryptor>> decryptor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoDecryptorTest);
 };
 
 // DecryptAndDecodeAudio() and ResetDecoder(kAudio) immediately.

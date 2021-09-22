@@ -50,6 +50,10 @@ class MEDIA_EXPORT SincResampler {
   SincResampler(double io_sample_rate_ratio,
                 int request_frames,
                 const ReadCB read_cb);
+
+  SincResampler(const SincResampler&) = delete;
+  SincResampler& operator=(const SincResampler&) = delete;
+
   ~SincResampler();
 
   // Resample |frames| of data from |read_cb_| into |destination|.
@@ -170,8 +174,6 @@ class MEDIA_EXPORT SincResampler {
   float* const r2_;
   float* r3_;
   float* r4_;
-
-  DISALLOW_COPY_AND_ASSIGN(SincResampler);
 };
 
 }  // namespace media

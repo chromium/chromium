@@ -32,6 +32,10 @@ class TestAudioBusFactory {
                       int sample_rate,
                       float sine_wave_frequency,
                       float volume);
+
+  TestAudioBusFactory(const TestAudioBusFactory&) = delete;
+  TestAudioBusFactory& operator=(const TestAudioBusFactory&) = delete;
+
   ~TestAudioBusFactory();
 
   // Creates a new AudioBus of the given |duration|, filled with the next batch
@@ -46,8 +50,6 @@ class TestAudioBusFactory {
   const int sample_rate_;
   const float volume_;
   SineWaveAudioSource source_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAudioBusFactory);
 };
 
 // Assuming |samples| contains a single-frequency sine wave (and maybe some

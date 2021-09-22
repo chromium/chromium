@@ -23,6 +23,11 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskController
   MojoLearningTaskController(
       const LearningTask& task,
       mojo::Remote<mojom::LearningTaskController> controller);
+
+  MojoLearningTaskController(const MojoLearningTaskController&) = delete;
+  MojoLearningTaskController& operator=(const MojoLearningTaskController&) =
+      delete;
+
   ~MojoLearningTaskController() override;
 
   // LearningTaskController
@@ -44,8 +49,6 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskController
  private:
   LearningTask task_;
   mojo::Remote<mojom::LearningTaskController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoLearningTaskController);
 };
 
 }  // namespace learning

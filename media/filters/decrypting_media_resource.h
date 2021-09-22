@@ -36,6 +36,10 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
                           CdmContext* cdm_context,
                           MediaLog* media_log,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  DecryptingMediaResource(const DecryptingMediaResource&) = delete;
+  DecryptingMediaResource& operator=(const DecryptingMediaResource&) = delete;
+
   ~DecryptingMediaResource() override;
 
   // MediaResource implementation:
@@ -69,8 +73,6 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
   // if one of the DecryptingDemuxerStreams failed to initialize correctly.
   InitCB init_cb_;
   base::WeakPtrFactory<DecryptingMediaResource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DecryptingMediaResource);
 };
 
 }  // namespace media

@@ -20,6 +20,10 @@ class MEDIA_EXPORT BitReader : private BitReaderCore::ByteStreamProvider {
   // Initialize the reader to start reading at |data|, |size| being size
   // of |data| in bytes.
   BitReader(const uint8_t* data, int size);
+
+  BitReader(const BitReader&) = delete;
+  BitReader& operator=(const BitReader&) = delete;
+
   ~BitReader() override;
 
   template<typename T> bool ReadBits(int num_bits, T* out) {
@@ -61,8 +65,6 @@ class MEDIA_EXPORT BitReader : private BitReaderCore::ByteStreamProvider {
   int bytes_left_;
 
   BitReaderCore bit_reader_core_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitReader);
 };
 
 }  // namespace media

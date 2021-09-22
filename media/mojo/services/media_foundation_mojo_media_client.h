@@ -18,6 +18,12 @@ namespace media {
 class MediaFoundationMojoMediaClient final : public MojoMediaClient {
  public:
   MediaFoundationMojoMediaClient();
+
+  MediaFoundationMojoMediaClient(const MediaFoundationMojoMediaClient&) =
+      delete;
+  MediaFoundationMojoMediaClient& operator=(
+      const MediaFoundationMojoMediaClient&) = delete;
+
   ~MediaFoundationMojoMediaClient() override;
 
   // MojoMediaClient implementation.
@@ -29,9 +35,6 @@ class MediaFoundationMojoMediaClient final : public MojoMediaClient {
           renderer_extension_receiver) override;
   std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* frame_interfaces) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaFoundationMojoMediaClient);
 };
 
 }  // namespace media

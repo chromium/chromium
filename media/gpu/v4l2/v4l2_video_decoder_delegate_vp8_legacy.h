@@ -20,6 +20,12 @@ class V4L2VideoDecoderDelegateVP8Legacy : public VP8Decoder::VP8Accelerator {
   explicit V4L2VideoDecoderDelegateVP8Legacy(
       V4L2DecodeSurfaceHandler* surface_handler,
       V4L2Device* device);
+
+  V4L2VideoDecoderDelegateVP8Legacy(const V4L2VideoDecoderDelegateVP8Legacy&) =
+      delete;
+  V4L2VideoDecoderDelegateVP8Legacy& operator=(
+      const V4L2VideoDecoderDelegateVP8Legacy&) = delete;
+
   ~V4L2VideoDecoderDelegateVP8Legacy() override;
 
   // VP8Decoder::VP8Accelerator implementation.
@@ -34,8 +40,6 @@ class V4L2VideoDecoderDelegateVP8Legacy : public VP8Decoder::VP8Accelerator {
 
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderDelegateVP8Legacy);
 };
 
 }  // namespace media

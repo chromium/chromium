@@ -61,6 +61,10 @@ CreateEmptySampleWithBuffer(uint32_t buffer_length, int align);
 class MF_INITIALIZER_EXPORT MediaBufferScopedPointer {
  public:
   explicit MediaBufferScopedPointer(IMFMediaBuffer* media_buffer);
+
+  MediaBufferScopedPointer(const MediaBufferScopedPointer&) = delete;
+  MediaBufferScopedPointer& operator=(const MediaBufferScopedPointer&) = delete;
+
   ~MediaBufferScopedPointer();
 
   uint8_t* get() { return buffer_; }
@@ -72,8 +76,6 @@ class MF_INITIALIZER_EXPORT MediaBufferScopedPointer {
   uint8_t* buffer_;
   DWORD max_length_;
   DWORD current_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaBufferScopedPointer);
 };
 
 // Copies |in_string| to |out_string| that is allocated with CoTaskMemAlloc().

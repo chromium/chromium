@@ -78,6 +78,11 @@ class AesDecryptor::SessionIdDecryptionKeyMap {
 
  public:
   SessionIdDecryptionKeyMap() = default;
+
+  SessionIdDecryptionKeyMap(const SessionIdDecryptionKeyMap&) = delete;
+  SessionIdDecryptionKeyMap& operator=(const SessionIdDecryptionKeyMap&) =
+      delete;
+
   ~SessionIdDecryptionKeyMap() = default;
 
   // Replaces value if |session_id| is already present, or adds it if not.
@@ -110,8 +115,6 @@ class AesDecryptor::SessionIdDecryptionKeyMap {
   void Erase(KeyList::iterator position);
 
   KeyList key_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionIdDecryptionKeyMap);
 };
 
 void AesDecryptor::SessionIdDecryptionKeyMap::Insert(

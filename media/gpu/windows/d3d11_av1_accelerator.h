@@ -30,6 +30,10 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
                       MediaLog* media_log,
                       ComD3D11VideoDevice video_device,
                       std::unique_ptr<VideoContextWrapper> video_context);
+
+  D3D11AV1Accelerator(const D3D11AV1Accelerator&) = delete;
+  D3D11AV1Accelerator& operator=(const D3D11AV1Accelerator&) = delete;
+
   ~D3D11AV1Accelerator() override;
 
   scoped_refptr<AV1Picture> CreateAV1Picture(bool apply_grain) override;
@@ -67,8 +71,6 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
   ComD3D11VideoDecoder video_decoder_;
   ComD3D11VideoDevice video_device_;
   std::unique_ptr<VideoContextWrapper> video_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11AV1Accelerator);
 };
 
 }  // namespace media

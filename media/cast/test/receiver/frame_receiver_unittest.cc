@@ -42,6 +42,10 @@ FrameId GetFirstTestFrameId() {
 class FakeFrameClient {
  public:
   FakeFrameClient() : num_called_(0) {}
+
+  FakeFrameClient(const FakeFrameClient&) = delete;
+  FakeFrameClient& operator=(const FakeFrameClient&) = delete;
+
   virtual ~FakeFrameClient() = default;
 
   void AddExpectedResult(FrameId expected_frame_id,
@@ -66,8 +70,6 @@ class FakeFrameClient {
  private:
   base::circular_deque<std::pair<FrameId, base::TimeTicks>> expected_results_;
   int num_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFrameClient);
 };
 }  // namespace
 

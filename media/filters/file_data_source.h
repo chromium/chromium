@@ -21,6 +21,10 @@ namespace media {
 class MEDIA_EXPORT FileDataSource : public DataSource {
  public:
   FileDataSource();
+
+  FileDataSource(const FileDataSource&) = delete;
+  FileDataSource& operator=(const FileDataSource&) = delete;
+
   ~FileDataSource() override;
 
   bool Initialize(const base::FilePath& file_path) WARN_UNUSED_RESULT;
@@ -49,8 +53,6 @@ class MEDIA_EXPORT FileDataSource : public DataSource {
   bool force_read_errors_;
   bool force_streaming_;
   uint64_t bytes_read_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDataSource);
 };
 
 }  // namespace media

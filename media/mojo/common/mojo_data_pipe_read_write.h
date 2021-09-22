@@ -18,6 +18,9 @@ class MojoDataPipeReader {
   explicit MojoDataPipeReader(
       mojo::ScopedDataPipeConsumerHandle consumer_handle);
 
+  MojoDataPipeReader(const MojoDataPipeReader&) = delete;
+  MojoDataPipeReader& operator=(const MojoDataPipeReader&) = delete;
+
   ~MojoDataPipeReader();
 
   using DoneCB = base::OnceCallback<void(bool)>;
@@ -59,8 +62,6 @@ class MojoDataPipeReader {
 
   // Number of bytes already read into the current buffer.
   uint32_t bytes_read_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDataPipeReader);
 };
 
 // Write a certain amount of data into a mojo data pipe by request.
@@ -68,6 +69,9 @@ class MojoDataPipeWriter {
  public:
   explicit MojoDataPipeWriter(
       mojo::ScopedDataPipeProducerHandle producer_handle);
+
+  MojoDataPipeWriter(const MojoDataPipeWriter&) = delete;
+  MojoDataPipeWriter& operator=(const MojoDataPipeWriter&) = delete;
 
   ~MojoDataPipeWriter();
 
@@ -109,8 +113,6 @@ class MojoDataPipeWriter {
 
   // Number of bytes already written from the current buffer.
   uint32_t bytes_written_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDataPipeWriter);
 };
 
 }  // namespace media

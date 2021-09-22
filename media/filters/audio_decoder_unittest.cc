@@ -146,6 +146,9 @@ class AudioDecoderTest
     }
   }
 
+  AudioDecoderTest(const AudioDecoderTest&) = delete;
+  AudioDecoderTest& operator=(const AudioDecoderTest&) = delete;
+
   virtual ~AudioDecoderTest() {
     EXPECT_FALSE(pending_decode_);
     EXPECT_FALSE(pending_reset_);
@@ -414,8 +417,6 @@ class AudioDecoderTest
 
   base::circular_deque<scoped_refptr<AudioBuffer>> decoded_audio_;
   base::TimeDelta start_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderTest);
 };
 
 const DecodedBufferExpectations kBearOpusExpectations[] = {

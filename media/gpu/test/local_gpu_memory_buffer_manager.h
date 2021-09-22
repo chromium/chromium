@@ -30,6 +30,10 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
  public:
   LocalGpuMemoryBufferManager();
 
+  LocalGpuMemoryBufferManager(const LocalGpuMemoryBufferManager&) = delete;
+  LocalGpuMemoryBufferManager& operator=(const LocalGpuMemoryBufferManager&) =
+      delete;
+
   // gpu::GpuMemoryBufferManager implementation
   ~LocalGpuMemoryBufferManager() override;
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
@@ -64,8 +68,6 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
 
  private:
   gbm_device* gbm_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalGpuMemoryBufferManager);
 };
 
 }  // namespace media

@@ -42,6 +42,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
  public:
   explicit PlatformVideoFramePool(
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
+
+  PlatformVideoFramePool(const PlatformVideoFramePool&) = delete;
+  PlatformVideoFramePool& operator=(const PlatformVideoFramePool&) = delete;
+
   ~PlatformVideoFramePool() override;
 
   // Returns the ID of the GpuMemoryBuffer wrapped by |frame|.
@@ -142,8 +146,6 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   // Used at the VideoFrame destruction callback.
   base::WeakPtr<PlatformVideoFramePool> weak_this_;
   base::WeakPtrFactory<PlatformVideoFramePool> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformVideoFramePool);
 };
 
 }  // namespace media

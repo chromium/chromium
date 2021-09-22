@@ -40,6 +40,11 @@ class MEDIA_EXPORT AudioOutputDispatcherImpl
                             const AudioParameters& params,
                             const std::string& output_device_id,
                             base::TimeDelta close_delay);
+
+  AudioOutputDispatcherImpl(const AudioOutputDispatcherImpl&) = delete;
+  AudioOutputDispatcherImpl& operator=(const AudioOutputDispatcherImpl&) =
+      delete;
+
   ~AudioOutputDispatcherImpl() override;
 
   // AudioOutputDispatcher implementation.
@@ -95,7 +100,6 @@ class MEDIA_EXPORT AudioOutputDispatcherImpl
   int audio_stream_id_;
 
   base::WeakPtrFactory<AudioOutputDispatcherImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputDispatcherImpl);
 };
 
 }  // namespace media

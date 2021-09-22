@@ -31,6 +31,9 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   MojoAudioDecoderService(MojoCdmServiceContext* mojo_cdm_service_context,
                           std::unique_ptr<media::AudioDecoder> decoder);
 
+  MojoAudioDecoderService(const MojoAudioDecoderService&) = delete;
+  MojoAudioDecoderService& operator=(const MojoAudioDecoderService&) = delete;
+
   ~MojoAudioDecoderService() final;
 
   // mojom::AudioDecoder implementation
@@ -90,8 +93,6 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
 
   base::WeakPtr<MojoAudioDecoderService> weak_this_;
   base::WeakPtrFactory<MojoAudioDecoderService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioDecoderService);
 };
 
 }  // namespace media

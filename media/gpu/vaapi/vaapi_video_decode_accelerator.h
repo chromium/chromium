@@ -65,6 +65,10 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
       const MakeGLContextCurrentCallback& make_context_current_cb,
       const BindGLImageCallback& bind_image_cb);
 
+  VaapiVideoDecodeAccelerator(const VaapiVideoDecodeAccelerator&) = delete;
+  VaapiVideoDecodeAccelerator& operator=(const VaapiVideoDecodeAccelerator&) =
+      delete;
+
   ~VaapiVideoDecodeAccelerator() override;
 
   // VideoDecodeAccelerator implementation.
@@ -354,8 +358,6 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
 
   // The WeakPtrFactory for |weak_this_|.
   base::WeakPtrFactory<VaapiVideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVideoDecodeAccelerator);
 };
 
 }  // namespace media

@@ -68,6 +68,10 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
                           Header* header);
 
   MPEG1AudioStreamParser();
+
+  MPEG1AudioStreamParser(const MPEG1AudioStreamParser&) = delete;
+  MPEG1AudioStreamParser& operator=(const MPEG1AudioStreamParser&) = delete;
+
   ~MPEG1AudioStreamParser() override;
 
  private:
@@ -82,8 +86,6 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
                        std::vector<uint8_t>* extra_data) override;
 
   size_t mp3_parse_error_limit_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MPEG1AudioStreamParser);
 };
 
 }  // namespace media

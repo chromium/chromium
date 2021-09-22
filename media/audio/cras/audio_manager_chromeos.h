@@ -25,6 +25,10 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
  public:
   AudioManagerChromeOS(std::unique_ptr<AudioThread> audio_thread,
                    AudioLogFactory* audio_log_factory);
+
+  AudioManagerChromeOS(const AudioManagerChromeOS&) = delete;
+  AudioManagerChromeOS& operator=(const AudioManagerChromeOS&) = delete;
+
   ~AudioManagerChromeOS() override;
 
   // AudioManager implementation.
@@ -108,8 +112,6 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
   base::WeakPtr<AudioManagerChromeOS> weak_this_;
 
   base::WeakPtrFactory<AudioManagerChromeOS> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerChromeOS);
 };
 
 }  // namespace media

@@ -61,6 +61,10 @@ class MEDIA_EXPORT FFmpegGlue {
  public:
   // See file documentation for usage.  |protocol| must outlive FFmpegGlue.
   explicit FFmpegGlue(FFmpegURLProtocol* protocol);
+
+  FFmpegGlue(const FFmpegGlue&) = delete;
+  FFmpegGlue& operator=(const FFmpegGlue&) = delete;
+
   ~FFmpegGlue();
 
   // Opens an AVFormatContext specially prepared to process reads and seeks
@@ -85,8 +89,6 @@ class MEDIA_EXPORT FFmpegGlue {
   std::unique_ptr<AVIOContext, ScopedPtrAVFree> avio_context_;
   container_names::MediaContainerName container_ =
       container_names::CONTAINER_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegGlue);
 };
 
 }  // namespace media

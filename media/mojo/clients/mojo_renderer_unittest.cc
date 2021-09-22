@@ -87,6 +87,9 @@ class MojoRendererTest : public ::testing::Test {
         .WillRepeatedly(Return(base::TimeDelta()));
   }
 
+  MojoRendererTest(const MojoRendererTest&) = delete;
+  MojoRendererTest& operator=(const MojoRendererTest&) = delete;
+
   ~MojoRendererTest() override = default;
 
   void Destroy() {
@@ -223,9 +226,6 @@ class MojoRendererTest : public ::testing::Test {
   RendererClient* remote_renderer_client_;
 
   mojo::SelfOwnedReceiverRef<mojom::Renderer> renderer_receiver_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoRendererTest);
 };
 
 TEST_F(MojoRendererTest, Initialize_Success) {

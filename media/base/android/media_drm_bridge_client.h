@@ -39,6 +39,10 @@ class MEDIA_EXPORT MediaDrmBridgeClient {
   typedef std::unordered_map<std::string, UUID> KeySystemUuidMap;
 
   MediaDrmBridgeClient();
+
+  MediaDrmBridgeClient(const MediaDrmBridgeClient&) = delete;
+  MediaDrmBridgeClient& operator=(const MediaDrmBridgeClient&) = delete;
+
   virtual ~MediaDrmBridgeClient();
 
   // Adds extra mappings from key-system name to Android UUID into |map|.
@@ -51,8 +55,6 @@ class MEDIA_EXPORT MediaDrmBridgeClient {
 
  private:
   friend class KeySystemManager;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDrmBridgeClient);
 };
 
 }  // namespace media

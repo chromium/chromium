@@ -24,6 +24,10 @@ typedef std::map<uint16_t, std::vector<uint8_t>> PacketMap;
 class FrameBuffer {
  public:
   FrameBuffer();
+
+  FrameBuffer(const FrameBuffer&) = delete;
+  FrameBuffer& operator=(const FrameBuffer&) = delete;
+
   ~FrameBuffer();
   bool InsertPacket(const uint8_t* payload_data,
                     size_t payload_size,
@@ -53,8 +57,6 @@ class FrameBuffer {
   FrameId last_referenced_frame_id_;
   RtpTimeTicks rtp_timestamp_;
   PacketMap packets_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameBuffer);
 };
 
 }  // namespace cast

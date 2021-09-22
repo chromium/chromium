@@ -29,6 +29,11 @@ class MEDIA_EXPORT FFmpegAACBitstreamConverter
   // |stream_codec_parameters| is retained, so it must outlive this class.
   explicit FFmpegAACBitstreamConverter(
       AVCodecParameters* stream_codec_parameters);
+
+  FFmpegAACBitstreamConverter(const FFmpegAACBitstreamConverter&) = delete;
+  FFmpegAACBitstreamConverter& operator=(const FFmpegAACBitstreamConverter&) =
+      delete;
+
   ~FFmpegAACBitstreamConverter() override;
 
   // FFmpegBitstreamConverter implementation.
@@ -48,8 +53,6 @@ class MEDIA_EXPORT FFmpegAACBitstreamConverter
   int sample_rate_index_;
   int channel_configuration_;
   int frame_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegAACBitstreamConverter);
 };
 
 }  // namespace media

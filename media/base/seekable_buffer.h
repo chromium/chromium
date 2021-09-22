@@ -52,6 +52,9 @@ class MEDIA_EXPORT SeekableBuffer {
   // The values are in bytes.
   SeekableBuffer(int backward_capacity, int forward_capacity);
 
+  SeekableBuffer(const SeekableBuffer&) = delete;
+  SeekableBuffer& operator=(const SeekableBuffer&) = delete;
+
   ~SeekableBuffer();
 
   // Clears the buffer queue.
@@ -180,8 +183,6 @@ class MEDIA_EXPORT SeekableBuffer {
   // Keeps track of the most recent time we've seen in case the |buffers_| is
   // empty when our owner asks what time it is.
   base::TimeDelta current_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SeekableBuffer);
 };
 
 }  // namespace media

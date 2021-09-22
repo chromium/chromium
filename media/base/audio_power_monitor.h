@@ -42,6 +42,9 @@ class MEDIA_EXPORT AudioPowerMonitor {
   // ~63.2% of maximum given a step input signal.
   AudioPowerMonitor(int sample_rate, base::TimeDelta time_constant);
 
+  AudioPowerMonitor(const AudioPowerMonitor&) = delete;
+  AudioPowerMonitor& operator=(const AudioPowerMonitor&) = delete;
+
   ~AudioPowerMonitor();
 
   // Reset power monitor to initial state (zero power level).  This should not
@@ -79,8 +82,6 @@ class MEDIA_EXPORT AudioPowerMonitor {
   base::Lock reading_lock_;
   float power_reading_;
   bool clipped_reading_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPowerMonitor);
 };
 
 }  // namespace media

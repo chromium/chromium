@@ -63,6 +63,10 @@ class MEDIA_EXPORT PipelineController {
                      BeforeResumeCB before_resume_cb,
                      ResumedCB resumed_cb,
                      PipelineStatusCB error_cb);
+
+  PipelineController(const PipelineController&) = delete;
+  PipelineController& operator=(const PipelineController&) = delete;
+
   ~PipelineController();
 
   // Start |pipeline_|. |demuxer| will be retained and StartWaitingForSeek()/
@@ -234,8 +238,6 @@ class MEDIA_EXPORT PipelineController {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<PipelineController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineController);
 };
 
 }  // namespace media

@@ -72,6 +72,11 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooser {
   using UseTextureOwnerCB = base::RepeatingCallback<void(void)>;
 
   AndroidVideoSurfaceChooser() {}
+
+  AndroidVideoSurfaceChooser(const AndroidVideoSurfaceChooser&) = delete;
+  AndroidVideoSurfaceChooser& operator=(const AndroidVideoSurfaceChooser&) =
+      delete;
+
   virtual ~AndroidVideoSurfaceChooser() {}
 
   // Sets the client callbacks to be called when a new surface choice is made.
@@ -84,9 +89,6 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooser {
   // the factory is updated to |*new_factory|.
   virtual void UpdateState(absl::optional<AndroidOverlayFactoryCB> new_factory,
                            const State& new_state) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidVideoSurfaceChooser);
 };
 
 }  // namespace media

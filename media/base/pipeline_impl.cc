@@ -59,6 +59,10 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   RendererWrapper(scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
                   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
                   MediaLog* media_log);
+
+  RendererWrapper(const RendererWrapper&) = delete;
+  RendererWrapper& operator=(const RendererWrapper&) = delete;
+
   ~RendererWrapper() final;
 
   void Start(StartType start_type,
@@ -233,7 +237,6 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   PipelineStatusCB error_cb_;
 
   base::WeakPtrFactory<RendererWrapper> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(RendererWrapper);
 };
 
 PipelineImpl::RendererWrapper::RendererWrapper(

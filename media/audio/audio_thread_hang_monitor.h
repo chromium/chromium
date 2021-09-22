@@ -73,6 +73,9 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
       scoped_refptr<base::SequencedTaskRunner> monitor_task_runner = nullptr);
 
+  AudioThreadHangMonitor(const AudioThreadHangMonitor&) = delete;
+  AudioThreadHangMonitor& operator=(const AudioThreadHangMonitor&) = delete;
+
   ~AudioThreadHangMonitor();
 
   // Thread-safe.
@@ -162,8 +165,6 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // successive successful pings. If the most recent ping was failed, the number
   // is the negative of the number of successive failed pings.
   int recent_ping_state_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioThreadHangMonitor);
 };
 
 }  // namespace media

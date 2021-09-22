@@ -125,6 +125,10 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   class DecryptionKey {
    public:
     explicit DecryptionKey(const std::string& secret);
+
+    DecryptionKey(const DecryptionKey&) = delete;
+    DecryptionKey& operator=(const DecryptionKey&) = delete;
+
     ~DecryptionKey();
 
     // Creates the encryption key.
@@ -139,8 +143,6 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
 
     // The key used to decrypt the data.
     std::unique_ptr<crypto::SymmetricKey> decryption_key_;
-
-    DISALLOW_COPY_AND_ASSIGN(DecryptionKey);
   };
 
   // Keep track of the keys for a key ID. If multiple sessions specify keys

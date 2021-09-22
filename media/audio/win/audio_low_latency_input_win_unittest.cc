@@ -243,6 +243,9 @@ class ScopedAudioInputStream {
  public:
   explicit ScopedAudioInputStream(AudioInputStream* stream) : stream_(stream) {}
 
+  ScopedAudioInputStream(const ScopedAudioInputStream&) = delete;
+  ScopedAudioInputStream& operator=(const ScopedAudioInputStream&) = delete;
+
   ~ScopedAudioInputStream() {
     if (stream_)
       stream_->Close();
@@ -265,8 +268,6 @@ class ScopedAudioInputStream {
 
  private:
   AudioInputStream* stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAudioInputStream);
 };
 
 class WinAudioInputTest : public ::testing::Test,

@@ -53,6 +53,11 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
  public:
   V4L2JpegEncodeAccelerator(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
+
+  V4L2JpegEncodeAccelerator(const V4L2JpegEncodeAccelerator&) = delete;
+  V4L2JpegEncodeAccelerator& operator=(const V4L2JpegEncodeAccelerator&) =
+      delete;
+
   ~V4L2JpegEncodeAccelerator() override;
 
   // JpegEncodeAccelerator implementation.
@@ -430,8 +435,6 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   base::WeakPtr<V4L2JpegEncodeAccelerator> weak_ptr_;
   // Weak factory for producing weak pointers on the child thread.
   base::WeakPtrFactory<V4L2JpegEncodeAccelerator> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2JpegEncodeAccelerator);
 };
 
 }  // namespace media

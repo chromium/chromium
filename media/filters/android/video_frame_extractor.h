@@ -41,6 +41,10 @@ class MEDIA_EXPORT VideoFrameExtractor {
                               const VideoDecoderConfig& decoder_config)>;
 
   explicit VideoFrameExtractor(DataSource* data_source);
+
+  VideoFrameExtractor(const VideoFrameExtractor&) = delete;
+  VideoFrameExtractor& operator=(const VideoFrameExtractor&) = delete;
+
   ~VideoFrameExtractor();
 
   // Starts to retrieve thumbnail from video frame.
@@ -75,8 +79,6 @@ class MEDIA_EXPORT VideoFrameExtractor {
   VideoFrameCallback video_frame_callback_;
 
   base::WeakPtrFactory<VideoFrameExtractor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameExtractor);
 };
 
 }  // namespace media

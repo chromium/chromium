@@ -24,6 +24,10 @@ class AudioRendererSink;
 class MEDIA_EXPORT AudioRendererMixerPool {
  public:
   AudioRendererMixerPool() = default;
+
+  AudioRendererMixerPool(const AudioRendererMixerPool&) = delete;
+  AudioRendererMixerPool& operator=(const AudioRendererMixerPool&) = delete;
+
   virtual ~AudioRendererMixerPool() = default;
 
   // Obtains a pointer to mixer instance based on AudioParameters. The pointer
@@ -50,9 +54,6 @@ class MEDIA_EXPORT AudioRendererMixerPool {
   virtual scoped_refptr<AudioRendererSink> GetSink(
       const base::UnguessableToken& owner_token,
       const std::string& device_id) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerPool);
 };
 
 }  // namespace media

@@ -61,6 +61,11 @@ class InterruptedPoissonProcess {
                             double coef_burstiness,
                             double coef_variance,
                             uint32_t rand_seed);
+
+  InterruptedPoissonProcess(const InterruptedPoissonProcess&) = delete;
+  InterruptedPoissonProcess& operator=(const InterruptedPoissonProcess&) =
+      delete;
+
   ~InterruptedPoissonProcess();
 
   std::unique_ptr<PacketPipe> NewBuffer(size_t size);
@@ -101,8 +106,6 @@ class InterruptedPoissonProcess {
   std::mt19937 mt_rand_;
 
   base::WeakPtrFactory<InterruptedPoissonProcess> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterruptedPoissonProcess);
 };
 
 // A UDPProxy will set up a UDP socket and bind to |local_port|.

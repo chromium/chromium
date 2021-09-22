@@ -27,6 +27,11 @@ class MEDIA_EXPORT FFmpegH264ToAnnexBBitstreamConverter
   explicit FFmpegH264ToAnnexBBitstreamConverter(
       AVCodecParameters* stream_codec_parameters);
 
+  FFmpegH264ToAnnexBBitstreamConverter(
+      const FFmpegH264ToAnnexBBitstreamConverter&) = delete;
+  FFmpegH264ToAnnexBBitstreamConverter& operator=(
+      const FFmpegH264ToAnnexBBitstreamConverter&) = delete;
+
   ~FFmpegH264ToAnnexBBitstreamConverter() override;
 
   // FFmpegBitstreamConverter implementation.
@@ -60,8 +65,6 @@ class MEDIA_EXPORT FFmpegH264ToAnnexBBitstreamConverter
   // Variable to hold a pointer to memory where we can access the global
   // data from the FFmpeg file format's global headers.
   AVCodecParameters* stream_codec_parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegH264ToAnnexBBitstreamConverter);
 };
 
 }  // namespace media

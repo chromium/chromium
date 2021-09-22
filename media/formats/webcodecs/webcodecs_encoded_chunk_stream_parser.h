@@ -24,6 +24,12 @@ class MEDIA_EXPORT WebCodecsEncodedChunkStreamParser : public StreamParser {
       std::unique_ptr<AudioDecoderConfig> audio_config);
   explicit WebCodecsEncodedChunkStreamParser(
       std::unique_ptr<VideoDecoderConfig> video_config);
+
+  WebCodecsEncodedChunkStreamParser(const WebCodecsEncodedChunkStreamParser&) =
+      delete;
+  WebCodecsEncodedChunkStreamParser& operator=(
+      const WebCodecsEncodedChunkStreamParser&) = delete;
+
   ~WebCodecsEncodedChunkStreamParser() override;
 
   // StreamParser implementation.
@@ -69,8 +75,6 @@ class MEDIA_EXPORT WebCodecsEncodedChunkStreamParser : public StreamParser {
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
   MediaLog* media_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebCodecsEncodedChunkStreamParser);
 };
 
 }  // namespace media

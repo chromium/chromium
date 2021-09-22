@@ -29,6 +29,10 @@ class MediaServerCrashListener {
   MediaServerCrashListener(
       OnMediaServerCrashCB on_server_crash_cb,
       scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner);
+
+  MediaServerCrashListener(const MediaServerCrashListener&) = delete;
+  MediaServerCrashListener& operator=(const MediaServerCrashListener&) = delete;
+
   ~MediaServerCrashListener();
 
   // Ensure the underlying watchdog MediaPlayer is created.
@@ -50,7 +54,6 @@ class MediaServerCrashListener {
   scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner_;
 
   base::android::ScopedJavaGlobalRef<jobject> j_crash_listener_;
-  DISALLOW_COPY_AND_ASSIGN(MediaServerCrashListener);
 };
 
 }  // namespace media

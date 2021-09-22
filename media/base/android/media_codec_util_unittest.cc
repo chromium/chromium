@@ -20,10 +20,13 @@ using base::android::SDK_VERSION_NOUGAT_MR1;
 class MediaCodecUtilTest : public testing::Test {
  public:
   MediaCodecUtilTest() {}
+
+  MediaCodecUtilTest(const MediaCodecUtilTest&) = delete;
+  MediaCodecUtilTest& operator=(const MediaCodecUtilTest&) = delete;
+
   ~MediaCodecUtilTest() override {}
 
  public:
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecUtilTest);
 };
 
 TEST_F(MediaCodecUtilTest, TestCodecAvailableIfNewerVersion) {

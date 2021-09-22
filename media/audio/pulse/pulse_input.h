@@ -31,6 +31,9 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
                         pa_context* context,
                         AudioManager::LogCallback log_callback);
 
+  PulseAudioInputStream(const PulseAudioInputStream&) = delete;
+  PulseAudioInputStream& operator=(const PulseAudioInputStream&) = delete;
+
   ~PulseAudioInputStream() override;
 
   // Implementation of AudioInputStream.
@@ -90,8 +93,6 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
   pa_stream* handle_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PulseAudioInputStream);
 };
 
 }  // namespace media

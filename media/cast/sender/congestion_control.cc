@@ -35,6 +35,10 @@ class AdaptiveCongestionControl final : public CongestionControl {
                             int min_bitrate_configured,
                             double max_frame_rate);
 
+  AdaptiveCongestionControl(const AdaptiveCongestionControl&) = delete;
+  AdaptiveCongestionControl& operator=(const AdaptiveCongestionControl&) =
+      delete;
+
   ~AdaptiveCongestionControl() final;
 
   // CongestionControl implementation.
@@ -100,13 +104,15 @@ class AdaptiveCongestionControl final : public CongestionControl {
   size_t history_size_;
   size_t acked_bits_in_history_;
   base::TimeDelta dead_time_in_history_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdaptiveCongestionControl);
 };
 
 class FixedCongestionControl final : public CongestionControl {
  public:
   explicit FixedCongestionControl(int bitrate) : bitrate_(bitrate) {}
+
+  FixedCongestionControl(const FixedCongestionControl&) = delete;
+  FixedCongestionControl& operator=(const FixedCongestionControl&) = delete;
+
   ~FixedCongestionControl() final = default;
 
   // CongestionControl implementation.
@@ -125,8 +131,6 @@ class FixedCongestionControl final : public CongestionControl {
 
  private:
   const int bitrate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedCongestionControl);
 };
 
 CongestionControl* NewAdaptiveCongestionControl(const base::TickClock* clock,

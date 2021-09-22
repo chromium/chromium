@@ -15,6 +15,10 @@ namespace media {
 class AudioBlockFifoTest : public testing::Test {
  public:
   AudioBlockFifoTest() = default;
+
+  AudioBlockFifoTest(const AudioBlockFifoTest&) = delete;
+  AudioBlockFifoTest& operator=(const AudioBlockFifoTest&) = delete;
+
   ~AudioBlockFifoTest() override = default;
 
   void PushAndVerify(AudioBlockFifo* fifo,
@@ -54,9 +58,6 @@ class AudioBlockFifoTest : public testing::Test {
       EXPECT_GT(bus->channel(i)[bus->frames() - 1], 0.0f);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioBlockFifoTest);
 };
 
 // Verify that construction works as intended.

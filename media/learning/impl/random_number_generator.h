@@ -17,6 +17,10 @@ namespace media {
 class COMPONENT_EXPORT(LEARNING_IMPL) RandomNumberGenerator {
  public:
   RandomNumberGenerator() = default;
+
+  RandomNumberGenerator(const RandomNumberGenerator&) = delete;
+  RandomNumberGenerator& operator=(const RandomNumberGenerator&) = delete;
+
   virtual ~RandomNumberGenerator() = default;
 
   // Return a random generator that will return unpredictable values in the
@@ -35,9 +39,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) RandomNumberGenerator {
   // This isn't an overload of Generate() to be sure that one isn't surprised by
   // the result.
   double GenerateDouble(double range);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RandomNumberGenerator);
 };
 
 // Handy mix-in class if you want to support rng injection.

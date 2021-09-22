@@ -33,6 +33,11 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
       CreateDebugRecorderCB create_debug_recorder_cb,
       AudioInputStream* stream);
 
+  AudioInputStreamDataInterceptor(const AudioInputStreamDataInterceptor&) =
+      delete;
+  AudioInputStreamDataInterceptor& operator=(
+      const AudioInputStreamDataInterceptor&) = delete;
+
   ~AudioInputStreamDataInterceptor() override;
 
   // Implementation of AudioInputStream.
@@ -61,8 +66,6 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
   AudioInputStream* const stream_;
   AudioInputStream::AudioInputCallback* callback_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputStreamDataInterceptor);
 };
 
 }  // namespace media

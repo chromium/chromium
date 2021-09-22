@@ -38,6 +38,10 @@ class OnMoreDataConverter
   OnMoreDataConverter(const AudioParameters& input_params,
                       const AudioParameters& output_params,
                       std::unique_ptr<AudioDebugRecorder> debug_recorder);
+
+  OnMoreDataConverter(const OnMoreDataConverter&) = delete;
+  OnMoreDataConverter& operator=(const OnMoreDataConverter&) = delete;
+
   ~OnMoreDataConverter() override;
 
   // AudioSourceCallback interface.
@@ -86,8 +90,6 @@ class OnMoreDataConverter
 
   // For audio debug recordings.
   std::unique_ptr<AudioDebugRecorder> debug_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnMoreDataConverter);
 };
 
 namespace {

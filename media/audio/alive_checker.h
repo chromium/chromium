@@ -69,6 +69,9 @@ class MEDIA_EXPORT AliveChecker {
                PowerObserverHelperFactoryCallback
                    power_observer_helper_factory_callback);
 
+  AliveChecker(const AliveChecker&) = delete;
+  AliveChecker& operator=(const AliveChecker&) = delete;
+
   ~AliveChecker();
 
   // Start and stop checking if the client is alive.
@@ -136,8 +139,6 @@ class MEDIA_EXPORT AliveChecker {
   std::unique_ptr<PowerObserverHelper> power_observer_;
 
   base::WeakPtrFactory<AliveChecker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AliveChecker);
 };
 
 }  // namespace media

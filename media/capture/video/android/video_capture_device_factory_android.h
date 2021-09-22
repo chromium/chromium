@@ -26,6 +26,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
       jlong nativeVideoCaptureDeviceAndroid);
 
   VideoCaptureDeviceFactoryAndroid();
+
+  VideoCaptureDeviceFactoryAndroid(const VideoCaptureDeviceFactoryAndroid&) =
+      delete;
+  VideoCaptureDeviceFactoryAndroid& operator=(
+      const VideoCaptureDeviceFactoryAndroid&) = delete;
+
   ~VideoCaptureDeviceFactoryAndroid() override;
 
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
@@ -51,8 +57,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
   // an actively used camera is opened again (see https://crbug.com/1138608).
   base::flat_map<std::string, VideoCaptureFormats> supported_formats_cache_;
   base::flat_map<std::string, bool> zooms_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryAndroid);
 };
 
 }  // namespace media

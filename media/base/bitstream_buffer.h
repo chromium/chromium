@@ -54,6 +54,9 @@ class MEDIA_EXPORT BitstreamBuffer {
   BitstreamBuffer(BitstreamBuffer&&);
   BitstreamBuffer& operator=(BitstreamBuffer&&);
 
+  BitstreamBuffer(const BitstreamBuffer&) = delete;
+  BitstreamBuffer& operator=(const BitstreamBuffer&) = delete;
+
   ~BitstreamBuffer();
 
   // Produce an equivalent DecoderBuffer. This consumes region(), even if
@@ -130,8 +133,6 @@ class MEDIA_EXPORT BitstreamBuffer {
   std::vector<SubsampleEntry> subsamples_;  // clear/cypher sizes
 
   friend struct IPC::ParamTraits<media::BitstreamBuffer>;
-
-  DISALLOW_COPY_AND_ASSIGN(BitstreamBuffer);
 };
 
 }  // namespace media

@@ -143,6 +143,9 @@ class VideoDecoderStreamTest
     EXPECT_MEDIA_LOG(HasSubstr("decryptor")).Times(AnyNumber());
   }
 
+  VideoDecoderStreamTest(const VideoDecoderStreamTest&) = delete;
+  VideoDecoderStreamTest& operator=(const VideoDecoderStreamTest&) = delete;
+
   ~VideoDecoderStreamTest() {
     // Check that the pipeline statistics callback was fired correctly.
     EXPECT_EQ(num_decoded_bytes_unreported_, 0);
@@ -556,9 +559,6 @@ class VideoDecoderStreamTest
 
   // Decryptor has no key to decrypt a frame.
   bool has_no_key_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderStreamTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(

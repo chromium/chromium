@@ -50,6 +50,9 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
             base::BindRepeating(&PipelineControllerTest::OnError,
                                 base::Unretained(this))) {}
 
+  PipelineControllerTest(const PipelineControllerTest&) = delete;
+  PipelineControllerTest& operator=(const PipelineControllerTest&) = delete;
+
   ~PipelineControllerTest() override = default;
 
   PipelineStatusCallback StartPipeline(bool is_streaming, bool is_static) {
@@ -167,8 +170,6 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   bool was_resuming_ = false;
   bool was_resumed_ = false;
   base::TimeDelta last_resume_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineControllerTest);
 };
 
 TEST_F(PipelineControllerTest, Startup) {

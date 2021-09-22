@@ -40,6 +40,10 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
       std::unique_ptr<PromotionHintAggregator> promotion_hint_aggregator =
           nullptr,
       const base::TickClock* tick_clock = nullptr);
+
+  SurfaceChooserHelper(const SurfaceChooserHelper&) = delete;
+  SurfaceChooserHelper& operator=(const SurfaceChooserHelper&) = delete;
+
   ~SurfaceChooserHelper();
 
   enum class SecureSurfaceMode {
@@ -124,8 +128,6 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   // Since overlay positioning isn't synchronous, it's good to make sure that
   // blink isn't moving the quad around too.
   int hints_until_clear_relayout_flag_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceChooserHelper);
 };
 
 }  // namespace media

@@ -60,6 +60,10 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
       std::unique_ptr<VideoDecodeStatsDB> db,
       learning::FeatureProviderFactoryCB feature_factory_cb =
           learning::FeatureProviderFactoryCB());
+
+  VideoDecodePerfHistory(const VideoDecodePerfHistory&) = delete;
+  VideoDecodePerfHistory& operator=(const VideoDecodePerfHistory&) = delete;
+
   ~VideoDecodePerfHistory() override;
 
   // Bind the mojo receiver to this instance. Single instance will be used to
@@ -205,8 +209,6 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<VideoDecodePerfHistory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecodePerfHistory);
 };
 
 }  // namespace media

@@ -32,6 +32,9 @@ class MockCameraHalServer : public cros::mojom::CameraHalServer {
  public:
   MockCameraHalServer() = default;
 
+  MockCameraHalServer(const MockCameraHalServer&) = delete;
+  MockCameraHalServer& operator=(const MockCameraHalServer&) = delete;
+
   ~MockCameraHalServer() = default;
 
   void CreateChannel(
@@ -52,12 +55,14 @@ class MockCameraHalServer : public cros::mojom::CameraHalServer {
 
  private:
   mojo::Receiver<cros::mojom::CameraHalServer> receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockCameraHalServer);
 };
 
 class MockCameraHalClient : public cros::mojom::CameraHalClient {
  public:
   MockCameraHalClient() = default;
+
+  MockCameraHalClient(const MockCameraHalClient&) = delete;
+  MockCameraHalClient& operator=(const MockCameraHalClient&) = delete;
 
   ~MockCameraHalClient() = default;
 
@@ -75,7 +80,6 @@ class MockCameraHalClient : public cros::mojom::CameraHalClient {
 
  private:
   mojo::Receiver<cros::mojom::CameraHalClient> receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockCameraHalClient);
 };
 
 class MockCameraActiveClientObserver : public CameraActiveClientObserver {
@@ -94,6 +98,10 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
  public:
   CameraHalDispatcherImplTest()
       : register_client_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC) {}
+
+  CameraHalDispatcherImplTest(const CameraHalDispatcherImplTest&) = delete;
+  CameraHalDispatcherImplTest& operator=(const CameraHalDispatcherImplTest&) =
+      delete;
 
   ~CameraHalDispatcherImplTest() override = default;
 
@@ -171,7 +179,6 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImplTest);
 };
 
 // Test that the CameraHalDisptcherImpl correctly re-establishes a Mojo channel

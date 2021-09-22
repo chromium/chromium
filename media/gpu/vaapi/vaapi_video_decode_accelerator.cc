@@ -101,6 +101,10 @@ class VaapiVideoDecodeAccelerator::InputBuffer {
       : id_(id),
         buffer_(std::move(buffer)),
         release_cb_(std::move(release_cb)) {}
+
+  InputBuffer(const InputBuffer&) = delete;
+  InputBuffer& operator=(const InputBuffer&) = delete;
+
   ~InputBuffer() {
     DVLOGF(4) << "id = " << id_;
     if (release_cb_)
@@ -116,8 +120,6 @@ class VaapiVideoDecodeAccelerator::InputBuffer {
   const int32_t id_ = -1;
   const scoped_refptr<DecoderBuffer> buffer_;
   base::OnceCallback<void(int32_t id)> release_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputBuffer);
 };
 
 void VaapiVideoDecodeAccelerator::NotifyStatus(Status status) {

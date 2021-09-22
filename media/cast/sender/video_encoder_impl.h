@@ -34,6 +34,9 @@ class VideoEncoderImpl final : public VideoEncoder {
                    const FrameSenderConfig& video_config,
                    StatusChangeCallback status_change_cb);
 
+  VideoEncoderImpl(const VideoEncoderImpl&) = delete;
+  VideoEncoderImpl& operator=(const VideoEncoderImpl&) = delete;
+
   ~VideoEncoderImpl() final;
 
   // VideoEncoder implementation.
@@ -52,8 +55,6 @@ class VideoEncoderImpl final : public VideoEncoder {
   // manually because it needs to be initialize, used and destroyed on the
   // video encoder thread and video encoder thread can out-live the main thread.
   std::unique_ptr<SoftwareVideoEncoder> encoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderImpl);
 };
 
 }  // namespace cast

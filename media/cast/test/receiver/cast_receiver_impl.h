@@ -33,6 +33,9 @@ class CastReceiverImpl final : public CastReceiver {
                    const FrameReceiverConfig& video_config,
                    CastTransport* const transport);
 
+  CastReceiverImpl(const CastReceiverImpl&) = delete;
+  CastReceiverImpl& operator=(const CastReceiverImpl&) = delete;
+
   ~CastReceiverImpl() final;
 
   // CastReceiver implementation.
@@ -105,8 +108,6 @@ class CastReceiverImpl final : public CastReceiver {
   // Created on-demand to decode frames from |video_receiver_| into VideoFrame
   // images for playback.
   std::unique_ptr<VideoDecoder> video_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastReceiverImpl);
 };
 
 }  // namespace cast

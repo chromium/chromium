@@ -39,6 +39,10 @@ class AudioPullFifoTest
         last_frame_delay_(-1) {
     EXPECT_EQ(kMaxFramesInFifo, pull_fifo_.SizeInFrames());
   }
+
+  AudioPullFifoTest(const AudioPullFifoTest&) = delete;
+  AudioPullFifoTest& operator=(const AudioPullFifoTest&) = delete;
+
   virtual ~AudioPullFifoTest() = default;
 
   void VerifyValue(const float data[], int size, float start_value) {
@@ -86,8 +90,6 @@ class AudioPullFifoTest
   std::unique_ptr<AudioBus> audio_bus_;
   int fill_value_;
   int last_frame_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPullFifoTest);
 };
 
 TEST_P(AudioPullFifoTest, Consume) {

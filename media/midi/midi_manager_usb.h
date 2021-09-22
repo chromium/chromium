@@ -36,6 +36,10 @@ class USB_MIDI_EXPORT MidiManagerUsb : public MidiManager,
  public:
   MidiManagerUsb(MidiService* service,
                  std::unique_ptr<UsbMidiDevice::Factory> device_factory);
+
+  MidiManagerUsb(const MidiManagerUsb&) = delete;
+  MidiManagerUsb& operator=(const MidiManagerUsb&) = delete;
+
   ~MidiManagerUsb() override;
 
   // MidiManager implementation.
@@ -92,8 +96,6 @@ class USB_MIDI_EXPORT MidiManagerUsb : public MidiManager,
                      size_t,
                      base::IntPairHash<std::pair<int, int>>>
       input_jack_dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerUsb);
 };
 
 }  // namespace midi

@@ -85,6 +85,10 @@ class MEDIA_EXPORT MediaPlayerBridge {
                     Client* client,
                     bool allow_credentials,
                     bool is_hls);
+
+  MediaPlayerBridge(const MediaPlayerBridge&) = delete;
+  MediaPlayerBridge& operator=(const MediaPlayerBridge&) = delete;
+
   virtual ~MediaPlayerBridge();
 
   // Initialize this object and extract the metadata from the media.
@@ -281,8 +285,6 @@ class MEDIA_EXPORT MediaPlayerBridge {
   // Weak pointer passed to `listener_` for callbacks.
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaPlayerBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerBridge);
 };
 
 }  // namespace media

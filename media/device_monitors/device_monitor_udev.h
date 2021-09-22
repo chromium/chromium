@@ -19,6 +19,10 @@ namespace media {
 class MEDIA_EXPORT DeviceMonitorLinux {
  public:
   DeviceMonitorLinux();
+
+  DeviceMonitorLinux(const DeviceMonitorLinux&) = delete;
+  DeviceMonitorLinux& operator=(const DeviceMonitorLinux&) = delete;
+
   ~DeviceMonitorLinux();
 
   // TODO(mcasas): Consider adding a StartMonitoring() method like
@@ -34,8 +38,6 @@ class MEDIA_EXPORT DeviceMonitorLinux {
   // |blocking_task_runner_|.
   std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter>
       blocking_task_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceMonitorLinux);
 };
 
 }  // namespace media

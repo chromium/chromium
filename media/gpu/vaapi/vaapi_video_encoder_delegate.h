@@ -88,6 +88,10 @@ class VaapiVideoEncoderDelegate {
               scoped_refptr<VASurface> input_surface,
               scoped_refptr<CodecPicture> picture,
               std::unique_ptr<ScopedVABuffer> coded_buffer);
+
+    EncodeJob(const EncodeJob&) = delete;
+    EncodeJob& operator=(const EncodeJob&) = delete;
+
     ~EncodeJob();
 
     // Schedules a callback to be run immediately before this job is executed.
@@ -163,8 +167,6 @@ class VaapiVideoEncoderDelegate {
 
     // Reference pictures required for this job.
     std::vector<scoped_refptr<CodecPicture>> reference_pictures_;
-
-    DISALLOW_COPY_AND_ASSIGN(EncodeJob);
   };
 
   // Initializes the encoder with requested parameter set |config| and

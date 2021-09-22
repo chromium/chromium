@@ -61,6 +61,10 @@ class MEDIA_EXPORT VideoRendererImpl
       bool drop_frames,
       MediaLog* media_log,
       std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool);
+
+  VideoRendererImpl(const VideoRendererImpl&) = delete;
+  VideoRendererImpl& operator=(const VideoRendererImpl&) = delete;
+
   ~VideoRendererImpl() override;
 
   // VideoRenderer implementation.
@@ -357,8 +361,6 @@ class MEDIA_EXPORT VideoRendererImpl
   // want to discard video frames that might be received after the stream has
   // been reset.
   base::WeakPtrFactory<VideoRendererImpl> cancel_on_flush_weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoRendererImpl);
 };
 
 }  // namespace media

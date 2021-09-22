@@ -22,6 +22,10 @@ class TsSectionCetsPssh : public TsSection {
       base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
 
   explicit TsSectionCetsPssh(RegisterPsshBoxesCB register_pssh_boxes_cb);
+
+  TsSectionCetsPssh(const TsSectionCetsPssh&) = delete;
+  TsSectionCetsPssh& operator=(const TsSectionCetsPssh&) = delete;
+
   ~TsSectionCetsPssh() override;
 
   // TsSection implementation.
@@ -33,8 +37,6 @@ class TsSectionCetsPssh : public TsSection {
 
  private:
   const RegisterPsshBoxesCB register_pssh_boxes_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionCetsPssh);
 };
 
 }  // namespace mp2t

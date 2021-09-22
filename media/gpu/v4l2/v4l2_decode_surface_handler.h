@@ -16,6 +16,10 @@ class V4L2DecodeSurfaceHandler
     : public DecodeSurfaceHandler<V4L2DecodeSurface> {
  public:
   V4L2DecodeSurfaceHandler() = default;
+
+  V4L2DecodeSurfaceHandler(const V4L2DecodeSurfaceHandler&) = delete;
+  V4L2DecodeSurfaceHandler& operator=(const V4L2DecodeSurfaceHandler&) = delete;
+
   ~V4L2DecodeSurfaceHandler() override = default;
 
   // Append slice data in |data| of size |size| to pending hardware
@@ -27,9 +31,6 @@ class V4L2DecodeSurfaceHandler
 
   // Decode the surface |dec_surface|.
   virtual void DecodeSurface(scoped_refptr<V4L2DecodeSurface> dec_surface) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4L2DecodeSurfaceHandler);
 };
 
 }  // namespace media

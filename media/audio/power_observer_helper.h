@@ -26,6 +26,9 @@ class MEDIA_EXPORT PowerObserverHelper : public base::PowerSuspendObserver {
                       base::RepeatingClosure suspend_callback,
                       base::RepeatingClosure resume_callback);
 
+  PowerObserverHelper(const PowerObserverHelper&) = delete;
+  PowerObserverHelper& operator=(const PowerObserverHelper&) = delete;
+
   ~PowerObserverHelper() override;
 
   // Must be called on |task_runner|.
@@ -66,8 +69,6 @@ class MEDIA_EXPORT PowerObserverHelper : public base::PowerSuspendObserver {
   bool is_suspending_ = false;
 
   base::WeakPtrFactory<PowerObserverHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerObserverHelper);
 };
 
 }  // namespace media

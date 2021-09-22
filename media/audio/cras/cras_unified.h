@@ -38,6 +38,9 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
                     AudioManagerCrasBase* manager,
                     const std::string& device_id);
 
+  CrasUnifiedStream(const CrasUnifiedStream&) = delete;
+  CrasUnifiedStream& operator=(const CrasUnifiedStream&) = delete;
+
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioUnifiedStream::Close().
   ~CrasUnifiedStream() override;
@@ -98,8 +101,6 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
 
   // Index of the CRAS device to stream output to.
   const int pin_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrasUnifiedStream);
 };
 
 }  // namespace media

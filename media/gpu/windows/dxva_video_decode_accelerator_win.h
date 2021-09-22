@@ -96,6 +96,11 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const gpu::GpuPreferences& gpu_preferences,
       MediaLog* media_log);
+
+  DXVAVideoDecodeAccelerator(const DXVAVideoDecodeAccelerator&) = delete;
+  DXVAVideoDecodeAccelerator& operator=(const DXVAVideoDecodeAccelerator&) =
+      delete;
+
   ~DXVAVideoDecodeAccelerator() override;
 
   // VideoDecodeAccelerator implementation.
@@ -644,8 +649,6 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
 
   // Function pointer for the MFCreateDXGIDeviceManager API.
   static CreateDXGIDeviceManager create_dxgi_device_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DXVAVideoDecodeAccelerator);
 };
 
 }  // namespace media

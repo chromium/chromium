@@ -21,6 +21,10 @@ class MEDIA_EXPORT DataSource {
   enum { kReadError = -1, kAborted = -2 };
 
   DataSource();
+
+  DataSource(const DataSource&) = delete;
+  DataSource& operator=(const DataSource&) = delete;
+
   virtual ~DataSource();
 
   // Reads |size| bytes from |position| into |data|. And when the read is done
@@ -57,9 +61,6 @@ class MEDIA_EXPORT DataSource {
 
   // By default this just returns GetSize().
   virtual int64_t GetMemoryUsage();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DataSource);
 };
 
 }  // namespace media

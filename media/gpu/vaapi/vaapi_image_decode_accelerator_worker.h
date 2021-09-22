@@ -45,6 +45,11 @@ class VaapiImageDecodeAcceleratorWorker
   // internal state. Returns nullptr if initialization fails.
   static std::unique_ptr<VaapiImageDecodeAcceleratorWorker> Create();
 
+  VaapiImageDecodeAcceleratorWorker(const VaapiImageDecodeAcceleratorWorker&) =
+      delete;
+  VaapiImageDecodeAcceleratorWorker& operator=(
+      const VaapiImageDecodeAcceleratorWorker&) = delete;
+
   ~VaapiImageDecodeAcceleratorWorker() override;
 
   // gpu::ImageDecodeAcceleratorWorker implementation.
@@ -69,8 +74,6 @@ class VaapiImageDecodeAcceleratorWorker
 
   SEQUENCE_CHECKER(main_sequence_checker_);
   SEQUENCE_CHECKER(io_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiImageDecodeAcceleratorWorker);
 };
 
 }  // namespace media

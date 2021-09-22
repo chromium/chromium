@@ -81,6 +81,10 @@ MATCHER_P(MatchesPropertyAnyValue, message, "") {
 class MockMediaLog : public MediaLog {
  public:
   MockMediaLog();
+
+  MockMediaLog(const MockMediaLog&) = delete;
+  MockMediaLog& operator=(const MockMediaLog&) = delete;
+
   ~MockMediaLog() override;
 
   MOCK_METHOD1(DoAddLogRecordLogString, void(const std::string& event));
@@ -105,8 +109,6 @@ class MockMediaLog : public MediaLog {
 
  private:
   std::unique_ptr<MediaLogRecord> most_recent_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaLog);
 };
 
 }  // namespace media

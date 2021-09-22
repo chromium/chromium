@@ -39,6 +39,11 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   V4L2MjpegDecodeAccelerator(
       const scoped_refptr<V4L2Device>& device,
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
+
+  V4L2MjpegDecodeAccelerator(const V4L2MjpegDecodeAccelerator&) = delete;
+  V4L2MjpegDecodeAccelerator& operator=(const V4L2MjpegDecodeAccelerator&) =
+      delete;
+
   ~V4L2MjpegDecodeAccelerator() override;
 
   // MjpegDecodeAccelerator implementation.
@@ -185,8 +190,6 @@ class MEDIA_GPU_EXPORT V4L2MjpegDecodeAccelerator
   base::WeakPtr<V4L2MjpegDecodeAccelerator> weak_ptr_;
   // Weak factory for producing weak pointers on the child thread.
   base::WeakPtrFactory<V4L2MjpegDecodeAccelerator> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2MjpegDecodeAccelerator);
 };
 
 }  // namespace media

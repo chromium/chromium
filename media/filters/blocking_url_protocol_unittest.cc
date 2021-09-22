@@ -29,15 +29,15 @@ class BlockingUrlProtocolTest : public testing::Test {
     CHECK(data_source_.Initialize(GetTestDataFilePath("bear-320x240.webm")));
   }
 
+  BlockingUrlProtocolTest(const BlockingUrlProtocolTest&) = delete;
+  BlockingUrlProtocolTest& operator=(const BlockingUrlProtocolTest&) = delete;
+
   ~BlockingUrlProtocolTest() override { data_source_.Stop(); }
 
   MOCK_METHOD0(OnDataSourceError, void());
 
   FileDataSource data_source_;
   std::unique_ptr<BlockingUrlProtocol> url_protocol_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlockingUrlProtocolTest);
 };
 
 

@@ -56,6 +56,11 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   H264VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
                                 base::RepeatingClosure error_cb);
+
+  H264VaapiVideoEncoderDelegate(const H264VaapiVideoEncoderDelegate&) = delete;
+  H264VaapiVideoEncoderDelegate& operator=(
+      const H264VaapiVideoEncoderDelegate&) = delete;
+
   ~H264VaapiVideoEncoderDelegate() override;
 
   // VaapiVideoEncoderDelegate implementation.
@@ -154,8 +159,6 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   base::circular_deque<scoped_refptr<H264Picture>> ref_pic_list0_;
 
   uint8_t num_temporal_layers_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoEncoderDelegate);
 };
 
 }  // namespace media

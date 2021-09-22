@@ -18,6 +18,10 @@ class MEDIA_EXPORT MockMediaCryptoContext
       public testing::NiceMock<MediaCryptoContext> {
  public:
   explicit MockMediaCryptoContext(bool has_media_crypto_context);
+
+  MockMediaCryptoContext(const MockMediaCryptoContext&) = delete;
+  MockMediaCryptoContext& operator=(const MockMediaCryptoContext&) = delete;
+
   ~MockMediaCryptoContext() override;
 
   // CdmContext implementation.
@@ -38,7 +42,6 @@ class MEDIA_EXPORT MockMediaCryptoContext
 
  private:
   bool has_media_crypto_context_;
-  DISALLOW_COPY_AND_ASSIGN(MockMediaCryptoContext);
 };
 
 }  // namespace media

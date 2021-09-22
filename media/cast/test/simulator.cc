@@ -176,6 +176,10 @@ class EncodedVideoFrameTracker final : public RawEventSubscriber {
   EncodedVideoFrameTracker(FakeMediaSource* media_source)
       : media_source_(media_source),
         last_frame_event_type_(UNKNOWN) {}
+
+  EncodedVideoFrameTracker(const EncodedVideoFrameTracker&) = delete;
+  EncodedVideoFrameTracker& operator=(const EncodedVideoFrameTracker&) = delete;
+
   ~EncodedVideoFrameTracker() override = default;
 
   // RawEventSubscriber implementations.
@@ -216,8 +220,6 @@ class EncodedVideoFrameTracker final : public RawEventSubscriber {
   FakeMediaSource* media_source_;
   CastLoggingEvent last_frame_event_type_;
   base::queue<scoped_refptr<media::VideoFrame>> video_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncodedVideoFrameTracker);
 };
 
 // Appends a YUV frame in I420 format to the file located at |path|.

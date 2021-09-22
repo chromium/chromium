@@ -18,6 +18,12 @@ class V4L2VideoDecoderDelegateVP9Chromium : public VP9Decoder::VP9Accelerator {
   explicit V4L2VideoDecoderDelegateVP9Chromium(
       V4L2DecodeSurfaceHandler* surface_handler,
       V4L2Device* device);
+
+  V4L2VideoDecoderDelegateVP9Chromium(
+      const V4L2VideoDecoderDelegateVP9Chromium&) = delete;
+  V4L2VideoDecoderDelegateVP9Chromium& operator=(
+      const V4L2VideoDecoderDelegateVP9Chromium&) = delete;
+
   ~V4L2VideoDecoderDelegateVP9Chromium() override;
 
   // VP9Decoder::VP9Accelerator implementation.
@@ -41,8 +47,6 @@ class V4L2VideoDecoderDelegateVP9Chromium : public VP9Decoder::VP9Accelerator {
   V4L2Device* const device_;
 
   bool device_needs_frame_context_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderDelegateVP9Chromium);
 };
 
 }  // namespace media

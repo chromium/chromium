@@ -49,6 +49,10 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
                std::unique_ptr<VideoOverlayFactory> video_overlay_factory,
                VideoRendererSink* video_renderer_sink,
                mojo::PendingRemote<mojom::Renderer> remote_renderer);
+
+  MojoRenderer(const MojoRenderer&) = delete;
+  MojoRenderer& operator=(const MojoRenderer&) = delete;
+
   ~MojoRenderer() override;
 
   // Renderer implementation.
@@ -158,8 +162,6 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   media::TimeDeltaInterpolator media_time_interpolator_;
 
   absl::optional<PipelineStatistics> pending_stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoRenderer);
 };
 
 }  // namespace media

@@ -997,6 +997,9 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
       : expected_frames_per_buffer_(expected_frames_per_buffer),
         event_(event) {}
 
+  TestAudioSourceCallback(const TestAudioSourceCallback&) = delete;
+  TestAudioSourceCallback& operator=(const TestAudioSourceCallback&) = delete;
+
   ~TestAudioSourceCallback() override {}
 
   int OnMoreData(base::TimeDelta,
@@ -1013,8 +1016,6 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
  private:
   const int expected_frames_per_buffer_;
   base::WaitableEvent* event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAudioSourceCallback);
 };
 
 // Test that we can create an AudioOutputStream with kMinAudioBufferSize and

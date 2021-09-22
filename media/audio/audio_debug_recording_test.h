@@ -21,6 +21,10 @@ class MockAudioManager;
 class AudioDebugRecordingTest : public testing::Test {
  public:
   AudioDebugRecordingTest();
+
+  AudioDebugRecordingTest(const AudioDebugRecordingTest&) = delete;
+  AudioDebugRecordingTest& operator=(const AudioDebugRecordingTest&) = delete;
+
   ~AudioDebugRecordingTest() override;
 
  protected:
@@ -31,9 +35,6 @@ class AudioDebugRecordingTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockAudioManager> mock_audio_manager_;
   MockAudioDebugRecordingManager* mock_debug_recording_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingTest);
 };
 
 }  // namespace media

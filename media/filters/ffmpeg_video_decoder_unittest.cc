@@ -65,6 +65,9 @@ class FFmpegVideoDecoderTest : public testing::Test {
     corrupt_i_frame_buffer_ = ReadTestDataFile("vp8-corrupt-I-frame");
   }
 
+  FFmpegVideoDecoderTest(const FFmpegVideoDecoderTest&) = delete;
+  FFmpegVideoDecoderTest& operator=(const FFmpegVideoDecoderTest&) = delete;
+
   ~FFmpegVideoDecoderTest() override { Destroy(); }
 
   void Initialize() {
@@ -215,9 +218,6 @@ class FFmpegVideoDecoderTest : public testing::Test {
   scoped_refptr<DecoderBuffer> corrupt_i_frame_buffer_;
 
   OutputFrames output_frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FFmpegVideoDecoderTest);
 };
 
 TEST_F(FFmpegVideoDecoderTest, Initialize_Normal) {

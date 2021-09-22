@@ -42,6 +42,10 @@ class MEDIA_EXPORT Decryptor {
   enum StreamType { kAudio, kVideo, kStreamTypeMax = kVideo };
 
   Decryptor();
+
+  Decryptor(const Decryptor&) = delete;
+  Decryptor& operator=(const Decryptor&) = delete;
+
   virtual ~Decryptor();
 
   // Indicates completion of a decryption operation.
@@ -148,9 +152,6 @@ class MEDIA_EXPORT Decryptor {
 
   // Returns whether or not the decryptor implementation supports decrypt-only.
   virtual bool CanAlwaysDecrypt();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Decryptor);
 };
 
 }  // namespace media

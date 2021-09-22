@@ -91,6 +91,10 @@ class DecryptingDemuxerStreamTest : public testing::Test {
         encrypted_buffer_(CreateFakeEncryptedStreamBuffer(false)),
         decrypted_buffer_(new DecoderBuffer(kFakeBufferSize)) {}
 
+  DecryptingDemuxerStreamTest(const DecryptingDemuxerStreamTest&) = delete;
+  DecryptingDemuxerStreamTest& operator=(const DecryptingDemuxerStreamTest&) =
+      delete;
+
   ~DecryptingDemuxerStreamTest() override {
     if (is_initialized_)
       EXPECT_CALL(*decryptor_, CancelDecrypt(_));
@@ -300,9 +304,6 @@ class DecryptingDemuxerStreamTest : public testing::Test {
   scoped_refptr<DecoderBuffer> clear_encrypted_stream_buffer_;
   scoped_refptr<DecoderBuffer> encrypted_buffer_;
   scoped_refptr<DecoderBuffer> decrypted_buffer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecryptingDemuxerStreamTest);
 };
 
 TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalAudio) {

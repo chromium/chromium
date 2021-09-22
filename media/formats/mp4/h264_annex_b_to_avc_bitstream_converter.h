@@ -24,6 +24,12 @@ namespace media {
 class MEDIA_EXPORT H264AnnexBToAvcBitstreamConverter {
  public:
   H264AnnexBToAvcBitstreamConverter();
+
+  H264AnnexBToAvcBitstreamConverter(const H264AnnexBToAvcBitstreamConverter&) =
+      delete;
+  H264AnnexBToAvcBitstreamConverter& operator=(
+      const H264AnnexBToAvcBitstreamConverter&) = delete;
+
   ~H264AnnexBToAvcBitstreamConverter();
 
   // Converts a video chunk from a format with in-place decoder configuration
@@ -59,8 +65,6 @@ class MEDIA_EXPORT H264AnnexBToAvcBitstreamConverter {
 
   int active_sps_id_ = -1;
   int active_pps_id_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(H264AnnexBToAvcBitstreamConverter);
 };
 
 }  // namespace media

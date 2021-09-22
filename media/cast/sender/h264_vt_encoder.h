@@ -34,6 +34,10 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
       StatusChangeCallback status_change_cb);
+
+  H264VideoToolboxEncoder(const H264VideoToolboxEncoder&) = delete;
+  H264VideoToolboxEncoder& operator=(const H264VideoToolboxEncoder&) = delete;
+
   ~H264VideoToolboxEncoder() override;
 
   // media::cast::VideoEncoder implementation
@@ -112,8 +116,6 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<H264VideoToolboxEncoder> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264VideoToolboxEncoder);
 };
 
 }  // namespace cast

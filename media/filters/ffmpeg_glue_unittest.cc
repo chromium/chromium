@@ -32,6 +32,10 @@ namespace media {
 class MockProtocol : public FFmpegURLProtocol {
  public:
   MockProtocol() = default;
+
+  MockProtocol(const MockProtocol&) = delete;
+  MockProtocol& operator=(const MockProtocol&) = delete;
+
   virtual ~MockProtocol() = default;
 
   MOCK_METHOD2(Read, int(int size, uint8_t* data));
@@ -39,9 +43,6 @@ class MockProtocol : public FFmpegURLProtocol {
   MOCK_METHOD1(SetPosition, bool(int64_t position));
   MOCK_METHOD1(GetSize, bool(int64_t* size_out));
   MOCK_METHOD0(IsStreaming, bool());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProtocol);
 };
 
 class FFmpegGlueTest : public ::testing::Test {
@@ -54,6 +55,9 @@ class FFmpegGlueTest : public ::testing::Test {
     CHECK(glue_->format_context());
     CHECK(glue_->format_context()->pb);
   }
+
+  FFmpegGlueTest(const FFmpegGlueTest&) = delete;
+  FFmpegGlueTest& operator=(const FFmpegGlueTest&) = delete;
 
   ~FFmpegGlueTest() override {
     // Ensure |glue_| and |protocol_| are still alive.
@@ -76,9 +80,6 @@ class FFmpegGlueTest : public ::testing::Test {
  protected:
   std::unique_ptr<FFmpegGlue> glue_;
   std::unique_ptr<StrictMock<MockProtocol>> protocol_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FFmpegGlueTest);
 };
 
 class FFmpegGlueDestructionTest : public ::testing::Test {
@@ -93,6 +94,10 @@ class FFmpegGlueDestructionTest : public ::testing::Test {
     CHECK(glue_->format_context());
     CHECK(glue_->format_context()->pb);
   }
+
+  FFmpegGlueDestructionTest(const FFmpegGlueDestructionTest&) = delete;
+  FFmpegGlueDestructionTest& operator=(const FFmpegGlueDestructionTest&) =
+      delete;
 
   ~FFmpegGlueDestructionTest() override {
     // Ensure Initialize() was called.
@@ -113,8 +118,6 @@ class FFmpegGlueDestructionTest : public ::testing::Test {
  private:
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   scoped_refptr<DecoderBuffer> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegGlueDestructionTest);
 };
 
 // Tests that ensure we are using the correct AVInputFormat name given by ffmpeg
@@ -122,6 +125,10 @@ class FFmpegGlueDestructionTest : public ::testing::Test {
 class FFmpegGlueContainerTest : public FFmpegGlueDestructionTest {
  public:
   FFmpegGlueContainerTest() = default;
+
+  FFmpegGlueContainerTest(const FFmpegGlueContainerTest&) = delete;
+  FFmpegGlueContainerTest& operator=(const FFmpegGlueContainerTest&) = delete;
+
   ~FFmpegGlueContainerTest() override = default;
 
  protected:
@@ -137,7 +144,6 @@ class FFmpegGlueContainerTest : public FFmpegGlueDestructionTest {
 
  private:
   base::HistogramTester histogram_tester_;
-  DISALLOW_COPY_AND_ASSIGN(FFmpegGlueContainerTest);
 };
 
 // Ensure writing has been disabled.

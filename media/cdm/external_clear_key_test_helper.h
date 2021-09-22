@@ -18,6 +18,11 @@ namespace media {
 class ExternalClearKeyTestHelper {
  public:
   ExternalClearKeyTestHelper();
+
+  ExternalClearKeyTestHelper(const ExternalClearKeyTestHelper&) = delete;
+  ExternalClearKeyTestHelper& operator=(const ExternalClearKeyTestHelper&) =
+      delete;
+
   ~ExternalClearKeyTestHelper();
 
   std::string KeySystemName() { return "org.chromium.externalclearkey"; }
@@ -32,8 +37,6 @@ class ExternalClearKeyTestHelper {
   // Keep a reference to the loaded library.
   base::FilePath library_path_;
   base::ScopedNativeLibrary library_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalClearKeyTestHelper);
 };
 
 }  // namespace media

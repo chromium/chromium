@@ -30,6 +30,10 @@ class PacketPipe;
 class LoopBackTransport final : public PacketTransport {
  public:
   explicit LoopBackTransport(scoped_refptr<CastEnvironment> cast_environment);
+
+  LoopBackTransport(const LoopBackTransport&) = delete;
+  LoopBackTransport& operator=(const LoopBackTransport&) = delete;
+
   ~LoopBackTransport() final;
 
   bool SendPacket(PacketRef packet, base::OnceClosure cb) final;
@@ -58,8 +62,6 @@ class LoopBackTransport final : public PacketTransport {
   const scoped_refptr<CastEnvironment> cast_environment_;
   std::unique_ptr<test::PacketPipe> packet_pipe_;
   int64_t bytes_sent_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopBackTransport);
 };
 
 }  // namespace cast

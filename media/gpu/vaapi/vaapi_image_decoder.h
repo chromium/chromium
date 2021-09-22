@@ -59,6 +59,9 @@ enum class VaapiImageDecodeStatus : uint32_t {
 // call the methods on any thread, but calls must be synchronized externally.
 class VaapiImageDecoder {
  public:
+  VaapiImageDecoder(const VaapiImageDecoder&) = delete;
+  VaapiImageDecoder& operator=(const VaapiImageDecoder&) = delete;
+
   virtual ~VaapiImageDecoder();
 
   // Initializes |vaapi_wrapper_| in kDecode mode with the
@@ -113,8 +116,6 @@ class VaapiImageDecoder {
 
   // The VA profile used for the current image decoder.
   const VAProfile va_profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiImageDecoder);
 };
 
 }  // namespace media

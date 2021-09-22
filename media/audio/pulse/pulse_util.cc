@@ -92,13 +92,16 @@ pa_channel_position ChromiumToPAChannelPosition(Channels channel) {
 class ScopedPropertyList {
  public:
   ScopedPropertyList() : property_list_(pa_proplist_new()) {}
+
+  ScopedPropertyList(const ScopedPropertyList&) = delete;
+  ScopedPropertyList& operator=(const ScopedPropertyList&) = delete;
+
   ~ScopedPropertyList() { pa_proplist_free(property_list_); }
 
   pa_proplist* get() const { return property_list_; }
 
  private:
   pa_proplist* property_list_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedPropertyList);
 };
 
 struct InputBusData {

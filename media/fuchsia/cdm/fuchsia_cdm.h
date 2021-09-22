@@ -27,6 +27,10 @@ class FuchsiaCdm : public ContentDecryptionModule,
   struct SessionCallbacks {
     SessionCallbacks();
     SessionCallbacks(SessionCallbacks&&);
+
+    SessionCallbacks(const SessionCallbacks&) = delete;
+    SessionCallbacks& operator=(const SessionCallbacks&) = delete;
+
     ~SessionCallbacks();
 
     SessionCallbacks& operator=(SessionCallbacks&&);
@@ -35,8 +39,6 @@ class FuchsiaCdm : public ContentDecryptionModule,
     SessionClosedCB closed_cb;
     SessionKeysChangeCB keys_change_cb;
     SessionExpirationUpdateCB expiration_update_cb;
-
-    DISALLOW_COPY_AND_ASSIGN(SessionCallbacks);
   };
   using ReadyCB = base::OnceCallback<void(bool, const std::string&)>;
 

@@ -113,6 +113,10 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
   explicit MojoCdmVideoFrame(MojoSharedBufferVideoFrame::MojoSharedBufferDoneCB
                                  mojo_shared_buffer_done_cb)
       : mojo_shared_buffer_done_cb_(std::move(mojo_shared_buffer_done_cb)) {}
+
+  MojoCdmVideoFrame(const MojoCdmVideoFrame&) = delete;
+  MojoCdmVideoFrame& operator=(const MojoCdmVideoFrame&) = delete;
+
   ~MojoCdmVideoFrame() final = default;
 
   // VideoFrameImpl implementation.
@@ -158,8 +162,6 @@ class MojoCdmVideoFrame final : public VideoFrameImpl {
  private:
   MojoSharedBufferVideoFrame::MojoSharedBufferDoneCB
       mojo_shared_buffer_done_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmVideoFrame);
 };
 
 }  // namespace

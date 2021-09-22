@@ -22,6 +22,10 @@ class BitReader;
 class MEDIA_EXPORT Vp9RawBitsReader {
  public:
   Vp9RawBitsReader();
+
+  Vp9RawBitsReader(const Vp9RawBitsReader&) = delete;
+  Vp9RawBitsReader& operator=(const Vp9RawBitsReader&) = delete;
+
   ~Vp9RawBitsReader();
 
   // |data| is the input buffer with |size| bytes.
@@ -58,8 +62,6 @@ class MEDIA_EXPORT Vp9RawBitsReader {
   // Indicates if none of the reads since the last Initialize() call has gone
   // beyond the end of available data.
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp9RawBitsReader);
 };
 
 }  // namespace media

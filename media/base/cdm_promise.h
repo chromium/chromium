@@ -62,6 +62,10 @@ class MEDIA_EXPORT CdmPromise {
   };
 
   CdmPromise() = default;
+
+  CdmPromise(const CdmPromise&) = delete;
+  CdmPromise& operator=(const CdmPromise&) = delete;
+
   virtual ~CdmPromise() = default;
 
   // Used to indicate that the operation failed. |exception_code| must be
@@ -75,9 +79,6 @@ class MEDIA_EXPORT CdmPromise {
   // Used to determine the template type of CdmPromiseTemplate<T> so that
   // saved CdmPromise objects can be cast to the correct templated version.
   virtual ResolveParameterType GetResolveParameterType() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmPromise);
 };
 
 template <typename... T>
@@ -109,6 +110,9 @@ template <typename... T>
 class CdmPromiseTemplate : public CdmPromise {
  public:
   CdmPromiseTemplate() : is_settled_(false) {}
+
+  CdmPromiseTemplate(const CdmPromiseTemplate&) = delete;
+  CdmPromiseTemplate& operator=(const CdmPromiseTemplate&) = delete;
 
   virtual ~CdmPromiseTemplate() { DCHECK(is_settled_); }
 
@@ -142,8 +146,6 @@ class CdmPromiseTemplate : public CdmPromise {
  private:
   // Keep track of whether the promise has been resolved or rejected yet.
   bool is_settled_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmPromiseTemplate);
 };
 
 // Explicitly defining all variants of GetResolveParameterType().

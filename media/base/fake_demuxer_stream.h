@@ -39,6 +39,10 @@ class FakeDemuxerStream : public DemuxerStream {
                     bool is_encrypted,
                     gfx::Size start_coded_size,
                     gfx::Vector2dF coded_size_delta);
+
+  FakeDemuxerStream(const FakeDemuxerStream&) = delete;
+  FakeDemuxerStream& operator=(const FakeDemuxerStream&) = delete;
+
   ~FakeDemuxerStream() override;
 
   // DemuxerStream implementation.
@@ -116,8 +120,6 @@ class FakeDemuxerStream : public DemuxerStream {
   // Zero-based number indicating which read operation should be held. -1 means
   // no read shall be held.
   int read_to_hold_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDemuxerStream);
 };
 
 class FakeMediaResource : public MediaResource {
@@ -126,6 +128,10 @@ class FakeMediaResource : public MediaResource {
   FakeMediaResource(int num_video_configs,
                     int num_video_buffers_in_one_config,
                     bool is_video_encrypted);
+
+  FakeMediaResource(const FakeMediaResource&) = delete;
+  FakeMediaResource& operator=(const FakeMediaResource&) = delete;
+
   ~FakeMediaResource() override;
 
   // MediaResource implementation.
@@ -133,8 +139,6 @@ class FakeMediaResource : public MediaResource {
 
  private:
   FakeDemuxerStream fake_video_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaResource);
 };
 
 }  // namespace media

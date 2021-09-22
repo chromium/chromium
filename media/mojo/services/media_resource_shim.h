@@ -25,6 +25,10 @@ class MediaResourceShim : public MediaResource {
   MediaResourceShim(
       std::vector<mojo::PendingRemote<mojom::DemuxerStream>> streams,
       base::OnceClosure demuxer_ready_cb);
+
+  MediaResourceShim(const MediaResourceShim&) = delete;
+  MediaResourceShim& operator=(const MediaResourceShim&) = delete;
+
   ~MediaResourceShim() override;
 
   // MediaResource interface.
@@ -48,8 +52,6 @@ class MediaResourceShim : public MediaResource {
 
   // WeakPtrFactorys must always be the last member variable.
   base::WeakPtrFactory<MediaResourceShim> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaResourceShim);
 };
 
 }  // namespace media

@@ -49,6 +49,10 @@ class CourierRenderer final : public Renderer {
   CourierRenderer(scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
                   const base::WeakPtr<RendererController>& controller,
                   VideoRendererSink* video_renderer_sink);
+
+  CourierRenderer(const CourierRenderer&) = delete;
+  CourierRenderer& operator=(const CourierRenderer&) = delete;
+
   ~CourierRenderer() final;
 
  private:
@@ -241,8 +245,6 @@ class CourierRenderer final : public Renderer {
   bool receiver_is_blocked_on_local_demuxers_ = true;
 
   base::WeakPtrFactory<CourierRenderer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CourierRenderer);
 };
 
 }  // namespace remoting

@@ -33,6 +33,10 @@ class FFmpegDecodingLoop;
 class FFmpegCdmAudioDecoder {
  public:
   explicit FFmpegCdmAudioDecoder(CdmHostProxy* cdm_host_proxy);
+
+  FFmpegCdmAudioDecoder(const FFmpegCdmAudioDecoder&) = delete;
+  FFmpegCdmAudioDecoder& operator=(const FFmpegCdmAudioDecoder&) = delete;
+
   ~FFmpegCdmAudioDecoder();
   bool Initialize(const cdm::AudioDecoderConfig_2& config);
   void Deinitialize();
@@ -78,8 +82,6 @@ class FFmpegCdmAudioDecoder {
   std::unique_ptr<AudioTimestampHelper> output_timestamp_helper_;
   int bytes_per_frame_ = 0;
   base::TimeDelta last_input_timestamp_ = kNoTimestamp;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegCdmAudioDecoder);
 };
 
 }  // namespace media

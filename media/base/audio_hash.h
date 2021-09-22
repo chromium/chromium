@@ -35,6 +35,10 @@ class AudioBus;
 class MEDIA_EXPORT AudioHash {
  public:
   AudioHash();
+
+  AudioHash(const AudioHash&) = delete;
+  AudioHash& operator=(const AudioHash&) = delete;
+
   ~AudioHash();
 
   // Update current hash with the contents of the provided AudioBus.
@@ -57,8 +61,6 @@ class MEDIA_EXPORT AudioHash {
   // The total number of samples processed per channel.  Uses a uint32_t instead
   // of size_t so overflows on 64-bit and 32-bit machines are equivalent.
   uint32_t sample_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioHash);
 };
 
 }  // namespace media

@@ -93,6 +93,10 @@ template <class T>
 class AudioSystemTestTemplate : public T {
  public:
   AudioSystemTestTemplate() {}
+
+  AudioSystemTestTemplate(const AudioSystemTestTemplate&) = delete;
+  AudioSystemTestTemplate& operator=(const AudioSystemTestTemplate&) = delete;
+
   ~AudioSystemTestTemplate() override {}
 
   void SetUp() override {
@@ -136,9 +140,6 @@ class AudioSystemTestTemplate : public T {
   AudioParameters default_output_params_;
   AudioDeviceDescriptions input_device_descriptions_;
   AudioDeviceDescriptions output_device_descriptions_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioSystemTestTemplate);
 };
 
 TYPED_TEST_SUITE_P(AudioSystemTestTemplate);

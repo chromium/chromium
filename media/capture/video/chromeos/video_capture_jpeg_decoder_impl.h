@@ -43,6 +43,11 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       DecodeDoneCB decode_done_cb,
       base::RepeatingCallback<void(const std::string&)> send_log_message_cb);
+
+  VideoCaptureJpegDecoderImpl(const VideoCaptureJpegDecoderImpl&) = delete;
+  VideoCaptureJpegDecoderImpl& operator=(const VideoCaptureJpegDecoderImpl&) =
+      delete;
+
   ~VideoCaptureJpegDecoderImpl() override;
 
   // Implementation of VideoCaptureJpegDecoder:
@@ -106,8 +111,6 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<VideoCaptureJpegDecoderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureJpegDecoderImpl);
 };
 
 }  // namespace media

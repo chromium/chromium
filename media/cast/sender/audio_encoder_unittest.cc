@@ -35,6 +35,11 @@ namespace {
 class TestEncodedAudioFrameReceiver {
  public:
   TestEncodedAudioFrameReceiver() : frames_received_(0) {}
+
+  TestEncodedAudioFrameReceiver(const TestEncodedAudioFrameReceiver&) = delete;
+  TestEncodedAudioFrameReceiver& operator=(
+      const TestEncodedAudioFrameReceiver&) = delete;
+
   virtual ~TestEncodedAudioFrameReceiver() = default;
 
   int frames_received() const { return frames_received_; }
@@ -78,8 +83,6 @@ class TestEncodedAudioFrameReceiver {
   int samples_per_frame_;
   base::TimeTicks lower_bound_;
   base::TimeTicks upper_bound_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEncodedAudioFrameReceiver);
 };
 
 struct TestScenario {
@@ -114,6 +117,9 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
     cast_environment_ = new CastEnvironment(&testing_clock_, task_runner_,
                                             task_runner_, task_runner_);
   }
+
+  AudioEncoderTest(const AudioEncoderTest&) = delete;
+  AudioEncoderTest& operator=(const AudioEncoderTest&) = delete;
 
   virtual ~AudioEncoderTest() = default;
 
@@ -172,8 +178,6 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
   std::unique_ptr<TestEncodedAudioFrameReceiver> receiver_;
   std::unique_ptr<AudioEncoder> audio_encoder_;
   scoped_refptr<CastEnvironment> cast_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioEncoderTest);
 };
 
 TEST_P(AudioEncoderTest, EncodeOpus) {

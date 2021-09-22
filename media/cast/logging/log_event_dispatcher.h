@@ -27,6 +27,9 @@ class LogEventDispatcher {
   // |env| outlives this instance (and generally owns this instance).
   explicit LogEventDispatcher(CastEnvironment* env);
 
+  LogEventDispatcher(const LogEventDispatcher&) = delete;
+  LogEventDispatcher& operator=(const LogEventDispatcher&) = delete;
+
   ~LogEventDispatcher();
 
   // Called on any thread to schedule the sending of event(s) to all
@@ -71,8 +74,6 @@ class LogEventDispatcher {
 
   CastEnvironment* const env_;  // Owner of this instance.
   const scoped_refptr<Impl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogEventDispatcher);
 };
 
 }  // namespace cast

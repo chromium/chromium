@@ -23,6 +23,10 @@ namespace mp4 {
 class MEDIA_EXPORT SampleToGroupIterator {
  public:
   explicit SampleToGroupIterator(const SampleToGroup& sample_to_group);
+
+  SampleToGroupIterator(const SampleToGroupIterator&) = delete;
+  SampleToGroupIterator& operator=(const SampleToGroupIterator&) = delete;
+
   ~SampleToGroupIterator();
 
   // Advances the iterator to refer to the next sample. Return status
@@ -42,8 +46,6 @@ class MEDIA_EXPORT SampleToGroupIterator {
   uint32_t remaining_samples_;
   const std::vector<SampleToGroupEntry>& sample_to_group_table_;
   std::vector<SampleToGroupEntry>::const_iterator iterator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SampleToGroupIterator);
 };
 
 }  // namespace mp4

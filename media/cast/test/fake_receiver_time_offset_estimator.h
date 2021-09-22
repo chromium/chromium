@@ -22,6 +22,11 @@ class FakeReceiverTimeOffsetEstimator final
  public:
   FakeReceiverTimeOffsetEstimator(base::TimeDelta offset);
 
+  FakeReceiverTimeOffsetEstimator(const FakeReceiverTimeOffsetEstimator&) =
+      delete;
+  FakeReceiverTimeOffsetEstimator& operator=(
+      const FakeReceiverTimeOffsetEstimator&) = delete;
+
   ~FakeReceiverTimeOffsetEstimator() final;
 
   // RawReventSubscriber implementations.
@@ -34,7 +39,6 @@ class FakeReceiverTimeOffsetEstimator final
 
  private:
   const base::TimeDelta offset_;
-  DISALLOW_COPY_AND_ASSIGN(FakeReceiverTimeOffsetEstimator);
 };
 
 }  // namespace test

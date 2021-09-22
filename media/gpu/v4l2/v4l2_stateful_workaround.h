@@ -22,6 +22,9 @@ class V4L2StatefulWorkaround {
                   // VDA will call NotifyError() if this is returned.
   };
 
+  V4L2StatefulWorkaround(const V4L2StatefulWorkaround&) = delete;
+  V4L2StatefulWorkaround& operator=(const V4L2StatefulWorkaround&) = delete;
+
   virtual ~V4L2StatefulWorkaround() = default;
 
   // Apply the workaround.
@@ -29,8 +32,6 @@ class V4L2StatefulWorkaround {
 
  protected:
   V4L2StatefulWorkaround() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2StatefulWorkaround);
 };
 
 // Create necessary workarounds on the device for |device_type| and |profile|.

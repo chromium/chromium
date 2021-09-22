@@ -22,6 +22,10 @@ class TsSectionCat : public TsSectionPsi {
       base::RepeatingCallback<void(EncryptionScheme)>;
   TsSectionCat(const RegisterCencPidsCB& register_cenc_ids_cb,
                const RegisterEncryptionSchemeCB& register_encryption_scheme_cb);
+
+  TsSectionCat(const TsSectionCat&) = delete;
+  TsSectionCat& operator=(const TsSectionCat&) = delete;
+
   ~TsSectionCat() override;
 
   // TsSectionPsi implementation.
@@ -34,8 +38,6 @@ class TsSectionCat : public TsSectionPsi {
 
   // Parameters from the CAT.
   int version_number_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionCat);
 };
 
 }  // namespace mp2t

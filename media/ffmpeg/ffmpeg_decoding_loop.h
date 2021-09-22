@@ -44,6 +44,10 @@ class MEDIA_EXPORT FFmpegDecodingLoop {
   // true; note: send packet failures are always fatal.
   FFmpegDecodingLoop(AVCodecContext* context,
                      bool continue_on_decoding_errors = false);
+
+  FFmpegDecodingLoop(const FFmpegDecodingLoop&) = delete;
+  FFmpegDecodingLoop& operator=(const FFmpegDecodingLoop&) = delete;
+
   ~FFmpegDecodingLoop();
 
   // Callback issued when the decoding loop has produced a frame. |frame| is
@@ -68,8 +72,6 @@ class MEDIA_EXPORT FFmpegDecodingLoop {
   AVCodecContext* const context_;
   std::unique_ptr<AVFrame, ScopedPtrAVFreeFrame> frame_;
   int last_averror_code_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegDecodingLoop);
 };
 
 }  // namespace media

@@ -111,6 +111,9 @@ class VideoRendererImplTest : public testing::Test {
         .WillByDefault(Invoke(this, &VideoRendererImplTest::OnDemuxerRead));
   }
 
+  VideoRendererImplTest(const VideoRendererImplTest&) = delete;
+  VideoRendererImplTest& operator=(const VideoRendererImplTest&) = delete;
+
   ~VideoRendererImplTest() override = default;
 
   void Initialize() {
@@ -419,8 +422,6 @@ class VideoRendererImplTest : public testing::Test {
 
   base::circular_deque<std::pair<DecodeStatus, scoped_refptr<VideoFrame>>>
       decode_results_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoRendererImplTest);
 };
 
 TEST_F(VideoRendererImplTest, DoNothing) {

@@ -33,6 +33,10 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
   static SupportedVideoDecoderConfigs SupportedConfigsForWebRTC();
 
   explicit FFmpegVideoDecoder(MediaLog* media_log);
+
+  FFmpegVideoDecoder(const FFmpegVideoDecoder&) = delete;
+  FFmpegVideoDecoder& operator=(const FFmpegVideoDecoder&) = delete;
+
   ~FFmpegVideoDecoder() override;
 
   // Allow decoding of individual NALU. Entire frames are required by default.
@@ -94,8 +98,6 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
   bool force_allocation_error_ = false;
 
   std::unique_ptr<FFmpegDecodingLoop> decoding_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegVideoDecoder);
 };
 
 }  // namespace media

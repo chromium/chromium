@@ -36,6 +36,10 @@ AudioManager* g_last_created = nullptr;
 class AudioManagerHelper {
  public:
   AudioManagerHelper() = default;
+
+  AudioManagerHelper(const AudioManagerHelper&) = delete;
+  AudioManagerHelper& operator=(const AudioManagerHelper&) = delete;
+
   ~AudioManagerHelper() = default;
 
   AudioLogFactory* fake_log_factory() { return &fake_log_factory_; }
@@ -59,8 +63,6 @@ class AudioManagerHelper {
 #endif
 
   std::string app_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerHelper);
 };
 
 AudioManagerHelper* GetHelper() {

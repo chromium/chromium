@@ -23,6 +23,10 @@ class MEDIA_MOJO_EXPORT MojoMediaDrmStorage final : public MediaDrmStorage {
  public:
   explicit MojoMediaDrmStorage(
       mojo::PendingRemote<mojom::MediaDrmStorage> media_drm_storage);
+
+  MojoMediaDrmStorage(const MojoMediaDrmStorage&) = delete;
+  MojoMediaDrmStorage& operator=(const MojoMediaDrmStorage&) = delete;
+
   ~MojoMediaDrmStorage() override;
 
   // MediaDrmStorage implementation:
@@ -44,8 +48,6 @@ class MEDIA_MOJO_EXPORT MojoMediaDrmStorage final : public MediaDrmStorage {
 
   mojo::Remote<mojom::MediaDrmStorage> media_drm_storage_;
   base::WeakPtrFactory<MojoMediaDrmStorage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoMediaDrmStorage);
 };
 
 }  // namespace media

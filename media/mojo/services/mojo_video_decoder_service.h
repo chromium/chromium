@@ -41,6 +41,10 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   explicit MojoVideoDecoderService(
       MojoMediaClient* mojo_media_client,
       MojoCdmServiceContext* mojo_cdm_service_context);
+
+  MojoVideoDecoderService(const MojoVideoDecoderService&) = delete;
+  MojoVideoDecoderService& operator=(const MojoVideoDecoderService&) = delete;
+
   ~MojoVideoDecoderService() final;
 
   // mojom::VideoDecoder implementation
@@ -126,8 +130,6 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
 
   base::WeakPtr<MojoVideoDecoderService> weak_this_;
   base::WeakPtrFactory<MojoVideoDecoderService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoDecoderService);
 };
 
 }  // namespace media

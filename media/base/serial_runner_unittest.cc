@@ -21,6 +21,10 @@ class SerialRunnerTest : public ::testing::Test {
  public:
   SerialRunnerTest()
       : inside_start_(false), done_called_(false), done_status_(PIPELINE_OK) {}
+
+  SerialRunnerTest(const SerialRunnerTest&) = delete;
+  SerialRunnerTest& operator=(const SerialRunnerTest&) = delete;
+
   ~SerialRunnerTest() override = default;
 
   void RunSerialRunner() {
@@ -140,8 +144,6 @@ class SerialRunnerTest : public ::testing::Test {
   // Tracks whether the final done callback was called + resulting status.
   bool done_called_;
   PipelineStatus done_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialRunnerTest);
 };
 
 TEST_F(SerialRunnerTest, Empty) {

@@ -17,6 +17,10 @@ class WallClockTimeSourceTest : public testing::Test {
     time_source_.SetTickClockForTesting(tick_clock_.get());
     AdvanceTimeInSeconds(1);
   }
+
+  WallClockTimeSourceTest(const WallClockTimeSourceTest&) = delete;
+  WallClockTimeSourceTest& operator=(const WallClockTimeSourceTest&) = delete;
+
   ~WallClockTimeSourceTest() override = default;
 
   void AdvanceTimeInSeconds(int seconds) {
@@ -56,8 +60,6 @@ class WallClockTimeSourceTest : public testing::Test {
  protected:
   WallClockTimeSource time_source_;
   std::unique_ptr<base::SimpleTestTickClock> tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallClockTimeSourceTest);
 };
 
 TEST_F(WallClockTimeSourceTest, InitialTimeIsZero) {

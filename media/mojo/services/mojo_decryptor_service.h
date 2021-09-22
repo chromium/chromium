@@ -37,6 +37,9 @@ class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
   MojoDecryptorService(media::Decryptor* decryptor,
                        std::unique_ptr<CdmContextRef> cdm_context_ref);
 
+  MojoDecryptorService(const MojoDecryptorService&) = delete;
+  MojoDecryptorService& operator=(const MojoDecryptorService&) = delete;
+
   ~MojoDecryptorService() final;
 
   // mojom::Decryptor implementation.
@@ -110,8 +113,6 @@ class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
 
   base::WeakPtr<MojoDecryptorService> weak_this_;
   base::WeakPtrFactory<MojoDecryptorService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecryptorService);
 };
 
 }  // namespace media

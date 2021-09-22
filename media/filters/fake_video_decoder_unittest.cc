@@ -50,6 +50,9 @@ class FakeVideoDecoderTest
         pending_decode_requests_(0),
         is_reset_pending_(false) {}
 
+  FakeVideoDecoderTest(const FakeVideoDecoderTest&) = delete;
+  FakeVideoDecoderTest& operator=(const FakeVideoDecoderTest&) = delete;
+
   virtual ~FakeVideoDecoderTest() {
     Destroy();
   }
@@ -244,9 +247,6 @@ class FakeVideoDecoderTest
   scoped_refptr<VideoFrame> last_decoded_frame_;
   int pending_decode_requests_;
   bool is_reset_pending_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoDecoderTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(NoParallelDecode,

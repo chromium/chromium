@@ -78,6 +78,10 @@ class COMPONENT_EXPORT(LEARNING_IMPL) RandomTreeTrainer
       public HasRandomNumberGenerator {
  public:
   explicit RandomTreeTrainer(RandomNumberGenerator* rng = nullptr);
+
+  RandomTreeTrainer(const RandomTreeTrainer&) = delete;
+  RandomTreeTrainer& operator=(const RandomTreeTrainer&) = delete;
+
   ~RandomTreeTrainer() override;
 
   // Train on all examples.  Calls |model_cb| with the trained model, which
@@ -174,8 +178,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) RandomTreeTrainer
   FeatureValue FindSplitPoint_Numeric(size_t index,
                                       const TrainingData& training_data,
                                       const std::vector<size_t>& training_idx);
-
-  DISALLOW_COPY_AND_ASSIGN(RandomTreeTrainer);
 };
 
 }  // namespace learning

@@ -22,6 +22,10 @@ class MEDIA_EXPORT AudioManagerCras : public AudioManagerCrasBase {
  public:
   AudioManagerCras(std::unique_ptr<AudioThread> audio_thread,
                    AudioLogFactory* audio_log_factory);
+
+  AudioManagerCras(const AudioManagerCras&) = delete;
+  AudioManagerCras& operator=(const AudioManagerCras&) = delete;
+
   ~AudioManagerCras() override;
 
   // AudioManager implementation.
@@ -65,8 +69,6 @@ class MEDIA_EXPORT AudioManagerCras : public AudioManagerCrasBase {
   base::WeakPtr<AudioManagerCras> weak_this_;
 
   base::WeakPtrFactory<AudioManagerCras> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerCras);
 };
 
 }  // namespace media

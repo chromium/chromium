@@ -26,6 +26,12 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
   // provided, then it must outlast |this|.
   AndroidVideoSurfaceChooserImpl(bool allow_dynamic,
                                  const base::TickClock* tick_clock = nullptr);
+
+  AndroidVideoSurfaceChooserImpl(const AndroidVideoSurfaceChooserImpl&) =
+      delete;
+  AndroidVideoSurfaceChooserImpl& operator=(
+      const AndroidVideoSurfaceChooserImpl&) = delete;
+
   ~AndroidVideoSurfaceChooserImpl() override;
 
   // AndroidVideoSurfaceChooser
@@ -90,8 +96,6 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
   base::TimeTicks most_recent_overlay_failure_;
 
   base::WeakPtrFactory<AndroidVideoSurfaceChooserImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidVideoSurfaceChooserImpl);
 };
 
 }  // namespace media

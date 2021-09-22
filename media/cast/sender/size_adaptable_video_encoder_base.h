@@ -33,6 +33,10 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
       const FrameSenderConfig& video_config,
       StatusChangeCallback status_change_cb);
 
+  SizeAdaptableVideoEncoderBase(const SizeAdaptableVideoEncoderBase&) = delete;
+  SizeAdaptableVideoEncoderBase& operator=(
+      const SizeAdaptableVideoEncoderBase&) = delete;
+
   ~SizeAdaptableVideoEncoderBase() override;
 
   // VideoEncoder implementation.
@@ -109,8 +113,6 @@ class SizeAdaptableVideoEncoderBase : public VideoEncoder {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<SizeAdaptableVideoEncoderBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SizeAdaptableVideoEncoderBase);
 };
 
 }  // namespace cast

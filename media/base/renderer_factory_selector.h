@@ -61,6 +61,10 @@ class MEDIA_EXPORT RendererFactorySelector {
   using ConditionalFactoryCB = base::RepeatingCallback<bool()>;
 
   RendererFactorySelector();
+
+  RendererFactorySelector(const RendererFactorySelector&) = delete;
+  RendererFactorySelector& operator=(const RendererFactorySelector&) = delete;
+
   ~RendererFactorySelector();
 
   // See file level comments above.
@@ -107,8 +111,6 @@ class MEDIA_EXPORT RendererFactorySelector {
   RequestRemotePlayStateChangeCB remote_play_state_change_cb_request_;
 
   std::map<RendererType, std::unique_ptr<RendererFactory>> factories_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererFactorySelector);
 };
 
 }  // namespace media

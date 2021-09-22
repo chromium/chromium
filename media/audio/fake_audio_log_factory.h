@@ -18,12 +18,13 @@ namespace media {
 class MEDIA_EXPORT FakeAudioLogFactory : public AudioLogFactory {
  public:
   FakeAudioLogFactory();
+
+  FakeAudioLogFactory(const FakeAudioLogFactory&) = delete;
+  FakeAudioLogFactory& operator=(const FakeAudioLogFactory&) = delete;
+
   ~FakeAudioLogFactory() override;
   std::unique_ptr<AudioLog> CreateAudioLog(AudioComponent component,
                                            int component_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioLogFactory);
 };
 
 }  // namespace media

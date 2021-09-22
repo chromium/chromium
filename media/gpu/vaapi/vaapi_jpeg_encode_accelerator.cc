@@ -70,6 +70,10 @@ class VaapiJpegEncodeAccelerator::Encoder {
           scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper,
           base::RepeatingCallback<void(int32_t, size_t)> video_frame_ready_cb,
           base::RepeatingCallback<void(int32_t, Status)> notify_error_cb);
+
+  Encoder(const Encoder&) = delete;
+  Encoder& operator=(const Encoder&) = delete;
+
   ~Encoder();
 
   // Processes one encode task with DMA-buf.
@@ -106,8 +110,6 @@ class VaapiJpegEncodeAccelerator::Encoder {
   uint32_t va_format_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Encoder);
 };
 
 VaapiJpegEncodeAccelerator::Encoder::Encoder(

@@ -33,6 +33,10 @@ class MEDIA_EXPORT AudioFileReader {
   // The AudioFileReader does not take ownership of |protocol| and
   // simply maintains a weak reference to it.
   explicit AudioFileReader(FFmpegURLProtocol* protocol);
+
+  AudioFileReader(const AudioFileReader&) = delete;
+  AudioFileReader& operator=(const AudioFileReader&) = delete;
+
   virtual ~AudioFileReader();
 
   // Open() reads the audio data format so that the sample_rate(),
@@ -110,8 +114,6 @@ class MEDIA_EXPORT AudioFileReader {
 
   // AVSampleFormat initially requested; not Chrome's SampleFormat.
   int av_sample_format_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFileReader);
 };
 
 }  // namespace media

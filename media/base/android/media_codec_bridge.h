@@ -47,6 +47,10 @@ enum MediaCodecStatus {
 class MEDIA_EXPORT MediaCodecBridge {
  public:
   MediaCodecBridge() = default;
+
+  MediaCodecBridge(const MediaCodecBridge&) = delete;
+  MediaCodecBridge& operator=(const MediaCodecBridge&) = delete;
+
   virtual ~MediaCodecBridge() = default;
 
   // Calls MediaCodec#stop(). However, due to buggy implementations (b/8125974)
@@ -164,8 +168,6 @@ class MEDIA_EXPORT MediaCodecBridge {
 
   // Returns the max input size we configured the codec with.
   virtual size_t GetMaxInputSize() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecBridge);
 };
 
 }  // namespace media

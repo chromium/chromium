@@ -39,6 +39,10 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
                        MediaLog* media_log,
                        ComD3D11VideoDevice video_device,
                        std::unique_ptr<VideoContextWrapper> video_context);
+
+  D3D11H264Accelerator(const D3D11H264Accelerator&) = delete;
+  D3D11H264Accelerator& operator=(const D3D11H264Accelerator&) = delete;
+
   ~D3D11H264Accelerator() override;
 
   // H264Decoder::H264Accelerator implementation.
@@ -118,8 +122,6 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK> subsamples_;
   // IV for the current frame.
   std::vector<uint8_t> frame_iv_;
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11H264Accelerator);
 };
 
 }  // namespace media

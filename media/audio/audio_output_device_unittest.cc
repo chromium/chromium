@@ -88,6 +88,10 @@ class MockAudioOutputIPC : public AudioOutputIPC {
 class AudioOutputDeviceTest : public testing::Test {
  public:
   AudioOutputDeviceTest();
+
+  AudioOutputDeviceTest(const AudioOutputDeviceTest&) = delete;
+  AudioOutputDeviceTest& operator=(const AudioOutputDeviceTest&) = delete;
+
   ~AudioOutputDeviceTest() override;
 
   void ReceiveAuthorization(OutputDeviceStatus device_status);
@@ -117,8 +121,6 @@ class AudioOutputDeviceTest : public testing::Test {
   WritableSharedMemoryMapping shared_memory_mapping_;
   CancelableSyncSocket browser_socket_;
   CancelableSyncSocket renderer_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputDeviceTest);
 };
 
 AudioOutputDeviceTest::AudioOutputDeviceTest()

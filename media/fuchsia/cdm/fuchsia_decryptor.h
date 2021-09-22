@@ -20,6 +20,10 @@ class FuchsiaDecryptor : public Decryptor {
  public:
   // Caller should make sure |cdm| lives longer than this class.
   explicit FuchsiaDecryptor(FuchsiaCdmContext* cdm_context);
+
+  FuchsiaDecryptor(const FuchsiaDecryptor&) = delete;
+  FuchsiaDecryptor& operator=(const FuchsiaDecryptor&) = delete;
+
   ~FuchsiaDecryptor() override;
 
   // media::Decryptor implementation:
@@ -44,8 +48,6 @@ class FuchsiaDecryptor : public Decryptor {
 
   // TaskRunner for the thread on which |audio_decryptor_| was created.
   scoped_refptr<base::SingleThreadTaskRunner> audio_decryptor_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaDecryptor);
 };
 
 }  // namespace media

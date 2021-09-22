@@ -41,6 +41,11 @@ class MultiChannelResamplerTest
   MultiChannelResamplerTest()
       : last_frame_delay_(-1) {
   }
+
+  MultiChannelResamplerTest(const MultiChannelResamplerTest&) = delete;
+  MultiChannelResamplerTest& operator=(const MultiChannelResamplerTest&) =
+      delete;
+
   virtual ~MultiChannelResamplerTest() = default;
 
   void InitializeAudioData(int channels, int frames) {
@@ -121,8 +126,6 @@ class MultiChannelResamplerTest
   bool fill_junk_values_;
   std::unique_ptr<AudioBus> audio_bus_;
   int last_frame_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiChannelResamplerTest);
 };
 
 TEST_P(MultiChannelResamplerTest, HighLatency) {

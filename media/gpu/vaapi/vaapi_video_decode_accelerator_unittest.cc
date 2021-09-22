@@ -191,6 +191,12 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
 
     vda_.state_ = VaapiVideoDecodeAccelerator::kIdle;
   }
+
+  VaapiVideoDecodeAcceleratorTest(const VaapiVideoDecodeAcceleratorTest&) =
+      delete;
+  VaapiVideoDecodeAcceleratorTest& operator=(
+      const VaapiVideoDecodeAcceleratorTest&) = delete;
+
   ~VaapiVideoDecodeAcceleratorTest() {}
 
   void SetUp() override {
@@ -402,8 +408,6 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
 
  private:
   base::WeakPtrFactory<VaapiVideoDecodeAcceleratorTest> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVideoDecodeAcceleratorTest);
 };
 
 // Verify that it is possible to select DRM(egl) and TFP(glx) at runtime.

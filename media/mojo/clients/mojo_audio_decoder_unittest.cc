@@ -70,6 +70,9 @@ class MojoAudioDecoderTest : public ::testing::Test {
         std::move(remote_audio_decoder));
   }
 
+  MojoAudioDecoderTest(const MojoAudioDecoderTest&) = delete;
+  MojoAudioDecoderTest& operator=(const MojoAudioDecoderTest&) = delete;
+
   ~MojoAudioDecoderTest() override {
     // Destroy |mojo_audio_decoder_| first so that the service will be
     // destructed. Then stop the service thread. Otherwise we'll leak memory.
@@ -248,9 +251,6 @@ class MojoAudioDecoderTest : public ::testing::Test {
 
   int num_of_decodes_ = 0;
   int decode_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioDecoderTest);
 };
 
 TEST_F(MojoAudioDecoderTest, Initialize_Success) {

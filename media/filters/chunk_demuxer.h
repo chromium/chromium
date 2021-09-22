@@ -212,6 +212,10 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                base::RepeatingClosure progress_cb,
                EncryptedMediaInitDataCB encrypted_media_init_data_cb,
                MediaLog* media_log);
+
+  ChunkDemuxer(const ChunkDemuxer&) = delete;
+  ChunkDemuxer& operator=(const ChunkDemuxer&) = delete;
+
   ~ChunkDemuxer() override;
 
   // Demuxer implementation.
@@ -552,8 +556,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   std::vector<std::unique_ptr<ChunkDemuxerStream>> removed_streams_;
 
   std::map<MediaTrack::Id, ChunkDemuxerStream*> track_id_to_demux_stream_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkDemuxer);
 };
 
 }  // namespace media

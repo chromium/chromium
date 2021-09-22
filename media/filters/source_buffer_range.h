@@ -50,6 +50,9 @@ class MEDIA_EXPORT SourceBufferRange {
                     base::TimeDelta range_start_pts,
                     InterbufferDistanceCB interbuffer_distance_cb);
 
+  SourceBufferRange(const SourceBufferRange&) = delete;
+  SourceBufferRange& operator=(const SourceBufferRange&) = delete;
+
   ~SourceBufferRange();
 
   // Deletes all buffers in range.
@@ -392,8 +395,6 @@ class MEDIA_EXPORT SourceBufferRange {
   // Maps keyframe presentation timestamps to GOP start index of |buffers_|
   // (with index adjusted by |keyframe_map_index_base_|);
   KeyframeMap keyframe_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceBufferRange);
 };
 
 }  // namespace media

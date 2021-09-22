@@ -35,6 +35,9 @@ class CastSenderImpl final : public CastSender {
 
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay) final;
 
+  CastSenderImpl(const CastSenderImpl&) = delete;
+  CastSenderImpl& operator=(const CastSenderImpl&) = delete;
+
   ~CastSenderImpl() final;
 
   scoped_refptr<AudioFrameInput> audio_frame_input() final;
@@ -58,8 +61,6 @@ class CastSenderImpl final : public CastSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<CastSenderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastSenderImpl);
 };
 
 }  // namespace cast

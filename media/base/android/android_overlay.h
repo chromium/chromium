@@ -40,6 +40,9 @@ namespace media {
 // AndroidOverlay isn't technically supposed to do that.
 class MEDIA_EXPORT AndroidOverlay {
  public:
+  AndroidOverlay(const AndroidOverlay&) = delete;
+  AndroidOverlay& operator=(const AndroidOverlay&) = delete;
+
   virtual ~AndroidOverlay();
 
   // Schedules a relayout of this overlay.  If called before the client is
@@ -73,8 +76,6 @@ class MEDIA_EXPORT AndroidOverlay {
   std::list<AndroidOverlayConfig::DeletedCB> deletion_cbs_;
 
   base::WeakPtrFactory<AndroidOverlay> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidOverlay);
 };
 
 }  // namespace media

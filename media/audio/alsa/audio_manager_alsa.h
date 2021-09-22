@@ -22,6 +22,10 @@ class MEDIA_EXPORT AudioManagerAlsa : public AudioManagerBase {
  public:
   AudioManagerAlsa(std::unique_ptr<AudioThread> audio_thread,
                    AudioLogFactory* audio_log_factory);
+
+  AudioManagerAlsa(const AudioManagerAlsa&) = delete;
+  AudioManagerAlsa& operator=(const AudioManagerAlsa&) = delete;
+
   ~AudioManagerAlsa() override;
 
   // Implementation of AudioManager.
@@ -88,8 +92,6 @@ class MEDIA_EXPORT AudioManagerAlsa : public AudioManagerBase {
                                     const std::string& device_id);
 
   std::unique_ptr<AlsaWrapper> wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerAlsa);
 };
 
 }  // namespace media

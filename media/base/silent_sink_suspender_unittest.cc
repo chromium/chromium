@@ -32,6 +32,10 @@ class SilentSinkSuspenderTest : public testing::Test {
                    params_,
                    mock_sink_,
                    test_loop_.task_runner()) {}
+
+  SilentSinkSuspenderTest(const SilentSinkSuspenderTest&) = delete;
+  SilentSinkSuspenderTest& operator=(const SilentSinkSuspenderTest&) = delete;
+
   ~SilentSinkSuspenderTest() override = default;
 
  protected:
@@ -41,9 +45,6 @@ class SilentSinkSuspenderTest : public testing::Test {
   FakeAudioRenderCallback fake_callback_;
   std::unique_ptr<AudioBus> temp_bus_;
   SilentSinkSuspender suspender_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SilentSinkSuspenderTest);
 };
 
 TEST_F(SilentSinkSuspenderTest, BasicPassthough) {

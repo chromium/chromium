@@ -85,6 +85,10 @@ class MEDIA_EXPORT OffloadingVideoDecoder : public VideoDecoder {
   OffloadingVideoDecoder(int min_offloading_width,
                          std::vector<VideoCodec> supported_codecs,
                          std::unique_ptr<OffloadableVideoDecoder> decoder);
+
+  OffloadingVideoDecoder(const OffloadingVideoDecoder&) = delete;
+  OffloadingVideoDecoder& operator=(const OffloadingVideoDecoder&) = delete;
+
   ~OffloadingVideoDecoder() override;
 
   // VideoDecoder implementation.
@@ -124,8 +128,6 @@ class MEDIA_EXPORT OffloadingVideoDecoder : public VideoDecoder {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<OffloadingVideoDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OffloadingVideoDecoder);
 };
 
 }  // namespace media

@@ -45,6 +45,9 @@ class PulseAudioOutputStream : public AudioOutputStream {
                          AudioManagerBase* manager,
                          AudioManager::LogCallback log_callback);
 
+  PulseAudioOutputStream(const PulseAudioOutputStream&) = delete;
+  PulseAudioOutputStream& operator=(const PulseAudioOutputStream&) = delete;
+
   ~PulseAudioOutputStream() override;
 
   // Implementation of AudioOutputStream.
@@ -105,8 +108,6 @@ class PulseAudioOutputStream : public AudioOutputStream {
   const size_t buffer_size_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PulseAudioOutputStream);
 };
 
 }  // namespace media

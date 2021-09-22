@@ -33,6 +33,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   static bool PlatformSupportsMediaFoundation();
 
   VideoCaptureDeviceFactoryWin();
+
+  VideoCaptureDeviceFactoryWin(const VideoCaptureDeviceFactoryWin&) = delete;
+  VideoCaptureDeviceFactoryWin& operator=(const VideoCaptureDeviceFactoryWin&) =
+      delete;
+
   ~VideoCaptureDeviceFactoryWin() override;
 
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
@@ -104,8 +109,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   // For hardware acceleration in MediaFoundation capture engine
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   base::WeakPtrFactory<VideoCaptureDeviceFactoryWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryWin);
 };
 
 }  // namespace media

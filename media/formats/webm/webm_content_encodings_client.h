@@ -26,6 +26,11 @@ typedef std::vector<std::unique_ptr<ContentEncoding>> ContentEncodings;
 class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
  public:
   explicit WebMContentEncodingsClient(MediaLog* media_log);
+
+  WebMContentEncodingsClient(const WebMContentEncodingsClient&) = delete;
+  WebMContentEncodingsClient& operator=(const WebMContentEncodingsClient&) =
+      delete;
+
   ~WebMContentEncodingsClient() override;
 
   const ContentEncodings& content_encodings() const;
@@ -44,8 +49,6 @@ class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
 
   // |content_encodings_| is ready. For debugging purpose.
   bool content_encodings_ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMContentEncodingsClient);
 };
 
 }  // namespace media

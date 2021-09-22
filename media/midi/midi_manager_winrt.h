@@ -20,6 +20,10 @@ class MIDI_EXPORT MidiManagerWinrt final : public MidiManager {
   class MidiOutPortManager;
 
   explicit MidiManagerWinrt(MidiService* service);
+
+  MidiManagerWinrt(const MidiManagerWinrt&) = delete;
+  MidiManagerWinrt& operator=(const MidiManagerWinrt&) = delete;
+
   ~MidiManagerWinrt() override;
 
   // MidiManager overrides:
@@ -58,8 +62,6 @@ class MIDI_EXPORT MidiManagerWinrt final : public MidiManager {
 
   // Incremented when a MidiPortManager is ready.
   uint8_t port_manager_ready_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerWinrt);
 };
 
 }  // namespace midi

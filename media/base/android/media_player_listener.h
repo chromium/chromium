@@ -30,6 +30,10 @@ class MediaPlayerListener {
   MediaPlayerListener(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       base::WeakPtr<MediaPlayerBridge> media_player);
+
+  MediaPlayerListener(const MediaPlayerListener&) = delete;
+  MediaPlayerListener& operator=(const MediaPlayerListener&) = delete;
+
   virtual ~MediaPlayerListener();
 
   // Called by the Java MediaPlayerListener and mirrored to corresponding
@@ -65,8 +69,6 @@ class MediaPlayerListener {
   base::WeakPtr<MediaPlayerBridge> media_player_;
 
   base::android::ScopedJavaGlobalRef<jobject> j_media_player_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerListener);
 };
 
 }  // namespace media

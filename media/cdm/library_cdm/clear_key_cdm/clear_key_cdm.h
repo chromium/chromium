@@ -36,6 +36,10 @@ class ClearKeyCdm : public cdm::ContentDecryptionModule_10,
  public:
   template <typename HostInterface>
   ClearKeyCdm(HostInterface* host, const std::string& key_system);
+
+  ClearKeyCdm(const ClearKeyCdm&) = delete;
+  ClearKeyCdm& operator=(const ClearKeyCdm&) = delete;
+
   ~ClearKeyCdm() override;
 
   // cdm::ContentDecryptionModule_10 implementation.
@@ -183,8 +187,6 @@ class ClearKeyCdm : public cdm::ContentDecryptionModule_10,
   bool is_running_output_protection_test_ = false;
   bool is_running_platform_verification_test_ = false;
   bool is_running_storage_id_test_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearKeyCdm);
 };
 
 }  // namespace media

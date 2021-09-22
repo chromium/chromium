@@ -18,6 +18,10 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                              public DestructionObservable {
  public:
   MockMediaCodecBridge();
+
+  MockMediaCodecBridge(const MockMediaCodecBridge&) = delete;
+  MockMediaCodecBridge& operator=(const MockMediaCodecBridge&) = delete;
+
   ~MockMediaCodecBridge() override;
 
   // Helpers for conveniently setting expectations.
@@ -87,8 +91,6 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   bool is_drained_ = true;
 
   CodecType codec_type_ = CodecType::kAny;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaCodecBridge);
 };
 
 }  // namespace media

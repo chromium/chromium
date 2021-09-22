@@ -36,6 +36,10 @@ class VaapiPictureNativePixmapOzone : public VaapiPictureNativePixmap {
       uint32_t client_texture_id,
       uint32_t texture_target);
 
+  VaapiPictureNativePixmapOzone(const VaapiPictureNativePixmapOzone&) = delete;
+  VaapiPictureNativePixmapOzone& operator=(
+      const VaapiPictureNativePixmapOzone&) = delete;
+
   ~VaapiPictureNativePixmapOzone() override;
 
   // VaapiPicture implementation.
@@ -46,8 +50,6 @@ class VaapiPictureNativePixmapOzone : public VaapiPictureNativePixmap {
 
  private:
   Status Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiPictureNativePixmapOzone);
 };
 
 }  // namespace media

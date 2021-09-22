@@ -22,6 +22,10 @@ class AudioDecoderConfig;
 class WebMAudioClient : public WebMParserClient {
  public:
   explicit WebMAudioClient(MediaLog* media_log);
+
+  WebMAudioClient(const WebMAudioClient&) = delete;
+  WebMAudioClient& operator=(const WebMAudioClient&) = delete;
+
   ~WebMAudioClient() override;
 
   // Reset this object's state so it can process a new audio track element.
@@ -49,8 +53,6 @@ class WebMAudioClient : public WebMParserClient {
   int channels_;
   double samples_per_second_;
   double output_samples_per_second_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMAudioClient);
 };
 
 }  // namespace media

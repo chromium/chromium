@@ -55,6 +55,9 @@ class COMPONENT_EXPORT(LEARNING_IMPL) DistributionReporter {
   // Create a DistributionReporter that's suitable for |task|.
   static std::unique_ptr<DistributionReporter> Create(const LearningTask& task);
 
+  DistributionReporter(const DistributionReporter&) = delete;
+  DistributionReporter& operator=(const DistributionReporter&) = delete;
+
   virtual ~DistributionReporter();
 
   // Returns a prediction CB that will be compared to |prediction_info.observed|
@@ -93,8 +96,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) DistributionReporter {
   absl::optional<std::set<int>> feature_indices_;
 
   base::WeakPtrFactory<DistributionReporter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DistributionReporter);
 };
 
 }  // namespace learning

@@ -40,6 +40,9 @@ class FakeAudioWorkerTest : public testing::Test {
         static_cast<float>(params_.sample_rate()));
   }
 
+  FakeAudioWorkerTest(const FakeAudioWorkerTest&) = delete;
+  FakeAudioWorkerTest& operator=(const FakeAudioWorkerTest&) = delete;
+
   ~FakeAudioWorkerTest() override = default;
 
   void CalledByFakeWorker(base::TimeTicks ideal_time, base::TimeTicks now) {
@@ -93,9 +96,6 @@ class FakeAudioWorkerTest : public testing::Test {
   FakeAudioWorker fake_worker_;
   base::TimeDelta time_between_callbacks_;
   std::vector<base::TimeTicks> callbacks_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioWorkerTest);
 };
 
 TEST_F(FakeAudioWorkerTest, FakeBasicCallback) {
@@ -188,6 +188,10 @@ class FakeAudioWorkerMockTaskTest : public testing::Test {
         nullptr, TimeTicksOverride, nullptr);
   }
 
+  FakeAudioWorkerMockTaskTest(const FakeAudioWorkerMockTaskTest&) = delete;
+  FakeAudioWorkerMockTaskTest& operator=(const FakeAudioWorkerMockTaskTest&) =
+      delete;
+
   ~FakeAudioWorkerMockTaskTest() override { global_clock_ = nullptr; }
 
   void CalledByFakeWorker(base::TimeTicks ideal_time, base::TimeTicks now) {
@@ -225,9 +229,6 @@ class FakeAudioWorkerMockTaskTest : public testing::Test {
     DCHECK(global_clock_);
     return global_clock_->NowTicks();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioWorkerMockTaskTest);
 };
 
 const base::TickClock* FakeAudioWorkerMockTaskTest::global_clock_ = nullptr;

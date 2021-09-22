@@ -63,6 +63,10 @@ class DecryptingVideoDecoderTest : public testing::Test {
             VideoFrame::CreateBlackFrame(TestVideoConfig::NormalCodedSize())),
         null_video_frame_(scoped_refptr<VideoFrame>()) {}
 
+  DecryptingVideoDecoderTest(const DecryptingVideoDecoderTest&) = delete;
+  DecryptingVideoDecoderTest& operator=(const DecryptingVideoDecoderTest&) =
+      delete;
+
   ~DecryptingVideoDecoderTest() override { Destroy(); }
 
   enum CdmType { CDM_WITHOUT_DECRYPTOR, CDM_WITH_DECRYPTOR };
@@ -255,9 +259,6 @@ class DecryptingVideoDecoderTest : public testing::Test {
   scoped_refptr<DecoderBuffer> encrypted_buffer_;
   scoped_refptr<VideoFrame> decoded_video_frame_;
   scoped_refptr<VideoFrame> null_video_frame_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecryptingVideoDecoderTest);
 };
 
 TEST_F(DecryptingVideoDecoderTest, Initialize_Normal) {

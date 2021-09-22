@@ -64,6 +64,9 @@ class FrameReceiver final : public RtpPayloadFeedback {
                 EventMediaType event_media_type,
                 CastTransport* const transport);
 
+  FrameReceiver(const FrameReceiver&) = delete;
+  FrameReceiver& operator=(const FrameReceiver&) = delete;
+
   ~FrameReceiver() final;
 
   // Request an encoded frame.
@@ -211,8 +214,6 @@ class FrameReceiver final : public RtpPayloadFeedback {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FrameReceiver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameReceiver);
 };
 
 }  // namespace cast

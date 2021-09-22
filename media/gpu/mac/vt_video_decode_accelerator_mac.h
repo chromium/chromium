@@ -52,6 +52,9 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
                            const gpu::GpuDriverBugWorkarounds& workarounds,
                            MediaLog* media_log);
 
+  VTVideoDecodeAccelerator(const VTVideoDecodeAccelerator&) = delete;
+  VTVideoDecodeAccelerator& operator=(const VTVideoDecodeAccelerator&) = delete;
+
   ~VTVideoDecodeAccelerator() override;
 
   // VideoDecodeAccelerator implementation.
@@ -325,8 +328,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // other destructors run.
   base::WeakPtrFactory<VTVideoDecodeAccelerator> decoder_weak_this_factory_;
   base::WeakPtrFactory<VTVideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VTVideoDecodeAccelerator);
 };
 
 }  // namespace media

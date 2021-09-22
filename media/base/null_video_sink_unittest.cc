@@ -32,6 +32,10 @@ class NullVideoSinkTest : public testing::Test,
     // Never use null TimeTicks since they have special connotations.
     tick_clock_.Advance(base::TimeDelta::FromMicroseconds(12345));
   }
+
+  NullVideoSinkTest(const NullVideoSinkTest&) = delete;
+  NullVideoSinkTest& operator=(const NullVideoSinkTest&) = delete;
+
   ~NullVideoSinkTest() override = default;
 
   std::unique_ptr<NullVideoSink> ConstructSink(bool clockless,
@@ -67,8 +71,6 @@ class NullVideoSinkTest : public testing::Test,
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestTickClock tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(NullVideoSinkTest);
 };
 
 TEST_F(NullVideoSinkTest, BasicFunctionality) {

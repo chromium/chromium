@@ -52,6 +52,9 @@ class ImageProcessorClient {
       VideoRotation relative_rotation,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
 
+  ImageProcessorClient(const ImageProcessorClient&) = delete;
+  ImageProcessorClient& operator=(const ImageProcessorClient&) = delete;
+
   // Destruct |image_processor_| if it is created.
   ~ImageProcessorClient();
 
@@ -138,7 +141,6 @@ class ImageProcessorClient {
 
   THREAD_CHECKER(image_processor_client_thread_checker_);
   THREAD_CHECKER(test_main_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(ImageProcessorClient);
 };
 
 }  // namespace test

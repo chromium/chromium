@@ -48,6 +48,9 @@ class VideoSender : public FrameSender {
               PlayoutDelayChangeCB playout_delay_change_cb,
               media::VideoCaptureFeedbackCB feedback_callback);
 
+  VideoSender(const VideoSender&) = delete;
+  VideoSender& operator=(const VideoSender&) = delete;
+
   ~VideoSender() override;
 
   // Note: It is not guaranteed that |video_frame| will actually be encoded and
@@ -114,8 +117,6 @@ class VideoSender : public FrameSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<VideoSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoSender);
 };
 
 }  // namespace cast

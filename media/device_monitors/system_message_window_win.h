@@ -18,6 +18,9 @@ class MEDIA_EXPORT SystemMessageWindowWin {
  public:
   SystemMessageWindowWin();
 
+  SystemMessageWindowWin(const SystemMessageWindowWin&) = delete;
+  SystemMessageWindowWin& operator=(const SystemMessageWindowWin&) = delete;
+
   virtual ~SystemMessageWindowWin();
 
   virtual LRESULT OnDeviceChange(UINT event_type, LPARAM data);
@@ -45,8 +48,6 @@ class MEDIA_EXPORT SystemMessageWindowWin {
   HWND window_;
   class DeviceNotifications;
   std::unique_ptr<DeviceNotifications> device_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMessageWindowWin);
 };
 
 }  // namespace media

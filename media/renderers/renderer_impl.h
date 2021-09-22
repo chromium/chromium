@@ -51,6 +51,9 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
                std::unique_ptr<AudioRenderer> audio_renderer,
                std::unique_ptr<VideoRenderer> video_renderer);
 
+  RendererImpl(const RendererImpl&) = delete;
+  RendererImpl& operator=(const RendererImpl&) = delete;
+
   ~RendererImpl() final;
 
   // Renderer implementation.
@@ -272,8 +275,6 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
 
   base::WeakPtr<RendererImpl> weak_this_;
   base::WeakPtrFactory<RendererImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererImpl);
 };
 
 }  // namespace media

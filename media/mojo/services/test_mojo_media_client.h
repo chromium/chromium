@@ -25,6 +25,10 @@ class VideoRendererSink;
 class TestMojoMediaClient final : public MojoMediaClient {
  public:
   TestMojoMediaClient();
+
+  TestMojoMediaClient(const TestMojoMediaClient&) = delete;
+  TestMojoMediaClient& operator=(const TestMojoMediaClient&) = delete;
+
   ~TestMojoMediaClient() final;
 
   // MojoMediaClient implementation.
@@ -50,8 +54,6 @@ class TestMojoMediaClient final : public MojoMediaClient {
   std::unique_ptr<RendererFactory> renderer_factory_;
   std::vector<scoped_refptr<AudioRendererSink>> audio_sinks_;
   std::vector<std::unique_ptr<VideoRendererSink>> video_sinks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMojoMediaClient);
 };
 
 }  // namespace media

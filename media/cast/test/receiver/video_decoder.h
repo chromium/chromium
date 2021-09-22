@@ -32,6 +32,10 @@ class VideoDecoder {
 
   VideoDecoder(const scoped_refptr<CastEnvironment>& cast_environment,
                Codec codec);
+
+  VideoDecoder(const VideoDecoder&) = delete;
+  VideoDecoder& operator=(const VideoDecoder&) = delete;
+
   virtual ~VideoDecoder();
 
   // Returns STATUS_INITIALIZED if the decoder was successfully constructed.  If
@@ -56,8 +60,6 @@ class VideoDecoder {
 
   const scoped_refptr<CastEnvironment> cast_environment_;
   scoped_refptr<ImplBase> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoder);
 };
 
 }  // namespace cast

@@ -25,6 +25,9 @@ class MEDIA_EXPORT MediaCryptoContextImpl final : public MediaCryptoContext {
   // The |media_drm_bridge| owns |this| and is guaranteed to outlive |this|.
   explicit MediaCryptoContextImpl(MediaDrmBridge* media_drm_bridge);
 
+  MediaCryptoContextImpl(const MediaCryptoContextImpl&) = delete;
+  MediaCryptoContextImpl& operator=(const MediaCryptoContextImpl&) = delete;
+
   ~MediaCryptoContextImpl() override;
 
   // MediaCryptoContext implementation.
@@ -32,8 +35,6 @@ class MEDIA_EXPORT MediaCryptoContextImpl final : public MediaCryptoContext {
 
  private:
   MediaDrmBridge* const media_drm_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCryptoContextImpl);
 };
 
 }  // namespace media

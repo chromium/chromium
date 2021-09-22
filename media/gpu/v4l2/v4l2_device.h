@@ -184,6 +184,9 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // store is deprecated and should not be called by new code.
   void SetConfigStore(uint32_t config_store);
 
+  V4L2WritableBufferRef(const V4L2WritableBufferRef&) = delete;
+  V4L2WritableBufferRef& operator=(const V4L2WritableBufferRef&) = delete;
+
   ~V4L2WritableBufferRef();
 
  private:
@@ -201,7 +204,6 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   std::unique_ptr<V4L2BufferRefBase> buffer_data_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2WritableBufferRef);
 };
 
 // A reference to a read-only, dequeued buffer.

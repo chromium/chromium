@@ -33,6 +33,10 @@ class MEDIA_EXPORT EsParser {
   using GetDecryptConfigCB = base::RepeatingCallback<const DecryptConfig*()>;
 
   EsParser();
+
+  EsParser(const EsParser&) = delete;
+  EsParser& operator=(const EsParser&) = delete;
+
   virtual ~EsParser();
 
   // ES parsing.
@@ -87,8 +91,6 @@ class MEDIA_EXPORT EsParser {
   // present in the PES packet header, it shall refer to the first AVC access
   // unit that commences in this PES packet.
   std::list<std::pair<int64_t, TimingDesc>> timing_desc_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsParser);
 };
 
 }  // namespace mp2t

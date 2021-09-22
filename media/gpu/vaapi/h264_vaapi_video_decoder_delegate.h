@@ -32,6 +32,11 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
           base::DoNothing(),
       CdmContext* cdm_context = nullptr,
       EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted);
+
+  H264VaapiVideoDecoderDelegate(const H264VaapiVideoDecoderDelegate&) = delete;
+  H264VaapiVideoDecoderDelegate& operator=(
+      const H264VaapiVideoDecoderDelegate&) = delete;
+
   ~H264VaapiVideoDecoderDelegate() override;
 
   // H264Decoder::H264Accelerator implementation.
@@ -82,8 +87,6 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
 
   // We need to set this so we don't resubmit crypto params on decode.
   bool full_sample_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoDecoderDelegate);
 };
 
 }  // namespace media

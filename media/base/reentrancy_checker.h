@@ -50,13 +50,15 @@ namespace media {
 class SCOPED_LOCKABLE MEDIA_EXPORT NonReentrantScope {
  public:
   explicit NonReentrantScope(base::Lock& lock) EXCLUSIVE_LOCK_FUNCTION(lock);
+
+  NonReentrantScope(const NonReentrantScope&) = delete;
+  NonReentrantScope& operator=(const NonReentrantScope&) = delete;
+
   ~NonReentrantScope() UNLOCK_FUNCTION();
 
  private:
   base::Lock& lock_;
   bool is_lock_holder_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NonReentrantScope);
 };
 
 }  // namespace media

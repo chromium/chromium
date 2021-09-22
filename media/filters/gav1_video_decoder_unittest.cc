@@ -69,6 +69,9 @@ class Gav1VideoDecoderTest : public testing::Test {
       : decoder_(new Gav1VideoDecoder(&media_log_)),
         i_frame_buffer_(ReadTestDataFile("av1-I-frame-320x240")) {}
 
+  Gav1VideoDecoderTest(const Gav1VideoDecoderTest&) = delete;
+  Gav1VideoDecoderTest& operator=(const Gav1VideoDecoderTest&) = delete;
+
   ~Gav1VideoDecoderTest() override { Destroy(); }
 
   void Initialize() {
@@ -216,9 +219,6 @@ class Gav1VideoDecoderTest : public testing::Test {
 
   scoped_refptr<DecoderBuffer> i_frame_buffer_;
   OutputFrames output_frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Gav1VideoDecoderTest);
 };
 
 TEST_F(Gav1VideoDecoderTest, Initialize_Normal) {

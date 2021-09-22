@@ -25,6 +25,10 @@ class MEDIA_EXPORT AndroidCdmFactory final : public CdmFactory {
  public:
   AndroidCdmFactory(CreateFetcherCB create_fetcher_cb,
                     CreateStorageCB create_storage_cb);
+
+  AndroidCdmFactory(const AndroidCdmFactory&) = delete;
+  AndroidCdmFactory& operator=(const AndroidCdmFactory&) = delete;
+
   ~AndroidCdmFactory() override;
 
   // CdmFactory implementation.
@@ -53,8 +57,6 @@ class MEDIA_EXPORT AndroidCdmFactory final : public CdmFactory {
   base::flat_map<uint32_t, PendingCreation> pending_creations_;
 
   base::WeakPtrFactory<AndroidCdmFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidCdmFactory);
 };
 
 }  // namespace media

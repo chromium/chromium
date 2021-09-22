@@ -23,6 +23,10 @@ class VideoFrame;
 class MEDIA_EXPORT VideoOverlayFactory {
  public:
   VideoOverlayFactory();
+
+  VideoOverlayFactory(const VideoOverlayFactory&) = delete;
+  VideoOverlayFactory& operator=(const VideoOverlayFactory&) = delete;
+
   ~VideoOverlayFactory();
 
   scoped_refptr<::media::VideoFrame> CreateFrame(const gfx::Size& size);
@@ -33,8 +37,6 @@ class MEDIA_EXPORT VideoOverlayFactory {
  private:
   // |overlay_plane_id_| identifies the instances of VideoOverlayFactory.
   const base::UnguessableToken overlay_plane_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoOverlayFactory);
 };
 
 }  // namespace media

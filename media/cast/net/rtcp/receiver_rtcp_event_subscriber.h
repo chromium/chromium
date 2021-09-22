@@ -47,6 +47,10 @@ class ReceiverRtcpEventSubscriber final : public RawEventSubscriber {
   ReceiverRtcpEventSubscriber(const size_t max_size_to_retain,
       EventMediaType type);
 
+  ReceiverRtcpEventSubscriber(const ReceiverRtcpEventSubscriber&) = delete;
+  ReceiverRtcpEventSubscriber& operator=(const ReceiverRtcpEventSubscriber&) =
+      delete;
+
   ~ReceiverRtcpEventSubscriber() final;
 
   // RawEventSubscriber implementation.
@@ -96,8 +100,6 @@ class ReceiverRtcpEventSubscriber final : public RawEventSubscriber {
 
   // Ensures methods are only called on the main thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverRtcpEventSubscriber);
 };
 
 }  // namespace cast

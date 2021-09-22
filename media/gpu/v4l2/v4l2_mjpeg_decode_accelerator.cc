@@ -136,6 +136,9 @@ const uint8_t kDefaultDhtSeg[] = {
 
 class V4L2MjpegDecodeAccelerator::JobRecord {
  public:
+  JobRecord(const JobRecord&) = delete;
+  JobRecord& operator=(const JobRecord&) = delete;
+
   virtual ~JobRecord() = default;
 
   // Task ID passed from Decode() call.
@@ -154,8 +157,6 @@ class V4L2MjpegDecodeAccelerator::JobRecord {
 
  protected:
   JobRecord() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(JobRecord);
 };
 
 // Job record when the client uses BitstreamBuffer as input in Decode().
@@ -202,6 +203,9 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
         mapped_addr_(nullptr),
         out_frame_(std::move(dst_frame)) {}
 
+  JobRecordDmaBuf(const JobRecordDmaBuf&) = delete;
+  JobRecordDmaBuf& operator=(const JobRecordDmaBuf&) = delete;
+
   ~JobRecordDmaBuf() {
     if (mapped_addr_) {
       const int ret = munmap(mapped_addr_, size());
@@ -242,8 +246,6 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
   off_t offset_;
   void* mapped_addr_;
   scoped_refptr<VideoFrame> out_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobRecordDmaBuf);
 };
 
 V4L2MjpegDecodeAccelerator::BufferRecord::BufferRecord() : at_device(false) {

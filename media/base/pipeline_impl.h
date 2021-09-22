@@ -86,6 +86,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
                scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
                CreateRendererCB create_renderer_cb,
                MediaLog* media_log);
+
+  PipelineImpl(const PipelineImpl&) = delete;
+  PipelineImpl& operator=(const PipelineImpl&) = delete;
+
   ~PipelineImpl() override;
 
   // Pipeline implementation.
@@ -215,8 +219,6 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<PipelineImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineImpl);
 };
 
 }  // namespace media

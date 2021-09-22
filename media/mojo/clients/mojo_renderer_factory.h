@@ -34,6 +34,10 @@ class MojoRendererFactory final : public RendererFactory {
  public:
   explicit MojoRendererFactory(
       media::mojom::InterfaceFactory* interface_factory);
+
+  MojoRendererFactory(const MojoRendererFactory&) = delete;
+  MojoRendererFactory& operator=(const MojoRendererFactory&) = delete;
+
   ~MojoRendererFactory() final;
 
   std::unique_ptr<Renderer> CreateRenderer(
@@ -80,8 +84,6 @@ class MojoRendererFactory final : public RendererFactory {
   // InterfaceFactory or InterfaceProvider used to create or connect to remote
   // renderer.
   media::mojom::InterfaceFactory* interface_factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoRendererFactory);
 };
 
 }  // namespace media

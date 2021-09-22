@@ -42,6 +42,9 @@ class MEDIA_EXPORT AudioDecoder : public Decoder {
 
   AudioDecoder();
 
+  AudioDecoder(const AudioDecoder&) = delete;
+  AudioDecoder& operator=(const AudioDecoder&) = delete;
+
   // Fires any pending callbacks, stops and destroys the decoder.
   // Note: Since this is a destructor, |this| will be destroyed after this call.
   // Make sure the callbacks fired from this call doesn't post any task that
@@ -87,9 +90,6 @@ class MEDIA_EXPORT AudioDecoder : public Decoder {
 
   // Returns the type of the decoder for statistics recording purposes.
   virtual AudioDecoderType GetDecoderType() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoder);
 };
 
 }  // namespace media

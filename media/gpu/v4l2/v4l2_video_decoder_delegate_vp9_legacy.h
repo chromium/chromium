@@ -22,6 +22,12 @@ class V4L2VideoDecoderDelegateVP9Legacy : public VP9Decoder::VP9Accelerator {
   explicit V4L2VideoDecoderDelegateVP9Legacy(
       V4L2DecodeSurfaceHandler* surface_handler,
       V4L2Device* device);
+
+  V4L2VideoDecoderDelegateVP9Legacy(const V4L2VideoDecoderDelegateVP9Legacy&) =
+      delete;
+  V4L2VideoDecoderDelegateVP9Legacy& operator=(
+      const V4L2VideoDecoderDelegateVP9Legacy&) = delete;
+
   ~V4L2VideoDecoderDelegateVP9Legacy() override;
 
   // VP9Decoder::VP9Accelerator implementation.
@@ -48,8 +54,6 @@ class V4L2VideoDecoderDelegateVP9Legacy : public VP9Decoder::VP9Accelerator {
 
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderDelegateVP9Legacy);
 };
 
 }  // namespace media

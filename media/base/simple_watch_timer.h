@@ -33,6 +33,10 @@ class MEDIA_EXPORT SimpleWatchTimer {
   using GetCurrentTimeCB = base::RepeatingCallback<base::TimeDelta()>;
 
   SimpleWatchTimer(TickCB tick_cb, GetCurrentTimeCB get_current_time_cb);
+
+  SimpleWatchTimer(const SimpleWatchTimer&) = delete;
+  SimpleWatchTimer& operator=(const SimpleWatchTimer&) = delete;
+
   ~SimpleWatchTimer();
 
   void Start();
@@ -47,8 +51,6 @@ class MEDIA_EXPORT SimpleWatchTimer {
   int unreported_ms_ = 0;
   base::TimeDelta last_current_time_;
   base::RepeatingTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleWatchTimer);
 };
 
 }  // namespace media

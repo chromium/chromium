@@ -22,6 +22,10 @@ namespace media {
 class FakeTextTrackStream : public DemuxerStream {
  public:
   FakeTextTrackStream();
+
+  FakeTextTrackStream(const FakeTextTrackStream&) = delete;
+  FakeTextTrackStream& operator=(const FakeTextTrackStream&) = delete;
+
   ~FakeTextTrackStream() override;
 
   // DemuxerStream implementation.
@@ -48,8 +52,6 @@ class FakeTextTrackStream : public DemuxerStream {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   ReadCB read_cb_;
   bool stopping_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTextTrackStream);
 };
 
 }  // namespace media

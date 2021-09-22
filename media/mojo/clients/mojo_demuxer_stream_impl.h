@@ -28,6 +28,10 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
   // Note: |this| does not take ownership of |stream|.
   MojoDemuxerStreamImpl(media::DemuxerStream* stream,
                         mojo::PendingReceiver<mojom::DemuxerStream> receiver);
+
+  MojoDemuxerStreamImpl(const MojoDemuxerStreamImpl&) = delete;
+  MojoDemuxerStreamImpl& operator=(const MojoDemuxerStreamImpl&) = delete;
+
   ~MojoDemuxerStreamImpl() override;
 
   // mojom::DemuxerStream implementation.
@@ -59,7 +63,6 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_;
 
   base::WeakPtrFactory<MojoDemuxerStreamImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MojoDemuxerStreamImpl);
 };
 
 }  // namespace media

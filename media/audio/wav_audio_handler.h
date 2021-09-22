@@ -30,6 +30,9 @@ class MEDIA_EXPORT WavAudioHandler {
     kAudioFormatExtensible = 0xfffe
   };
 
+  WavAudioHandler(const WavAudioHandler&) = delete;
+  WavAudioHandler& operator=(const WavAudioHandler&) = delete;
+
   virtual ~WavAudioHandler();
 
   // Create a WavAudioHandler using |wav_data|. If |wav_data| cannot be parsed
@@ -73,8 +76,6 @@ class MEDIA_EXPORT WavAudioHandler {
   const uint16_t bits_per_sample_;
   const AudioFormat audio_format_;
   uint32_t total_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(WavAudioHandler);
 };
 
 }  // namespace media

@@ -41,6 +41,9 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
   AudioDecoderTest()
       : cast_environment_(new StandaloneCastEnvironment()), cond_(&lock_) {}
 
+  AudioDecoderTest(const AudioDecoderTest&) = delete;
+  AudioDecoderTest& operator=(const AudioDecoderTest&) = delete;
+
   virtual ~AudioDecoderTest() {
     // Make sure all threads have stopped before the environment goes away.
     cast_environment_->Shutdown();
@@ -187,8 +190,6 @@ class AudioDecoderTest : public ::testing::TestWithParam<TestScenario> {
   base::ConditionVariable cond_;
   base::TimeDelta total_audio_feed_in_;
   base::TimeDelta total_audio_decoded_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderTest);
 };
 
 TEST_P(AudioDecoderTest, DecodesFramesWithSameDuration) {

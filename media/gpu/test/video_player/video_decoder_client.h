@@ -58,6 +58,9 @@ struct VideoDecoderClientConfig {
 // necessary if we don't want to interrupt the test flow.
 class VideoDecoderClient {
  public:
+  VideoDecoderClient(const VideoDecoderClient&) = delete;
+  VideoDecoderClient& operator=(const VideoDecoderClient&) = delete;
+
   ~VideoDecoderClient();
 
   // Return an instance of the VideoDecoderClient. The
@@ -181,8 +184,6 @@ class VideoDecoderClient {
 
   base::WeakPtr<VideoDecoderClient> weak_this_;
   base::WeakPtrFactory<VideoDecoderClient> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderClient);
 };
 
 }  // namespace test

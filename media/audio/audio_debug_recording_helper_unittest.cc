@@ -38,6 +38,10 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
  public:
   explicit MockAudioDebugFileWriter(const AudioParameters& params)
       : AudioDebugFileWriter(params), reference_data_(nullptr) {}
+
+  MockAudioDebugFileWriter(const MockAudioDebugFileWriter&) = delete;
+  MockAudioDebugFileWriter& operator=(const MockAudioDebugFileWriter&) = delete;
+
   ~MockAudioDebugFileWriter() override = default;
 
   MOCK_METHOD1(DoStart, void(bool));
@@ -72,8 +76,6 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
 
  private:
   AudioBus* reference_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudioDebugFileWriter);
 };
 
 // Sub-class of the helper that overrides the CreateAudioDebugFileWriter
@@ -87,6 +89,12 @@ class AudioDebugRecordingHelperUnderTest : public AudioDebugRecordingHelper {
       : AudioDebugRecordingHelper(params,
                                   std::move(task_runner),
                                   std::move(on_destruction_closure)) {}
+
+  AudioDebugRecordingHelperUnderTest(
+      const AudioDebugRecordingHelperUnderTest&) = delete;
+  AudioDebugRecordingHelperUnderTest& operator=(
+      const AudioDebugRecordingHelperUnderTest&) = delete;
+
   ~AudioDebugRecordingHelperUnderTest() override = default;
 
  private:
@@ -98,13 +106,16 @@ class AudioDebugRecordingHelperUnderTest : public AudioDebugRecordingHelper {
     EXPECT_CALL(*writer, DoStart(true));
     return base::WrapUnique<AudioDebugFileWriter>(writer);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingHelperUnderTest);
 };
 
 class AudioDebugRecordingHelperTest : public ::testing::Test {
  public:
   AudioDebugRecordingHelperTest() {}
+
+  AudioDebugRecordingHelperTest(const AudioDebugRecordingHelperTest&) = delete;
+  AudioDebugRecordingHelperTest& operator=(
+      const AudioDebugRecordingHelperTest&) = delete;
+
   ~AudioDebugRecordingHelperTest() override = default;
 
   // Helper function that creates a recording helper.
@@ -147,9 +158,6 @@ class AudioDebugRecordingHelperTest : public ::testing::Test {
 
   // The test task environment.
   base::test::TaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingHelperTest);
 };
 
 // Creates a helper with an on destruction closure, and verifies that it's run.

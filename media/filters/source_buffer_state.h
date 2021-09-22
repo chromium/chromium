@@ -42,6 +42,9 @@ class MEDIA_EXPORT SourceBufferState {
                     CreateDemuxerStreamCB create_demuxer_stream_cb,
                     MediaLog* media_log);
 
+  SourceBufferState(const SourceBufferState&) = delete;
+  SourceBufferState& operator=(const SourceBufferState&) = delete;
+
   ~SourceBufferState();
 
   void Init(StreamParser::InitCB init_cb,
@@ -266,8 +269,6 @@ class MEDIA_EXPORT SourceBufferState {
 
   std::vector<AudioCodec> expected_audio_codecs_;
   std::vector<VideoCodec> expected_video_codecs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceBufferState);
 };
 
 }  // namespace media

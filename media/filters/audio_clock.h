@@ -53,6 +53,10 @@ namespace media {
 class MEDIA_EXPORT AudioClock {
  public:
   AudioClock(base::TimeDelta start_timestamp, int sample_rate);
+
+  AudioClock(const AudioClock&) = delete;
+  AudioClock& operator=(const AudioClock&) = delete;
+
   ~AudioClock();
 
   // |frames_written| amount of audio data scaled to |playback_rate| written.
@@ -140,8 +144,6 @@ class MEDIA_EXPORT AudioClock {
   // See http://crbug.com/564604.
   double front_timestamp_micros_;
   double back_timestamp_micros_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioClock);
 };
 
 }  // namespace media

@@ -152,6 +152,10 @@ class V4L2Buffer {
                                             enum v4l2_memory memory,
                                             const struct v4l2_format& format,
                                             size_t buffer_id);
+
+  V4L2Buffer(const V4L2Buffer&) = delete;
+  V4L2Buffer& operator=(const V4L2Buffer&) = delete;
+
   ~V4L2Buffer();
 
   void* GetPlaneMapping(const size_t plane);
@@ -180,8 +184,6 @@ class V4L2Buffer {
 
   struct v4l2_format format_;
   scoped_refptr<VideoFrame> video_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2Buffer);
 };
 
 std::unique_ptr<V4L2Buffer> V4L2Buffer::Create(scoped_refptr<V4L2Device> device,
@@ -405,6 +407,10 @@ class V4L2BufferRefBase {
  public:
   V4L2BufferRefBase(const struct v4l2_buffer& v4l2_buffer,
                     base::WeakPtr<V4L2Queue> queue);
+
+  V4L2BufferRefBase(const V4L2BufferRefBase&) = delete;
+  V4L2BufferRefBase& operator=(const V4L2BufferRefBase&) = delete;
+
   ~V4L2BufferRefBase();
 
   bool QueueBuffer(scoped_refptr<VideoFrame> video_frame);
@@ -436,7 +442,6 @@ class V4L2BufferRefBase {
   bool queued = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2BufferRefBase);
 };
 
 V4L2BufferRefBase::V4L2BufferRefBase(const struct v4l2_buffer& v4l2_buffer,

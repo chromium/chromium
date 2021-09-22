@@ -31,13 +31,15 @@ class AutoPulseLock {
     pa_threaded_mainloop_lock(pa_mainloop_);
   }
 
+  AutoPulseLock(const AutoPulseLock&) = delete;
+  AutoPulseLock& operator=(const AutoPulseLock&) = delete;
+
   ~AutoPulseLock() {
     pa_threaded_mainloop_unlock(pa_mainloop_);
   }
 
  private:
   pa_threaded_mainloop* pa_mainloop_;
-  DISALLOW_COPY_AND_ASSIGN(AutoPulseLock);
 };
 
 bool MEDIA_EXPORT InitPulse(pa_threaded_mainloop** mainloop,

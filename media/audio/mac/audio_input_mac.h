@@ -32,6 +32,11 @@ class PCMQueueInAudioInputStream : public AudioInputStream {
   // Parameters as per AudioManager::MakeAudioInputStream.
   PCMQueueInAudioInputStream(AudioManagerMac* manager,
                              const AudioParameters& params);
+
+  PCMQueueInAudioInputStream(const PCMQueueInAudioInputStream&) = delete;
+  PCMQueueInAudioInputStream& operator=(const PCMQueueInAudioInputStream&) =
+      delete;
+
   ~PCMQueueInAudioInputStream() override;
 
   // Implementation of AudioInputStream.
@@ -111,8 +116,6 @@ class PCMQueueInAudioInputStream : public AudioInputStream {
   std::unique_ptr<base::OneShotTimer> input_callback_timer_;
 
   std::unique_ptr<media::AudioBus> audio_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(PCMQueueInAudioInputStream);
 };
 
 }  // namespace media

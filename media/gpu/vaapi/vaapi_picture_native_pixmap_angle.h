@@ -34,6 +34,10 @@ class VaapiPictureNativePixmapAngle : public VaapiPictureNativePixmap {
       uint32_t client_texture_id,
       uint32_t texture_target);
 
+  VaapiPictureNativePixmapAngle(const VaapiPictureNativePixmapAngle&) = delete;
+  VaapiPictureNativePixmapAngle& operator=(
+      const VaapiPictureNativePixmapAngle&) = delete;
+
   ~VaapiPictureNativePixmapAngle() override;
 
   // VaapiPicture implementation.
@@ -48,8 +52,6 @@ class VaapiPictureNativePixmapAngle : public VaapiPictureNativePixmap {
 
  private:
   x11::Pixmap x_pixmap_ = x11::Pixmap::None;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiPictureNativePixmapAngle);
 };
 
 }  // namespace media

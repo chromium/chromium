@@ -33,6 +33,12 @@ class RawEventSubscriberBundleForStream {
       const scoped_refptr<CastEnvironment>& cast_environment,
       bool is_audio,
       ReceiverTimeOffsetEstimator* offset_estimator);
+
+  RawEventSubscriberBundleForStream(const RawEventSubscriberBundleForStream&) =
+      delete;
+  RawEventSubscriberBundleForStream& operator=(
+      const RawEventSubscriberBundleForStream&) = delete;
+
   ~RawEventSubscriberBundleForStream();
 
   EncodingEventSubscriber* GetEncodingEventSubscriber();
@@ -42,8 +48,6 @@ class RawEventSubscriberBundleForStream {
   const scoped_refptr<CastEnvironment> cast_environment_;
   EncodingEventSubscriber event_subscriber_;
   StatsEventSubscriber stats_subscriber_;
-
-  DISALLOW_COPY_AND_ASSIGN(RawEventSubscriberBundleForStream);
 };
 
 // A bundle of subscribers for all streams. An instance of this object
@@ -56,6 +60,10 @@ class RawEventSubscriberBundle {
  public:
   explicit RawEventSubscriberBundle(
       const scoped_refptr<CastEnvironment>& cast_environment);
+
+  RawEventSubscriberBundle(const RawEventSubscriberBundle&) = delete;
+  RawEventSubscriberBundle& operator=(const RawEventSubscriberBundle&) = delete;
+
   ~RawEventSubscriberBundle();
 
   void AddEventSubscribers(bool is_audio);
@@ -72,12 +80,9 @@ class RawEventSubscriberBundle {
   std::map<bool, std::unique_ptr<RawEventSubscriberBundleForStream>>
       subscribers_;
   std::unique_ptr<ReceiverTimeOffsetEstimator> receiver_offset_estimator_;
-
-  DISALLOW_COPY_AND_ASSIGN(RawEventSubscriberBundle);
 };
 
 }  // namespace cast
 }  // namespace media
 
 #endif  // MEDIA_CAST_LOGGING_RAW_EVENT_SUBSCRIBER_BUNDLE_H_
-

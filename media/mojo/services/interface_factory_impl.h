@@ -42,6 +42,10 @@ class InterfaceFactoryImpl final
   InterfaceFactoryImpl(
       mojo::PendingRemote<mojom::FrameInterfaceFactory> frame_interfaces,
       MojoMediaClient* mojo_media_client);
+
+  InterfaceFactoryImpl(const InterfaceFactoryImpl&) = delete;
+  InterfaceFactoryImpl& operator=(const InterfaceFactoryImpl&) = delete;
+
   ~InterfaceFactoryImpl() final;
 
   // mojom::InterfaceFactory implementation.
@@ -147,8 +151,6 @@ class InterfaceFactoryImpl final
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<InterfaceFactoryImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceFactoryImpl);
 };
 
 }  // namespace media

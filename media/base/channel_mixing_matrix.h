@@ -20,6 +20,9 @@ class MEDIA_EXPORT ChannelMixingMatrix {
                       ChannelLayout output_layout,
                       int output_channels);
 
+  ChannelMixingMatrix(const ChannelMixingMatrix&) = delete;
+  ChannelMixingMatrix& operator=(const ChannelMixingMatrix&) = delete;
+
   ~ChannelMixingMatrix();
 
   // Create the transformation matrix of input channels to output channels.
@@ -55,8 +58,6 @@ class MEDIA_EXPORT ChannelMixingMatrix {
   // remove the channel from |unaccounted_inputs_|.
   void Mix(Channels input_ch, Channels output_ch, float scale);
   void MixWithoutAccounting(Channels input_ch, Channels output_ch, float scale);
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMixingMatrix);
 };
 
 }  // namespace media

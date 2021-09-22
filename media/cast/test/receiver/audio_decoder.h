@@ -32,6 +32,10 @@ class AudioDecoder {
                int channels,
                int sampling_rate,
                Codec codec);
+
+  AudioDecoder(const AudioDecoder&) = delete;
+  AudioDecoder& operator=(const AudioDecoder&) = delete;
+
   virtual ~AudioDecoder();
 
   // Returns STATUS_INITIALIZED if the decoder was successfully constructed.  If
@@ -56,8 +60,6 @@ class AudioDecoder {
 
   const scoped_refptr<CastEnvironment> cast_environment_;
   scoped_refptr<ImplBase> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoder);
 };
 
 }  // namespace cast

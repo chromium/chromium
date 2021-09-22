@@ -87,6 +87,9 @@ class UdpTransportImplTest : public ::testing::Test {
     recv_transport_->SetSendBufferSize(65536);
   }
 
+  UdpTransportImplTest(const UdpTransportImplTest&) = delete;
+  UdpTransportImplTest& operator=(const UdpTransportImplTest&) = delete;
+
   ~UdpTransportImplTest() override = default;
 
  protected:
@@ -96,9 +99,6 @@ class UdpTransportImplTest : public ::testing::Test {
 
   // A receiver side transport to receiver/send packets from/to sender.
   std::unique_ptr<UdpTransportImpl> recv_transport_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UdpTransportImplTest);
 };
 
 // Test the sending/receiving functions as a PacketSender.

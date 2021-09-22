@@ -24,6 +24,10 @@ class MockCdmAuxiliaryHelper : public CdmAuxiliaryHelper {
  public:
   // `allocator` is optional; can be null if no need to create buffers/frames.
   explicit MockCdmAuxiliaryHelper(std::unique_ptr<CdmAllocator> allocator);
+
+  MockCdmAuxiliaryHelper(const MockCdmAuxiliaryHelper&) = delete;
+  MockCdmAuxiliaryHelper& operator=(const MockCdmAuxiliaryHelper&) = delete;
+
   ~MockCdmAuxiliaryHelper() override;
 
   // CdmAuxiliaryHelper implementation.
@@ -61,8 +65,6 @@ class MockCdmAuxiliaryHelper : public CdmAuxiliaryHelper {
 
  private:
   std::unique_ptr<CdmAllocator> allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCdmAuxiliaryHelper);
 };
 
 }  // namespace media

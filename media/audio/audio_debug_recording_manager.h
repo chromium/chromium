@@ -61,6 +61,11 @@ class MEDIA_EXPORT AudioDebugRecordingManager {
 
   AudioDebugRecordingManager(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  AudioDebugRecordingManager(const AudioDebugRecordingManager&) = delete;
+  AudioDebugRecordingManager& operator=(const AudioDebugRecordingManager&) =
+      delete;
+
   virtual ~AudioDebugRecordingManager();
 
   // Enables and disables debug recording.
@@ -111,7 +116,6 @@ class MEDIA_EXPORT AudioDebugRecordingManager {
   CreateWavFileCallback create_file_callback_;
 
   base::WeakPtrFactory<AudioDebugRecordingManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingManager);
 };
 
 }  // namespace media

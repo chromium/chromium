@@ -29,6 +29,11 @@ namespace media {
 class CAPTURE_EXPORT VideoCaptureDeviceFactory {
  public:
   VideoCaptureDeviceFactory();
+
+  VideoCaptureDeviceFactory(const VideoCaptureDeviceFactory&) = delete;
+  VideoCaptureDeviceFactory& operator=(const VideoCaptureDeviceFactory&) =
+      delete;
+
   virtual ~VideoCaptureDeviceFactory();
 
   // Creates a VideoCaptureDevice object. Returns NULL if something goes wrong.
@@ -45,9 +50,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactory {
 
  protected:
   base::ThreadChecker thread_checker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactory);
 };
 
 }  // namespace media

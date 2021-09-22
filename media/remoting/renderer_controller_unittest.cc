@@ -63,6 +63,9 @@ class RendererControllerTest : public ::testing::Test,
   RendererControllerTest()
       : controller_(FakeRemoterFactory::CreateController(false)) {}
 
+  RendererControllerTest(const RendererControllerTest&) = delete;
+  RendererControllerTest& operator=(const RendererControllerTest&) = delete;
+
   ~RendererControllerTest() override = default;
 
   void TearDown() final { RunUntilIdle(); }
@@ -167,9 +170,6 @@ class RendererControllerTest : public ::testing::Test,
   std::string sink_name_;
   std::unique_ptr<RendererController> controller_;
   double duration_in_sec_ = 120;  // 2m duration.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RendererControllerTest);
 };
 
 TEST_F(RendererControllerTest, ToggleRendererOnDominantChange) {

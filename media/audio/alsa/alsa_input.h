@@ -43,6 +43,9 @@ class MEDIA_EXPORT AlsaPcmInputStream
                      const AudioParameters& params,
                      AlsaWrapper* wrapper);
 
+  AlsaPcmInputStream(const AlsaPcmInputStream&) = delete;
+  AlsaPcmInputStream& operator=(const AlsaPcmInputStream&) = delete;
+
   ~AlsaPcmInputStream() override;
 
   // Implementation of AudioInputStream.
@@ -92,8 +95,6 @@ class MEDIA_EXPORT AlsaPcmInputStream
   std::unique_ptr<AudioBus> audio_bus_;
   base::Thread capture_thread_;
   bool running_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlsaPcmInputStream);
 };
 
 }  // namespace media

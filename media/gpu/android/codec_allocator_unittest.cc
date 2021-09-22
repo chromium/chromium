@@ -40,6 +40,9 @@ class CodecAllocatorTest : public testing::Test {
     allocator_->tick_clock_ = &tick_clock_;
   }
 
+  CodecAllocatorTest(const CodecAllocatorTest&) = delete;
+  CodecAllocatorTest& operator=(const CodecAllocatorTest&) = delete;
+
   ~CodecAllocatorTest() override {
     if (allocator_thread_.IsRunning()) {
       // Don't leave any threads hung, or this will hang too. It would be nice
@@ -133,9 +136,6 @@ class CodecAllocatorTest : public testing::Test {
   CodecAllocator* allocator_ = nullptr;
 
   std::unique_ptr<MockMediaCodecBridge> last_created_codec_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CodecAllocatorTest);
 };
 
 TEST_F(CodecAllocatorTest, NormalCreation) {

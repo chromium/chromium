@@ -30,6 +30,9 @@ class VaapiWrapper;
 // Picture is native pixmap abstraction (X11/Ozone).
 class MEDIA_GPU_EXPORT VaapiPicture {
  public:
+  VaapiPicture(const VaapiPicture&) = delete;
+  VaapiPicture& operator=(const VaapiPicture&) = delete;
+
   virtual ~VaapiPicture();
 
   // Uses the buffer of |format|, pointed to by |gpu_memory_buffer_handle| as
@@ -79,8 +82,6 @@ class MEDIA_GPU_EXPORT VaapiPicture {
 
  private:
   const int32_t picture_buffer_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiPicture);
 };
 
 }  // namespace media

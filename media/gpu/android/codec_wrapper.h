@@ -33,6 +33,9 @@ using CodecSurfacePair = std::pair<std::unique_ptr<MediaCodecBridge>,
 // soon as we know we no longer need them.
 class MEDIA_GPU_EXPORT CodecOutputBuffer {
  public:
+  CodecOutputBuffer(const CodecOutputBuffer&) = delete;
+  CodecOutputBuffer& operator=(const CodecOutputBuffer&) = delete;
+
   // Releases the buffer without rendering it.
   ~CodecOutputBuffer();
 
@@ -72,7 +75,6 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   bool was_rendered_ = false;
   gfx::Size size_;
   base::OnceClosure render_cb_;
-  DISALLOW_COPY_AND_ASSIGN(CodecOutputBuffer);
 };
 
 // This wraps a MediaCodecBridge and provides higher level features and tracks
@@ -99,6 +101,10 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   CodecWrapper(CodecSurfacePair codec_surface_pair,
                OutputReleasedCB output_buffer_release_cb,
                scoped_refptr<base::SequencedTaskRunner> release_task_runner);
+
+  CodecWrapper(const CodecWrapper&) = delete;
+  CodecWrapper& operator=(const CodecWrapper&) = delete;
+
   ~CodecWrapper();
 
   // Takes the backing codec and surface, implicitly discarding all outstanding
@@ -150,7 +156,6 @@ class MEDIA_GPU_EXPORT CodecWrapper {
 
  private:
   scoped_refptr<CodecWrapperImpl> impl_;
-  DISALLOW_COPY_AND_ASSIGN(CodecWrapper);
 };
 
 }  // namespace media

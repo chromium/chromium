@@ -28,6 +28,10 @@ class MEDIA_EXPORT FrameProcessor {
   using UpdateDurationCB = base::RepeatingCallback<void(base::TimeDelta)>;
 
   FrameProcessor(UpdateDurationCB update_duration_cb, MediaLog* media_log);
+
+  FrameProcessor(const FrameProcessor&) = delete;
+  FrameProcessor& operator=(const FrameProcessor&) = delete;
+
   ~FrameProcessor();
 
   // This must be called exactly once, before doing any track buffer creation or
@@ -211,8 +215,6 @@ class MEDIA_EXPORT FrameProcessor {
   int num_skipped_empty_frame_warnings_ = 0;
   int num_partial_discard_warnings_ = 0;
   int num_dropped_frame_warnings_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameProcessor);
 };
 
 }  // namespace media

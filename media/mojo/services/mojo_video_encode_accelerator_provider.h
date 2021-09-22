@@ -42,6 +42,12 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
       CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+
+  MojoVideoEncodeAcceleratorProvider(
+      const MojoVideoEncodeAcceleratorProvider&) = delete;
+  MojoVideoEncodeAcceleratorProvider& operator=(
+      const MojoVideoEncodeAcceleratorProvider&) = delete;
+
   ~MojoVideoEncodeAcceleratorProvider() override;
 
   // mojom::VideoEncodeAcceleratorProvider impl.
@@ -54,8 +60,6 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
   const CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
   const gpu::GpuPreferences& gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorProvider);
 };
 
 }  // namespace media

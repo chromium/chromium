@@ -53,6 +53,12 @@ typedef StreamParser::TrackId TrackId;
 class FrameProcessorTestCallbackHelper {
  public:
   FrameProcessorTestCallbackHelper() = default;
+
+  FrameProcessorTestCallbackHelper(const FrameProcessorTestCallbackHelper&) =
+      delete;
+  FrameProcessorTestCallbackHelper& operator=(
+      const FrameProcessorTestCallbackHelper&) = delete;
+
   virtual ~FrameProcessorTestCallbackHelper() = default;
 
   MOCK_METHOD1(OnParseWarning, void(const SourceBufferParseWarning));
@@ -73,9 +79,6 @@ class FrameProcessorTestCallbackHelper {
                void(const DemuxerStream::Type type,
                     DecodeTimestamp start_dts,
                     base::TimeDelta start_pts));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameProcessorTestCallbackHelper);
 };
 
 class FrameProcessorTest : public ::testing::TestWithParam<bool> {

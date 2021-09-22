@@ -24,14 +24,15 @@ class COMPONENT_EXPORT(LEARNING_COMMON) LearningSession
     : public base::SupportsUserData::Data {
  public:
   LearningSession();
+
+  LearningSession(const LearningSession&) = delete;
+  LearningSession& operator=(const LearningSession&) = delete;
+
   ~LearningSession() override;
 
   // Return a LearningTaskController for the given task.
   virtual std::unique_ptr<LearningTaskController> GetController(
       const std::string& task_name) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LearningSession);
 };
 
 }  // namespace learning

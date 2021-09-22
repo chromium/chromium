@@ -31,6 +31,10 @@ class MEDIA_EXPORT AudioRendererMixer
  public:
   AudioRendererMixer(const AudioParameters& output_params,
                      scoped_refptr<AudioRendererSink> sink);
+
+  AudioRendererMixer(const AudioRendererMixer&) = delete;
+  AudioRendererMixer& operator=(const AudioRendererMixer&) = delete;
+
   ~AudioRendererMixer() override;
 
   // Add or remove a mixer input from mixing; called by AudioRendererMixerInput.
@@ -94,8 +98,6 @@ class MEDIA_EXPORT AudioRendererMixer
   base::TimeDelta pause_delay_ GUARDED_BY(lock_);
   base::TimeTicks last_play_time_ GUARDED_BY(lock_);
   bool playing_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixer);
 };
 
 }  // namespace media

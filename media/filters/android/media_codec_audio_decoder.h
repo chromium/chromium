@@ -81,6 +81,10 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
  public:
   explicit MediaCodecAudioDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  MediaCodecAudioDecoder(const MediaCodecAudioDecoder&) = delete;
+  MediaCodecAudioDecoder& operator=(const MediaCodecAudioDecoder&) = delete;
+
   ~MediaCodecAudioDecoder() override;
 
   // AudioDecoder implementation.
@@ -210,8 +214,6 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
   JavaObjectPtr media_crypto_;
 
   base::WeakPtrFactory<MediaCodecAudioDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecAudioDecoder);
 };
 
 }  // namespace media

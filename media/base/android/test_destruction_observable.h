@@ -19,11 +19,14 @@ class DestructionObserver;
 class DestructionObservable {
  public:
   DestructionObservable();
+
+  DestructionObservable(const DestructionObservable&) = delete;
+  DestructionObservable& operator=(const DestructionObservable&) = delete;
+
   virtual ~DestructionObservable();
   std::unique_ptr<DestructionObserver> CreateDestructionObserver();
 
   base::ScopedClosureRunner destruction_cb;
-  DISALLOW_COPY_AND_ASSIGN(DestructionObservable);
 };
 
 // DestructionObserver lets you set expectations about the destruction of an
@@ -31,6 +34,10 @@ class DestructionObservable {
 class DestructionObserver {
  public:
   DestructionObserver(DestructionObservable* observable);
+
+  DestructionObserver(const DestructionObserver&) = delete;
+  DestructionObserver& operator=(const DestructionObserver&) = delete;
+
   virtual ~DestructionObserver();
 
   void VerifyAndClearExpectations();
@@ -58,7 +65,6 @@ class DestructionObserver {
   absl::optional<bool> expect_destruction_;
 
   base::WeakPtrFactory<DestructionObserver> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DestructionObserver);
 };
 
 }  // namespace media

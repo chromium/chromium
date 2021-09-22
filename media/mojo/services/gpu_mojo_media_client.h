@@ -114,6 +114,10 @@ class GpuMojoMediaClient final : public MojoMediaClient {
       base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
+
+  GpuMojoMediaClient(const GpuMojoMediaClient&) = delete;
+  GpuMojoMediaClient& operator=(const GpuMojoMediaClient&) = delete;
+
   ~GpuMojoMediaClient() final;
 
   // MojoMediaClient implementation.
@@ -145,7 +149,6 @@ class GpuMojoMediaClient final : public MojoMediaClient {
   base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager_;
   AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
-  DISALLOW_COPY_AND_ASSIGN(GpuMojoMediaClient);
 };
 
 }  // namespace media

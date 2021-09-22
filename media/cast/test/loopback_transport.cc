@@ -22,6 +22,9 @@ class LoopBackPacketPipe final : public test::PacketPipe {
   explicit LoopBackPacketPipe(const PacketReceiverCallback& packet_receiver)
       : packet_receiver_(packet_receiver) {}
 
+  LoopBackPacketPipe(const LoopBackPacketPipe&) = delete;
+  LoopBackPacketPipe& operator=(const LoopBackPacketPipe&) = delete;
+
   ~LoopBackPacketPipe() final = default;
 
   // PacketPipe implementations.
@@ -31,8 +34,6 @@ class LoopBackPacketPipe final : public test::PacketPipe {
 
  private:
   PacketReceiverCallback packet_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopBackPacketPipe);
 };
 
 }  // namespace

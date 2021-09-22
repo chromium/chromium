@@ -101,6 +101,9 @@ class MEDIA_EXPORT VideoResourceUpdater
                        bool use_r16_texture,
                        int max_resource_size);
 
+  VideoResourceUpdater(const VideoResourceUpdater&) = delete;
+  VideoResourceUpdater& operator=(const VideoResourceUpdater&) = delete;
+
   ~VideoResourceUpdater() override;
 
   // For each CompositorFrame the following sequence is expected:
@@ -244,8 +247,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   std::vector<std::unique_ptr<PlaneResource>> all_resources_;
 
   base::WeakPtrFactory<VideoResourceUpdater> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoResourceUpdater);
 };
 
 }  // namespace media

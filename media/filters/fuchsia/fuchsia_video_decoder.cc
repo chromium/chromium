@@ -90,6 +90,9 @@ class FuchsiaVideoDecoder::OutputMailbox {
             kPremul_SkAlphaType, usage);
   }
 
+  OutputMailbox(const OutputMailbox&) = delete;
+  OutputMailbox& operator=(const OutputMailbox&) = delete;
+
   ~OutputMailbox() {
     raster_context_provider_->SharedImageInterface()->DestroySharedImage(
         sync_token_, mailbox_);
@@ -172,8 +175,6 @@ class FuchsiaVideoDecoder::OutputMailbox {
   base::OnceClosure reuse_callback_;
 
   base::WeakPtrFactory<OutputMailbox> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputMailbox);
 };
 
 // static

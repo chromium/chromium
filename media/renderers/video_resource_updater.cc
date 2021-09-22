@@ -184,6 +184,10 @@ class SyncTokenClientImpl : public VideoFrame::SyncTokenClient {
     // Only one interface should be used.
     DCHECK((gl_ && !sii_) || (!gl_ && sii_));
   }
+
+  SyncTokenClientImpl(const SyncTokenClientImpl&) = delete;
+  SyncTokenClientImpl& operator=(const SyncTokenClientImpl&) = delete;
+
   ~SyncTokenClientImpl() override = default;
 
   void GenerateSyncToken(gpu::SyncToken* sync_token) override {
@@ -220,7 +224,6 @@ class SyncTokenClientImpl : public VideoFrame::SyncTokenClient {
   gpu::gles2::GLES2Interface* gl_;
   gpu::SharedImageInterface* sii_;
   gpu::SyncToken sync_token_;
-  DISALLOW_COPY_AND_ASSIGN(SyncTokenClientImpl);
 };
 
 // Sync tokens passed downstream to the compositor can be unverified.
@@ -265,6 +268,10 @@ class VideoResourceUpdater::PlaneResource {
         resource_size_(resource_size),
         resource_format_(resource_format),
         is_software_(is_software) {}
+
+  PlaneResource(const PlaneResource&) = delete;
+  PlaneResource& operator=(const PlaneResource&) = delete;
+
   virtual ~PlaneResource() = default;
 
   // Casts |this| to SoftwarePlaneResource for software compositing.
@@ -316,8 +323,6 @@ class VideoResourceUpdater::PlaneResource {
   size_t plane_index_ = 0u;
   // Indicates if the above two members have been set or not.
   bool has_unique_frame_id_and_plane_index_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PlaneResource);
 };
 
 class VideoResourceUpdater::SoftwarePlaneResource
@@ -342,6 +347,10 @@ class VideoResourceUpdater::SoftwarePlaneResource
     shared_bitmap_reporter_->DidAllocateSharedBitmap(std::move(shm.region),
                                                      shared_bitmap_id_);
   }
+
+  SoftwarePlaneResource(const SoftwarePlaneResource&) = delete;
+  SoftwarePlaneResource& operator=(const SoftwarePlaneResource&) = delete;
+
   ~SoftwarePlaneResource() override {
     shared_bitmap_reporter_->DidDeleteSharedBitmap(shared_bitmap_id_);
   }
@@ -360,8 +369,6 @@ class VideoResourceUpdater::SoftwarePlaneResource
   viz::SharedBitmapReporter* const shared_bitmap_reporter_;
   const viz::SharedBitmapId shared_bitmap_id_;
   base::WritableSharedMemoryMapping shared_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwarePlaneResource);
 };
 
 class VideoResourceUpdater::HardwarePlaneResource

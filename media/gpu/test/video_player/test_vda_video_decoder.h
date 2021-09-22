@@ -38,6 +38,9 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
                       FrameRenderer* const frame_renderer,
                       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
 
+  TestVDAVideoDecoder(const TestVDAVideoDecoder&) = delete;
+  TestVDAVideoDecoder& operator=(const TestVDAVideoDecoder&) = delete;
+
   ~TestVDAVideoDecoder() override;
 
   // media::VideoDecoder implementation
@@ -130,8 +133,6 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
 
   base::WeakPtr<TestVDAVideoDecoder> weak_this_;
   base::WeakPtrFactory<TestVDAVideoDecoder> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestVDAVideoDecoder);
 };
 
 }  // namespace test

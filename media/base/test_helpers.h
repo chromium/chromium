@@ -50,6 +50,10 @@ class WaitableMessageLoopEvent {
  public:
   WaitableMessageLoopEvent();
   explicit WaitableMessageLoopEvent(base::TimeDelta timeout);
+
+  WaitableMessageLoopEvent(const WaitableMessageLoopEvent&) = delete;
+  WaitableMessageLoopEvent& operator=(const WaitableMessageLoopEvent&) = delete;
+
   ~WaitableMessageLoopEvent();
 
   // Returns a thread-safe closure that will signal |this| when executed.
@@ -79,8 +83,6 @@ class WaitableMessageLoopEvent {
   const base::TimeDelta timeout_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableMessageLoopEvent);
 };
 
 // Provides pre-canned VideoDecoderConfig. These types are used for tests that

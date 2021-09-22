@@ -29,6 +29,10 @@ namespace midi {
 class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
  public:
   explicit MidiManagerAlsa(MidiService* service);
+
+  MidiManagerAlsa(const MidiManagerAlsa&) = delete;
+  MidiManagerAlsa& operator=(const MidiManagerAlsa&) = delete;
+
   ~MidiManagerAlsa() override;
 
   // MidiManager implementation.
@@ -181,6 +185,9 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
    public:
     typedef std::vector<std::unique_ptr<MidiPort>>::iterator iterator;
 
+    MidiPortStateBase(const MidiPortStateBase&) = delete;
+    MidiPortStateBase& operator=(const MidiPortStateBase&) = delete;
+
     virtual ~MidiPortStateBase();
 
     // Given a port, finds a port in the internal store.
@@ -204,8 +211,6 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
 
    private:
     std::vector<std::unique_ptr<MidiPort>> ports_;
-
-    DISALLOW_COPY_AND_ASSIGN(MidiPortStateBase);
   };
 
   class TemporaryMidiPortState final : public MidiPortStateBase {
@@ -235,6 +240,10 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
     enum class PortDirection { kInput, kOutput, kDuplex };
 
     AlsaSeqState();
+
+    AlsaSeqState(const AlsaSeqState&) = delete;
+    AlsaSeqState& operator=(const AlsaSeqState&) = delete;
+
     ~AlsaSeqState();
 
     void ClientStart(int client_id,
@@ -258,6 +267,10 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
     class Port {
      public:
       Port(const std::string& name, PortDirection direction, bool midi);
+
+      Port(const Port&) = delete;
+      Port& operator=(const Port&) = delete;
+
       ~Port();
 
       std::string name() const { return name_; }
@@ -269,8 +282,6 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
       const std::string name_;
       const PortDirection direction_;
       const bool midi_;
-
-      DISALLOW_COPY_AND_ASSIGN(Port);
     };
 
     class Client {
@@ -278,6 +289,10 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
       using PortMap = std::map<int, std::unique_ptr<Port>>;
 
       Client(const std::string& name, snd_seq_client_type_t type);
+
+      Client(const Client&) = delete;
+      Client& operator=(const Client&) = delete;
+
       ~Client();
 
       std::string name() const { return name_; }
@@ -291,8 +306,6 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
       const std::string name_;
       const snd_seq_client_type_t type_;
       PortMap ports_;
-
-      DISALLOW_COPY_AND_ASSIGN(Client);
     };
 
     std::map<int, std::unique_ptr<Client>> clients_;
@@ -302,8 +315,6 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
     // we are in sync between ALSA and udev. Until then, we cannot generate
     // MIDIConnectionEvents to web clients.
     int card_client_count_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(AlsaSeqState);
   };
 
   class AlsaCard {
@@ -313,6 +324,10 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
              const std::string& longname,
              const std::string& driver,
              int midi_device_count);
+
+    AlsaCard(const AlsaCard&) = delete;
+    AlsaCard& operator=(const AlsaCard&) = delete;
+
     ~AlsaCard();
     std::string name() const { return name_; }
     std::string longname() const { return longname_; }
@@ -348,8 +363,6 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
     const std::string serial_;
     const int midi_device_count_;
     const std::string manufacturer_;
-
-    DISALLOW_COPY_AND_ASSIGN(AlsaCard);
   };
 
   struct SndSeqDeleter {
@@ -435,8 +448,6 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
   // udev, for querying hardware devices.
   device::ScopedUdevPtr udev_;
   device::ScopedUdevMonitorPtr udev_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerAlsa);
 };
 
 }  // namespace midi

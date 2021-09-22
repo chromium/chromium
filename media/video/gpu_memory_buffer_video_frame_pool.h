@@ -38,6 +38,11 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
       const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       GpuVideoAcceleratorFactories* gpu_factories);
+
+  GpuMemoryBufferVideoFramePool(const GpuMemoryBufferVideoFramePool&) = delete;
+  GpuMemoryBufferVideoFramePool& operator=(
+      const GpuMemoryBufferVideoFramePool&) = delete;
+
   virtual ~GpuMemoryBufferVideoFramePool();
 
   // Callback used by MaybeCreateHardwareFrame to deliver a new VideoFrame
@@ -68,8 +73,6 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
  private:
   class PoolImpl;
   scoped_refptr<PoolImpl> pool_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferVideoFramePool);
 };
 
 }  // namespace media

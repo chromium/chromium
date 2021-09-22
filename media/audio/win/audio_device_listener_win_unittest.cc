@@ -47,6 +47,10 @@ class AudioDeviceListenerWinTest
     output_device_listener_->tick_clock_ = &tick_clock_;
   }
 
+  AudioDeviceListenerWinTest(const AudioDeviceListenerWinTest&) = delete;
+  AudioDeviceListenerWinTest& operator=(const AudioDeviceListenerWinTest&) =
+      delete;
+
   ~AudioDeviceListenerWinTest() override {
     system_monitor_.RemoveDevicesChangedObserver(this);
   }
@@ -81,8 +85,6 @@ class AudioDeviceListenerWinTest
   base::SystemMonitor system_monitor_;
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<AudioDeviceListenerWin> output_device_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerWinTest);
 };
 
 // Simulate a device change events and ensure we get the right callbacks.

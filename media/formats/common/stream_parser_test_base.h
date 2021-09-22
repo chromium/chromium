@@ -24,6 +24,10 @@ namespace media {
 class StreamParserTestBase {
  public:
   explicit StreamParserTestBase(std::unique_ptr<StreamParser> stream_parser);
+
+  StreamParserTestBase(const StreamParserTestBase&) = delete;
+  StreamParserTestBase& operator=(const StreamParserTestBase&) = delete;
+
   virtual ~StreamParserTestBase();
 
  protected:
@@ -71,8 +75,6 @@ class StreamParserTestBase {
   std::stringstream results_stream_;
   AudioDecoderConfig last_audio_config_;
   StreamParser::TrackId audio_track_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamParserTestBase);
 };
 
 }  // namespace media

@@ -23,6 +23,10 @@ namespace media {
 class MEDIA_EXPORT H264BitReader {
  public:
   H264BitReader();
+
+  H264BitReader(const H264BitReader&) = delete;
+  H264BitReader& operator=(const H264BitReader&) = delete;
+
   ~H264BitReader();
 
   // Initialize the reader to start reading at |data|, |size| being size
@@ -72,8 +76,6 @@ class MEDIA_EXPORT H264BitReader {
 
   // Number of emulation preventation bytes (0x000003) we met.
   size_t emulation_prevention_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264BitReader);
 };
 
 }  // namespace media

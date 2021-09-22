@@ -46,6 +46,10 @@ class UdpTransportImpl final : public PacketTransport, public UdpTransport {
       const net::IPEndPoint& local_end_point,
       const net::IPEndPoint& remote_end_point,
       CastTransportStatusCallback status_callback);
+
+  UdpTransportImpl(const UdpTransportImpl&) = delete;
+  UdpTransportImpl& operator=(const UdpTransportImpl&) = delete;
+
   ~UdpTransportImpl() final;
 
   // PacketTransport implementations.
@@ -136,8 +140,6 @@ class UdpTransportImpl final : public PacketTransport, public UdpTransport {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<UdpTransportImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UdpTransportImpl);
 };
 
 }  // namespace cast

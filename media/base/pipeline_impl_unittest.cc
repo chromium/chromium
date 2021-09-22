@@ -90,6 +90,10 @@ class PipelineImplTest : public ::testing::Test {
   class CallbackHelper : public MockPipelineClient {
    public:
     CallbackHelper() = default;
+
+    CallbackHelper(const CallbackHelper&) = delete;
+    CallbackHelper& operator=(const CallbackHelper&) = delete;
+
     virtual ~CallbackHelper() = default;
 
     MOCK_METHOD1(OnStart, void(PipelineStatus));
@@ -97,9 +101,6 @@ class PipelineImplTest : public ::testing::Test {
     MOCK_METHOD1(OnSuspend, void(PipelineStatus));
     MOCK_METHOD1(OnResume, void(PipelineStatus));
     MOCK_METHOD1(OnCdmAttached, void(bool));
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CallbackHelper);
   };
 
   PipelineImplTest()
@@ -130,6 +131,9 @@ class PipelineImplTest : public ::testing::Test {
 
     EXPECT_CALL(*renderer_, SetPreservesPitch(true)).Times(AnyNumber());
   }
+
+  PipelineImplTest(const PipelineImplTest&) = delete;
+  PipelineImplTest& operator=(const PipelineImplTest&) = delete;
 
   ~PipelineImplTest() override {
     if (pipeline_->IsRunning()) {
@@ -366,9 +370,6 @@ class PipelineImplTest : public ::testing::Test {
   VideoDecoderConfig video_decoder_config_;
   PipelineMetadata metadata_;
   base::TimeDelta start_time_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PipelineImplTest);
 };
 
 // Test that playback controls methods can be set even before the pipeline is
@@ -981,6 +982,10 @@ class PipelineTeardownTest : public PipelineImplTest {
   };
 
   PipelineTeardownTest() = default;
+
+  PipelineTeardownTest(const PipelineTeardownTest&) = delete;
+  PipelineTeardownTest& operator=(const PipelineTeardownTest&) = delete;
+
   ~PipelineTeardownTest() override = default;
 
   void RunTest(TeardownState state, StopOrError stop_or_error) {
@@ -1197,8 +1202,6 @@ class PipelineTeardownTest : public PipelineImplTest {
 
     base::RunLoop().RunUntilIdle();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineTeardownTest);
 };
 
 #define INSTANTIATE_TEARDOWN_TEST(stop_or_error, state)   \

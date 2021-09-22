@@ -107,6 +107,10 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
 class H264DPB {
  public:
   H264DPB();
+
+  H264DPB(const H264DPB&) = delete;
+  H264DPB& operator=(const H264DPB&) = delete;
+
   ~H264DPB();
 
   void set_max_num_pics(size_t max_num_pics);
@@ -177,8 +181,6 @@ class H264DPB {
 
   H264Picture::Vector pics_;
   size_t max_num_pics_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264DPB);
 };
 
 }  // namespace media

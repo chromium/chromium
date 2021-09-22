@@ -22,6 +22,10 @@ class MEDIA_EXPORT AudioTrackOutputStream : public MuteableAudioOutputStream {
  public:
   AudioTrackOutputStream(AudioManagerBase* manager,
                          const AudioParameters& params);
+
+  AudioTrackOutputStream(const AudioTrackOutputStream&) = delete;
+  AudioTrackOutputStream& operator=(const AudioTrackOutputStream&) = delete;
+
   ~AudioTrackOutputStream() override;
 
   // AudioOutputStream implementation.
@@ -59,8 +63,6 @@ class MEDIA_EXPORT AudioTrackOutputStream : public MuteableAudioOutputStream {
 
   // Java AudioTrackOutputStream instance.
   base::android::ScopedJavaGlobalRef<jobject> j_audio_output_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioTrackOutputStream);
 };
 
 }  // namespace media

@@ -37,6 +37,11 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
   AndroidVideoEncodeAccelerator();
+
+  AndroidVideoEncodeAccelerator(const AndroidVideoEncodeAccelerator&) = delete;
+  AndroidVideoEncodeAccelerator& operator=(
+      const AndroidVideoEncodeAccelerator&) = delete;
+
   ~AndroidVideoEncodeAccelerator() override;
 
   // VideoEncodeAccelerator implementation.
@@ -107,8 +112,6 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
 
   // True if there is encoder error.
   bool error_occurred_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidVideoEncodeAccelerator);
 };
 
 }  // namespace media

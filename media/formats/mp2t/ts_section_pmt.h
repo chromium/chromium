@@ -22,6 +22,10 @@ class TsSectionPmt : public TsSectionPsi {
       void(int pes_pid, int stream_type, const Descriptors& descriptors)>;
 
   explicit TsSectionPmt(RegisterPesCB register_pes_cb);
+
+  TsSectionPmt(const TsSectionPmt&) = delete;
+  TsSectionPmt& operator=(const TsSectionPmt&) = delete;
+
   ~TsSectionPmt() override;
 
   // Mpeg2TsPsiParser implementation.
@@ -30,8 +34,6 @@ class TsSectionPmt : public TsSectionPsi {
 
  private:
   const RegisterPesCB register_pes_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionPmt);
 };
 
 }  // namespace mp2t

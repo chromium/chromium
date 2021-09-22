@@ -61,6 +61,9 @@ class V4L2VideoDecoderBackend {
     virtual DmabufVideoFramePool* GetVideoFramePool() const = 0;
   };
 
+  V4L2VideoDecoderBackend(const V4L2VideoDecoderBackend&) = delete;
+  V4L2VideoDecoderBackend& operator=(const V4L2VideoDecoderBackend&) = delete;
+
   virtual ~V4L2VideoDecoderBackend();
 
   virtual bool Initialize() = 0;
@@ -113,7 +116,6 @@ class V4L2VideoDecoderBackend {
   scoped_refptr<V4L2Queue> output_queue_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderBackend);
 };
 
 }  // namespace media

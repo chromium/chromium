@@ -40,6 +40,10 @@ class EsParserTestBase {
   };
 
   EsParserTestBase();
+
+  EsParserTestBase(const EsParserTestBase&) = delete;
+  EsParserTestBase& operator=(const EsParserTestBase&) = delete;
+
   virtual ~EsParserTestBase();
 
  protected:
@@ -82,8 +86,6 @@ class EsParserTestBase {
  private:
   // Timestamps of buffers generated while parsing the ES stream.
   std::stringstream buffer_timestamps_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsParserTestBase);
 };
 
 }  // namespace mp2t

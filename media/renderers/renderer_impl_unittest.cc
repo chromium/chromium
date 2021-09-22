@@ -66,6 +66,10 @@ class RendererImplTest : public ::testing::Test {
   class CallbackHelper : public MockRendererClient {
    public:
     CallbackHelper() = default;
+
+    CallbackHelper(const CallbackHelper&) = delete;
+    CallbackHelper& operator=(const CallbackHelper&) = delete;
+
     virtual ~CallbackHelper() = default;
 
     // Completion callbacks.
@@ -75,9 +79,6 @@ class RendererImplTest : public ::testing::Test {
     MOCK_METHOD1(OnDurationChange, void(base::TimeDelta duration));
     MOCK_METHOD0(OnVideoTrackChangeComplete, void());
     MOCK_METHOD0(OnAudioTrackChangeComplete, void());
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CallbackHelper);
   };
 
   RendererImplTest()
@@ -96,6 +97,9 @@ class RendererImplTest : public ::testing::Test {
     // expected non-NULL streams.
     EXPECT_CALL(*demuxer_, GetAllStreams()).WillRepeatedly(Return(streams_));
   }
+
+  RendererImplTest(const RendererImplTest&) = delete;
+  RendererImplTest& operator=(const RendererImplTest&) = delete;
 
   ~RendererImplTest() override { Destroy(); }
 
@@ -374,9 +378,6 @@ class RendererImplTest : public ::testing::Test {
   PipelineStatus initialization_status_;
   bool is_encrypted_ = false;
   bool is_cdm_set_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RendererImplTest);
 };
 
 TEST_F(RendererImplTest, Destroy_BeforeInitialize) {

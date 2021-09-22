@@ -15,6 +15,10 @@ namespace media {
 class AudioFifoTest : public testing::Test {
  public:
   AudioFifoTest() = default;
+
+  AudioFifoTest(const AudioFifoTest&) = delete;
+  AudioFifoTest& operator=(const AudioFifoTest&) = delete;
+
   ~AudioFifoTest() override = default;
 
   void VerifyValue(const float data[], int size, float value) {
@@ -23,7 +27,6 @@ class AudioFifoTest : public testing::Test {
   }
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(AudioFifoTest);
 };
 
 // Verify that construction works as intended.

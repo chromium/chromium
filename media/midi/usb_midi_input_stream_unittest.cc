@@ -26,6 +26,10 @@ namespace {
 class TestUsbMidiDevice : public UsbMidiDevice {
  public:
   TestUsbMidiDevice() = default;
+
+  TestUsbMidiDevice(const TestUsbMidiDevice&) = delete;
+  TestUsbMidiDevice& operator=(const TestUsbMidiDevice&) = delete;
+
   ~TestUsbMidiDevice() override = default;
   std::vector<uint8_t> GetDescriptors() override {
     return std::vector<uint8_t>();
@@ -34,14 +38,15 @@ class TestUsbMidiDevice : public UsbMidiDevice {
   std::string GetProductName() override { return std::string(); }
   std::string GetDeviceVersion() override { return std::string(); }
   void Send(int endpoint_number, const std::vector<uint8_t>& data) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestUsbMidiDevice);
 };
 
 class MockDelegate : public UsbMidiInputStream::Delegate {
  public:
   MockDelegate() = default;
+
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
   ~MockDelegate() override = default;
   void OnReceivedData(size_t jack_index,
                       const uint8_t* data,
@@ -56,7 +61,6 @@ class MockDelegate : public UsbMidiInputStream::Delegate {
 
  private:
   std::string received_data_;
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 class UsbMidiInputStreamTest : public ::testing::Test {

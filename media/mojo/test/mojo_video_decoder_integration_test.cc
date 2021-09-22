@@ -81,6 +81,9 @@ class MockVideoDecoder : public VideoDecoder {
         .WillByDefault(Invoke(this, &MockVideoDecoder::DoReset));
   }
 
+  MockVideoDecoder(const MockVideoDecoder&) = delete;
+  MockVideoDecoder& operator=(const MockVideoDecoder&) = delete;
+
   // Re-declare as public.
   ~MockVideoDecoder() override {}
 
@@ -168,8 +171,6 @@ class MockVideoDecoder : public VideoDecoder {
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
   base::WeakPtrFactory<MockVideoDecoder> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockVideoDecoder);
 };
 
 // Proxies CreateVideoDecoder() to a callback.

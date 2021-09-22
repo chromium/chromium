@@ -54,6 +54,9 @@ class MEDIA_EXPORT MediaLog {
   static constexpr size_t kLogLimit = 512;
 #endif
 
+  MediaLog(const MediaLog&) = delete;
+  MediaLog& operator=(const MediaLog&) = delete;
+
   // Constructor is protected, see below.
   virtual ~MediaLog();
 
@@ -193,8 +196,6 @@ class MEDIA_EXPORT MediaLog {
 
   // The underlying media log.
   scoped_refptr<ParentLogRecord> parent_log_record_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaLog);
 };
 
 // Helper class to make it easier to use MediaLog like DVLOG().

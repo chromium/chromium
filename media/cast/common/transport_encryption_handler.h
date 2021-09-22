@@ -27,6 +27,11 @@ namespace cast {
 class TransportEncryptionHandler {
  public:
   TransportEncryptionHandler();
+
+  TransportEncryptionHandler(const TransportEncryptionHandler&) = delete;
+  TransportEncryptionHandler& operator=(const TransportEncryptionHandler&) =
+      delete;
+
   ~TransportEncryptionHandler();
 
   bool Initialize(const std::string& aes_key, const std::string& aes_iv_mask);
@@ -46,8 +51,6 @@ class TransportEncryptionHandler {
   std::unique_ptr<crypto::Encryptor> encryptor_;
   std::string iv_mask_;
   bool is_activated_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransportEncryptionHandler);
 };
 
 }  // namespace cast

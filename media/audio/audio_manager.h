@@ -36,6 +36,9 @@ class AudioSourceDiverter;
 // the need to provide iterators over the existing streams.
 class MEDIA_EXPORT AudioManager {
  public:
+  AudioManager(const AudioManager&) = delete;
+  AudioManager& operator=(const AudioManager&) = delete;
+
   virtual ~AudioManager();
 
   // Construct the audio manager; only one instance is allowed.
@@ -274,7 +277,6 @@ class MEDIA_EXPORT AudioManager {
   RemoveDiverterCallback remove_diverter_callback_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AudioManager);
 };
 
 }  // namespace media

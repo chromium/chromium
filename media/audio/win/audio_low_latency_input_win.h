@@ -125,6 +125,9 @@ class MEDIA_EXPORT WASAPIAudioInputStream
                          const std::string& device_id,
                          AudioManager::LogCallback log_callback);
 
+  WASAPIAudioInputStream(const WASAPIAudioInputStream&) = delete;
+  WASAPIAudioInputStream& operator=(const WASAPIAudioInputStream&) = delete;
+
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioInputStream::Close().
   ~WASAPIAudioInputStream() override;
@@ -339,8 +342,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   std::vector<ABI::Windows::Media::Effects::AudioEffectType> raw_effect_types_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WASAPIAudioInputStream);
 };
 
 }  // namespace media

@@ -30,6 +30,10 @@ class MEDIA_EXPORT ChannelMixer {
 
   ChannelMixer(ChannelLayout input_layout, ChannelLayout output_layout);
   ChannelMixer(const AudioParameters& input, const AudioParameters& output);
+
+  ChannelMixer(const ChannelMixer&) = delete;
+  ChannelMixer& operator=(const ChannelMixer&) = delete;
+
   ~ChannelMixer();
 
   // Transforms all channels from |input| into |output| channels.
@@ -53,8 +57,6 @@ class MEDIA_EXPORT ChannelMixer {
   // Optimization case for when we can simply remap the input channels to output
   // channels and don't need to do a multiply-accumulate loop over |matrix_|.
   bool remapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMixer);
 };
 
 }  // namespace media

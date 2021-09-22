@@ -23,6 +23,10 @@ namespace media {
 class AudioFileReaderTest : public testing::Test {
  public:
   AudioFileReaderTest() : packet_verification_disabled_(false) {}
+
+  AudioFileReaderTest(const AudioFileReaderTest&) = delete;
+  AudioFileReaderTest& operator=(const AudioFileReaderTest&) = delete;
+
   ~AudioFileReaderTest() override = default;
 
   void Initialize(const char* filename) {
@@ -140,8 +144,6 @@ class AudioFileReaderTest : public testing::Test {
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<AudioFileReader> reader_;
   bool packet_verification_disabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFileReaderTest);
 };
 
 TEST_F(AudioFileReaderTest, WithoutOpen) {

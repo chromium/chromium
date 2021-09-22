@@ -36,6 +36,9 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
  public:
   enum class VoiceProcessingMode { kDisabled = 0, kEnabled = 1 };
 
+  AudioManagerBase(const AudioManagerBase&) = delete;
+  AudioManagerBase& operator=(const AudioManagerBase&) = delete;
+
   ~AudioManagerBase() override;
 
   AudioOutputStream* MakeAudioOutputStream(
@@ -212,8 +215,6 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
 
   // Debug recording manager.
   std::unique_ptr<AudioDebugRecordingManager> debug_recording_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerBase);
 };
 
 }  // namespace media

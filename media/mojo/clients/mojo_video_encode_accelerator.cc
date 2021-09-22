@@ -32,6 +32,11 @@ class VideoEncodeAcceleratorClient
   VideoEncodeAcceleratorClient(
       VideoEncodeAccelerator::Client* client,
       mojo::PendingReceiver<mojom::VideoEncodeAcceleratorClient> receiver);
+
+  VideoEncodeAcceleratorClient(const VideoEncodeAcceleratorClient&) = delete;
+  VideoEncodeAcceleratorClient& operator=(const VideoEncodeAcceleratorClient&) =
+      delete;
+
   ~VideoEncodeAcceleratorClient() override = default;
 
   // mojom::VideoEncodeAcceleratorClient impl.
@@ -47,8 +52,6 @@ class VideoEncodeAcceleratorClient
  private:
   VideoEncodeAccelerator::Client* client_;
   mojo::Receiver<mojom::VideoEncodeAcceleratorClient> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncodeAcceleratorClient);
 };
 
 VideoEncodeAcceleratorClient::VideoEncodeAcceleratorClient(

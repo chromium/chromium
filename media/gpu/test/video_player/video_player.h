@@ -60,6 +60,9 @@ class VideoPlayer {
  public:
   using EventCallback = base::RepeatingCallback<bool(VideoPlayerEvent)>;
 
+  VideoPlayer(const VideoPlayer&) = delete;
+  VideoPlayer& operator=(const VideoPlayer&) = delete;
+
   ~VideoPlayer();
 
   // Create an instance of the video player. The |gpu_memory_buffer_factory|,
@@ -160,7 +163,6 @@ class VideoPlayer {
       VideoPlayerEvent::kNumEvents, std::numeric_limits<size_t>::max()};
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(VideoPlayer);
 };
 
 }  // namespace test

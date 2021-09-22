@@ -23,6 +23,10 @@ class MEDIA_EXPORT FuchsiaCdmFactory final : public CdmFactory {
  public:
   // |interface_provider| must outlive this class.
   explicit FuchsiaCdmFactory(std::unique_ptr<FuchsiaCdmProvider> provider);
+
+  FuchsiaCdmFactory(const FuchsiaCdmFactory&) = delete;
+  FuchsiaCdmFactory& operator=(const FuchsiaCdmFactory&) = delete;
+
   ~FuchsiaCdmFactory() override;
 
   // CdmFactory implementation.
@@ -48,8 +52,6 @@ class MEDIA_EXPORT FuchsiaCdmFactory final : public CdmFactory {
       pending_cdms_;
 
   base::WeakPtrFactory<FuchsiaCdmFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaCdmFactory);
 };
 
 }  // namespace media

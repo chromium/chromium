@@ -44,6 +44,11 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
  public:
   VaapiMjpegDecodeAccelerator(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
+
+  VaapiMjpegDecodeAccelerator(const VaapiMjpegDecodeAccelerator&) = delete;
+  VaapiMjpegDecodeAccelerator& operator=(const VaapiMjpegDecodeAccelerator&) =
+      delete;
+
   ~VaapiMjpegDecodeAccelerator() override;
 
   // chromeos_camera::MjpegDecodeAccelerator implementation.
@@ -146,8 +151,6 @@ class MEDIA_GPU_EXPORT VaapiMjpegDecodeAccelerator
   // posted from the |decoder_task_runner_| to |task_runner_| should use a
   // WeakPtr (obtained via weak_this_factory_.GetWeakPtr()).
   base::WeakPtrFactory<VaapiMjpegDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiMjpegDecodeAccelerator);
 };
 
 }  // namespace media

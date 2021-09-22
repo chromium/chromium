@@ -26,6 +26,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
       scoped_refptr<base::SingleThreadTaskRunner>
           task_runner_for_screen_observer);
 
+  VideoCaptureDeviceFactoryChromeOS(const VideoCaptureDeviceFactoryChromeOS&) =
+      delete;
+  VideoCaptureDeviceFactoryChromeOS& operator=(
+      const VideoCaptureDeviceFactoryChromeOS&) = delete;
+
   ~VideoCaptureDeviceFactoryChromeOS() override;
 
   // VideoCaptureDeviceFactory interface implementations.
@@ -58,8 +63,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
 
   base::WeakPtrFactory<VideoCaptureDeviceFactoryChromeOS> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryChromeOS);
 };
 
 }  // namespace media

@@ -67,6 +67,9 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
  public:
   static std::vector<SupportedVideoDecoderConfig> GetSupportedConfigs();
 
+  MediaCodecVideoDecoder(const MediaCodecVideoDecoder&) = delete;
+  MediaCodecVideoDecoder& operator=(const MediaCodecVideoDecoder&) = delete;
+
   ~MediaCodecVideoDecoder() override;
   static void DestroyAsync(std::unique_ptr<MediaCodecVideoDecoder>);
 
@@ -350,8 +353,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   base::WeakPtrFactory<MediaCodecVideoDecoder> weak_factory_{this};
   base::WeakPtrFactory<MediaCodecVideoDecoder> codec_allocator_weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecVideoDecoder);
 };
 
 }  // namespace media

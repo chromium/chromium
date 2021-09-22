@@ -31,6 +31,10 @@ class Cluster {
 class ClusterBuilder {
  public:
   ClusterBuilder();
+
+  ClusterBuilder(const ClusterBuilder&) = delete;
+  ClusterBuilder& operator=(const ClusterBuilder&) = delete;
+
   ~ClusterBuilder();
 
   void SetClusterTimecode(int64_t cluster_timecode);
@@ -79,8 +83,6 @@ class ClusterBuilder {
   int buffer_size_;
   int bytes_used_;
   int64_t cluster_timecode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClusterBuilder);
 };
 
 }  // namespace media

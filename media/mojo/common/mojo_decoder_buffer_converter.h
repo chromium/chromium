@@ -45,6 +45,9 @@ class MojoDecoderBufferReader {
   explicit MojoDecoderBufferReader(
       mojo::ScopedDataPipeConsumerHandle consumer_handle);
 
+  MojoDecoderBufferReader(const MojoDecoderBufferReader&) = delete;
+  MojoDecoderBufferReader& operator=(const MojoDecoderBufferReader&) = delete;
+
   ~MojoDecoderBufferReader();
 
   // Enqueues conversion of and reading data for a mojom::DecoderBuffer. Once
@@ -97,8 +100,6 @@ class MojoDecoderBufferReader {
 
   // Number of bytes already read into the current buffer.
   uint32_t bytes_read_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecoderBufferReader);
 };
 
 // Converts media::DecoderBuffers to mojom::DecoderBuffers, writing the data
@@ -122,6 +123,9 @@ class MojoDecoderBufferWriter {
   // Hold the producer handle to write DecoderBuffer data.
   explicit MojoDecoderBufferWriter(
       mojo::ScopedDataPipeProducerHandle producer_handle);
+
+  MojoDecoderBufferWriter(const MojoDecoderBufferWriter&) = delete;
+  MojoDecoderBufferWriter& operator=(const MojoDecoderBufferWriter&) = delete;
 
   ~MojoDecoderBufferWriter();
 
@@ -150,8 +154,6 @@ class MojoDecoderBufferWriter {
 
   // Number of bytes already written from the current buffer.
   uint32_t bytes_written_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecoderBufferWriter);
 };
 
 }  // namespace media

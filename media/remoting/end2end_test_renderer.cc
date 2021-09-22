@@ -53,6 +53,9 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
         type_(type),
         send_frame_to_sink_cb_(std::move(callback)) {}
 
+  TestStreamSender(const TestStreamSender&) = delete;
+  TestStreamSender& operator=(const TestStreamSender&) = delete;
+
   ~TestStreamSender() override = default;
 
   // mojom::RemotingDataStreamSender implementation.
@@ -80,8 +83,6 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
   const DemuxerStream::Type type_;
   const SendFrameToSinkCallback send_frame_to_sink_cb_;
   std::vector<uint8_t> next_frame_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStreamSender);
 };
 
 class TestRemoter final : public mojom::Remoter {
@@ -94,6 +95,9 @@ class TestRemoter final : public mojom::Remoter {
       : source_(std::move(source)),
         send_message_to_sink_cb_(std::move(send_message_to_sink_cb)),
         send_frame_to_sink_cb_(std::move(send_frame_to_sink_cb)) {}
+
+  TestRemoter(const TestRemoter&) = delete;
+  TestRemoter& operator=(const TestRemoter&) = delete;
 
   ~TestRemoter() override = default;
 
@@ -144,8 +148,6 @@ class TestRemoter final : public mojom::Remoter {
   const TestStreamSender::SendFrameToSinkCallback send_frame_to_sink_cb_;
   std::unique_ptr<TestStreamSender> audio_stream_sender_;
   std::unique_ptr<TestStreamSender> video_stream_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRemoter);
 };
 
 std::unique_ptr<RendererController> CreateController(

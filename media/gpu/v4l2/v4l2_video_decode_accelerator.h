@@ -111,6 +111,11 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
       const GetGLContextCallback& get_gl_context_cb,
       const MakeGLContextCurrentCallback& make_context_current_cb,
       scoped_refptr<V4L2Device> device);
+
+  V4L2VideoDecodeAccelerator(const V4L2VideoDecodeAccelerator&) = delete;
+  V4L2VideoDecodeAccelerator& operator=(const V4L2VideoDecodeAccelerator&) =
+      delete;
+
   ~V4L2VideoDecodeAccelerator() override;
 
   // VideoDecodeAccelerator implementation.
@@ -618,8 +623,6 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
 
   // The WeakPtrFactory for |weak_this_|.
   base::WeakPtrFactory<V4L2VideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecodeAccelerator);
 };
 
 }  // namespace media

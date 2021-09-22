@@ -37,6 +37,9 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
                        const AudioParameters& params,
                        SLint32 stream_type);
 
+  OpenSLESOutputStream(const OpenSLESOutputStream&) = delete;
+  OpenSLESOutputStream& operator=(const OpenSLESOutputStream&) = delete;
+
   ~OpenSLESOutputStream() override;
 
   // Implementation of MuteableAudioOutputStream.
@@ -150,8 +153,6 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // Adjustment for hardware latency.  Needed for some cast targets, since
   // OpenSLES's GetPosition doesn't properly account for HAL latency.
   base::TimeDelta hardware_latency_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenSLESOutputStream);
 };
 
 }  // namespace media

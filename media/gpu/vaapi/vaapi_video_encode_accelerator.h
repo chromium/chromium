@@ -32,6 +32,11 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
   VaapiVideoEncodeAccelerator();
+
+  VaapiVideoEncodeAccelerator(const VaapiVideoEncodeAccelerator&) = delete;
+  VaapiVideoEncodeAccelerator& operator=(const VaapiVideoEncodeAccelerator&) =
+      delete;
+
   ~VaapiVideoEncodeAccelerator() override;
 
   // VideoEncodeAccelerator implementation.
@@ -293,8 +298,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
       this};
   base::WeakPtrFactory<VaapiVideoEncodeAccelerator> encoder_weak_this_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVideoEncodeAccelerator);
 };
 
 }  // namespace media

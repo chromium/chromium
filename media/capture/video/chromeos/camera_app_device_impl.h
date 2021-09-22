@@ -73,6 +73,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   CameraAppDeviceImpl(const std::string& device_id,
                       cros::mojom::CameraInfoPtr camera_info);
+
+  CameraAppDeviceImpl(const CameraAppDeviceImpl&) = delete;
+  CameraAppDeviceImpl& operator=(const CameraAppDeviceImpl&) = delete;
+
   ~CameraAppDeviceImpl() override;
 
   // Binds the mojo receiver to this implementation.
@@ -239,8 +243,6 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // The weak pointers should be dereferenced and invalidated on the Mojo
   // thread.
   base::WeakPtrFactory<CameraAppDeviceImpl> weak_ptr_factory_for_mojo_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CameraAppDeviceImpl);
 };
 
 }  // namespace media

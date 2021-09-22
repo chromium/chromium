@@ -22,6 +22,9 @@ class LoopbackAudioConverter : public AudioConverter::InputCallback {
                          const AudioParameters& output_params,
                          bool disable_fifo);
 
+  LoopbackAudioConverter(const LoopbackAudioConverter&) = delete;
+  LoopbackAudioConverter& operator=(const LoopbackAudioConverter&) = delete;
+
   ~LoopbackAudioConverter() override;
 
   void AddInput(AudioConverter::InputCallback* input) {
@@ -38,8 +41,6 @@ class LoopbackAudioConverter : public AudioConverter::InputCallback {
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
 
   AudioConverter audio_converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackAudioConverter);
 };
 
 }  // namespace media

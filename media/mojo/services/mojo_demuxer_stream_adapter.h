@@ -36,6 +36,10 @@ class MojoDemuxerStreamAdapter : public DemuxerStream {
   MojoDemuxerStreamAdapter(
       mojo::PendingRemote<mojom::DemuxerStream> demuxer_stream,
       base::OnceClosure stream_ready_cb);
+
+  MojoDemuxerStreamAdapter(const MojoDemuxerStreamAdapter&) = delete;
+  MojoDemuxerStreamAdapter& operator=(const MojoDemuxerStreamAdapter&) = delete;
+
   ~MojoDemuxerStreamAdapter() override;
 
   // DemuxerStream implementation.
@@ -84,7 +88,6 @@ class MojoDemuxerStreamAdapter : public DemuxerStream {
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
 
   base::WeakPtrFactory<MojoDemuxerStreamAdapter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MojoDemuxerStreamAdapter);
 };
 
 }  // namespace media

@@ -36,6 +36,9 @@ class VaapiTFPPicture : public VaapiPicture {
                   uint32_t client_texture_id,
                   uint32_t texture_target);
 
+  VaapiTFPPicture(const VaapiTFPPicture&) = delete;
+  VaapiTFPPicture& operator=(const VaapiTFPPicture&) = delete;
+
   ~VaapiTFPPicture() override;
 
   // VaapiPicture implementation.
@@ -52,8 +55,6 @@ class VaapiTFPPicture : public VaapiPicture {
 
   x11::Pixmap x_pixmap_;
   scoped_refptr<gl::GLImageGLX> glx_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiTFPPicture);
 };
 
 }  // namespace media

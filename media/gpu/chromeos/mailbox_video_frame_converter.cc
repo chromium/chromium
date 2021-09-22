@@ -43,6 +43,10 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
 
   ScopedSharedImage(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner)
       : destruction_task_runner_(std::move(gpu_task_runner)) {}
+
+  ScopedSharedImage(const ScopedSharedImage&) = delete;
+  ScopedSharedImage& operator=(const ScopedSharedImage&) = delete;
+
   ~ScopedSharedImage() { Destroy(); }
 
   void Reset(const gpu::Mailbox& mailbox,
@@ -76,8 +80,6 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
   gfx::Size size_;
   DestroySharedImageCB destroy_shared_image_cb_;
   const scoped_refptr<base::SequencedTaskRunner> destruction_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSharedImage);
 };
 
 // static

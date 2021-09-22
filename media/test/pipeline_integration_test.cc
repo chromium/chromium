@@ -156,11 +156,14 @@ class ScopedVerboseLogEnabler {
   ScopedVerboseLogEnabler() : old_level_(logging::GetMinLogLevel()) {
     logging::SetMinLogLevel(-1);
   }
+
+  ScopedVerboseLogEnabler(const ScopedVerboseLogEnabler&) = delete;
+  ScopedVerboseLogEnabler& operator=(const ScopedVerboseLogEnabler&) = delete;
+
   ~ScopedVerboseLogEnabler() { logging::SetMinLogLevel(old_level_); }
 
  private:
   const int old_level_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedVerboseLogEnabler);
 };
 #endif
 

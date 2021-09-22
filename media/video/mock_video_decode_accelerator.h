@@ -24,6 +24,11 @@ namespace media {
 class MockVideoDecodeAccelerator : public VideoDecodeAccelerator {
  public:
   MockVideoDecodeAccelerator();
+
+  MockVideoDecodeAccelerator(const MockVideoDecodeAccelerator&) = delete;
+  MockVideoDecodeAccelerator& operator=(const MockVideoDecodeAccelerator&) =
+      delete;
+
   ~MockVideoDecodeAccelerator() override;
 
   MOCK_METHOD2(Initialize, bool(const Config& config, Client* client));
@@ -42,7 +47,6 @@ class MockVideoDecodeAccelerator : public VideoDecodeAccelerator {
 
  private:
   void DeleteThis();
-  DISALLOW_COPY_AND_ASSIGN(MockVideoDecodeAccelerator);
 };
 
 }  // namespace media

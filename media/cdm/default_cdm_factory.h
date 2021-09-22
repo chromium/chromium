@@ -16,6 +16,10 @@ struct CdmConfig;
 class MEDIA_EXPORT DefaultCdmFactory final : public CdmFactory {
  public:
   DefaultCdmFactory();
+
+  DefaultCdmFactory(const DefaultCdmFactory&) = delete;
+  DefaultCdmFactory& operator=(const DefaultCdmFactory&) = delete;
+
   ~DefaultCdmFactory() final;
 
   // CdmFactory implementation.
@@ -26,9 +30,6 @@ class MEDIA_EXPORT DefaultCdmFactory final : public CdmFactory {
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
               CdmCreatedCB cdm_created_cb) final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultCdmFactory);
 };
 
 }  // namespace media

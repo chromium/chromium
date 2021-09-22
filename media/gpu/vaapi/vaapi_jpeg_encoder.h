@@ -29,6 +29,10 @@ class MEDIA_GPU_EXPORT VaapiJpegEncoder {
   // VaapiWrapper::kEncodeConstantBitrate mode with VAProfileJPEGBaseline
   // profile.
   explicit VaapiJpegEncoder(scoped_refptr<VaapiWrapper> vaapi_wrapper);
+
+  VaapiJpegEncoder(const VaapiJpegEncoder&) = delete;
+  VaapiJpegEncoder& operator=(const VaapiJpegEncoder&) = delete;
+
   ~VaapiJpegEncoder();
 
   // Encode a JPEG picture. It will fill VA-API parameters and call
@@ -64,8 +68,6 @@ class MEDIA_GPU_EXPORT VaapiJpegEncoder {
   std::unique_ptr<VAQMatrixBufferJPEG> q_matrix_cached_;
   std::unique_ptr<VAHuffmanTableBufferJPEGBaseline> huff_table_param_cached_;
   std::unique_ptr<VAEncSliceParameterBufferJPEG> slice_param_cached_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiJpegEncoder);
 };
 
 }  // namespace media

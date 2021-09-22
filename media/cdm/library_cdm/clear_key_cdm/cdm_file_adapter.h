@@ -29,6 +29,10 @@ class CdmFileAdapter : public cdm::FileIOClient {
   using WriteCB = base::OnceCallback<void(bool success)>;
 
   explicit CdmFileAdapter(CdmHostProxy* cdm_host_proxy);
+
+  CdmFileAdapter(const CdmFileAdapter&) = delete;
+  CdmFileAdapter& operator=(const CdmFileAdapter&) = delete;
+
   ~CdmFileAdapter() override;
 
   // Open the file with |name|. |open_cb| will be called when the file is
@@ -59,8 +63,6 @@ class CdmFileAdapter : public cdm::FileIOClient {
   ReadCB read_cb_;
   WriteCB write_cb_;
   cdm::FileIO* file_io_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmFileAdapter);
 };
 
 }  // namespace media

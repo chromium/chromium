@@ -29,6 +29,9 @@ class MediaMetricsProviderTest : public testing::Test {
  public:
   MediaMetricsProviderTest() { ResetMetricRecorders(); }
 
+  MediaMetricsProviderTest(const MediaMetricsProviderTest&) = delete;
+  MediaMetricsProviderTest& operator=(const MediaMetricsProviderTest&) = delete;
+
   ~MediaMetricsProviderTest() override { base::RunLoop().RunUntilIdle(); }
 
   void Initialize(bool is_mse,
@@ -74,8 +77,6 @@ class MediaMetricsProviderTest : public testing::Test {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_recorder_;
   ukm::SourceId source_id_;
   mojo::Remote<mojom::MediaMetricsProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaMetricsProviderTest);
 };
 
 #define EXPECT_UKM(name, value) \

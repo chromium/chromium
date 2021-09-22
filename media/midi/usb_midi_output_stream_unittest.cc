@@ -28,6 +28,10 @@ std::vector<T> ToVector(const T((&array)[N])) {
 class MockUsbMidiDevice : public UsbMidiDevice {
  public:
   MockUsbMidiDevice() = default;
+
+  MockUsbMidiDevice(const MockUsbMidiDevice&) = delete;
+  MockUsbMidiDevice& operator=(const MockUsbMidiDevice&) = delete;
+
   ~MockUsbMidiDevice() override = default;
 
   std::vector<uint8_t> GetDescriptors() override {
@@ -50,8 +54,6 @@ class MockUsbMidiDevice : public UsbMidiDevice {
 
  private:
   std::string log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockUsbMidiDevice);
 };
 
 class UsbMidiOutputStreamTest : public ::testing::Test {

@@ -44,6 +44,10 @@ class RendererController final : public mojom::RemotingSource,
   RendererController(
       mojo::PendingReceiver<mojom::RemotingSource> source_receiver,
       mojo::PendingRemote<mojom::Remoter> remoter);
+
+  RendererController(const RendererController&) = delete;
+  RendererController& operator=(const RendererController&) = delete;
+
   ~RendererController() override;
 
   // mojom::RemotingSource implementations.
@@ -245,8 +249,6 @@ class RendererController final : public mojom::RemotingSource,
   const base::TickClock* clock_;
 
   base::WeakPtrFactory<RendererController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererController);
 };
 
 }  // namespace remoting

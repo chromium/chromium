@@ -18,14 +18,15 @@ namespace media {
 class SimpleCdmAllocator final : public CdmAllocator {
  public:
   SimpleCdmAllocator();
+
+  SimpleCdmAllocator(const SimpleCdmAllocator&) = delete;
+  SimpleCdmAllocator& operator=(const SimpleCdmAllocator&) = delete;
+
   ~SimpleCdmAllocator() override;
 
   // CdmAllocator implementation.
   cdm::Buffer* CreateCdmBuffer(size_t capacity) override;
   std::unique_ptr<VideoFrameImpl> CreateCdmVideoFrame() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleCdmAllocator);
 };
 
 }  // namespace media

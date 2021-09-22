@@ -23,6 +23,10 @@ class CodecSurfaceBundle;
 class MEDIA_GPU_EXPORT MaybeRenderEarlyManager {
  public:
   MaybeRenderEarlyManager() = default;
+
+  MaybeRenderEarlyManager(const MaybeRenderEarlyManager&) = delete;
+  MaybeRenderEarlyManager& operator=(const MaybeRenderEarlyManager&) = delete;
+
   virtual ~MaybeRenderEarlyManager() = default;
 
   // Sets the surface bundle that future images will use.
@@ -45,8 +49,6 @@ class MEDIA_GPU_EXPORT MaybeRenderEarlyManager {
   static std::unique_ptr<MaybeRenderEarlyManager> Create(
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
       scoped_refptr<gpu::RefCountedLock> drdc_lock);
-
-  DISALLOW_COPY_AND_ASSIGN(MaybeRenderEarlyManager);
 };
 
 namespace internal {

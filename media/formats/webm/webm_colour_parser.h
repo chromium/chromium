@@ -37,6 +37,11 @@ struct MEDIA_EXPORT WebMColorMetadata {
 class WebMColorVolumeMetadataParser : public WebMParserClient {
  public:
   WebMColorVolumeMetadataParser();
+
+  WebMColorVolumeMetadataParser(const WebMColorVolumeMetadataParser&) = delete;
+  WebMColorVolumeMetadataParser& operator=(
+      const WebMColorVolumeMetadataParser&) = delete;
+
   ~WebMColorVolumeMetadataParser() override;
 
   gfx::ColorVolumeMetadata GetColorVolumeMetadata() const {
@@ -48,7 +53,6 @@ class WebMColorVolumeMetadataParser : public WebMParserClient {
   bool OnFloat(int id, double val) override;
 
   gfx::ColorVolumeMetadata color_volume_metadata_;
-  DISALLOW_COPY_AND_ASSIGN(WebMColorVolumeMetadataParser);
 };
 
 // Parser for WebM Colour element:
@@ -56,6 +60,10 @@ class WebMColorVolumeMetadataParser : public WebMParserClient {
 class WebMColourParser : public WebMParserClient {
  public:
   WebMColourParser();
+
+  WebMColourParser(const WebMColourParser&) = delete;
+  WebMColourParser& operator=(const WebMColourParser&) = delete;
+
   ~WebMColourParser() override;
 
   void Reset();
@@ -84,8 +92,6 @@ class WebMColourParser : public WebMParserClient {
 
   WebMColorVolumeMetadataParser color_volume_metadata_parser_;
   bool color_volume_metadata_parsed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMColourParser);
 };
 
 }  // namespace media

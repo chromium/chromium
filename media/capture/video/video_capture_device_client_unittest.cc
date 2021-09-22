@@ -72,6 +72,11 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
         buffer_pool);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
+
+  VideoCaptureDeviceClientTest(const VideoCaptureDeviceClientTest&) = delete;
+  VideoCaptureDeviceClientTest& operator=(const VideoCaptureDeviceClientTest&) =
+      delete;
+
   ~VideoCaptureDeviceClientTest() override = default;
 
  protected:
@@ -79,9 +84,6 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
   std::unique_ptr<VideoCaptureDeviceClient> device_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceClientTest);
 };
 
 // A small test for reference and to verify VideoCaptureDeviceClient is

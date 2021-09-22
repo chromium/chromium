@@ -36,6 +36,11 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
       VideoCodecProfile profile,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  V4L2StatelessVideoDecoderBackend(const V4L2StatelessVideoDecoderBackend&) =
+      delete;
+  V4L2StatelessVideoDecoderBackend& operator=(
+      const V4L2StatelessVideoDecoderBackend&) = delete;
+
   ~V4L2StatelessVideoDecoderBackend() override;
 
   // V4L2VideoDecoderBackend implementation
@@ -179,8 +184,6 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   base::WeakPtr<V4L2StatelessVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatelessVideoDecoderBackend> weak_this_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2StatelessVideoDecoderBackend);
 };
 
 }  // namespace media

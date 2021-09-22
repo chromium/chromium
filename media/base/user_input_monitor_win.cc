@@ -52,6 +52,10 @@ class UserInputMonitorWinCore
 
   explicit UserInputMonitorWinCore(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  UserInputMonitorWinCore(const UserInputMonitorWinCore&) = delete;
+  UserInputMonitorWinCore& operator=(const UserInputMonitorWinCore&) = delete;
+
   ~UserInputMonitorWinCore() override;
 
   // DestructionObserver overrides.
@@ -90,14 +94,16 @@ class UserInputMonitorWinCore
 
   bool pause_monitoring_ = false;
   bool start_monitoring_after_hook_removed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInputMonitorWinCore);
 };
 
 class UserInputMonitorWin : public UserInputMonitorBase {
  public:
   explicit UserInputMonitorWin(
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
+
+  UserInputMonitorWin(const UserInputMonitorWin&) = delete;
+  UserInputMonitorWin& operator=(const UserInputMonitorWin&) = delete;
+
   ~UserInputMonitorWin() override;
 
   // Public UserInputMonitor overrides.
@@ -112,8 +118,6 @@ class UserInputMonitorWin : public UserInputMonitorBase {
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   UserInputMonitorWinCore* core_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInputMonitorWin);
 };
 
 UserInputMonitorWinCore::UserInputMonitorWinCore(

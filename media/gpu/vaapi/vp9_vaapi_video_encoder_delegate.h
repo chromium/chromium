@@ -47,6 +47,11 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   VP9VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
                                base::RepeatingClosure error_cb);
+
+  VP9VaapiVideoEncoderDelegate(const VP9VaapiVideoEncoderDelegate&) = delete;
+  VP9VaapiVideoEncoderDelegate& operator=(const VP9VaapiVideoEncoderDelegate&) =
+      delete;
+
   ~VP9VaapiVideoEncoderDelegate() override;
 
   // VaapiVideoEncoderDelegate implementation.
@@ -106,8 +111,6 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       pending_update_rates_;
 
   std::unique_ptr<VP9RateControl> rate_ctrl_;
-
-  DISALLOW_COPY_AND_ASSIGN(VP9VaapiVideoEncoderDelegate);
 };
 }  // namespace media
 

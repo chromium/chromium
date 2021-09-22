@@ -16,6 +16,10 @@ namespace media {
 class AndroidMojoMediaClient final : public MojoMediaClient {
  public:
   AndroidMojoMediaClient();
+
+  AndroidMojoMediaClient(const AndroidMojoMediaClient&) = delete;
+  AndroidMojoMediaClient& operator=(const AndroidMojoMediaClient&) = delete;
+
   ~AndroidMojoMediaClient() override;
 
   // MojoMediaClient implementation.
@@ -24,9 +28,6 @@ class AndroidMojoMediaClient final : public MojoMediaClient {
 
   std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* frame_interfaces) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidMojoMediaClient);
 };
 
 }  // namespace media

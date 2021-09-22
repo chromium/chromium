@@ -43,6 +43,11 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
   explicit V4L2VideoEncodeAccelerator(scoped_refptr<V4L2Device> device);
+
+  V4L2VideoEncodeAccelerator(const V4L2VideoEncodeAccelerator&) = delete;
+  V4L2VideoEncodeAccelerator& operator=(const V4L2VideoEncodeAccelerator&) =
+      delete;
+
   ~V4L2VideoEncodeAccelerator() override;
 
   // VideoEncodeAccelerator implementation.
@@ -360,8 +365,6 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // |encoder_task_runner_|.
   base::WeakPtr<V4L2VideoEncodeAccelerator> weak_this_;
   base::WeakPtrFactory<V4L2VideoEncodeAccelerator> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoEncodeAccelerator);
 };
 
 }  // namespace media

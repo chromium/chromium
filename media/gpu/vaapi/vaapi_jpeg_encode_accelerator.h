@@ -33,6 +33,11 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
  public:
   explicit VaapiJpegEncodeAccelerator(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  VaapiJpegEncodeAccelerator(const VaapiJpegEncodeAccelerator&) = delete;
+  VaapiJpegEncodeAccelerator& operator=(const VaapiJpegEncodeAccelerator&) =
+      delete;
+
   ~VaapiJpegEncodeAccelerator() override;
 
   // JpegEncodeAccelerator implementation.
@@ -111,8 +116,6 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   // |task_runner_|.
   base::WeakPtr<VaapiJpegEncodeAccelerator> weak_this_;
   base::WeakPtrFactory<VaapiJpegEncodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiJpegEncodeAccelerator);
 };
 
 }  // namespace media

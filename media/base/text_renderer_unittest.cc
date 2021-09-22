@@ -31,6 +31,10 @@ class FakeTextTrack : public TextTrack {
  public:
   FakeTextTrack(base::OnceClosure destroy_cb, const TextTrackConfig& config)
       : destroy_cb_(std::move(destroy_cb)), config_(config) {}
+
+  FakeTextTrack(const FakeTextTrack&) = delete;
+  FakeTextTrack& operator=(const FakeTextTrack&) = delete;
+
   ~FakeTextTrack() override { std::move(destroy_cb_).Run(); }
 
   MOCK_METHOD5(addWebVTTCue,
@@ -42,9 +46,6 @@ class FakeTextTrack : public TextTrack {
 
   base::OnceClosure destroy_cb_;
   const TextTrackConfig config_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeTextTrack);
 };
 
 class TextRendererTest : public testing::Test {

@@ -112,6 +112,10 @@ class FakeMidiManagerClient : public MidiManagerClient {
 class MidiManagerMacTest : public ::testing::Test {
  public:
   MidiManagerMacTest() : service_(std::make_unique<MidiService>()) {}
+
+  MidiManagerMacTest(const MidiManagerMacTest&) = delete;
+  MidiManagerMacTest& operator=(const MidiManagerMacTest&) = delete;
+
   ~MidiManagerMacTest() override {
     service_->Shutdown();
     base::RunLoop run_loop;
@@ -127,8 +131,6 @@ class MidiManagerMacTest : public ::testing::Test {
  private:
   std::unique_ptr<MidiService> service_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerMacTest);
 };
 
 

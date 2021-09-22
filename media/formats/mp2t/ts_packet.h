@@ -28,6 +28,9 @@ class TsPacket {
   // Return NULL otherwise.
   static TsPacket* Parse(const uint8_t* buf, int size);
 
+  TsPacket(const TsPacket&) = delete;
+  TsPacket& operator=(const TsPacket&) = delete;
+
   ~TsPacket();
 
   // TS header accessors.
@@ -64,8 +67,6 @@ class TsPacket {
   // Params from the adaptation field.
   bool discontinuity_indicator_;
   bool random_access_indicator_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsPacket);
 };
 
 }  // namespace mp2t

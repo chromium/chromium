@@ -348,6 +348,10 @@ struct MEDIA_EXPORT H265SliceHeader {
 class MEDIA_EXPORT H265Parser : public H265NaluParser {
  public:
   H265Parser();
+
+  H265Parser(const H265Parser&) = delete;
+  H265Parser& operator=(const H265Parser&) = delete;
+
   ~H265Parser() override;
 
   // NALU-specific parsing functions.
@@ -414,8 +418,6 @@ class MEDIA_EXPORT H265Parser : public H265NaluParser {
   // PPSes and SPSes stored for future reference.
   base::flat_map<int, std::unique_ptr<H265SPS>> active_sps_;
   base::flat_map<int, std::unique_ptr<H265PPS>> active_pps_;
-
-  DISALLOW_COPY_AND_ASSIGN(H265Parser);
 };
 
 }  // namespace media

@@ -22,6 +22,10 @@ class VideoFrame;
 class DecryptedBlockImpl final : public cdm::DecryptedBlock {
  public:
   DecryptedBlockImpl();
+
+  DecryptedBlockImpl(const DecryptedBlockImpl&) = delete;
+  DecryptedBlockImpl& operator=(const DecryptedBlockImpl&) = delete;
+
   ~DecryptedBlockImpl() final;
 
   // cdm::DecryptedBlock implementation.
@@ -33,14 +37,16 @@ class DecryptedBlockImpl final : public cdm::DecryptedBlock {
  private:
   cdm::Buffer* buffer_;
   int64_t timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecryptedBlockImpl);
 };
 
 class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
                                     public cdm::VideoFrame_2 {
  public:
   VideoFrameImpl();
+
+  VideoFrameImpl(const VideoFrameImpl&) = delete;
+  VideoFrameImpl& operator=(const VideoFrameImpl&) = delete;
+
   ~VideoFrameImpl() override;
 
   // cdm::VideoFrame and cdm::VideoFrame_2 common implementation.
@@ -97,14 +103,15 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
 
   // Presentation timestamp in microseconds.
   int64_t timestamp_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameImpl);
 };
 
 class AudioFramesImpl final : public cdm::AudioFrames {
  public:
   AudioFramesImpl();
+
+  AudioFramesImpl(const AudioFramesImpl&) = delete;
+  AudioFramesImpl& operator=(const AudioFramesImpl&) = delete;
+
   ~AudioFramesImpl() final;
 
   // cdm::AudioFrames implementation.
@@ -118,8 +125,6 @@ class AudioFramesImpl final : public cdm::AudioFrames {
  private:
   cdm::Buffer* buffer_;
   cdm::AudioFormat format_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFramesImpl);
 };
 
 }  // namespace media

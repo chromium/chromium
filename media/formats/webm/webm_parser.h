@@ -29,6 +29,9 @@ namespace media {
 // error is reported by the parser.
 class MEDIA_EXPORT WebMParserClient {
  public:
+  WebMParserClient(const WebMParserClient&) = delete;
+  WebMParserClient& operator=(const WebMParserClient&) = delete;
+
   virtual ~WebMParserClient();
 
   virtual WebMParserClient* OnListStart(int id);
@@ -45,8 +48,6 @@ class MEDIA_EXPORT WebMParserClient {
 
  protected:
   WebMParserClient();
-
-  DISALLOW_COPY_AND_ASSIGN(WebMParserClient);
 };
 
 struct ListElementInfo;
@@ -61,6 +62,10 @@ class MEDIA_EXPORT WebMListParser {
   // |id| - Element ID of the list we intend to parse.
   // |client| - Called as different elements in the list are parsed.
   WebMListParser(int id, WebMParserClient* client);
+
+  WebMListParser(const WebMListParser&) = delete;
+  WebMListParser& operator=(const WebMListParser&) = delete;
+
   ~WebMListParser();
 
   // Resets the state of the parser so it can start parsing a new list.
@@ -151,8 +156,6 @@ class MEDIA_EXPORT WebMListParser {
   // Stack of state for all the lists currently being parsed. Lists are
   // added and removed from this stack as they are parsed.
   std::vector<ListState> list_state_stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMListParser);
 };
 
 // Parses an element header & returns the ID and element size.

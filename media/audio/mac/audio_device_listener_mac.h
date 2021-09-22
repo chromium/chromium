@@ -31,6 +31,10 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
                          bool monitor_default_input = false,
                          bool monitor_addition_removal = false,
                          bool monitor_sources = false);
+
+  AudioDeviceListenerMac(const AudioDeviceListenerMac&) = delete;
+  AudioDeviceListenerMac& operator=(const AudioDeviceListenerMac&) = delete;
+
   ~AudioDeviceListenerMac();
 
  private:
@@ -67,8 +71,6 @@ class MEDIA_EXPORT AudioDeviceListenerMac {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<AudioDeviceListenerMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerMac);
 };
 
 }  // namespace media

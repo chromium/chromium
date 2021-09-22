@@ -158,6 +158,9 @@ class Y4mFileParser final : public VideoFileParser {
  public:
   explicit Y4mFileParser(const base::FilePath& file_path);
 
+  Y4mFileParser(const Y4mFileParser&) = delete;
+  Y4mFileParser& operator=(const Y4mFileParser&) = delete;
+
   // VideoFileParser implementation, class methods.
   ~Y4mFileParser() override;
   bool Initialize(VideoCaptureFormat* capture_format) override;
@@ -166,13 +169,14 @@ class Y4mFileParser final : public VideoFileParser {
  private:
   std::unique_ptr<base::File> file_;
   std::unique_ptr<uint8_t[]> video_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(Y4mFileParser);
 };
 
 class MjpegFileParser final : public VideoFileParser {
  public:
   explicit MjpegFileParser(const base::FilePath& file_path);
+
+  MjpegFileParser(const MjpegFileParser&) = delete;
+  MjpegFileParser& operator=(const MjpegFileParser&) = delete;
 
   // VideoFileParser implementation, class methods.
   ~MjpegFileParser() override;
@@ -181,8 +185,6 @@ class MjpegFileParser final : public VideoFileParser {
 
  private:
   std::unique_ptr<base::MemoryMappedFile> mapped_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(MjpegFileParser);
 };
 
 VideoFileParser::VideoFileParser(const base::FilePath& file_path)

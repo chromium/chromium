@@ -37,6 +37,10 @@ class MEDIA_EXPORT ScopedDecodeTrace {
   ScopedDecodeTrace(const char* trace_name,
                     bool is_key_frame,
                     base::TimeDelta timestamp);
+
+  ScopedDecodeTrace(const ScopedDecodeTrace&) = delete;
+  ScopedDecodeTrace& operator=(const ScopedDecodeTrace&) = delete;
+
   ~ScopedDecodeTrace();
 
   // Completes the Decode() trace with the given status.
@@ -45,8 +49,6 @@ class MEDIA_EXPORT ScopedDecodeTrace {
  private:
   const char* trace_name_;
   bool closed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDecodeTrace);
 };
 
 }  // namespace media

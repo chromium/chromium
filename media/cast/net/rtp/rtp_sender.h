@@ -37,6 +37,9 @@ class RtpSender {
       const scoped_refptr<base::SingleThreadTaskRunner>& transport_task_runner,
       PacedSender* const transport);
 
+  RtpSender(const RtpSender&) = delete;
+  RtpSender& operator=(const RtpSender&) = delete;
+
   ~RtpSender();
 
   // This must be called before sending any frames. Returns false if
@@ -78,8 +81,6 @@ class RtpSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<RtpSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RtpSender);
 };
 
 }  // namespace cast

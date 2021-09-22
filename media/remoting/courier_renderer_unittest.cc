@@ -86,6 +86,10 @@ class RendererClientImpl final : public RendererClient {
         .WillByDefault(
             Invoke(this, &RendererClientImpl::DelegateOnVideoOpacityChange));
   }
+
+  RendererClientImpl(const RendererClientImpl&) = delete;
+  RendererClientImpl& operator=(const RendererClientImpl&) = delete;
+
   ~RendererClientImpl() = default;
 
   // RendererClient implementation.
@@ -145,8 +149,6 @@ class RendererClientImpl final : public RendererClient {
   PipelineStatistics stats_;
   VideoDecoderConfig video_decoder_config_;
   AudioDecoderConfig audio_decoder_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererClientImpl);
 };
 
 }  // namespace
@@ -154,6 +156,10 @@ class RendererClientImpl final : public RendererClient {
 class CourierRendererTest : public testing::Test {
  public:
   CourierRendererTest() = default;
+
+  CourierRendererTest(const CourierRendererTest&) = delete;
+  CourierRendererTest& operator=(const CourierRendererTest&) = delete;
+
   ~CourierRendererTest() override = default;
 
   // Use this function to mimic receiver to handle RPC message for renderer
@@ -491,9 +497,6 @@ class CourierRendererTest : public testing::Test {
 
   // Stores RPC messages that have been sent to the remote sink.
   std::vector<openscreen::cast::RpcMessage> received_rpc_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CourierRendererTest);
 };
 
 TEST_F(CourierRendererTest, Initialize) {

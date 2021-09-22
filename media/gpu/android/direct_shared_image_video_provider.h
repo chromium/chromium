@@ -37,6 +37,12 @@ class MEDIA_GPU_EXPORT DirectSharedImageVideoProvider
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetStubCB get_stub_cb,
       scoped_refptr<gpu::RefCountedLock> drdc_lock);
+
+  DirectSharedImageVideoProvider(const DirectSharedImageVideoProvider&) =
+      delete;
+  DirectSharedImageVideoProvider& operator=(
+      const DirectSharedImageVideoProvider&) = delete;
+
   ~DirectSharedImageVideoProvider() override;
 
   // SharedImageVideoProvider
@@ -47,8 +53,6 @@ class MEDIA_GPU_EXPORT DirectSharedImageVideoProvider
   base::SequenceBound<GpuSharedImageVideoFactory> gpu_factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectSharedImageVideoProvider);
 };
 
 // GpuSharedImageVideoFactory creates SharedImageVideo objects.  It must be run
@@ -62,6 +66,11 @@ class GpuSharedImageVideoFactory
  public:
   explicit GpuSharedImageVideoFactory(
       SharedImageVideoProvider::GetStubCB get_stub_cb);
+
+  GpuSharedImageVideoFactory(const GpuSharedImageVideoFactory&) = delete;
+  GpuSharedImageVideoFactory& operator=(const GpuSharedImageVideoFactory&) =
+      delete;
+
   ~GpuSharedImageVideoFactory() override;
 
   // Will run |init_cb| with the shared context current.  |init_cb| should not
@@ -95,8 +104,6 @@ class GpuSharedImageVideoFactory
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<GpuSharedImageVideoFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuSharedImageVideoFactory);
 };
 
 }  // namespace media

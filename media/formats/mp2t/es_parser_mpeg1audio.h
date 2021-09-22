@@ -35,6 +35,10 @@ class MEDIA_EXPORT EsParserMpeg1Audio : public EsParser {
   EsParserMpeg1Audio(const NewAudioConfigCB& new_audio_config_cb,
                      EmitBufferCB emit_buffer_cb,
                      MediaLog* media_log);
+
+  EsParserMpeg1Audio(const EsParserMpeg1Audio&) = delete;
+  EsParserMpeg1Audio& operator=(const EsParserMpeg1Audio&) = delete;
+
   ~EsParserMpeg1Audio() override;
 
   // EsParser implementation.
@@ -81,8 +85,6 @@ class MEDIA_EXPORT EsParserMpeg1Audio : public EsParser {
 
   // Last audio config.
   AudioDecoderConfig last_audio_decoder_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsParserMpeg1Audio);
 };
 
 }  // namespace mp2t

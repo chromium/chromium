@@ -71,6 +71,10 @@ class DemuxerStreamAdapter {
       mojo::PendingRemote<mojom::RemotingDataStreamSender> stream_sender_remote,
       mojo::ScopedDataPipeProducerHandle producer_handle,
       ErrorCallback error_callback);
+
+  DemuxerStreamAdapter(const DemuxerStreamAdapter&) = delete;
+  DemuxerStreamAdapter& operator=(const DemuxerStreamAdapter&) = delete;
+
   ~DemuxerStreamAdapter();
 
   // Rpc handle for this class. This is used for sending/receiving RPC message
@@ -201,8 +205,6 @@ class DemuxerStreamAdapter {
   base::WeakPtrFactory<DemuxerStreamAdapter> request_buffer_weak_factory_{this};
   // WeakPtrFactory for normal usage.
   base::WeakPtrFactory<DemuxerStreamAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemuxerStreamAdapter);
 };
 
 }  // namespace remoting

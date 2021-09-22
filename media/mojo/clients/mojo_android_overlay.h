@@ -24,6 +24,9 @@ class MojoAndroidOverlay : public AndroidOverlay,
       AndroidOverlayConfig config,
       const base::UnguessableToken& routing_token);
 
+  MojoAndroidOverlay(const MojoAndroidOverlay&) = delete;
+  MojoAndroidOverlay& operator=(const MojoAndroidOverlay&) = delete;
+
   ~MojoAndroidOverlay() override;
 
   // AndroidOverlay
@@ -45,8 +48,6 @@ class MojoAndroidOverlay : public AndroidOverlay,
 
   // Have we received OnSurfaceReady yet?
   bool received_surface_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAndroidOverlay);
 };
 
 }  // namespace media

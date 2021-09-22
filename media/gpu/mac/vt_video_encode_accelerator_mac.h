@@ -29,6 +29,10 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
   VTVideoEncodeAccelerator();
+
+  VTVideoEncodeAccelerator(const VTVideoEncodeAccelerator&) = delete;
+  VTVideoEncodeAccelerator& operator=(const VTVideoEncodeAccelerator&) = delete;
+
   ~VTVideoEncodeAccelerator() override;
 
   // VideoEncodeAccelerator implementation.
@@ -155,8 +159,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // other destructors run.
   base::WeakPtr<VTVideoEncodeAccelerator> encoder_weak_ptr_;
   base::WeakPtrFactory<VTVideoEncodeAccelerator> encoder_task_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VTVideoEncodeAccelerator);
 };
 
 }  // namespace media

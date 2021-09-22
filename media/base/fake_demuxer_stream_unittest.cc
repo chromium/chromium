@@ -30,6 +30,10 @@ class FakeDemuxerStreamTest : public testing::Test {
       : status_(DemuxerStream::kAborted),
         read_pending_(false),
         num_buffers_received_(0) {}
+
+  FakeDemuxerStreamTest(const FakeDemuxerStreamTest&) = delete;
+  FakeDemuxerStreamTest& operator=(const FakeDemuxerStreamTest&) = delete;
+
   ~FakeDemuxerStreamTest() override = default;
 
   void BufferReady(DemuxerStream::Status status,
@@ -188,9 +192,6 @@ class FakeDemuxerStreamTest : public testing::Test {
   scoped_refptr<DecoderBuffer> buffer_;
   bool read_pending_;
   int num_buffers_received_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDemuxerStreamTest);
 };
 
 TEST_F(FakeDemuxerStreamTest, Read_OneConfig) {

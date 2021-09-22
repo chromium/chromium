@@ -26,6 +26,10 @@ class MidiService;
 class MIDI_EXPORT MidiManagerMac final : public MidiManager {
  public:
   explicit MidiManagerMac(MidiService* service);
+
+  MidiManagerMac(const MidiManagerMac&) = delete;
+  MidiManagerMac& operator=(const MidiManagerMac&) = delete;
+
   ~MidiManagerMac() override;
 
   // MidiManager implementation.
@@ -81,8 +85,6 @@ class MIDI_EXPORT MidiManagerMac final : public MidiManager {
 
   // Keeps track of all destinations.
   std::vector<MIDIEndpointRef> destinations_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerMac);
 };
 
 }  // namespace midi

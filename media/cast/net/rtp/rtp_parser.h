@@ -22,6 +22,9 @@ class RtpParser {
  public:
   RtpParser(uint32_t expected_sender_ssrc, uint8_t expected_payload_type);
 
+  RtpParser(const RtpParser&) = delete;
+  RtpParser& operator=(const RtpParser&) = delete;
+
   virtual ~RtpParser();
 
   // Parses the |packet|, expecting an RTP header along with a Cast header at
@@ -47,8 +50,6 @@ class RtpParser {
   // re-expanded into full-form.
   RtpTimeTicks last_parsed_rtp_timestamp_;
   FrameId last_parsed_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RtpParser);
 };
 
 }  // namespace cast
