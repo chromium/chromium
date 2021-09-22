@@ -65,12 +65,12 @@ namespace web_app {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // The sub-directory of the extensions directory in which to scan for external
 // web apps (as opposed to external extensions or external ARC apps).
 const base::FilePath::CharType kWebAppsSubDirectory[] =
     FILE_PATH_LITERAL("web_apps");
-#endif
+#endif  // defined(OS_CHROMEOS)
 
 bool g_skip_startup_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
@@ -638,28 +638,34 @@ base::FilePath PreinstalledWebAppManager::GetConfigDir() {
   if (!command_line_directory.empty())
     return base::FilePath::FromUTF8Unsafe(command_line_directory);
 
+#if defined(OS_CHROMEOS)
+    // As of mid 2018, only Chrome OS has default/external web apps, and
+    // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
+    // which includes OS_CHROMEOS.
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // As of mid 2018, only Chrome OS has default/external web apps, and
-  // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
-  // which includes OS_CHROMEOS.
-  if (chromeos::ProfileHelper::IsRegularProfile(profile_)) {
-    if (g_config_dir_for_testing) {
-      return *g_config_dir_for_testing;
-    }
-
-    // For manual testing, you can change s/STANDALONE/USER/, as writing to
-    // "$HOME/.config/chromium/test-user/.config/chromium/External
-    // Extensions/web_apps" does not require root ACLs, unlike
-    // "/usr/share/chromium/extensions/web_apps".
-    base::FilePath dir;
-    if (base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
-                               &dir)) {
-      return dir.Append(kWebAppsSubDirectory);
-    }
-
-    LOG(ERROR) << "base::PathService::Get failed";
+  // Exclude sign-in and lock screen profiles.
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile_)) {
+    return {};
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (g_config_dir_for_testing) {
+    return *g_config_dir_for_testing;
+  }
+
+  // For manual testing, you can change s/STANDALONE/USER/, as writing to
+  // "$HOME/.config/chromium/test-user/.config/chromium/External
+  // Extensions/web_apps" does not require root ACLs, unlike
+  // "/usr/share/chromium/extensions/web_apps".
+  base::FilePath dir;
+  if (base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
+                             &dir)) {
+    return dir.Append(kWebAppsSubDirectory);
+  }
+
+  LOG(ERROR) << "base::PathService::Get failed";
+#endif  // defined(OS_CHROMEOS)
 
   return {};
 }

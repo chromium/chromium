@@ -46,10 +46,15 @@ namespace web_app {
 
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr char kUserTypesTestDir[] = "user_types";
+#endif
+
+#if defined(OS_CHROMEOS)
+constexpr char kGoodJsonTestDir[] = "good_json";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kGoodJsonTestDir[] = "good_json";
 constexpr char kAppAllUrl[] = "https://www.google.com/all";
 constexpr char kAppChildUrl[] = "https://www.google.com/child";
 constexpr char kAppGuestUrl[] = "https://www.google.com/guest";
@@ -90,6 +95,9 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     if (!profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       testing_profile = CreateProfileAndLogin();
+      profile = testing_profile.get();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      testing_profile = CreateProfile();
       profile = testing_profile.get();
 #else
       NOTREACHED();
@@ -256,7 +264,7 @@ TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
 }
 
 // Only Chrome OS parses config files.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
   const auto install_options_list = LoadApps(kGoodJsonTestDir);
 
@@ -453,7 +461,14 @@ TEST_F(PreinstalledWebAppManagerTest, NotEnabledByFinch) {
   EXPECT_EQ(0u, app_infos.size());
   ExpectHistograms(/*enabled=*/0, /*disabled=*/2, /*errors=*/0);
 }
+#else
+// No app is expected for non-ChromeOS builds.
+TEST_F(PreinstalledWebAppManagerTest, NoApp) {
+  EXPECT_TRUE(LoadApps(kUserTypesTestDir, CreateProfile().get()).empty());
+}
+#endif  // defined(OS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PreinstalledWebAppManagerTest, ChildUser) {
   const auto profile = CreateProfileAndLogin();
   profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
@@ -502,12 +517,6 @@ TEST_F(PreinstalledWebAppManagerTest, ExtraWebAppsNoMatchingDirectory) {
   const auto app_infos = LoadApps("extra_web_apps");
   EXPECT_EQ(0u, app_infos.size());
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/0);
-}
-
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-// No app is expected for non-ChromeOS builds.
-TEST_F(PreinstalledWebAppManagerTest, NoApp) {
-  EXPECT_TRUE(LoadApps(kUserTypesTestDir, CreateProfile().get()).empty());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

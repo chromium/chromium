@@ -45,14 +45,17 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touchscreen_device.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/test/app_list_test_api.h"
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #endif
 
 namespace web_app {
@@ -81,7 +84,7 @@ base::FilePath GetDataFilePath(const base::FilePath& relative_path,
   return path;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void ExpectInitialManifestFieldsFromBasicWebApp(
     const WebAppIconManager& icon_manager,
     const WebApp* web_app,
@@ -120,7 +123,7 @@ void ExpectInitialManifestFieldsFromBasicWebApp(
   // User preferences:
   EXPECT_EQ(web_app->user_display_mode(), DisplayMode::kStandalone);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 
@@ -582,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
 // The offline manifest JSON config functionality is only available on Chrome
 // OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 
 // Check that offline fallback installs work offline.
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
@@ -840,6 +843,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
             absl::nullopt);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -872,6 +876,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
 
   EXPECT_EQ(install_source, apps::mojom::InstallSource::kOem);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 ui::TouchscreenDevice CreateTouchDevice(ui::InputDeviceType type,
@@ -940,6 +945,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_EQ(disabled_configs.size(), 3u);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                        UninstallFromTwoItemAppListFolder) {
   GURL preinstalled_app_start_url("https://example.org/");
@@ -1011,6 +1017,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       "");
   EXPECT_EQ(app_list_syncable_service->GetSyncItem(user_app_id)->parent_id, "");
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Check that offline only installs don't overwrite fresh online manifest
 // obtained via sync install.
@@ -1072,6 +1079,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace web_app
