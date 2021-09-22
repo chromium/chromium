@@ -60,8 +60,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
   // be added to the map.
   bool ParseNameValuePairs(const std::string& in_string,
                            const std::string& eq,
-                           const std::string& delim,
-                           const std::string& debug_source);
+                           const std::string& delim);
 
   // This version allows for values which end with a comment beginning with
   // |comment_delim|.
@@ -71,8 +70,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
   bool ParseNameValuePairsWithComments(const std::string& in_string,
                                        const std::string& eq,
                                        const std::string& delim,
-                                       const std::string& comment_delim,
-                                       const std::string& debug_source);
+                                       const std::string& comment_delim);
 
   NameValueMap* map_;
 
