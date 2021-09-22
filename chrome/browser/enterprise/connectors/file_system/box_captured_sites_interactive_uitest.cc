@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/internal/enterprise_connectors_interactive_uitest_test_accounts.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/views/download/download_item_view.h"
@@ -61,29 +62,6 @@ TestExecutionMode GetTestExecutionMode() {
   else if (command_line->HasSwitch(kLiveMode))
     return TestExecutionMode::kLive;
   return TestExecutionMode::kReplay;
-}
-
-// The commandline flags to specify a REAL box.com username and password,
-// used to create new web captures against the LIVE box.com site.
-const char kBoxAccountUserName[] = "user_name";
-const char kBoxAccountPassword[] = "password";
-
-const std::string GetBoxAccountUserName() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kBoxAccountUserName)) {
-    return command_line->GetSwitchValueASCII(kBoxAccountUserName);
-  }
-  // In replay mode, it is okay to return a fake account.
-  return "FakeUser@FakeDomain.com";
-}
-
-const std::string GetBoxAccountPassword() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kBoxAccountPassword)) {
-    return command_line->GetSwitchValueASCII(kBoxAccountPassword);
-  }
-  // In replay mode, it is okay to return a fake account.
-  return "FakePassword";
 }
 
 // Print WPR output.
@@ -587,8 +565,9 @@ class BoxCapturedSitesInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        SFA_DownloadSmallFileSuccess) {
+  BoxTestAccount account = GetSFATestAccount();
   ASSERT_NO_FATAL_FAILURE(
-      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy(account.enterprise_id)));
   ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir("box.com.sfa.wpr"));
 
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
@@ -610,10 +589,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
 
   // Bypass the Box signin and authorize dialog.
-  ASSERT_NO_FATAL_FAILURE(
-      download_item_observer.sign_in_observer()
-          ->AuthorizeWithUserAndPasswordSFA(GetBoxAccountUserName(),
-                                            GetBoxAccountPassword()));
+  ASSERT_NO_FATAL_FAILURE(download_item_observer.sign_in_observer()
+                              ->AuthorizeWithUserAndPasswordSFA(
+                                  account.user_name, account.password));
   ASSERT_TRUE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
 
@@ -651,8 +629,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        MFA_DownloadSmallFileSuccess) {
+  BoxTestAccount account = GetMFATestAccount();
   ASSERT_NO_FATAL_FAILURE(
-      SetCloudFSCPolicy(GetAllAllowedTestPolicy("611447719")));
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy(account.enterprise_id)));
   ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir("box.com.mfa.wpr"));
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
@@ -672,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(
       download_item_observer.sign_in_observer()
           ->AuthorizeWithUserAndPassword2FA(
-              GetBoxAccountUserName(), GetBoxAccountPassword(), "123456",
+              account.user_name, account.password, "123456",
               GetTestExecutionMode() != TestExecutionMode::kReplay));
   ASSERT_TRUE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
@@ -686,8 +665,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        DownloadLargeFileSuccess) {
+  BoxTestAccount account = GetSFATestAccount();
   ASSERT_NO_FATAL_FAILURE(
-      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy(account.enterprise_id)));
   ASSERT_NO_FATAL_FAILURE(
       StartWprUsingFSCCaptureDir("box.com.large.download.wpr"));
 
@@ -704,10 +684,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
       download_item_observer.sign_in_observer()->AcceptSignInConfirmation());
-  ASSERT_NO_FATAL_FAILURE(
-      download_item_observer.sign_in_observer()
-          ->AuthorizeWithUserAndPasswordSFA(GetBoxAccountUserName(),
-                                            GetBoxAccountPassword()));
+  ASSERT_NO_FATAL_FAILURE(download_item_observer.sign_in_observer()
+                              ->AuthorizeWithUserAndPasswordSFA(
+                                  account.user_name, account.password));
 
   ASSERT_TRUE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
@@ -745,6 +724,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, EnterpriseIdMismatch) {
+  BoxTestAccount account = GetSFATestAccount();
   SetCloudFSCPolicy(GetAllAllowedTestPolicy("123456789"));
   StartWprUsingFSCCaptureDir("box.com.ent.id.mismatch.wpr");
 
@@ -762,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, EnterpriseIdMismatch) {
 
   // Bypass the Box signin and authorize dialog.
   download_item_observer.sign_in_observer()->AuthorizeWithUserAndPasswordSFA(
-      GetBoxAccountUserName(), GetBoxAccountPassword());
+      account.user_name, account.password);
   EXPECT_FALSE(
       download_item_observer.fetch_access_token_observer()->WaitForFetch());
 
@@ -787,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, EnterpriseIdMismatch) {
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        CancelSignInConfirmation) {
   ASSERT_NO_FATAL_FAILURE(
-      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("123456789")));
   ASSERT_NO_FATAL_FAILURE(
       StartWprUsingFSCCaptureDir("box.com.cancel.sign.in.confirmation.wpr"));
 
@@ -819,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
   ASSERT_NO_FATAL_FAILURE(
-      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("123456789")));
   ASSERT_NO_FATAL_FAILURE(
       StartWprUsingFSCCaptureDir("box.com.sign.in.fail.wpr"));
 
@@ -837,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
       download_item_observer.sign_in_observer()->AcceptSignInConfirmation());
   ASSERT_NO_FATAL_FAILURE(
       download_item_observer.sign_in_observer()->SubmitInvalidSignInCredentials(
-          GetBoxAccountUserName(), GetBoxAccountPassword()));
+          "fake_user@FakeDomain.com", "fake_password"));
   download_item_observer.sign_in_observer()->CloseSignInWidget();
   EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
@@ -855,11 +835,12 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        FilterByEnabledSettings_match_mime_only) {
+  BoxTestAccount account = GetSFATestAccount();
   // Set the SendDownloadToCloudEnterpriseConnector policy
   // Configure a policy to only to upload downloaded files to Box.com IFF:
   // - The download has a mime type of "application/zip".
-  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(
-      GetTestPolicyWithEnabledFilter("797972721", "*", "application/zip")));
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(GetTestPolicyWithEnabledFilter(
+      account.enterprise_id, "*", "application/zip")));
   ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
       "box.com.filter.by.enabled.matching.mime.wpr"));
 
@@ -871,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
           "/enterprise/connectors/file_system/downloads/sub/example.svg",
           DownloadServiceProvider::kLocal, need_to_link_box_account,
-          "image/svg+xml", GetBoxAccountUserName(), GetBoxAccountPassword()));
+          "image/svg+xml", account.user_name, account.password));
 
   // Download a zip file, which should be downloaded to Box.com.
   ASSERT_NO_FATAL_FAILURE(
@@ -879,11 +860,12 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           "/enterprise/connectors/file_system/downloads/sub/"
           "angry_clouds.mp4.zip",
           DownloadServiceProvider::kBox, need_to_link_box_account,
-          "application/zip", GetBoxAccountUserName(), GetBoxAccountPassword()));
+          "application/zip", account.user_name, account.password));
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        FilterByEnabledSettings_match_url_only) {
+  BoxTestAccount account = GetSFATestAccount();
   // Set the SendDownloadToCloudEnterpriseConnector policy
   // Configure a policy to only to upload downloaded files to Box.com IFF:
   // - The download comes from the '.../sub/' url.
@@ -891,8 +873,8 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       embedded_test_server()
           ->GetURL("/enterprise/connectors/file_system/downloads/sub/")
           .GetContent();
-  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(
-      GetTestPolicyWithEnabledFilter("797972721", include_url.c_str(), "*")));
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(GetTestPolicyWithEnabledFilter(
+      account.enterprise_id, include_url.c_str(), "*")));
   ASSERT_NO_FATAL_FAILURE(
       StartWprUsingFSCCaptureDir("box.com.filter.by.enabled.matching.url.wpr"));
 
@@ -905,8 +887,8 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           "/enterprise/connectors/file_system/downloads/"
           "angry_clouds.mp4.zip",
           DownloadServiceProvider::kLocal, need_to_link_box_account,
-          "" /* No need to check mime. */, GetBoxAccountUserName(),
-          GetBoxAccountPassword()));
+          "" /* No need to check mime. */, account.user_name,
+          account.password));
 
   // Download a zip file from the .../sub/ url, which should be downloaded to
   // Box.com.
@@ -915,12 +897,13 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           "/enterprise/connectors/file_system/downloads/sub/"
           "angry_clouds.mp4.zip",
           DownloadServiceProvider::kBox, need_to_link_box_account,
-          "" /* No need to check mime. */, GetBoxAccountUserName(),
-          GetBoxAccountPassword()));
+          "" /* No need to check mime. */, account.user_name,
+          account.password));
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        FilterByEnabledSettings_match_mime_and_url) {
+  BoxTestAccount account = GetSFATestAccount();
   // Set the SendDownloadToCloudEnterpriseConnector policy
   // Configure a policy to only to upload downloaded files to Box.com IFF:
   // - The download comes from the '.../sub/' url.
@@ -933,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   // 1. The download comes from the '.../sub/' url.
   // 2. The download has a mime type of "application/zip".
   ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(GetTestPolicyWithEnabledFilter(
-      "797972721", include_url.c_str(), "application/zip")));
+      account.enterprise_id, include_url.c_str(), "application/zip")));
   ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
       "box.com.filter.by.enabled.matching.url.and.mime.wpr"));
 
@@ -945,16 +928,17 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           "/enterprise/connectors/file_system/downloads/sub/"
           "angry_clouds.mp4.zip",
           DownloadServiceProvider::kBox, need_to_link_box_account,
-          "application/zip", GetBoxAccountUserName(), GetBoxAccountPassword()));
+          "application/zip", account.user_name, account.password));
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        FilterByDisabledSettings_match_mime_only) {
+  BoxTestAccount account = GetSFATestAccount();
   // Set the SendDownloadToCloudEnterpriseConnector policy
   // Configure a policy to only to upload downloaded files to Box.com UNLESS:
   // - The download has a mime type of "application/zip".
-  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(
-      GetTestPolicyWithDisabledFilter("797972721", "*", "application/zip")));
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(GetTestPolicyWithDisabledFilter(
+      account.enterprise_id, "*", "application/zip")));
   ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
       "box.com.filter.by.disabled.matching.mime.wpr"));
 
@@ -965,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       DownloadFromEmbeddedServerAndVerifyDownloadServiceProvider(
           "/enterprise/connectors/file_system/downloads/sub/example.svg",
           DownloadServiceProvider::kBox, need_to_link_box_account,
-          "image/svg+xml", GetBoxAccountUserName(), GetBoxAccountPassword()));
+          "image/svg+xml", account.user_name, account.password));
 
   // Download a zip file, which should be downloaded directly to the local
   // file system.
@@ -974,11 +958,12 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           "/enterprise/connectors/file_system/downloads/sub/"
           "angry_clouds.mp4.zip",
           DownloadServiceProvider::kLocal, need_to_link_box_account,
-          "application/zip", GetBoxAccountUserName(), GetBoxAccountPassword()));
+          "application/zip", account.user_name, account.password));
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        FilterByDisabledSettings_match_url_only) {
+  BoxTestAccount account = GetSFATestAccount();
   // Set the SendDownloadToCloudEnterpriseConnector policy
   // Configure a policy to only to upload downloaded files to Box.com UNLESS:
   // - The download comes from the '.../sub/' url.
@@ -986,8 +971,8 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       embedded_test_server()
           ->GetURL("/enterprise/connectors/file_system/downloads/sub/")
           .GetContent();
-  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(
-      GetTestPolicyWithDisabledFilter("797972721", include_url.c_str(), "*")));
+  ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(GetTestPolicyWithDisabledFilter(
+      account.enterprise_id, include_url.c_str(), "*")));
   ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
       "box.com.filter.by.disabled.matching.url.wpr"));
 
@@ -1000,8 +985,8 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           "/enterprise/connectors/file_system/downloads/"
           "angry_clouds.mp4.zip",
           DownloadServiceProvider::kBox, need_to_link_box_account,
-          "" /* No need to check mime. */, GetBoxAccountUserName(),
-          GetBoxAccountPassword()));
+          "" /* No need to check mime. */, account.user_name,
+          account.password));
 
   // Download a zip file from the .../sub/ url, which should be
   // downloaded directly to the local file system.
@@ -1010,12 +995,13 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           "/enterprise/connectors/file_system/downloads/sub/"
           "angry_clouds.mp4.zip",
           DownloadServiceProvider::kLocal, need_to_link_box_account,
-          "" /* No need to check mime. */, GetBoxAccountUserName(),
-          GetBoxAccountPassword()));
+          "" /* No need to check mime. */, account.user_name,
+          account.password));
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        FilterByDisabledSettings_match_mime_and_url) {
+  BoxTestAccount account = GetSFATestAccount();
   // Set the SendDownloadToCloudEnterpriseConnector policy
   // Configure a policy to only to upload downloaded files to Box.com IFF:
   // - The download comes from the '.../sub/' url.
@@ -1028,7 +1014,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   // 1. The download comes from the '.../sub/' url.
   // 2. The download has a mime type of "application/zip".
   ASSERT_NO_FATAL_FAILURE(SetCloudFSCPolicy(GetTestPolicyWithDisabledFilter(
-      "797972721", include_url.c_str(), "application/zip")));
+      account.enterprise_id, include_url.c_str(), "application/zip")));
   ASSERT_NO_FATAL_FAILURE(StartWprUsingFSCCaptureDir(
       "box.com.filter.by.disabled.matching.url.and.mime.wpr"));
 
@@ -1040,8 +1026,8 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
           "/enterprise/connectors/file_system/downloads/sub/"
           "angry_clouds.mp4.zip",
           DownloadServiceProvider::kLocal, need_to_link_box_account,
-          "" /* No need to check mime. */, GetBoxAccountUserName(),
-          GetBoxAccountPassword()));
+          "" /* No need to check mime. */, account.user_name,
+          account.password));
 }
 
 IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
@@ -1058,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
       std::move(account_info));
 
   ASSERT_NO_FATAL_FAILURE(
-      SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
+      SetCloudFSCPolicy(GetAllAllowedTestPolicy("123456789")));
   ASSERT_NO_FATAL_FAILURE(
       StartWprUsingFSCCaptureDir("box.com.sign.in.prepop.account.wpr"));
 
