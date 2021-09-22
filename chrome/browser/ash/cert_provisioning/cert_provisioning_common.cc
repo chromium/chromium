@@ -77,6 +77,36 @@ void DeleteVaKeysWithMatchBehavior(
 
 }  // namespace
 
+std::string CertificateProvisioningWorkerStateToString(
+    CertProvisioningWorkerState state) {
+  switch (state) {
+    case CertProvisioningWorkerState::kInitState:
+      return "InitState";
+    case CertProvisioningWorkerState::kKeypairGenerated:
+      return "KeypairGenerated";
+    case CertProvisioningWorkerState::kStartCsrResponseReceived:
+      return "StartCsrResponseReceived";
+    case CertProvisioningWorkerState::kVaChallengeFinished:
+      return "VaChallengeFinished";
+    case CertProvisioningWorkerState::kKeyRegistered:
+      return "KeyRegistered";
+    case CertProvisioningWorkerState::kKeypairMarked:
+      return "KeypairMarked";
+    case CertProvisioningWorkerState::kSignCsrFinished:
+      return "SignCsrFinished";
+    case CertProvisioningWorkerState::kFinishCsrResponseReceived:
+      return "FinishCsrResponseReceived";
+    case CertProvisioningWorkerState::kSucceeded:
+      return "Succeeded";
+    case CertProvisioningWorkerState::kInconsistentDataError:
+      return "InconsistentDataError";
+    case CertProvisioningWorkerState::kFailed:
+      return "Failed";
+    case CertProvisioningWorkerState::kCanceled:
+      return "Canceled";
+  }
+}
+
 bool IsFinalState(CertProvisioningWorkerState state) {
   switch (state) {
     case CertProvisioningWorkerState::kSucceeded:

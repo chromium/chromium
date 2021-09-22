@@ -72,6 +72,10 @@ enum class DeviceManagementServerRequestType {
   kDownloadCert = 2,
 };
 
+// Converts the worker |state| to a string. This is mainly for logging purposes.
+std::string CertificateProvisioningWorkerStateToString(
+    CertProvisioningWorkerState state);
+
 // Returns true if the |state| is one of final states, i. e. worker should
 // finish its task in one of them.
 bool IsFinalState(CertProvisioningWorkerState state);
