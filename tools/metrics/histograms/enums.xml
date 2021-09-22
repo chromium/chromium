@@ -68312,6 +68312,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Valid minidump in background app"/>
 </enum>
 
+<enum name="ProcessIntegrityResult">
+  <int value="0" label="Low integrity level"/>
+  <int value="1" label="Medium integrity level from Open GL"/>
+  <int value="2" label="Medium integrity level from Desktop access check"/>
+</enum>
+
 <enum name="ProcessNameHash">
   <summary>
     The hash of a lower case process name generated using metrics::HashName.
