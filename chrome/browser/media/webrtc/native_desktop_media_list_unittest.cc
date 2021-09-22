@@ -60,6 +60,8 @@ class MockObserver : public DesktopMediaListObserver {
   MOCK_METHOD2(OnSourceThumbnailChanged,
                void(DesktopMediaList* list, int index));
   MOCK_METHOD1(OnAllSourcesFound, void(DesktopMediaList* list));
+  MOCK_METHOD2(OnSourcePreviewChanged,
+               void(DesktopMediaList* list, size_t index));
 };
 
 class FakeScreenCapturer : public webrtc::DesktopCapturer {

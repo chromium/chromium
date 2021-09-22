@@ -54,6 +54,11 @@ void FakeDesktopMediaList::SetSourceName(int index, std::u16string name) {
   observer_->OnSourceNameChanged(this, index);
 }
 
+void FakeDesktopMediaList::SetSourcePreview(int index, gfx::ImageSkia preview) {
+  sources_[index].preview = preview;
+  observer_->OnSourcePreviewChanged(this, index);
+}
+
 void FakeDesktopMediaList::SetUpdatePeriod(base::TimeDelta period) {}
 
 void FakeDesktopMediaList::SetThumbnailSize(const gfx::Size& thumbnail_size) {}
@@ -86,3 +91,6 @@ const DesktopMediaList::Source& FakeDesktopMediaList::GetSource(
 DesktopMediaList::Type FakeDesktopMediaList::GetMediaListType() const {
   return type_;
 }
+
+void FakeDesktopMediaList::SetPreviewedSource(
+    const absl::optional<content::DesktopMediaID>& id) {}

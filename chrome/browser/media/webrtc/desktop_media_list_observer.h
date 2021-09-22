@@ -20,6 +20,7 @@ class DesktopMediaListObserver {
                              int new_index) = 0;
   virtual void OnSourceNameChanged(DesktopMediaList* list, int index) = 0;
   virtual void OnSourceThumbnailChanged(DesktopMediaList* list, int index) = 0;
+  virtual void OnSourcePreviewChanged(DesktopMediaList* list, size_t index) = 0;
 
  protected:
   virtual ~DesktopMediaListObserver() {}

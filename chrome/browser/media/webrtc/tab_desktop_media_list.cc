@@ -7,18 +7,21 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/bind_post_task.h"
 #include "base/hash/hash.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "media/base/video_util.h"
@@ -26,6 +29,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 using content::BrowserThread;
 using content::DesktopMediaID;
@@ -63,6 +67,51 @@ gfx::ImageSkia CreateEnclosedFaviconImage(gfx::Size size,
 // Update the list once per second.
 const int kDefaultTabDesktopMediaListUpdatePeriod = 1000;
 
+gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {
+  const gfx::Rect scaled_rect = media::ComputeLetterboxRegion(
+      gfx::Rect(0, 0, size.width(), size.height()),
+      gfx::Size(bitmap.info().width(), bitmap.info().height()));
+
+  // TODO(crbug.com/1246835): Consider changing to ResizeMethod::BEST after
+  // verifying CPU impact isn't too high.
+  const gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
+      gfx::ImageSkia::CreateFromBitmap(bitmap, 1.f),
+      skia::ImageOperations::ResizeMethod::RESIZE_GOOD, scaled_rect.size());
+
+  SkBitmap result(*resized.bitmap());
+
+  // Set alpha channel values to 255 for all pixels.
+  // TODO(crbug.com/264424): Fix screen/window capturers to capture alpha
+  // channel and remove this code. Currently screen/window capturers (at least
+  // some implementations) only capture R, G and B channels and set Alpha to 0.
+  uint8_t* pixels_data = reinterpret_cast<uint8_t*>(result.getPixels());
+  for (int y = 0; y < result.height(); ++y) {
+    for (int x = 0; x < result.width(); ++x) {
+      pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 3] =
+          0xff;
+    }
+  }
+
+  return gfx::ImageSkia::CreateFrom1xBitmap(result);
+}
+
+void HandleCapturedBitmap(
+    base::OnceCallback<void(uint32_t, const gfx::ImageSkia&)> reply,
+    absl::optional<uint32_t> last_hash,
+    const SkBitmap& bitmap) {
+  gfx::ImageSkia image;
+
+  // Only scale and update if the frame appears to be new.
+  const uint32_t hash = base::FastHash(base::make_span(
+      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
+  if (!last_hash.has_value() || hash != last_hash.value()) {
+    image = ScaleBitmap(bitmap, desktopcapture::kPreviewSize);
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(reply), hash, image));
+}
+
 }  // namespace
 
 TabDesktopMediaList::TabDesktopMediaList(
@@ -74,11 +123,27 @@ TabDesktopMediaList::TabDesktopMediaList(
           std::move(includable_web_contents_filter)),
       include_chrome_app_windows_(include_chrome_app_windows) {
   type_ = DesktopMediaList::Type::kWebContents;
-  thumbnail_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+  image_resize_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 }
 
-TabDesktopMediaList::~TabDesktopMediaList() {}
+TabDesktopMediaList::~TabDesktopMediaList() {
+  // previewed_source_visible_keepalive_ is expected to be destructed on the UI
+  // thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+void TabDesktopMediaList::CompleteRefreshAfterThumbnailProcessing() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // OnRefreshComplete() needs to be called after all calls to
+  // UpdateSourceThumbnail() have completed. Therefore, a DoNothing task is
+  // posted to the same sequenced task runner to which
+  // CreateEnclosedFaviconImage() is posted.
+  image_resize_task_runner_.get()->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(),
+      base::BindOnce(&TabDesktopMediaList::OnRefreshComplete,
+                     weak_factory_.GetWeakPtr()));
+}
 
 void TabDesktopMediaList::Refresh(bool update_thumnails) {
   DCHECK(can_refresh());
@@ -173,17 +238,155 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
     // Create a thumbail in a different thread and update the thumbnail in
     // current thread.
     base::PostTaskAndReplyWithResult(
-        thumbnail_task_runner_.get(), FROM_HERE,
+        image_resize_task_runner_.get(), FROM_HERE,
         base::BindOnce(&CreateEnclosedFaviconImage, thumbnail_size_, it.second),
         base::BindOnce(&TabDesktopMediaList::UpdateSourceThumbnail,
                        weak_factory_.GetWeakPtr(), it.first));
   }
 
-  // OnRefreshComplete() needs to be called after all calls for
-  // UpdateSourceThumbnail() have done. Therefore, a DoNothing task is posted to
-  // the same sequenced task runner that CreateEnlargedFaviconImag() is posted.
-  thumbnail_task_runner_.get()->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(),
-      base::BindOnce(&TabDesktopMediaList::OnRefreshComplete,
-                     weak_factory_.GetWeakPtr()));
+  if (previewed_source_) {
+    // Trigger an update of the selected tab's preview image. It handles calling
+    // OnRefreshComplete when it's ready.
+    TriggerScreenshot(/*remaining_retries=*/0,
+                      std::make_unique<TabDesktopMediaList::RefreshCompleter>(
+                          weak_factory_.GetWeakPtr()));
+  } else {
+    // No preview to update.
+    CompleteRefreshAfterThumbnailProcessing();
+  }
+}
+
+void TabDesktopMediaList::TriggerScreenshot(
+    int remaining_retries,
+    std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!previewed_source_.has_value()) {
+    // The selection must have been cleared while waiting to retry. Nothing to
+    // do.
+    return;
+  }
+
+  content::RenderFrameHost* host = content::RenderFrameHost::FromID(
+      previewed_source_->web_contents_id.render_process_id,
+      previewed_source_->web_contents_id.main_render_frame_id);
+  content::RenderWidgetHostView* const view = host ? host->GetView() : nullptr;
+  if (!view) {
+    // Clear the preview image, so that we don't have a stale image for eg
+    // crashed tabs.
+    UpdateSourcePreview(previewed_source_.value(), gfx::ImageSkia());
+    return;
+  }
+
+  view->CopyFromSurface(
+      gfx::Rect(), gfx::Size(),
+      base::BindPostTask(
+          content::GetUIThreadTaskRunner({}),
+          base::BindOnce(&TabDesktopMediaList::ScreenshotReceived,
+                         weak_factory_.GetWeakPtr(), remaining_retries,
+                         previewed_source_.value(),
+                         std::move(refresh_completer))));
+}
+
+void TabDesktopMediaList::ScreenshotReceived(
+    int remaining_retries,
+    const content::DesktopMediaID& id,
+    std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
+    const SkBitmap& bitmap) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (id != previewed_source_) {
+    // Selection has changed since triggering this screenshot. Quit early to
+    // avoid rescaling the image unnecessarily.
+    return;
+  }
+
+  // TODO(crbug.com/1224342): Listen for a newly drawn frame to be ready when a
+  // hidden tab is woken up,rather than just retrying after an arbitrary delay.
+  constexpr base::TimeDelta kScreenshotRetryDelayMs =
+      base::TimeDelta::FromMilliseconds(20);
+
+  // It can take a little time after we tell a WebContents it's being captured
+  // by calling IncrementCapturerCount before it starts painting actual frames,
+  // so do a few retries before giving up and proceeding with an empty image
+  // meaning the preview is cleared.
+  if (bitmap.drawsNothing() && remaining_retries > 0) {
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TabDesktopMediaList::TriggerScreenshot,
+                       weak_factory_.GetWeakPtr(), remaining_retries - 1,
+                       std::move(refresh_completer)),
+        kScreenshotRetryDelayMs);
+    return;
+  }
+
+  auto reply = base::BindOnce(&TabDesktopMediaList::OnPreviewCaptureHandled,
+                              weak_factory_.GetWeakPtr(), id,
+                              std::move(refresh_completer));
+  image_resize_task_runner_.get()->PostTask(
+      FROM_HERE, base::BindOnce(&HandleCapturedBitmap, std::move(reply),
+                                last_hash_, bitmap));
+}
+
+void TabDesktopMediaList::OnPreviewCaptureHandled(
+    const content::DesktopMediaID& media_id,
+    std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
+    uint32_t new_hash,
+    const gfx::ImageSkia& image) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (new_hash != last_hash_) {
+    last_hash_ = new_hash;
+    UpdateSourcePreview(media_id, image);
+  }
+}
+
+void TabDesktopMediaList::SetPreviewedSource(
+    const absl::optional<content::DesktopMediaID>& id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!(id.has_value() && id.value().is_null()));
+
+  previewed_source_ = id;
+  previewed_source_visible_keepalive_.RunAndReset();
+
+  if (!id.has_value()) {
+    return;
+  }
+
+  content::RenderFrameHost* const host = content::RenderFrameHost::FromID(
+      id->web_contents_id.render_process_id,
+      id->web_contents_id.main_render_frame_id);
+  // Note host may be nullptr, but FromRenderFrameHost handles that for us.
+  content::WebContents* const source_contents =
+      content::WebContents::FromRenderFrameHost(host);
+  if (!source_contents) {
+    // No WebContents instance found, likely the selected tab has been recently
+    // closed or crashed and the list of sources hasn't been updated yet.
+    UpdateSourcePreview(id.value(), gfx::ImageSkia());
+    return;
+  }
+
+  // Let the WebContents know that it's being visibly captured, so paints even
+  // in the background. Pass false to stay_hidden to fully wake the page to not
+  // only allow it to load, but also to avoid pages realising they're visible
+  // only in the preview and manipulating the user.
+  previewed_source_visible_keepalive_ = source_contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+
+  // Capture a new previewed image.
+  // TODO(crbug.com/1224342): Schedule this delayed if there has been another
+  // update recently to avoid churning when a user scrolls quickly through the
+  // list.
+  constexpr int kMaxPreviewRetries = 5;
+  TriggerScreenshot(kMaxPreviewRetries, /*refresh_completer=*/nullptr);
+}
+
+TabDesktopMediaList::RefreshCompleter::RefreshCompleter(
+    base::WeakPtr<TabDesktopMediaList> list)
+    : list_(list) {}
+
+TabDesktopMediaList::RefreshCompleter::~RefreshCompleter() {
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI) && list_) {
+    list_->CompleteRefreshAfterThumbnailProcessing();
+  }
 }

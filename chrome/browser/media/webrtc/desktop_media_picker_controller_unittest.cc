@@ -48,6 +48,8 @@ class MockDesktopMediaList : public DesktopMediaList {
   MOCK_METHOD1(SetViewDialogWindowId, void(content::DesktopMediaID dialog_id));
   MOCK_METHOD1(StartUpdating, void(DesktopMediaListObserver* observer));
   MOCK_METHOD1(Update, void(UpdateCallback callback));
+  MOCK_METHOD1(SetPreviewedSource,
+               void(const absl::optional<content::DesktopMediaID>& id));
   MOCK_CONST_METHOD0(GetSourceCount, int());
   MOCK_CONST_METHOD1(GetSource, Source&(int index));
   MOCK_CONST_METHOD0(GetMediaListType, DesktopMediaList::Type());

@@ -32,6 +32,8 @@ class MockDesktopMediaListObserver : public DesktopMediaListObserver {
   MOCK_METHOD2(OnSourceNameChanged, void(DesktopMediaList* list, int index));
   MOCK_METHOD2(OnSourceThumbnailChanged,
                void(DesktopMediaList* list, int index));
+  MOCK_METHOD2(OnSourcePreviewChanged,
+               void(DesktopMediaList* list, size_t index));
 };
 
 class DesktopMediaListAshTest : public ChromeAshTestBase {

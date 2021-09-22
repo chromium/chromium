@@ -112,6 +112,11 @@ void DesktopMediaListController::SetThumbnailSize(const gfx::Size& size) {
   media_list_->SetThumbnailSize(size);
 }
 
+void DesktopMediaListController::SetPreviewedSource(
+    const absl::optional<content::DesktopMediaID>& id) {
+  media_list_->SetPreviewedSource(id);
+}
+
 void DesktopMediaListController::OnSourceAdded(DesktopMediaList* list,
                                                int index) {
   if (view_) {
@@ -163,6 +168,13 @@ void DesktopMediaListController::OnSourceThumbnailChanged(
   if (view_) {
     view_->GetSourceListListener()->OnSourceThumbnailChanged(
         base::checked_cast<size_t>(index));
+  }
+}
+
+void DesktopMediaListController::OnSourcePreviewChanged(DesktopMediaList* list,
+                                                        size_t index) {
+  if (view_) {
+    view_->GetSourceListListener()->OnSourcePreviewChanged(index);
   }
 }
 

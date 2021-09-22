@@ -93,6 +93,8 @@ class MockObserver : public DesktopMediaListObserver {
   MOCK_METHOD2(OnSourceThumbnailChanged,
                void(DesktopMediaList* list, int index));
   MOCK_METHOD1(OnAllSourcesFound, void(DesktopMediaList* list));
+  MOCK_METHOD2(OnSourcePreviewChanged,
+               void(DesktopMediaList* list, size_t index));
 
   void VerifyAndClearExpectations() {
     testing::Mock::VerifyAndClearExpectations(this);
@@ -242,6 +244,8 @@ class TabDesktopMediaListTest : public testing::Test {
   }
 
   void TearDown() override {
+    list_.reset();
+
     // TODO(erikchen): Tearing down the TabStripModel should just delete all its
     // owned WebContents. Then |manually_added_web_contents_| won't be
     // necessary. https://crbug.com/832879.
@@ -344,8 +348,6 @@ TEST_F(TabDesktopMediaListTest, AddTab) {
       .WillOnce(QuitMessageLoop());
 
   base::RunLoop().Run();
-
-  list_.reset();
 }
 
 TEST_F(TabDesktopMediaListTest, AddAppWindow) {
@@ -363,8 +365,6 @@ TEST_F(TabDesktopMediaListTest, AddAppWindow) {
                          base::test::RunClosure(loop.QuitClosure())));
 
   loop.Run();
-
-  list_.reset();
 }
 
 TEST_F(TabDesktopMediaListTest, RemoveTab) {
@@ -382,8 +382,6 @@ TEST_F(TabDesktopMediaListTest, RemoveTab) {
                          QuitMessageLoop()));
 
   base::RunLoop().Run();
-
-  list_.reset();
 }
 
 TEST_F(TabDesktopMediaListTest, MoveTab) {
@@ -408,8 +406,6 @@ TEST_F(TabDesktopMediaListTest, MoveTab) {
                                QuitMessageLoop()));
 
   base::RunLoop().Run();
-
-  list_.reset();
 }
 
 TEST_F(TabDesktopMediaListTest, UpdateTitle) {
@@ -431,8 +427,6 @@ TEST_F(TabDesktopMediaListTest, UpdateTitle) {
   base::RunLoop().Run();
 
   EXPECT_EQ(list_->GetSource(0).name, u"New test tab");
-
-  list_.reset();
 }
 
 TEST_F(TabDesktopMediaListTest, UpdateThumbnail) {
@@ -454,6 +448,25 @@ TEST_F(TabDesktopMediaListTest, UpdateThumbnail) {
       .WillOnce(QuitMessageLoop());
 
   base::RunLoop().Run();
+}
 
-  list_.reset();
+// Test that a source which is set as the one being previewed is marked as being
+// visibly captured, so that it is still painted even when hidden.
+TEST_F(TabDesktopMediaListTest, SetPreviewMarksTabAsVisiblyCaptured) {
+  InitializeAndVerify();
+
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+  WebContents* contents =
+      tab_strip_model->GetWebContentsAt(kDefaultSourceCount - 1);
+  ASSERT_TRUE(contents);
+
+  list_->SetPreviewedSource(list_->GetSource(0).id);
+
+  EXPECT_TRUE(contents->IsBeingVisiblyCaptured());
+
+  EXPECT_CALL(observer_, OnSourcePreviewChanged(list_.get(), 0))
+      .WillOnce(QuitMessageLoop());
+
+  base::RunLoop().Run();
 }

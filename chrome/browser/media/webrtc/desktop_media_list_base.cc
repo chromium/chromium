@@ -13,31 +13,40 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/image/image.h"
 
+using content::BrowserThread;
 using content::DesktopMediaID;
 
 DesktopMediaListBase::DesktopMediaListBase(base::TimeDelta update_period)
-    : update_period_(update_period) {}
+    : update_period_(update_period) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 DesktopMediaListBase::DesktopMediaListBase(base::TimeDelta update_period,
                                            DesktopMediaListObserver* observer)
-    : update_period_(update_period), observer_(observer) {}
+    : update_period_(update_period), observer_(observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 DesktopMediaListBase::~DesktopMediaListBase() = default;
 
 void DesktopMediaListBase::SetUpdatePeriod(base::TimeDelta period) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!observer_);
   update_period_ = period;
 }
 
 void DesktopMediaListBase::SetThumbnailSize(const gfx::Size& thumbnail_size) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   thumbnail_size_ = thumbnail_size;
 }
 
 void DesktopMediaListBase::SetViewDialogWindowId(DesktopMediaID dialog_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   view_dialog_id_ = dialog_id;
 }
 
 void DesktopMediaListBase::StartUpdating(DesktopMediaListObserver* observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!observer_);
   observer_ = observer;
 
@@ -55,6 +64,7 @@ void DesktopMediaListBase::StartUpdating(DesktopMediaListObserver* observer) {
 }
 
 void DesktopMediaListBase::Update(UpdateCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(sources_.empty());
   DCHECK(!refresh_callback_);
   refresh_callback_ = std::move(callback);
@@ -62,17 +72,20 @@ void DesktopMediaListBase::Update(UpdateCallback callback) {
 }
 
 int DesktopMediaListBase::GetSourceCount() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return sources_.size();
 }
 
 const DesktopMediaList::Source& DesktopMediaListBase::GetSource(
     int index) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(sources_.size()));
   return sources_[index];
 }
 
 DesktopMediaList::Type DesktopMediaListBase::GetMediaListType() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return type_;
 }
 
@@ -83,6 +96,8 @@ DesktopMediaListBase::SourceDescription::SourceDescription(
 
 void DesktopMediaListBase::UpdateSourcesList(
     const std::vector<SourceDescription>& new_sources) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   typedef std::set<DesktopMediaID> SourceSet;
   SourceSet new_source_set;
   for (size_t i = 0; i < new_sources.size(); ++i) {
@@ -147,12 +162,14 @@ void DesktopMediaListBase::UpdateSourcesList(
   }
 }
 
-void DesktopMediaListBase::UpdateSourceThumbnail(DesktopMediaID id,
+void DesktopMediaListBase::UpdateSourceThumbnail(const DesktopMediaID& id,
                                                  const gfx::ImageSkia& image) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // Unlike other methods that check can_refresh(), this one won't cause
   // OnRefreshComplete() to be called, but the caller is expected to schedule a
-  // call to OnRefreshComplete() after this method has been called as many times
-  // as needed, so the check is still valid.
+  // call to OnRefreshComplete() after this method and UpdateSourcePreview()
+  // have been called as many times as needed, so the check is still valid.
   DCHECK(can_refresh());
 
   for (size_t i = 0; i < sources_.size(); ++i) {
@@ -165,19 +182,42 @@ void DesktopMediaListBase::UpdateSourceThumbnail(DesktopMediaID id,
   }
 }
 
+void DesktopMediaListBase::UpdateSourcePreview(const DesktopMediaID& id,
+                                               const gfx::ImageSkia& image) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Unlike other methods that check can_refresh(), this one won't cause
+  // OnRefreshComplete() to be called, but the caller is expected to schedule a
+  // call to OnRefreshComplete() after this method and UpdateSourceThumbnail()
+  // have been called as many times as needed, so the check is still valid.
+  DCHECK(can_refresh());
+
+  for (size_t i = 0; i < sources_.size(); ++i) {
+    if (sources_[i].id == id) {
+      sources_[i].preview = image;
+      if (observer_)
+        observer_->OnSourcePreviewChanged(this, i);
+      break;
+    }
+  }
+}
+
 // static
 uint32_t DesktopMediaListBase::GetImageHash(const gfx::Image& image) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   SkBitmap bitmap = image.AsBitmap();
   return base::FastHash(base::make_span(
       static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
 }
 
 void DesktopMediaListBase::OnRefreshComplete() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(refresh_callback_);
   std::move(refresh_callback_).Run();
 }
 
 void DesktopMediaListBase::ScheduleNextRefresh() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!refresh_callback_);
   refresh_callback_ = base::BindOnce(&DesktopMediaListBase::ScheduleNextRefresh,
                                      weak_factory_.GetWeakPtr());

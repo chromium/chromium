@@ -24,6 +24,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void MoveSource(int old_index, int new_index);
   void SetSourceThumbnail(int index);
   void SetSourceName(int index, std::u16string name);
+  void SetSourcePreview(int index, gfx::ImageSkia);
 
   // DesktopMediaList implementation:
   void SetUpdatePeriod(base::TimeDelta period) override;
@@ -34,6 +35,8 @@ class FakeDesktopMediaList : public DesktopMediaList {
   int GetSourceCount() const override;
   const Source& GetSource(int index) const override;
   DesktopMediaList::Type GetMediaListType() const override;
+  void SetPreviewedSource(
+      const absl::optional<content::DesktopMediaID>& id) override;
 
  private:
   std::vector<Source> sources_;

@@ -51,6 +51,7 @@ class DesktopMediaListView
   void OnSourceMoved(size_t old_index, size_t new_index) override;
   void OnSourceNameChanged(size_t index) override;
   void OnSourceThumbnailChanged(size_t index) override;
+  void OnSourcePreviewChanged(size_t index) override;
 
  private:
   // Change the source style of this list on the fly.
