@@ -9,16 +9,29 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
   ]
 
   deps = [
+    ":java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/content_creation/reactions/android:public_java",
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
   resources_package =
       "org.chromium.chrome.browser.content_creation.reactions.internal"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/reactions_dialog.xml",
+    "java/res/layout/scene.xml",
+    "java/res/layout/toolbar.xml",
+  ]
 }

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Activity;
 
+import androidx.fragment.app.FragmentActivity;
+
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -16,6 +18,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  */
 public class LightweightReactionsCoordinatorImpl
         extends BaseScreenshotCoordinator implements LightweightReactionsCoordinator {
+    private final LightweightReactionsDialog mDialog;
     /**
      * Constructs a new LightweightReactionsCoordinatorImpl which initializes and displays the
      * Lightweight Reactions scene.
@@ -30,15 +33,17 @@ public class LightweightReactionsCoordinatorImpl
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController) {
         super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
+        mDialog = new LightweightReactionsDialog();
     }
 
     @Override
     public void showDialog() {
-        // No-op for now
+        FragmentActivity fragmentActivity = (FragmentActivity) mActivity;
+        mDialog.show(fragmentActivity.getSupportFragmentManager(), null);
     }
 
     @Override
     protected void handleScreenshot() {
-        // No-op for now
+        showDialog();
     }
 }
