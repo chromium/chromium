@@ -308,10 +308,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // called. If FinishRequest is not called the request will eventually time
   // out and the worker will be forcibly terminated.
   //
-  // The |error_callback| is called if either ServiceWorkerVersion decides the
+  // `error_callback` is called if either ServiceWorkerVersion decides the
   // event is taking too long, or if for some reason the worker stops or is
   // killed before the request finishes. In this case, the caller should not
-  // call FinishRequest.
+  // call FinishRequest. EXCEPTION: If CreateSimpleEventCallback() is used,
+  // `error_callback` is always called, even in the case of success.
+  // TODO(http://crbug.com/1251834): Clean up this exception.
   int StartRequest(ServiceWorkerMetrics::EventType event_type,
                    StatusCallback error_callback);
 

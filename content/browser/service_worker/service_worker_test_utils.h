@@ -41,26 +41,6 @@ class ServiceWorkerRegistry;
 class ServiceWorkerStorage;
 class ServiceWorkerVersion;
 
-template <typename Arg>
-void ReceiveResult(BrowserThread::ID run_quit_thread,
-                   base::OnceClosure quit,
-                   absl::optional<Arg>* out,
-                   Arg actual) {
-  *out = actual;
-  if (!quit.is_null()) {
-    BrowserThread::GetTaskRunnerForThread(run_quit_thread)
-        ->PostTask(FROM_HERE, std::move(quit));
-  }
-}
-
-template <typename Arg>
-base::OnceCallback<void(Arg)> CreateReceiver(BrowserThread::ID run_quit_thread,
-                                             base::OnceClosure quit,
-                                             absl::optional<Arg>* out) {
-  return base::BindOnce(&ReceiveResult<Arg>, run_quit_thread, std::move(quit),
-                        out);
-}
-
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>
 ReceiveServiceWorkerStatus(absl::optional<blink::ServiceWorkerStatusCode>* out,
                            base::OnceClosure quit_closure);
