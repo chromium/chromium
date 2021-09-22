@@ -9,11 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-// TODO(https://crbug.com/1164001): move CrosSettings to forward declaration
-// when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
@@ -21,7 +19,8 @@ namespace device {
 class BluetoothAdapter;
 }
 
-namespace chromeos {
+namespace ash {
+class CrosSettings;
 
 // Fetches all info we want to show on OOBE/Login screens about system
 // version, boot times and cloud policy.
@@ -81,7 +80,7 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   // Produce a label with device identifiers.
   std::string GetDeviceIdsLabel();
 
-  // Callback from chromeos::VersionLoader giving the version.
+  // Callback from VersionLoader giving the version.
   void OnVersion(const std::string& version);
 
   // Callback from device::BluetoothAdapterFactory::GetAdapter.
@@ -97,7 +96,7 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
 
   std::vector<base::CallbackListSubscription> subscriptions_;
 
-  chromeos::CrosSettings* cros_settings_;
+  CrosSettings* cros_settings_;
 
   Delegate* delegate_;
 
@@ -107,6 +106,12 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   base::WeakPtrFactory<VersionInfoUpdater> weak_pointer_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::VersionInfoUpdater;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_INFO_UPDATER_H_

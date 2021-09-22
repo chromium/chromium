@@ -14,7 +14,7 @@ namespace base {
 class ListValue;
 }
 
-namespace chromeos {
+namespace ash {
 namespace lock_screen_utils {
 
 // Update current input method (namely keyboard layout) in the given IME state
@@ -37,21 +37,9 @@ void StopEnforcingPolicyInputMethods();
 void SetKeyboardSettings(const AccountId& account_id);
 
 // Covert a ListValue of locale info to a list of ash struct LocaleItem.
-std::vector<ash::LocaleItem> FromListValueToLocaleItem(
+std::vector<LocaleItem> FromListValueToLocaleItem(
     std::unique_ptr<base::ListValue> locales);
 
-}  // namespace lock_screen_utils
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace lock_screen_utils {
-using ::chromeos::lock_screen_utils::EnforceDevicePolicyInputMethods;
-using ::chromeos::lock_screen_utils::FromListValueToLocaleItem;
-using ::chromeos::lock_screen_utils::GetUserLastInputMethod;
-using ::chromeos::lock_screen_utils::SetKeyboardSettings;
-using ::chromeos::lock_screen_utils::SetUserInputMethod;
 }  // namespace lock_screen_utils
 }  // namespace ash
 

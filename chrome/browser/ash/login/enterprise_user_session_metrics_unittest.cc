@@ -17,8 +17,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 AccountId GetAccountId() {
@@ -247,4 +246,4 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

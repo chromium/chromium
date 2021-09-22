@@ -28,8 +28,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 void DisableLoginScreenExtension(const extensions::ExtensionId& extension_id) {
@@ -143,4 +142,4 @@ void LoginScreenExtensionsLifetimeManager::OnExtensionLoaded(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

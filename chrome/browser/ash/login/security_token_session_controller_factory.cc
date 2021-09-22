@@ -14,7 +14,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 
-namespace chromeos {
+namespace ash {
 namespace login {
 
 SecurityTokenSessionControllerFactory::SecurityTokenSessionControllerFactory()
@@ -46,7 +46,7 @@ KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // The service should only exist for the primary profile.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile))
+  if (!ProfileHelper::IsPrimaryProfile(profile))
     return nullptr;
 
   PrefService* local_state = g_browser_process->local_state();
@@ -80,4 +80,4 @@ bool SecurityTokenSessionControllerFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 }  // namespace login
-}  // namespace chromeos
+}  // namespace ash

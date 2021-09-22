@@ -31,7 +31,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 LoginManagerTest::LoginManagerTest() {
   set_exit_when_last_browser_closes(false);
@@ -40,10 +40,10 @@ LoginManagerTest::LoginManagerTest() {
 LoginManagerTest::~LoginManagerTest() {}
 
 void LoginManagerTest::SetUpCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(switches::kLoginManager);
+  command_line->AppendSwitch(switches::kForceLoginManagerInTests);
   command_line->AppendSwitch(
-      chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
+      switches::kDisableOOBEChromeVoxHintTimerForTesting);
 
   MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 }
@@ -137,4 +137,4 @@ void LoginManagerTest::AddUser(const AccountId& account_id) {
   EXPECT_TRUE(AddUserToSession(user_context));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -52,7 +52,7 @@ const char EnrollmentRequisitionManager::kRialtoRequisition[] = "rialto";
 // static
 void EnrollmentRequisitionManager::Initialize() {
   // OEM statistics are only loaded when OOBE is not completed.
-  if (chromeos::StartupUtils::IsOobeCompleted())
+  if (ash::StartupUtils::IsOobeCompleted())
     return;
 
   // Demo requisition may have been set in a prior enrollment attempt that was

@@ -13,7 +13,7 @@
 #include "components/version_info/channel.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 MojoSystemInfoDispatcher::MojoSystemInfoDispatcher() = default;
 
@@ -66,9 +66,9 @@ void MojoSystemInfoDispatcher::OnSystemInfoUpdated() {
     show = channel != version_info::Channel::STABLE &&
            channel != version_info::Channel::BETA;
   }
-  ash::LoginScreen::Get()->GetModel()->SetSystemInfo(
+  LoginScreen::Get()->GetModel()->SetSystemInfo(
       show, enforced, os_version_label_text_, enterprise_info_, bluetooth_name_,
       adb_sideloading_enabled_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

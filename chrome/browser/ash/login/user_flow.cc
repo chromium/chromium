@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 
 UserFlow::UserFlow() {}
 
@@ -37,4 +37,4 @@ void ExtendedUserFlow::UnregisterFlowSoon() {
                      base::Unretained(ChromeUserManager::Get()), account_id()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -39,8 +39,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr base::TimeDelta kDefaultMaximumExtensionLoadWaitingTime =
@@ -472,4 +471,4 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts(
   std::move(callback).Run(std::move(filtered_keys));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -499,7 +499,7 @@ void ChromeInternalLogSource::PopulateOnboardingTime(
   if (!profile)
     return;
   base::Time time =
-      profile->GetPrefs()->GetTime(chromeos::prefs::kOobeOnboardingTime);
+      profile->GetPrefs()->GetTime(ash::prefs::kOobeOnboardingTime);
   if (time.is_null())
     return;
 

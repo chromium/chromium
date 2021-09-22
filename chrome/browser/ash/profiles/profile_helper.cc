@@ -46,10 +46,6 @@
 namespace ash {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace login = ::chromeos::login;
-
 // This array contains a subset of the explicitly allowlisted extensions that
 // are defined in extensions/common/api/_behavior_features.json. The extension
 // is treated as risky if it has some UI elements which remain accessible

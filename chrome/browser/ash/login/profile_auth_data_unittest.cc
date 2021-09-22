@@ -40,8 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kProxyAuthURL[] = "https://example.com/";
@@ -306,4 +305,4 @@ TEST_F(ProfileAuthDataTest, TransferOnSubsequentLogin) {
   VerifyUserCookies(kCookieValue2, kCookieValue1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

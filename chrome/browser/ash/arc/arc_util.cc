@@ -446,7 +446,7 @@ bool IsArcOobeOptInConfigurationBased() {
   if (!IsArcOobeOptInActive())
     return false;
   // Check that configuration exist.
-  auto* oobe_configuration = chromeos::OobeConfiguration::Get();
+  auto* oobe_configuration = ash::OobeConfiguration::Get();
   if (!oobe_configuration)
     return false;
   if (!oobe_configuration->CheckCompleted())
@@ -454,7 +454,7 @@ bool IsArcOobeOptInConfigurationBased() {
   // Check configuration value that triggers automatic ARC TOS acceptance.
   auto& configuration = oobe_configuration->GetConfiguration();
   auto* auto_accept = configuration.FindKeyOfType(
-      chromeos::configuration::kArcTosAutoAccept, base::Value::Type::BOOLEAN);
+      ash::configuration::kArcTosAutoAccept, base::Value::Type::BOOLEAN);
   if (!auto_accept)
     return false;
   return auto_accept->GetBool();

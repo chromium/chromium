@@ -6,7 +6,7 @@
 
 #include <ostream>
 
-namespace chromeos {
+namespace ash {
 
 OobeScreenId::OobeScreenId(const std::string& name) : name(name) {}
 
@@ -47,4 +47,4 @@ constexpr StaticOobeScreenId
 constexpr StaticOobeScreenId OobeScreen::SCREEN_CONFIRM_PASSWORD;
 constexpr StaticOobeScreenId OobeScreen::SCREEN_UNKNOWN;
 
-}  // namespace chromeos
+}  // namespace ash

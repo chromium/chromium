@@ -1850,7 +1850,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
     }
     if (!user_manager->IsCurrentUserNew() && !pending_screen.empty()) {
       LoginDisplayHost::default_host()->GetSigninUI()->ResumeUserOnboarding(
-          chromeos::OobeScreenId(pending_screen));
+          OobeScreenId(pending_screen));
       return false;
     }
     if (!user_manager->IsCurrentUserNew() &&

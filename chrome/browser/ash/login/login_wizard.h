@@ -18,10 +18,4 @@ void SwitchWebUItoMojo();
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::ShowLoginWizard;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_WIZARD_H_

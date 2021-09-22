@@ -54,7 +54,7 @@ const char kGaiaId[] = "gaia@test";
 const char kExtensionName[] = "extension_name";
 const char kExtensionId[] = "abcdefghijklmnopqrstuvwxyzabcdef";
 
-class MockExistingUserController : public chromeos::ExistingUserController {
+class MockExistingUserController : public ash::ExistingUserController {
  public:
   MockExistingUserController() = default;
 
@@ -66,8 +66,7 @@ class MockExistingUserController : public chromeos::ExistingUserController {
   ~MockExistingUserController() override = default;
 
   MOCK_METHOD2(Login,
-               void(const chromeos::UserContext&,
-                    const chromeos::SigninSpecifics&));
+               void(const chromeos::UserContext&, const ash::SigninSpecifics&));
   MOCK_CONST_METHOD0(IsSigninInProgress, bool());
 };
 
@@ -220,7 +219,7 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSession) {
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
   EXPECT_CALL(*mock_existing_user_controller_,
               Login(GetPublicUserContext(kEmail),
-                    MatchSigninSpecifics(chromeos::SigninSpecifics())))
+                    MatchSigninSpecifics(ash::SigninSpecifics())))
       .Times(1);
 
   RunFunction(new LoginLaunchManagedGuestSessionFunction(), "[]");
@@ -237,9 +236,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWithPassword) {
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
   chromeos::UserContext user_context = GetPublicUserContext(kEmail);
   user_context.SetKey(chromeos::Key("password"));
-  EXPECT_CALL(
-      *mock_existing_user_controller_,
-      Login(user_context, MatchSigninSpecifics(chromeos::SigninSpecifics())))
+  EXPECT_CALL(*mock_existing_user_controller_,
+              Login(user_context, MatchSigninSpecifics(ash::SigninSpecifics())))
       .Times(1);
 
   RunFunction(new LoginLaunchManagedGuestSessionFunction(), "[\"password\"]");

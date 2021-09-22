@@ -15,7 +15,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 // Tracks changes to 'DeviceLoginScreenExtensions' policy and clears its data
 // stored in the login screen storage whenever a login screen extension is
@@ -44,6 +44,12 @@ class LoginScreenExtensionsStorageCleaner {
   PrefChangeRegistrar pref_change_registrar_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
+// migration is finished.
+namespace chromeos {
+using ::ash::LoginScreenExtensionsStorageCleaner;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_SCREEN_EXTENSIONS_STORAGE_CLEANER_H_

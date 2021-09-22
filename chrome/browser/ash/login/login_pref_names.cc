@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/login/login_pref_names.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace prefs {
 
 // *************** PROFILE PREFS ***************
@@ -107,5 +106,4 @@ const char kOobeComplete[] = "OobeComplete";
 const char kOobeScreenPending[] = "OobeScreenPending";
 
 }  // namespace prefs
-
-}  // namespace chromeos
+}  // namespace ash

@@ -7,13 +7,12 @@
 
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.h
+#include "chromeos/login/auth/user_context.h"
 
 class PrefRegistrySimple;
 
-namespace chromeos {
-
-class UserContext;
-
+namespace ash {
 namespace enterprise_user_session_metrics {
 
 // Enum for logins metrics on an enrolled device.
@@ -55,12 +54,6 @@ void StoreSessionLength(user_manager::UserType session_type,
 void RecordStoredSessionLength();
 
 }  // namespace enterprise_user_session_metrics
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove once the migration is finished.
-namespace ash {
-namespace enterprise_user_session_metrics =
-    ::chromeos::enterprise_user_session_metrics;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENTERPRISE_USER_SESSION_METRICS_H_

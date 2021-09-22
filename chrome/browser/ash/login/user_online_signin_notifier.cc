@@ -8,7 +8,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 UserOnlineSigninNotifier::UserOnlineSigninNotifier(
     const user_manager::UserList& users)
@@ -65,4 +65,4 @@ void UserOnlineSigninNotifier::NotifyObservers(const AccountId& account_id) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

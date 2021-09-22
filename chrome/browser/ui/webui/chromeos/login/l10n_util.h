@@ -95,6 +95,7 @@ void GetKeyboardLayoutsForLocale(GetKeyboardLayoutsForLocaleCallback callback,
 // to ash.
 namespace ash {
 using ::chromeos::FindMostRelevantLocale;
+using ::chromeos::GetKeyboardLayoutsForLocale;
 using ::chromeos::GetUILanguageList;
 using ::chromeos::kMostRelevantLanguagesDivider;
 using ::chromeos::ResolveUILanguageList;

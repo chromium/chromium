@@ -12,7 +12,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 // Configuration that might be used to automate passing through
 // OOBE/enrollment screens
@@ -78,12 +78,12 @@ class OobeConfiguration {
   base::WeakPtrFactory<OobeConfiguration> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::OobeConfiguration;
+namespace chromeos {
+using ::ash::OobeConfiguration;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_CONFIGURATION_H_
