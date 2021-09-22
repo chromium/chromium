@@ -160,26 +160,6 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     return;
   UMA_HISTOGRAM_COUNTS_1M("History.VisitTableCount", visit_count.ColumnInt(0));
 
-  base::Time one_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
-  sql::Statement weekly_visit_sql(db_.GetUniqueStatement(
-      "SELECT count(*) FROM visits WHERE visit_time > ?"));
-  weekly_visit_sql.BindInt64(0, one_week_ago.ToInternalValue());
-  int weekly_visit_count = 0;
-  if (weekly_visit_sql.Step())
-    weekly_visit_count = weekly_visit_sql.ColumnInt(0);
-  UMA_HISTOGRAM_COUNTS_1M("History.WeeklyVisitCount", weekly_visit_count);
-
-  base::Time one_month_ago = base::Time::Now() - base::TimeDelta::FromDays(30);
-  sql::Statement monthly_visit_sql(db_.GetUniqueStatement(
-      "SELECT count(*) FROM visits WHERE visit_time > ? AND visit_time <= ?"));
-  monthly_visit_sql.BindInt64(0, one_month_ago.ToInternalValue());
-  monthly_visit_sql.BindInt64(1, one_week_ago.ToInternalValue());
-  int older_visit_count = 0;
-  if (monthly_visit_sql.Step())
-    older_visit_count = monthly_visit_sql.ColumnInt(0);
-  UMA_HISTOGRAM_COUNTS_1M("History.MonthlyVisitCount",
-                          older_visit_count + weekly_visit_count);
-
   UMA_HISTOGRAM_TIMES("History.DatabaseBasicMetricsTime",
                       base::TimeTicks::Now() - start_time);
 
@@ -189,6 +169,8 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     start_time = base::TimeTicks::Now();
 
     // Collect all URLs visited within the last month.
+    base::Time one_month_ago =
+        base::Time::Now() - base::TimeDelta::FromDays(30);
     sql::Statement url_sql(db_.GetUniqueStatement(
         "SELECT url, last_visit_time FROM urls WHERE last_visit_time > ?"));
     url_sql.BindInt64(0, one_month_ago.ToInternalValue());
@@ -199,6 +181,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     int month_url_count = 0;
     std::set<std::string> week_hosts;
     std::set<std::string> month_hosts;
+    base::Time one_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
     while (url_sql.Step()) {
       GURL url(url_sql.ColumnString(0));
       base::Time visit_time =

@@ -802,6 +802,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="History.MonthlyVisitCount" units="visits"
     expires_after="2021-10-04">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -966,6 +969,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="History.WeeklyVisitCount" units="visits"
     expires_after="2021-10-04">
+  <obsolete>
+    Removed September 2021.
+  </obsolete>
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
