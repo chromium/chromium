@@ -94,6 +94,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/sessions:test_support",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/window_activities",
     "//ios/web/public/test",

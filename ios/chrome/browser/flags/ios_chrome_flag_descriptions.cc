@@ -243,12 +243,6 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
-const char kIncognitoAuthenticationName[] =
-    "Device Authentication for Incognito";
-extern const char kIncognitoAuthenticationDescription[] =
-    "When enabled, a setting appears to enable biometric authentication for "
-    "accessing incognito.";
-
 const char kIncognitoBrandConsistencyForIOSName[] =
     "Enable Incognito brand consistency in iOS.";
 const char kIncognitoBrandConsistencyForIOSDescription[] =

@@ -36,9 +36,6 @@ extern const base::Feature kEnableFullPageScreenshot;
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 extern const base::Feature kModernTabStrip;
 
-// Adds a setting to enable biometric authentication for incognito tabs.
-extern const base::Feature kIncognitoAuthentication;
-
 // Enables the usage of dark mode color while in Incognito mode.
 extern const base::Feature kIncognitoBrandConsistencyForIOS;
 

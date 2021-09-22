@@ -30,9 +30,6 @@ const base::Feature kEnableFullPageScreenshot{"EnableFullPageScreenshot",
 const base::Feature kModernTabStrip{"ModernTabStrip",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kIncognitoAuthentication{
-    "enable-incognito-authentication-ios", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kIncognitoBrandConsistencyForIOS{
     "IncognitoBrandConsistencyForIOS", base::FEATURE_DISABLED_BY_DEFAULT};
 

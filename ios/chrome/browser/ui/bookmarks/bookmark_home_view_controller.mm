@@ -708,7 +708,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (void)openAllURLs:(std::vector<GURL>)urls
         inIncognito:(BOOL)inIncognito
              newTab:(BOOL)newTab {
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) && inIncognito) {
+  if (inIncognito) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
         agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
                            ->GetSceneState()];

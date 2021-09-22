@@ -127,12 +127,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kIosHandoffToOtherDevices, &_prefChangeRegistrar);
 
-    if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-      _incognitoReauthPref = [[PrefBackedBoolean alloc]
-          initWithPrefService:GetApplicationContext()->GetLocalState()
-                     prefName:prefs::kIncognitoAuthenticationSetting];
-      [_incognitoReauthPref setObserver:self];
-    }
+    _incognitoReauthPref = [[PrefBackedBoolean alloc]
+        initWithPrefService:GetApplicationContext()->GetLocalState()
+                   prefName:prefs::kIncognitoAuthenticationSetting];
+    [_incognitoReauthPref setObserver:self];
   }
   return self;
 }
@@ -161,9 +159,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierPrivacyContent];
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-    [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
 
   // Clear Browsing item.
   [model addItem:[self clearBrowsingDetailItem]
@@ -178,8 +174,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   // Do not show the incognito authentication setting when Incognito mode is
   // disabled.
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-      !IsIncognitoModeDisabled(_browserState->GetPrefs())) {
+  if (!IsIncognitoModeDisabled(_browserState->GetPrefs())) {
     // Incognito authentication item.
     [model addItem:self.incognitoReauthItem
         toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
@@ -257,8 +252,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 }
 
 - (SettingsSwitchItem*)incognitoReauthItem {
-  DCHECK(base::FeatureList::IsEnabled(kIncognitoAuthentication));
-
   if (_incognitoReauthItem) {
     return _incognitoReauthItem;
   }
@@ -421,9 +414,6 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 // Whether the explanatory footer for the incognito reauth setting should be
 // shown. It's shown when the setting cannot be enabled due to the device state.
 - (BOOL)shouldShowReauthFooter {
-  if (!base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-    return NO;
-  }
   return ![self deviceSupportsAuthentication];
 }
 

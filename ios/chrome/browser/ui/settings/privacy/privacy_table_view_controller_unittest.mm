@@ -107,7 +107,7 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
 TEST_F(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
-  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_EQ(3, NumberOfSections());
 
   // Sections[0].
   EXPECT_EQ(1, NumberOfItemsInSection(0));
@@ -124,6 +124,11 @@ TEST_F(PrivacyTableViewControllerTest, TestModel) {
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
       handoffSubtitle, 1, 0);
 
+  // Sections[2].
+  EXPECT_EQ(1, NumberOfItemsInSection(2));
+  CheckSwitchCellStateAndText(
+      NO, l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME), 2, 0);
+
   CheckSectionFooter(
       l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
       /* section= */ 0);
@@ -137,7 +142,7 @@ TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
 
   CreateController();
   CheckController();
-  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_EQ(3, NumberOfSections());
 
   CheckSectionFooter(
       l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
@@ -154,7 +159,7 @@ TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
 
   CreateController();
   CheckController();
-  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_EQ(3, NumberOfSections());
 
   CheckSectionFooter(
       l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),

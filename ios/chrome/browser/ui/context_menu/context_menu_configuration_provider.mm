@@ -510,25 +510,23 @@ const CGFloat kFaviconWidthHeight = 24;
           UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
         };
 
-        if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-          IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-              agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
-                                 ->GetSceneState()];
-          // Wrap the action inside of an auth check block.
-          ProceduralBlock wrappedAction = action;
-          action = ^{
-            if (reauthAgent.authenticationRequired) {
-              [reauthAgent authenticateIncognitoContentWithCompletionBlock:^(
-                               BOOL success) {
-                if (success) {
-                  wrappedAction();
-                }
-              }];
-            } else {
-              wrappedAction();
-            }
-          };
-        }
+        IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+            agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
+                               ->GetSceneState()];
+        // Wrap the action inside of an auth check block.
+        ProceduralBlock wrappedAction = action;
+        action = ^{
+          if (reauthAgent.authenticationRequired) {
+            [reauthAgent authenticateIncognitoContentWithCompletionBlock:^(
+                             BOOL success) {
+              if (success) {
+                wrappedAction();
+              }
+            }];
+          } else {
+            wrappedAction();
+          }
+        };
 
         [self.legacyContextMenuCoordinator
             addItemWithTitle:title

@@ -389,7 +389,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
            incognito:(BOOL)incognito {
   // Only open a new incognito tab when incognito is authenticated. Prompt for
   // auth otherwise.
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) && incognito) {
+  if (incognito) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
         agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
                            ->GetSceneState()];

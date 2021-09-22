@@ -1459,8 +1459,7 @@ bool IsSigninForcedByPolicy() {
 }
 
 - (void)openURLInNewTab:(OpenNewTabCommand*)command {
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-      command.inIncognito) {
+  if (command.inIncognito) {
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
     if (reauthAgent.authenticationRequired) {
@@ -2152,8 +2151,7 @@ bool IsSigninForcedByPolicy() {
   };
 
   // Wrap the post-dismiss-modals action with the incognito auth check.
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-      targetMode == ApplicationModeForTabOpening::INCOGNITO) {
+  if (targetMode == ApplicationModeForTabOpening::INCOGNITO) {
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
     if (reauthAgent.authenticationRequired) {

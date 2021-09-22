@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -38,9 +40,12 @@ class BrowserActionFactoryTest : public PlatformTest {
  protected:
   BrowserActionFactoryTest()
       : test_title_(@"SomeTitle"),
-        test_browser_(std::make_unique<TestBrowser>()) {}
+        test_browser_(std::make_unique<TestBrowser>()),
+        scene_state_([[SceneState alloc] initWithAppState:nil]) {}
 
   void SetUp() override {
+    SceneStateBrowserAgent::CreateForBrowser(test_browser_.get(), scene_state_);
+
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [test_browser_->GetCommandDispatcher()
@@ -66,6 +71,7 @@ class BrowserActionFactoryTest : public PlatformTest {
   std::unique_ptr<TestBrowser> test_browser_;
   id mock_application_commands_handler_;
   id mock_application_settings_commands_handler_;
+  SceneState* scene_state_;
 };
 
 // Tests that the Open in New Tab actions have the right titles and images.

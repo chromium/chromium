@@ -188,9 +188,6 @@
 - (void)logEnabledHistogramOnce {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (!base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-      return;
-    }
     DCHECK(self.localState)
         << "Local state is not yet available when trying to log "
            "IOS.Incognito.BiometricAuthEnabled. This code is called too "
@@ -216,8 +213,7 @@
 // Convenience method to check the pref associated with the reauth setting and
 // the feature flag.
 - (BOOL)featureEnabled {
-  return base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-         self.localState &&
+  return self.localState &&
          self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
 }
 

@@ -216,11 +216,6 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];
 
-// Title and dscription for the flag to allow biometric authentication for
-// accessing incognito.
-extern const char kIncognitoAuthenticationName[];
-extern const char kIncognitoAuthenticationDescription[];
-
 // Title and description for the flag to enable dark mode colors while in
 // Incognito mode.
 extern const char kIncognitoBrandConsistencyForIOSName[];
