@@ -5,7 +5,10 @@
 #include "ash/components/device_activity/device_activity_controller.h"
 
 #include "ash/components/device_activity/device_activity_client.h"
+#include "ash/components/device_activity/fresnel_pref_names.h"
 #include "base/check_op.h"
+#include "base/time/time.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
 namespace device_activity {
@@ -16,6 +19,17 @@ DeviceActivityController* g_ash_device_activity_controller = nullptr;
 
 DeviceActivityController* DeviceActivityController::Get() {
   return g_ash_device_activity_controller;
+}
+
+// static
+void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
+  const base::Time unix_epoch = base::Time::UnixEpoch();
+  registry->RegisterTimePref(prefs::kDeviceActiveLastKnownDailyPingTimestamp,
+                             unix_epoch);
+  registry->RegisterTimePref(prefs::kDeviceActiveLastKnownMonthlyPingTimestamp,
+                             unix_epoch);
+  registry->RegisterTimePref(prefs::kDeviceActiveLastKnownAllTimePingTimestamp,
+                             unix_epoch);
 }
 
 DeviceActivityController::DeviceActivityController() {

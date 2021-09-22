@@ -10,13 +10,18 @@ component("device_activity") {
   output_name = "ash_device_activity"
   defines = [ "IS_ASH_DEVICE_ACTIVITY_IMPL" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/prefs:prefs",
+  ]
 
   sources = [
     "device_activity_client.cc",
     "device_activity_client.h",
     "device_activity_controller.cc",
     "device_activity_controller.h",
+    "fresnel_pref_names.cc",
+    "fresnel_pref_names.h",
   ]
 }
 
@@ -31,6 +36,7 @@ source_set("unit_tests") {
   deps = [
     ":device_activity",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
   ]

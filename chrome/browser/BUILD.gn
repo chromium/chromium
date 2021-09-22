@@ -2404,6 +2404,7 @@ static_library("browser") {
     ]
     deps += [
       "//ash/components/audio",
+      "//ash/components/device_activity:device_activity",
       "//ash/components/quick_answers/public/cpp:prefs",
       "//ash/constants",
       "//ash/webui/diagnostics_ui",

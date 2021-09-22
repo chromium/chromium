@@ -10,6 +10,8 @@
 #include "ash/components/device_activity/trigger.h"
 #include "base/component_export.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 namespace device_activity {
 
@@ -20,6 +22,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
  public:
   // Retrieves a singleton instance.
   static DeviceActivityController* Get();
+
+  // Registers local state preferences.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   DeviceActivityController();
   DeviceActivityController(const DeviceActivityController&) = delete;
