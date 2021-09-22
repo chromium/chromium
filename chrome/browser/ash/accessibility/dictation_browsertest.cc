@@ -36,6 +36,10 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/dummy_text_input_client.h"
@@ -54,8 +58,9 @@ const char16_t kFinalSpeechResult16[] = u"hello world";
 const int kNoSpeechTimeoutInSeconds = 10;
 
 static const char* kEnglishDictationCommands[] = {
-    "delete", "move left", "move right", "copy",
-    "paste",  "cut",       "undo",       "redo"};
+    "delete",     "move left",    "move right", "move up", "move down",
+    "copy",       "paste",        "cut",        "undo",    "redo",
+    "select all", "unselect all", "new line"};
 
 PrefService* GetActiveUserPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -568,7 +573,8 @@ class DictationExtensionTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
-        GURL("data:text/html;charset=utf-8,<input type=text id=textarea>")));
+        GURL(
+            "data:text/html;charset=utf-8,<textarea id=textarea></textarea>")));
     // Put focus in the text box.
     ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
@@ -601,6 +607,12 @@ class DictationExtensionTest : public InProcessBrowserTest {
     fake_speech_recognition_manager_->SendFakeResponse(
         /*end_recognition=*/false, loop.QuitClosure());
     loop.Run();
+  }
+
+  void SendFinalSpeechResultAndWaitForTextAreaValue(const std::string& result,
+                                                    const std::string& value) {
+    SendFinalSpeechResult(result);
+    WaitForTextAreaValue(value);
   }
 
   std::string GetTextareaValue() {
@@ -643,8 +655,8 @@ IN_PROC_BROWSER_TEST_F(DictationExtensionTest, StartsAndStopsRecognition) {
 IN_PROC_BROWSER_TEST_F(DictationExtensionTest, EntersFinalizedSpeech) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalSpeechResult(kFinalSpeechResult);
-  WaitForTextAreaValue(kFinalSpeechResult);
+  SendFinalSpeechResultAndWaitForTextAreaValue(kFinalSpeechResult,
+                                               kFinalSpeechResult);
   ToggleDictationWithKeystroke();
   WaitForRecognitionEnded();
 }
@@ -652,10 +664,11 @@ IN_PROC_BROWSER_TEST_F(DictationExtensionTest, EntersFinalizedSpeech) {
 IN_PROC_BROWSER_TEST_F(DictationExtensionTest, EntersMultipleFinalizedStrings) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalSpeechResult("The rain in Spain");
-  WaitForTextAreaValue("The rain in Spain");
-  SendFinalSpeechResult(" falls mainly on the plain.");
-  WaitForTextAreaValue("The rain in Spain falls mainly on the plain.");
+  SendFinalSpeechResultAndWaitForTextAreaValue("The rain in Spain",
+                                               "The rain in Spain");
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      " falls mainly on the plain.",
+      "The rain in Spain falls mainly on the plain.");
   ToggleDictationWithKeystroke();
   WaitForRecognitionEnded();
 }
@@ -664,8 +677,8 @@ IN_PROC_BROWSER_TEST_F(DictationExtensionTest,
                        RecognitionEndsWhenInputFieldLosesFocus) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalSpeechResult("Vega is a star");
-  WaitForTextAreaValue("Vega is a star");
+  SendFinalSpeechResultAndWaitForTextAreaValue("Vega is a star",
+                                               "Vega is a star");
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
   WaitForRecognitionEnded();
@@ -679,9 +692,8 @@ IN_PROC_BROWSER_TEST_F(DictationExtensionTest, IgnoresCommands) {
   WaitForRecognitionStarted();
   std::string expected_text = "";
   for (const char* command : kEnglishDictationCommands) {
-    SendFinalSpeechResult(command);
     expected_text += command;
-    WaitForTextAreaValue(expected_text);
+    SendFinalSpeechResultAndWaitForTextAreaValue(command, expected_text);
   }
   ToggleDictationWithKeystroke();
   WaitForRecognitionEnded();
@@ -711,6 +723,26 @@ class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
   }
 
   ui::InputMethod* input_method_;
+  base::RunLoop run_loop_;
+};
+
+class ClipboardChangedWaiter : public ui::ClipboardObserver {
+ public:
+  ClipboardChangedWaiter() {
+    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+  }
+  ClipboardChangedWaiter(const ClipboardChangedWaiter&) = delete;
+  ClipboardChangedWaiter& operator=(const ClipboardChangedWaiter&) = delete;
+  ~ClipboardChangedWaiter() override {
+    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override { run_loop_.Quit(); }
+
   base::RunLoop run_loop_;
 };
 
@@ -747,6 +779,18 @@ class DictationCommandsExtensionTest : public DictationExtensionTest {
     waiter.Wait();
   }
 
+  void WaitForClipboardDataChanged() {
+    ClipboardChangedWaiter waiter;
+    waiter.Wait();
+  }
+
+  std::string GetClipboardText() {
+    std::u16string text;
+    ui::Clipboard::GetForCurrentThread()->ReadText(
+        ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &text);
+    return base::UTF16ToUTF8(text);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -755,57 +799,107 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, TypesCommands) {
   std::string expected_text = "";
   for (const char* command : kEnglishDictationCommands) {
     std::string type_command = "type ";
-    SendFinalSpeechResult(type_command + command);
     expected_text += command;
-    WaitForTextAreaValue(expected_text);
+    SendFinalSpeechResultAndWaitForTextAreaValue(type_command + command,
+                                                 expected_text);
   }
 }
 
 IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, DeleteCharacter) {
-  SendFinalSpeechResult("Vega");
-  WaitForTextAreaValue("Vega");
+  SendFinalSpeechResultAndWaitForTextAreaValue("Vega", "Vega");
 
   // Capitalization and whitespace shouldn't matter.
-  SendFinalSpeechResult(" Delete");
-  WaitForTextAreaValue("Veg");
-  SendFinalSpeechResult("delete ");
-  WaitForTextAreaValue("Ve");
-  SendFinalSpeechResult("  delete ");
-  WaitForTextAreaValue("V");
-  SendFinalSpeechResult("DELETE");
-  WaitForTextAreaValue("");
+  SendFinalSpeechResultAndWaitForTextAreaValue(" Delete", "Veg");
+  SendFinalSpeechResultAndWaitForTextAreaValue("delete ", "Ve");
+  SendFinalSpeechResultAndWaitForTextAreaValue("  delete ", "V");
+  SendFinalSpeechResultAndWaitForTextAreaValue("DELETE", "");
 }
 
 IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, MoveByCharacter) {
-  SendFinalSpeechResult("Lyra");
-  WaitForTextAreaValue("Lyra");
+  SendFinalSpeechResultAndWaitForTextAreaValue("Lyra", "Lyra");
 
   SendFinalSpeechResult("Move left");
   WaitForCaretBoundsChanged();
-  SendFinalSpeechResult(" inserted ");
-  WaitForTextAreaValue("Lyr inserted a");
+  SendFinalSpeechResultAndWaitForTextAreaValue(" inserted ", "Lyr inserted a");
   SendFinalSpeechResult("move Right ");
   WaitForCaretBoundsChanged();
-  SendFinalSpeechResult(" is a constellation");
-  WaitForTextAreaValue("Lyr inserted a is a constellation");
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      " is a constellation", "Lyr inserted a is a constellation");
+}
+
+IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, NewLineAndMoveByLine) {
+  SendFinalSpeechResultAndWaitForTextAreaValue("Line 1", "Line 1");
+
+  SendFinalSpeechResultAndWaitForTextAreaValue("new line", "Line 1\n");
+
+  SendFinalSpeechResultAndWaitForTextAreaValue("Line 2", "Line 1\nLine 2");
+
+  SendFinalSpeechResult("Move up");
+  WaitForCaretBoundsChanged();
+  SendFinalSpeechResultAndWaitForTextAreaValue("up", "Line 1up\nLine 2");
+
+  SendFinalSpeechResult("Move down");
+  WaitForCaretBoundsChanged();
+  SendFinalSpeechResultAndWaitForTextAreaValue("down", "Line 1up\nLine 2down");
 }
 
 IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, UndoAndRedo) {
-  SendFinalSpeechResult("The constellation");
-  WaitForTextAreaValue("The constellation");
-  SendFinalSpeechResult(" Myra");
-  WaitForTextAreaValue("The constellation Myra");
-  SendFinalSpeechResult("undo");
-  WaitForTextAreaValue("The constellation");
-  SendFinalSpeechResult(" Lyra");
-  WaitForTextAreaValue("The constellation Lyra");
-  SendFinalSpeechResult("undo");
-  WaitForTextAreaValue("The constellation");
-  SendFinalSpeechResult("redo");
-  WaitForTextAreaValue("The constellation Lyra");
+  SendFinalSpeechResultAndWaitForTextAreaValue("The constellation",
+                                               "The constellation");
+  SendFinalSpeechResultAndWaitForTextAreaValue(" Myra",
+                                               "The constellation Myra");
+  SendFinalSpeechResultAndWaitForTextAreaValue("undo", "The constellation");
+  SendFinalSpeechResultAndWaitForTextAreaValue(" Lyra",
+                                               "The constellation Lyra");
+  SendFinalSpeechResultAndWaitForTextAreaValue("undo", "The constellation");
+  SendFinalSpeechResultAndWaitForTextAreaValue("redo",
+                                               "The constellation Lyra");
 }
 
-// TODO(crbug.com/1247299): Tests for cut, copy paste will be easier after
-// implementing selection commands.
+IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, SelectAndUnselectAll) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      "Vega is the brightest star in Lyra",
+      "Vega is the brightest star in Lyra");
+  SendFinalSpeechResult("Select all");
+  WaitForSelectionBoundingBoxUpdate(web_contents);
+  SendFinalSpeechResultAndWaitForTextAreaValue("delete", "");
+
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      "Vega is the fifth brightest star in the sky",
+      "Vega is the fifth brightest star in the sky");
+  SendFinalSpeechResult("Select all");
+  WaitForSelectionBoundingBoxUpdate(web_contents);
+  SendFinalSpeechResult("Unselect all");
+  WaitForSelectionBoundingBoxUpdate(web_contents);
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      "!", "Vega is the fifth brightest star in the sky!");
+}
+
+IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, CutCopyPaste) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SendFinalSpeechResultAndWaitForTextAreaValue("Star", "Star");
+  SendFinalSpeechResult("Select all");
+  WaitForSelectionBoundingBoxUpdate(web_contents);
+
+  SendFinalSpeechResult("Copy");
+  WaitForClipboardDataChanged();
+  EXPECT_EQ("Star", GetClipboardText());
+  SendFinalSpeechResult("unselect all");
+  WaitForSelectionBoundingBoxUpdate(web_contents);
+
+  SendFinalSpeechResultAndWaitForTextAreaValue("paste", "StarStar");
+
+  SendFinalSpeechResult("select ALL ");
+  WaitForSelectionBoundingBoxUpdate(web_contents);
+  SendFinalSpeechResult("cut");
+  WaitForClipboardDataChanged();
+  EXPECT_EQ("StarStar", GetClipboardText());
+  WaitForTextAreaValue("");
+
+  SendFinalSpeechResultAndWaitForTextAreaValue("  PaStE ", "StarStar");
+}
 
 }  // namespace ash

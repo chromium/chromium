@@ -9,6 +9,12 @@
   <message name="DICTATION_COMMAND_MOVE_RIGHT_ONCE" desc="A spoken text-editing command move the cursor right one character." is_accessibility_with_no_ui="true">
     move right
   </message>
+    <message name="DICTATION_COMMAND_MOVE_UP_ONCE" desc="A spoken text-editing command to move the cursor up one line." is_accessibility_with_no_ui="true">
+    move up
+  </message>
+  <message name="DICTATION_COMMAND_MOVE_DOWN_ONCE" desc="A spoken text-editing command move the cursor down one line." is_accessibility_with_no_ui="true">
+    move down
+  </message>
   <message name="DICTATION_COMMAND_COPY" desc="A spoken text-editing command to copy selected text." is_accessibility_with_no_ui="true">
     copy
   </message>
@@ -23,6 +29,15 @@
   </message>
   <message name="DICTATION_COMMAND_REDO" desc="A spoken text-editing command to redo the last text edit." is_accessibility_with_no_ui="true">
     redo
+  </message>
+  <message name="DICTATION_COMMAND_SELECT_ALL" desc="A spoken text-editing command to select all the content in the active input." is_accessibility_with_no_ui="true">
+    select all
+  </message>
+  <message name="DICTATION_COMMAND_UNSELECT_ALL" desc="A spoken text-editing command to unselect the current selection, moving the cursor to the end of the selection." is_accessibility_with_no_ui="true">
+    unselect all
+  </message>
+  <message name="DICTATION_COMMAND_NEW_LINE" desc="A spoken text-editing command to enter a new line character." is_accessibility_with_no_ui="true">
+    new line
   </message>
   <message name="DICTATION_COMMAND_TYPE_TEXT" desc="A spoken text-editing command to type another command's keyword. For example, 'type delete' is a command to type the word 'delete'." is_accessibility_with_no_ui="true">
     type <ph name="text">$1<ex>delete</ex></ph>

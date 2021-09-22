@@ -34,8 +34,8 @@ DictationE2ETest = class extends E2ETestBase {
         '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
     this.commandStrings = [
-      'delete', 'move left', 'move right', 'copy', 'paste', 'cut', 'undo',
-      'redo'
+      'delete', 'move left', 'move right', 'move up', 'move down', 'copy',
+      'paste', 'cut', 'undo', 'redo', 'select all', 'unselect all', 'new line'
     ];
 
     this.lastSetTimeoutCallback = null;
@@ -553,18 +553,19 @@ SYNC_TEST_F(
         mockSpeechRecognition.callOnResult(command, false);
         this.assertImeCompositionParameters(command, 8);
 
-        // On final result, composition is cleared, nothing is committed
-        // (instead, an action is taken).
         mockSpeechRecognition.callOnResult(command, true);
-        assertFalse(!!this.mockInputIme.getLastCommittedParameters());
-        // TODO(crbug.com/1247299): Check that some action was taken. This will
-        // probably need to be done with full integration testing, which will be
-        // easiest after changing to the SpeechRecognitionPrivate API.
+        if (command === 'new line') {
+          this.assertImeCommitParameters('\n', 8);
+        } else {
+          // On final result, composition is cleared, nothing is committed
+          // (instead, an action is taken).
+          assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+        }
 
         // Try a command to "type delete", etc.
         mockSpeechRecognition.callOnResult('type ' + command, true);
         // The command should be entered but not the word "type".
-        this.mockInputIme.getLastCommittedParameters(command, 8);
+        this.assertImeCommitParameters(command, 8);
 
         this.mockInputIme.clearLastParameters();
       }

@@ -79,6 +79,12 @@ export class CommandParser {
         case Command.Action.MOVE_RIGHT_ONCE:
           messageId = 'dictation_command_move_right_once';
           break;
+        case Command.Action.MOVE_UP_ONCE:
+          messageId = 'dictation_command_move_up_once';
+          break;
+        case Command.Action.MOVE_DOWN_ONCE:
+          messageId = 'dictation_command_move_down_once';
+          break;
         case Command.Action.COPY:
           // TODO(1247299): This command requires text to be selected but
           // composition text changes during speech, clearing the selection.
@@ -97,6 +103,15 @@ export class CommandParser {
           break;
         case Command.Action.REDO:
           messageId = 'dictation_command_redo';
+          break;
+        case Command.Action.SELECT_ALL:
+          messageId = 'dictation_command_select_all';
+          break;
+        case Command.Action.UNSELECT_ALL:
+          messageId = 'dictation_command_unselect_all';
+          break;
+        case Command.Action.NEW_LINE:
+          messageId = 'dictation_command_new_line';
           break;
         default:
           continue;
@@ -164,7 +179,8 @@ export class Command {
    * @return {boolean} Whether this command is a request to input text.
    */
   isTextInput() {
-    return this.action_ === Command.Action.INPUT_TEXT;
+    return this.action_ === Command.Action.INPUT_TEXT ||
+        this.action_ === Command.Action.NEW_LINE;
   }
 
   /**
@@ -172,6 +188,9 @@ export class Command {
    * @return {string} The text to input.
    */
   getText() {
+    if (this.action_ === Command.Action.NEW_LINE) {
+      return '\n';
+    }
     return this.text_;
   }
 
@@ -182,6 +201,7 @@ export class Command {
     // Commands using keyboard shortcuts.
     switch (this.action_) {
       case Command.Action.INPUT_TEXT:
+      case Command.Action.NEW_LINE:
         // Text input is not handled here.
         break;
       case Command.Action.DELETE_ONCE:
@@ -192,6 +212,12 @@ export class Command {
         break;
       case Command.Action.MOVE_RIGHT_ONCE:
         EventGenerator.sendKeyPress(KeyCode.RIGHT);
+        break;
+      case Command.Action.MOVE_UP_ONCE:
+        EventGenerator.sendKeyPress(KeyCode.UP);
+        break;
+      case Command.Action.MOVE_DOWN_ONCE:
+        EventGenerator.sendKeyPress(KeyCode.DOWN);
         break;
       case Command.Action.COPY:
         EventGenerator.sendKeyPress(KeyCode.C, {ctrl: true});
@@ -207,6 +233,15 @@ export class Command {
         break;
       case Command.Action.REDO:
         EventGenerator.sendKeyPress(KeyCode.Z, {ctrl: true, shift: true});
+        break;
+      case Command.Action.SELECT_ALL:
+        EventGenerator.sendKeyPress(KeyCode.A, {ctrl: true});
+        break;
+      case Command.Action.UNSELECT_ALL:
+        // TODO(crbug.com/1247299): Internationalization: might want to move
+        // left in RTL application languages, or restore previous caret position
+        // from before selection began, if available.
+        EventGenerator.sendKeyPress(KeyCode.RIGHT);
         break;
       default:
         console.warn(
@@ -235,22 +270,38 @@ Command.Action = {
   // Move right one character.
   MOVE_RIGHT_ONCE: 4,
 
+  // Move up one line.
+  MOVE_UP_ONCE: 5,
+
+  // Move down one line.
+  MOVE_DOWN_ONCE: 6,
+
   // Copy any selected text, using clipboard copy.
-  COPY: 5,
+  COPY: 7,
 
   // Paste any clipboard text.
-  PASTE: 6,
+  PASTE: 8,
 
   // Cut (copy and delete) any selected text.
-  CUT: 7,
+  CUT: 9,
 
   // Undo previous text-editing action. Does not undo
   // previous navigation or selection action, does not
   // clear clipboard.
-  UNDO: 8,
+  UNDO: 10,
 
   // Redo previous text-editing action. Does not redo
   // previous navigation or selection action, does not
   // clear clipboard.
-  REDO: 9,
+  REDO: 11,
+
+  // Select all text in the text field.
+  SELECT_ALL: 12,
+
+  // Clears the current selection, moving the cursor to
+  // the end of the selection.
+  UNSELECT_ALL: 13,
+
+  // Insert a new line character.
+  NEW_LINE: 14,
 };
