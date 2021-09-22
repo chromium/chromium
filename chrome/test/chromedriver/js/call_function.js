@@ -7,6 +7,7 @@
  * @enum {number}
  */
 var StatusCode = {
+  NO_SUCH_ELEMENT: 7,
   STALE_ELEMENT_REFERENCE: 10,
   JAVA_SCRIPT_ERROR: 17,
   NO_SUCH_SHADOW_ROOT: 65,
@@ -119,10 +120,15 @@ CacheWithUUID.prototype = {
    */
   retrieveItem: function(id) {
     var item = this.cache_[id];
-    if (item && this.isNodeReachable_(item))
-      return item;
-    throw newError('element is not attached to the page document',
-                   StatusCode.STALE_ELEMENT_REFERENCE);
+    if (!item)
+      throw newError(`id (${id}) not seen before`,
+                     StatusCode.NO_SUCH_ELEMENT);
+
+    if (!this.isNodeReachable_(item))
+      throw newError('element is not attached to the page document',
+                     StatusCode.STALE_ELEMENT_REFERENCE);
+
+    return item;
   },
 
   isNodeReachable_: function(node) {
@@ -169,10 +175,15 @@ Cache.prototype = {
    */
   retrieveItem: function(id) {
     var item = this.cache_[id];
-    if (item && this.isNodeReachable_(item))
-      return item;
-    throw newError('element is not attached to the page document',
-                   StatusCode.STALE_ELEMENT_REFERENCE);
+    if (!item)
+      throw newError(`id (${id}) not seen before`,
+                     StatusCode.NO_SUCH_ELEMENT);
+
+    if (!this.isNodeReachable_(item))
+      throw newError('element is not attached to the page document',
+                     StatusCode.STALE_ELEMENT_REFERENCE);
+
+    return item;
   },
 
   isNodeReachable_: function(node) {
