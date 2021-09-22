@@ -77,8 +77,8 @@ Polymer({
       // Note: When adding a new page, update the DiagnosticsPage enum located
       // in chrome/browser/ui/webui/chromeos/diagnostics_dialog.h.
       const pages = [navPanel.createSelectorItem(
-          loadTimeData.getString('overviewText'), 'system-page',
-          getNavigationIcon('laptop-chromebook'), 'overview')];
+          loadTimeData.getString('systemText'), 'system-page',
+          getNavigationIcon('laptop-chromebook'), 'system')];
 
       if (this.isNetworkingEnabled_) {
         pages.push(navPanel.createSelectorItem(

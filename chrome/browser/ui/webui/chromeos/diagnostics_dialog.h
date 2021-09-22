@@ -16,8 +16,8 @@ class DiagnosticsDialog : public SystemWebDialogDelegate {
   enum class DiagnosticsPage {
     // The default page.
     kDefault,
-    // The overview page.
-    kOverview,
+    // The system page.
+    kSystem,
     // The connectivity page.
     kConnectivity,
     // The input page.

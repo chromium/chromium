@@ -968,8 +968,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_TROUBLESHOOTING_TEXT" desc="The label for the text displayed when an internet network is not in a connected or connecting state.">
         No <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph> connection detected
       </message>
-      <message name="IDS_DIAGNOSTICS_OVERVIEW" desc="The label for the overview navigation panel item.">
-        Overview
+      <message name="IDS_DIAGNOSTICS_SYSTEM" desc="The label for the system navigation panel item.">
+        System
       </message>
       <message name="IDS_DIAGNOSTICS_CONNECTIVITY" desc="The label for the connectivity navigation panel item.">
         Connectivity

@@ -18,8 +18,8 @@ std::string GetUrlForPage(DiagnosticsDialog::DiagnosticsPage page) {
   switch (page) {
     case DiagnosticsDialog::DiagnosticsPage::kDefault:
       return kChromeUIDiagnosticsAppUrl;
-    case DiagnosticsDialog::DiagnosticsPage::kOverview:
-      return base::StrCat({kChromeUIDiagnosticsAppUrl, "?overview"});
+    case DiagnosticsDialog::DiagnosticsPage::kSystem:
+      return base::StrCat({kChromeUIDiagnosticsAppUrl, "?system"});
     case DiagnosticsDialog::DiagnosticsPage::kConnectivity:
       return base::StrCat({kChromeUIDiagnosticsAppUrl, "?connectivity"});
     case DiagnosticsDialog::DiagnosticsPage::kInput:
