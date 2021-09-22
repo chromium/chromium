@@ -21,7 +21,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 
 import java.util.Locale;
 
@@ -169,7 +168,6 @@ public class AwZoomTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @FlakyTest(message = "https://crbug.com/1239510")
     public void testMagnification() throws Throwable {
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setSupportZoom(true);
         runMagnificationTest();
@@ -180,7 +178,6 @@ public class AwZoomTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @FlakyTest(message = "https://crbug.com/1239510")
     public void testMagnificationWithZoomSupportOff() throws Throwable {
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setSupportZoom(false);
         runMagnificationTest();
