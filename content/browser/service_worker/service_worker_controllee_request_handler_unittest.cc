@@ -12,7 +12,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -169,8 +168,6 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
 };
 
 TEST_F(ServiceWorkerControlleeRequestHandlerTest, Basic) {
-  base::HistogramTester histogram_tester;
-
   // Prepare a valid version and registration.
   version_->set_fetch_handler_existence(
       ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
@@ -190,9 +187,6 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, Basic) {
     loop.Run();
   }
 
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LookupRegistration.MainResource.Time.Exists", 0);
-
   // Conduct a main resource load.
   ServiceWorkerRequestTestResources test_resources(
       this, GURL("https://host/scope/doc"),
@@ -204,17 +198,11 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, Basic) {
 
   EXPECT_TRUE(test_resources.loader());
   EXPECT_TRUE(version_->HasControllee());
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LookupRegistration.MainResource.Time.Exists", 1);
 
   test_resources.ResetHandler();
 }
 
 TEST_F(ServiceWorkerControlleeRequestHandlerTest, DoesNotExist) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LookupRegistration.MainResource.Time.DoesNotExist", 0);
-
   // No version and registration exists in the scope.
 
   // Conduct a main resource load.
@@ -226,20 +214,14 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, DoesNotExist) {
 
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LookupRegistration.MainResource.Time.DoesNotExist", 1);
-
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(version_->HasControllee());
   test_resources.ResetHandler();
 }
 
 TEST_F(ServiceWorkerControlleeRequestHandlerTest, Error) {
-  base::HistogramTester histogram_tester;
-
   // Disabling the storage makes looking up the registration return an error.
   context()->registry()->DisableStorageForTesting(base::DoNothing());
-
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LookupRegistration.MainResource.Time.Error", 0);
 
   // Conduct a main resource load.
   ServiceWorkerRequestTestResources test_resources(
@@ -250,9 +232,8 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, Error) {
 
   base::RunLoop().RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(
-      "ServiceWorker.LookupRegistration.MainResource.Time.Error", 1);
-
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(version_->HasControllee());
   test_resources.ResetHandler();
 }
 

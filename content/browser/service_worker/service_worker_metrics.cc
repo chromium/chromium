@@ -513,22 +513,6 @@ void ServiceWorkerMetrics::RecordStartServiceWorkerForNavigationHintResult(
                             result);
 }
 
-void ServiceWorkerMetrics::RecordLookupRegistrationTime(
-    blink::ServiceWorkerStatusCode status,
-    base::TimeDelta duration) {
-  if (status == blink::ServiceWorkerStatusCode::kOk) {
-    UMA_HISTOGRAM_TIMES(
-        "ServiceWorker.LookupRegistration.MainResource.Time.Exists", duration);
-  } else if (status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
-    UMA_HISTOGRAM_TIMES(
-        "ServiceWorker.LookupRegistration.MainResource.Time.DoesNotExist",
-        duration);
-  } else {
-    UMA_HISTOGRAM_TIMES(
-        "ServiceWorker.LookupRegistration.MainResource.Time.Error", duration);
-  }
-}
-
 void ServiceWorkerMetrics::RecordOfflineCapableReason(
     blink::ServiceWorkerStatusCode status,
     int status_code) {

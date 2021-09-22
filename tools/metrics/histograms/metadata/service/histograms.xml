@@ -635,6 +635,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ServiceWorker.LookupRegistration.MainResource.Time" units="ms"
     expires_after="2022-09-20">
+  <obsolete>
+    Removed in September 2021.
+  </obsolete>
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

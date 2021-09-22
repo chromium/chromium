@@ -118,7 +118,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   GURL stripped_url_;
   blink::StorageKey storage_key_;
   bool force_update_started_;
-  base::TimeTicks registration_lookup_start_time_;
   const int frame_tree_node_id_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;

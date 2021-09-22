@@ -168,7 +168,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
 
   loader_callback_ = std::move(loader_callback);
   fallback_callback_ = std::move(fallback_callback);
-  registration_lookup_start_time_ = base::TimeTicks::Now();
   browser_context_ = browser_context;
 
   // Look up a registration.
@@ -205,9 +204,6 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  ServiceWorkerMetrics::RecordLookupRegistrationTime(
-      status, base::TimeTicks::Now() - registration_lookup_start_time_);
-
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",

@@ -215,15 +215,6 @@ class ServiceWorkerMetrics {
   static void RecordStartServiceWorkerForNavigationHintResult(
       StartServiceWorkerForNavigationHintResult result);
 
-  // Records the duration of looking up an existing registration.
-  // |status| is the result of lookup. The records for the cases where
-  // the registration is found (kOk), not found (kErrorNotFound), or an error
-  // happens (other errors) are saved separately into a relevant suffixed
-  // histogram.
-  static void RecordLookupRegistrationTime(
-      blink::ServiceWorkerStatusCode status,
-      base::TimeDelta duration);
-
   // Records the reason a service worker was deemed to be offline capable. The
   // reason may be that the service worker responded with 2xx..., 3xx..., or the
   // check timed out.
