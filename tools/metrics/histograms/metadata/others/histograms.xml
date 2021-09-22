@@ -13274,7 +13274,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Process.Sandbox.Launch.Error" enum="WinGetLastError"
-    expires_after="2021-10-04">
+    expires_after="never">
+<!-- expires-never: metric needed for diagnosing sandbox issues. -->
+
   <owner>forshaw@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
