@@ -3989,16 +3989,20 @@ if (is_chromeos_lacros) {
       "../browser/lacros/popup_lacros_browsertest.cc",
       "../browser/lacros/screen_manager_lacros_browsertest.cc",
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
+      "../browser/metrics/structured/lacros_structured_metrics_recorder_browsertest.cc",
     ]
 
     deps = [
       ":browser_tests_runner",
       ":test_support",
+      "//chrome/browser/metrics/structured",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
+      "//components/metrics/structured",
+      "//components/metrics/structured:structured_events",
       "//components/proxy_config:proxy_config",
       "//ui/platform_window",
     ]
