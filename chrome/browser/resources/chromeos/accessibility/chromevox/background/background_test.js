@@ -3681,3 +3681,28 @@ TEST_F('ChromeVoxBackgroundTest', 'ShowContextMenuOnViewsTab', function() {
     mockFeedback.expectSpeech(/menu opened/).replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'SelectWithOptGroup', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <select>
+      <optgroup label="Theropods">
+          <option>Tyrannosaurus</option>
+          <option>Velociraptor</option>
+          <option>Deinonychus</option>
+      </optgroup>
+    </select>
+  `;
+  this.runWithLoadedTree(site, function() {
+    mockFeedback.expectSpeech('Tyrannosaurus', 'has pop up', 'Collapsed')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('Tyrannosaurus')
+        .call(press(KeyCode.DOWN))
+        .expectSpeech('Velociraptor')
+        .call(press(KeyCode.DOWN))
+        .expectSpeech('Deinonychus')
+        .call(press(KeyCode.UP))
+        .expectSpeech('Velociraptor')
+        .replay();
+  });
+});
