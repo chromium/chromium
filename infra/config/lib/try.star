@@ -115,7 +115,7 @@ def try_builder(
     experiments = experiments or {}
 
     # TODO(crbug.com/1135718): Promote out of experiment for all builders.
-    experiments.setdefault("chromium.chromium_tests.use_rdb_results", 5)
+    experiments.setdefault("chromium.chromium_tests.use_rdb_results", 100)
 
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(

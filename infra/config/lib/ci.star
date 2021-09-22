@@ -115,7 +115,7 @@ def ci_builder(
     experiments = experiments or {}
 
     # TODO(crbug.com/1135718): Promote out of experiment for all builders.
-    experiments.setdefault("chromium.chromium_tests.use_rdb_results", 5)
+    experiments.setdefault("chromium.chromium_tests.use_rdb_results", 100)
 
     goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
     if goma_enable_ats == args.COMPUTE:
