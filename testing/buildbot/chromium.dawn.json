@@ -1245,7 +1245,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1280,7 +1280,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1331,8 +1331,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1358,8 +1358,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1386,8 +1386,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1414,8 +1414,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1439,8 +1439,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1462,8 +1462,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1494,8 +1494,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1506,7 +1506,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1525,8 +1525,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1539,7 +1539,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1558,8 +1558,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1784,7 +1784,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1820,7 +1820,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2327,7 +2327,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2362,7 +2362,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2413,8 +2413,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2440,8 +2440,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2468,8 +2468,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2496,8 +2496,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2521,8 +2521,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2544,8 +2544,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2576,8 +2576,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2588,7 +2588,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2607,8 +2607,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2621,7 +2621,7 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--platform=mac-mac10.13"
+          "--platform=mac-mac11.5"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2640,8 +2640,8 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "8086:0a2e",
-              "os": "Mac-10.15.7"
+              "gpu": "8086:3e9b",
+              "os": "Mac-11.5.2"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

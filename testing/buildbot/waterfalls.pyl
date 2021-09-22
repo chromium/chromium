@@ -2113,7 +2113,7 @@
         'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
-          'mac_mini_intel_uhd_630_gpu_stable',
+          'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_validating',
@@ -4407,7 +4407,7 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
-          'mac_mini_intel_uhd_630_gpu_stable',
+          'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',

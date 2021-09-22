@@ -761,8 +761,8 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'gpu': '8086:0a2e',
-        'os': 'Mac-10.15.7',
+        'gpu': '8086:3e9b',
+        'os': 'Mac-11.5.2',
         'display_attached': '1',
       },
     },
@@ -771,8 +771,8 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'gpu': '8086:0a2e',
-        'os': 'Mac-10.15.7',
+        'gpu': '8086:3e9b',
+        'os': 'Mac-11.5.2',
         'display_attached': '1',
       },
     },
@@ -785,21 +785,11 @@
       'dimension_sets': [
         {
           'cpu': 'x86-64',
-          'gpu': '8086:0a2e',
-          'os': 'Mac-10.15.7',
+          'gpu': '8086:3e9b',
+          'os': 'Mac-11.5.2',
           'display_attached': '1',
         },
       ],
-    },
-  },
-  'mac_mini_intel_uhd_630_gpu_stable': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'gpu': '8086:3e9b',
-        'os': 'Mac-11.5.2',
-        'display_attached': '1',
-      },
     },
   },
   'mac_pro_amd_gpu': {
