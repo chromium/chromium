@@ -27,6 +27,7 @@ js_type_check("closure_compile_local") {
     ":fake_oobe",
     ":hd_iron_icon",
     ":html-echo",
+    ":long_touch_detector",
     ":network_select_login",
     ":oobe_i18n_dropdown",
     ":oobe_select",
@@ -45,6 +46,7 @@ group("closure_compile_module") {
     # Local targets
     ":display_manager_types.m",
     ":hd_iron_icon.m",
+    ":long_touch_detector.m",
     ":oobe_a11y_option.m",
     ":oobe_icons.m",
     ":oobe_network_icons.m",
@@ -62,6 +64,7 @@ group("polymer3_elements") {
 
     # Local targets
     ":hd_iron_icon_module",
+    ":long_touch_detector_module",
     ":oobe_a11y_option_module",
     ":oobe_icons_module",
     ":oobe_network_icons_module",
@@ -103,6 +106,9 @@ js_library("hd_iron_icon") {
 js_library("html-echo") {
 }
 
+js_library("long_touch_detector") {
+}
+
 js_library("network_select_login") {
   deps = [
     "//ui/webui/resources/cr_components/chromeos/network:network_select",
@@ -139,6 +145,11 @@ js_library("hd_iron_icon.m") {
   extra_deps = [ ":hd_iron_icon_module" ]
 }
 
+js_library("long_touch_detector.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/long_touch_detector.m.js" ]
+  extra_deps = [ ":long_touch_detector_module" ]
+}
+
 js_library("oobe_a11y_option.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_a11y_option.m.js" ]
   deps = []
@@ -166,6 +177,12 @@ js_library("oobe_types.m") {
 polymer_modulizer("hd_iron_icon") {
   js_file = "hd_iron_icon.js"
   html_file = "hd_iron_icon.html"
+  html_type = "dom-module"
+}
+
+polymer_modulizer("long_touch_detector") {
+  js_file = "long_touch_detector.js"
+  html_file = "long_touch_detector.html"
   html_type = "dom-module"
 }
 

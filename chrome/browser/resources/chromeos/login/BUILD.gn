@@ -145,6 +145,8 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "components/throbber_notice/throbber_notice.js",
     "components/hd_iron_icon.html",
     "components/hd_iron_icon.js",
+    "components/long_touch_detector.html",
+    "components/long_touch_detector.js",
     "components/oobe_a11y_option.html",
     "components/oobe_a11y_option.js",
     "components/oobe_icons.html",
