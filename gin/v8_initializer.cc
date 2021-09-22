@@ -291,6 +291,18 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   bool v8_cage_is_initialized = false;
   if (base::FeatureList::IsEnabled(features::kV8VirtualMemoryCage)) {
     v8_cage_is_initialized = v8::V8::InitializeVirtualMemoryCage();
+
+    // Record the size of the virtual memory cage, in GB. The size will always
+    // be a power of two, so we use a sparse histogram to capture it.
+    // If the initialization failed, this API will return zero.
+    // The main reason for capturing this histogram here instead of having V8
+    // do it is that there are no Isolates available yet, which are required
+    // for recording histograms in V8.
+    size_t size = v8::V8::GetVirtualMemoryCageSizeInBytes();
+    int sizeInGB = size >> 30;
+    DCHECK(base::bits::IsPowerOfTwo(size));
+    DCHECK(size == 0 || sizeInGB > 0);
+    base::UmaHistogramSparse("V8.VirtualMemoryCageSizeGB", sizeInGB);
   }
 #endif
 

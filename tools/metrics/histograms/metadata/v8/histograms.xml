@@ -1376,6 +1376,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.VirtualMemoryCageSizeGB" units="GB"
+    expires_after="2022-09-30">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    Size of the virtual memory cage, in GB.
+
+    Recorded during initialization of V8, after the virtual memory cage has been
+    created. If the initial reservation attempt fails, the size of the cage is
+    reduced until either the reservation succeeds or a minimum size is reached.
+    A value of zero indicates that even the minimum size could not be reserved,
+    implying that the cage initialization failed.
+
+    This value excludes the size of any guard regions placed around the cage and
+    so represents only the usable size of the cage.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmAddressSpaceUsageMiB" units="MB"
     expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
