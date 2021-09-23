@@ -130,7 +130,6 @@ class TextInputManager;
 class WakeLockContextHost;
 class WebContentsDelegate;
 class WebContentsImpl;
-class WebContentsReceiverSet;
 class WebContentsView;
 class WebContentsViewDelegate;
 struct AXEventNotificationDetails;
@@ -1701,9 +1700,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // WebContents. If this is an inner WebContents which is not yet attached to
   // an outer WebContents the method will return nullptr.
   FindRequestManager* GetOrCreateFindRequestManager();
-
-  // Removes a registered WebContentsReceiverSet by interface name.
-  void RemoveReceiverSet(const std::string& interface_name);
 
   // Prints a console warning when visiting a localhost site with a bad
   // certificate via --allow-insecure-localhost.
