@@ -8789,6 +8789,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "SharingMessageBridgeTimeoutSeconds": "8"
+                    },
+                    "enable_features": [
+                        "SharingMessageBridgeTimeout"
+                    ],
                     "disable_features": [
                         "SharingPreferVapid"
                     ]
