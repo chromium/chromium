@@ -218,8 +218,8 @@ class CORE_EXPORT DisplayLockContext final
   // We unlock auto locks for printing, which is set here.
   void SetShouldUnlockAutoForPrint(bool);
 
-  void SetForDetailsElement(bool for_details_element) {
-    for_details_element_ = for_details_element;
+  void SetActivateForFindInPage(bool activate_for_find_in_page) {
+    activate_for_find_in_page_ = activate_for_find_in_page;
   }
 
   bool HasElement() const { return element_; }
@@ -474,9 +474,10 @@ class CORE_EXPORT DisplayLockContext final
 
   absl::optional<ScrollOffset> stashed_scroll_offset_;
 
-  // When we use content-visibility:hidden for a <details> element, it should be
-  // activatable by find-in-page, element fragments, and text fragments.
-  bool for_details_element_ = false;
+  // When we use content-visibility:hidden for the <details> element's content
+  // slot or the hidden=until-found attribute, then this lock must activate
+  // during find-in-page.
+  bool activate_for_find_in_page_ = false;
 };
 
 }  // namespace blink

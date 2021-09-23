@@ -6459,6 +6459,11 @@ CSSPropertyValueSet* Element::CreatePresentationAttributeStyle() {
   auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(
       IsSVGElement() ? kSVGAttributeMode : kHTMLStandardMode);
   AttributeCollection attributes = AttributesWithoutUpdate();
+  if (DisplayLockContext* context = GetDisplayLockContext()) {
+    // CollectStyleForPresentationAttribute will set this to true if it actually
+    // applies.
+    context->SetActivateForFindInPage(false);
+  }
   for (const Attribute& attr : attributes)
     CollectStyleForPresentationAttribute(attr.GetName(), attr.Value(), style);
   CollectExtraStyleForPresentationAttribute(style);

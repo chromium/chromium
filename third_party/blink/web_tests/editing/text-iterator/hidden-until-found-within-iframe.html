@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/6040">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="height:2000px">spacer</div>
+
+<iframe src="resources/hidden-until-found-within-iframe-source.html"></iframe>
+
+<script>
+async_test(t => {
+  const iframe = document.querySelector('iframe');
+  iframe.onload = t.step_func(() => {
+    assert_equals(window.pageYOffset, 0,
+      `The page should be scrolled to the top at the start of the test.`);
+
+    testRunner.findString('target', ['Async']);
+
+    requestAnimationFrame(t.step_func(() => {
+      requestAnimationFrame(t.step_func_done(() => {
+        assert_false(
+          iframe.contentDocument.getElementById('target').hasAttribute('hidden'),
+          `The hidden attribute should have been removed to reveal the content.`);
+        assert_not_equals(window.pageYOffset, 0,
+          `The page should be scrolled down to the target element.`);
+      }));
+    }));
+  });
+}, `hidden=until-found content inside an iframe with target text should be revealed in response to find-in-page.`);
+</script>

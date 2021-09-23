@@ -95,6 +95,8 @@ static void ScrollToVisible(Range* match) {
   const EphemeralRangeInFlatTree range(match);
   const Node& first_node = *match->FirstNode();
 
+  bool needs_style_and_layout = false;
+
   if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled()) {
     // TODO(vmpstr): Rework this, since it is only used for bookkeeping.
     DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(range);
@@ -102,18 +104,31 @@ static void ScrollToVisible(Range* match) {
     // We need to update the style and layout since the event dispatched may
     // have modified it, and we need up-to-date layout to ScrollRectToVisible
     // below.
-    first_node.GetDocument().UpdateStyleAndLayoutForNode(
-        &first_node, DocumentUpdateReason::kFindInPage);
+    needs_style_and_layout = true;
   }
+
+  // TODO(crbug.com/1250847): Make ExpandDetailsAncestors and
+  // RevealHiddenUntilFoundAncestors work better with iframes.
+  // It seems like Document::EnqueueAnimationFrameTask isn't getting fired for
+  // some iframes.
 
   // If the active match is hidden inside a <details> element, then we should
   // expand it so find-in-page can scroll to it.
-  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
-      HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
-    // If we opened any details elements, we need to update style and layout
-    // to account for the new content to render inside the now-expanded
-    // details element before we scroll to it. The added open attribute may
-    // also affect style and have fired mutation events.
+  needs_style_and_layout |=
+      RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
+      HTMLDetailsElement::ExpandDetailsAncestors(first_node);
+
+  // If the active match is hidden inside a hidden=until-found element, then we
+  // should reveal it so find-in-page can scroll to it.
+  needs_style_and_layout |=
+      RuntimeEnabledFeatures::BeforeMatchEventEnabled(
+          first_node.GetExecutionContext()) &&
+      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
+
+  if (needs_style_and_layout) {
+    // If we changed dom or style in order to reveal the target element, then we
+    // have to update style and layout before scrolling The modified attributes
+    // may also affect style and have fired mutation events.
     first_node.GetDocument().UpdateStyleAndLayoutForNode(
         &first_node, DocumentUpdateReason::kFindInPage);
   }

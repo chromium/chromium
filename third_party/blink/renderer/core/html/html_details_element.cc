@@ -103,7 +103,7 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
     content_slot->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                          CSSValueID::kHidden);
-    content_slot->EnsureDisplayLockContext().SetForDetailsElement(true);
+    content_slot->EnsureDisplayLockContext().SetActivateForFindInPage(true);
     content_slot->SetInlineStyleProperty(CSSPropertyID::kDisplay,
                                          CSSValueID::kBlock);
   } else {
@@ -199,7 +199,7 @@ void HTMLDetailsElement::ParseAttribute(
                                         CSSValueID::kBlock);
         content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                         CSSValueID::kHidden);
-        content->EnsureDisplayLockContext().SetForDetailsElement(true);
+        content->EnsureDisplayLockContext().SetActivateForFindInPage(true);
       }
     } else {
       if (is_open_) {

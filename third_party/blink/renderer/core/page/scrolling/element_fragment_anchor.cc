@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -109,8 +110,19 @@ bool ElementFragmentAnchor::Invoke() {
 
   if (element_to_scroll) {
     // Expand <details> elements so we can make |element_to_scroll| visible.
-    if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
-        HTMLDetailsElement::ExpandDetailsAncestors(*element_to_scroll)) {
+    bool needs_style_and_layout =
+        RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
+        HTMLDetailsElement::ExpandDetailsAncestors(*element_to_scroll);
+
+    // Reveal hidden=until-found ancestors so we can make |element_to_scroll|
+    // visible.
+    needs_style_and_layout |=
+        RuntimeEnabledFeatures::BeforeMatchEventEnabled(
+            element_to_scroll->GetExecutionContext()) &&
+        DisplayLockUtilities::RevealHiddenUntilFoundAncestors(
+            *element_to_scroll);
+
+    if (needs_style_and_layout) {
       // If we opened any details elements, we need to update style and layout
       // to account for the new content to render inside the now-expanded
       // details element before we scroll to it. The added open attribute may

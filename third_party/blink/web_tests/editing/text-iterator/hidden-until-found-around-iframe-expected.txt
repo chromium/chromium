@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL hidden=until-found content wrapping an iframe with target text should be revealed in response to find-in-page. assert_false: The hidden attribute should have been removed to reveal the content. expected false got true
+Harness: the test ran to completion.
+

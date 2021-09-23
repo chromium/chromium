@@ -636,4 +636,30 @@ bool DisplayLockUtilities::IsAutoWithoutLayout(const LayoutObject& object) {
          !context->HadLifecycleUpdateSinceLastUnlock();
 }
 
+bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
+  // Since setting the open attribute fires mutation events which could mess
+  // with the FlatTreeTraversal iterator, we should first iterate details
+  // elements to open and then open them all.
+  VectorOf<HTMLElement> elements_to_reveal;
+
+  for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
+    if (HTMLElement* element = DynamicTo<HTMLElement>(parent)) {
+      if (EqualIgnoringASCIICase(
+              element->FastGetAttribute(html_names::kHiddenAttr),
+              "until-found")) {
+        elements_to_reveal.push_back(element);
+      }
+    }
+  }
+
+  for (HTMLElement* element : elements_to_reveal) {
+    element->removeAttribute(html_names::kHiddenAttr);
+  }
+
+  // TODO(crbug.com/1055002): Fire the beforematch event here on all
+  //   |elements_to_reveal|.
+
+  return elements_to_reveal.size();
+}
+
 }  // namespace blink
