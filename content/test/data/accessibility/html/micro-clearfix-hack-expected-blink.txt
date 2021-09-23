@@ -1,0 +1,16 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Micro clearfix demo'
+++++++++staticText name='Micro clearfix demo'
+++++++++++inlineTextBox name='Micro clearfix demo'
+++++++genericContainer ignored
+++++++++genericContainer
+++++++++++staticText name='Float#1'
+++++++++++++inlineTextBox name='Float#1'
+++++++++genericContainer
+++++++++++staticText name='Float#2'
+++++++++++++inlineTextBox name='Float#2'
+++++++heading name='End of demo'
+++++++++staticText name='End of demo'
+++++++++++inlineTextBox name='End of demo'
