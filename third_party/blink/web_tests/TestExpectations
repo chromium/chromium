@@ -5520,10 +5520,6 @@ crbug.com/1007228 [ Mac ] external/wpt/fullscreen/api/element-request-fullscreen
 # Disabled for landing DevTools change
 crbug.com/1011811 http/tests/devtools/persistence/automapping-sourcemap.js [ Failure Pass ]
 
-# Sheriff 2020-06-05
-crbug.com/1091829 [ Mac ] fast/scrolling/scroll-non-composited-scroller.html [ Failure Pass ]
-crbug.com/1091829 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-non-composited-scroller.html [ Failure Pass ]
-
 # Sheriff 2020-06-06
 crbug.com/1091843 fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure Pass ]
 
