@@ -129,7 +129,13 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_SuccessfulLoadUMA, {
 })
 
 // Test that a successful load adds stats to Subzero buckets.
-IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero, SuccessfulLoadUMA) {
+// Test is flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_SuccessfulLoadUMA DISABLED_SuccessfulLoadUMA
+#else
+#define MAYBE_SuccessfulLoadUMA SuccessfulLoadUMA
+#endif
+IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero, MAYBE_SuccessfulLoadUMA) {
   // Only test where Subzero is supported.
   if (!IsSubzeroSupportedForArch())
     return;
