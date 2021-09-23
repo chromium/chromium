@@ -212,6 +212,12 @@ void UpdateContainerPref(Profile* profile,
                          const std::string& key,
                          base::Value value);
 
+bool IsContainerVersionExpired(Profile* profile,
+                               const ContainerId& container_id);
+
+bool ShouldWarnAboutExpiredVersion(Profile* profile,
+                                   const ContainerId& container_id);
+
 const ContainerId& DefaultContainerId();
 
 bool IsCrostiniWindow(const aura::Window* window);

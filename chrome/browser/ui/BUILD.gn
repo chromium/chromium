@@ -2230,6 +2230,8 @@ static_library("ui") {
       "views/crostini/crostini_ansible_software_config_view.h",
       "views/crostini/crostini_app_restart_dialog.cc",
       "views/crostini/crostini_app_restart_dialog.h",
+      "views/crostini/crostini_expired_container_warning_view.cc",
+      "views/crostini/crostini_expired_container_warning_view.h",
       "views/crostini/crostini_force_close_view.cc",
       "views/crostini/crostini_force_close_view.h",
       "views/crostini/crostini_package_install_failure_view.cc",

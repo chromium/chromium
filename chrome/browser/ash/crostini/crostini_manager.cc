@@ -51,6 +51,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/crostini/crostini_expired_container_warning_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -3159,16 +3160,33 @@ void CrostiniManager::FinishRestart(CrostiniRestarter* restarter,
                                     CrostiniResult result) {
   auto range = restarters_by_container_.equal_range(restarter->container_id());
   std::vector<std::unique_ptr<CrostiniRestarter>> pending_restarters;
-  // Erase first, because restarter->RunCallback() may modify our maps.
+
+  // Erase first, because restarter->RunCallback() may modify our maps, and
+  // because the upgrade process will want to run more restarters.
   for (auto it = range.first; it != range.second; ++it) {
     CrostiniManager::RestartId restart_id = it->second;
     pending_restarters.emplace_back(std::move(restarters_by_id_[restart_id]));
     restarters_by_id_.erase(restart_id);
   }
   restarters_by_container_.erase(range.first, range.second);
-  for (const auto& pending_restarter : pending_restarters) {
-    pending_restarter->result_ = result;
-    pending_restarter->RunCallback(result);
+
+  std::vector<base::OnceClosure> callbacks;
+  for (auto&& restarter : pending_restarters) {
+    callbacks.push_back(base::BindOnce(
+        [](std::unique_ptr<CrostiniRestarter> restarter,
+           CrostiniResult result) {
+          restarter->result_ = result;
+          restarter->RunCallback(result);
+        },
+        std::move(restarter), result));
+  }
+
+  if (ShouldWarnAboutExpiredVersion(profile_, restarter->container_id())) {
+    CrostiniExpiredContainerWarningView::Show(profile_, std::move(callbacks));
+  } else {
+    for (auto&& callback : callbacks) {
+      std::move(callback).Run();
+    }
   }
 }
 
@@ -3431,10 +3449,12 @@ void CrostiniManager::OnUpgradeContainer(
     case vm_tools::cicerone::UpgradeContainerResponse::UNKNOWN:
     case vm_tools::cicerone::UpgradeContainerResponse::FAILED:
     default:
-      LOG(ERROR) << "Upgrade container failed. Failure reason "
-                 << response->failure_reason();
       result = CrostiniResult::UPGRADE_CONTAINER_FAILED;
       break;
+  }
+  if (!response->failure_reason().empty()) {
+    LOG(ERROR) << "Upgrade container failed. Failure reason: "
+               << response->failure_reason();
   }
   std::move(callback).Run(result);
 }

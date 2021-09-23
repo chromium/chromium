@@ -4475,6 +4475,18 @@
   <message name="IDS_CROSTINI_UPGRADER_NOT_NOW" desc="Text on the button to defer performing the upgrade">
     Not now
   </message>
+  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_TITLE" desc="Title for a dialog to warn the user that the OS version in their crostini container is unsupported">
+    Upgrade your Linux container
+  </message>
+  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_BODY" desc="Body of a dialog to warn the user that the OS version in their crostini container is unsupported">
+    The operating system in your Linux container is no longer supported. It will stop receiving security updates and bug fixes, and features that currently work may break unexpectedly. Please upgrade to the latest version to continue using Linux.
+  </message>
+  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_CONTINUE_BUTTON" desc="Button to continue using crostini even though the OS version in their crostini container is unsupported">
+    Continue anyway
+  </message>
+  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_UPGRADE_BUTTON" desc="Button to begin upgrading the crostini container after warning that the OS version in their crostini container is unsupported">
+    Upgrade
+  </message>
   <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_LABEL" desc="Label for dialog warning user of unavailable Linux container until software configurations are applied.">
     Configuring Linux
   </message>
