@@ -2356,6 +2356,19 @@ void ClearPreviewedElements(
   }
 }
 
+bool IsOwnedByFrame(const WebNode& node, content::RenderFrame* frame) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes))
+    return true;
+  if (node.IsNull() || !frame)
+    return false;
+  const blink::WebDocument& doc = node.GetDocument();
+  blink::WebLocalFrame* node_frame = !doc.IsNull() ? doc.GetFrame() : nullptr;
+  blink::WebLocalFrame* expected_frame = frame->GetWebFrame();
+  return expected_frame && node_frame &&
+         expected_frame->GetLocalFrameToken() ==
+             node_frame->GetLocalFrameToken();
+}
+
 bool IsWebpageEmpty(const blink::WebLocalFrame* frame) {
   blink::WebDocument document = frame->GetDocument();
 

@@ -48,12 +48,23 @@ class PasswordGenerationAgent;
 class FieldDataManager;
 
 // AutofillAgent deals with Autofill related communications between WebKit and
-// the browser.  There is one AutofillAgent per RenderFrame.
+// the browser.
+//
+// Each AutofillAgent is associated with exactly one RenderFrame and
+// communicates with exactly one ContentAutofillDriver throughout its entire
+// lifetime.
+//
+// This RenderFrame owns all forms and fields in the renderer-browser
+// communication:
+// - AutofillAgent may assume that forms and fields received in the
+//   mojom::AutofillAgent events are owned by that RenderFrame.
+// - Conversely, the forms and fields which AutofillAgent passes to
+//   mojom::AutofillDriver events must be owned by that RenderFrame.
+//
 // Note that Autofill encompasses:
 // - single text field suggestions, that we usually refer to as Autocomplete,
 // - password form fill, refered to as Password Autofill, and
 // - entire form fill based on one field entry, referred to as Form Autofill.
-
 class AutofillAgent : public content::RenderFrameObserver,
                       public FormTracker::Observer,
                       public blink::WebAutofillClient,
@@ -241,13 +252,13 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Set |node| to display the given |value|.
   void DoFillFieldWithValue(const std::u16string& value,
-                            blink::WebInputElement* node);
+                            blink::WebInputElement& node);
 
   // Set |node| to display the given |value| as a preview.  The preview is
   // visible on screen to the user, but not visible to the page via the DOM or
   // JavaScript.
   void DoPreviewFieldWithValue(const std::u16string& value,
-                               blink::WebInputElement* node);
+                               blink::WebInputElement& node);
 
   // Notifies browser of new fillable forms in |render_frame|.
   void ProcessForms();
@@ -263,7 +274,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   void SendPotentiallySubmittedFormToBrowser();
 
   void ResetLastInteractedElements();
-  void UpdateLastInteractedForm(blink::WebFormElement form);
+  void UpdateLastInteractedForm(const blink::WebFormElement& form);
 
   // Called when current form is no longer submittable, submitted_forms_ is
   // cleared in this method.
