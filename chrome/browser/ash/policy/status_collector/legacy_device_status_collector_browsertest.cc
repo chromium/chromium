@@ -1487,8 +1487,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, ActivityNoUser) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceUsers, true);
 
-  EXPECT_FALSE(status_collector_->ShouldReportActivityTimes());
-  EXPECT_FALSE(status_collector_->ShouldReportUsers());
+  EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
+  EXPECT_FALSE(status_collector_->IsReportingUsers());
 
   status_collector_->Simulate(test_states, 3);
   GetStatus();
@@ -1510,8 +1510,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
       "public@public-accounts.device-local.localhost"));
   user_manager_->CreatePublicAccountUser(public_account_id);
 
-  EXPECT_FALSE(status_collector_->ShouldReportActivityTimes());
-  EXPECT_FALSE(status_collector_->ShouldReportUsers());
+  EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
+  EXPECT_FALSE(status_collector_->IsReportingUsers());
 
   status_collector_->Simulate(test_states, 3);
   GetStatus();
@@ -1534,8 +1534,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, ActivityWithKioskUser) {
       AccountId::FromUserEmail("public@web-kiosk-apps.device-local.localhost"));
   user_manager_->CreatePublicAccountUser(public_account_id);
 
-  EXPECT_FALSE(status_collector_->ShouldReportActivityTimes());
-  EXPECT_FALSE(status_collector_->ShouldReportUsers());
+  EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
+  EXPECT_FALSE(status_collector_->IsReportingUsers());
 
   status_collector_->Simulate(test_states, 3);
   GetStatus();
@@ -1558,8 +1558,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   user_manager_->AddUserWithAffiliationAndType(account_id0, true,
                                                user_manager::USER_TYPE_REGULAR);
 
-  EXPECT_TRUE(status_collector_->ShouldReportActivityTimes());
-  EXPECT_TRUE(status_collector_->ShouldReportUsers());
+  EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
+  EXPECT_TRUE(status_collector_->IsReportingUsers());
 
   status_collector_->Simulate(test_states, 3);
   GetStatus();
@@ -1573,8 +1573,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceUsers, false);
 
-  EXPECT_TRUE(status_collector_->ShouldReportActivityTimes());
-  EXPECT_FALSE(status_collector_->ShouldReportUsers());
+  EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
+  EXPECT_FALSE(status_collector_->IsReportingUsers());
 
   status_collector_->Simulate(test_states, 3);
   GetStatus();
@@ -1596,8 +1596,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   user_manager_->AddUserWithAffiliationAndType(account_id0, false,
                                                user_manager::USER_TYPE_REGULAR);
 
-  EXPECT_FALSE(status_collector_->ShouldReportActivityTimes());
-  EXPECT_FALSE(status_collector_->ShouldReportUsers());
+  EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
+  EXPECT_FALSE(status_collector_->IsReportingUsers());
 
   status_collector_->Simulate(test_states, 3);
   GetStatus();
@@ -1609,8 +1609,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceUsers, false);
 
-  EXPECT_FALSE(status_collector_->ShouldReportActivityTimes());
-  EXPECT_FALSE(status_collector_->ShouldReportUsers());
+  EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
+  EXPECT_FALSE(status_collector_->IsReportingUsers());
 
   status_collector_->Simulate(test_states, 3);
   GetStatus();

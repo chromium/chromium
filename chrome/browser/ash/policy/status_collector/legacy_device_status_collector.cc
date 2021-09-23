@@ -2825,7 +2825,7 @@ void LegacyDeviceStatusCollector::OnSubmittedSuccessfully() {
   app_info_generator_.OnReportedSuccessfully(last_requested_);
 }
 
-bool LegacyDeviceStatusCollector::ShouldReportActivityTimes() const {
+bool LegacyDeviceStatusCollector::IsReportingActivityTimes() const {
   // This function is used for checking if a message about activity reporting
   // should be displayed to a user in the transparency panel. User activity for
   // a current user is reported only if the user is managed by the same
@@ -2836,22 +2836,25 @@ bool LegacyDeviceStatusCollector::ShouldReportActivityTimes() const {
   std::string user_email = GetUserForActivityReporting();
   return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
 }
-bool LegacyDeviceStatusCollector::ShouldReportNetworkInterfaces() const {
+bool LegacyDeviceStatusCollector::IsReportingNetworkData() const {
   return report_network_interfaces_;
 }
-bool LegacyDeviceStatusCollector::ShouldReportUsers() const {
+bool LegacyDeviceStatusCollector::IsReportingUsers() const {
   // For more details, see comment in
-  // LegacyDeviceStatusCollector::ShouldReportActivityTimes() function.
+  // LegacyDeviceStatusCollector::IsReportingActivityTimes() function.
   if (!report_users_) {
     return false;
   }
   std::string user_email = GetUserForActivityReporting();
   return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
 }
-bool LegacyDeviceStatusCollector::ShouldReportCrashReportInfo() const {
+bool LegacyDeviceStatusCollector::IsReportingHardwareData() const {
+  return report_hardware_status_;
+}
+bool LegacyDeviceStatusCollector::IsReportingCrashReportInfo() const {
   return report_crash_report_info_ && stat_reporting_pref_;
 }
-bool LegacyDeviceStatusCollector::ShouldReportAppInfoAndActivity() const {
+bool LegacyDeviceStatusCollector::IsReportingAppInfoAndActivity() const {
   return report_app_info_;
 }
 

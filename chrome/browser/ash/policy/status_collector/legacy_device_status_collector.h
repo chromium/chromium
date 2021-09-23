@@ -160,11 +160,12 @@ class LegacyDeviceStatusCollector
   // StatusCollector:
   void GetStatusAsync(StatusCollectorCallback response) override;
   void OnSubmittedSuccessfully() override;
-  bool ShouldReportActivityTimes() const override;
-  bool ShouldReportNetworkInterfaces() const override;
-  bool ShouldReportUsers() const override;
-  bool ShouldReportCrashReportInfo() const override;
-  bool ShouldReportAppInfoAndActivity() const override;
+  bool IsReportingActivityTimes() const override;
+  bool IsReportingNetworkData() const override;
+  bool IsReportingHardwareData() const override;
+  bool IsReportingUsers() const override;
+  bool IsReportingCrashReportInfo() const override;
+  bool IsReportingAppInfoAndActivity() const override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

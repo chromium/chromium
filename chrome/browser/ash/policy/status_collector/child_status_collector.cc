@@ -412,22 +412,26 @@ void ChildStatusCollector::OnSubmittedSuccessfully() {
   OnAppActivityReportSubmitted();
 }
 
-bool ChildStatusCollector::ShouldReportActivityTimes() const {
+bool ChildStatusCollector::IsReportingActivityTimes() const {
   return true;
 }
 
-bool ChildStatusCollector::ShouldReportNetworkInterfaces() const {
+bool ChildStatusCollector::IsReportingHardwareData() const {
   return false;
 }
 
-bool ChildStatusCollector::ShouldReportUsers() const {
+bool ChildStatusCollector::IsReportingNetworkData() const {
   return false;
 }
 
-bool ChildStatusCollector::ShouldReportCrashReportInfo() const {
+bool ChildStatusCollector::IsReportingUsers() const {
   return false;
 }
-bool ChildStatusCollector::ShouldReportAppInfoAndActivity() const {
+
+bool ChildStatusCollector::IsReportingCrashReportInfo() const {
+  return false;
+}
+bool ChildStatusCollector::IsReportingAppInfoAndActivity() const {
   return false;
 }
 

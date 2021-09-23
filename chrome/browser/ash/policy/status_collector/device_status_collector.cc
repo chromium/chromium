@@ -2872,7 +2872,7 @@ void DeviceStatusCollector::OnSubmittedSuccessfully() {
   app_info_generator_.OnReportedSuccessfully(last_requested_);
 }
 
-bool DeviceStatusCollector::ShouldReportActivityTimes() const {
+bool DeviceStatusCollector::IsReportingActivityTimes() const {
   // This function is used for checking if a message about activity reporting
   // should be displayed to a user in the transparency panel. User activity for
   // a current user is reported only if the user is managed by the same
@@ -2884,22 +2884,28 @@ bool DeviceStatusCollector::ShouldReportActivityTimes() const {
   return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
 }
 // TODO(b/192252043): Remove this once management ui has been refactored.
-bool DeviceStatusCollector::ShouldReportNetworkInterfaces() const {
-  return false;
+bool DeviceStatusCollector::IsReportingNetworkData() const {
+  return report_network_configuration_ || report_network_status_;
 }
-bool DeviceStatusCollector::ShouldReportUsers() const {
+bool DeviceStatusCollector::IsReportingHardwareData() const {
+  return report_power_status_ || report_storage_status_ ||
+         report_board_status_ || report_memory_info_ || report_cpu_info_ ||
+         report_backlight_info_ || report_bluetooth_info_ || report_fan_info_ ||
+         report_vpd_info_ || report_system_info_;
+}
+bool DeviceStatusCollector::IsReportingUsers() const {
   // For more details, see comment in
-  // DeviceStatusCollector::ShouldReportActivityTimes() function.
+  // DeviceStatusCollector::IsReportingActivityTimes() function.
   if (!report_users_) {
     return false;
   }
   std::string user_email = GetUserForActivityReporting();
   return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
 }
-bool DeviceStatusCollector::ShouldReportCrashReportInfo() const {
+bool DeviceStatusCollector::IsReportingCrashReportInfo() const {
   return report_crash_report_info_ && stat_reporting_pref_;
 }
-bool DeviceStatusCollector::ShouldReportAppInfoAndActivity() const {
+bool DeviceStatusCollector::IsReportingAppInfoAndActivity() const {
   return report_app_info_;
 }
 

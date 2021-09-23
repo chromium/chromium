@@ -132,26 +132,31 @@ class TestDeviceStatusCollector : public policy::DeviceStatusCollector {
   TestDeviceStatusCollector(PrefService* local_state,
                             bool report_activity_times,
                             bool report_nics,
+                            bool report_hardware_data,
                             bool report_users,
                             bool report_crash_info,
                             bool report_app_info_and_activity)
       : policy::DeviceStatusCollector(local_state, nullptr),
         report_activity_times_(report_activity_times),
         report_nics_(report_nics),
+        report_hardware_data_(report_hardware_data),
         report_users_(report_users),
         report_crash_info_(report_crash_info),
         report_app_info_and_activity_(report_app_info_and_activity) {}
   ~TestDeviceStatusCollector() override = default;
 
-  bool ShouldReportActivityTimes() const override {
+  bool IsReportingActivityTimes() const override {
     return report_activity_times_;
   }
-  bool ShouldReportNetworkInterfaces() const override { return report_nics_; }
-  bool ShouldReportUsers() const override { return report_users_; }
-  bool ShouldReportCrashReportInfo() const override {
+  bool IsReportingNetworkData() const override { return report_nics_; }
+  bool IsReportingHardwareData() const override {
+    return report_hardware_data_;
+  }
+  bool IsReportingUsers() const override { return report_users_; }
+  bool IsReportingCrashReportInfo() const override {
     return report_crash_info_;
   }
-  bool ShouldReportAppInfoAndActivity() const override {
+  bool IsReportingAppInfoAndActivity() const override {
     return report_app_info_and_activity_;
   }
 
@@ -163,6 +168,7 @@ class TestDeviceStatusCollector : public policy::DeviceStatusCollector {
  private:
   bool report_activity_times_;
   bool report_nics_;
+  bool report_hardware_data_;
   bool report_users_;
   bool report_crash_info_;
   bool report_app_info_and_activity_;
@@ -350,6 +356,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   struct TestConfig {
     bool report_activity_times;
     bool report_nics;
+    bool report_hardware_data;
     bool report_users;
     bool report_crash_info;
     bool report_app_info_and_activity;
@@ -371,6 +378,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   void ResetTestConfig(bool default_value) {
     setup_config_.report_activity_times = default_value;
     setup_config_.report_nics = default_value;
+    setup_config_.report_hardware_data = default_value;
     setup_config_.report_users = default_value;
     setup_config_.report_crash_info = default_value;
     setup_config_.report_app_info_and_activity = default_value;
@@ -434,8 +442,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     const TestDeviceStatusCollector* status_collector =
         new TestDeviceStatusCollector(
             &local_state_, GetTestConfig().report_activity_times,
-            GetTestConfig().report_nics, GetTestConfig().report_users,
-            GetTestConfig().report_crash_info,
+            GetTestConfig().report_nics, GetTestConfig().report_hardware_data,
+            GetTestConfig().report_users, GetTestConfig().report_crash_info,
             GetTestConfig().report_app_info_and_activity);
     settings_.device_settings()->SetTrustedStatus(
         chromeos::CrosSettingsProvider::TRUSTED);
@@ -1012,7 +1020,8 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
   const base::Value info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
-      {kManagementReportNetworkInterfaces, "device"},
+      {kManagementReportNetworkData, "device"},
+      {kManagementReportHardwareData, "device statistics"},
       {kManagementReportCrashReports, "crash report"},
       {kManagementReportAppInfoAndActivity, "app info and activity"},
       {kManagementLogUploadEnabled, "logs"},
@@ -1035,7 +1044,8 @@ TEST_F(ManagementUIHandlerTests,
   const base::Value info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
-      {kManagementReportNetworkInterfaces, "device"},
+      {kManagementReportNetworkData, "device"},
+      {kManagementReportHardwareData, "device statistics"},
       {kManagementReportCrashReports, "crash report"},
       {kManagementReportAppInfoAndActivity, "app info and activity"},
       {kManagementLogUploadEnabled, "logs"},
