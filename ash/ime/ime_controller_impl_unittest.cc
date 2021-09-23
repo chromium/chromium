@@ -386,5 +386,20 @@ TEST_F(ImeControllerImplTest, MirroringChanged) {
   EXPECT_TRUE(client.is_mirroring_);
 }
 
+TEST_F(ImeControllerImplTest, MeetMirroringChanged) {
+  ImeControllerImpl* controller = Shell::Get()->ime_controller();
+  TestImeControllerClient client;
+  controller->SetClient(&client);
+
+  EXPECT_FALSE(client.is_casting_);
+
+  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
+      base::DoNothing(), base::DoNothing(), u"");
+  EXPECT_TRUE(client.is_casting_);
+
+  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+  EXPECT_FALSE(client.is_casting_);
+}
+
 }  // namespace
 }  // namespace ash

@@ -13,6 +13,7 @@
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
+#include "ash/system/screen_security/screen_capture_observer.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -34,7 +35,8 @@ class ModeIndicatorObserver;
 // which might live in Chrome browser or in a separate mojo service.
 class ASH_EXPORT ImeControllerImpl : public ImeController,
                                      public display::DisplayObserver,
-                                     public CastConfigController::Observer {
+                                     public CastConfigController::Observer,
+                                     public ScreenCaptureObserver {
  public:
   class Observer {
    public:
@@ -123,6 +125,13 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
 
   // CastConfigController::Observer:
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
+
+  // ScreenCaptureObserver:
+  void OnScreenCaptureStart(
+      const base::RepeatingClosure& stop_callback,
+      const base::RepeatingClosure& source_callback,
+      const std::u16string& screen_capture_status) override;
+  void OnScreenCaptureStop() override;
 
   // Synchronously returns the cached caps lock state.
   bool IsCapsLockEnabled() const;

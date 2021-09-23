@@ -65,6 +65,7 @@ void ImeControllerImpl::SetClient(ImeControllerClient* client) {
     if (CastConfigController::Get())
       CastConfigController::Get()->RemoveObserver(this);
     Shell::Get()->display_manager()->RemoveObserver(this);
+    Shell::Get()->system_tray_notifier()->RemoveScreenCaptureObserver(this);
   }
 
   client_ = client;
@@ -72,6 +73,7 @@ void ImeControllerImpl::SetClient(ImeControllerClient* client) {
   if (client_) {
     if (CastConfigController::Get())
       CastConfigController::Get()->AddObserver(this);
+    Shell::Get()->system_tray_notifier()->AddScreenCaptureObserver(this);
     Shell::Get()->display_manager()->AddObserver(this);
   }
 }
@@ -296,6 +298,17 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
       candidate_ids.push_back(ime.id);
   }
   return candidate_ids;
+}
+
+void ImeControllerImpl::OnScreenCaptureStart(
+    const base::RepeatingClosure& stop_callback,
+    const base::RepeatingClosure& source_callback,
+    const std::u16string& screen_capture_status) {
+  client_->UpdateCastingState(true);
+}
+
+void ImeControllerImpl::OnScreenCaptureStop() {
+  client_->UpdateCastingState(false);
 }
 
 }  // namespace ash
