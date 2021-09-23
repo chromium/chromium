@@ -11189,6 +11189,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="OptimizationGuide_OptimizationTypes" separator=".">
+  <suffix name="BloomFilterValidation"
+      label="Validates bloom filer allowlist/blocklist based hints"/>
   <suffix name="CompressPublicImages" label="Compresses public images"/>
   <suffix name="DeferAllScript" label="Defers execution of script"/>
   <suffix name="DelayAsyncScriptExecution"
@@ -11229,7 +11231,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              logged-in"/>
   <suffix name="MerchantTrustSignals"
       label="Provides trust data related to the merchant."/>
-  <suffix name="None" label="No optimization type"/>
+  <suffix name="MetadataFetchValidation"
+      label="Validates metadata fetch on navigation"/>
   <suffix name="NoScript"
       label="Disables the fetching and execution of JavaScript">
     <obsolete>

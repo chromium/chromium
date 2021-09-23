@@ -19,8 +19,8 @@
 namespace optimization_guide {
 
 // The returned string is used to record histograms for the optimization type.
-// Also add the string to OptimizationGuide.OptimizationTypes histogram suffix
-// in histograms.xml.
+// Also add the string to OptimizationGuide_OptimizationTypes histogram suffix
+// in histogram_suffixes_list.xml.
 std::string GetStringNameForOptimizationType(
     proto::OptimizationType optimization_type) {
   switch (optimization_type) {
@@ -32,8 +32,8 @@ std::string GetStringNameForOptimizationType(
       return "ResourceLoading";
     case proto::OptimizationType::LITE_PAGE_REDIRECT:
       return "LitePageRedirect";
-    case proto::OptimizationType::OPTIMIZATION_NONE:
-      return "None";
+    case proto::OptimizationType::METADATA_FETCH_VALIDATION:
+      return "MetadataFetchValidation";
     case proto::OptimizationType::DEFER_ALL_SCRIPT:
       return "DeferAllScript";
     case proto::OptimizationType::PERFORMANCE_HINTS:
@@ -58,6 +58,8 @@ std::string GetStringNameForOptimizationType(
       return "MerchantTrustSignals";
     case proto::OptimizationType::PRICE_TRACKING:
       return "PriceTracking";
+    case proto::OptimizationType::BLOOM_FILTER_VALIDATION:
+      return "BloomFilterValidation";
   }
   NOTREACHED();
   return std::string();

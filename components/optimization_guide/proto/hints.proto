@@ -112,8 +112,8 @@ enum OptimizationType {
   RESOURCE_LOADING = 2;
   // This optimization redirects the navigation through a lite page server.
   LITE_PAGE_REDIRECT = 3;
-  // This optimization does nothing (no-op).
-  OPTIMIZATION_NONE = 4;
+  // This optimization does validation of metadata fetch on navigation.
+  METADATA_FETCH_VALIDATION = 4;
   // This optimization defers execution of parser-blocking script until after
   // parsing completes.
   DEFER_ALL_SCRIPT = 5;
@@ -150,6 +150,8 @@ enum OptimizationType {
   MERCHANT_TRUST_SIGNALS = 17;
   // Provides pricing data so the user can track prices and price updates.
   PRICE_TRACKING = 18;
+  // This optimization does validation of bloom filter.
+  BLOOM_FILTER_VALIDATION = 19;
 }
 
 // Presents semantics for how page load URLs should be matched.
