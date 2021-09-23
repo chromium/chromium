@@ -30,6 +30,8 @@ class BaseTelemetryExtensionApiGuardFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() final;
 
+  bool IsPwaUiOpen();
+
   void OnGetManufacturer(std::string manufacturer);
 
   virtual void RunIfAllowed() = 0;

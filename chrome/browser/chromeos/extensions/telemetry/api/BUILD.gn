@@ -28,10 +28,14 @@ source_set("api") {
     "//ash/webui/telemetry_extension_ui/mojom",
     "//ash/webui/telemetry_extension_ui/services:telemetry_services",
     "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
     "//chrome/common/chromeos/extensions/api",
     "//components/user_manager",
+    "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
+    "//url",
   ]
 }
 
@@ -76,6 +80,8 @@ source_set("browser_tests") {
     "//chromeos/services/cros_healthd/public/mojom",
     "//extensions:test_support",
     "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//url",
   ]
 }
 

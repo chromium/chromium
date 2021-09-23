@@ -176,4 +176,24 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
       "This extension is not allowed to access the API on this device"));
 }
 
+class TelemetryExtensionApiGuardWithoutPwaBrowserTest
+    : public BaseTelemetryExtensionBrowserTest {
+ public:
+  TelemetryExtensionApiGuardWithoutPwaBrowserTest() {
+    should_open_pwa_ui_ = false;
+  }
+  ~TelemetryExtensionApiGuardWithoutPwaBrowserTest() override = default;
+
+  TelemetryExtensionApiGuardWithoutPwaBrowserTest(
+      const TelemetryExtensionApiGuardWithoutPwaBrowserTest&) = delete;
+  TelemetryExtensionApiGuardWithoutPwaBrowserTest& operator=(
+      const TelemetryExtensionApiGuardWithoutPwaBrowserTest&) = delete;
+};
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardWithoutPwaBrowserTest,
+                       PwaUiNotOpen) {
+  CreateExtensionAndRunServiceWorker(
+      GetServiceWorkerForError("Companion PWA UI is not open"));
+}
+
 }  // namespace chromeos

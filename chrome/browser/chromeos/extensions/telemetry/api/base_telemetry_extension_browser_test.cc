@@ -13,10 +13,12 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
+#include "chrome/browser/extensions/browsertest_util.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
@@ -61,10 +63,17 @@ void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
   user_manager->SetOwnerId(
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
 
+  // Make sure device OEM is allowlisted.
   hardware_info_delegate_factory_ =
       std::make_unique<FakeHardwareInfoDelegate::Factory>("HP\n");
   HardwareInfoDelegate::Factory::SetForTesting(
       hardware_info_delegate_factory_.get());
+
+  if (should_open_pwa_ui_) {
+    // Make sure PWA UI is open.
+    extensions::browsertest_util::AddTab(browser(),
+                                         GURL("http://www.google.com"));
+  }
 }
 
 const extensions::Extension*

@@ -8,14 +8,23 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
 namespace {
 
 constexpr char kAllowedManufacturer[] = "HP";
+
+// TODO(b/200920331): replace with real host when it will be known.
+constexpr char kAllowedCompanionPwaHost[] = "www.google.com";
 
 }  // namespace
 
@@ -33,12 +42,42 @@ BaseTelemetryExtensionApiGuardFunction::Run() {
                            name())));
   }
 
+  if (!IsPwaUiOpen()) {
+    return RespondNow(
+        Error(base::StringPrintf("Unauthorized access to chrome.%s. "
+                                 "Companion PWA UI is not open",
+                                 name())));
+  }
+
   // TODO(b/200676085): figure out a better way to async check different
   // conditions.
   HardwareInfoDelegate::Factory::Create()->GetManufacturer(base::BindOnce(
       &BaseTelemetryExtensionApiGuardFunction::OnGetManufacturer, this));
 
   return RespondLater();
+}
+
+bool BaseTelemetryExtensionApiGuardFunction::IsPwaUiOpen() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+
+  for (auto* target_browser : *BrowserList::GetInstance()) {
+    // Ignore incognito.
+    if (target_browser->profile() != profile) {
+      continue;
+    }
+
+    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+    for (int i = 0; i < target_tab_strip->count(); ++i) {
+      content::WebContents* target_contents =
+          target_tab_strip->GetWebContentsAt(i);
+      const GURL url = target_contents->GetLastCommittedURL();
+      if (url.host() == kAllowedCompanionPwaHost) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 void BaseTelemetryExtensionApiGuardFunction::OnGetManufacturer(

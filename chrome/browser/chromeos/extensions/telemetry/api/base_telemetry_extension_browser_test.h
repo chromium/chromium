@@ -44,6 +44,8 @@ class BaseTelemetryExtensionBrowserTest
 
   std::unique_ptr<HardwareInfoDelegate::Factory>
       hardware_info_delegate_factory_;
+
+  bool should_open_pwa_ui_ = true;
 };
 
 }  // namespace chromeos
