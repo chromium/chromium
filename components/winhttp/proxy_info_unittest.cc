@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/net/proxy_info.h"
+#include "components/winhttp/proxy_info.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace updater {
+namespace winhttp {
 
-TEST(ProxyInfoTest, DefaultIsDirectConnection) {
+TEST(WinHttpProxyInfoTest, DefaultIsDirectConnection) {
   ProxyInfo proxy_info;
   EXPECT_FALSE(proxy_info.auto_detect);
   EXPECT_TRUE(proxy_info.auto_config_url.empty());
@@ -16,7 +16,7 @@ TEST(ProxyInfoTest, DefaultIsDirectConnection) {
   EXPECT_TRUE(proxy_info.proxy_bypass.empty());
 }
 
-TEST(ProxyInfoTest, CanCopy) {
+TEST(WinHttpProxyInfoTest, CanCopy) {
   ProxyInfo proxy_info(true, L"Foo", L"Bar", L"Baz");
   ProxyInfo proxy_info2(proxy_info);
 
@@ -30,7 +30,7 @@ TEST(ProxyInfoTest, CanCopy) {
   EXPECT_STREQ(L"Baz", proxy_info2.proxy_bypass.c_str());
 }
 
-TEST(ProxyInfoTest, CanMove) {
+TEST(WinHttpProxyInfoTest, CanMove) {
   ProxyInfo proxy_info{true, L"Foo", L"Bar", L"Baz"};
   ProxyInfo proxy_info2 = std::move(proxy_info);
 
@@ -43,4 +43,4 @@ TEST(ProxyInfoTest, CanMove) {
   EXPECT_TRUE(proxy_info.proxy_bypass.empty());
 }
 
-}  // namespace updater
+}  // namespace winhttp

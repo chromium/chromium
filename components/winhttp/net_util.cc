@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/net/net_util.h"
+#include "components/winhttp/net_util.h"
 
 #include <vector>
 
-namespace updater {
+namespace winhttp {
+
+HRESULT HRESULTFromLastError() {
+  const auto error_code = ::GetLastError();
+  return (error_code != NO_ERROR) ? HRESULT_FROM_WIN32(error_code) : E_FAIL;
+}
 
 HRESULT QueryHeadersString(HINTERNET request_handle,
                            uint32_t info_level,
@@ -44,4 +49,4 @@ HRESULT QueryHeadersInt(HINTERNET request_handle,
   return S_OK;
 }
 
-}  // namespace updater
+}  // namespace winhttp

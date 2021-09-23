@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_NET_PROXY_CONFIGURATION_H_
-#define CHROME_UPDATER_WIN_NET_PROXY_CONFIGURATION_H_
+#ifndef COMPONENTS_WINHTTP_PROXY_CONFIGURATION_H_
+#define COMPONENTS_WINHTTP_PROXY_CONFIGURATION_H_
 
 #include <windows.h>
 #include <winhttp.h>
 
 #include "base/memory/ref_counted.h"
-#include "chrome/updater/win/net/proxy_info.h"
-#include "chrome/updater/win/net/scoped_winttp_proxy_info.h"
+#include "components/winhttp/proxy_info.h"
+#include "components/winhttp/scoped_winttp_proxy_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
-namespace updater {
+namespace winhttp {
 
-class PolicyService;
-
-// Classes in this module represent sources of system proxy configuration.
 // On Windows 8.1 and above, we can use Auto Proxy mode in WinHTTP and let
 // the OS configure the proxy.
 // This is represented by the AutoProxyConfiguration class.
@@ -75,11 +72,6 @@ class AutoProxyConfiguration final : public ProxyConfiguration {
 void SetProxyForRequest(
     const HINTERNET request_handle,
     const absl::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info);
+}  // namespace winhttp
 
-// Factory method for the proxy configuration strategy.
-scoped_refptr<ProxyConfiguration> GetProxyConfiguration(
-    scoped_refptr<PolicyService> policy_service);
-
-}  // namespace updater
-
-#endif  // CHROME_UPDATER_WIN_NET_PROXY_CONFIGURATION_H_
+#endif  // COMPONENTS_WINHTTP_PROXY_CONFIGURATION_H_

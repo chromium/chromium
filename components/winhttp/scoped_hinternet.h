@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_NET_SCOPED_HINTERNET_H_
-#define CHROME_UPDATER_WIN_NET_SCOPED_HINTERNET_H_
+#ifndef COMPONENTS_WINHTTP_SCOPED_HINTERNET_H_
+#define COMPONENTS_WINHTTP_SCOPED_HINTERNET_H_
 
 #include <windows.h>
 #include <winhttp.h>
 
 #include "base/scoped_generic.h"
 
-namespace updater {
+namespace winhttp {
 
 namespace internal {
 
@@ -25,9 +25,14 @@ struct ScopedHInternetTraits {
 }  // namespace internal
 
 // Manages the lifetime of HINTERNET handles allocated by WinHTTP.
-using scoped_hinternet =
-    base::ScopedGeneric<HINTERNET, updater::internal::ScopedHInternetTraits>;
+using ScopedHInternet =
+    base::ScopedGeneric<HINTERNET, internal::ScopedHInternetTraits>;
 
-}  // namespace updater
+// Creates a new WinHttp session using the given user agent and properly
+// configured for the Windows OS version.
+ScopedHInternet CreateSessionHandle(const wchar_t* user_agent,
+                                    int proxy_access_type);
 
-#endif  // CHROME_UPDATER_WIN_NET_SCOPED_HINTERNET_H_
+}  // namespace winhttp
+
+#endif  // COMPONENTS_WINHTTP_SCOPED_HINTERNET_H_

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/net/proxy_info.h"
+#include "components/winhttp/proxy_info.h"
 
-namespace updater {
+namespace winhttp {
 
 ProxyInfo::ProxyInfo() = default;
 ProxyInfo::~ProxyInfo() = default;
@@ -23,4 +23,4 @@ ProxyInfo& ProxyInfo::operator=(const ProxyInfo& proxy_info) = default;
 ProxyInfo::ProxyInfo(ProxyInfo&& proxy_info) = default;
 ProxyInfo& ProxyInfo::operator=(ProxyInfo&& proxy_info) = default;
 
-}  // namespace updater
+}  // namespace winhttp

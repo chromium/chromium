@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_NET_NET_UTIL_H_
-#define CHROME_UPDATER_WIN_NET_NET_UTIL_H_
+#ifndef COMPONENTS_WINHTTP_NET_UTIL_H_
+#define COMPONENTS_WINHTTP_NET_UTIL_H_
 
 #include <windows.h>
 #include <winhttp.h>
@@ -13,15 +13,22 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "chrome/updater/win/win_util.h"
 
-namespace updater {
+namespace winhttp {
 
+// Returns the last error as an HRESULT or E_FAIL if last error is NO_ERROR.
+// This is not a drop in replacement for the HRESULT_FROM_WIN32 macro.
+// The macro maps a NO_ERROR to S_OK, whereas the HRESULTFromLastError maps a
+// NO_ERROR to E_FAIL.
+HRESULT HRESULTFromLastError();
+
+// Returns HTTP response headers from the given request as strings.
 HRESULT QueryHeadersString(HINTERNET request_handle,
                            uint32_t info_level,
                            const wchar_t* name,
                            std::wstring* value);
 
+// Returns HTTP response headers from the given request as integers.
 HRESULT QueryHeadersInt(HINTERNET request_handle,
                         uint32_t info_level,
                         const wchar_t* name,
@@ -48,6 +55,6 @@ HRESULT SetOption(HINTERNET handle, uint32_t option, T value) {
   return S_OK;
 }
 
-}  // namespace updater
+}  // namespace winhttp
 
-#endif  // CHROME_UPDATER_WIN_NET_NET_UTIL_H_
+#endif  // COMPONENTS_WINHTTP_NET_UTIL_H_

@@ -243,19 +243,9 @@ if (is_win || is_mac) {
         "win/install_progress_observer.h",
         "win/installer_api.cc",
         "win/installer_api.h",
-        "win/net/net_util.cc",
-        "win/net/net_util.h",
         "win/net/network.h",
         "win/net/network_fetcher.cc",
         "win/net/network_fetcher.h",
-        "win/net/network_winhttp.cc",
-        "win/net/network_winhttp.h",
-        "win/net/proxy_configuration.cc",
-        "win/net/proxy_configuration.h",
-        "win/net/proxy_info.cc",
-        "win/net/proxy_info.h",
-        "win/net/scoped_hinternet.h",
-        "win/net/scoped_winttp_proxy_info.h",
         "win/scoped_handle.h",
         "win/scoped_impersonation.cc",
         "win/scoped_impersonation.h",
@@ -286,6 +276,7 @@ if (is_win || is_mac) {
         "//chrome/updater/app/server/win:updater_legacy_idl_idl",
         "//chrome/updater/win:app_install_controller",
         "//chrome/updater/win/ui",
+        "//components/winhttp",
       ]
 
       configs -= [ "//build/config/win:winver" ]
@@ -299,7 +290,6 @@ if (is_win || is_mac) {
       libs = [
         "secur32.lib",
         "taskschd.lib",
-        "winhttp.lib",
       ]
     }
   }
@@ -517,8 +507,6 @@ if (is_win || is_mac) {
         "test/integration_tests_win.cc",
         "win/installer_api_unittest.cc",
         "win/net/network_unittest.cc",
-        "win/net/proxy_configuration_unittest.cc",
-        "win/net/proxy_info_unittest.cc",
         "win/setup/setup_util_unittest.cc",
         "win/tag_extractor_unittest.cc",
         "win/task_scheduler_unittest.cc",

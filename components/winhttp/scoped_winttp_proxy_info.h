@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_NET_SCOPED_WINTTP_PROXY_INFO_H_
-#define CHROME_UPDATER_WIN_NET_SCOPED_WINTTP_PROXY_INFO_H_
+#ifndef COMPONENTS_WINHTTP_SCOPED_WINTTP_PROXY_INFO_H_
+#define COMPONENTS_WINHTTP_SCOPED_WINTTP_PROXY_INFO_H_
 
 #include <windows.h>
 #include <winhttp.h>
@@ -12,7 +12,7 @@
 
 #include "base/logging.h"
 
-namespace updater {
+namespace winhttp {
 
 // Wrapper class for the WINHTTP_PROXY_INFO structure.
 // Note that certain Win32 APIs expected the strings to be allocated with
@@ -94,6 +94,6 @@ class ScopedWinHttpProxyInfo {
   WINHTTP_PROXY_INFO proxy_info_ = {};
 };
 
-}  // namespace updater
+}  // namespace winhttp
 
-#endif  // CHROME_UPDATER_WIN_NET_SCOPED_WINTTP_PROXY_INFO_H_
+#endif  // COMPONENTS_WINHTTP_SCOPED_WINTTP_PROXY_INFO_H_

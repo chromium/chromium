@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_NET_PROXY_INFO_H_
-#define CHROME_UPDATER_WIN_NET_PROXY_INFO_H_
+#ifndef COMPONENTS_WINHTTP_PROXY_INFO_H_
+#define COMPONENTS_WINHTTP_PROXY_INFO_H_
 
 #include <string>
 
-namespace updater {
+namespace winhttp {
 
 struct ProxyInfo {
   ProxyInfo();
@@ -37,6 +37,6 @@ struct ProxyInfo {
   std::wstring proxy_bypass;
 };
 
-}  // namespace updater
+}  // namespace winhttp
 
-#endif  // CHROME_UPDATER_WIN_NET_PROXY_INFO_H_
+#endif  // COMPONENTS_WINHTTP_PROXY_INFO_H_

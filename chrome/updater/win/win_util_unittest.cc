@@ -24,13 +24,6 @@ HRESULT MakeHRESULT(unsigned long x) {
 
 }  // namespace
 
-TEST(WinUtil, HRESULTFromLastError) {
-  ::SetLastError(ERROR_ACCESS_DENIED);
-  EXPECT_EQ(E_ACCESSDENIED, HRESULTFromLastError());
-  ::SetLastError(ERROR_SUCCESS);
-  EXPECT_EQ(E_FAIL, HRESULTFromLastError());
-}
-
 TEST(WinUtil, HRESULTFromUpdaterError) {
   EXPECT_EQ(HRESULTFromUpdaterError(0), MakeHRESULT(0xa0430000L));
   EXPECT_EQ(HRESULTFromUpdaterError(ERROR_ACCESS_DENIED),
