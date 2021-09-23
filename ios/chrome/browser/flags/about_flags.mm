@@ -211,21 +211,6 @@ const FeatureEntry::FeatureVariation
          base::size(kDefaultBrowserFullscreenPromoExperimentRemindMeLater),
          nullptr}};
 
-const FeatureEntry::FeatureParam kDefaultPromoTailoredIOS[] = {
-    {kDefaultPromoTailoredVariantIOSParam, "true"}};
-const FeatureEntry::FeatureParam kDefaultPromoTailoredSafe[] = {
-    {kDefaultPromoTailoredVariantSafeParam, "true"}};
-const FeatureEntry::FeatureParam kDefaultPromoTailoredTabs[] = {
-    {kDefaultPromoTailoredVariantTabsParam, "true"}};
-const FeatureEntry::FeatureVariation kDefaultPromoTailoredVariations[] = {
-    {"Built for iOS", kDefaultPromoTailoredIOS,
-     base::size(kDefaultPromoTailoredIOS), nullptr},
-    {"Stay Safe With Google Chrome", kDefaultPromoTailoredSafe,
-     base::size(kDefaultPromoTailoredSafe), nullptr},
-    {"All Your Tabs In One Browser", kDefaultPromoTailoredTabs,
-     base::size(kDefaultPromoTailoredTabs), nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kDefaultPromoNonModalShortTimeoutWithInstructions[] = {
         {kDefaultPromoNonModalTimeoutParam, "15"},
@@ -662,12 +647,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kDefaultPromoNonModal,
          kDefaultPromoNonModalVariations,
          "IOSDefaultBrowserNonModalPromoExperiment")},
-    {"default-browser-promo-tailored",
-     flag_descriptions::kDefaultPromoTailoredName,
-     flag_descriptions::kDefaultPromoTailoredDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultPromoTailored,
-                                    kDefaultPromoTailoredVariations,
-                                    "DefaultPromoTailored")},
     {"autofill-parse-merchant-promo-code-fields",
      flag_descriptions::kAutofillParseMerchantPromoCodeFieldsName,
      flag_descriptions::kAutofillParseMerchantPromoCodeFieldsDescription,

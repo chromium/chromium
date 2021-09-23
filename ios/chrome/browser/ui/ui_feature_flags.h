@@ -51,9 +51,6 @@ extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 // Feature flag that enables non-modal default browser promos.
 extern const base::Feature kDefaultPromoNonModal;
 
-// Feature flag that enables tailored fullscreen browser promos.
-extern const base::Feature kDefaultPromoTailored;
-
 // Feature flag that swaps the omnibox textfield implementation.
 extern const base::Feature kIOSNewOmniboxImplementation;
 

@@ -137,12 +137,6 @@ const char kDefaultPromoNonModalTimeoutParam[] = "timeout";
 
 const char kDefaultPromoNonModalInstructionsParam[] = "instructions_enabled";
 
-const char kDefaultPromoTailoredVariantIOSParam[] = "variant_ios_enabled";
-
-const char kDefaultPromoTailoredVariantSafeParam[] = "variant_safe_enabled";
-
-const char kDefaultPromoTailoredVariantTabsParam[] = "variant_tabs_enabled";
-
 const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
     "show_remind_me_later";
 
@@ -210,21 +204,6 @@ double NonModalPromosTimeout() {
 bool NonModalPromosInstructionsEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kDefaultPromoNonModal, kDefaultPromoNonModalInstructionsParam, false);
-}
-
-bool IOSTailoredPromoEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultPromoTailored, kDefaultPromoTailoredVariantIOSParam, false);
-}
-
-bool SafeTailoredPromoEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultPromoTailored, kDefaultPromoTailoredVariantSafeParam, false);
-}
-
-bool TabsTailoredPromoEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultPromoTailored, kDefaultPromoTailoredVariantTabsParam, false);
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {
@@ -302,15 +281,6 @@ bool IsChromeLikelyDefaultBrowser() {
 }
 
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type) {
-  if (type == DefaultPromoTypeAllTabs && !TabsTailoredPromoEnabled()) {
-    return NO;
-  }
-  if (type == DefaultPromoTypeStaySafe && !SafeTailoredPromoEnabled()) {
-    return NO;
-  }
-  if (type == DefaultPromoTypeMadeForIOS && !IOSTailoredPromoEnabled()) {
-    return NO;
-  }
   NSString* key = NSUserDefaultKeyForType(type);
   NSMutableArray<NSDate*>* pastUserEvents =
       [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];

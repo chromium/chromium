@@ -4342,24 +4342,6 @@
             ]
         }
     ],
-    "IOSDefaultBrowserFullscreenTailoredPromoExperiment": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "MadeForIOS",
-                    "params": {
-                        "variant_ios_enabled": "true"
-                    },
-                    "enable_features": [
-                        "DefaultPromoTailored"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDefaultBrowserNonModalPromoExperiment": [
         {
             "platforms": [

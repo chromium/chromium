@@ -36,18 +36,6 @@ extern NSString* const kLastHTTPURLOpenTime;
 // The feature parameter to activate the remind me later button.
 extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
 
-// Indicates if the tailored variant "Built for iOS" is enabled. It is not
-// mutually exclusive with other tailored promos.
-extern const char kDefaultPromoTailoredVariantIOSParam[];
-
-// Indicates if the tailored variant "Stay Safe With Google Chrome" is enabled.
-// It is not mutually exclusive with other tailored promos.
-extern const char kDefaultPromoTailoredVariantSafeParam[];
-
-// Indicates if the tailored variant "All Your Tabs In One Browser" is enabled.
-// It is not mutually exclusive with other tailored promos.
-extern const char kDefaultPromoTailoredVariantTabsParam[];
-
 // Indicates the timeout duration for the non-modal promo.
 extern const char kDefaultPromoNonModalTimeoutParam[];
 
@@ -90,18 +78,6 @@ double NonModalPromosTimeout();
 
 // Returns true if instructions for non modals should be shown.
 bool NonModalPromosInstructionsEnabled();
-
-// Returns true if tailored default browser promo variant "Built for iOS" is
-// enabled.
-bool IOSTailoredPromoEnabled();
-
-// Returns true if tailored default browser promo variant "Stay Safe With Google
-// Chrome" is enabled.
-bool SafeTailoredPromoEnabled();
-
-// Returns true if tailored default browser promo variant "All Your Tabs In One
-// Browser" is enabled.
-bool TabsTailoredPromoEnabled();
 
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.

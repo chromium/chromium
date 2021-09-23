@@ -21,13 +21,6 @@ namespace {
 class DefaultBrowserUtilsTest : public PlatformTest {
  protected:
   void SetUp() override {
-    const std::map<std::string, std::string> feature_params = {
-        {"variant_ios_enabled", "true"},
-        {"variant_safe_enabled", "true"},
-        {"variant_tabs_enabled", "true"},
-    };
-    feature_list_.InitAndEnableFeatureWithParameters(kDefaultPromoTailored,
-                                                     feature_params);
     ClearUserDefaults();
   }
   void TearDown() override { ClearUserDefaults(); }

@@ -92,11 +92,6 @@ extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-// Title and description for the flag to show tailored fullscreen default
-// browser promos.
-extern const char kDefaultPromoTailoredName[];
-extern const char kDefaultPromoTailoredDescription[];
-
 // Title and description for the flag to show non modal default browser promos.
 extern const char kDefaultPromoNonModalName[];
 extern const char kDefaultPromoNonModalDescription[];
