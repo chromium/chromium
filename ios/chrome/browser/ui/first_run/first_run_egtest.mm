@@ -541,6 +541,62 @@ GREYLayoutConstraint* BelowConstraint() {
   [SigninEarlGrey verifySyncUIEnabled:NO];
 }
 
+// Checks that Sync is turned off after the user chose not to turn
+// it on, having opened the Advanced Settings in the advanced sync settings
+// screen.
+- (void)testTapLinkSyncOff {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [self verifyWelcomeScreenIsDisplayed];
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+
+  [self verifySignInScreenIsDisplayed];
+  [[EarlGrey
+      selectElementWithMatcher:GetContinueButtonWithIdentity(fakeIdentity)]
+      performAction:grey_tap()];
+
+  [self verifySyncScreenIsDisplayed];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_text(l10n_util::GetNSString(
+                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Check that Sync hasn't started yet, allowing the user to change some
+  // settings.
+  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+                  @"Sync shouldn't have finished its original setup yet");
+
+  [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Check sync did not start.
+  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+                  @"Sync shouldn't start when discarding advanced settings.");
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_text(l10n_util::GetNSString(
+                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION)),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Verify that the user is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Dismiss the location prompt.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_DEFAULT_BROWSER_SECONDARY_BUTTON_TEXT))]
+      performAction:grey_tap()];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [SigninEarlGrey verifySyncUIEnabled:NO];
+}
+
 // Checks that sync is turned on after the user chose to turn on
 // sync in the advanced sync settings screen.
 - (void)testCustomSyncOn {
