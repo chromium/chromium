@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/application_context.h"
@@ -90,7 +91,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
-    self.shouldHideDoneButton = YES;
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kSupportForAddPasswordsInSettings)) {
+      self.shouldDisableDoneButtonOnEdit = YES;
+    } else {
+      self.shouldHideDoneButton = YES;
+    }
     _browserState = browserState;
     _personalDataManager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(_browserState);
@@ -133,6 +139,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       forSectionWithIdentifier:SectionIdentifierSwitches];
 
   [self populateProfileSection];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.navigationController.toolbarHidden = NO;
+  }
 }
 
 #pragma mark - LoadModel Helpers
@@ -231,6 +245,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    // The edit button is put in the toolbar instead of the navigation bar.
+    return NO;
+  }
   return YES;
 }
 
@@ -238,10 +257,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return [self localProfilesExist];
 }
 
+- (BOOL)shouldHideToolbar {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+}
+
 - (void)updateUIForEditState {
   [super updateUIForEditState];
   [self setSwitchItemEnabled:!self.tableView.editing
                     itemType:ItemTypeAutofillAddressSwitch];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    [self updatedToolbarForEditState];
+  }
 }
 
 // Override.
@@ -276,6 +309,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // edit mode, selection is handled by the superclass. When not in edit mode
   // selection presents the editing controller for the selected entry.
   if ([self.tableView isEditing]) {
+    self.deleteButton.enabled = YES;
     return;
   }
 
@@ -292,6 +326,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   controller.dispatcher = self.dispatcher;
   [self.navigationController pushViewController:controller animated:YES];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)tableView:(UITableView*)tableView
+    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didDeselectRowAtIndexPath:indexPath];
+  if (!self.tableView.editing)
+    return;
+
+  if (self.tableView.indexPathsForSelectedRows.count == 0)
+    self.deleteButton.enabled = NO;
 }
 
 #pragma mark - Actions
