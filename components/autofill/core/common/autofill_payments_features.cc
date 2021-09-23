@@ -67,7 +67,7 @@ const base::Feature kAutofillEnableMerchantBoundVirtualCards{
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible credit card linked offer or reward.
 const base::Feature kAutofillEnableOfferNotification{
-    "AutofillEnableOfferNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillEnableOfferNotification", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to track the cross-tab-status of the offer notification
 // bubble.
