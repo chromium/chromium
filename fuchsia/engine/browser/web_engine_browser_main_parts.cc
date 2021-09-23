@@ -182,7 +182,10 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
                           base::Unretained(this)));
 
   // Configure Ozone with an Aura implementation of the Screen abstraction.
-  screen_ = std::make_unique<aura::ScreenOzone>();
+  std::unique_ptr<aura::ScreenOzone> screen_ozone =
+      std::make_unique<aura::ScreenOzone>();
+  screen_ozone.get()->Initialize();
+  screen_ = std::move(screen_ozone);
   display::Screen::SetScreenInstance(screen_.get());
 
   // Create the MediaResourceProviderService at startup rather than on-demand,

@@ -29,6 +29,8 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
 
   ~ScreenOzone() override;
 
+  void Initialize();
+
   // display::Screen interface.
   gfx::Point GetCursorScreenPoint() override;
   bool IsWindowUnderCursor(gfx::NativeWindow window) override;
@@ -65,6 +67,8 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
  private:
   gfx::AcceleratedWidget GetAcceleratedWidgetForWindow(
       aura::Window* window) const;
+
+  virtual void OnBeforePlatformScreenInit();
 
   display::Screen* const old_screen_ = display::Screen::SetScreenInstance(this);
   std::unique_ptr<ui::PlatformScreen> platform_screen_;

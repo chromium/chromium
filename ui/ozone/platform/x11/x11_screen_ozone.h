@@ -77,6 +77,9 @@ class X11ScreenOzone : public PlatformScreen,
   // Scale value that DesktopScreenOzoneLinux sets by listening to
   // DeviceScaleFactorObserver.
   float device_scale_factor_ = 1.0f;
+
+  // Indicates that |this| is initialized.
+  bool initialized_ = false;
 };
 
 }  // namespace ui

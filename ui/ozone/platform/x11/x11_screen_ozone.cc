@@ -34,6 +34,7 @@ X11ScreenOzone::~X11ScreenOzone() {
 }
 
 void X11ScreenOzone::Init() {
+  initialized_ = true;
   if (x11_display_manager_->IsXrandrAvailable())
     x11::Connection::Get()->AddEventObserver(this);
   x11_display_manager_->Init();
@@ -151,7 +152,10 @@ void X11ScreenOzone::SetDeviceScaleFactor(float scale) {
     return;
 
   device_scale_factor_ = scale;
-  x11_display_manager_->DispatchDelayedDisplayListUpdate();
+  // See DesktopScreenLinux, which sets the |device_scale_factor| before |this|
+  // is initialized.
+  if (initialized_)
+    x11_display_manager_->DispatchDelayedDisplayListUpdate();
 }
 
 void X11ScreenOzone::OnEvent(const x11::Event& xev) {

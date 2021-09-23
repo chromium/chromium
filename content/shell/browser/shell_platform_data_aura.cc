@@ -27,7 +27,6 @@
 
 #if defined(USE_OZONE)
 #include "ui/aura/screen_ozone.h"
-#include "ui/base/ui_base_features.h"
 #endif
 
 namespace content {
@@ -83,8 +82,12 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
 
 #if defined(USE_OZONE)
   // Setup global display::Screen singleton.
-  if (features::IsUsingOzonePlatform() && !display::Screen::GetScreen())
-    screen_ = std::make_unique<aura::ScreenOzone>();
+  if (!display::Screen::GetScreen()) {
+    std::unique_ptr<aura::ScreenOzone> screen_ozone =
+        std::make_unique<aura::ScreenOzone>();
+    screen_ozone.get()->Initialize();
+    screen_ = std::move(screen_ozone);
+  }
 #endif  // defined(USE_OZONE)
 
   ui::PlatformWindowInitProperties properties;
