@@ -38,7 +38,8 @@ std::ostream& operator<<(std::ostream& out, const ClientStatus& status) {
   }
   if (status.details_.has_unexpected_error_info()) {
     auto& error_info = status.details_.unexpected_error_info();
-    out << error_info.source_file() << ":" << error_info.source_line_number();
+    out << " " << error_info.source_file() << ":"
+        << error_info.source_line_number();
     if (!error_info.js_exception_classname().empty()) {
       out << " JS error " << error_info.js_exception_classname() << " at "
           << error_info.js_exception_line_number() << ":"
