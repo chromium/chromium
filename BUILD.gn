@@ -880,6 +880,7 @@ group("gn_all") {
 }
 
 group("rust_build_tests") {
+  testonly = true
   deps = [ "//build/rust/tests" ]
 }
 
