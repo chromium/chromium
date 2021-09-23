@@ -21,10 +21,6 @@ projectorApp.AnnotatorToolParams = function() {};
 
 /**
  * The tool type supported in the Ink Engine.
- *
- * See ANNOTATOR_TOOL_TYPE in
- * chrome/apps/projector/client/api/projector_app_message_types.js.
- *
  * @type {string}
  */
 projectorApp.AnnotatorToolParams.prototype.tool;
@@ -74,14 +70,14 @@ projectorApp.AnnotatorApi.prototype.clear = function() {};
 projectorApp.AnnotatorApi.prototype.addUndoRedoListener = function(listener) {};
 
 /**
- * Structure for Account information..
+ * Structure for Account information.
  * @record
  * @struct
  */
- projectorApp.Account = function() {}
+projectorApp.Account = function() {};
 
 /**
- * The name of user.
+ * The name of the user.
  * @type {string}
  */
 projectorApp.Account.prototype.name;
@@ -110,7 +106,7 @@ projectorApp.Account.prototype.isPrimaryUser;
  * @record
  * @struct
  */
-projectorApp.OAuthTokenInfo = function() {}
+projectorApp.OAuthTokenInfo = function() {};
 
 /**
  * The OAuth token.
@@ -129,7 +125,7 @@ projectorApp.OAuthTokenInfo.prototype.expirationTime;
  * @record
  * @struct
  */
-projectorApp.OAuthToken = function() {}
+projectorApp.OAuthToken = function() {};
 
 /**
  * The email of user associated with the oauth token request.
@@ -138,17 +134,80 @@ projectorApp.OAuthToken = function() {}
 projectorApp.OAuthToken.prototype.email;
 
 /**
- * The OAuthToken information..
+ * The OAuth token information.
  * @type {!projectorApp.OAuthTokenInfo}
  */
 projectorApp.OAuthToken.prototype.oauthTokenInfo;
 
 /**
  * The error message associated with the token fetch request.
- *
- * See ProjectorError in
- * chrome/apps/projector/client/api/projector_app_message_types.js.
- *
  * @type {string}
  */
 projectorApp.OAuthTokenInfo.prototype.error;
+
+/**
+ * The delegate interface that the Projector app can use to make requests to
+ * chrome.
+ * @record
+ * @struct
+ */
+projectorApp.ClientDelegate = function() {};
+
+/**
+ * Gets the list of primary and secondary accounts currently available on the
+ * device.
+ * @return {Promise<Array<!projectorApp.Account>>}
+ */
+projectorApp.ClientDelegate.prototype.getAccounts = function() {};
+
+/**
+ * Checks whether the SWA can trigger a new Projector session.
+ * @return {Promise<boolean>}
+ */
+projectorApp.ClientDelegate.prototype.canStartProjectorSession = function() {};
+
+/**
+ * Starts the Projector session if it is possible. Provides the storage
+ * directory name where projector output artifacts will be saved in.
+ * @param {string} storageDir
+ * @return {Promise<boolean>}
+ */
+projectorApp.ClientDelegate.prototype.startProjectorSession = function(
+    storageDir) {};
+
+/**
+ * Gets the oauth token with the required scopes for the specified account.
+ * @param {string} email user's email
+ * @return {!Promise<!projectorApp.OAuthToken>}
+ */
+projectorApp.ClientDelegate.prototype.getOAuthTokenForAccount = function(
+    email) {};
+
+/**
+ * Sends 'error' message to handler.
+ * The Handler will log the message. If the error is not a recoverable error,
+ * the handler closes the corresponding WebUI.
+ * @param {!Array<string>} msg Error messages.
+ */
+projectorApp.ClientDelegate.prototype.onError = function(msg) {};
+
+/**
+ * The client Api for interacting with the Projector app instance.
+ * @record
+ * @struct
+ */
+projectorApp.AppApi = function() {};
+
+/**
+ * Notifies the Projector app that whether it can start a new session.
+ * @param {boolean} canStart
+ */
+projectorApp.AppApi.prototype.onNewScreencastPreconditionChanged = function(
+    canStart) {};
+
+/**
+ * Sets the delegate that the Projector app can use to call into Chrome
+ * dependent functions.
+ * @param {!projectorApp.ClientDelegate} clientDelegate
+ */
+projectorApp.AppApi.prototype.setClientDelegate = function(clientDelegate) {};
