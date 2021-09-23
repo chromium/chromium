@@ -220,7 +220,7 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
     available_types.push_back(kMimeTypeSvg);
   if (target_list.ContainsFormat(ClipboardFormatType::RtfType()))
     available_types.push_back(kMimeTypeRTF);
-  if (target_list.ContainsFormat(ClipboardFormatType::BitmapType()))
+  if (target_list.ContainsFormat(ClipboardFormatType::PngType()))
     available_types.push_back(kMimeTypePNG);
   if (target_list.ContainsFormat(ClipboardFormatType::FilenamesType()))
     available_types.push_back(kMimeTypeURIList);
