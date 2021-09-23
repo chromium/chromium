@@ -483,6 +483,8 @@ class HeadlessWebContentsPDFPageSizeRoundingTest
 
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsPDFPageSizeRoundingTest);
 
+#if BUILDFLAG(ENABLE_TAGGED_PDF)
+
 const char kExpectedStructTreeJSON[] = R"({
    "lang": "en",
    "type": "Document",
@@ -635,6 +637,8 @@ class HeadlessWebContentsTaggedPDFTest
 };
 
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsTaggedPDFTest);
+
+#endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
 
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
