@@ -312,6 +312,12 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
                             memory_stats->total_decommittable_bytes);
   allocator_dump->AddScalar("discardable_size", "bytes",
                             memory_stats->total_discardable_bytes);
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  allocator_dump->AddScalar("brp_quarantined_size", "bytes",
+                            memory_stats->total_brp_quarantined_bytes);
+  allocator_dump->AddScalar("brp_quarantined_count", "count",
+                            memory_stats->total_brp_quarantined_count);
+#endif
 
   allocator_dump->AddScalar("syscall_count", "count",
                             memory_stats->syscall_count);

@@ -989,6 +989,12 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
         max_size_of_committed_pages.load(std::memory_order_relaxed);
     stats.total_allocated_bytes = total_size_of_allocated_bytes;
     stats.max_allocated_bytes = max_size_of_allocated_bytes;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    stats.total_brp_quarantined_bytes =
+        total_size_of_brp_quarantined_bytes.load(std::memory_order_relaxed);
+    stats.total_brp_quarantined_count =
+        total_count_of_brp_quarantined_slots.load(std::memory_order_relaxed);
+#endif
 
     size_t direct_mapped_allocations_total_size = 0;
     for (size_t i = 0; i < kNumBuckets; ++i) {

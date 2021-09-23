@@ -307,6 +307,10 @@ struct BASE_EXPORT PartitionRoot {
   // Atomic, because system calls can be made without the lock held.
   std::atomic<uint64_t> syscall_count{};
   std::atomic<uint64_t> syscall_total_time_ns{};
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  std::atomic<size_t> total_size_of_brp_quarantined_bytes{0};
+  std::atomic<size_t> total_count_of_brp_quarantined_slots{0};
+#endif
 
   char* next_super_page = nullptr;
   char* next_partition_page = nullptr;
@@ -901,6 +905,11 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
   );
 #endif
 
+  root->total_size_of_brp_quarantined_bytes.fetch_sub(
+      slot_span->GetSizeForBookkeeping(), std::memory_order_relaxed);
+  root->total_count_of_brp_quarantined_slots.fetch_sub(
+      1, std::memory_order_relaxed);
+
   if (root->is_thread_safe) {
     root->RawFreeWithThreadCache(slot_start, slot_span);
     return;
@@ -1132,8 +1141,13 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     if (UNLIKELY(!ref_count->IsAliveWithNoKnownRefs()))
       internal::SecureMemset(ptr, kQuarantinedByte, usable_size);
 
-    if (UNLIKELY(!(ref_count->ReleaseFromAllocator())))
+    if (UNLIKELY(!(ref_count->ReleaseFromAllocator()))) {
+      total_size_of_brp_quarantined_bytes.fetch_add(
+          slot_span->GetSizeForBookkeeping(), std::memory_order_relaxed);
+      total_count_of_brp_quarantined_slots.fetch_add(1,
+                                                     std::memory_order_relaxed);
       return;
+    }
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 

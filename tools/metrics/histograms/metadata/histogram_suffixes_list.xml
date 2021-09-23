@@ -13867,6 +13867,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="History" label="Only counting memory used by History service."/>
   <suffix name="LevelDatabase"
       label="Only counting memory used by Level databases."/>
+  <suffix name="Malloc.BRPQuarantined"
+      label="Memory used by objects quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="Malloc.BRPQuarantinedCount"
+      label="Number of slots quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
   <suffix name="Malloc.ThreadCache"
       label="Memory used by all thread caches, recorded when PartitionAlloc
              is used as malloc()."/>
