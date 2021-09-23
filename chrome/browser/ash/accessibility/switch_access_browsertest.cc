@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
@@ -42,7 +43,12 @@ class SwitchAccessTest : public InProcessBrowserTest {
                           const std::set<int>& next_key_codes,
                           const std::set<int>& previous_key_codes) {
     AccessibilityManager* manager = AccessibilityManager::Get();
+
+    extensions::ExtensionHostTestHelper host_helper(
+        manager->profile(), extension_misc::kSwitchAccessExtensionId);
     manager->SetSwitchAccessEnabled(true);
+    host_helper.WaitForExtensionHostCompletedFirstLoad();
+
     manager->SetSwitchAccessKeysForTest(
         select_key_codes,
         prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
@@ -84,8 +90,6 @@ class SwitchAccessTest : public InProcessBrowserTest {
     std::string script;
     ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
         << test_support_path;
-
-    WaitForExtensionLoad(extension_misc::kSwitchAccessExtensionId);
 
     std::string result =
         extensions::browsertest_util::ExecuteScriptInBackgroundPage(

@@ -49,7 +49,5 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
   ErrorConsole* error_console_;
 };
 
-void WaitForExtensionLoad(const char* extension_id);
-
 }  // namespace ash
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_

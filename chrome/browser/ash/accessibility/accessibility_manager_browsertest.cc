@@ -36,6 +36,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -725,8 +726,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, ChromeVoxPanel) {
   // Switch profiles. The panel shouldn't be created if ChromeVox is off.
   PostSwitchChromeVoxProfile();
   ASSERT_FALSE(IsChromeVoxPanelActive());
+
+  extensions::ExtensionHostTestHelper host_helper(
+      AccessibilityManager::Get()->profile(),
+      extension_misc::kChromeVoxExtensionId);
   SetSpokenFeedbackEnabled(true);
-  WaitForExtensionLoad(extension_misc::kChromeVoxExtensionId);
+  host_helper.WaitForExtensionHostCompletedFirstLoad();
+
   ASSERT_TRUE(IsSpokenFeedbackEnabled());
   ASSERT_TRUE(IsChromeVoxPanelActive());
   // Switch profiles. The panel should not be recreated.

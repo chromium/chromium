@@ -32,6 +32,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -70,8 +71,11 @@ class SelectToSpeakTest : public InProcessBrowserTest {
         browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
 
     tray_test_api_ = SystemTrayTestApi::Create();
+
+    extensions::ExtensionHostTestHelper host_helper(
+        browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
     AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
-    WaitForExtensionLoad(extension_misc::kSelectToSpeakExtensionId);
+    host_helper.WaitForExtensionHostCompletedFirstLoad();
 
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_ = std::make_unique<ui::test::EventGenerator>(root_window);

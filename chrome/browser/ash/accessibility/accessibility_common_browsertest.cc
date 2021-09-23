@@ -13,8 +13,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 
 namespace ash {
 
@@ -57,8 +57,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
 
   PrefService* pref_service = manager->profile()->GetPrefs();
 
-  pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, true);
-  WaitForExtensionLoad(extension_misc::kAccessibilityCommonExtensionId);
+  {
+    extensions::ExtensionHostTestHelper host_helper(
+        manager->profile(), extension_misc::kAccessibilityCommonExtensionId);
+    pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, true);
+    host_helper.WaitForExtensionHostCompletedFirstLoad();
+  }
 
   EXPECT_EQ(1U, enabled_features.size());
   EXPECT_EQ(1U, enabled_features.count(prefs::kAccessibilityAutoclickEnabled));
@@ -85,9 +89,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
   EXPECT_FALSE(DoesComponentExtensionExist(
       extension_misc::kAccessibilityCommonExtensionId));
 
-  // Not an accessibility common feature.
-  pref_service->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled, true);
-  WaitForExtensionLoad(extension_misc::kChromeVoxExtensionId);
+  {
+    extensions::ExtensionHostTestHelper host_helper(
+        manager->profile(), extension_misc::kChromeVoxExtensionId);
+    // Not an accessibility common feature.
+    pref_service->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled, true);
+    host_helper.WaitForExtensionHostCompletedFirstLoad();
+  }
+
   EXPECT_TRUE(enabled_features.empty());
   EXPECT_FALSE(DoesComponentExtensionExist(
       extension_misc::kAccessibilityCommonExtensionId));

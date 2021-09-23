@@ -479,8 +479,6 @@ static_library("test_support") {
       # Only used for Chromevox tests, so only included on Chrome OS.
       "base/extension_js_browser_test.cc",
       "base/extension_js_browser_test.h",
-      "base/extension_load_waiter_one_shot.cc",
-      "base/extension_load_waiter_one_shot.h",
     ]
     public_deps += [
       "//ash",

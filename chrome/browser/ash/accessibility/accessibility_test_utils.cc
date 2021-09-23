@@ -6,7 +6,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/extension_load_waiter_one_shot.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -55,13 +54,6 @@ std::string ExtensionConsoleErrorObserver::GetErrorOrWarningAt(
 
 size_t ExtensionConsoleErrorObserver::GetErrorsAndWarningsCount() const {
   return errors_.size();
-}
-
-void WaitForExtensionLoad(const char* extension_id) {
-  base::RunLoop loop;
-  ExtensionLoadWaiterOneShot waiter;
-  waiter.WaitForExtension(extension_id, loop.QuitClosure());
-  loop.Run();
 }
 
 }  // namespace ash

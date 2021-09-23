@@ -30,7 +30,7 @@
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -565,8 +565,11 @@ class DictationExtensionTest : public InProcessBrowserTest {
         browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
     browser()->profile()->GetPrefs()->SetBoolean(
         ash::prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+
+    extensions::ExtensionHostTestHelper host_helper(
+        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
     AccessibilityManager::Get()->SetDictationEnabled(true);
-    WaitForExtensionLoad(extension_misc::kAccessibilityCommonExtensionId);
+    host_helper.WaitForExtensionHostCompletedFirstLoad();
 
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
