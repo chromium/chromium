@@ -16,6 +16,8 @@ static_library("browser") {
     "page_content_annotations_service.h",
     "page_content_annotations_web_contents_observer.cc",
     "page_content_annotations_web_contents_observer.h",
+    "page_content_annotator.cc",
+    "page_content_annotator.h",
     "page_text_dump_result.cc",
     "page_text_dump_result.h",
     "page_text_observer.cc",
@@ -66,6 +68,8 @@ static_library("test_support") {
   sources = [
     "test_optimization_guide_decider.cc",
     "test_optimization_guide_decider.h",
+    "test_page_content_annotator.cc",
+    "test_page_content_annotator.h",
   ]
   deps = [
     ":browser",

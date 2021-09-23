@@ -26,6 +26,8 @@ using EntityMetadataRetrievedCallback =
     base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
 
 // Manages the loading and execution of models used to annotate page content.
+//
+// TODO(crbug/1249632): Implement |PageContentAnnotator|.
 class PageContentAnnotationsModelManager {
  public:
   explicit PageContentAnnotationsModelManager(

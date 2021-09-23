@@ -56,6 +56,7 @@ enum class AnnotationType {
 struct WeightedString {
  public:
   WeightedString(const std::string& value, double weight);
+  WeightedString(const WeightedString&);
   ~WeightedString();
 
   const std::string value;
@@ -81,6 +82,13 @@ struct BatchAnnotationResult {
   absl::optional<std::vector<WeightedString>> entites;
   absl::optional<double> visibility_score;
 };
+
+// Creates a vector of |BatchAnnotationResult| from the given |inputs| where
+// each result's status is set to |status|. Useful for creating an Annotation
+// response with a single error.
+std::vector<BatchAnnotationResult> FillResultWithStatus(
+    const std::vector<std::string>& inputs,
+    ExecutionStatus status);
 
 }  // namespace optimization_guide
 

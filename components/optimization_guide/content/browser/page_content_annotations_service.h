@@ -21,6 +21,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_common.h"
+#include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "url/gurl.h"
@@ -72,11 +73,14 @@ class PageContentAnnotationsService : public KeyedService,
   //
   // TODO(crbug/1249632): Flesh out description more as implementation
   // progresses and we see what is most important to write here.
-  using BatchAnnotationCallback =
-      base::OnceCallback<void(const std::vector<BatchAnnotationResult>&)>;
   void BatchAnnotate(BatchAnnotationCallback callback,
                      const std::vector<std::string>& inputs,
                      AnnotationType annotation_type);
+
+  // Overrides the PageContentAnnotator for testing. See
+  // test_page_content_annotator.h for an implementation designed for testing.
+  void OverridePageContentAnnotatorForTesting(
+      std::unique_ptr<PageContentAnnotator> annotator);
 
   // Returns the version of the page topics model that is currently being used
   // to annotate page content. Will return |absl::nullopt| if no model is being
@@ -98,6 +102,13 @@ class PageContentAnnotationsService : public KeyedService,
 
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 #endif
+
+  // TODO(crbug/1249632): This will take the place of |model_manager_| where
+  // |PageContentAnnotationsModelManager| implements the virtual interface.
+  //
+  // The annotator to use for requests to |BatchAnnotate|. Override-able for
+  // testing.
+  std::unique_ptr<PageContentAnnotator> annotator_;
 
   // Requests to annotate |text|, which is associated with |web_contents|.
   //
