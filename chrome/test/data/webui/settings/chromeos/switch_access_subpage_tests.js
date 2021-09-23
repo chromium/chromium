@@ -232,7 +232,7 @@ suite('ManageAccessibilityPageTests', function() {
                           .$$('#switchAccessActionAssignmentPane')
                           .$$('#error')
                           .textContent.trim();
-    assertEquals('Keys do not match. Press any key to exit.', errorText);
+    assertEquals('Keys don’t match. Press any key to exit.', errorText);
   });
 
   test('Deep link to auto-scan keyboards', async () => {
