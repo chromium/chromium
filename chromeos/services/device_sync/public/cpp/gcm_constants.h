@@ -18,4 +18,12 @@ extern const char kCryptAuthV2EnrollmentAuthorizedEntity[];
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::kCryptAuthGcmAppId;
+using ::chromeos::device_sync::kCryptAuthV2EnrollmentAuthorizedEntity;
+}  // namespace device_sync
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_CONSTANTS_H_

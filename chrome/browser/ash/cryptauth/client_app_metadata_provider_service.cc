@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
+#include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 
 #include <string>
 
@@ -18,8 +18,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/chromeos/cryptauth/cryptauth_device_id_provider_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/network/network_state_handler.h"
@@ -34,7 +34,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -338,7 +338,7 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
   metadata.set_device_type(cryptauthv2::ClientAppMetadata_DeviceType_CHROME);
 
   metadata.set_using_secure_screenlock(
-      pref_service_->GetBoolean(ash::prefs::kEnableAutoScreenLock));
+      pref_service_->GetBoolean(prefs::kEnableAutoScreenLock));
   // Auto-unlock here refers to concepts such as "trusted places" and "trusted
   // peripherals." Chromebooks do support Smart Lock (i.e., unlocking via the
   // user's phone), but these fields are unrelated.
@@ -424,4 +424,4 @@ void ClientAppMetadataProviderService::InvokePendingCallbacks() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

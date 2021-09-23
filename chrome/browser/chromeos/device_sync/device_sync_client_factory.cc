@@ -6,9 +6,9 @@
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
-#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service_factory.h"
-#include "chrome/browser/chromeos/cryptauth/gcm_device_info_provider_impl.h"
+#include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
+#include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service_factory.h"
+#include "chrome/browser/ash/cryptauth/gcm_device_info_provider_impl.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -43,8 +43,8 @@ std::unique_ptr<DeviceSyncBase> CreateDeviceSyncImplForProfile(
   return DeviceSyncImpl::Factory::Create(
       IdentityManagerFactory::GetForProfile(profile),
       gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
-      profile->GetPrefs(), chromeos::GcmDeviceInfoProviderImpl::GetInstance(),
-      chromeos::ClientAppMetadataProviderServiceFactory::GetForProfile(profile),
+      profile->GetPrefs(), GcmDeviceInfoProviderImpl::GetInstance(),
+      ClientAppMetadataProviderServiceFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(), std::make_unique<base::OneShotTimer>());
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_CHROMEOS_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
@@ -11,7 +11,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class ClientAppMetadataProviderService;
 
@@ -36,6 +36,11 @@ class ClientAppMetadataProviderServiceFactory
   DISALLOW_COPY_AND_ASSIGN(ClientAppMetadataProviderServiceFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::ClientAppMetadataProviderServiceFactory;
+}
+
+#endif  // CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_FACTORY_H_

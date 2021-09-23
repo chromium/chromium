@@ -1318,7 +1318,7 @@
     },
     'multidevice': {
       'filepath': 'ash/multi_device_setup/'\
-                  '|chrome/browser/chromeos/cryptauth/'\
+                  '|chrome/browser/ash/cryptauth/'\
                   '|chrome/browser/chromeos/device_sync/'\
                   '|chrome/browser/chromeos/multidevice_setup/'\
                   '|chrome/browser/chromeos/secure_channel/'\

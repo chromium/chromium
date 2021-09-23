@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service_factory.h"
+#include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service_factory.h"
 
-#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
+#include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/network/network_handler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 ClientAppMetadataProviderService*
@@ -48,4 +48,4 @@ KeyedService* ClientAppMetadataProviderServiceFactory::BuildServiceInstanceFor(
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile));
 }
 
-}  // namespace chromeos
+}  // namespace ash

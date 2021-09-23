@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cryptauth/cryptauth_device_id_provider_impl.h"
+#include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
 
 #include "base/guid.h"
 #include "chrome/browser/browser_process.h"

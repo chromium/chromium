@@ -31,4 +31,11 @@ class GcmDeviceInfoProvider {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::GcmDeviceInfoProvider;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_

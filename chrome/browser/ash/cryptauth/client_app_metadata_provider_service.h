@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_H_
+#define CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_H_
 
 #include <list>
 
@@ -12,6 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/services/device_sync/public/cpp/client_app_metadata_provider.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -30,9 +32,7 @@ class InstanceID;
 class InstanceIDProfileService;
 }  // namespace instance_id
 
-namespace chromeos {
-
-class NetworkStateHandler;
+namespace ash {
 
 // Concrete ClientAppMetadataProvider implementation, which lazily computes the
 // ClientAppMetadata when GetClientAppMetadata() is called. Once the
@@ -111,6 +111,6 @@ class ClientAppMetadataProviderService
       this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_CRYPTAUTH_CLIENT_APP_METADATA_PROVIDER_SERVICE_H_

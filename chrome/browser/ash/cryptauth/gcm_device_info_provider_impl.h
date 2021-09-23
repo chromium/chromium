@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CRYPTAUTH_GCM_DEVICE_INFO_PROVIDER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_CRYPTAUTH_GCM_DEVICE_INFO_PROVIDER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_CRYPTAUTH_GCM_DEVICE_INFO_PROVIDER_IMPL_H_
+#define CHROME_BROWSER_ASH_CRYPTAUTH_GCM_DEVICE_INFO_PROVIDER_IMPL_H_
 
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/services/device_sync/public/cpp/gcm_device_info_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 // Concrete GcmDeviceInfoProvider implementation.
 class GcmDeviceInfoProviderImpl : public device_sync::GcmDeviceInfoProvider {
@@ -28,6 +28,11 @@ class GcmDeviceInfoProviderImpl : public device_sync::GcmDeviceInfoProvider {
   DISALLOW_COPY_AND_ASSIGN(GcmDeviceInfoProviderImpl);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_CRYPTAUTH_GCM_DEVICE_INFO_PROVIDER_IMPL_H_
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::GcmDeviceInfoProviderImpl;
+}
+
+#endif  // CHROME_BROWSER_ASH_CRYPTAUTH_GCM_DEVICE_INFO_PROVIDER_IMPL_H_

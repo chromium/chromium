@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
+#include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 // Note: Actual service code does not currently have a test, since it would be a
 // "change detector test" (i.e., it would simply verify that the values provided
@@ -23,4 +23,4 @@ TEST(ClientAppMetadataProviderServiceTest, VersionCodeToInt64) {
                     "NotAVersionStringAtAll"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

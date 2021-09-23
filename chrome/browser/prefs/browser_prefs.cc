@@ -294,6 +294,8 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
+#include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/file_system_provider/registry.h"
 #include "chrome/browser/ash/first_run/first_run.h"
@@ -342,8 +344,6 @@
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
-#include "chrome/browser/chromeos/cryptauth/cryptauth_device_id_provider_impl.h"
 #include "chrome/browser/chromeos/extensions/echo_private_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 #include "chrome/browser/chromeos/net/network_throttling_observer.h"
@@ -1303,7 +1303,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::app_time::AppTimeController::RegisterProfilePrefs(registry);
   chromeos::assistant::prefs::RegisterProfilePrefs(registry);
   ash::bluetooth::DebugLogsManager::RegisterPrefs(registry);
-  chromeos::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
+  ash::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   chromeos::CupsPrintersManager::RegisterProfilePrefs(registry);
   chromeos::device_sync::RegisterProfilePrefs(registry);
   ash::FamilyUserChromeActivityMetrics::RegisterProfilePrefs(registry);
