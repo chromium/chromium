@@ -6323,6 +6323,9 @@ crbug.com/1210658 [ Mac10.14 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ 
 crbug.com/1210658 [ Mac10.15 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure ]
 crbug.com/1210658 [ Win ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure ]
 
+# Temporarily disabled to unblock https://crrev.com/c/3099011
+crbug.com/1199701 http/tests/devtools/console/console-big-array.js [ Skip ]
+
 # Sheriff 2021-5-19
 # Flaky on Webkit Linux Leak
 crbug.com/1210731 [ Linux ] http/tests/devtools/sources/debugger-step/debugger-step-out-document-write.js [ Failure Pass ]
