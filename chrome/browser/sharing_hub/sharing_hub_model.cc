@@ -96,19 +96,17 @@ void SharingHubModel::GetFirstPartyActionList(
 }
 
 void SharingHubModel::GetThirdPartyActionList(
-    content::WebContents* web_contents,
     std::vector<SharingHubAction>* list) {
   for (const auto& action : third_party_action_list_) {
     list->push_back(action);
   }
 }
 
-void SharingHubModel::ExecuteThirdPartyAction(
-    content::WebContents* web_contents,
-    int id) {
-  const std::string& url = web_contents->GetLastCommittedURL().spec();
-  const std::u16string& title = web_contents->GetTitle();
-
+void SharingHubModel::ExecuteThirdPartyAction(Profile* profile,
+                                              const GURL& gurl,
+                                              const std::u16string& title,
+                                              int id) {
+  const std::string url = gurl.spec();
   auto url_it = third_party_action_urls_.find(id);
   if (url_it == third_party_action_urls_.end())
     return;
@@ -132,9 +130,7 @@ void SharingHubModel::ExecuteThirdPartyAction(
 
   GURL share_url = GURL(url_found);
   if (share_url.is_valid()) {
-    NavigateParams params(
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-        share_url, ui::PAGE_TRANSITION_LINK);
+    NavigateParams params(profile, share_url, ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
     base::RecordAction(
@@ -142,6 +138,13 @@ void SharingHubModel::ExecuteThirdPartyAction(
   } else {
     LOG(ERROR) << "Third Party Share URL was invalid.";
   }
+}
+
+void SharingHubModel::ExecuteThirdPartyAction(content::WebContents* contents,
+                                              int id) {
+  ExecuteThirdPartyAction(
+      Profile::FromBrowserContext(contents->GetBrowserContext()),
+      contents->GetLastCommittedURL(), contents->GetTitle(), id);
 }
 
 void SharingHubModel::PopulateFirstPartyActions() {

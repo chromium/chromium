@@ -16,6 +16,10 @@ namespace send_tab_to_self {
 class SendTabToSelfSubMenuModel;
 }
 
+namespace sharing_hub {
+class SharingHubModel;
+}
+
 namespace share {
 
 extern const base::Feature kShareMenu;
@@ -46,11 +50,13 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
   // The |url| parameter is a bit tricky: it is the "target URL" of the
   // containing menu, whatever that happens to be. The exact meaning of that
   // depends on |context|. The |source_endpoint| is the source of |url| or
-  // whichever other data is being offered for share (image or similar).
+  // whichever other data is being offered for share (image or similar), and
+  // |text| is text describing the data being shared.
   ShareSubmenuModel(Browser* browser,
                     std::unique_ptr<ui::DataTransferEndpoint> source_endpoint,
                     Context context,
-                    GURL url);
+                    GURL url,
+                    std::u16string text);
   ~ShareSubmenuModel() override;
 
   // ui::SimpleMenuModel::Delegate:
@@ -60,17 +66,22 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
   void AddGenerateQRCodeItem();
   void AddSendTabToSelfItem();
   void AddCopyLinkItem();
+  void AddShareToThirdPartyItems();
 
   void AddSendTabToSelfSingleTargetItem();
 
   void GenerateQRCode();
   void SendTabToSelfSingleTarget();
   void CopyLink();
+  void ShareToThirdParty(int command_id);
+
+  sharing_hub::SharingHubModel* GetSharingHubModel();
 
   Browser* browser_;
   std::unique_ptr<ui::DataTransferEndpoint> source_endpoint_;
   Context context_;
   GURL url_;
+  std::u16string text_;
 
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       stts_submenu_model_;

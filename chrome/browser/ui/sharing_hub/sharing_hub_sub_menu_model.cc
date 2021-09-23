@@ -71,7 +71,7 @@ void SharingHubSubMenuModel::Build(content::WebContents* web_contents) {
   std::vector<SharingHubAction> first_party_actions;
   std::vector<SharingHubAction> third_party_actions;
   model->GetFirstPartyActionList(web_contents, &first_party_actions);
-  model->GetThirdPartyActionList(web_contents, &third_party_actions);
+  model->GetThirdPartyActionList(&third_party_actions);
 
   for (auto action : first_party_actions) {
     AddItem(action.command_id, action.title);

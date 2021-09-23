@@ -25,19 +25,19 @@ using ShareSubmenuModelTest = ::testing::Test;
 
 TEST(ShareSubmenuModelTest, CopyItemPresentForLink) {
   ShareSubmenuModel model(nullptr, nullptr, ShareSubmenuModel::Context::LINK,
-                          GURL("https://www.chromium.org"));
+                          GURL("https://www.chromium.org"), u"");
   EXPECT_TRUE(HasItemWithName(model, IDS_CONTENT_CONTEXT_COPYLINKLOCATION));
 }
 
 TEST(ShareSubmenuModelTest, CopyItemPresentForImage) {
   ShareSubmenuModel model(nullptr, nullptr, ShareSubmenuModel::Context::IMAGE,
-                          GURL("https://www.chromium.org/image.png"));
+                          GURL("https://www.chromium.org/image.png"), u"");
   EXPECT_TRUE(HasItemWithName(model, IDS_CONTENT_CONTEXT_COPYIMAGELOCATION));
 }
 
 TEST(ShareSubmenuModelTest, CopyItemPresentForEmail) {
   ShareSubmenuModel model(nullptr, nullptr, ShareSubmenuModel::Context::LINK,
-                          GURL("mailto:example@chromium.org"));
+                          GURL("mailto:example@chromium.org"), u"");
   EXPECT_TRUE(HasItemWithName(model, IDS_CONTENT_CONTEXT_COPYEMAILADDRESS));
 }
 

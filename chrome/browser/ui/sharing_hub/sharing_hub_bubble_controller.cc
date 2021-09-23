@@ -167,7 +167,7 @@ SharingHubBubbleController::GetThirdPartyActions() {
 
   SharingHubModel* model = GetSharingHubModel();
   if (model)
-    model->GetThirdPartyActionList(web_contents_, &actions);
+    model->GetThirdPartyActionList(&actions);
 
   return actions;
 }
