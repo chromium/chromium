@@ -94,23 +94,6 @@ source_set("bookmarks") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("edit") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "bookmark_edit_coordinator.h",
-    "bookmark_edit_coordinator.mm",
-  ]
-  deps = [
-    ":bookmarks_ui",
-    ":core",
-    "//components/bookmarks/browser",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/table_view",
-    "//url",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("core") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

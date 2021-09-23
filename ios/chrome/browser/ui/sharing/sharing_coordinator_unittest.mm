@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_presentation.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_edit_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
 #import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
@@ -97,45 +96,6 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTest {
     browser_->GetWebStateList()->InsertWebState(
         WebStateList::kInvalidIndex, std::move(web_state),
         WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  }
-
-  // Validates that |trigger_block| gets a Edit Bookmark VC to be presented,
-  // and that |delegate| controls its dismissal.
-  void ValidateEditBookmark(ProceduralBlock trigger_block,
-                            id<BookmarkEditCoordinatorDelegate> delegate) {
-    id vc_partial_mock = OCMPartialMock(base_view_controller_);
-    __block BookmarkEditViewController* bookmarkEditVC;
-    [[vc_partial_mock expect]
-        presentViewController:[OCMArg checkWithBlock:^BOOL(
-                                          UIViewController* viewController) {
-          if ([viewController
-                  isKindOfClass:[TableViewNavigationController class]]) {
-            TableViewNavigationController* navController =
-                (TableViewNavigationController*)viewController;
-            if ([navController.tableViewController
-                    isKindOfClass:[BookmarkEditViewController class]]) {
-              bookmarkEditVC = (BookmarkEditViewController*)
-                                   navController.tableViewController;
-              return YES;
-            }
-            return NO;
-          }
-          return NO;
-        }]
-                     animated:YES
-                   completion:nil];
-
-    trigger_block();
-
-    [vc_partial_mock verify];
-
-    [[vc_partial_mock expect] dismissViewControllerAnimated:YES completion:nil];
-
-    // Dismiss the ViewController.
-    ASSERT_NE(nil, bookmarkEditVC);
-    [bookmarkEditVC dismiss];
-
-    [vc_partial_mock verify];
   }
 
   ScopedKeyWindow scoped_key_window_;
