@@ -126,7 +126,7 @@ class TipTextContainer : public views::View {
 
     // TODO(tluk): We should not be using hard coded color constants and
     // switching colors based on the dark mode flag. We should instead
-    // systematize these into color ids simply call GetSystemColor() for these
+    // systematize these into color ids and simply call GetColor() for these
     // ids.
     SetBackground(views::CreateSolidBackground(
         should_use_dark_colors ? gfx::kGoogleGrey800 : gfx::kGoogleGrey050));

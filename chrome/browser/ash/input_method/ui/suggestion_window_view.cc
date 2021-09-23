@@ -21,14 +21,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -137,8 +137,7 @@ void SuggestionWindowView::OnThemeChanged() {
   learn_more_button_->SetBorder(views::CreatePaddedBorder(
       views::CreateSolidSidedBorder(
           1, 0, 0, 0,
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_FootnoteContainerBorder)),
+          GetColorProvider()->GetColor(ui::kColorBubbleFooterBorder)),
       views::LayoutProvider::Get()->GetInsetsMetric(
           views::INSETS_VECTOR_IMAGE_BUTTON)));
 

@@ -37,6 +37,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -188,8 +190,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
         /*thickness=*/1,
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kMedium),
-        GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+        GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused)));
   }
 
   void AddRowToImageContainerView() {

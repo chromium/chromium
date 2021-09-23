@@ -12,6 +12,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -227,14 +229,13 @@ void SuggestionView::SetHighlighted(bool highlighted) {
 }
 
 void SuggestionView::OnThemeChanged() {
+  const auto* color_provider = GetColorProvider();
   down_icon_->SetImage(
       gfx::CreateVectorIcon(kKeyboardArrowDownIcon, kDownIconSize,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_DefaultIconColor)));
+                            color_provider->GetColor(ui::kColorIcon)));
   arrow_icon_->SetImage(
       gfx::CreateVectorIcon(kKeyboardArrowRightIcon, kArrowIconSize,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_DefaultIconColor)));
+                            color_provider->GetColor(ui::kColorIcon)));
   views::View::OnThemeChanged();
 }
 

@@ -22,10 +22,10 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -52,8 +52,7 @@ class ErrorLabelView : public views::Label {
   // views::View:
   void OnThemeChanged() override {
     Label::OnThemeChanged();
-    SetEnabledColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityHigh));
+    SetEnabledColor(GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
   }
 };
 
