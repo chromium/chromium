@@ -296,11 +296,6 @@ const BOOL kDefaultStatsCheckboxValue = YES;
                                      (SigninCompletionInfo*)completionInfo {
   FirstRunDismissed();
   switch (completionInfo.signinCompletionAction) {
-    case SigninCompletionActionShowAdvancedSettingsSignin:
-      DCHECK(!self.interruptCompletion);
-      [self.dispatcher showAdvancedSigninSettingsFromViewController:
-                           presentingViewController];
-      break;
     case SigninCompletionActionNone:
     case SigninCompletionActionShowManagedLearnMore:
       if (self.interruptCompletion) {

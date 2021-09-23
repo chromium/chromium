@@ -2774,10 +2774,6 @@ bool IsSigninForcedByPolicy() {
         switch (info.signinCompletionAction) {
           case SigninCompletionActionNone:
             break;
-          case SigninCompletionActionShowAdvancedSettingsSignin:
-            // Case only for first run.
-            NOTREACHED();
-            break;
           case SigninCompletionActionShowManagedLearnMore:
             id<ApplicationCommands> dispatcher = HandlerForProtocol(
                 strongSelf.mainInterface.browser->GetCommandDispatcher(),

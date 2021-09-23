@@ -346,17 +346,13 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   if (self.managedLearnMoreLinkWasTapped) {
     completionAction = SigninCompletionActionShowManagedLearnMore;
   } else if (self.unifiedConsentCoordinator.settingsLinkWasTapped) {
-    completionAction = SigninCompletionActionShowAdvancedSettingsSignin;
+    // Sign-in is finished but the advanced settings link was tapped.
+    [self displayAdvancedSettings];
+    return;
   }
   SigninCompletionInfo* completionInfo =
       [[SigninCompletionInfo alloc] initWithIdentity:identity
                               signinCompletionAction:completionAction];
-  // Sign-in is finished but the advanced settings link was tapped.
-  if (completionInfo.signinCompletionAction ==
-      SigninCompletionActionShowAdvancedSettingsSignin) {
-    [self displayAdvancedSettings];
-    return;
-  }
   __weak UserSigninCoordinator* weakSelf = self;
   ProceduralBlock completion = ^void() {
     [weakSelf viewControllerDismissedWithResult:signinResult
@@ -415,9 +411,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                     object:self];
 }
 
-// Called when |self.viewController| is dismissed. If |completionInfo|'s
-// signinCompletionAction is SigninCompletionActionShowAdvancedSettingsSignin,
-// the advanced settings sign-in is presented. Otherwise, the sign-in is
+// Called when |self.viewController| is dismissed. The sign-in is
 // finished and |runCompletionCallbackWithSigninResult:completionInfo:| is
 // called.
 - (void)viewControllerDismissedWithResult:(SigninCoordinatorResult)signinResult
@@ -428,8 +422,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   DCHECK(self.unifiedConsentCoordinator);
   DCHECK(self.mediator);
   DCHECK(self.viewController);
-  DCHECK_NE(SigninCompletionActionShowAdvancedSettingsSignin,
-            completionInfo.signinCompletionAction);
 
   [self.unifiedConsentCoordinator stop];
   self.unifiedConsentCoordinator = nil;

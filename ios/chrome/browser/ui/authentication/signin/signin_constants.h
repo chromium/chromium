@@ -63,9 +63,6 @@ extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
 typedef NS_ENUM(NSUInteger, SigninCompletionAction) {
   // No action needed.
   SigninCompletionActionNone,
-  // The advanced settings sign-in view is needed to finish the sign-in.
-  // This case is only used for the first run sign-in.
-  SigninCompletionActionShowAdvancedSettingsSignin,
   // The user tapped the manager, learn more, link and sign-in was cancelled.
   SigninCompletionActionShowManagedLearnMore,
 };
