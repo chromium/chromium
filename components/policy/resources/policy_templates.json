@@ -19251,7 +19251,7 @@
       'owners': ['khorimoto@google.com', 'cros-connectivity@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:97-'],
       'device_only': True,
       'features': {
         'can_be_mandatory': True,
