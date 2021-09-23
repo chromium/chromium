@@ -29,8 +29,7 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
   DCHECK(sync_service_);
 }
 
-SyncSetupService::~SyncSetupService() {
-}
+SyncSetupService::~SyncSetupService() {}
 
 syncer::ModelType SyncSetupService::GetModelType(SyncableDatatype datatype) {
   DCHECK(datatype < base::size(kDataTypes));

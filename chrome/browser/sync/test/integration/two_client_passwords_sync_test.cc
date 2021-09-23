@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Merge)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) <<  "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   // All profiles should sync same passwords.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait())
       << "Initial password forms did not match for all profiles";
@@ -344,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ONLY(TwoClientAddPass)) {
 
   // Check that total number of passwords is as expected.
   for (int i = 0; i < num_clients(); ++i) {
-    ASSERT_EQ(GetPasswordCount(i), init_password_count + num_clients()) <<
-        "Total password count is wrong.";
+    ASSERT_EQ(GetPasswordCount(i), init_password_count + num_clients())
+        << "Total password count is wrong.";
   }
 }
 

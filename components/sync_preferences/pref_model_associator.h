@@ -28,7 +28,7 @@ class Value;
 namespace sync_pb {
 class EntitySpecifics;
 class PreferenceSpecifics;
-}
+}  // namespace sync_pb
 
 namespace sync_preferences {
 

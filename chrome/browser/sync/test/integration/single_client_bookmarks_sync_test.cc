@@ -171,22 +171,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
   const BookmarkNode* other_node = GetOtherNode(kSingleProfileIndex);
   const BookmarkNode* top =
       AddFolder(kSingleProfileIndex, other_node, 0, "top");
-  const BookmarkNode* tier1_a = AddFolder(
-      kSingleProfileIndex, top, 0, "tier1_a");
-  const BookmarkNode* tier1_b = AddFolder(
-      kSingleProfileIndex, top, 1, "tier1_b");
-  const BookmarkNode* tier1_a_url0 = AddURL(
-      kSingleProfileIndex, tier1_a, 0, "tier1_a_url0",
-      GURL("http://mail.google.com"));
-  const BookmarkNode* tier1_a_url1 = AddURL(
-      kSingleProfileIndex, tier1_a, 1, "tier1_a_url1",
-      GURL("http://www.pandora.com"));
-  const BookmarkNode* tier1_a_url2 = AddURL(
-      kSingleProfileIndex, tier1_a, 2, "tier1_a_url2",
-      GURL("http://www.facebook.com"));
-  const BookmarkNode* tier1_b_url0 = AddURL(
-      kSingleProfileIndex, tier1_b, 0, "tier1_b_url0",
-      GURL("http://www.nhl.com"));
+  const BookmarkNode* tier1_a =
+      AddFolder(kSingleProfileIndex, top, 0, "tier1_a");
+  const BookmarkNode* tier1_b =
+      AddFolder(kSingleProfileIndex, top, 1, "tier1_b");
+  const BookmarkNode* tier1_a_url0 =
+      AddURL(kSingleProfileIndex, tier1_a, 0, "tier1_a_url0",
+             GURL("http://mail.google.com"));
+  const BookmarkNode* tier1_a_url1 =
+      AddURL(kSingleProfileIndex, tier1_a, 1, "tier1_a_url1",
+             GURL("http://www.pandora.com"));
+  const BookmarkNode* tier1_a_url2 =
+      AddURL(kSingleProfileIndex, tier1_a, 2, "tier1_a_url2",
+             GURL("http://www.facebook.com"));
+  const BookmarkNode* tier1_b_url0 =
+      AddURL(kSingleProfileIndex, tier1_b, 0, "tier1_b_url0",
+             GURL("http://www.nhl.com"));
 
   // Setup sync, wait for its completion, and make sure changes were synced.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -232,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
   //            -> Wynn (www.wynnlasvegas.com)
   //      -> tier1_a_url0
   const BookmarkNode* bar = GetBookmarkBarNode(kSingleProfileIndex);
-  const BookmarkNode* cnn = AddURL(
-      kSingleProfileIndex, bar, 0, "CNN", GURL("http://www.cnn.com"));
+  const BookmarkNode* cnn =
+      AddURL(kSingleProfileIndex, bar, 0, "CNN", GURL("http://www.cnn.com"));
   ASSERT_NE(nullptr, cnn);
   Move(kSingleProfileIndex, tier1_a, bar, 1);
 
@@ -248,8 +248,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
                           IsFolderWithTitle("tier1_a")));
   EXPECT_THAT(top->children(), ElementsAre(IsFolderWithTitle("tier1_b")));
 
-  const BookmarkNode* porsche = AddURL(
-      kSingleProfileIndex, bar, 2, "Porsche", GURL("http://www.porsche.com"));
+  const BookmarkNode* porsche = AddURL(kSingleProfileIndex, bar, 2, "Porsche",
+                                       GURL("http://www.porsche.com"));
   // Rearrange stuff in tier1_a.
   ASSERT_EQ(tier1_a, tier1_a_url2->parent());
   ASSERT_EQ(tier1_a, tier1_a_url1->parent());
@@ -287,10 +287,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
       AddURL(kSingleProfileIndex, bar, bar->children().size(), "Seattle Bubble",
              GURL("http://seattlebubble.com"));
   ASSERT_NE(nullptr, bubble);
-  const BookmarkNode* wired = AddURL(
-      kSingleProfileIndex, bar, 2, "Wired News", GURL("http://www.wired.com"));
-  const BookmarkNode* tier2_b = AddFolder(
-      kSingleProfileIndex, tier1_b, 0, "tier2_b");
+  const BookmarkNode* wired = AddURL(kSingleProfileIndex, bar, 2, "Wired News",
+                                     GURL("http://www.wired.com"));
+  const BookmarkNode* tier2_b =
+      AddFolder(kSingleProfileIndex, tier1_b, 0, "tier2_b");
   Move(kSingleProfileIndex, tier1_b_url0, tier2_b, 0);
   Move(kSingleProfileIndex, porsche, bar, 0);
   SetTitle(kSingleProfileIndex, wired, "News Wired");
@@ -334,13 +334,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
   Remove(kSingleProfileIndex, top, top->children().size() - 1);
   Move(kSingleProfileIndex, wired, tier1_b, 0);
   Move(kSingleProfileIndex, porsche, bar, 3);
-  const BookmarkNode* tier3_b = AddFolder(
-      kSingleProfileIndex, tier2_b, 1, "tier3_b");
-  const BookmarkNode* leafs = AddURL(
-      kSingleProfileIndex, tier1_a, 0, "Toronto Maple Leafs",
-      GURL("http://mapleleafs.nhl.com"));
-  const BookmarkNode* wynn = AddURL(
-      kSingleProfileIndex, bar, 1, "Wynn", GURL("http://www.wynnlasvegas.com"));
+  const BookmarkNode* tier3_b =
+      AddFolder(kSingleProfileIndex, tier2_b, 1, "tier3_b");
+  const BookmarkNode* leafs =
+      AddURL(kSingleProfileIndex, tier1_a, 0, "Toronto Maple Leafs",
+             GURL("http://mapleleafs.nhl.com"));
+  const BookmarkNode* wynn = AddURL(kSingleProfileIndex, bar, 1, "Wynn",
+                                    GURL("http://www.wynnlasvegas.com"));
 
   Move(kSingleProfileIndex, wynn, tier3_b, 0);
   Move(kSingleProfileIndex, leafs, tier3_b, 0);
@@ -447,8 +447,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, InjectedBookmark) {
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(title);
-  fake_server_->InjectEntity(bookmark_builder.BuildBookmark(
-      GURL("http://canadiens.nhl.com")));
+  fake_server_->InjectEntity(
+      bookmark_builder.BuildBookmark(GURL("http://canadiens.nhl.com")));
 
   ASSERT_TRUE(SetupSync());
 
@@ -594,8 +594,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   // than the one native to the OS. This tests the PNG data is not decoded to
   // SkBitmap (or any other image format) then encoded back to PNG on the path
   // between sync and the database.
-  gfx::Image original_favicon = Create1xFaviconFromPNGFile(
-      "favicon_cocoa_png_codec.png");
+  gfx::Image original_favicon =
+      Create1xFaviconFromPNGFile("favicon_cocoa_png_codec.png");
   ASSERT_FALSE(original_favicon.IsEmpty());
   SetFavicon(kSingleProfileIndex, bookmark, icon_url, original_favicon,
              bookmarks_helper::FROM_SYNC);
@@ -981,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, E2E_ONLY(SanitySetup)) {
-  ASSERT_TRUE(SetupSync()) <<  "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 }
 
 IN_PROC_BROWSER_TEST_F(

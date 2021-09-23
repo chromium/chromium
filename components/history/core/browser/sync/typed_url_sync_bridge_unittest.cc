@@ -354,9 +354,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
     fake_history_backend_->SetTypedURLSyncBridgeForTest(std::move(bridge));
   }
 
-  void TearDown() override {
-    fake_history_backend_->Closing();
-  }
+  void TearDown() override { fake_history_backend_->Closing(); }
 
   // Starts sync for `typed_url_sync_bridge_` with `initial_data` as the
   // initial sync data.

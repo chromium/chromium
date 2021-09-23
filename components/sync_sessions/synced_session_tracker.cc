@@ -427,16 +427,18 @@ bool SyncedSessionTracker::PutWindowInSession(const std::string& session_tag,
     window = std::move(iter->second);
     session->unmapped_windows.erase(iter);
     DVLOG(1) << "Putting seen window " << window_id << " at " << window.get()
-             << "in " << (session_tag == local_session_tag_ ? "local session"
-                                                            : session_tag);
+             << "in "
+             << (session_tag == local_session_tag_ ? "local session"
+                                                   : session_tag);
   } else {
     // Create the window.
     window = std::make_unique<SyncedSessionWindow>();
     window->wrapped_window.window_id = window_id;
     session->synced_window_map[window_id] = window.get();
     DVLOG(1) << "Putting new window " << window_id << " at " << window.get()
-             << "in " << (session_tag == local_session_tag_ ? "local session"
-                                                            : session_tag);
+             << "in "
+             << (session_tag == local_session_tag_ ? "local session"
+                                                   : session_tag);
   }
   DCHECK_EQ(window->wrapped_window.window_id, window_id);
   DCHECK(GetSession(session_tag)->windows.end() ==

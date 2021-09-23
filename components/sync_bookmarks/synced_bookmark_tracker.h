@@ -85,13 +85,9 @@ class SyncedBookmarkTracker {
       bookmark_node_ = bookmark_node;
     }
 
-    const sync_pb::EntityMetadata* metadata() const {
-      return metadata_.get();
-    }
+    const sync_pb::EntityMetadata* metadata() const { return metadata_.get(); }
 
-    sync_pb::EntityMetadata* metadata() {
-      return metadata_.get();
-    }
+    sync_pb::EntityMetadata* metadata() { return metadata_.get(); }
 
     bool commit_may_have_started() const { return commit_may_have_started_; }
     void set_commit_may_have_started(bool value) {

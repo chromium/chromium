@@ -25,7 +25,7 @@ namespace {
 // profile's name.
 const char kNotificationId[] = "chrome://settings/sync/testing_profile";
 
-class FakeLoginUIService: public LoginUIService {
+class FakeLoginUIService : public LoginUIService {
  public:
   FakeLoginUIService() : LoginUIService(nullptr) {}
   ~FakeLoginUIService() override = default;

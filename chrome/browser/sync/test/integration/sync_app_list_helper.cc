@@ -103,8 +103,9 @@ bool SyncAppListHelper::AllProfilesHaveSameAppList(size_t* size_out) {
       DVLOG(1) << "Profile1: "
                << AppListSyncableServiceFactory::GetForProfile(profile);
       PrintAppList(profile);
-      DVLOG(1) << "Profile2: " <<
-          AppListSyncableServiceFactory::GetForProfile(profiles.front());
+      DVLOG(1) << "Profile2: "
+               << AppListSyncableServiceFactory::GetForProfile(
+                      profiles.front());
       PrintAppList(profiles.front());
       return false;
     }

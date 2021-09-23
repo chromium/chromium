@@ -12,16 +12,15 @@
 
 SyncErrorNotifierFactory::SyncErrorNotifierFactory()
     : BrowserContextKeyedServiceFactory(
-        "SyncErrorNotifier",
-        BrowserContextDependencyManager::GetInstance()) {
+          "SyncErrorNotifier",
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
 SyncErrorNotifierFactory::~SyncErrorNotifierFactory() {}
 
 // static
-SyncErrorNotifier* SyncErrorNotifierFactory::GetForProfile(
-    Profile* profile) {
+SyncErrorNotifier* SyncErrorNotifierFactory::GetForProfile(Profile* profile) {
   return static_cast<SyncErrorNotifier*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

@@ -21,9 +21,9 @@
 
 namespace {
 
-using autofill::ServerFieldType;
 using autofill::AutofillKey;
 using autofill::AutofillProfile;
+using autofill::ServerFieldType;
 using autofill_helper::GetAllAutoFillProfiles;
 using autofill_helper::GetAllKeys;
 using autofill_helper::GetKeyCount;

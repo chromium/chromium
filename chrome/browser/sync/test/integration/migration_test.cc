@@ -36,8 +36,7 @@ syncer::ModelTypeSet MakeSet(syncer::ModelType type) {
   return syncer::ModelTypeSet(type);
 }
 
-syncer::ModelTypeSet MakeSet(syncer::ModelType type1,
-                             syncer::ModelType type2) {
+syncer::ModelTypeSet MakeSet(syncer::ModelType type1, syncer::ModelType type2) {
   return syncer::ModelTypeSet(type1, type2);
 }
 
@@ -64,12 +63,11 @@ MigrationList MakeList(syncer::ModelType type) {
   return MakeList(MakeSet(type));
 }
 
-MigrationList MakeList(syncer::ModelType type1,
-                       syncer::ModelType type2) {
+MigrationList MakeList(syncer::ModelType type1, syncer::ModelType type2) {
   return MakeList(MakeSet(type1), MakeSet(type2));
 }
 
-class MigrationTest : public SyncTest  {
+class MigrationTest : public SyncTest {
  public:
   explicit MigrationTest(TestType test_type) : SyncTest(test_type) {}
 
@@ -134,8 +132,7 @@ class MigrationTest : public SyncTest  {
   // set.
   MigrationList GetPreferredDataTypesList() {
     MigrationList migration_list;
-    const syncer::ModelTypeSet preferred_data_types =
-        GetPreferredDataTypes();
+    const syncer::ModelTypeSet preferred_data_types = GetPreferredDataTypes();
     for (syncer::ModelType type : preferred_data_types) {
       migration_list.push_back(MakeSet(type));
     }
@@ -232,8 +229,7 @@ IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, PrefsOnlyModifyPref) {
 }
 
 IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, PrefsOnlyModifyBookmark) {
-  RunSingleClientMigrationTest(MakeList(syncer::PREFERENCES),
-                               MODIFY_BOOKMARK);
+  RunSingleClientMigrationTest(MakeList(syncer::PREFERENCES), MODIFY_BOOKMARK);
 }
 
 IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, PrefsOnlyTriggerRefresh) {
@@ -249,9 +245,8 @@ IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, NigoriOnly) {
 // A little more complicated -- two data types.
 
 IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, BookmarksPrefsIndividually) {
-  RunSingleClientMigrationTest(
-      MakeList(syncer::BOOKMARKS, syncer::PREFERENCES),
-      MODIFY_PREF);
+  RunSingleClientMigrationTest(MakeList(syncer::BOOKMARKS, syncer::PREFERENCES),
+                               MODIFY_PREF);
 }
 
 IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, BookmarksPrefsBoth) {
@@ -269,8 +264,7 @@ IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, PrefsNigoriIndividiaully) {
 
 IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, PrefsNigoriBoth) {
   RunSingleClientMigrationTest(
-      MakeList(MakeSet(syncer::PREFERENCES, syncer::NIGORI)),
-      MODIFY_PREF);
+      MakeList(MakeSet(syncer::PREFERENCES, syncer::NIGORI)), MODIFY_PREF);
 }
 
 // The whole shebang -- all data types.
@@ -287,8 +281,7 @@ IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest,
 
 IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, AllTypesAtOnce) {
   ASSERT_TRUE(SetupClients());
-  RunSingleClientMigrationTest(MakeList(GetPreferredDataTypes()),
-                               MODIFY_PREF);
+  RunSingleClientMigrationTest(MakeList(GetPreferredDataTypes()), MODIFY_PREF);
 }
 
 IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest,
@@ -349,17 +342,15 @@ class MigrationTwoClientTest : public MigrationTest {
 // Easiest possible test of migration errors: triggers a server
 // migration on one datatype, then modifies some other datatype.
 IN_PROC_BROWSER_TEST_F(MigrationTwoClientTest, MigratePrefsThenModifyBookmark) {
-  RunTwoClientMigrationTest(MakeList(syncer::PREFERENCES),
-                            MODIFY_BOOKMARK);
+  RunTwoClientMigrationTest(MakeList(syncer::PREFERENCES), MODIFY_BOOKMARK);
 }
 
 // Triggers a server migration on two datatypes, then makes a local
 // modification to one of them.
 IN_PROC_BROWSER_TEST_F(MigrationTwoClientTest,
                        MigratePrefsAndBookmarksThenModifyBookmark) {
-  RunTwoClientMigrationTest(
-      MakeList(syncer::PREFERENCES, syncer::BOOKMARKS),
-      MODIFY_BOOKMARK);
+  RunTwoClientMigrationTest(MakeList(syncer::PREFERENCES, syncer::BOOKMARKS),
+                            MODIFY_BOOKMARK);
 }
 
 // Migrate every datatype in sequence; the catch being that the server

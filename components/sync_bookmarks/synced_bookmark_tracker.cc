@@ -268,11 +268,10 @@ const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::Add(
   return raw_entity;
 }
 
-void SyncedBookmarkTracker::Update(
-    const Entity* entity,
-    int64_t server_version,
-    base::Time modification_time,
-    const sync_pb::EntitySpecifics& specifics) {
+void SyncedBookmarkTracker::Update(const Entity* entity,
+                                   int64_t server_version,
+                                   base::Time modification_time,
+                                   const sync_pb::EntitySpecifics& specifics) {
   DCHECK_GT(specifics.ByteSize(), 0);
   DCHECK(entity);
   DCHECK(specifics.has_bookmark());

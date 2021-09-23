@@ -19,11 +19,11 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using sessions_helper::CheckInitialState;
+using sessions_helper::OpenTab;
 using testing::Eq;
 using testing::Ge;
 using testing::Le;
-using sessions_helper::CheckInitialState;
-using sessions_helper::OpenTab;
 
 namespace {
 

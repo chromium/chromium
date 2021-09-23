@@ -524,10 +524,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(new_token.empty());
   // New device info should eventually be committed to the server (but the old
   // device info will remain on the server). The FCM token should be present.
-  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(), UnorderedElementsAre(HasInstanceIdToken(old_token),
-                                                        HasInstanceIdToken(new_token)))
-                  .Wait());
+  EXPECT_TRUE(
+      ServerDeviceInfoMatchChecker(
+          GetFakeServer(), UnorderedElementsAre(HasInstanceIdToken(old_token),
+                                                HasInstanceIdToken(new_token)))
+          .Wait());
 }
 #endif  // !OS_CHROMEOS
 

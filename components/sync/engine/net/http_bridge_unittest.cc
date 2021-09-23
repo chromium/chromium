@@ -63,9 +63,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
     HttpBridge::SetIOCapableTaskRunnerForTest(io_thread_.task_runner());
   }
 
-  void TearDown() override {
-    io_thread_.Stop();
-  }
+  void TearDown() override { io_thread_.Stop(); }
 
   HttpBridge* BuildBridge() { return new CustomHttpBridge(); }
 

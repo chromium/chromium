@@ -24,8 +24,8 @@ using themes_helper::UsingSystemTheme;
 
 namespace {
 
-// TODO(crbug.com/1170798): Write better tests. The current ones basically verify that committing
-// doesn't affect the local state.
+// TODO(crbug.com/1170798): Write better tests. The current ones basically
+// verify that committing doesn't affect the local state.
 class SingleClientThemesSyncTest : public SyncTest {
  public:
   SingleClientThemesSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -70,7 +70,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest, DefaultTheme) {
 
   SetCustomTheme(GetProfile(0));
   EXPECT_FALSE(UsingDefaultTheme(GetProfile(0)));
-
 
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   UseDefaultTheme(GetProfile(0));

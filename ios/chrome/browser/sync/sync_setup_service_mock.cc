@@ -11,8 +11,7 @@
 SyncSetupServiceMock::SyncSetupServiceMock(syncer::SyncService* sync_service)
     : SyncSetupService(sync_service) {}
 
-SyncSetupServiceMock::~SyncSetupServiceMock() {
-}
+SyncSetupServiceMock::~SyncSetupServiceMock() {}
 
 bool SyncSetupServiceMock::SyncSetupServiceHasFinishedInitialSetup() {
   return SyncSetupService::HasFinishedInitialSetup();

@@ -16,8 +16,7 @@ class SyncServiceImpl;
 // This class provides some common functionality for StatusChangeCheckers that
 // observe only one SyncServiceImpl.  This class is abstract.  Its
 // descendants are expected to provide additional functionality.
-class SingleClientStatusChangeChecker
-  : public MultiClientStatusChangeChecker {
+class SingleClientStatusChangeChecker : public MultiClientStatusChangeChecker {
  public:
   explicit SingleClientStatusChangeChecker(syncer::SyncServiceImpl* service);
   ~SingleClientStatusChangeChecker() override;

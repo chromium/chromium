@@ -44,10 +44,9 @@ class SessionStore {
   // from disk. |sessions_client| must not be null and must outlive the
   // SessionStore instance returned via |callback|, or until the callback is
   // cancelled.
-  static void Open(
-      const std::string& cache_guid,
-      SyncSessionsClient* sessions_client,
-      OpenCallback callback);
+  static void Open(const std::string& cache_guid,
+                   SyncSessionsClient* sessions_client,
+                   OpenCallback callback);
 
   // Verifies whether a proto is malformed (e.g. required fields are missing).
   static bool AreValidSpecifics(const sync_pb::SessionSpecifics& specifics);

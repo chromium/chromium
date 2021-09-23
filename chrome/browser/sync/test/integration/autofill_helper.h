@@ -36,8 +36,8 @@ enum ProfileType {
 };
 
 // Used to access the personal data manager within a particular sync profile.
-autofill::PersonalDataManager* GetPersonalDataManager(
-    int index) WARN_UNUSED_RESULT;
+autofill::PersonalDataManager* GetPersonalDataManager(int index)
+    WARN_UNUSED_RESULT;
 
 // Adds the form fields in |keys| to the WebDataService of sync profile
 // |profile|.

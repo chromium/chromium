@@ -46,11 +46,11 @@ void FillDelayTable(DelayInfo* delay_table, int count) {
   // short retry time via command-line kSyncShortInitialRetryOverride.
   delay_table[0] = CalculateDelay(syncer::kInitialBackoffShortRetryTime);
 
-  for (int i = 1 ; i < count ; ++i) {
-    delay_table[i].min_delay = CalculateDelay(delay_table[i-1].min_delay).
-                               min_delay;
-    delay_table[i].max_delay = CalculateDelay(delay_table[i-1].max_delay).
-                               max_delay;
+  for (int i = 1; i < count; ++i) {
+    delay_table[i].min_delay =
+        CalculateDelay(delay_table[i - 1].min_delay).min_delay;
+    delay_table[i].max_delay =
+        CalculateDelay(delay_table[i - 1].max_delay).max_delay;
   }
 }
 }  // namespace
@@ -60,7 +60,8 @@ void FillDelayTable(DelayInfo* delay_table, int count) {
 // being there is no guarantee that the retry will be on the dot. However in
 // practice it is on the dot. But making that assumption for all the platforms
 // would make the test flaky.
-bool IsRetryOnTime(DelayInfo* delay_table, int retry_count,
+bool IsRetryOnTime(DelayInfo* delay_table,
+                   int retry_count,
                    const base::TimeDelta& time_elapsed) {
   DVLOG(1) << "Retry Count : " << retry_count
            << " Time elapsed : " << time_elapsed
@@ -69,14 +70,12 @@ bool IsRetryOnTime(DelayInfo* delay_table, int retry_count,
   return time_elapsed >= delay_table[retry_count].min_delay;
 }
 
-RetryVerifier::RetryVerifier() : retry_count_(0),
-                                 success_(false),
-                                 done_(false) {
+RetryVerifier::RetryVerifier()
+    : retry_count_(0), success_(false), done_(false) {
   memset(&delay_table_, 0, sizeof(delay_table_));
 }
 
-RetryVerifier::~RetryVerifier() {
-}
+RetryVerifier::~RetryVerifier() {}
 
 // Initializes the state for verification.
 void RetryVerifier::Initialize(const syncer::SyncCycleSnapshot& snap) {

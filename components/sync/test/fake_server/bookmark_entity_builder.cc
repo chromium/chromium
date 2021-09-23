@@ -138,7 +138,6 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
 std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
     const sync_pb::EntitySpecifics& entity_specifics,
     bool is_folder) {
-
   if (parent_id_.empty()) {
     parent_id_ =
         LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");

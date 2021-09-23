@@ -17,13 +17,11 @@
 SyncedExtensionInstaller::SyncedExtensionInstaller(Profile* profile)
     : profile_(profile) {
   DoInstallSyncedExtensions();
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,
+  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,
                  content::Source<Profile>(profile_));
 }
 
-SyncedExtensionInstaller::~SyncedExtensionInstaller() {
-}
+SyncedExtensionInstaller::~SyncedExtensionInstaller() {}
 
 void SyncedExtensionInstaller::Observe(
     int type,

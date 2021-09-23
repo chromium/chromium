@@ -776,9 +776,8 @@ void BookmarkRemoteUpdatesHandler::ReuploadEntityIfNeeded(
          !tracked_entity->bookmark_node()->is_permanent_node());
 
   // Do not initiate reupload if the local entity is a tombstone.
-  const bool is_reupload_needed =
-      tracked_entity->bookmark_node() &&
-      IsBookmarkEntityReuploadNeeded(entity_data);
+  const bool is_reupload_needed = tracked_entity->bookmark_node() &&
+                                  IsBookmarkEntityReuploadNeeded(entity_data);
   base::UmaHistogramBoolean(
       "Sync.BookmarkEntityReuploadNeeded.OnIncrementalUpdate",
       is_reupload_needed);

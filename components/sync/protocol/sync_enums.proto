@@ -130,12 +130,12 @@ message SyncEnums {
   }
 
   enum Action {
-    UPGRADE_CLIENT = 0;              // Upgrade the client to latest version.
+    UPGRADE_CLIENT = 0;  // Upgrade the client to latest version.
     // DEPRECATED_CLEAR_USER_DATA_AND_RESYNC = 1;
     // DEPRECATED_ENABLE_SYNC_ON_ACCOUNT = 2;
     // DEPRECATED_STOP_AND_RESTART_SYNC = 3;
     // DEPRECATED_DISABLE_SYNC_ON_CLIENT = 4;
-    UNKNOWN_ACTION = 5;              // This is the default.
+    UNKNOWN_ACTION = 5;  // This is the default.
   }
 
   // Please keep in sync with chrome/android/java/.../ForeignSessionHelper.java

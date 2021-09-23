@@ -43,11 +43,13 @@ import java.util.List;
  * Dialog to ask the user select what type of password to use for encryption.
  * TODO(crbug.com/1202692): Consider simplifying this class. See the linked bug for details.
  */
-public class PassphraseTypeDialogFragment extends DialogFragment implements
-        DialogInterface.OnClickListener, OnItemClickListener {
+public class PassphraseTypeDialogFragment
+        extends DialogFragment implements DialogInterface.OnClickListener, OnItemClickListener {
     private static final String TAG = "PassphraseTypeDialogFragment";
 
-    public interface Listener { void onPassphraseTypeSelected(@PassphraseType int type); }
+    public interface Listener {
+        void onPassphraseTypeSelected(@PassphraseType int type);
+    }
 
     private String[] getDisplayNames(List<Integer /* @PassphraseType */> passphraseTypes) {
         String[] displayNames = new String[passphraseTypes.size()];

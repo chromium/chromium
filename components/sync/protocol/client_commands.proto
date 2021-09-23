@@ -23,7 +23,7 @@ message CustomNudgeDelay {
 
 message ClientCommand {
   // Time to wait before sending any requests to the server.
-  optional int32 set_sync_poll_interval = 1;       // in seconds
+  optional int32 set_sync_poll_interval = 1;  // in seconds
   // This has been deprecated since M75.
   optional int32 set_sync_long_poll_interval = 2 [deprecated = true];
 

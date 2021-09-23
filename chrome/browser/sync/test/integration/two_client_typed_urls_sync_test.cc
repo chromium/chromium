@@ -122,11 +122,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddExpired) {
   GURL new_url(kHistoryUrl);
   // Create a URL with a timestamp 1 year before today.
   base::Time timestamp = base::Time::Now() - base::TimeDelta::FromDays(365);
-  AddUrlToHistoryWithTimestamp(0,
-                               new_url,
-                               ui::PAGE_TRANSITION_TYPED,
-                               history::SOURCE_BROWSED,
-                               timestamp);
+  AddUrlToHistoryWithTimestamp(0, new_url, ui::PAGE_TRANSITION_TYPED,
+                               history::SOURCE_BROWSED, timestamp);
   history::URLRows urls = GetTypedUrlsFromClient(0);
   ASSERT_EQ(1U, urls.size());
   ASSERT_EQ(new_url, urls[0].url());
@@ -157,11 +154,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddExpiredThenUpdate) {
   GURL new_url(kHistoryUrl);
   // Create a URL with a timestamp 1 year before today.
   base::Time timestamp = base::Time::Now() - base::TimeDelta::FromDays(365);
-  AddUrlToHistoryWithTimestamp(0,
-                               new_url,
-                               ui::PAGE_TRANSITION_TYPED,
-                               history::SOURCE_BROWSED,
-                               timestamp);
+  AddUrlToHistoryWithTimestamp(0, new_url, ui::PAGE_TRANSITION_TYPED,
+                               history::SOURCE_BROWSED, timestamp);
   std::vector<history::URLRow> urls = GetTypedUrlsFromClient(0);
   ASSERT_EQ(1U, urls.size());
   ASSERT_EQ(new_url, urls[0].url());
@@ -431,8 +425,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
   ASSERT_EQ(0u, GetTypedUrlsFromClient(1).size());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
-                       DisableEnableSync) {
+IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, DisableEnableSync) {
   ResetSyncForPrimaryAccount();
   const std::u16string kUrl1(u"http://history1.google.com/");
   const std::u16string kUrl2(u"http://history2.google.com/");
@@ -707,8 +700,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
                                            ui::PAGE_TRANSITION_TYPED));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
-                       SkipImportedVisits) {
+IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, SkipImportedVisits) {
   GURL imported_url("http://imported_url.com");
   GURL browsed_url("http://browsed_url.com");
   GURL browsed_and_imported_url("http://browsed_and_imported_url.com");
@@ -716,11 +708,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
 
   // Create 3 items in our first client - 1 imported, one browsed, one with
   // both imported and browsed entries.
-  AddUrlToHistoryWithTransition(0, imported_url,
-                                ui::PAGE_TRANSITION_TYPED,
+  AddUrlToHistoryWithTransition(0, imported_url, ui::PAGE_TRANSITION_TYPED,
                                 history::SOURCE_FIREFOX_IMPORTED);
-  AddUrlToHistoryWithTransition(0, browsed_url,
-                                ui::PAGE_TRANSITION_TYPED,
+  AddUrlToHistoryWithTransition(0, browsed_url, ui::PAGE_TRANSITION_TYPED,
                                 history::SOURCE_BROWSED);
   AddUrlToHistoryWithTransition(0, browsed_and_imported_url,
                                 ui::PAGE_TRANSITION_TYPED,
@@ -755,8 +745,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, BookmarksWithTypedVisit) {
   const BookmarkNode* node = bookmarks_helper::AddURL(
       0, bookmarks_helper::IndexedURLTitle(0), bookmark_url);
   bookmarks_helper::SetFavicon(0, node, bookmark_icon_url,
-      bookmarks_helper::CreateFavicon(SK_ColorWHITE),
-      bookmarks_helper::FROM_UI);
+                               bookmarks_helper::CreateFavicon(SK_ColorWHITE),
+                               bookmarks_helper::FROM_UI);
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // A row in the DB for client 1 should have been created as a result of the

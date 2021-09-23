@@ -28,6 +28,7 @@ namespace {
 
 using sessions::SerializedNavigationEntry;
 using sessions::SerializedNavigationEntryTestHelper;
+using testing::_;
 using testing::ByMove;
 using testing::Eq;
 using testing::IsEmpty;
@@ -36,7 +37,6 @@ using testing::Pointee;
 using testing::Return;
 using testing::SizeIs;
 using testing::StrictMock;
-using testing::_;
 
 const char kFoo1[] = "http://foo1/";
 const char kBar1[] = "http://bar1/";

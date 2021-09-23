@@ -64,8 +64,8 @@ class SyncExtensionHelper {
 
   // Returns true iff the extension with the given id is pending
   // install in |profile|.
-  bool IsExtensionPendingInstallForSync(
-      Profile* profile, const std::string& id) const;
+  bool IsExtensionPendingInstallForSync(Profile* profile,
+                                        const std::string& id) const;
 
   // Installs all extensions pending sync in |profile|.
   void InstallExtensionsPendingForSync(Profile* profile);
@@ -87,7 +87,7 @@ class SyncExtensionHelper {
 
     ExtensionState();
     ~ExtensionState();
-    bool Equals(const ExtensionState &other) const;
+    bool Equals(const ExtensionState& other) const;
 
     EnabledState enabled_state;
     int disable_reasons;
@@ -117,7 +117,8 @@ class SyncExtensionHelper {
   // index.  Two extensions with the name but different profiles will
   // have the same id.
   scoped_refptr<extensions::Extension> GetExtension(
-      Profile* profile, const std::string& name,
+      Profile* profile,
+      const std::string& name,
       extensions::Manifest::Type type) WARN_UNUSED_RESULT;
 
   std::string extension_name_prefix_;

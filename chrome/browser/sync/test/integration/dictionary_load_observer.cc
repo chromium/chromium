@@ -14,5 +14,4 @@ void DictionaryLoadObserver::OnCustomDictionaryLoaded() {
 }
 
 void DictionaryLoadObserver::OnCustomDictionaryChanged(
-    const SpellcheckCustomDictionary::Change& dictionary_change) {
-}
+    const SpellcheckCustomDictionary::Change& dictionary_change) {}

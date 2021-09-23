@@ -28,7 +28,6 @@
 #include "components/sync_device_info/device_info_sync_service_impl.h"
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
-
 // static
 syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
     Profile* profile) {

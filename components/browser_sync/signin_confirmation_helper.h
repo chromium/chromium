@@ -18,7 +18,7 @@ class SequencedTaskRunner;
 namespace history {
 class HistoryService;
 class QueryResults;
-}
+}  // namespace history
 
 namespace browser_sync {
 

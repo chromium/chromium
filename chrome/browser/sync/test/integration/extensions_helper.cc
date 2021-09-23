@@ -37,8 +37,9 @@ bool HasSameExtensionsAsVerifier(int index) {
 bool AllProfilesHaveSameExtensionsAsVerifier() {
   for (int i = 0; i < test()->num_clients(); ++i) {
     if (!HasSameExtensionsAsVerifier(i)) {
-      LOG(ERROR) << "Profile " << i << " doesn't have the same extensions as"
-                                       " the verifier profile.";
+      LOG(ERROR) << "Profile " << i
+                 << " doesn't have the same extensions as"
+                    " the verifier profile.";
       return false;
     }
   }
@@ -48,20 +49,19 @@ bool AllProfilesHaveSameExtensionsAsVerifier() {
 bool AllProfilesHaveSameExtensions() {
   for (int i = 1; i < test()->num_clients(); ++i) {
     if (!SyncExtensionHelper::GetInstance()->ExtensionStatesMatch(
-        test()->GetProfile(0), test()->GetProfile(i))) {
-      LOG(ERROR) << "Profile " << i << " doesnt have the same extensions as"
-                                       " profile 0.";
+            test()->GetProfile(0), test()->GetProfile(i))) {
+      LOG(ERROR) << "Profile " << i
+                 << " doesnt have the same extensions as"
+                    " profile 0.";
       return false;
     }
   }
   return true;
 }
 
-
 std::string InstallExtension(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile,
-      CreateFakeExtensionName(index),
+      profile, CreateFakeExtensionName(index),
       extensions::Manifest::TYPE_EXTENSION);
 }
 

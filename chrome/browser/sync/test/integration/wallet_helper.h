@@ -30,7 +30,7 @@ namespace sync_pb {
 class SyncEntity;
 class ModelType;
 class ModelTypeState;
-}
+}  // namespace sync_pb
 
 namespace wallet_helper {
 

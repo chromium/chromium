@@ -138,10 +138,9 @@ struct SessionStore::Builder {
 };
 
 // static
-void SessionStore::Open(
-    const std::string& cache_guid,
-    SyncSessionsClient* sessions_client,
-    OpenCallback callback) {
+void SessionStore::Open(const std::string& cache_guid,
+                        SyncSessionsClient* sessions_client,
+                        OpenCallback callback) {
   DCHECK(sessions_client);
 
   DVLOG(1) << "Opening session store";

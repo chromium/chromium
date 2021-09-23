@@ -125,8 +125,7 @@ class ToValueVisitor {
  public:
   ToValueVisitor(bool include_specifics = true,
                  base::DictionaryValue* value = nullptr)
-    : value_(value)
-    , include_specifics_(include_specifics) {}
+      : value_(value), include_specifics_(include_specifics) {}
 
   template <class P>
   void VisitBytes(const P& parent_proto,
@@ -274,16 +273,15 @@ class ToValueVisitor {
 
 }  // namespace
 
-#define IMPLEMENT_PROTO_TO_VALUE(Proto) \
+#define IMPLEMENT_PROTO_TO_VALUE(Proto)                  \
   std::unique_ptr<base::DictionaryValue> Proto##ToValue( \
-      const sync_pb::Proto& proto) { \
-    return ToValueVisitor().ToValue(proto); \
+      const sync_pb::Proto& proto) {                     \
+    return ToValueVisitor().ToValue(proto);              \
   }
 
-#define IMPLEMENT_PROTO_TO_VALUE_INCLUDE_SPECIFICS(Proto) \
-  std::unique_ptr<base::DictionaryValue> Proto##ToValue( \
-      const sync_pb::Proto& proto, \
-      bool include_specifics) { \
+#define IMPLEMENT_PROTO_TO_VALUE_INCLUDE_SPECIFICS(Proto)    \
+  std::unique_ptr<base::DictionaryValue> Proto##ToValue(     \
+      const sync_pb::Proto& proto, bool include_specifics) { \
     return ToValueVisitor(include_specifics).ToValue(proto); \
   }
 

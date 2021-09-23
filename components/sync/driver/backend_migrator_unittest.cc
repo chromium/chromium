@@ -39,9 +39,7 @@ class SyncBackendMigratorTest : public testing::Test {
     SetUnsyncedTypes(ModelTypeSet());
   }
 
-  void TearDown() override {
-    migrator_.reset();
-  }
+  void TearDown() override { migrator_.reset(); }
 
   // Marks all types in |unsynced_types| as unsynced  and all other
   // types as synced.

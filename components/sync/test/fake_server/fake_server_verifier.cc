@@ -34,8 +34,8 @@ AssertionResult VerificationCountAssertionFailure(size_t actual_count,
 }
 
 AssertionResult UnknownTypeAssertionFailure(const string& model_type) {
-  return AssertionFailure() << "Verification not attempted. Unknown ModelType: "
-                            << model_type;
+  return AssertionFailure()
+         << "Verification not attempted. Unknown ModelType: " << model_type;
 }
 
 AssertionResult VerifySessionsHierarchyEquality(

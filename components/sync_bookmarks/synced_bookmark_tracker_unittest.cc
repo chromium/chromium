@@ -1121,22 +1121,18 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(kTitle, kUrl.spec());
   tracker->Add(node, /*sync_id=*/"id", /*server_version=*/0,
-               /*creation_time=*/base::Time::Now(),
-               specifics);
+               /*creation_time=*/base::Time::Now(), specifics);
 
   sync_pb::EntitySpecifics permanent_specifics;
   permanent_specifics.mutable_bookmark();
 
   // Add permanent nodes to tracker.
   tracker->Add(model->bookmark_bar_node(), kBookmarkBarId, /*server_version=*/0,
-               /*creation_time=*/base::Time::Now(),
-               permanent_specifics);
+               /*creation_time=*/base::Time::Now(), permanent_specifics);
   tracker->Add(model->other_node(), kOtherBookmarksId, /*server_version=*/0,
-               /*creation_time=*/base::Time::Now(),
-               permanent_specifics);
+               /*creation_time=*/base::Time::Now(), permanent_specifics);
   tracker->Add(model->mobile_node(), kMobileBookmarksId, /*server_version=*/0,
-               /*creation_time=*/base::Time::Now(),
-               permanent_specifics);
+               /*creation_time=*/base::Time::Now(), permanent_specifics);
 
   ASSERT_FALSE(tracker->HasLocalChanges());
 

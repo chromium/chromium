@@ -19,8 +19,8 @@
 namespace syncer {
 namespace {
 
-using testing::Return;
 using testing::_;
+using testing::Return;
 
 class ModelTypeSyncBridgeTest : public ::testing::Test {
  public:

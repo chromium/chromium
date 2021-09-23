@@ -82,14 +82,12 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
 
   void CleanupLocalTabs(WriteBatch* batch);
 
-  void AssociateWindows(ReloadTabsOption option,
-                        WriteBatch* batch);
+  void AssociateWindows(ReloadTabsOption option, WriteBatch* batch);
 
   // Loads and reassociates the local tab referenced in |tab|.
   // |batch| must not be null. This function will append necessary
   // changes for processing later.
-  void AssociateTab(SyncedTabDelegate* const tab,
-                    WriteBatch* batch);
+  void AssociateTab(SyncedTabDelegate* const tab, WriteBatch* batch);
 
   // Set |session_tab| from |tab_delegate|.
   sync_pb::SessionTab GetTabSpecificsFromDelegate(

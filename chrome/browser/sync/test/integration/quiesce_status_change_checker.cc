@@ -55,9 +55,8 @@ bool ProgressMarkersMatch(const syncer::SyncServiceImpl* service1,
     return false;
   }
 
-  const syncer::ModelTypeSet common_types =
-      Intersection(service1->GetActiveDataTypes(),
-                   service2->GetActiveDataTypes());
+  const syncer::ModelTypeSet common_types = Intersection(
+      service1->GetActiveDataTypes(), service2->GetActiveDataTypes());
 
   const syncer::SyncCycleSnapshot& snap1 =
       service1->GetLastCycleSnapshotForDebugging();

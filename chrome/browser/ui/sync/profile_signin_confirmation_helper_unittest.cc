@@ -84,9 +84,8 @@ class TestingPrefStoreWithCustomReadError : public TestingPrefStore {
   }
   PrefReadError GetReadError() const override { return read_error_; }
   bool IsInitializationComplete() const override { return true; }
-  void set_read_error(PrefReadError read_error) {
-    read_error_ = read_error;
-  }
+  void set_read_error(PrefReadError read_error) { read_error_ = read_error; }
+
  private:
   ~TestingPrefStoreWithCustomReadError() override {}
   PrefReadError read_error_;
@@ -97,8 +96,7 @@ class TestingPrefStoreWithCustomReadError : public TestingPrefStore {
 const base::FilePath::CharType kExtensionFilePath[] =
     FILE_PATH_LITERAL("c:\\foo");
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-const base::FilePath::CharType kExtensionFilePath[] =
-    FILE_PATH_LITERAL("/oo");
+const base::FilePath::CharType kExtensionFilePath[] = FILE_PATH_LITERAL("/oo");
 #endif
 
 static scoped_refptr<extensions::Extension> CreateExtension(
@@ -111,13 +109,9 @@ static scoped_refptr<extensions::Extension> CreateExtension(
   manifest.SetString(extensions::manifest_keys::kName, name);
   std::string error;
   scoped_refptr<extensions::Extension> extension =
-    extensions::Extension::Create(
-        base::FilePath(kExtensionFilePath).AppendASCII(name),
-        location,
-        manifest,
-        extensions::Extension::NO_FLAGS,
-        id,
-        &error);
+      extensions::Extension::Create(
+          base::FilePath(kExtensionFilePath).AppendASCII(name), location,
+          manifest, extensions::Extension::NO_FLAGS, id, &error);
   return extension;
 }
 #endif
@@ -160,8 +154,7 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
             extensions::ExtensionSystem::Get(profile_.get()));
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     system->CreateExtensionService(&command_line,
-                                   base::FilePath(kExtensionFilePath),
-                                   false);
+                                   base::FilePath(kExtensionFilePath), false);
 #endif
   }
 

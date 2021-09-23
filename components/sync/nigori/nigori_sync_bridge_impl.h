@@ -48,11 +48,10 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
                              public NigoriSyncBridge,
                              public SyncEncryptionHandler {
  public:
-  NigoriSyncBridgeImpl(
-      std::unique_ptr<NigoriLocalChangeProcessor> processor,
-      std::unique_ptr<NigoriStorage> storage,
-      const std::string& packed_explicit_passphrase_key,
-      const std::string& packed_keystore_keys);
+  NigoriSyncBridgeImpl(std::unique_ptr<NigoriLocalChangeProcessor> processor,
+                       std::unique_ptr<NigoriStorage> storage,
+                       const std::string& packed_explicit_passphrase_key,
+                       const std::string& packed_keystore_keys);
   ~NigoriSyncBridgeImpl() override;
 
   // SyncEncryptionHandler implementation.

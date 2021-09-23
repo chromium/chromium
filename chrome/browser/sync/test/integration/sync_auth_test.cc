@@ -135,9 +135,7 @@ class SyncAuthTest : public SyncTest {
   }
 
  private:
-  int GetNextBookmarkIndex() {
-    return bookmark_index_++;
-  }
+  int GetNextBookmarkIndex() { return bookmark_index_++; }
 
   int bookmark_index_;
 };

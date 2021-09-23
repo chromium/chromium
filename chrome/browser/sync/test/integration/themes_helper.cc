@@ -55,8 +55,8 @@ bool UsingSystemTheme(Profile* profile) {
 }
 
 bool ThemeIsPendingInstall(Profile* profile, const std::string& id) {
-  return SyncExtensionHelper::GetInstance()->
-      IsExtensionPendingInstallForSync(profile, id);
+  return SyncExtensionHelper::GetInstance()->IsExtensionPendingInstallForSync(
+      profile, id);
 }
 
 void UseCustomTheme(Profile* profile, int index) {
@@ -93,8 +93,7 @@ ThemePendingInstallChecker::ThemePendingInstallChecker(Profile* profile,
                  content::Source<Profile>(profile_));
 }
 
-ThemePendingInstallChecker::~ThemePendingInstallChecker() {
-}
+ThemePendingInstallChecker::~ThemePendingInstallChecker() {}
 
 bool ThemePendingInstallChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for pending theme to be '" << theme_ << "'";

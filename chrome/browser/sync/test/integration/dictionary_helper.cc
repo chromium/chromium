@@ -37,13 +37,13 @@ class DictionarySyncIntegrationTestHelper {
   DISALLOW_COPY_AND_ASSIGN(DictionarySyncIntegrationTestHelper);
 };
 
-
 namespace dictionary_helper {
 namespace {
 
 SpellcheckCustomDictionary* GetDictionary(int index) {
   return SpellcheckServiceFactory::GetForContext(
-      sync_datatype_helper::test()->GetProfile(index))->GetCustomDictionary();
+             sync_datatype_helper::test()->GetProfile(index))
+      ->GetCustomDictionary();
 }
 
 void LoadDictionary(SpellcheckCustomDictionary* dictionary) {

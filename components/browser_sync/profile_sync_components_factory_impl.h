@@ -20,7 +20,7 @@ class ModelTypeController;
 class ModelTypeControllerDelegate;
 class SyncInvalidationsService;
 class SyncService;
-}
+}  // namespace syncer
 
 namespace autofill {
 class AutofillWebDataService;

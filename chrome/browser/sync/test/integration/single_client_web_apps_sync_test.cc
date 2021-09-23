@@ -47,8 +47,8 @@ const char kVersion[] = "1.0.0.1";
 // the OS sync feature.
 class SingleClientWebAppsOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientWebAppsOsSyncTest() : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {
-  }
+  SingleClientWebAppsOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientWebAppsOsSyncTest() override = default;
 };
 

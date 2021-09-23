@@ -289,7 +289,7 @@ TEST_F(SyncedSessionTrackerTest, LookupSessionTab) {
 }
 
 TEST_F(SyncedSessionTrackerTest, Complex) {
-  std::vector<sessions::SessionTab *> tabs1, tabs2;
+  std::vector<sessions::SessionTab*> tabs1, tabs2;
   sessions::SessionTab* temp_tab;
   ASSERT_TRUE(tracker_.Empty());
   ASSERT_EQ(0U, tracker_.num_synced_sessions());

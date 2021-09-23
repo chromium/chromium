@@ -39,8 +39,7 @@ void StartSyncOnUIThread(const base::FilePath& profile,
   service->OnDataTypeRequestsSyncStartup(type);
 }
 
-void StartSyncProxy(const base::FilePath& profile,
-                    syncer::ModelType type) {
+void StartSyncProxy(const base::FilePath& profile, syncer::ModelType type) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&StartSyncOnUIThread, profile, type));
 }

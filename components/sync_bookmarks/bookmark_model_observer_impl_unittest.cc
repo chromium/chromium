@@ -80,22 +80,19 @@ class BookmarkModelObserverImplTest : public testing::Test {
     bookmark_tracker_->Add(
         /*bookmark_node=*/bookmark_model()->bookmark_bar_node(),
         /*sync_id=*/kBookmarkBarId,
-        /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-        specifics);
+        /*server_version=*/0, /*creation_time=*/base::Time::Now(), specifics);
     specifics.mutable_bookmark()->set_legacy_canonicalized_title(
         kOtherBookmarksTag);
     bookmark_tracker_->Add(
         /*bookmark_node=*/bookmark_model()->other_node(),
         /*sync_id=*/kOtherBookmarksId,
-        /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-        specifics);
+        /*server_version=*/0, /*creation_time=*/base::Time::Now(), specifics);
     specifics.mutable_bookmark()->set_legacy_canonicalized_title(
         kMobileBookmarksTag);
     bookmark_tracker_->Add(
         /*bookmark_node=*/bookmark_model()->mobile_node(),
         /*sync_id=*/kMobileBookmarksId,
-        /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-        specifics);
+        /*server_version=*/0, /*creation_time=*/base::Time::Now(), specifics);
   }
 
   ~BookmarkModelObserverImplTest() override {
@@ -511,22 +508,19 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotSyncUnsyncableBookmarks) {
   bookmark_tracker->Add(
       /*bookmark_node=*/model->bookmark_bar_node(),
       /*sync_id=*/kBookmarkBarId,
-      /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-      specifics);
+      /*server_version=*/0, /*creation_time=*/base::Time::Now(), specifics);
   specifics.mutable_bookmark()->set_legacy_canonicalized_title(
       kOtherBookmarksTag);
   bookmark_tracker->Add(
       /*bookmark_node=*/model->other_node(),
       /*sync_id=*/kOtherBookmarksId,
-      /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-      specifics);
+      /*server_version=*/0, /*creation_time=*/base::Time::Now(), specifics);
   specifics.mutable_bookmark()->set_legacy_canonicalized_title(
       kMobileBookmarksTag);
   bookmark_tracker->Add(
       /*bookmark_node=*/model->mobile_node(),
       /*sync_id=*/kMobileBookmarksId,
-      /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-      specifics);
+      /*server_version=*/0, /*creation_time=*/base::Time::Now(), specifics);
   BookmarkModelObserverImpl observer(
       nudge_for_commit_closure()->Get(),
       /*on_bookmark_model_being_deleted_closure=*/base::DoNothing(),
@@ -579,8 +573,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldAddChildrenInArbitraryOrder) {
   bookmark_tracker->Add(
       /*bookmark_node=*/bookmark_model()->bookmark_bar_node(),
       /*sync_id=*/kBookmarkBarId,
-      /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-      specifics);
+      /*server_version=*/0, /*creation_time=*/base::Time::Now(), specifics);
 
   // Build this structure:
   // bookmark_bar
@@ -753,8 +746,7 @@ TEST_F(BookmarkModelObserverImplTest,
           .ToProto();
 
   const SyncedBookmarkTracker::Entity* entity = bookmark_tracker()->Add(
-      bookmark_node, "id", /*server_version=*/1, base::Time::Now(),
-      specifics);
+      bookmark_node, "id", /*server_version=*/1, base::Time::Now(), specifics);
   bookmark_tracker()->IncrementSequenceNumber(entity);
 
   // Restore state.

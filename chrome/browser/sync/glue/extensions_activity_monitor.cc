@@ -27,8 +27,7 @@ ExtensionsActivityMonitor::ExtensionsActivityMonitor()
   // wanted to use the string name).  Thus, we use all sources and filter in
   // Observe.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_BOOKMARKS_API_INVOKED,
+  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_BOOKMARKS_API_INVOKED,
                  content::NotificationService::AllSources());
 #endif
 }

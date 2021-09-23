@@ -87,15 +87,12 @@ bool AllProfilesHaveSameApps() {
 
 std::string InstallHostedApp(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile,
-      CreateFakeAppName(index),
-      extensions::Manifest::TYPE_HOSTED_APP);
+      profile, CreateFakeAppName(index), extensions::Manifest::TYPE_HOSTED_APP);
 }
 
 std::string InstallPlatformApp(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile,
-      CreateFakeAppName(index),
+      profile, CreateFakeAppName(index),
       extensions::Manifest::TYPE_PLATFORM_APP);
 }
 
@@ -156,8 +153,7 @@ void WaitForAppService(Profile* profile) {
       ->FlushMojoCallsForTesting();
 }
 
-syncer::StringOrdinal GetPageOrdinalForApp(Profile* profile,
-                                           int app_index) {
+syncer::StringOrdinal GetPageOrdinalForApp(Profile* profile, int app_index) {
   return SyncAppHelper::GetInstance()->GetPageOrdinalForApp(
       profile, CreateFakeAppName(app_index));
 }
@@ -185,8 +181,8 @@ void SetAppLaunchOrdinalForApp(
 
 void CopyNTPOrdinals(Profile* source, Profile* destination, int index) {
   SetPageOrdinalForApp(destination, index, GetPageOrdinalForApp(source, index));
-  SetAppLaunchOrdinalForApp(
-      destination, index, GetAppLaunchOrdinalForApp(source, index));
+  SetAppLaunchOrdinalForApp(destination, index,
+                            GetAppLaunchOrdinalForApp(source, index));
 }
 
 void FixNTPOrdinalCollisions(Profile* profile) {

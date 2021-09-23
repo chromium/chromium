@@ -170,14 +170,13 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
 
 }  // namespace
 
-ModelTypeWorker::ModelTypeWorker(
-    ModelType type,
-    const sync_pb::ModelTypeState& initial_state,
-    Cryptographer* cryptographer,
-    bool encryption_enabled,
-    PassphraseType passphrase_type,
-    NudgeHandler* nudge_handler,
-    CancelationSignal* cancelation_signal)
+ModelTypeWorker::ModelTypeWorker(ModelType type,
+                                 const sync_pb::ModelTypeState& initial_state,
+                                 Cryptographer* cryptographer,
+                                 bool encryption_enabled,
+                                 PassphraseType passphrase_type,
+                                 NudgeHandler* nudge_handler,
+                                 CancelationSignal* cancelation_signal)
     : type_(type),
       cryptographer_(cryptographer),
       nudge_handler_(nudge_handler),

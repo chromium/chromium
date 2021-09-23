@@ -88,8 +88,7 @@ void CheckShouldPromptForNewProfile(
     base::OnceCallback<void(bool)> return_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (HasBeenShutdown(profile) ||
-      HasBookmarks(profile) ||
+  if (HasBeenShutdown(profile) || HasBookmarks(profile) ||
       HasSyncedExtensions(profile)) {
     std::move(return_result).Run(true);
     return;

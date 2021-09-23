@@ -46,9 +46,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class ExtensionsSyncPerfTest : public SyncTest {
  public:
-  ExtensionsSyncPerfTest()
-      : SyncTest(TWO_CLIENT),
-        extension_number_(0) {}
+  ExtensionsSyncPerfTest() : SyncTest(TWO_CLIENT), extension_number_(0) {}
 
   // Adds |num_extensions| new unique extensions to |profile|.
   void AddExtensions(int profile, int num_extensions);

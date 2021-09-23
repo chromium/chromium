@@ -81,9 +81,7 @@ class AppListSyncUpdateWaiter
   AppListSyncUpdateWaiter(const AppListSyncUpdateWaiter&) = delete;
   AppListSyncUpdateWaiter& operator=(const AppListSyncUpdateWaiter&) = delete;
 
-  ~AppListSyncUpdateWaiter() override {
-    service_->RemoveObserver(this);
-  }
+  ~AppListSyncUpdateWaiter() override { service_->RemoveObserver(this); }
 
   // StatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override {

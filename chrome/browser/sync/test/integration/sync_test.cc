@@ -225,12 +225,11 @@ SyncTest::FakeInstanceID::FakeInstanceID(const std::string& app_id,
     : instance_id::InstanceID(app_id, gcm_driver),
       token_(GenerateNextToken()) {}
 
-void SyncTest::FakeInstanceID::GetToken(
-    const std::string& authorized_entity,
-    const std::string& scope,
-    base::TimeDelta time_to_live,
-    std::set<Flags> flags,
-    GetTokenCallback callback) {
+void SyncTest::FakeInstanceID::GetToken(const std::string& authorized_entity,
+                                        const std::string& scope,
+                                        base::TimeDelta time_to_live,
+                                        std::set<Flags> flags,
+                                        GetTokenCallback callback) {
   std::move(callback).Run(token_, instance_id::InstanceID::Result::SUCCESS);
 }
 

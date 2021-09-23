@@ -148,8 +148,8 @@ void SyncAppHelper::SetupIfNecessary(SyncTest* test) {
 }
 
 bool SyncAppHelper::AppStatesMatch(Profile* profile1, Profile* profile2) {
-  if (!SyncExtensionHelper::GetInstance()->ExtensionStatesMatch(
-          profile1, profile2))
+  if (!SyncExtensionHelper::GetInstance()->ExtensionStatesMatch(profile1,
+                                                                profile2))
     return false;
 
   const AppStateMap& state_map1 = GetAppStates(profile1);

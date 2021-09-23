@@ -315,8 +315,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
       GetSyncService(0)->GetActiveDataTypes();
   ASSERT_TRUE(synced_datatypes.Has(syncer::TYPED_URLS));
   ASSERT_TRUE(synced_datatypes.Has(syncer::SESSIONS));
-  GetProfile(0)->GetPrefs()->SetBoolean(
-      prefs::kSavingBrowserHistoryDisabled, true);
+  GetProfile(0)->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled,
+                                        true);
 
   // Wait for reconfigurations.
   ASSERT_TRUE(

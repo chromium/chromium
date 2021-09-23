@@ -21,8 +21,7 @@ MockModelTypeProcessor::MockModelTypeProcessor() : is_synchronous_(true) {}
 MockModelTypeProcessor::~MockModelTypeProcessor() = default;
 
 void MockModelTypeProcessor::ConnectSync(
-    std::unique_ptr<CommitQueue> commit_queue) {
-}
+    std::unique_ptr<CommitQueue> commit_queue) {}
 
 void MockModelTypeProcessor::DisconnectSync() {
   if (!disconnect_callback_.is_null()) {

@@ -1040,8 +1040,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
       matchers_in_folder.push_back(IsUrlBookmarkWithTitleAndUrl(title, url));
     } else {
       const std::string title = IndexedSubfolderName(i);
-      const BookmarkNode* subfolder =
-          AddFolder(0, folder, i, title);
+      const BookmarkNode* subfolder = AddFolder(0, folder, i, title);
       ASSERT_NE(nullptr, subfolder);
       std::vector<BookmarkNodeMatcher> matchers_in_subfolder;
       if (base::RandDouble() > 0.3) {
@@ -1347,7 +1346,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_HoistBMs10LevelUp) {
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-
   // Add an extra level to represent an empty folder for the last real level.
   std::vector<std::vector<BookmarkNodeMatcher>> matchers_by_level(kNumLevels +
                                                                   1);
@@ -1368,8 +1366,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_HoistBMs10LevelUp) {
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 0) folder_L0 = folder;
-    if (level == 10) folder_L10 = folder;
+    if (level == 0)
+      folder_L0 = folder;
+    if (level == 10)
+      folder_L10 = folder;
   }
 
   std::vector<BookmarkNodeMatcher>& matchers_L11 = matchers_by_level[11];
@@ -1460,8 +1460,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_SinkBMs10LevelDown) {
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 0) folder_L0 = folder;
-    if (level == 10) folder_L10 = folder;
+    if (level == 0)
+      folder_L0 = folder;
+    if (level == 10)
+      folder_L10 = folder;
   }
 
   std::vector<BookmarkNodeMatcher>& matchers_L01 = matchers_by_level[1];
@@ -1552,7 +1554,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 5) folder_L5 = folder;
+    if (level == 5)
+      folder_L5 = folder;
   }
 
   // Add all folders to matchers from all levels.
@@ -1623,7 +1626,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 5) folder_L5 = folder;
+    if (level == 5)
+      folder_L5 = folder;
   }
 
   // Add all folders to matchers from all levels.
@@ -1700,7 +1704,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_HoistFolder5LevelsUp) {
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 5) folder_L5 = folder;
+    if (level == 5)
+      folder_L5 = folder;
   }
 
   folder =
@@ -2301,10 +2306,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
 
   GURL url(IndexedURL(0));
-  ASSERT_TRUE(SetURL(
-      0, GetUniqueNodeByURL(0, url), GURL("http://www.google.com/00")));
-  ASSERT_TRUE(SetURL(
-      1, GetUniqueNodeByURL(1, url), GURL("http://www.google.com/11")));
+  ASSERT_TRUE(
+      SetURL(0, GetUniqueNodeByURL(0, url), GURL("http://www.google.com/00")));
+  ASSERT_TRUE(
+      SetURL(1, GetUniqueNodeByURL(1, url), GURL("http://www.google.com/11")));
 
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_FALSE(ContainsDuplicateBookmarks(0));
@@ -2546,8 +2551,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
             AddURL(0, tier1_a, 0, "Gmai", GURL("http://mail.google.com")));
   ASSERT_NE(nullptr,
             AddURL(0, tier1_a, 1, "Google", GURL("http://www.google.com")));
-  ASSERT_TRUE(
-      AddURL(0, GetOtherNode(0), 1, "CNN", GURL("http://www.cnn.com")));
+  ASSERT_TRUE(AddURL(0, GetOtherNode(0), 1, "CNN", GURL("http://www.cnn.com")));
 
   ASSERT_TRUE(AddFolder(0, GetBookmarkBarNode(0), 0, "empty_folder"));
   const BookmarkNode* folder1 =
@@ -2639,13 +2643,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, ManagedBookmarks) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, E2E_ONLY(SanitySetup)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) <<  "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
                        E2E_ONLY(OneClientAddsBookmark)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) <<  "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   // All profiles should sync same bookmarks.
   ASSERT_TRUE(BookmarksMatchChecker().Wait())
       << "Initial bookmark models did not match for all profiles";
@@ -2662,8 +2666,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   // Check that total number of bookmarks is as expected.
   for (int i = 0; i < num_clients(); ++i) {
-    ASSERT_EQ(CountAllBookmarks(i), init_bookmarks_count + 1) <<
-        "Total bookmark count is wrong.";
+    ASSERT_EQ(CountAllBookmarks(i), init_bookmarks_count + 1)
+        << "Total bookmark count is wrong.";
   }
 }
 
@@ -2696,7 +2700,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
                        E2E_ONLY(TwoClientsAddBookmarks)) {
   ResetSyncForPrimaryAccount();
-  ASSERT_TRUE(SetupSync()) <<  "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   // ALl profiles should sync same bookmarks.
   ASSERT_TRUE(BookmarksMatchChecker().Wait())
       << "Initial bookmark models did not match for all profiles";
@@ -2717,8 +2721,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
 
   // Check that total number of bookmarks is as expected.
   for (int i = 0; i < num_clients(); ++i) {
-    ASSERT_EQ(CountAllBookmarks(i), init_bookmarks_count + num_clients()) <<
-        "Total bookmark count is wrong.";
+    ASSERT_EQ(CountAllBookmarks(i), init_bookmarks_count + num_clients())
+        << "Total bookmark count is wrong.";
   }
 }
 

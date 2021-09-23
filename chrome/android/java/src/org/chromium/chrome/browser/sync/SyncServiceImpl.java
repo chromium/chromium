@@ -48,14 +48,9 @@ public class SyncServiceImpl extends SyncService {
      * uses values from the ModelType enum instead.
      * TODO(crbug.com/985290): Resolve this inconsistency.
      */
-    private static final int[] ALL_SELECTABLE_TYPES = new int[] {
-        ModelType.AUTOFILL,
-        ModelType.BOOKMARKS,
-        ModelType.PASSWORDS,
-        ModelType.PREFERENCES,
-        ModelType.PROXY_TABS,
-        ModelType.TYPED_URLS
-    };
+    private static final int[] ALL_SELECTABLE_TYPES =
+            new int[] {ModelType.AUTOFILL, ModelType.BOOKMARKS, ModelType.PASSWORDS,
+                    ModelType.PREFERENCES, ModelType.PROXY_TABS, ModelType.TYPED_URLS};
 
     /** SyncService should be the only caller of this method. */
     public static @Nullable SyncServiceImpl create() {

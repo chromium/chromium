@@ -4,7 +4,6 @@
 
 #include "components/sync/engine/events/protocol_event.h"
 
-
 namespace syncer {
 
 ProtocolEvent::ProtocolEvent() {}

@@ -336,7 +336,7 @@ optional<syncer::ModelError> AutocompleteSyncBridge::MergeSyncData(
 
   RETURN_IF_ERROR(tracker.FlushToLocal(web_data_backend_));
   RETURN_IF_ERROR(tracker.FlushToSync(true, std::move(metadata_change_list),
-                                change_processor()));
+                                      change_processor()));
 
   web_data_backend_->CommitChanges();
   web_data_backend_->NotifyThatSyncHasStarted(syncer::AUTOFILL);

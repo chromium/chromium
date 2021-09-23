@@ -174,10 +174,7 @@ void SetTitle(int profile,
               const std::string& new_title);
 
 // The source of the favicon.
-enum FaviconSource {
-  FROM_UI,
-  FROM_SYNC
-};
+enum FaviconSource { FROM_UI, FROM_SYNC };
 
 // Sets the |icon_url| and |image| data for the favicon for |node| in the
 // bookmark model for |profile|.

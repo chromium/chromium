@@ -63,9 +63,9 @@ std::string SyncChange::ChangeTypeToString(SyncChangeType change_type) {
 }
 
 std::string SyncChange::ToString() const {
-  return "{ " + location_.ToString() + ", changeType: " +
-         ChangeTypeToString(change_type_) + ", syncData: " +
-         sync_data_.ToString() + "}";
+  return "{ " + location_.ToString() +
+         ", changeType: " + ChangeTypeToString(change_type_) +
+         ", syncData: " + sync_data_.ToString() + "}";
 }
 
 void PrintTo(const SyncChange& sync_change, std::ostream* os) {

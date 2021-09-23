@@ -144,8 +144,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DisableProtocolEventForwarding();
 
   // Notify the syncer that the cookie jar has changed.
-  void DoOnCookieJarChanged(bool account_mismatch,
-                            base::OnceClosure callback);
+  void DoOnCookieJarChanged(bool account_mismatch, base::OnceClosure callback);
 
   // Notify about change in client id.
   void DoOnInvalidatorClientIdChange(const std::string& client_id);

@@ -50,7 +50,6 @@ import java.util.Date;
  * Dialog to ask to user to enter their sync passphrase.
  */
 public class PassphraseDialogFragment extends DialogFragment implements OnClickListener {
-
     private static final String TAG = "Sync_UI";
 
     /**
@@ -208,7 +207,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                 case PassphraseType.KEYSTORE_PASSPHRASE:
                 case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
                 default:
-                    Log.w(TAG, "Found incorrect passphrase type " + passphraseType
+                    Log.w(TAG,
+                            "Found incorrect passphrase type " + passphraseType
                                     + ". Falling back to default string.");
             }
         }
@@ -243,9 +243,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
     }
 
     private void handleCancel() {
-        int cancelReason = isIncorrectPassphraseVisible()
-                ? PASSPHRASE_DIALOG_ERROR
-                : PASSPHRASE_DIALOG_CANCEL;
+        int cancelReason =
+                isIncorrectPassphraseVisible() ? PASSPHRASE_DIALOG_ERROR : PASSPHRASE_DIALOG_CANCEL;
         getListener().onPassphraseCanceled();
     }
 
@@ -273,8 +272,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
      */
     private void invalidPassphrase() {
         mVerifyingTextView.setText(R.string.sync_passphrase_incorrect);
-        mVerifyingTextView.setTextColor(ApiCompatibilityUtils.getColor(getResources(),
-                R.color.input_underline_error_color));
+        mVerifyingTextView.setTextColor(ApiCompatibilityUtils.getColor(
+                getResources(), R.color.input_underline_error_color));
 
         mPassphraseEditText.setBackground(mErrorBackground);
     }

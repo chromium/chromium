@@ -602,8 +602,9 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OS_ANDROID)
     case syncer::THEMES:
-      return ThemeServiceFactory::GetForProfile(profile_)->
-          GetThemeSyncableService()->AsWeakPtr();
+      return ThemeServiceFactory::GetForProfile(profile_)
+          ->GetThemeSyncableService()
+          ->AsWeakPtr();
 #endif  // !defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_SPELLCHECK)
     case syncer::DICTIONARY: {

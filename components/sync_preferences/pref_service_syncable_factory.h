@@ -14,7 +14,7 @@
 namespace policy {
 class BrowserPolicyConnector;
 class PolicyService;
-}
+}  // namespace policy
 
 namespace user_prefs {
 class PrefRegistrySyncable;

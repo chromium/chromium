@@ -23,8 +23,7 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
                      OnceModelTypeStoreFactory store_factory,
                      base::WeakPtr<SyncableService> syncable_service,
                      const base::RepeatingClosure& dump_stack)
-      : type_(type),
-        dump_stack_(dump_stack) {
+      : type_(type), dump_stack_(dump_stack) {
     DCHECK(store_factory);
 
     // The |syncable_service| can be null in tests.

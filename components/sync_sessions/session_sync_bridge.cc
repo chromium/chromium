@@ -338,11 +338,9 @@ void SessionSyncBridge::OnSyncStarting(
   }
 
   // Open the store and read state from disk if it exists.
-  SessionStore::Open(
-      request.cache_guid,
-      sessions_client_,
-      base::BindOnce(&SessionSyncBridge::OnStoreInitialized,
-                     weak_ptr_factory_.GetWeakPtr()));
+  SessionStore::Open(request.cache_guid, sessions_client_,
+                     base::BindOnce(&SessionSyncBridge::OnStoreInitialized,
+                                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SessionSyncBridge::OnStoreInitialized(

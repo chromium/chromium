@@ -54,8 +54,8 @@ scoped_refptr<Extension> MakeExtension(const std::string& name) {
 // Fire a bookmarks API event from the given extension the given
 // number of times.
 template <class T>
-void FireBookmarksApiEvent(
-    const scoped_refptr<Extension>& extension, int repeats) {
+void FireBookmarksApiEvent(const scoped_refptr<Extension>& extension,
+                           int repeats) {
   scoped_refptr<extensions::BookmarksFunction> bookmarks_function(new T());
   bookmarks_function->set_histogram_value(T::static_histogram_value());
   bookmarks_function->SetName(T::static_function_name());
@@ -104,12 +104,12 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, Basic) {
   FireBookmarksApiEvent<extensions::BookmarksSearchFunction>(extension1_, 5);
   const uint32_t writes_by_extension1 = 1 + 1 + 2 + 3;
 
-  FireBookmarksApiEvent<extensions::BookmarksRemoveTreeFunction>(
-      extension2_, 8);
-  FireBookmarksApiEvent<extensions::BookmarksGetSubTreeFunction>(
-      extension2_, 13);
-  FireBookmarksApiEvent<extensions::BookmarksGetChildrenFunction>(
-      extension2_, 21);
+  FireBookmarksApiEvent<extensions::BookmarksRemoveTreeFunction>(extension2_,
+                                                                 8);
+  FireBookmarksApiEvent<extensions::BookmarksGetSubTreeFunction>(extension2_,
+                                                                 13);
+  FireBookmarksApiEvent<extensions::BookmarksGetChildrenFunction>(extension2_,
+                                                                  21);
   FireBookmarksApiEvent<extensions::BookmarksGetTreeFunction>(extension2_, 33);
   const uint32_t writes_by_extension2 = 8;
 

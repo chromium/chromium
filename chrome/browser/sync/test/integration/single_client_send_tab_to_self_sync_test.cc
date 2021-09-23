@@ -27,8 +27,7 @@ namespace {
 
 class SingleClientSendTabToSelfSyncTest : public SyncTest {
  public:
-  SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {
-  }
+  SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientSendTabToSelfSyncTest(const SingleClientSendTabToSelfSyncTest&) =
       delete;

@@ -42,7 +42,6 @@ namespace {
 const char kFakeSignonRealm[] = "http://fake-signon-realm.google.com/";
 const char kIndexedFakeOrigin[] = "http://fake-signon-realm.google.com/%d";
 
-
 class PasswordStoreConsumerHelper
     : public password_manager::PasswordStoreConsumer {
  public:
@@ -126,7 +125,6 @@ PasswordStoreInterface* GetProfilePasswordStoreInterface(int index) {
                                              ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }
-
 
 PasswordStoreInterface* GetVerifierProfilePasswordStoreInterface() {
   return PasswordStoreFactory::GetForProfile(test()->verifier(),
