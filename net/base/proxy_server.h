@@ -5,12 +5,16 @@
 #ifndef NET_BASE_PROXY_SERVER_H_
 #define NET_BASE_PROXY_SERVER_H_
 
+#include <stdint.h>
+
+#include <ostream>
 #include <string>
 #include <tuple>
 
 #include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -39,6 +43,29 @@ class NET_EXPORT ProxyServer {
   ProxyServer() {}
 
   ProxyServer(Scheme scheme, const HostPortPair& host_port_pair);
+
+  // Creates a ProxyServer, validating and canonicalizing input. Port is
+  // optional and, if not provided, will be replaced with the default port for
+  // the given scheme. Accepts IPv6 literal `host`s with surrounding brackets
+  // (URL format) or without (HostPortPair format). On invalid input, result
+  // will be a `SCHEME_INVALID` ProxyServer.
+  //
+  // Must not be called with `SCHEME_INVALID` or `SCHEME_DIRECT`. Use
+  // `ProxyServer()` or `Direct()` respectively to create an invalid or direct
+  // ProxyServer.
+  static ProxyServer FromSchemeHostAndPort(Scheme scheme,
+                                           base::StringPiece host,
+                                           base::StringPiece port_str);
+  static ProxyServer FromSchemeHostAndPort(Scheme scheme,
+                                           base::StringPiece host,
+                                           absl::optional<uint16_t> port);
+
+  // In URL format (with brackets around IPv6 literals). Must not call for
+  // ProxyServers without a host (invalid or direct).
+  std::string GetHost() const;
+
+  // Must not call for ProxyServers without a host (invalid or direct).
+  uint16_t GetPort() const;
 
   bool is_valid() const { return scheme_ != SCHEME_INVALID; }
 
@@ -102,6 +129,9 @@ class NET_EXPORT ProxyServer {
   Scheme scheme_ = SCHEME_INVALID;
   HostPortPair host_port_pair_;
 };
+
+NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
+                                            const ProxyServer& proxy_server);
 
 typedef std::pair<HostPortPair, ProxyServer> HostPortProxyPair;
 

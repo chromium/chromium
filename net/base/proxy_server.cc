@@ -4,7 +4,21 @@
 
 #include "net/base/proxy_server.h"
 
-#include "base/check.h"
+#include <stdint.h>
+
+#include <ostream>
+#include <string>
+
+#include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "net/base/proxy_string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon.h"
+#include "url/url_canon_stdstring.h"
 
 namespace net {
 
@@ -17,6 +31,80 @@ ProxyServer::ProxyServer(Scheme scheme, const HostPortPair& host_port_pair)
     DCHECK(host_port_pair.Equals(HostPortPair()));
     host_port_pair_ = HostPortPair();
   }
+}
+
+// static
+ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
+                                               base::StringPiece host,
+                                               base::StringPiece port_str) {
+  // Create INVALID proxies directly using `ProxyServer()`.
+  DCHECK_NE(scheme, SCHEME_INVALID);
+
+  // Create DIRECT proxies directly using `Direct()`.
+  DCHECK_NE(scheme, SCHEME_DIRECT);
+
+  int port_number =
+      url::ParsePort(port_str.data(), url::Component(0, port_str.size()));
+  if (port_number == url::PORT_UNSPECIFIED)
+    return FromSchemeHostAndPort(scheme, host, absl::nullopt);
+  if (port_number == url::PORT_INVALID)
+    return ProxyServer();
+
+  DCHECK(base::IsValueInRangeForNumericType<uint16_t>(port_number));
+
+  return FromSchemeHostAndPort(scheme, host,
+                               static_cast<uint16_t>(port_number));
+}
+
+// static
+ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
+                                               base::StringPiece host,
+                                               absl::optional<uint16_t> port) {
+  // Create INVALID proxies directly using `ProxyServer()`.
+  DCHECK_NE(scheme, SCHEME_INVALID);
+
+  // Create DIRECT proxies directly using `Direct()`.
+  DCHECK_NE(scheme, SCHEME_DIRECT);
+
+  // Add brackets to IPv6 literals if missing, as required by url
+  // canonicalization.
+  std::string bracketed_host;
+  if (!host.empty() && host.front() != '[' &&
+      host.find(":") != base::StringPiece::npos) {
+    bracketed_host = base::StrCat({"[", host, "]"});
+    host = bracketed_host;
+  }
+
+  std::string canonicalized_host;
+  url::StdStringCanonOutput canonicalized_output(&canonicalized_host);
+  url::Component component_output;
+
+  if (!url::CanonicalizeHost(host.data(), url::Component(0, host.size()),
+                             &canonicalized_output, &component_output)) {
+    return ProxyServer();
+  }
+  if (!component_output.is_nonempty())
+    return ProxyServer();
+
+  canonicalized_output.Complete();
+
+  // Remove IPv6 literal bracketing, as required by HostPortPair.
+  base::StringPiece unbracketed_host = canonicalized_host;
+  if (canonicalized_host.front() == '[' && canonicalized_host.back() == ']')
+    unbracketed_host = unbracketed_host.substr(1, unbracketed_host.size() - 2);
+
+  // A uint16_t port is always valid and canonicalized.
+  uint16_t fixed_port = port.value_or(GetDefaultPortForScheme(scheme));
+
+  return ProxyServer(scheme, HostPortPair(unbracketed_host, fixed_port));
+}
+
+std::string ProxyServer::GetHost() const {
+  return host_port_pair().HostForURL();
+}
+
+uint16_t ProxyServer::GetPort() const {
+  return host_port_pair().port();
 }
 
 const HostPortPair& ProxyServer::host_port_pair() const {
@@ -43,6 +131,10 @@ int ProxyServer::GetDefaultPortForScheme(Scheme scheme) {
       break;
   }
   return -1;
+}
+
+std::ostream& operator<<(std::ostream& os, const ProxyServer& proxy_server) {
+  return os << ProxyServerToPacResultElement(proxy_server);
 }
 
 }  // namespace net
