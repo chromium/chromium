@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="quick_action_search_widget_width">308dp</dimen>
+    <dimen name="quick_action_search_widget_width">240dp</dimen>
     <dimen name="quick_action_search_widget_background_radius">16dp</dimen>
     <dimen name="quick_action_search_widget_button_container_margin">12dp</dimen>
     <dimen name="quick_action_search_widget_button_margin">4dp</dimen>
