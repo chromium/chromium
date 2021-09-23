@@ -390,7 +390,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                     .removeObserver(mSectionHeaderListModelChangeProcessor);
         }
-        clearImageMemoryCache();
+        maybeClearImageMemoryCache();
         FeedSurfaceTracker.getInstance().untrackSurface(this);
         if (mHybridListRenderer != null) {
             mHybridListRenderer.unbind();
@@ -1014,11 +1014,14 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
                                 "force-enable-feed-reliability-logging"));
     }
 
-    private void clearImageMemoryCache() {
+    // Clear the memory cache if the FEED_CLEAR_IMAGE_MEMORY_CACHE flag is enabled.
+    private void maybeClearImageMemoryCache() {
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
         if (processScope != null) {
             ImageCacheHelper imageCacheHelper = processScope.provideImageCacheHelper();
-            if (imageCacheHelper != null) {
+            if (imageCacheHelper != null
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.FEED_CLEAR_IMAGE_MEMORY_CACHE)) {
                 imageCacheHelper.clearMemoryCache();
             }
         }
