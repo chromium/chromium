@@ -24,6 +24,8 @@ var MockAccessibilityPrivate = {
     DICTATION_COMMANDS: 'dictation_commands',
   },
 
+  SyntheticKeyboardEventType: {KEYDOWN: 'keydown', KEYUP: 'keyup,'},
+
   /** @private {function<number, number>} */
   boundsListener_: null,
 
@@ -197,6 +199,12 @@ var MockAccessibilityPrivate = {
   isFeatureEnabled(feature, callback) {
     callback(this.enabledFeatures_.has(feature));
   },
+
+  /**
+   * Creates a synthetic keyboard event.
+   * @param {Object} unused
+   */
+  sendSyntheticKeyEvent(unused) {},
 
   // Methods for testing. //
 

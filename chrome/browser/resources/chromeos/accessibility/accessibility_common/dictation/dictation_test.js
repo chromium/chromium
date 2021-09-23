@@ -297,15 +297,30 @@ SYNC_TEST_F(
     'DictationE2ETest', 'InterimResultsDependOnChromeVoxEnabled',
     async function() {
       await this.waitForDictationModule();
-      assertEquals(true, mockSpeechRecognition.interimResults());
+      await this.toggleDictationAndStartListening(4);
+
+      // Interim results shown in composition.
+      mockSpeechRecognition.callOnResult('one', false);
+      this.assertImeCompositionParameters('one', 4);
+      this.mockInputIme.clearLastParameters();
+
       // Toggle ChromeVox on.
       await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, true);
       await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
-      assertEquals(false, mockSpeechRecognition.interimResults());
+
+      // Composition is not changed.
+      mockSpeechRecognition.callOnResult('two', false);
+      assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+
       // Toggle ChromeVox off.
       await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, false);
       await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
-      assertEquals(true, mockSpeechRecognition.interimResults());
+
+      // Interim results impact the composition again.
+      mockSpeechRecognition.callOnResult('three', false);
+      this.assertImeCompositionParameters('three', 4);
+      this.mockInputIme.clearLastParameters();
+
     });
 
 SYNC_TEST_F(
@@ -551,7 +566,9 @@ SYNC_TEST_F(
       await this.toggleDictationAndStartListening(8);
       for (const command of this.commandStrings) {
         mockSpeechRecognition.callOnResult(command, false);
-        this.assertImeCompositionParameters(command, 8);
+        // Nothing is added to composition text when commands UI is enabled.
+        assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+        // TODO(crbug.com/1252037): Check UI shows correct command info.
 
         mockSpeechRecognition.callOnResult(command, true);
         if (command === 'new line') {

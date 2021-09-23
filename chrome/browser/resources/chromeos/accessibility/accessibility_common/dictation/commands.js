@@ -25,15 +25,6 @@ export class CommandParser {
      * @private {!Map<Command.Action, ActionInfo>}
      */
     this.commandMap_ = new Map();
-
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
-        (result) => {
-          this.commandsFeatureEnabled_ = result;
-          if (this.commandsFeatureEnabled_) {
-            this.initializeCommandMap_();
-          }
-        });
   }
 
   /**
@@ -61,11 +52,24 @@ export class CommandParser {
   }
 
   /**
-   * Pre-work to parse commands. Gets translated command strings and generates
-   * a map of commands to regular expressions that would match them.
-   * @private
+   * Gets the description of a command.
+   * @param {Command} command
+   * @return {string}
    */
-  initializeCommandMap_() {
+  getCommandString(command) {
+    if (command.isTextInput()) {
+      return '';
+    }
+    return this.commandMap_.get(command.action_).commandString;
+  }
+
+  /**
+   * Enables commands. Does pre-work to parse commands: gets translated command
+   * strings and generates a map of commands to regular expressions that would
+   * match them.
+   */
+  setCommandsEnabled() {
+    this.commandsFeatureEnabled_ = true;
     for (const key in Command.Action) {
       const actionId = Command.Action[key];
       let messageId;
@@ -196,6 +200,7 @@ export class Command {
 
   /**
    * Executes the command.
+   * @return {boolean} Whether execution was successful.
    */
   execute() {
     // Commands using keyboard shortcuts.
@@ -248,7 +253,9 @@ export class Command {
             'Cannot execute action ' +
             Object.keys(Command.Action)
                 .find(key => Command.Action[key] === this.action_));
+        return false;
     }
+    return true;
   }
 }
 

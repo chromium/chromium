@@ -139,6 +139,44 @@ export class InputController {
   }
 
   /**
+   * Shows an annotation in the candidate window.
+   * TODO(crbug.com/1252037): After implementing final UX design, remove
+   * this method from InputController.
+   * @param {string} annotation
+   */
+  showAnnotation(annotation) {
+    chrome.input.ime.setCandidateWindowProperties({
+      engineID: InputController.IME_ENGINE_ID,
+      properties: {
+        cursorVisible: true,
+        currentCandidateIndex: 0,
+        vertical: false,
+        visible: true,
+        windowPosition: 'cursor',
+        pageSize: 1
+      }
+    });
+    chrome.input.ime.setCandidates(
+        {
+          candidates: [{candidate: '', annotation, id: 1}],
+          contextID: this.activeImeContextId_,
+        },
+        (success) => {});
+  }
+
+  /**
+   * Hides the annotation and candidate window.
+   * TODO(crbug.com/1252037): After implementing final UX design, remove
+   * this method from InputController.
+   */
+  hideAnnotation() {
+    chrome.input.ime.setCandidateWindowProperties({
+      engineID: InputController.IME_ENGINE_ID,
+      properties: {visible: false}
+    });
+  }
+
+  /**
    * chrome.input.ime.onFocus callback. Save the active context ID, and
    * finish starting speech recognition if needed. This needs to be done
    * before starting recognition in order for browser tests to know that

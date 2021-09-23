@@ -20,6 +20,9 @@ export class Dictation {
     /** @private {CommandParser} */
     this.commandParser_ = null;
 
+    /** @private {boolean} */
+    this.commandsFeatureEnabled_ = false;
+
     /**
      * The state of Dictation.
      * @private {!Dictation.DictationState}
@@ -41,6 +44,15 @@ export class Dictation {
 
     /** @private {?number} */
     this.timeoutId_ = null;
+
+    /** @private {?number} */
+    this.clearUITextTimeoutId_ = null;
+
+    /** @private {string} */
+    this.interimText_ = '';
+
+    /** @private {boolean} */
+    this.chromeVoxEnabled_ = false;
 
     this.initialize_();
   }
@@ -69,6 +81,15 @@ export class Dictation {
     // Browser process.
     chrome.accessibilityPrivate.onToggleDictation.addListener(
         activated => this.onToggleDictation_(activated));
+
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
+        (result) => {
+          this.commandsFeatureEnabled_ = result;
+          if (this.commandsFeatureEnabled_) {
+            this.commandParser_.setCommandsEnabled();
+          }
+        });
   }
 
   /**
@@ -143,7 +164,7 @@ export class Dictation {
       return;
     }
     this.state_ = Dictation.DictationState.OFF;
-    if (this.inputController_.hasCompositionText()) {
+    if (this.inputController_.hasCompositionText() || this.interimText_) {
       this.endTone_.play();
     } else {
       this.cancelTone_.play();
@@ -157,6 +178,10 @@ export class Dictation {
       this.timeoutId_ = null;
     }
 
+    if (this.commandsFeatureEnabled_) {
+      this.inputController_.commitText(this.interimText_);
+      this.hideCommandsUI_();
+    }
     this.inputController_.disconnect();
     Dictation.removeAsInputMethod();
   }
@@ -190,12 +215,24 @@ export class Dictation {
   processSpeechRecognitionResult_(transcript, isFinal) {
     if (isFinal) {
       const command = this.commandParser_.parse(transcript);
-      this.inputController_.clearCompositionText(() => command.execute());
+      if (this.commandsFeatureEnabled_) {
+        if (command.execute()) {
+          this.showCommandExecuted_(command);
+        } else {
+          this.showCommandExecutionFailed_();
+        }
+      }
       if (command.isTextInput()) {
         this.inputController_.commitText(command.getText());
       }
-    } else if (this.speechRecognizer_.interimResults) {
-      this.inputController_.setCompositionText(transcript);
+    } else {
+      if (this.commandsFeatureEnabled_) {
+        this.setInterimText_(transcript);
+      } else if (!this.chromeVoxEnabled_) {
+        // When ChromeVox is enabled, we shouldn't populate interim
+        // composition results because it will increase the verbosity too much.
+        this.inputController_.setCompositionText(transcript);
+      }
     }
   }
 
@@ -209,6 +246,8 @@ export class Dictation {
       return;
     }
     this.state_ = Dictation.DictationState.LISTENING;
+    // Display the "....".
+    this.clearInterimText_();
   }
 
   /**
@@ -245,18 +284,116 @@ export class Dictation {
           }
           break;
         case Dictation.SPOKEN_FEEDBACK_PREF:
-          // When Spoken Feedback is enabled, we shouldn't populate interim
-          // results because it will increase the verbosity too much.
           if (pref.value) {
-            this.speechRecognizer_.interimResults = false;
+            this.chromeVoxEnabled_ = true;
           } else {
-            this.speechRecognizer_.interimResults = true;
+            this.chromeVoxEnabled_ = false;
           }
           break;
         default:
           return;
       }
     });
+  }
+
+  /**
+   * Shows the interim result in the UI.
+   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
+   * @param {string} text
+   * @private
+   */
+  setInterimText_(text) {
+    // TODO(crbug.com/1252037): Need to find a way to show interim text that is
+    // only whitespace. Google Cloud Speech can return a newline character
+    // although SODA does not seem to do that. The newline character looks wrong
+    // here.
+    this.interimText_ = text;
+    if (this.chromeVoxEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
+      return;
+    }
+    this.inputController_.showAnnotation(this.interimText_);
+    if (this.clearUITextTimeoutId_) {
+      clearTimeout(this.clearUITextTimeoutId_);
+      this.clearUITextTimeoutId_ = null;
+    }
+  }
+
+  /**
+   * Clears the interim result in the UI, replacing it with '....'.
+   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
+   * @private
+   */
+  clearInterimText_() {
+    if (this.chromeVoxEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
+      return;
+    }
+    this.interimText_ = '';
+    this.inputController_.showAnnotation('....');
+    if (this.clearUITextTimeoutId_) {
+      clearTimeout(this.clearUITextTimeoutId_);
+      this.clearUITextTimeoutId_ = null;
+    }
+  }
+
+  /**
+   * Shows that a command was executed in the UI.
+   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
+   * @param {Command} command
+   * @private
+   */
+  showCommandExecuted_(command) {
+    if (this.chromeVoxEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
+      return;
+    }
+    if (command.isTextInput()) {
+      // Return to the '....' UI.
+      this.clearInterimText_();
+      return;
+    }
+    this.interimText_ = '';
+    this.inputController_.showAnnotation(
+        '☑' + this.commandParser_.getCommandString(command));
+    this.clearUITextTimeoutId_ = setTimeout(
+        () => this.clearInterimText_(),
+        Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
+  }
+
+  /**
+   * Shows a message in the UI that a command failed to execute.
+   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
+   * @private
+   */
+  showCommandExecutionFailed_() {
+    if (this.chromeVoxEnabled_) {
+      // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
+      return;
+    }
+    this.interimText_ = '';
+    // TODO(crbug.com/1252037): Finalize string and internationalization.
+    this.inputController_.showAnnotation(`ⓘ We didn't recognize that`);
+    this.clearUITextTimeoutId_ = setTimeout(
+        () => this.clearInterimText_(),
+        Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
+  }
+
+  /**
+   * Hides the commands UI bubble.
+   * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
+   * @private
+   */
+  hideCommandsUI_() {
+    if (this.chromeVoxEnabled_) {
+      return;
+    }
+    this.inputController_.hideAnnotation();
+    this.interimText_ = '';
+    if (this.clearUITextTimeoutId_) {
+      clearTimeout(this.clearUITextTimeoutId_);
+      this.clearUITextTimeoutId_ = null;
+    }
   }
 
   /**
@@ -302,4 +439,5 @@ Dictation.Timeouts = {
   NO_SPEECH_MS: 10 * 1000,
   NO_NEW_SPEECH_MS: 5 * 1000,
   NO_FOCUSED_IME_MS: 500,
+  SHOW_COMMAND_MESSAGE_MS: 2000,
 };
