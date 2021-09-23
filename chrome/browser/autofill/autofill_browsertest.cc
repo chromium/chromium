@@ -646,7 +646,8 @@ class AutofillAccessibilityTest : public AutofillTest {
 };
 
 // Test that autofill available state is correctly set on accessibility node.
-IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutofillState) {
+// Test is flaky: https://crbug.com/1239099
+IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   // Navigate to url and wait for accessibility notification.
