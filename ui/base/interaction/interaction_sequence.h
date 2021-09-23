@@ -60,12 +60,13 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // The type of event that is expected to happen next in the sequence.
   enum class StepType {
     // Represents the element with the specified ID becoming visible to the
-    // user.
+    // user, or already being visible when the step starts.
     kShown,
     // Represents an element with the specified ID becoming activated by the
     // user (for buttons or menu items, being clicked).
     kActivated,
-    // Represents an element with the specified ID becoming hidden or destroyed.
+    // Represents an element with the specified ID becoming hidden or
+    // destroyed, or no elements with the specified ID being visible.
     kHidden
   };
 
@@ -117,6 +118,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // appropriate defaults for `type`.
     absl::optional<bool> must_be_visible;
     absl::optional<bool> must_remain_visible;
+    bool transition_only_on_event = false;
 
     StepCallback start_callback;
     StepCallback end_callback;
@@ -193,6 +195,25 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // otherwise (and incompatible with StepType::kHidden). Failure to meet this
     // condition will abort the sequence.
     StepBuilder& SetMustRemainVisible(bool must_remain_visible);
+
+    // For kShown and kHidden events, if set to true, only allows a step
+    // transition to happen when a "shown" or "hidden" event is received, and
+    // not if an element is already visible (in the case of kShown steps) or no
+    // elements are visible (in the case of kHidden steps).
+    //
+    // Default is false. Has no effect on kActiated events which are discrete
+    // rather than stateful.
+    //
+    // Note: Does not track events fired during previous step's start callback,
+    // so should not be used in automated interaction testing. The default
+    // behavior should be fine for these cases.
+    //
+    // Note: Be careful when setting this value to true, as it increases the
+    // likelihood of ending up in a state where a failure cannot be detected;
+    // that is, waiting for an element to appear and then it... never does. In
+    // this case, you will need an external way to terminate the sequence (a
+    // timeout, user interaction, etc.)
+    StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event);
 
     // Sets the callback called at the start of the step.
     StepBuilder& SetStartCallback(StepCallback start_callback);

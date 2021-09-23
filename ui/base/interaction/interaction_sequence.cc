@@ -136,10 +136,14 @@ InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
   DCHECK(step->id);
   DCHECK(configuration_->steps.empty() || !step->element)
       << " Only the initial step of a sequence may have a pre-set element.";
+  DCHECK(!step->transition_only_on_event || !step->element)
+      << " Pre-set element precludes transition_only_on_event.";
   step->must_be_visible =
       step->must_be_visible.value_or(step->type == StepType::kActivated);
   DCHECK(!step->element || step->must_be_visible.value())
       << " Initial step with associated element must be visible from start.";
+  DCHECK(!step->transition_only_on_event || !step->must_be_visible.value())
+      << " must_be_visible is not compatible with transition_only_on_event.";
   DCHECK(step->type != InteractionSequence::StepType::kHidden ||
          !step->must_remain_visible.has_value() ||
          !step->must_remain_visible.value());
@@ -205,6 +209,13 @@ InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetMustRemainVisible(
     bool must_remain_visible) {
   step_->must_remain_visible = must_remain_visible;
+  return *this;
+}
+
+InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::SetTransitionOnlyOnEvent(
+    bool transition_only_on_event) {
+  step_->transition_only_on_event = transition_only_on_event;
   return *this;
 }
 
@@ -481,7 +492,7 @@ void InteractionSequence::StageNextStep() {
 
   switch (next_step()->type) {
     case StepType::kShown:
-      if (next_element) {
+      if (next_element && !next_step()->transition_only_on_event) {
         DoStepTransition(next_element);
       } else {
         next_step()->subscription = tracker->AddElementShownCallback(
@@ -491,7 +502,7 @@ void InteractionSequence::StageNextStep() {
       }
       break;
     case StepType::kHidden:
-      if (!next_element) {
+      if (!next_element && !next_step()->transition_only_on_event) {
         DoStepTransition(nullptr);
       } else {
         next_step()->subscription = tracker->AddElementHiddenCallback(

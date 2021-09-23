@@ -1518,6 +1518,97 @@ TEST(InteractionSequenceTest,
       element3.Hide());
 }
 
+// SetTransitionOnlyOnEvent tests:
+
+TEST(InteractionSequenceTest,
+     SetTransitionOnlyOnEvent_TransitionsOnDifferentElementShown) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step_start);
+  // Two elements have the same identifier, but only the first is visible.
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto tracker =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(step_start.Get())
+                       .Build())
+          .Build();
+
+  tracker->Start();
+
+  // Fail step four.
+  EXPECT_CALLS_IN_SCOPE_2(step_start, Run, completed, Run, element2.Show());
+}
+
+TEST(InteractionSequenceTest,
+     SetTransitionOnlyOnEvent_TransitionsOnSameElementShown) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step_start);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto tracker =
+      InteractionSequence::Builder()
+          .SetContext(element1.context())
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetMustBeVisibleAtStart(true)
+                       .SetMustRemainVisible(false)
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(step_start.Get())
+                       .Build())
+          .Build();
+
+  tracker->Start();
+  element1.Hide();
+
+  // Fail step four.
+  EXPECT_CALLS_IN_SCOPE_2(step_start, Run, completed, Run, element1.Show());
+}
+
+TEST(InteractionSequenceTest,
+     SetTransitionOnlyOnEvent_TransitionsOnElementHidden) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepCallback, step_start);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  auto tracker =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(step_start.Get())
+                       .Build())
+          .Build();
+
+  tracker->Start();
+  element2.Show();
+
+  // Fail step four.
+  EXPECT_CALLS_IN_SCOPE_2(step_start, Run, completed, Run, element2.Hide());
+}
+
 // RunSynchronouslyForTesting() tests:
 
 TEST(InteractionSequenceTest,
