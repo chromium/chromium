@@ -9160,6 +9160,21 @@
             ]
         }
     ],
+    "VaapiVp9kSVCEncoding": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VaapiVp9kSVCHWEncoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "VerifyDidCommitParams": [
         {
             "platforms": [
