@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory_impl.h"
+#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 
 #include "base/feature_list.h"
 #include "base/guid.h"
@@ -49,27 +49,10 @@ using autofill_address_profile_infobar_overlays::
 using save_card_infobar_overlays::SaveCardModalRequestConfig;
 using translate_infobar_overlays::TranslateModalRequestConfig;
 
-// Test fixture for InfobarOverlayRequestFactoryImpl.
-class InfobarOverlayRequestFactoryImplTest : public PlatformTest {
- public:
-  InfobarOverlayRequestFactoryImplTest()
-      : card_(base::GenerateGUID(), "https://www.example.com/"),
-        profile_(base::GenerateGUID(), "https://www.example.com/"),
-        translate_delegate_factory_("fr", "en") {}
-
-  InfobarOverlayRequestFactory* factory() { return &factory_; }
-
- protected:
-  InfobarOverlayRequestFactoryImpl factory_;
-  autofill::CreditCard card_;
-  autofill::AutofillProfile profile_;
-  std::unique_ptr<InfoBarIOS> infobar_;
-  translate::testing::MockTranslateInfoBarDelegateFactory
-      translate_delegate_factory_;
-};
+using DefaultInfobarOverlayRequestFactoryTest = PlatformTest;
 
 // Tests that the factory creates a save passwords infobar request.
-TEST_F(InfobarOverlayRequestFactoryImplTest, SavePasswords) {
+TEST_F(DefaultInfobarOverlayRequestFactoryTest, SavePasswords) {
   GURL url("https://chromium.test");
   std::unique_ptr<InfoBarDelegate> delegate =
       MockIOSChromeSavePasswordInfoBarDelegate::Create(@"username", @"password",
@@ -79,19 +62,20 @@ TEST_F(InfobarOverlayRequestFactoryImplTest, SavePasswords) {
 
   // Test banner request creation.
   std::unique_ptr<OverlayRequest> banner_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kBanner);
+      DefaultInfobarOverlayRequestFactory(&infobar,
+                                          InfobarOverlayType::kBanner);
   EXPECT_TRUE(banner_request
                   ->GetConfig<SavePasswordInfobarBannerOverlayRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kModal);
+      DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
   EXPECT_TRUE(
       modal_request->GetConfig<PasswordInfobarModalOverlayRequestConfig>());
 }
 
 // Tests that the factory creates an update passwords infobar request.
-TEST_F(InfobarOverlayRequestFactoryImplTest, UpdatePasswords) {
+TEST_F(DefaultInfobarOverlayRequestFactoryTest, UpdatePasswords) {
   GURL url("https://chromium.test");
   std::unique_ptr<InfoBarDelegate> delegate =
       MockIOSChromeSavePasswordInfoBarDelegate::Create(@"username", @"password",
@@ -101,91 +85,100 @@ TEST_F(InfobarOverlayRequestFactoryImplTest, UpdatePasswords) {
 
   // Test banner request creation.
   std::unique_ptr<OverlayRequest> banner_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kBanner);
+      DefaultInfobarOverlayRequestFactory(&infobar,
+                                          InfobarOverlayType::kBanner);
   EXPECT_TRUE(
       banner_request
           ->GetConfig<UpdatePasswordInfobarBannerOverlayRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kModal);
+      DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
   EXPECT_TRUE(
       modal_request->GetConfig<PasswordInfobarModalOverlayRequestConfig>());
 }
 
 // Tests that the factory creates an confirm infobar request.
-TEST_F(InfobarOverlayRequestFactoryImplTest, Confirm) {
-  GURL url("https://chromium.test");
+TEST_F(DefaultInfobarOverlayRequestFactoryTest, Confirm) {
   std::unique_ptr<MockInfobarDelegate> delegate =
       std::make_unique<MockInfobarDelegate>();
   InfoBarIOS infobar(InfobarType::kInfobarTypeConfirm, std::move(delegate));
 
   // Test banner request creation.
   std::unique_ptr<OverlayRequest> banner_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kBanner);
+      DefaultInfobarOverlayRequestFactory(&infobar,
+                                          InfobarOverlayType::kBanner);
   EXPECT_TRUE(banner_request->GetConfig<ConfirmBannerRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kModal);
+      DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
   EXPECT_FALSE(modal_request);
 }
 
 // Tests that the factory creates a save card request.
-TEST_F(InfobarOverlayRequestFactoryImplTest, SaveCard) {
-  GURL url("https://chromium.test");
+TEST_F(DefaultInfobarOverlayRequestFactoryTest, SaveCard) {
+  autofill::CreditCard card(base::GenerateGUID(), "https://www.example.com/");
+
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeSaveCard,
       MockAutofillSaveCardInfoBarDelegateMobileFactory::
-          CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(false, card_));
+          CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(false, card));
 
   // Test banner request creation.
   std::unique_ptr<OverlayRequest> banner_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kBanner);
+      DefaultInfobarOverlayRequestFactory(&infobar,
+                                          InfobarOverlayType::kBanner);
   EXPECT_TRUE(banner_request->GetConfig<SaveCardBannerRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kModal);
+      DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
   EXPECT_TRUE(modal_request->GetConfig<SaveCardModalRequestConfig>());
 }
 
 // Tests that the factory creates a translate request.
-TEST_F(InfobarOverlayRequestFactoryImplTest, Translate) {
-  GURL url("https://chromium.test");
+TEST_F(DefaultInfobarOverlayRequestFactoryTest, Translate) {
+  translate::testing::MockTranslateInfoBarDelegateFactory
+      translate_delegate_factory("fr", "en");
+
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeTranslate,
-      translate_delegate_factory_.CreateMockTranslateInfoBarDelegate(
+      translate_delegate_factory.CreateMockTranslateInfoBarDelegate(
           translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE));
 
   // Test banner request creation.
   std::unique_ptr<OverlayRequest> banner_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kBanner);
+      DefaultInfobarOverlayRequestFactory(&infobar,
+                                          InfobarOverlayType::kBanner);
   EXPECT_TRUE(banner_request->GetConfig<TranslateBannerRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kModal);
+      DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
   EXPECT_TRUE(modal_request->GetConfig<TranslateModalRequestConfig>());
 }
 
 // Tests that the factory creates a save address profile request.
-TEST_F(InfobarOverlayRequestFactoryImplTest, SaveAddressProfile) {
-  GURL url("https://chromium.test");
+TEST_F(DefaultInfobarOverlayRequestFactoryTest, SaveAddressProfile) {
+  autofill::AutofillProfile profile(base::GenerateGUID(),
+                                    "https://www.example.com/");
+
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
           CreateMockAutofillSaveUpdateAddressProfileDelegateIOSFactory(
-              profile_));
+              profile));
 
   // Test banner request creation.
   std::unique_ptr<OverlayRequest> banner_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kBanner);
+      DefaultInfobarOverlayRequestFactory(&infobar,
+                                          InfobarOverlayType::kBanner);
   EXPECT_TRUE(
       banner_request->GetConfig<SaveAddressProfileBannerRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
-      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kModal);
+      DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
   EXPECT_TRUE(modal_request->GetConfig<SaveAddressProfileModalRequestConfig>());
 }

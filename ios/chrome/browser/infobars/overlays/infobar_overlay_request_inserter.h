@@ -10,12 +10,12 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory_impl.h"
+#include "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory.h"
 #include "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #include "ios/web/public/web_state_user_data.h"
 
+class InfoBarIOS;
 class InfobarModalCompletionNotifier;
-class InfobarOverlayRequestFactory;
 class OverlayRequestQueue;
 namespace web {
 class WebState;
@@ -53,8 +53,7 @@ class InfobarOverlayRequestInserter
   // inserted requests.
   static void CreateForWebState(
       web::WebState* web_state,
-      std::unique_ptr<InfobarOverlayRequestFactory> request_factory =
-          std::make_unique<InfobarOverlayRequestFactoryImpl>());
+      InfobarOverlayRequestFactory request_factory = nullptr);
 
   ~InfobarOverlayRequestInserter() override;
 
@@ -88,16 +87,15 @@ class InfobarOverlayRequestInserter
   // Constructor for an inserter that uses |factory| to construct
   // OverlayRequests to insert into |web_state|'s OverlayRequestQueues.  Both
   // |web_state| and |factory| must be non-null.
-  InfobarOverlayRequestInserter(
-      web::WebState* web_state,
-      std::unique_ptr<InfobarOverlayRequestFactory> factory);
+  InfobarOverlayRequestInserter(web::WebState* web_state,
+                                InfobarOverlayRequestFactory factory);
 
   // The WebState whose queues are being inserted into.
   web::WebState* web_state_ = nullptr;
   // The infobar modal completion notifier.
   std::unique_ptr<InfobarModalCompletionNotifier> modal_completion_notifier_;
   // The factory used to create OverlayRequests.
-  std::unique_ptr<InfobarOverlayRequestFactory> request_factory_;
+  InfobarOverlayRequestFactory request_factory_;
   // Map of the OverlayRequestQueues to use for each InfobarOverlayType.
   std::map<InfobarOverlayType, OverlayRequestQueue*> queues_;
   // Observers of request insertions.

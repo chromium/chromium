@@ -35,7 +35,6 @@
 #include "ios/chrome/browser/history/top_sites_factory.h"
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_factory_impl.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_tab_helper.h"
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
@@ -121,9 +120,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   InvalidUrlTabHelper::CreateForWebState(web_state);
 
-    InfobarOverlayRequestInserter::CreateForWebState(web_state);
-    InfobarOverlayTabHelper::CreateForWebState(web_state);
-    TranslateOverlayTabHelper::CreateForWebState(web_state);
+  InfobarOverlayRequestInserter::CreateForWebState(web_state);
+  InfobarOverlayTabHelper::CreateForWebState(web_state);
+  TranslateOverlayTabHelper::CreateForWebState(web_state);
 
   if (ios::provider::IsTextZoomEnabled()) {
     FontSizeTabHelper::CreateForWebState(web_state);
