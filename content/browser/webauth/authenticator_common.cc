@@ -1246,9 +1246,12 @@ void AuthenticatorCommon::GetAssertion(
     requested_extensions_.insert(RequestExtension::kLargeBlobWrite);
   }
 
-  timer_->Start(
-      FROM_HERE, AdjustTimeout(options->timeout, GetRenderFrameHost()),
-      base::BindOnce(&AuthenticatorCommon::OnTimeout, base::Unretained(this)));
+  if (!options->is_conditional) {
+    timer_->Start(FROM_HERE,
+                  AdjustTimeout(options->timeout, GetRenderFrameHost()),
+                  base::BindOnce(&AuthenticatorCommon::OnTimeout,
+                                 base::Unretained(this)));
+  }
 
   ctap_get_assertion_request_ =
       CreateCtapGetAssertionRequest(client_data_json_, options, app_id_,

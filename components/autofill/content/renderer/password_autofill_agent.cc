@@ -26,6 +26,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
+#include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/password_form_conversion_utils.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/prefilled_values_detector.h"
@@ -1257,7 +1258,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     if (!sent_request_to_store_ && password_forms_data.empty() &&
         HasPasswordField(*frame)) {
       // Set everything that |FormDigest| needs.
-      password_forms_data.push_back(FormData());
+      password_forms_data.emplace_back();
     }
     if (!password_forms_data.empty()) {
       sent_request_to_store_ = true;
@@ -1593,6 +1594,8 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     const WebInputElement& user_input,
     ShowAll show_all,
     OnPasswordField show_on_password_field) {
+  constexpr char kAutocompleteAttribute[] = "autocomplete";
+  constexpr char kAutocompleteWebAuthn[] = "webauthn";
   username_query_prefix_ = typed_username;
   FormData form;
   FormFieldData field;
@@ -1604,6 +1607,8 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     options |= SHOW_ALL;
   if (show_on_password_field)
     options |= IS_PASSWORD_FIELD;
+  if (user_input.GetAttribute(kAutocompleteAttribute) == kAutocompleteWebAuthn)
+    options |= ACCEPTS_WEBAUTHN_CREDENTIALS;
 
   GetPasswordManagerDriver().ShowPasswordSuggestions(
       field.text_direction, typed_username, options,

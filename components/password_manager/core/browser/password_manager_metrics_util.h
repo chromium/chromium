@@ -390,7 +390,9 @@ enum class PasswordDropdownSelectedOption {
   kUnlockAccountStoreGeneration = 4,
   // Previoulsy opted-in user decided to log-in again to access their passwords.
   kResigninToUnlockAccountStore = 5,
-  kMaxValue = kResigninToUnlockAccountStore
+  // User selected a WebAuthn credential.
+  kWebAuthn = 6,
+  kMaxValue = kWebAuthn
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

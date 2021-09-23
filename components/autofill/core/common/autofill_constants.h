@@ -74,7 +74,9 @@ constexpr int kCrossFrameFill = -2;
 // Options bitmask values for AutofillHostMsg_ShowPasswordSuggestions IPC
 enum ShowPasswordSuggestionsOptions {
   SHOW_ALL = 1 << 0 /* show all credentials, not just ones matching username */,
-  IS_PASSWORD_FIELD = 1 << 1 /* input field is a password field */
+  IS_PASSWORD_FIELD = 1 << 1 /* input field is a password field */,
+  ACCEPTS_WEBAUTHN_CREDENTIALS =
+      1 << 2 /* input field is marked to accept webauthn credentials */,
 };
 
 // Constants for the soft/hard deletion of Autofill data.

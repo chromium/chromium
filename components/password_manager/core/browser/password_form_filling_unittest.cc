@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
+#include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,6 +52,19 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
   MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
 };
 
+class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
+ public:
+  MOCK_METHOD(bool, IsWebAuthnAutofillEnabled, (), (const, override));
+  MOCK_METHOD(void,
+              SelectWebAuthnCredential,
+              (std::string backend_id),
+              (override));
+  MOCK_METHOD(std::vector<autofill::Suggestion>,
+              GetWebAuthnSuggestions,
+              (),
+              (const override));
+};
+
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MOCK_METHOD(void,
@@ -64,7 +78,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const GURL&),
               (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
-  MOCK_METHOD(bool, IsWebAuthnAutofillEnabled, (), (const, override));
+  MOCK_METHOD(MockWebAuthnCredentialsDelegate*,
+              GetWebAuthnCredentialsDelegate,
+              (),
+              (override));
 };
 
 // Matcher for PasswordAndMetadata.
@@ -249,10 +266,13 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
 
 #if !defined(ANDROID) && !defined(OS_IOS)
 TEST_F(PasswordFormFillingTest, DontFillOnLoadWebAuthnCredentials) {
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
   observed_form_.accepts_webauthn_credentials = true;
   for (bool webauthn_autofill_enabled : {false, true}) {
     PasswordFormFillData fill_data;
-    EXPECT_CALL(client_, IsWebAuthnAutofillEnabled())
+    EXPECT_CALL(client_, GetWebAuthnCredentialsDelegate())
+        .WillOnce(Return(&webauthn_credentials_delegate));
+    EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled())
         .WillOnce(Return(webauthn_autofill_enabled));
     EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
     EXPECT_CALL(client_, PasswordWasAutofilled);

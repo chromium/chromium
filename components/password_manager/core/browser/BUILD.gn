@@ -244,6 +244,7 @@ static_library("browser") {
     "ui/saved_passwords_presenter.h",
     "votes_uploader.cc",
     "votes_uploader.h",
+    "webauthn_credentials_delegate.h",
     "well_known_change_password_state.cc",
     "well_known_change_password_state.h",
     "well_known_change_password_util.cc",

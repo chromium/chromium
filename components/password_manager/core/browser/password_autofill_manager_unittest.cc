@@ -45,6 +45,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
@@ -106,6 +107,19 @@ constexpr char kDropdownShownHistogram[] =
 constexpr char kCredentialsCountFromAccountStoreAfterUnlockHistogram[] =
     "PasswordManager.CredentialsCountFromAccountStoreAfterUnlock";
 const gfx::Image kTestFavicon = gfx::test::CreateImage(16, 16);
+
+class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
+ public:
+  MOCK_METHOD(bool, IsWebAuthnAutofillEnabled, (), (const, override));
+  MOCK_METHOD(void,
+              SelectWebAuthnCredential,
+              (std::string backend_id),
+              (override));
+  MOCK_METHOD(std::vector<autofill::Suggestion>,
+              GetWebAuthnSuggestions,
+              (),
+              (const override));
+};
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
@@ -175,6 +189,10 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(void,
               NavigateToManagePasswordsPage,
               (ManagePasswordsReferrer),
+              (override));
+  MOCK_METHOD(WebAuthnCredentialsDelegate*,
+              GetWebAuthnCredentialsDelegate,
+              (),
               (override));
 
  private:
@@ -1759,6 +1777,64 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(*authenticator_.get(),
               Cancel(BiometricAuthRequester::kAutofillSuggestion));
   password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
+}
+
+TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Return a WebAuthn credential.
+  const std::string kId = "abcd";
+  const std::u16string kName = u"nadeshiko@example.com";
+  const std::u16string kDisplayName = u"Nadeshiko Kagamihara";
+  autofill::Suggestion webauthn_credential(kDisplayName);
+  webauthn_credential.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
+  webauthn_credential.backend_id = kId;
+  webauthn_credential.label = kName;
+  ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, GetWebAuthnCredentialsDelegate)
+      .WillRepeatedly(Return(&webauthn_credentials_delegate));
+  EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
+      .WillOnce(Return(std::vector<autofill::Suggestion>{webauthn_credential}));
+
+  // Show password suggestions including WebAuthn credentials.
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, /*typed_username=*/std::u16string(),
+      autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
+      element_bounds);
+  ASSERT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(ElementsAre(
+                  autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL,
+                  autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
+                  autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+  EXPECT_EQ(open_args.suggestions[0].backend_id, kId);
+  EXPECT_EQ(open_args.suggestions[0].frontend_id,
+            autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
+  EXPECT_EQ(open_args.suggestions[0].value, kDisplayName);
+  EXPECT_EQ(open_args.suggestions[0].label, kName);
+  testing::Mock::VerifyAndClearExpectations(client.mock_driver());
+
+  // Check that preview of the "username" (i.e. the credential name) works.
+  EXPECT_CALL(*client.mock_driver(),
+              PreviewSuggestion(kName, /*password=*/std::u16string(u"")));
+  password_autofill_manager_->DidSelectSuggestion(
+      kName, autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
+  testing::Mock::VerifyAndClearExpectations(client.mock_driver());
+
+  // Check that selecting the credential reports back to the client.
+  EXPECT_CALL(webauthn_credentials_delegate, SelectWebAuthnCredential(kId));
+  EXPECT_CALL(
+      autofill_client,
+      HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
+  password_autofill_manager_->DidAcceptSuggestion(
+      kName, autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL, kId, /*position=*/1);
 }
 
 }  // namespace password_manager

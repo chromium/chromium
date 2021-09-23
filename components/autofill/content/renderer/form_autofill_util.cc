@@ -1471,8 +1471,8 @@ bool FormOrFieldsetsToFormData(
     if (!IsAutofillableElement(control_element))
       continue;
 
-    form->fields.push_back(FormFieldData());
-    shadow_fields.push_back(ShadowFieldData());
+    form->fields.emplace_back();
+    shadow_fields.emplace_back();
     WebFormControlElementToFormField(
         form->unique_renderer_id, control_element, field_data_manager,
         extract_mask, &form->fields.back(), &shadow_fields.back());
@@ -1909,8 +1909,7 @@ base::i18n::TextDirection GetTextDirectionForElement(
 std::vector<blink::WebFormControlElement> ExtractAutofillableElementsFromSet(
     const WebVector<WebFormControlElement>& control_elements) {
   std::vector<blink::WebFormControlElement> autofillable_elements;
-  for (size_t i = 0; i < control_elements.size(); ++i) {
-    WebFormControlElement element = control_elements[i];
+  for (const auto& element : control_elements) {
     if (!IsAutofillableElement(element))
       continue;
 
@@ -2056,10 +2055,10 @@ void WebFormControlElementToFormField(
     const WebSelectElement select_element = element.ToConst<WebSelectElement>();
     // Convert the |select_element| value to text if requested.
     WebVector<WebElement> list_items = select_element.GetListItems();
-    for (size_t i = 0; i < list_items.size(); ++i) {
-      if (IsOptionElement(list_items[i])) {
+    for (const auto& list_item : list_items) {
+      if (IsOptionElement(list_item)) {
         const WebOptionElement option_element =
-            list_items[i].ToConst<WebOptionElement>();
+            list_item.ToConst<WebOptionElement>();
         if (option_element.Value().Utf16() == value) {
           value = option_element.GetText().Utf16();
           break;

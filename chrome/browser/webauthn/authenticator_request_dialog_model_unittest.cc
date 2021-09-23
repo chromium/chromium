@@ -651,9 +651,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   EXPECT_TRUE(model.should_dialog_be_hidden());
   EXPECT_EQ(num_called, 0);
 
-  // After selecting an account, the request should be dispatched to the
+  // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
-  model.OnAccountSelected(0);
+  model.OnAccountPreselected({1, 2, 3, 4});
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(num_called, 1);
 

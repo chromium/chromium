@@ -210,7 +210,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (IsFillOnAccountSelectFeatureEnabled()) {
     wait_for_username_reason = WaitForUsernameReason::kFoasFeature;
   } else if (observed_form.accepts_webauthn_credentials &&
-             client->IsWebAuthnAutofillEnabled()) {
+             client->GetWebAuthnCredentialsDelegate()
+                 ->IsWebAuthnAutofillEnabled()) {
     wait_for_username_reason =
         WaitForUsernameReason::kAcceptsWebAuthnCredentials;
   }

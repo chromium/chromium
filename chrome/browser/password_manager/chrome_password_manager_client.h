@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -243,7 +244,8 @@ class ChromePasswordManagerClient
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;
-  bool IsWebAuthnAutofillEnabled() const override;
+  password_manager::WebAuthnCredentialsDelegate*
+  GetWebAuthnCredentialsDelegate() override;
 
   // autofill::mojom::PasswordGenerationDriver overrides.
   void AutomaticGenerationAvailable(
@@ -389,6 +391,8 @@ class ChromePasswordManagerClient
 #endif  // defined(OS_ANDROID)
 
   password_manager::ContentPasswordManagerDriverFactory* driver_factory_;
+
+  ChromeWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
 
   // As a mojo service, will be registered into service registry
   // of the main frame host by ChromeContentBrowserClient

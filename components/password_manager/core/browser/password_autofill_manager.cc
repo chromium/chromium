@@ -41,6 +41,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -428,6 +429,12 @@ void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
             ? PasswordDropdownSelectedOption::kUnlockAccountStorePasswords
             : PasswordDropdownSelectedOption::kUnlockAccountStoreGeneration,
         password_client_->IsIncognito());
+  } else if (frontend_id == autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL) {
+    metrics_util::LogPasswordDropdownItemSelected(
+        PasswordDropdownSelectedOption::kWebAuthn,
+        password_client_->IsIncognito());
+    password_client_->GetWebAuthnCredentialsDelegate()
+        ->SelectWebAuthnCredential(backend_id);
   } else {
     metrics_util::LogPasswordDropdownItemSelected(
         PasswordDropdownSelectedOption::kPassword,
@@ -519,7 +526,8 @@ void PasswordAutofillManager::OnAddPasswordFillData(
                                ForPasswordField(AreSuggestionForPasswordField(
                                    autofill_client_->GetPopupSuggestions())),
                                ShowAllPasswords(true), OffersGeneration(false),
-                               ShowPasswordSuggestions(true)));
+                               ShowPasswordSuggestions(true),
+                               ShowWebAuthnCredentials(false)));
 }
 
 void PasswordAutofillManager::OnNoCredentialsFound() {
@@ -552,7 +560,9 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
       BuildSuggestions(typed_username,
                        ForPasswordField(options & autofill::IS_PASSWORD_FIELD),
                        ShowAllPasswords(options & autofill::SHOW_ALL),
-                       OffersGeneration(false), ShowPasswordSuggestions(true)));
+                       OffersGeneration(false), ShowPasswordSuggestions(true),
+                       ShowWebAuthnCredentials(
+                           options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS)));
 }
 
 bool PasswordAutofillManager::MaybeShowPasswordSuggestions(
@@ -562,7 +572,8 @@ bool PasswordAutofillManager::MaybeShowPasswordSuggestions(
       bounds, text_direction,
       BuildSuggestions(std::u16string(), ForPasswordField(true),
                        ShowAllPasswords(true), OffersGeneration(false),
-                       ShowPasswordSuggestions(true)));
+                       ShowPasswordSuggestions(true),
+                       ShowWebAuthnCredentials(false)));
 }
 
 bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
@@ -573,7 +584,8 @@ bool PasswordAutofillManager::MaybeShowPasswordSuggestionsWithGeneration(
       bounds, text_direction,
       BuildSuggestions(std::u16string(), ForPasswordField(true),
                        ShowAllPasswords(true), OffersGeneration(true),
-                       ShowPasswordSuggestions(show_password_suggestions)));
+                       ShowPasswordSuggestions(show_password_suggestions),
+                       ShowWebAuthnCredentials(false)));
 }
 
 void PasswordAutofillManager::DidNavigateMainFrame() {
@@ -601,7 +613,8 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
     ForPasswordField for_password_field,
     ShowAllPasswords show_all_passwords,
     OffersGeneration offers_generation,
-    ShowPasswordSuggestions show_password_suggestions) {
+    ShowPasswordSuggestions show_password_suggestions,
+    ShowWebAuthnCredentials show_webauthn_credentials) {
   std::vector<autofill::Suggestion> suggestions;
   bool show_account_storage_optin =
       password_client_ && password_client_->GetPasswordFeatureManager()
@@ -615,6 +628,17 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
       !show_account_storage_resignin) {
     // Probably the credential was deleted in the mean time.
     return suggestions;
+  }
+
+  // Add WebAuthn credentials suitable for an ongoing request if available.
+  if (show_webauthn_credentials) {
+    WebAuthnCredentialsDelegate* delegate =
+        password_client_->GetWebAuthnCredentialsDelegate();
+    DCHECK(delegate->IsWebAuthnAutofillEnabled());
+    std::vector<autofill::Suggestion> webauthn_suggestions =
+        delegate->GetWebAuthnSuggestions();
+    suggestions.insert(suggestions.end(), webauthn_suggestions.begin(),
+                       webauthn_suggestions.end());
   }
 
   // Add password suggestions if they exist and were requested.
@@ -715,6 +739,10 @@ bool PasswordAutofillManager::FillSuggestion(const std::u16string& username,
 
 bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
                                                 int item_id) {
+  if (item_id == autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL) {
+    password_manager_driver_->PreviewSuggestion(username, /*password=*/u"");
+    return true;
+  }
   autofill::PasswordAndMetadata password_and_meta_data;
   if (fill_data_ &&
       GetPasswordAndMetadataForUsername(username, item_id, *fill_data_,

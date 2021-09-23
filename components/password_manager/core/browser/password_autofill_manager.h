@@ -126,6 +126,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   using ShowAllPasswords = base::StrongAlias<class ShowAllPasswordsTag, bool>;
   using ShowPasswordSuggestions =
       base::StrongAlias<class ShowPasswordSuggestionsTag, bool>;
+  using ShowWebAuthnCredentials =
+      base::StrongAlias<class ShowWebAuthnCredentialsTag, bool>;
 
   // Builds the suggestions used to show or update the autofill popup.
   std::vector<autofill::Suggestion> BuildSuggestions(
@@ -133,7 +135,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       ForPasswordField for_password_field,
       ShowAllPasswords show_all_passwords,
       OffersGeneration for_generation,
-      ShowPasswordSuggestions show_password_suggestions);
+      ShowPasswordSuggestions show_password_suggestions,
+      ShowWebAuthnCredentials show_webauthn_credentials);
 
   // Called just before showing a popup to log which |suggestions| were shown.
   void LogMetricsForSuggestions(

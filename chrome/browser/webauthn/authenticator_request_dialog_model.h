@@ -446,6 +446,10 @@ class AuthenticatorRequestDialogModel {
   // |responses()|.
   void OnAccountSelected(size_t index);
 
+  // Called when an account from |ephemeral_state_.users_| is selected from the
+  // Conditional UI prompt.
+  void OnAccountPreselected(const std::vector<uint8_t>& id);
+
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
 
   base::span<const Mechanism> mechanisms() const;

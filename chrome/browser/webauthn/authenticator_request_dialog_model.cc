@@ -354,10 +354,6 @@ void AuthenticatorRequestDialogModel::OnRequestComplete() {
 }
 
 void AuthenticatorRequestDialogModel::OnRequestTimeout() {
-  if (current_step_ == Step::kLocationBarBubble) {
-    Cancel();
-    return;
-  }
   // The request may time out while the UI shows a different error.
   if (!is_request_complete()) {
     SetCurrentStep(Step::kTimedOut);
@@ -410,7 +406,11 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
   if (use_location_bar_bubble_) {
     // Do not show a page-modal retry error sheet if the user cancelled out of
     // their platform authenticator while displaying the location bar bubble UI.
-    Cancel();
+    // Instead, retry silently.
+    // TODO(nsatragno): we should retry for cross platform authenticators as
+    // well. However, hiding the dialog after it's been shown locks the page
+    // (see crbug.com/1247338).
+    StartOver();
     return;
   }
   SetCurrentStep(Step::kErrorInternalUnrecognized);
@@ -518,14 +518,6 @@ void AuthenticatorRequestDialogModel::SelectAccount(
 }
 
 void AuthenticatorRequestDialogModel::OnAccountSelected(size_t index) {
-  if (ephemeral_state_.responses_.empty()) {
-    // An account has been pre-selected from the conditional UI prompt.
-    preselected_account_ = std::move(ephemeral_state_.users_.at(index));
-    ephemeral_state_.users_.clear();
-    HideDialogAndDispatchToPlatformAuthenticator();
-    return;
-  }
-
   if (!selection_callback_) {
     // It's possible that the user could activate the dialog more than once
     // before the Webauthn request is completed and its torn down.
@@ -537,6 +529,19 @@ void AuthenticatorRequestDialogModel::OnAccountSelected(size_t index) {
   ephemeral_state_.users_.clear();
   ephemeral_state_.responses_.clear();
   std::move(selection_callback_).Run(std::move(response));
+}
+
+void AuthenticatorRequestDialogModel::OnAccountPreselected(
+    const std::vector<uint8_t>& id) {
+  for (const auto& account : users()) {
+    if (account.id == id) {
+      preselected_account_ = std::move(account);
+      ephemeral_state_.users_.clear();
+      HideDialogAndDispatchToPlatformAuthenticator();
+      return;
+    }
+  }
+  NOTREACHED();
 }
 
 void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
