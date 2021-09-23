@@ -29,7 +29,6 @@
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "gin/gin_features.h"
 #include "v8/include/v8-initialization.h"
@@ -210,48 +209,6 @@ void SetV8FlagsFormatted(const char* format, ...) {
   v8::V8::SetFlagsFromString(buffer, length - 1);
 }
 
-void RunArrayBufferCageReservationExperiment() {
-  // TODO(1218005) remove this function and windows_version.h include once the
-  // experiment has ended.
-#if defined(ARCH_CPU_64_BITS)
-  constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
-  constexpr size_t kTeraBytes = 1024 * kGigaBytes;
-
-  constexpr size_t kCageMaxSize = 1 * kTeraBytes;
-  constexpr size_t kCageMinSize = 8 * kGigaBytes;
-
-#if defined(OS_WIN)
-  // Windows prior to Win10 (or possibly Win8/8.1) appears to create page table
-  // entries when reserving virtual memory, causing unacceptably high memory
-  // consumption (e.g. ~2GB when reserving 1TB). As such, the experiment is
-  // only enabled on Win10.
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    return;
-  }
-#endif
-
-  void* reservation = nullptr;
-  size_t current_size = kCageMaxSize;
-  while (!reservation && current_size >= kCageMinSize) {
-    // The cage reservation will need to be 4GB aligned.
-    reservation = base::AllocPages(nullptr, current_size, 4 * kGigaBytes,
-                                   base::PageInaccessible, base::PageTag::kV8);
-    if (!reservation) {
-      current_size /= 2;
-    }
-  }
-
-  int result = current_size / kGigaBytes;
-  if (reservation) {
-    base::FreePages(reservation, current_size);
-  } else {
-    result = 0;
-  }
-
-  base::UmaHistogramSparse("V8.MaxArrayBufferCageReservationSize", result);
-#endif
-}
-
 template <size_t N, size_t M>
 void SetV8FlagsIfOverridden(const base::Feature& feature,
                             const char (&enabling_flag)[N],
@@ -274,11 +231,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   static bool v8_is_initialized = false;
   if (v8_is_initialized)
     return;
-
-  if (base::FeatureList::IsEnabled(
-          features::kV8ArrayBufferCageReservationExperiment)) {
-    RunArrayBufferCageReservationExperiment();
-  }
 
   v8::V8::InitializePlatform(V8Platform::Get());
 

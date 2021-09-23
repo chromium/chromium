@@ -1076,6 +1076,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="V8.MaxArrayBufferCageReservationSize" units="GB"
     expires_after="2022-06-30">
+  <obsolete>
+    Removed 09/2021. Superseded by V8.VirtualMemoryCageSizeGB.
+  </obsolete>
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>

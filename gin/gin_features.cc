@@ -83,11 +83,6 @@ const base::FeatureParam<int> kV8ScriptDelayMs{&kV8ScriptAblation,
 const base::FeatureParam<double> kV8ScriptDelayFraction{
     &kV8ScriptAblation, "V8ScriptDelayFraction", 0.0};
 
-// Experiment to determine the maximum size of the ArrayBuffer cage.
-const base::Feature kV8ArrayBufferCageReservationExperiment{
-    "V8ArrayBufferCageReservationExperiment",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables slow histograms that provide detailed information at increased
 // runtime overheads.
 const base::Feature kV8SlowHistograms{"V8SlowHistograms",

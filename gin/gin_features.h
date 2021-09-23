@@ -11,7 +11,6 @@
 
 namespace features {
 
-GIN_EXPORT extern const base::Feature kV8ArrayBufferCageReservationExperiment;
 GIN_EXPORT extern const base::Feature kV8ConcurrentInlining;
 GIN_EXPORT extern const base::Feature kV8ExperimentalRegexpEngine;
 GIN_EXPORT extern const base::Feature kV8FlushBytecode;
