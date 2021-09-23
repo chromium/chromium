@@ -121,16 +121,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableSharesheet() {
-    options.enable_sharesheet = true;
-    return *this;
-  }
-
-  TestCase& DisableSharesheet() {
-    options.enable_sharesheet = false;
-    return *this;
-  }
-
   TestCase& EnableTrash() {
     options.enable_trash = true;
     return *this;
@@ -507,22 +497,20 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Toolbar, /* toolbar.js */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("toolbarDeleteWithMenuItemNoEntrySelected"),
-        TestCase("toolbarDeleteButtonOpensDeleteConfirmDialog"),
-        TestCase("toolbarDeleteButtonKeepFocus"),
-        TestCase("toolbarDeleteEntry").InGuestMode(),
-        TestCase("toolbarDeleteEntry"),
-        TestCase("toolbarDeleteEntry").EnableTrash(),
-        TestCase("toolbarRefreshButtonWithSelection")
-            .EnableGenericDocumentsProvider(),
-        TestCase("toolbarAltACommand"),
-        TestCase("toolbarRefreshButtonHiddenInRecents"),
-        TestCase("toolbarMultiMenuFollowsButton"),
-        TestCase("toolbarSharesheetButtonWithSelection").EnableSharesheet(),
-        TestCase("toolbarSharesheetContextMenuWithSelection")
-            .EnableSharesheet(),
-        TestCase("toolbarSharesheetNoEntrySelected").EnableSharesheet()));
+    ::testing::Values(TestCase("toolbarDeleteWithMenuItemNoEntrySelected"),
+                      TestCase("toolbarDeleteButtonOpensDeleteConfirmDialog"),
+                      TestCase("toolbarDeleteButtonKeepFocus"),
+                      TestCase("toolbarDeleteEntry").InGuestMode(),
+                      TestCase("toolbarDeleteEntry"),
+                      TestCase("toolbarDeleteEntry").EnableTrash(),
+                      TestCase("toolbarRefreshButtonWithSelection")
+                          .EnableGenericDocumentsProvider(),
+                      TestCase("toolbarAltACommand"),
+                      TestCase("toolbarRefreshButtonHiddenInRecents"),
+                      TestCase("toolbarMultiMenuFollowsButton"),
+                      TestCase("toolbarSharesheetButtonWithSelection"),
+                      TestCase("toolbarSharesheetContextMenuWithSelection"),
+                      TestCase("toolbarSharesheetNoEntrySelected")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     QuickView, /* quick_view.js */
@@ -936,18 +924,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("tabindexFocusDownloads")
             .DisableBannersFramework()
             .InGuestMode(),
-        TestCase("tabindexFocusDirectorySelected")
-            .DisableBannersFramework()
-            .DisableSharesheet(),
-        TestCase("tabindexFocusDirectorySelected")
-            .EnableBannersFramework()
-            .DisableSharesheet(),
-        TestCase("tabindexFocusDirectorySelectedSharesheetEnabled")
-            .DisableBannersFramework()
-            .EnableSharesheet(),
-        TestCase("tabindexFocusDirectorySelectedSharesheetEnabled")
-            .EnableBannersFramework()
-            .EnableSharesheet(),
+        TestCase("tabindexFocusDirectorySelected").DisableBannersFramework(),
+        TestCase("tabindexFocusDirectorySelected").EnableBannersFramework(),
         TestCase("tabindexOpenDialogDownloads")
             .WithBrowser()
             .DisableBannersFramework(),

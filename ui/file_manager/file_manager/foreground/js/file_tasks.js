@@ -1061,10 +1061,7 @@ export class FileTasks {
         this.ui_.listContainer.currentList);
 
     // Hide share icon for New Folder creation.  See https://crbug.com/571355.
-    shareMenuButton.hidden =
-        (driveShareCommand.disabled && tasks.length == 0) ||
-        this.namingController_.isRenamingInProgress() ||
-        util.isSharesheetEnabled();
+    shareMenuButton.hidden = true;
     moreActionsSeparator.hidden = true;
 
     // Show the separator if Drive share command is enabled and there is at

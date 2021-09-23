@@ -1805,12 +1805,6 @@ util.getFilesAppModalDialogInstance = () => {
   return /** @type {!HTMLDialogElement} */ (dialogElement);
 };
 
-/** @return {boolean} */
-util.isSharesheetEnabled = () => {
-  return loadTimeData.valueExists('SHARESHEET_ENABLED') &&
-      loadTimeData.getBoolean('SHARESHEET_ENABLED');
-};
-
 util.isDriveDssPinEnabled = () => {
   return loadTimeData.valueExists('DRIVE_DSS_PIN_ENABLED') &&
       loadTimeData.getBoolean('DRIVE_DSS_PIN_ENABLED');

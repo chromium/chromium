@@ -87,8 +87,7 @@ SharingHubBubbleController::~SharingHubBubbleController() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kSharesheet) &&
-      base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
+  if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
       sharesheet_controller_) {
     sharesheet_controller_->CloseBubble(sharesheet::SharesheetResult::kCancel);
   }
@@ -145,8 +144,7 @@ bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
     return false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(features::kSharesheet) &&
-         base::FeatureList::IsEnabled(features::kChromeOSSharingHub);
+  return base::FeatureList::IsEnabled(features::kChromeOSSharingHub);
 #else
   return SharingHubOmniboxEnabled(web_contents_->GetBrowserContext());
 #endif
@@ -211,8 +209,7 @@ SharingHubModel* SharingHubBubbleController::GetSharingHubModel() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SharingHubBubbleController::ShowSharesheet(
     views::Button* highlighted_button) {
-  if (!base::FeatureList::IsEnabled(features::kSharesheet) ||
-      !base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
+  if (!base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
     return;
   }
 

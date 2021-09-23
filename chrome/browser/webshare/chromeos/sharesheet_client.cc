@@ -25,7 +25,6 @@
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/store_files_task.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -229,10 +228,6 @@ void SharesheetClient::ShowSharesheet(
     DeliveredCallback delivered_callback) {
   DCHECK_EQ(file_paths.size(), content_types.size());
   DCHECK_EQ(file_paths.size(), file_sizes.size());
-  if (!base::FeatureList::IsEnabled(features::kSharesheet)) {
-    std::move(delivered_callback).Run(sharesheet::SharesheetResult::kCancel);
-    return;
-  }
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

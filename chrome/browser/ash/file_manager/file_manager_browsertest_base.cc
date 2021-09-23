@@ -1735,12 +1735,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
 
-  if (options.enable_sharesheet) {
-    enabled_features.push_back(features::kSharesheet);
-  } else {
-    disabled_features.push_back(features::kSharesheet);
-  }
-
   if (options.single_partition_format) {
     enabled_features.push_back(chromeos::features::kFilesSinglePartitionFormat);
   }

@@ -340,8 +340,7 @@ void LocationBarView::Init() {
   }
   if (browser_) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
-        base::FeatureList::IsEnabled(features::kSharesheet)) {
+    if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
       params.types_enabled.push_back(PageActionIconType::kSharingHub);
     }
 #else

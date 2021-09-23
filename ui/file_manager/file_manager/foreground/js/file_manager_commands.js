@@ -1798,8 +1798,8 @@ CommandHandler.COMMANDS_['more-actions'] = new class extends FilesCommand {
 
   /** @override */
   canExecute(event, fileManager) {
-    const canExecute = fileManager.taskController.canExecuteMoreActions() &&
-        !util.isSharesheetEnabled();
+    // TODO(crbug.com/1251866) : Removing more-action dialog in progress.
+    const canExecute = false;
     event.canExecute = canExecute;
     event.command.setHidden(!canExecute);
   }
@@ -1841,7 +1841,7 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends FilesCommand {
   canExecute(event, fileManager) {
     const entries = fileManager.selectionHandler.selection.entries;
 
-    if (!util.isSharesheetEnabled() || !entries || entries.length === 0 ||
+    if (!entries || entries.length === 0 ||
         (entries.some(entry => entry.isDirectory) &&
          (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager) ||
           entries.length > 1))) {

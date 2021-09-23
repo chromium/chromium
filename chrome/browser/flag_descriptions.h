@@ -2883,9 +2883,6 @@ extern const char kSchedulerConfigurationPerformance[];
 extern const char kSelectToSpeakNavigationControlName[];
 extern const char kSelectToSpeakNavigationControlDescription[];
 
-extern const char kSharesheetName[];
-extern const char kSharesheetDescription[];
-
 extern const char kChromeOSSharingHubName[];
 extern const char kChromeOSSharingHubDescription[];
 

@@ -985,8 +985,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
       "DRIVE_DSS_PIN_ENABLED",
       base::FeatureList::IsEnabled(
           chromeos::features::kDriveFsBidirectionalNativeMessaging));
-  dict->SetBoolKey("SHARESHEET_ENABLED",
-                   base::FeatureList::IsEnabled(features::kSharesheet));
   dict->SetBoolKey(
       "FILTERS_IN_RECENTS_ENABLED",
       base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecents));

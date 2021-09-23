@@ -6681,10 +6681,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOffersInDownstream)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-sharesheet", flag_descriptions::kSharesheetName,
-     flag_descriptions::kSharesheetDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kSharesheet)},
-
     {"chromeos-sharing-hub", flag_descriptions::kChromeOSSharingHubName,
      flag_descriptions::kChromeOSSharingHubDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kChromeOSSharingHub)},
