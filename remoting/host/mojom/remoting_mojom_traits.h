@@ -11,7 +11,7 @@
 
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "remoting/host/mojom/clipboard.mojom-shared.h"
+#include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/proto/event.pb.h"
 
 namespace mojo {

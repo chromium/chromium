@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/win/scoped_handle.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "remoting/host/win/worker_process_launcher.h"
 
 namespace base {
@@ -55,6 +56,9 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   void ReportFatalError();
   void ReportProcessLaunched(base::win::ScopedHandle worker_process);

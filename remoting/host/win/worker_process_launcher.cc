@@ -13,6 +13,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
@@ -162,6 +163,17 @@ void WorkerProcessLauncher::OnChannelError() {
     kill_process_timer_.Start(FROM_HERE, kill_process_timeout_, this,
                               &WorkerProcessLauncher::StopWorker);
   }
+}
+
+void WorkerProcessLauncher::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ipc_enabled_)
+    return;
+
+  ipc_handler_->OnAssociatedInterfaceRequest(interface_name, std::move(handle));
 }
 
 void WorkerProcessLauncher::OnObjectSignaled(HANDLE object) {

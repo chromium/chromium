@@ -25,10 +25,8 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/ipc_file_operations.h"
-#include "remoting/host/ipc_url_forwarder_configurator.h"
-#include "remoting/host/mojom/clipboard.mojom.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
-#include "remoting/host/mojom/url_forwarder_configurator.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/proto/control.pb.h"
@@ -85,8 +83,7 @@ class DesktopSessionProxy
                                         DesktopSessionProxyTraits>,
       public IPC::Listener,
       public IpcFileOperations::RequestHandler,
-      public mojom::ClipboardEventObserver,
-      public mojom::UrlForwarderStateObserver {
+      public mojom::DesktopSessionEventHandler {
  public:
   DesktopSessionProxy(
       scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
@@ -179,17 +176,15 @@ class DesktopSessionProxy
   void Close(std::uint64_t file_id) override;
   void Cancel(std::uint64_t file_id) override;
 
-  // mojom::ClipboardEventObserver implementation.
+  // mojom::DesktopSessionEventHandler implementation.
   void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
+  void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
 
   // API used to implement the UrlForwarderConfigurator interface.
   void IsUrlForwarderSetUp(
       UrlForwarderConfigurator::IsUrlForwarderSetUpCallback callback);
   void SetUpUrlForwarder(
       const UrlForwarderConfigurator::SetUpUrlForwarderCallback& callback);
-
-  // mojom::UrlForwarderStateObserver implementation.
-  void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
 
   uint32_t desktop_session_id() const { return desktop_session_id_; }
 
@@ -294,20 +289,15 @@ class DesktopSessionProxy
   // is called on IpcKeyboardLayoutMonitor.
   absl::optional<protocol::KeyboardLayout> keyboard_layout_;
 
-  // |clipboard_handler_remote_| is only valid when |desktop_channel_| is
+  // |desktop_session_control_| is only valid when |desktop_channel_| is
   // connected. The desktop process can be detached and reattached several times
   // during a session (e.g. transitioning between the login screen and user
   // desktop) so the validity of this remote must be checked before calling a
   // method on it.
-  mojo::AssociatedRemote<mojom::ClipboardEventHandler>
-      clipboard_handler_remote_;
-  mojo::AssociatedReceiver<mojom::ClipboardEventObserver>
-      clipboard_observer_receiver_{this};
+  mojo::AssociatedRemote<mojom::DesktopSessionControl> desktop_session_control_;
+  mojo::AssociatedReceiver<mojom::DesktopSessionEventHandler>
+      desktop_session_event_handler_{this};
 
-  mojo::AssociatedRemote<mojom::UrlForwarderConfigurator>
-      url_forwarder_configurator_remote_;
-  mojo::AssociatedReceiver<mojom::UrlForwarderStateObserver>
-      url_forwarder_state_observer_receiver_{this};
   UrlForwarderConfigurator::IsUrlForwarderSetUpCallback
       is_url_forwarder_set_up_callback_;
   UrlForwarderConfigurator::SetUpUrlForwarderCallback

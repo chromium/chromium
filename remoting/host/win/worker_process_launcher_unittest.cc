@@ -21,6 +21,7 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_messages.h"
@@ -52,10 +53,10 @@ class MockProcessLauncherDelegate : public WorkerProcessLauncher::Delegate {
   ~MockProcessLauncherDelegate() override {}
 
   // WorkerProcessLauncher::Delegate interface.
-  MOCK_METHOD1(LaunchProcess, void(WorkerProcessLauncher*));
-  MOCK_METHOD1(Send, void(IPC::Message*));
-  MOCK_METHOD0(CloseChannel, void());
-  MOCK_METHOD0(KillProcess, void());
+  MOCK_METHOD(void, LaunchProcess, (WorkerProcessLauncher*), (override));
+  MOCK_METHOD(void, Send, (IPC::Message*), (override));
+  MOCK_METHOD(void, CloseChannel, (), (override));
+  MOCK_METHOD(void, KillProcess, (), (override));
 };
 
 class MockIpcDelegate : public WorkerProcessIpcDelegate {
@@ -68,10 +69,16 @@ class MockIpcDelegate : public WorkerProcessIpcDelegate {
   ~MockIpcDelegate() override {}
 
   // WorkerProcessIpcDelegate interface.
-  MOCK_METHOD1(OnChannelConnected, void(int32_t));
-  MOCK_METHOD1(OnMessageReceived, bool(const IPC::Message&));
-  MOCK_METHOD1(OnPermanentError, void(int));
-  MOCK_METHOD0(OnWorkerProcessStopped, void());
+  MOCK_METHOD(void, OnChannelConnected, (int32_t), (override));
+  MOCK_METHOD(bool, OnMessageReceived, (const IPC::Message&), (override));
+  MOCK_METHOD(void, OnPermanentError, (int), (override));
+  MOCK_METHOD(void, OnWorkerProcessStopped, (), (override));
+  MOCK_METHOD(void,
+              OnAssociatedInterfaceRequest,
+              (const std::string& interface_name,
+               mojo::ScopedInterfaceEndpointHandle handle),
+              (override));
+
 };
 
 class MockWorkerListener : public IPC::Listener {
@@ -83,7 +90,7 @@ class MockWorkerListener : public IPC::Listener {
 
   ~MockWorkerListener() override {}
 
-  MOCK_METHOD3(OnCrash, void(const std::string&, const std::string&, int));
+  MOCK_METHOD(void, OnCrash, (const std::string&, const std::string&, int));
 
   // IPC::Listener implementation
   bool OnMessageReceived(const IPC::Message& message) override;

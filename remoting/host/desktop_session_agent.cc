@@ -33,7 +33,7 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
-#include "remoting/host/mojom/url_forwarder_configurator.mojom-shared.h"
+#include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/host/process_stats_sender.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
@@ -315,25 +315,20 @@ void DesktopSessionAgent::OnAssociatedInterfaceRequest(
     mojo::ScopedInterfaceEndpointHandle handle) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (interface_name == mojom::ClipboardEventHandler::Name_) {
-    if (clipboard_handler_receiver_.is_bound()) {
+  if (interface_name == mojom::DesktopSessionControl::Name_) {
+    if (desktop_session_control_.is_bound()) {
       LOG(ERROR) << "Receiver already bound for associated interface: "
-                 << mojom::ClipboardEventHandler::Name_;
-      CrashProcess(base::Location::Current());
+                 << mojom::DesktopSessionControl::Name_;
+      delegate_->CrashNetworkProcess(base::Location::Current());
     }
 
-    mojo::PendingAssociatedReceiver<mojom::ClipboardEventHandler>
+    mojo::PendingAssociatedReceiver<mojom::DesktopSessionControl>
         pending_receiver(std::move(handle));
-    clipboard_handler_receiver_.Bind(std::move(pending_receiver));
-  } else if (interface_name == mojom::UrlForwarderConfigurator::Name_) {
-    if (url_forwarder_configurator_receiver_.is_bound()) {
-      LOG(ERROR) << "Receiver already bound for associated interface: "
-                 << mojom::UrlForwarderConfigurator::Name_;
-      CrashProcess(base::Location::Current());
-    }
-    mojo::PendingAssociatedReceiver<mojom::UrlForwarderConfigurator>
-        pending_receiver(std::move(handle));
-    url_forwarder_configurator_receiver_.Bind(std::move(pending_receiver));
+    desktop_session_control_.Bind(std::move(pending_receiver));
+  } else {
+    LOG(ERROR) << "Unknown associated interface requested: " << interface_name
+               << ", crashing the network process";
+    delegate_->CrashNetworkProcess(base::Location::Current());
   }
 }
 
@@ -412,10 +407,9 @@ void DesktopSessionAgent::OnStartSessionAgent(
   started_ = true;
   client_jid_ = authenticated_jid;
 
-  // Hook up the associated interfaces.
-  network_channel_->GetRemoteAssociatedInterface(&clipboard_observer_remote_);
+  // Hook up the associated interface.
   network_channel_->GetRemoteAssociatedInterface(
-      &url_forwarder_state_observer_remote_);
+      &desktop_session_event_handler_);
 
   // Create a desktop environment for the new session.
   desktop_environment_ = delegate_->desktop_environment_factory().Create(
@@ -535,8 +529,8 @@ void DesktopSessionAgent::OnClipboardEvent(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_) << "OnClipboardEvent called before agent was started.";
 
-  if (clipboard_observer_remote_) {
-    clipboard_observer_remote_->OnClipboardEvent(event);
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnClipboardEvent(event);
   }
 }
 
@@ -610,11 +604,9 @@ void DesktopSessionAgent::Stop() {
     weak_factory_.InvalidateWeakPtrs();
     client_jid_.clear();
 
-    clipboard_observer_remote_.reset();
-    clipboard_handler_receiver_.reset();
+    desktop_session_event_handler_.reset();
+    desktop_session_control_.reset();
 
-    url_forwarder_configurator_receiver_.reset();
-    url_forwarder_state_observer_remote_.reset();
     url_forwarder_configurator_.reset();
 
     remote_input_filter_.reset();
@@ -821,7 +813,7 @@ void DesktopSessionAgent::SetUpUrlForwarder() {
 
 void DesktopSessionAgent::OnCheckUrlForwarderSetUpResult(bool is_set_up) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  url_forwarder_state_observer_remote_->OnUrlForwarderStateChange(
+  desktop_session_event_handler_->OnUrlForwarderStateChange(
       is_set_up ? mojom::UrlForwarderState::kSetUp
                 : mojom::UrlForwarderState::kNotSetUp);
 }
@@ -844,7 +836,7 @@ void DesktopSessionAgent::OnUrlForwarderSetUpStateChanged(
       NOTREACHED() << "Unknown state: " << state;
       mojo_state = mojom::UrlForwarderState::kUnknown;
   }
-  url_forwarder_state_observer_remote_->OnUrlForwarderStateChange(mojo_state);
+  desktop_session_event_handler_->OnUrlForwarderStateChange(mojo_state);
 }
 
 }  // namespace remoting

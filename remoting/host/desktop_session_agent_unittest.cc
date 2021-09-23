@@ -40,6 +40,8 @@ class FakeDelegate : public DesktopSessionAgent::Delegate {
 
   void OnNetworkProcessDisconnected() override {}
 
+  void CrashNetworkProcess(const base::Location& location) override {}
+
   base::WeakPtr<Delegate> GetWeakPtr() { return weak_ptr_.GetWeakPtr(); }
 
  private:

@@ -127,19 +127,6 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_HostStarted,
 IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_HostShutdown)
 
 //-----------------------------------------------------------------------------
-// Chromoting messages sent from the desktop to the daemon process.
-
-// Notifies the daemon that a desktop integration process has been initialized.
-// |desktop_pipe| specifies the client end of the desktop pipe. It is to be
-// forwarded to the desktop environment stub.
-IPC_MESSAGE_CONTROL(ChromotingDesktopDaemonMsg_DesktopAttached,
-                    IPC::ChannelHandle /* desktop_pipe */)
-
-// Asks the daemon to inject Secure Attention Sequence (SAS) in the session
-// where the desktop process is running.
-IPC_MESSAGE_CONTROL(ChromotingDesktopDaemonMsg_InjectSas)
-
-//-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the network process.
 
 // Notifies the network process that a shared buffer has been created.

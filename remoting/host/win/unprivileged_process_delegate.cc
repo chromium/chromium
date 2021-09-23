@@ -376,6 +376,15 @@ void UnprivilegedProcessDelegate::OnChannelError() {
   event_handler_->OnChannelError();
 }
 
+void UnprivilegedProcessDelegate::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  event_handler_->OnAssociatedInterfaceRequest(interface_name,
+                                               std::move(handle));
+}
+
 void UnprivilegedProcessDelegate::ReportFatalError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

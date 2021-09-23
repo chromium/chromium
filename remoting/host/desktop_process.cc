@@ -60,10 +60,18 @@ void DesktopProcess::OnNetworkProcessDisconnected() {
   OnChannelError();
 }
 
+void DesktopProcess::CrashNetworkProcess(const base::Location& location) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  LOG(ERROR) << "Asking the daemon process to crash the network process. "
+             << "Request originated from: " << location.ToString();
+  desktop_session_request_handler_->CrashNetworkProcess();
+}
+
 void DesktopProcess::InjectSas() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  daemon_channel_->Send(new ChromotingDesktopDaemonMsg_InjectSas());
+  desktop_session_request_handler_->InjectSecureAttentionSequence();
 }
 
 void DesktopProcess::LockWorkstation() {
@@ -108,6 +116,7 @@ void DesktopProcess::OnChannelError() {
     desktop_agent_->Stop();
     desktop_agent_ = nullptr;
   }
+  desktop_session_request_handler_.reset();
 
   caller_task_runner_ = nullptr;
   input_task_runner_ = nullptr;
@@ -150,9 +159,12 @@ bool DesktopProcess::Start(
       daemon_channel_handle_.release(), IPC::Channel::MODE_CLIENT, this,
       io_task_runner_, base::ThreadTaskRunnerHandle::Get());
 
+  daemon_channel_->GetRemoteAssociatedInterface(
+      &desktop_session_request_handler_);
+
   // Pass |desktop_pipe| to the daemon.
-  daemon_channel_->Send(
-      new ChromotingDesktopDaemonMsg_DesktopAttached(desktop_pipe.release()));
+  desktop_session_request_handler_->ConnectDesktopChannel(
+      std::move(desktop_pipe));
 
   return true;
 }
