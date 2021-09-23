@@ -6,54 +6,15 @@
 
 #include <memory>
 
-#include "annotator_message_handler.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
+#include "chromeos/components/projector_app/annotator_tool.h"
 #include "content/public/browser/web_ui.h"
 
 namespace chromeos {
-
-namespace {
-
-const char kToolColor[] = "color";
-const char kToolSize[] = "size";
-const char kToolType[] = "toolType";
-
-}  // namespace
-
-Tool::Tool() = default;
-Tool::Tool(Tool&&) = default;
-Tool& Tool::operator=(Tool&&) = default;
-Tool::~Tool() = default;
-
-// static
-base::Value Tool::ToValue(const Tool& tool) {
-  base::Value val(base::Value::Type::DICTIONARY);
-  val.SetKey(kToolColor, base::Value(tool.color));
-  val.SetKey(kToolSize, base::Value(tool.size));
-  val.SetKey(kToolType, base::Value(static_cast<int>(tool.type)));
-  return val;
-}
-
-// static
-Tool Tool::ToTool(const base::Value& value) {
-  DCHECK(value.is_dict());
-  DCHECK(value.FindKey(kToolColor)->is_string());
-  DCHECK(value.FindKey(kToolSize)->is_int());
-  DCHECK(value.FindKey(kToolType)->is_int());
-  Tool t;
-  t.color = *(value.FindStringPath(kToolColor));
-  t.size = *(value.FindIntPath(kToolSize));
-  t.type = static_cast<AnnotatorToolType>(*(value.FindIntPath(kToolType)));
-  return t;
-}
-
-bool Tool::operator==(const Tool& rhs) const {
-  return rhs.color == color && rhs.size == size && rhs.type == type;
-}
 
 AnnotatorMessageHandler::AnnotatorMessageHandler() = default;
 AnnotatorMessageHandler::~AnnotatorMessageHandler() = default;
@@ -69,9 +30,9 @@ void AnnotatorMessageHandler::SetUndoRedoAvailabilityCallback(
   undo_redo_availability_callback_ = std::move(callback);
 }
 
-void AnnotatorMessageHandler::SetTool(const Tool& tool) {
+void AnnotatorMessageHandler::SetTool(const AnnotatorTool& tool) {
   AllowJavascript();
-  FireWebUIListener("setTool", Tool::ToValue(tool));
+  FireWebUIListener("setTool", tool.ToValue());
 }
 
 void AnnotatorMessageHandler::Undo() {
@@ -95,7 +56,7 @@ void AnnotatorMessageHandler::RegisterMessages() {
                                        base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      "OnUndoRedoAvailabilityChanged",
+      "onUndoRedoAvailabilityChanged",
       base::BindRepeating(
           &AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged,
           base::Unretained(this)));
@@ -106,7 +67,7 @@ void AnnotatorMessageHandler::OnToolSet(base::Value::ConstListView args) {
     return;
 
   DCHECK_EQ(args.size(), 1u);
-  tool_set_callback_.Run(Tool::ToTool(args[0]));
+  tool_set_callback_.Run(AnnotatorTool::FromValue(args[0]));
 }
 
 void AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged(

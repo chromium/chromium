@@ -7,8 +7,10 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/components/projector_app/annotator_tool.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace chromeos {
 
@@ -48,7 +50,7 @@ class AnnotatorMessageHandlerTest : public testing::Test {
     base::ListValue list_args;
     list_args.Append(base::Value(undo_available));
     list_args.Append(base::Value(redo_available));
-    web_ui().HandleReceivedMessage("OnUndoRedoAvailabilityChanged", &list_args);
+    web_ui().HandleReceivedMessage("onUndoRedoAvailabilityChanged", &list_args);
   }
 
   content::TestWebUI& web_ui() { return web_ui_; }
@@ -62,8 +64,8 @@ class AnnotatorMessageHandlerTest : public testing::Test {
 };
 
 TEST_F(AnnotatorMessageHandlerTest, SetTool) {
-  Tool expected_tool;
-  expected_tool.color = "black";
+  AnnotatorTool expected_tool;
+  expected_tool.color = SkColorSetARGB(0xA1, 0xB2, 0xC3, 0xD4);
   expected_tool.size = 5;
   expected_tool.type = AnnotatorToolType::kPen;
   handler()->SetTool(expected_tool);
@@ -72,20 +74,20 @@ TEST_F(AnnotatorMessageHandlerTest, SetTool) {
   ExpectCallToWebUI(kWebUIListenerCall, "setTool", /* call_count = */ 1u);
   const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
 
-  Tool requested_tool = Tool::ToTool(*call_data.arg2());
+  AnnotatorTool requested_tool = AnnotatorTool::FromValue(*call_data.arg2());
   EXPECT_EQ(requested_tool, expected_tool);
 
   // Now let's check that when the tool has been set, we notify the callback.
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   handler()->SetOnToolSetCallback(base::BindLambdaForTesting(
-      [&quit_closure, &expected_tool](const Tool& result_tool) {
+      [&quit_closure, &expected_tool](const AnnotatorTool& result_tool) {
         EXPECT_EQ(result_tool, expected_tool);
         quit_closure.Run();
       }));
 
   base::ListValue list_args;
-  list_args.Append(Tool::ToValue(expected_tool));
+  list_args.Append(expected_tool.ToValue());
   web_ui().HandleReceivedMessage("onToolSet", &list_args);
   run_loop.Run();
 }

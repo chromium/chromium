@@ -16,42 +16,11 @@ class WebUI;
 
 namespace chromeos {
 
-// The annotator tool type.
-enum class AnnotatorToolType {
-  kMarker = 0,
-  kPen,
-  kHighlighter,
-  kEraser,
-  // TODO(b/196245932) Add support for laser pointer when we are sure we are
-  // going to implement it inside the WebView.
-};
-
-// The tool that the annotator will be using.
-class Tool {
- public:
-  Tool();
-  Tool(Tool&&);
-  Tool& operator=(Tool&&);
-  ~Tool();
-
-  static base::Value ToValue(const Tool& tool);
-  static Tool ToTool(const base::Value& value);
-
-  bool operator==(const Tool& rhs) const;
-
-  // The color of of the annotator.
-  std::string color = "black";
-
-  // The size of the annotator tool tip.
-  int size = 16;
-
-  // The type of the annotator tool.
-  AnnotatorToolType type = AnnotatorToolType::kMarker;
-};
+struct AnnotatorTool;
 
 // Callback to setting the tool. The callback allows us to visually show the
 // user on whether the tool has changed or not.
-using ToolSetCallback = base::RepeatingCallback<void(const Tool&)>;
+using ToolSetCallback = base::RepeatingCallback<void(const AnnotatorTool&)>;
 
 // Callback to notify the user that undo/redo availability has changed. The
 // first argument is for undo availability. The second argument to the callback
@@ -71,7 +40,7 @@ class AnnotatorMessageHandler : public content::WebUIMessageHandler {
   // the annotator tool.
   void SetOnToolSetCallback(ToolSetCallback callback);
   void SetUndoRedoAvailabilityCallback(UndoRedoAvailabilityCallback callback);
-  void SetTool(const Tool& tool);
+  void SetTool(const AnnotatorTool& tool);
   void Undo();
   void Redo();
   void Clear();
