@@ -81,9 +81,6 @@ crbug.com/dawn/1002 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,validatio
 # Dawn implements validation of the limit at createShaderModule time, while the CTS checks at createRenderPipeline time.
 crbug.com/dawn/986 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_input_location_limit:* [ Failure ]
 
-# Dawn implementation for destinationOffset needs update
-crbug.com/dawn/940 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,queries,resolveQuerySet:destination_offset_alignment:* [ Failure ]
-
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
 # Linux: Crashes
