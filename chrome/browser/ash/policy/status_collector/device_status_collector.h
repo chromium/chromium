@@ -286,7 +286,9 @@ class DeviceStatusCollector : public StatusCollector,
   bool GetVersionInfo(enterprise_management::DeviceStatusReportRequest* status);
   bool GetWriteProtectSwitch(
       enterprise_management::DeviceStatusReportRequest* status);
-  bool GetNetworkInterfaces(
+  bool GetNetworkConfiguration(
+      enterprise_management::DeviceStatusReportRequest* status);
+  bool GetNetworkStatus(
       enterprise_management::DeviceStatusReportRequest* status);
   bool GetUsers(enterprise_management::DeviceStatusReportRequest* status);
   bool GetMemoryInfo(enterprise_management::DeviceStatusReportRequest* status);
@@ -458,7 +460,8 @@ class DeviceStatusCollector : public StatusCollector,
 
   // Cached values of the reporting settings. These are enterprise only. There
   // are common ones in StatusCollector interface.
-  bool report_network_interfaces_ = false;
+  bool report_network_configuration_ = false;
+  bool report_network_status_ = false;
   bool report_users_ = false;
   bool report_kiosk_session_status_ = false;
   bool report_os_update_status_ = false;
@@ -483,7 +486,9 @@ class DeviceStatusCollector : public StatusCollector,
 
   base::CallbackListSubscription activity_times_subscription_;
   base::CallbackListSubscription audio_status_subscription_;
+  base::CallbackListSubscription network_configuration_subscription_;
   base::CallbackListSubscription network_interfaces_subscription_;
+  base::CallbackListSubscription network_status_subscription_;
   base::CallbackListSubscription users_subscription_;
   base::CallbackListSubscription session_status_subscription_;
   base::CallbackListSubscription os_update_status_subscription_;

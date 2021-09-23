@@ -10211,7 +10211,7 @@
       'owners': ['tylergarrett@google.com', 'cros-reporting-team@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:96-'],
       'supported_chrome_os_management': ['google_cloud'],
       'device_only': True,
       'features': {
@@ -10263,7 +10263,7 @@
       'owners': ['tylergarrett@google.com', 'cros-reporting-team@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:96-'],
       'supported_chrome_os_management': ['google_cloud'],
       'device_only': True,
       'features': {

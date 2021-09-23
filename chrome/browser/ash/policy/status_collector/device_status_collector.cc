@@ -1569,6 +1569,10 @@ DeviceStatusCollector::DeviceStatusCollector(
       chromeos::kReportDeviceAudioStatus, callback);
   network_interfaces_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kReportDeviceNetworkInterfaces, callback);
+  network_configuration_subscription_ = cros_settings_->AddSettingsObserver(
+      chromeos::kReportDeviceNetworkConfiguration, callback);
+  network_status_subscription_ = cros_settings_->AddSettingsObserver(
+      chromeos::kReportDeviceNetworkStatus, callback);
   users_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kReportDeviceUsers, callback);
   session_status_subscription_ = cros_settings_->AddSettingsObserver(
@@ -1696,6 +1700,7 @@ void DeviceStatusCollector::UpdateReportingSettings() {
 
   // Keep the default values in sync with DeviceReportingProto in
   // components/policy/proto/chrome_device_policy.proto.
+  // TODO(b/195030842): Refactor how reporting policy variables are set.
   if (!cros_settings_->GetBoolean(chromeos::kReportDeviceVersionInfo,
                                   &report_version_info_)) {
     report_version_info_ = true;
@@ -1716,9 +1721,13 @@ void DeviceStatusCollector::UpdateReportingSettings() {
                                   &report_kiosk_session_status_)) {
     report_kiosk_session_status_ = true;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceNetworkInterfaces,
-                                  &report_network_interfaces_)) {
-    report_network_interfaces_ = true;
+  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceNetworkConfiguration,
+                                  &report_network_configuration_)) {
+    report_network_configuration_ = true;
+  }
+  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceNetworkStatus,
+                                  &report_network_status_)) {
+    report_network_status_ = true;
   }
   if (!cros_settings_->GetBoolean(chromeos::kReportDeviceUsers,
                                   &report_users_)) {
@@ -2263,9 +2272,8 @@ bool DeviceStatusCollector::GetWriteProtectSwitch(
   return true;
 }
 
-bool DeviceStatusCollector::GetNetworkInterfaces(
+bool DeviceStatusCollector::GetNetworkConfiguration(
     em::DeviceStatusReportRequest* status) {
-  // Maps shill device type strings to proto enum constants.
   static const struct {
     const char* type_string;
     em::NetworkInterface::NetworkDeviceType type_constant;
@@ -2282,27 +2290,6 @@ bool DeviceStatusCollector::GetNetworkInterfaces(
           shill::kTypeCellular,
           em::NetworkInterface::TYPE_CELLULAR,
       },
-  };
-
-  // Maps shill device connection status to proto enum constants.
-  static const struct {
-    const char* state_string;
-    em::NetworkState::ConnectionState state_constant;
-  } kConnectionStateMap[] = {
-      {shill::kStateIdle, em::NetworkState::IDLE},
-      {shill::kStateCarrier, em::NetworkState::CARRIER},
-      {shill::kStateAssociation, em::NetworkState::ASSOCIATION},
-      {shill::kStateConfiguration, em::NetworkState::CONFIGURATION},
-      {shill::kStateReady, em::NetworkState::READY},
-      {shill::kStatePortal, em::NetworkState::PORTAL},
-      {shill::kStateNoConnectivity, em::NetworkState::PORTAL},
-      {shill::kStateRedirectFound, em::NetworkState::PORTAL},
-      {shill::kStatePortalSuspected, em::NetworkState::PORTAL},
-      {shill::kStateOffline, em::NetworkState::OFFLINE},
-      {shill::kStateOnline, em::NetworkState::ONLINE},
-      {shill::kStateDisconnect, em::NetworkState::DISCONNECT},
-      {shill::kStateFailure, em::NetworkState::FAILURE},
-      {shill::kStateActivationFailure, em::NetworkState::ACTIVATION_FAILURE},
   };
 
   chromeos::NetworkStateHandler::DeviceStateList device_list;
@@ -2337,6 +2324,36 @@ bool DeviceStatusCollector::GetNetworkInterfaces(
       interface->set_device_path((*device)->path());
     anything_reported = true;
   }
+
+  return anything_reported;
+}
+
+bool DeviceStatusCollector::GetNetworkStatus(
+    em::DeviceStatusReportRequest* status) {
+  // Maps shill device connection status to proto enum constants.
+  static const struct {
+    const char* state_string;
+    em::NetworkState::ConnectionState state_constant;
+  } kConnectionStateMap[] = {
+      {shill::kStateIdle, em::NetworkState::IDLE},
+      {shill::kStateCarrier, em::NetworkState::CARRIER},
+      {shill::kStateAssociation, em::NetworkState::ASSOCIATION},
+      {shill::kStateConfiguration, em::NetworkState::CONFIGURATION},
+      {shill::kStateReady, em::NetworkState::READY},
+      {shill::kStatePortal, em::NetworkState::PORTAL},
+      {shill::kStateNoConnectivity, em::NetworkState::PORTAL},
+      {shill::kStateRedirectFound, em::NetworkState::PORTAL},
+      {shill::kStatePortalSuspected, em::NetworkState::PORTAL},
+      {shill::kStateOffline, em::NetworkState::OFFLINE},
+      {shill::kStateOnline, em::NetworkState::ONLINE},
+      {shill::kStateDisconnect, em::NetworkState::DISCONNECT},
+      {shill::kStateFailure, em::NetworkState::FAILURE},
+      {shill::kStateActivationFailure, em::NetworkState::ACTIVATION_FAILURE},
+  };
+
+  bool anything_reported = false;
+  chromeos::NetworkStateHandler* network_state_handler =
+      chromeos::NetworkHandler::Get()->network_state_handler();
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* const primary_user = user_manager->GetPrimaryUser();
@@ -2647,8 +2664,11 @@ void DeviceStatusCollector::GetDeviceStatus(
     }
   }
 
-  if (report_network_interfaces_)
-    anything_reported |= GetNetworkInterfaces(status);
+  if (report_network_configuration_)
+    anything_reported |= GetNetworkConfiguration(status);
+
+  if (report_network_status_)
+    anything_reported |= GetNetworkStatus(status);
 
   if (report_users_)
     anything_reported |= GetUsers(status);
@@ -2863,8 +2883,9 @@ bool DeviceStatusCollector::ShouldReportActivityTimes() const {
   std::string user_email = GetUserForActivityReporting();
   return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
 }
+// TODO(b/192252043): Remove this once management ui has been refactored.
 bool DeviceStatusCollector::ShouldReportNetworkInterfaces() const {
-  return report_network_interfaces_;
+  return false;
 }
 bool DeviceStatusCollector::ShouldReportUsers() const {
   // For more details, see comment in
