@@ -55,8 +55,11 @@ const char kNetworkAddedEventTemplate[] =
 const char kNetworkRemovedEventTemplate[] = "%s network [%s] removed\n";
 const char kNetworkStateChangedEventTemplate[] =
     "%s network [%s] changed state from %s to %s\n";
-const char kJoinedWiFiEventTemplate[] = "%s network [%s] joined SSID '%s'\n";
+const char kJoinedWiFiEventTemplate[] =
+    "%s network [%s] joined SSID '%s' on access point [%s]\n";
 const char kLeftWiFiEventTemplate[] = "%s network [%s] left SSID '%s'\n";
+const char kAccessPointRoamingEventTemplate[] =
+    "%s network [%s] on SSID '%s' roamed from access point [%s] to [%s]\n";
 
 std::string GetSubnetMask(int prefix) {
   uint32_t mask = (0xFFFFFFFF << (32 - prefix)) & 0xFFFFFFFF;
@@ -90,6 +93,12 @@ std::string GetSsid(const mojom::NetworkPtr& network) {
                                   : "";
 }
 
+std::string GetBssid(const mojom::NetworkPtr& network) {
+  DCHECK(network->type == mojom::NetworkType::kWiFi);
+  return network->type_properties ? network->type_properties->get_wifi()->bssid
+                                  : "";
+}
+
 bool HasJoinedWiFiNetwork(const mojom::NetworkPtr& old_state,
                           const mojom::NetworkPtr& new_state) {
   const std::string old_ssid = GetSsid(old_state);
@@ -100,6 +109,13 @@ bool HasLeftWiFiNetwork(const mojom::NetworkPtr& old_state,
                         const mojom::NetworkPtr& new_state) {
   const std::string new_ssid = GetSsid(new_state);
   return new_ssid.empty() && (new_ssid != GetSsid(old_state));
+}
+
+bool HasRoamedAccessPoint(const mojom::NetworkPtr& old_state,
+                          const mojom::NetworkPtr& new_state) {
+  const std::string new_ssid = GetSsid(new_state);
+  return !new_ssid.empty() && (new_ssid == GetSsid(old_state)) &&
+         (GetBssid(old_state) != GetBssid(new_state));
 }
 
 void AddWifiInfoToLog(const mojom::NetworkTypeProperties& type_props,
@@ -301,6 +317,8 @@ void NetworkingLog::LogNetworkChanges(const mojom::NetworkPtr& new_state) {
       LogJoinedWiFiNetwork(new_state);
     } else if (HasLeftWiFiNetwork(old_state, new_state)) {
       LogLeftWiFiNetwork(new_state, GetSsid(old_state));
+    } else if (HasRoamedAccessPoint(old_state, new_state)) {
+      LogWiFiRoamedAccessPoint(new_state, GetBssid(old_state));
     }
   }
 
@@ -323,7 +341,8 @@ void NetworkingLog::LogNetworkStateChanged(const mojom::NetworkPtr& old_state,
 void NetworkingLog::LogJoinedWiFiNetwork(const mojom::NetworkPtr& network) {
   const std::string line = base::StringPrintf(
       kJoinedWiFiEventTemplate, GetNetworkType(network->type).c_str(),
-      network->mac_address.value_or("").c_str(), GetSsid(network).c_str());
+      network->mac_address.value_or("").c_str(), GetSsid(network).c_str(),
+      GetBssid(network).c_str());
   LogEvent(line);
 }
 
@@ -332,6 +351,15 @@ void NetworkingLog::LogLeftWiFiNetwork(const mojom::NetworkPtr& network,
   const std::string line = base::StringPrintf(
       kLeftWiFiEventTemplate, GetNetworkType(network->type).c_str(),
       network->mac_address.value_or("").c_str(), old_ssid.c_str());
+  LogEvent(line);
+}
+
+void NetworkingLog::LogWiFiRoamedAccessPoint(const mojom::NetworkPtr& network,
+                                             const std::string& old_bssid) {
+  const std::string line = base::StringPrintf(
+      kAccessPointRoamingEventTemplate, GetNetworkType(network->type).c_str(),
+      network->mac_address.value_or("").c_str(), GetSsid(network).c_str(),
+      old_bssid.c_str(), GetBssid(network).c_str());
   LogEvent(line);
 }
 

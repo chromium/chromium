@@ -64,6 +64,10 @@ class NetworkingLog {
   void LogLeftWiFiNetwork(const mojom::NetworkPtr& network,
                           const std::string& old_ssid);
 
+  // Logs when a WiFi network roams between access points.
+  void LogWiFiRoamedAccessPoint(const mojom::NetworkPtr& network,
+                                const std::string& old_bssid);
+
   AsyncLog event_log_;
   std::string active_guid_;
   base::flat_map<std::string, mojom::NetworkPtr> latest_network_states_;

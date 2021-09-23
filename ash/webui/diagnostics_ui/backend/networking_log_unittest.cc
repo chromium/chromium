@@ -284,6 +284,7 @@ TEST_F(NetworkingLogTest, WiFiNetworkEvents) {
   const uint16_t expected_frequency = 5785;
   const std::string expected_ssid = "ssid";
   const std::string expected_bssid = "bssid";
+  const std::string expected_bssid_roamed = "bssid_roamed";
   const std::string expected_subnet_mask = "128.0.0.0";
   const std::string expected_gateway = "192.0.0.1";
   const std::string expected_ip_address = "192.168.1.1";
@@ -320,6 +321,12 @@ TEST_F(NetworkingLogTest, WiFiNetworkEvents) {
   new_state->type_properties->get_wifi()->ssid = expected_ssid;
   log.UpdateNetworkState(std::move(new_state));
 
+  // Roam to a new access point.
+  new_state = test_info.Clone();
+  new_state->state = mojom::NetworkState::kOnline;
+  new_state->type_properties->get_wifi()->bssid = expected_bssid_roamed;
+  log.UpdateNetworkState(std::move(new_state));
+
   // Remove the network.
   log.UpdateNetworkList({}, "expected_guid");
 
@@ -329,7 +336,7 @@ TEST_F(NetworkingLogTest, WiFiNetworkEvents) {
   // Split the log for verification.
   const std::string events_log = log.GetNetworkEvents();
   const std::vector<std::string> events_lines = GetLogLines(events_log);
-  EXPECT_EQ(7u, events_lines.size());
+  EXPECT_EQ(8u, events_lines.size());
 
   // Verify section header.
   size_t upto_line = 0;
@@ -352,12 +359,18 @@ TEST_F(NetworkingLogTest, WiFiNetworkEvents) {
 
   // Verify network join event.
   expected_line = "WiFi network [" + expected_mac_address + "] joined SSID '" +
-                  expected_ssid + "'";
+                  expected_ssid + "' on access point [" + expected_bssid + "]";
   ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
 
   // Verify state change event.
   expected_line = "WiFi network [" + expected_mac_address +
                   "] changed state from Not Connected to Online";
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+
+  // Verify access point roam event.
+  expected_line = "WiFi network [" + expected_mac_address + "] on SSID '" +
+                  expected_ssid + "' roamed from access point [" +
+                  expected_bssid + "] to [" + expected_bssid_roamed + "]";
   ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
 
   // Verify remove event.
