@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
@@ -17,15 +17,161 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
+
+namespace {
+
+constexpr int kSidePanelWidth = 380;
+constexpr int kDefaultIconSize = 16;
+constexpr int kDefaultTouchableIconSize = 24;
+
+// Below are hardcoded color constants for the side panel. This is a UX decision
+// to ensure that the colors align with the tier 2 Google SRP which only
+// supports light mode. These are not intended to change to match the light/dark
+// system setting or custom theme colors.
+
+// White background to match the Google SRP.
+constexpr SkColor kHeaderBackgroundColor = SK_ColorWHITE;
+
+// Default light mode icon color for controls.
+constexpr SkColor kIconColor = gfx::kGoogleGrey700;
+
+// Default light mode separator color.
+constexpr SkColor kSeparatorColor = gfx::kGoogleGrey300;
+
+// Close button used in the header of the side panel. Responds appropriately to
+// touch ui changes.
+class CloseButton : public views::ImageButton {
+ public:
+  METADATA_HEADER(CloseButton);
+  explicit CloseButton(base::RepeatingClosure callback)
+      : ImageButton(std::move(callback)) {
+    views::ConfigureVectorImageButton(this);
+    views::InstallCircleHighlightPathGenerator(this);
+
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets(views::LayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_CLOSE_BUTTON_MARGIN))));
+    SetID(SideSearchBrowserController::SideSearchViewID::
+              VIEW_ID_SIDE_PANEL_CLOSE_BUTTON);
+    SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_SEARCH_CLOSE_BUTTON));
+    SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_SEARCH_CLOSE_BUTTON));
+
+    UpdateIcon();
+  }
+  ~CloseButton() override = default;
+
+  void UpdateIcon() {
+    const int icon_size = ui::TouchUiController::Get()->touch_ui()
+                              ? kDefaultTouchableIconSize
+                              : kDefaultIconSize;
+    views::SetImageFromVectorIconWithColor(this, vector_icons::kCloseIcon,
+                                           icon_size, kIconColor);
+  }
+};
+
+BEGIN_METADATA(CloseButton, views::ImageButton)
+END_METADATA
+
+// Header view used to house the close control at the top of the side panel.
+class HeaderView : public views::View {
+ public:
+  METADATA_HEADER(HeaderView);
+  explicit HeaderView(base::RepeatingClosure callback)
+      : close_button_(
+            AddChildView(std::make_unique<CloseButton>(std::move(callback)))),
+        layout_(SetLayoutManager(std::make_unique<views::BoxLayout>())) {
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                 views::MaximumFlexSizeRule::kPreferred));
+    SetBackground(views::CreateSolidBackground(kHeaderBackgroundColor));
+    layout_->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+    UpdateSpacing();
+  }
+  ~HeaderView() override = default;
+
+ private:
+  void UpdateSpacing() {
+    close_button_->UpdateIcon();
+    layout_->set_inside_border_insets(
+        GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN));
+  }
+
+  CloseButton* const close_button_;
+  views::BoxLayout* const layout_;
+
+  base::CallbackListSubscription subscription_ =
+      ui::TouchUiController::Get()->RegisterCallback(
+          base::BindRepeating(&HeaderView::UpdateSpacing,
+                              base::Unretained(this)));
+};
+
+BEGIN_METADATA(HeaderView, views::View)
+END_METADATA
+
+std::unique_ptr<views::Separator> CreateSeparator() {
+  auto separator = std::make_unique<views::Separator>();
+  separator->SetColor(kSeparatorColor);
+  return separator;
+}
+
+views::WebView* ConfigureSidePanel(views::View* side_panel,
+                                   Profile* profile,
+                                   base::RepeatingClosure callback) {
+  // BrowserViewLayout will layout the SidePanel to match the height of the
+  // content area.
+  side_panel->SetPreferredSize(gfx::Size(kSidePanelWidth, 1));
+
+  auto* layout =
+      side_panel->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
+  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  side_panel->AddChildView(std::make_unique<HeaderView>(std::move(callback)));
+  side_panel->AddChildView(CreateSeparator());
+
+  // The WebView will fill the remaining space after the header view has been
+  // laid out.
+  auto* web_view =
+      side_panel->AddChildView(std::make_unique<views::WebView>(profile));
+  web_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+
+  return web_view;
+}
+
+}  // namespace
 
 SideSearchBrowserController::SideSearchBrowserController(
     SidePanel* side_panel,
     BrowserView* browser_view)
     : side_panel_(side_panel),
       browser_view_(browser_view),
-      web_view_(side_panel_->AddChildView(
-          std::make_unique<views::WebView>(browser_view_->GetProfile()))) {
+      web_view_(ConfigureSidePanel(
+          side_panel,
+          browser_view_->GetProfile(),
+          base::BindRepeating(
+              &SideSearchBrowserController::SidePanelButtonPressed,
+              base::Unretained(this)))) {
   UpdateSidePanelForContents(browser_view_->GetActiveWebContents(), nullptr);
 }
 

@@ -21,6 +21,11 @@ class ToolbarButton;
 // for Side Search in addition to managing the state of the side panel itself.
 class SideSearchBrowserController : public content::WebContentsObserver {
  public:
+  enum SideSearchViewID {
+    VIEW_ID_NONE = 0,
+    VIEW_ID_SIDE_PANEL_CLOSE_BUTTON,
+  };
+
   SideSearchBrowserController(SidePanel* side_panel, BrowserView* browser_view);
   SideSearchBrowserController(const SideSearchBrowserController&) = delete;
   SideSearchBrowserController& operator=(const SideSearchBrowserController&) =

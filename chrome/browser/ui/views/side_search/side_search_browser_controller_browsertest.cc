@@ -71,12 +71,24 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
         .NotifyClick(GetDummyEvent());
   }
 
+  void NotifyCloseButtonClick() {
+    ASSERT_TRUE(side_panel()->GetVisible());
+    views::test::ButtonTestApi(side_panel_close_button())
+        .NotifyClick(GetDummyEvent());
+  }
+
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
   ToolbarButton* side_panel_button() {
     return browser_view()->toolbar()->left_side_panel_button();
+  }
+
+  views::ImageButton* side_panel_close_button() {
+    return static_cast<views::ImageButton*>(
+        side_panel()->GetViewByID(static_cast<int>(
+            SideSearchBrowserController::VIEW_ID_SIDE_PANEL_CLOSE_BUTTON)));
   }
 
   SidePanel* side_panel() {
@@ -222,6 +234,14 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   ActivateTabAt(1);
   EXPECT_TRUE(side_panel_button()->GetVisible());
   EXPECT_FALSE(side_panel()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       CloseButtonClosesSidePanel) {
+  // The close button should be visible in the toggled state.
+  NavigateToSRPAndOpenSidePanel();
+  EXPECT_TRUE(side_panel()->GetVisible());
+  NotifyCloseButtonClick();
 }
 
 class SideSearchStatePerTabBrowserControllerTest
