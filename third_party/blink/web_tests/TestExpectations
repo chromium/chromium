@@ -3509,7 +3509,6 @@ crbug.com/626703 [ Mac10.12 ] virtual/portals/external/wpt/portals/idlharness.wi
 crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins-2.html [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-unsafe-none-report-to.https.html [ Failure Pass ]
 
 crbug.com/1220220 external/wpt/html/rendering/non-replaced-elements/form-controls/input-placeholder-line-height.html [ Failure ]
 
@@ -5438,9 +5437,6 @@ crbug.com/1066579 http/tests/devtools/har-importer.js [ Failure Pass ]
 # The "timeout" was detected by the wpt-importer bot.
 crbug.com/1069714 [ Mac10.13 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Failure Pass Skip Timeout ]
 
-# COOP access reporting:
-crbug.com/1090273 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-opener-set.https.html [ Timeout ]
-
 # COOP top navigation:
 crbug.com/1153648 external/wpt/html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html [ Failure ]
 
@@ -5864,7 +5860,6 @@ crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js
 
 # Sheriff 2021-01-08
 crbug.com/1164459 [ Mac ] virtual/synchronous_html_parser/external/wpt/preload/download-resources.html [ Pass Timeout ]
-crbug.com/1164568 [ Mac ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Failure Pass ]
 
 # Sheriff 2021-01-12
 crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [ Failure Pass ]
@@ -6020,12 +6015,6 @@ crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoin
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-editing-dom-from-inspector.js [ Skip ]
 crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Failure Pass ]
 
-# Sheriff 2021-03-22
-crbug.com/1190805 [ Win ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure Pass ]
-crbug.com/1190805 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure Pass ]
-crbug.com/1190805 [ Mac10.13 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure Pass ]
-crbug.com/1190805 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure Pass ]
-
 crbug.com/1191068 [ Mac ] external/wpt/resource-timing/iframe-failed-commit.html [ Failure Pass ]
 crbug.com/1191068 [ Win ] external/wpt/resource-timing/iframe-failed-commit.html [ Failure Pass ]
 
@@ -6180,7 +6169,6 @@ crbug.com/1203963 [ Mac10.14 ] external/wpt/webusb/idlharness.https.any.html [ F
 crbug.com/1203963 [ Mac10.14 ] external/wpt/xhr/idlharness.any.sharedworker.html [ Failure Pass Skip Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.html [ Failure Pass Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.worker.html [ Failure Pass Timeout ]
-crbug.com/1204086 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html [ Failure Pass ]
 crbug.com/1204086 external/wpt/requestidlecallback/callback-invoked.html [ Failure Pass Skip Timeout ]
 
 # Sheriff 2021-04-30
@@ -6634,7 +6622,6 @@ crbug.com/1231989 [ Linux ] external/wpt/html/cross-origin-embedder-policy/share
 # Sheriff 2021-07-23
 crbug.com/1232388 [ Mac10.12 ] external/wpt/html/rendering/non-replaced-elements/hidden-elements.html [ Failure Pass ]
 crbug.com/1232417 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-video.https.html [ Failure Pass Timeout ]
-crbug.com/1218065 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-coep-report-to.https.html [ Failure Pass ]
 
 # Sheriff 2021-07-26
 crbug.com/1232867 [ Mac10.12 ] fast/inline-block/contenteditable-baseline.html [ Failure Pass ]

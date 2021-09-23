@@ -8,6 +8,6 @@
 <script src="/html/cross-origin-opener-policy/reporting/resources/test-access-property.js"></script>
 <script>
 
-testAccessProperty("opener", w => w.opener = "");
+testAccessProperty("opener", w => w.opener = "", /* expectReport = */false);
 
 </script>
