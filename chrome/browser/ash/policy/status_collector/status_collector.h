@@ -104,7 +104,6 @@ class StatusCollector {
   virtual bool ShouldReportActivityTimes() const = 0;
   virtual bool ShouldReportNetworkInterfaces() const = 0;
   virtual bool ShouldReportUsers() const = 0;
-  virtual bool ShouldReportHardwareStatus() const = 0;
   virtual bool ShouldReportCrashReportInfo() const = 0;
   virtual bool ShouldReportAppInfoAndActivity() const = 0;
 

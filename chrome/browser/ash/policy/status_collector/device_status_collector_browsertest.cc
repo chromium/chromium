@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -390,7 +391,8 @@ class TestingDeviceStatusCollector : public policy::DeviceStatusCollector {
   }
 
   void RefreshSampleResourceUsage() {
-    SampleResourceUsage();
+    SampleCpuUsage();
+    SampleMemoryUsage();
     content::RunAllTasksUntilIdle();
   }
 
@@ -1650,25 +1652,13 @@ TEST_F(DeviceStatusCollectorTest, DevSwitchBootMode) {
 }
 
 TEST_F(DeviceStatusCollectorTest, WriteProtectSwitch) {
-  // Test that write protect switch is reported by default.
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceSystemInfo, true);
   fake_statistics_provider_.SetMachineStatistic(
       chromeos::system::kFirmwareWriteProtectCurrentKey,
       chromeos::system::kFirmwareWriteProtectCurrentValueOn);
   GetStatus();
   EXPECT_TRUE(device_status_.write_protect_switch());
-
-  // Test that write protect switch is not reported if the hardware report pref
-  // is off.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
-
-  GetStatus();
-  EXPECT_FALSE(device_status_.has_write_protect_switch());
-
-  // Turn the pref on, and check that the status is reported iff the
-  // statistics provider returns valid data.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, true);
 
   fake_statistics_provider_.SetMachineStatistic(
       chromeos::system::kFirmwareWriteProtectCurrentKey, "(error)");
@@ -1800,6 +1790,8 @@ TEST_F(DeviceStatusCollectorTest, ReportUsers) {
 }
 
 TEST_F(DeviceStatusCollectorTest, TestVolumeInfo) {
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceStorageStatus, true);
   std::vector<std::string> expected_mount_points;
   std::vector<em::VolumeInfo> expected_volume_info;
   int size = 12345678;
@@ -1845,17 +1837,13 @@ TEST_F(DeviceStatusCollectorTest, TestVolumeInfo) {
     EXPECT_TRUE(found) << "No matching VolumeInfo for "
                        << expected_info.volume_id();
   }
-
-  // Now turn off hardware status reporting - should have no data.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
-  GetStatus();
-  EXPECT_EQ(0, device_status_.volume_infos_size());
 }
 
 TEST_F(DeviceStatusCollectorTest, TestAvailableMemory) {
   // Refresh our samples. Sample more than kMaxHardwareSamples times to
   // make sure that the code correctly caps the number of cached samples.
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceMemoryInfo, true);
   for (int i = 0; i < static_cast<int>(
                           DeviceStatusCollector::kMaxResourceUsageSamples + 1);
        ++i) {
@@ -1876,6 +1864,8 @@ TEST_F(DeviceStatusCollectorTest, TestSystemFreeRamInfo) {
       static_cast<const int>(DeviceStatusCollector::kMaxResourceUsageSamples);
   std::vector<int64_t> timestamp_lowerbounds;
   std::vector<int64_t> timestamp_upperbounds;
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceMemoryInfo, true);
 
   // Refresh our samples. Sample more than kMaxHardwareSamples times to
   // make sure that the code correctly caps the number of cached samples.
@@ -1915,6 +1905,8 @@ TEST_F(DeviceStatusCollectorTest, TestCPUSamples) {
   auto options = CreateEmptyDeviceStatusCollectorOptions();
   options->cpu_fetcher =
       base::BindRepeating(&GetFakeCPUStatistics, full_cpu_usage);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceCpuInfo, true);
   RestartStatusCollector(std::move(options));
 
   // Force finishing tasks posted by ctor of DeviceStatusCollector.
@@ -1950,7 +1942,7 @@ TEST_F(DeviceStatusCollectorTest, TestCPUSamples) {
 
   // Turning off hardware reporting should not report CPU utilization.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
+      chromeos::kReportDeviceCpuInfo, false);
   GetStatus();
   EXPECT_EQ(0, device_status_.cpu_utilization_pct_samples().size());
 }
@@ -1962,6 +1954,8 @@ TEST_F(DeviceStatusCollectorTest, TestCPUInfos) {
   auto options = CreateEmptyDeviceStatusCollectorOptions();
   options->cpu_fetcher =
       base::BindRepeating(&GetFakeCPUStatistics, full_cpu_usage);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceCpuInfo, true);
   RestartStatusCollector(std::move(options));
 
   // Force finishing tasks posted by ctor of DeviceStatusCollector.
@@ -2017,21 +2011,17 @@ TEST_F(DeviceStatusCollectorTest, TestCPUInfos) {
     EXPECT_LE(device_status_.cpu_utilization_infos(i).timestamp(),
               timestamp_upperbounds[i]);
   }
-
-  // Turning off hardware reporting should not report CPU utilization.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
-  GetStatus();
-  EXPECT_EQ(0, device_status_.cpu_utilization_infos().size());
 }
 
 TEST_F(DeviceStatusCollectorTest, TestCPUTemp) {
   std::vector<em::CPUTempInfo> expected_temp_info;
   int cpu_cnt = 12;
+  int64_t timestamp_lowerbound = base::Time::Now().ToJavaTime();
   for (int i = 0; i < cpu_cnt; ++i) {
     em::CPUTempInfo info;
     info.set_cpu_temp(i * 10 + 100);
     info.set_cpu_label(base::StringPrintf("Core %d", i));
+    info.set_timestamp(kFakeCpuTimestamp);
     expected_temp_info.push_back(info);
   }
 
@@ -2039,11 +2029,14 @@ TEST_F(DeviceStatusCollectorTest, TestCPUTemp) {
   options->cpu_temp_fetcher =
       base::BindRepeating(&GetFakeCPUTempInfo, expected_temp_info);
   RestartStatusCollector(std::move(options));
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceCpuInfo, true);
 
   // Force finishing tasks posted by ctor of DeviceStatusCollector.
   content::RunAllTasksUntilIdle();
 
   GetStatus();
+  int64_t timestamp_upperbound = base::Time::Now().ToJavaTime();
   EXPECT_EQ(expected_temp_info.size(),
             static_cast<size_t>(device_status_.cpu_temp_infos_size()));
 
@@ -2053,6 +2046,8 @@ TEST_F(DeviceStatusCollectorTest, TestCPUTemp) {
     for (const em::CPUTempInfo& info : device_status_.cpu_temp_infos()) {
       if (info.cpu_label() == expected_info.cpu_label()) {
         EXPECT_EQ(expected_info.cpu_temp(), info.cpu_temp());
+        EXPECT_GE(info.timestamp(), timestamp_lowerbound);
+        EXPECT_LE(info.timestamp(), timestamp_upperbound);
         found = true;
         break;
       }
@@ -2060,12 +2055,6 @@ TEST_F(DeviceStatusCollectorTest, TestCPUTemp) {
     EXPECT_TRUE(found) << "No matching CPUTempInfo for "
                        << expected_info.cpu_label();
   }
-
-  // Now turn off hardware status reporting - should have no data.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
-  GetStatus();
-  EXPECT_EQ(0, device_status_.cpu_temp_infos_size());
 }
 
 TEST_F(DeviceStatusCollectorTest, TestDiskLifetimeEstimation) {
@@ -2076,13 +2065,12 @@ TEST_F(DeviceStatusCollectorTest, TestDiskLifetimeEstimation) {
   options->emmc_lifetime_fetcher =
       base::BindRepeating(&GetFakeEMMCLifetiemEstimation, est);
   RestartStatusCollector(std::move(options));
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceStorageStatus, true);
 
   // Force finishing tasks posted by ctor of DeviceStatusCollector.
   content::RunAllTasksUntilIdle();
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceStorageStatus, true);
   GetStatus();
-
   EXPECT_TRUE(device_status_.storage_status().has_lifetime_estimation());
   EXPECT_TRUE(device_status_.storage_status().lifetime_estimation().has_slc());
   EXPECT_TRUE(device_status_.storage_status().lifetime_estimation().has_mlc());
@@ -2090,10 +2078,6 @@ TEST_F(DeviceStatusCollectorTest, TestDiskLifetimeEstimation) {
             device_status_.storage_status().lifetime_estimation().slc());
   EXPECT_EQ(est.mlc(),
             device_status_.storage_status().lifetime_estimation().mlc());
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
-  GetStatus();
-  EXPECT_FALSE(device_status_.storage_status().has_lifetime_estimation());
 }
 
 TEST_F(DeviceStatusCollectorTest, KioskAndroidReporting) {
@@ -2399,6 +2383,8 @@ TEST_F(DeviceStatusCollectorTest,
 }
 
 TEST_F(DeviceStatusCollectorTest, TpmStatusReporting) {
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceSecurityStatus, true);
   auto* tpm_status_reply = chromeos::TpmManagerClient::Get()
                                ->GetTestInterface()
                                ->mutable_nonsensitive_status_reply();
@@ -2451,6 +2437,8 @@ TEST_F(DeviceStatusCollectorTest, TpmStatusReporting) {
 // Checks if tpm status is partially reported even if any error happens
 // among the multiple D-Bus calls.
 TEST_F(DeviceStatusCollectorTest, TpmStatusReportingAnyDBusError) {
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceSecurityStatus, true);
   auto* tpm_status_reply = chromeos::TpmManagerClient::Get()
                                ->GetTestInterface()
                                ->mutable_nonsensitive_status_reply();
@@ -2908,14 +2896,14 @@ TEST_F(DeviceStatusCollectorTest, TestSoundVolume) {
   // When the pref to collect this data is not enabled, expect that the field
   // isn't present in the protobuf.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
+      chromeos::kReportDeviceAudioStatus, false);
   GetStatus();
   EXPECT_FALSE(device_status_.has_sound_volume());
 
   // Try setting a custom volume value and check that it matches.
   const int kCustomVolume = 42;
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, true);
+      chromeos::kReportDeviceAudioStatus, true);
   chromeos::CrasAudioHandler::Get()->SetOutputVolumePercent(kCustomVolume);
   GetStatus();
   EXPECT_EQ(kCustomVolume, device_status_.sound_volume());
@@ -2927,11 +2915,15 @@ TEST_F(DeviceStatusCollectorTest, TestStatefulPartitionInfo) {
   em::StatefulPartitionInfo fakeStatefulPartitionInfo;
   fakeStatefulPartitionInfo.set_available_space(350);
   fakeStatefulPartitionInfo.set_total_space(500);
+  fakeStatefulPartitionInfo.set_mount_source("mount_source");
+  fakeStatefulPartitionInfo.set_filesystem(kFilesystem);
 
   auto options = CreateEmptyDeviceStatusCollectorOptions();
   options->stateful_partition_info_fetcher = base::BindRepeating(
       &GetFakeStatefulPartitionInfo, fakeStatefulPartitionInfo);
   RestartStatusCollector(std::move(options));
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceStorageStatus, true);
 
   GetStatus();
 
@@ -2940,6 +2932,10 @@ TEST_F(DeviceStatusCollectorTest, TestStatefulPartitionInfo) {
             device_status_.stateful_partition_info().available_space());
   EXPECT_EQ(fakeStatefulPartitionInfo.total_space(),
             device_status_.stateful_partition_info().total_space());
+  EXPECT_EQ(fakeStatefulPartitionInfo.mount_source(),
+            device_status_.stateful_partition_info().mount_source());
+  EXPECT_EQ(fakeStatefulPartitionInfo.filesystem(),
+            device_status_.stateful_partition_info().filesystem());
 }
 
 TEST_F(DeviceStatusCollectorTest, TestGraphicsStatus) {
@@ -3295,11 +3291,6 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
       base::BindRepeating(&FetchFakeFullCrosHealthdData);
   RestartStatusCollector(std::move(options));
 
-  // Policies set by fetching Cros Healthd Data were once dependent on
-  // ReportDeviceHardwareStatus being set. Ensure this is no longer the case.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
-
   // If none of the relevant policies are set to true, expect that the data from
   // cros_healthd isn't present in the protobuf.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -3357,13 +3348,6 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceVpdInfo, true);
   GetStatus();
-
-  // Check that the CPU temperature samples are stored correctly.
-  ASSERT_EQ(device_status_.cpu_temp_infos_size(), 1);
-  const auto& cpu_sample = device_status_.cpu_temp_infos(0);
-  EXPECT_EQ(cpu_sample.cpu_label(), kFakeCpuLabel);
-  EXPECT_EQ(cpu_sample.cpu_temp(), kFakeCpuTemp);
-  EXPECT_EQ(cpu_sample.timestamp(), kFakeCpuTimestamp);
 
   // Verify the battery data.
   ASSERT_TRUE(device_status_.has_power_status());
@@ -3495,14 +3479,6 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   const auto& fan = device_status_.fan_info(0);
   EXPECT_EQ(fan.speed_rpm(), kFakeSpeedRpm);
 
-  // Verify the stateful partition info.
-  ASSERT_TRUE(device_status_.has_stateful_partition_info());
-  const auto& partition = device_status_.stateful_partition_info();
-  EXPECT_EQ(partition.available_space(), kAvailableSpace);
-  EXPECT_EQ(partition.total_space(), kTotalSpace);
-  EXPECT_EQ(partition.filesystem(), kFilesystem);
-  EXPECT_EQ(partition.mount_source(), kMountSource);
-
   // Verify the Bluetooth info.
   ASSERT_EQ(device_status_.bluetooth_adapter_info_size(), 1);
   const auto& adapter = device_status_.bluetooth_adapter_info(0);
@@ -3520,10 +3496,6 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {
       base::BindRepeating(&FetchFakeOptionalCrosHealthdData);
   RestartStatusCollector(std::move(options));
 
-  // Policies set by fetching Cros Healthd Data were once dependent on
-  // ReportDeviceHardwareStatus being set. Ensure this is no longer the case.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceCpuInfo, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -3548,22 +3520,11 @@ TEST_F(DeviceStatusCollectorTest, TestPartialCrosHealthdInfo) {
       base::BindRepeating(&FetchFakePartialCrosHealthdData);
   RestartStatusCollector(std::move(options));
 
-  // Policies set by fetching Cros Healthd Data were once dependent on
-  // ReportDeviceHardwareStatus being set. Ensure this is no longer the case.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceCpuInfo, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDevicePowerStatus, true);
   GetStatus();
-
-  // Check that the CPU temperature samples are stored correctly.
-  ASSERT_EQ(device_status_.cpu_temp_infos_size(), 1);
-  const auto& cpu_sample = device_status_.cpu_temp_infos(0);
-  EXPECT_EQ(cpu_sample.cpu_label(), kFakeCpuLabel);
-  EXPECT_EQ(cpu_sample.cpu_temp(), kFakeCpuTemp);
-  EXPECT_EQ(cpu_sample.timestamp(), kFakeCpuTimestamp);
 
   // Verify the CPU data.
   ASSERT_EQ(device_status_.cpu_info_size(), 1);
@@ -3612,10 +3573,6 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
       base::BindRepeating(&FetchFakeFullCrosHealthdData);
   RestartStatusCollector(std::move(options));
 
-  // Policies set by fetching Cros Healthd Data were once dependent on
-  // ReportDeviceHardwareStatus being set. Ensure this is no longer the case.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kReportDeviceHardwareStatus, false);
   // When the vpd reporting policy is turned on and the system reporting
   // property is turned off, we only expect the protobuf to only have vpd info.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(

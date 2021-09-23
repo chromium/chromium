@@ -424,10 +424,6 @@ bool ChildStatusCollector::ShouldReportUsers() const {
   return false;
 }
 
-bool ChildStatusCollector::ShouldReportHardwareStatus() const {
-  return false;
-}
-
 bool ChildStatusCollector::ShouldReportCrashReportInfo() const {
   return false;
 }

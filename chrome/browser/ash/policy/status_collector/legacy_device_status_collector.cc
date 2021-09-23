@@ -2848,9 +2848,6 @@ bool LegacyDeviceStatusCollector::ShouldReportUsers() const {
   std::string user_email = GetUserForActivityReporting();
   return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
 }
-bool LegacyDeviceStatusCollector::ShouldReportHardwareStatus() const {
-  return report_hardware_status_;
-}
 bool LegacyDeviceStatusCollector::ShouldReportCrashReportInfo() const {
   return report_crash_report_info_ && stat_reporting_pref_;
 }

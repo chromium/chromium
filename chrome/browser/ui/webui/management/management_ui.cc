@@ -63,8 +63,6 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
     {kManagementLogUploadEnabled, IDS_MANAGEMENT_LOG_UPLOAD_ENABLED},
     {kManagementReportActivityTimes,
      IDS_MANAGEMENT_REPORT_DEVICE_ACTIVITY_TIMES},
-    {kManagementReportHardwareStatus,
-     IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_STATUS},
     {kManagementReportNetworkInterfaces,
      IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_INTERFACES},
     {kManagementReportUsers, IDS_MANAGEMENT_REPORT_DEVICE_USERS},

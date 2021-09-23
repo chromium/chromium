@@ -163,7 +163,6 @@ class LegacyDeviceStatusCollector
   bool ShouldReportActivityTimes() const override;
   bool ShouldReportNetworkInterfaces() const override;
   bool ShouldReportUsers() const override;
-  bool ShouldReportHardwareStatus() const override;
   bool ShouldReportCrashReportInfo() const override;
   bool ShouldReportAppInfoAndActivity() const override;
 

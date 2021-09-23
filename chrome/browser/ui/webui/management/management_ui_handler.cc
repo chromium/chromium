@@ -160,7 +160,6 @@ enum class ReportingType {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kManagementLogUploadEnabled[] = "managementLogUploadEnabled";
 const char kManagementReportActivityTimes[] = "managementReportActivityTimes";
-const char kManagementReportHardwareStatus[] = "managementReportHardwareStatus";
 const char kManagementReportNetworkInterfaces[] =
     "managementReportNetworkInterfaces";
 const char kManagementReportUsers[] = "managementReportUsers";
@@ -555,10 +554,6 @@ void ManagementUIHandler::AddDeviceReportingInfo(
       AddDeviceReportingElement(report_sources, kManagementReportUsers,
                                 DeviceReportingType::kSupervisedUser);
     }
-  }
-  if (collector->ShouldReportHardwareStatus()) {
-    AddDeviceReportingElement(report_sources, kManagementReportHardwareStatus,
-                              DeviceReportingType::kDeviceStatistics);
   }
   if (collector->ShouldReportNetworkInterfaces()) {
     AddDeviceReportingElement(report_sources,

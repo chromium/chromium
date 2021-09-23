@@ -29,7 +29,6 @@
 // load time data.
 extern const char kManagementLogUploadEnabled[];
 extern const char kManagementReportActivityTimes[];
-extern const char kManagementReportHardwareStatus[];
 extern const char kManagementReportNetworkInterfaces[];
 extern const char kManagementReportUsers[];
 extern const char kManagementReportCrashReports[];

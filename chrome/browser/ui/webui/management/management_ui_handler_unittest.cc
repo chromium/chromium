@@ -133,14 +133,12 @@ class TestDeviceStatusCollector : public policy::DeviceStatusCollector {
                             bool report_activity_times,
                             bool report_nics,
                             bool report_users,
-                            bool report_hw_status,
                             bool report_crash_info,
                             bool report_app_info_and_activity)
       : policy::DeviceStatusCollector(local_state, nullptr),
         report_activity_times_(report_activity_times),
         report_nics_(report_nics),
         report_users_(report_users),
-        report_hw_status_(report_hw_status),
         report_crash_info_(report_crash_info),
         report_app_info_and_activity_(report_app_info_and_activity) {}
   ~TestDeviceStatusCollector() override = default;
@@ -150,7 +148,6 @@ class TestDeviceStatusCollector : public policy::DeviceStatusCollector {
   }
   bool ShouldReportNetworkInterfaces() const override { return report_nics_; }
   bool ShouldReportUsers() const override { return report_users_; }
-  bool ShouldReportHardwareStatus() const override { return report_hw_status_; }
   bool ShouldReportCrashReportInfo() const override {
     return report_crash_info_;
   }
@@ -167,7 +164,6 @@ class TestDeviceStatusCollector : public policy::DeviceStatusCollector {
   bool report_activity_times_;
   bool report_nics_;
   bool report_users_;
-  bool report_hw_status_;
   bool report_crash_info_;
   bool report_app_info_and_activity_;
 };
@@ -355,7 +351,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     bool report_activity_times;
     bool report_nics;
     bool report_users;
-    bool report_hw_status;
     bool report_crash_info;
     bool report_app_info_and_activity;
     bool report_dlp_events;
@@ -377,7 +372,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.report_activity_times = default_value;
     setup_config_.report_nics = default_value;
     setup_config_.report_users = default_value;
-    setup_config_.report_hw_status = default_value;
     setup_config_.report_crash_info = default_value;
     setup_config_.report_app_info_and_activity = default_value;
     setup_config_.report_dlp_events = default_value;
@@ -441,7 +435,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         new TestDeviceStatusCollector(
             &local_state_, GetTestConfig().report_activity_times,
             GetTestConfig().report_nics, GetTestConfig().report_users,
-            GetTestConfig().report_hw_status, GetTestConfig().report_crash_info,
+            GetTestConfig().report_crash_info,
             GetTestConfig().report_app_info_and_activity);
     settings_.device_settings()->SetTrustedStatus(
         chromeos::CrosSettingsProvider::TRUSTED);
@@ -1018,7 +1012,6 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
   const base::Value info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
-      {kManagementReportHardwareStatus, "device statistics"},
       {kManagementReportNetworkInterfaces, "device"},
       {kManagementReportCrashReports, "crash report"},
       {kManagementReportAppInfoAndActivity, "app info and activity"},
@@ -1042,7 +1035,6 @@ TEST_F(ManagementUIHandlerTests,
   const base::Value info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
-      {kManagementReportHardwareStatus, "device statistics"},
       {kManagementReportNetworkInterfaces, "device"},
       {kManagementReportCrashReports, "crash report"},
       {kManagementReportAppInfoAndActivity, "app info and activity"},
