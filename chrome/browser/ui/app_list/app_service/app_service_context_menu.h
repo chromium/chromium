@@ -17,6 +17,7 @@
 class AppContextMenuDelegate;
 class AppListControllerDelegate;
 class Profile;
+class StandaloneBrowserExtensionAppContextMenu;
 
 namespace extensions {
 class ContextMenuMatcher;
@@ -52,12 +53,17 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
 
   void ExecutePublisherContextMenuCommand(int command_id);
 
-  apps::mojom::AppType app_type_;
+  apps::mojom::AppType app_type_ = apps::mojom::AppType::kUnknown;
 
   // The SimpleMenuModel used to hold the submenu items.
   std::unique_ptr<ui::SimpleMenuModel> submenu_;
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_menu_items_;
+
+  // This member holds all logic for context menus associated with standalone
+  // browser extension apps.
+  std::unique_ptr<StandaloneBrowserExtensionAppContextMenu>
+      standalone_browser_extension_menu_;
 
   // Caches the app shortcut items.
   std::unique_ptr<apps::AppShortcutItems> app_shortcut_items_;

@@ -20,6 +20,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
+class StandaloneBrowserExtensionAppContextMenu;
+
 // This class controls both the appearance and behavior of shelf items for
 // lacros-based extension apps -- aka packaged v2 apps / chrome apps.
 //
@@ -110,6 +112,11 @@ class StandaloneBrowserExtensionAppShelfItemController
 
   // Stores the icon.
   absl::optional<gfx::ImageSkia> icon_;
+
+  // This class is responsible for displaying a single instance of a context
+  // menu. If multiple context menus are requested, only the latest instance
+  // will be retained.
+  std::unique_ptr<StandaloneBrowserExtensionAppContextMenu> context_menu_;
 
   // Observes the shelf model for item additions in order to set initial state
   // on the corresponding ShelfItem.

@@ -481,7 +481,7 @@ TEST_F(AppContextMenuTest, ArcMenu) {
 
   // No app available case.
   menu = GetContextMenuModel(item.get());
-  EXPECT_EQ(0, menu->GetItemCount());
+  EXPECT_EQ(nullptr, menu);
 }
 
 TEST_F(AppContextMenuTest, ArcMenuShortcut) {

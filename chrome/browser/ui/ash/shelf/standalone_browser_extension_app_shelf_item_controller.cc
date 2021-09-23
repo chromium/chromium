@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
 
@@ -42,6 +43,9 @@ StandaloneBrowserExtensionAppShelfItemController::
       base::BindOnce(
           &StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon,
           weak_factory_.GetWeakPtr()));
+
+  context_menu_ = std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
+      shelf_id.app_id);
 }
 
 StandaloneBrowserExtensionAppShelfItemController::
@@ -124,8 +128,7 @@ void StandaloneBrowserExtensionAppShelfItemController::ItemSelected(
 void StandaloneBrowserExtensionAppShelfItemController::GetContextMenu(
     int64_t display_id,
     GetContextMenuCallback callback) {
-  std::move(callback).Run(nullptr);
-  // TODO(https://crbug.com/1225848): Implement. Existing code is a placeholder.
+  context_menu_->GetMenuModel(std::move(callback));
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::ExecuteCommand(
@@ -133,6 +136,9 @@ void StandaloneBrowserExtensionAppShelfItemController::ExecuteCommand(
     int64_t command_id,
     int32_t event_flags,
     int64_t display_id) {
+  // TODO(https://crbug.com/1225848): Distinguish between context menus coming
+  // from ash shelf for filtered windows and context_menu_.
+
   // The current API for showing existing windows in a context menu, and then
   // later receiving a callback here is intrinsically racy. There is no way to
   // encode all relevant information in |command_id|.
