@@ -1350,6 +1350,7 @@ TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
     DCHECK_EQ(0, *new_display_id);
     *old_display_id = old_id;
     *new_display_id = new_id;
+    return true;
   };
 
   int64_t old_display_id = 0, new_display_id = 0;
