@@ -202,11 +202,11 @@ absl::Status OOXMLToProto::ExtractRelationships() {
         absl::string_view value = utils::XmlCharPointerToString(prop.get());
 
         if (name == "Id") {
-          rel_proto.set_id(value.data());
+          rel_proto.set_id(value.data(), value.size());
         } else if (name == "Type") {
-          rel_proto.set_type(value.data());
+          rel_proto.set_type(value.data(), value.size());
         } else if (name == "Target") {
-          rel_proto.set_target(value.data());
+          rel_proto.set_target(value.data(), value.size());
         } else {
           DLOG(ERROR) << "Unexpected attribute in \'_rels/.rels\': " << name
                       << " = " << value;
@@ -306,7 +306,7 @@ absl::Status OOXMLToProto::ExtractFile(absl::string_view filename,
       return status_or_proto.status();
     }
     auto ole_entry = ooxml_proto_.add_ole_entries();
-    ole_entry->set_filename(filename.data());
+    ole_entry->set_filename(filename.data(), filename.size());
     ole_entry->set_filesize(content.size());
     ole_entry->set_hash(Sha256HexString(content));
     *(ole_entry->mutable_ole_content()) = status_or_proto.value();
