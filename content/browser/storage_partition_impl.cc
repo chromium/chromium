@@ -293,28 +293,6 @@ void ClearedShaderCache(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void ClearShaderCacheOnIOThread(const base::FilePath& path,
-                                const base::Time begin,
-                                const base::Time end,
-                                base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
-  gpu::ShaderCacheFactory* shader_cache_factory =
-      GetShaderCacheFactorySingleton();
-
-  // May be null in tests where it is difficult to plumb through a test storage
-  // partition.
-  if (!shader_cache_factory) {
-    std::move(callback).Run();
-    return;
-  }
-
-  shader_cache_factory->ClearByPath(
-      path, begin, end,
-      base::BindOnce(&ClearedShaderCache, std::move(callback)));
-}
-
 void OnLocalStorageUsageInfo(
     const scoped_refptr<DOMStorageContextWrapper>& dom_storage_context,
     const scoped_refptr<storage::SpecialStoragePolicy>& special_storage_policy,
@@ -2426,15 +2404,15 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_SHADER_CACHE) {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      ClearShaderCacheOnIOThread(
+    gpu::ShaderCacheFactory* shader_cache_factory =
+        GetShaderCacheFactorySingleton();
+    // May be null in tests where it is difficult to plumb through a test
+    // storage partition.
+    if (shader_cache_factory) {
+      shader_cache_factory->ClearByPath(
           path, begin, end,
-          CreateTaskCompletionClosure(TracingDataType::kShaderCache));
-    } else {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
           base::BindOnce(
-              &ClearShaderCacheOnIOThread, path, begin, end,
+              &ClearedShaderCache,
               CreateTaskCompletionClosure(TracingDataType::kShaderCache)));
     }
   }
