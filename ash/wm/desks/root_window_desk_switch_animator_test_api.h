@@ -33,6 +33,7 @@ class RootWindowDeskSwitchAnimatorTestApi {
 
   int GetEndingDeskIndex() const;
 
+  void SetOnStartingScreenshotTakenCallback(base::OnceClosure callback);
   void SetOnEndingScreenshotTakenCallback(base::OnceClosure callback);
 
  private:
