@@ -88,6 +88,10 @@ const gfx::VectorIcon& OmniboxAction::GetVectorIcon() const {
 }
 #endif
 
+SkColor OmniboxAction::GetVectorIconColor() const {
+  return SK_ColorTRANSPARENT;
+}
+
 size_t OmniboxAction::EstimateMemoryUsage() const {
   size_t total = 0;
   total += base::trace_event::EstimateMemoryUsage(url_);

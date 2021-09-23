@@ -16,6 +16,7 @@
 #include "components/search_engines/template_url.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/color_utils.h"
 #include "url/gurl.h"
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
@@ -137,6 +138,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // Returns the vector icon to represent this Action.
   virtual const gfx::VectorIcon& GetVectorIcon() const;
 #endif
+
+  // Returns SK_ColorTRANSPARENT by default to indicate usage of normal theme
+  // color for suggestion row buttons; or override to force icon color.
+  virtual SkColor GetVectorIconColor() const;
 
   // Estimates RAM usage in bytes for this Action.
   virtual size_t EstimateMemoryUsage() const;

@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-09-09T19:28:45.880Z",
+  "time_generated": "2021-09-22T19:12:06.162Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -10556,12 +10556,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Close Incognito windows",
+            "button_text": "Close all Incognito windows",
             "description_text": "Close all Incognito windows that are currently open.",
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to close all Incognito windows that are currently open.",
-            "spoken_button_focus_announcement": "Close Incognito windows button, Enter to close all Incognito windows that are currently open."
+            "spoken_button_focus_announcement": "Close Incognito windows button, press Enter to close all Incognito windows that are currently open."
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 27,
@@ -10586,12 +10586,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Play Dino Game",
+            "button_text": "Play Chrome Dino game",
             "description_text": "Play the Dino Run game in Chrome",
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to play the Dino Run game in Chrome",
-            "spoken_button_focus_announcement": "Play Dino Run button, Enter to play the Dino Run game in Chrome"
+            "spoken_button_focus_announcement": "Play Dino Run button, press Enter to play the Dino Run game in Chrome"
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 28,
@@ -10630,7 +10630,7 @@
             "spoken_suggestion_description_suffix": "$1, Press Tab then Enter to Find your device in the Google Account",
             "spoken_button_focus_announcement": "Find my device button, press Enter to visit find your device in the Google Account"
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 29,
@@ -10658,12 +10658,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Google Account privacy settings",
+            "button_text": "Manage Google Account privacy settings",
             "description_text": "Manage Google privacy settings in your Google Account",
             "spoken_suggestion_description_suffix": "$1, Press Tab then Enter to manage your Google Account privacy settings",
             "spoken_button_focus_announcement": "Manage Google Privacy settings button, press Enter to visit your Google Account privacy settings"
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 30,
@@ -10737,7 +10737,7 @@
             "spoken_suggestion_description_suffix": "$1, Press Tab then Enter to manage your Chrome settings",
             "spoken_button_focus_announcement": "Manage Chrome settings button, press Enter to visit your Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 32,
@@ -10773,12 +10773,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Manage downloads in Chrome",
+            "button_text": "Manage downloads",
             "description_text": "Manage files you have downloaded in Chrome",
             "spoken_suggestion_description_suffix": "$1, Press Tab then Enter to manage files you have downloaded in Chrome",
             "spoken_button_focus_announcement": "Manage downloads in Chrome button, press Enter to manage files you have downloaded in Chrome."
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 33,
@@ -10813,9 +10813,9 @@
             "button_text": "View your Chrome history",
             "description_text": "View and manage your browsing history in Chrome settings",
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to view your browsing history in Chrome",
-            "spoken_button_focus_announcement": "View your Chrome history button, Enter to view and manage your browsing history in Chrome settings"
+            "spoken_button_focus_announcement": "View your Chrome history button, press Enter to view and manage your browsing history in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 34,
@@ -10826,11 +10826,18 @@
               "synonyms": [
                 "share link with qr code",
                 "send link with qr code",
+                "share link via qr code",
+                "send link via qr code",
                 "share this page",
+                "cast this page",
+                "save this page",
+                "save page as",
+                "cast screen",
                 "share link",
                 "share page",
                 "send link",
                 "send page",
+                "cast page",
                 "qr code"
               ]
             }
@@ -10841,9 +10848,9 @@
             "button_text": "Share this page",
             "description_text": "Share this page by sharing the link, creating a QR code, casting, and more.",
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to share this page, with options to share the link, create a QR code, cast, and more.",
-            "spoken_button_focus_announcement": "Share this page button, Enter to share this page with options to share the link, create a QR code, cast, and more."
+            "spoken_button_focus_announcement": "Share this page button, press Enter to share this page with options to share the link, create a QR code, cast, and more."
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 35,
@@ -10883,9 +10890,9 @@
             "button_text": "Manage accessibility settings",
             "description_text": "Personalize your accessibility tools in Chrome settings",
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to personalize your accessibility tools in Chrome settings.",
-            "spoken_button_focus_announcement": "Manage accessibility settings button, Enter to personalize your accessibility tools in Chrome settings."
+            "spoken_button_focus_announcement": "Manage accessibility settings button, press Enter to personalize your accessibility tools in Chrome settings."
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 36,
@@ -10930,12 +10937,12 @@
           ],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Customize fonts in Chrome",
+            "button_text": "Customize fonts",
             "description_text": "Customize font sizes and typefaces in Chrome",
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to customize font sizes and typefaces in Chrome",
-            "spoken_button_focus_announcement": "Customize fonts in Chrome button, Enter to customize font sizes and typefaces in Chrome"
+            "spoken_button_focus_announcement": "Customize fonts in Chrome button, press Enter to customize font sizes and typefaces in Chrome"
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 37,
@@ -10968,12 +10975,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Manage Chrome appearance",
+            "button_text": "Customize appearance",
             "description_text": "Customize the look of your browser",
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to customize the look of your browser.",
-            "spoken_button_focus_announcement": "Manage Chrome appearance button, Enter to customize the look of your browser with themes."
+            "spoken_button_focus_announcement": "Manage Chrome appearance button, press Enter to customize the look of your browser with themes."
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 38,
@@ -10987,7 +10994,8 @@
                 "manage",
                 "change",
                 "modify",
-                "edit"
+                "edit",
+                "add"
               ]
             },
             {
@@ -10997,22 +11005,35 @@
                 "custom search engines",
                 "site search engines",
                 "customized search",
+                "search engines",
                 "tab to search",
                 "scoped search",
                 "custom search",
                 "site search"
               ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "chrome"
+              ]
             }
           ],
-          "cover_cases": [],
+          "cover_cases": [
+            "add custom search",
+            "manage search engines"
+          ],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage site search",
             "description_text": "Manage site search and your default search engine",
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to manage site search and your default search engine",
-            "spoken_button_focus_announcement": "Manage site search button, Enter to manage site search and your default search engine"
+            "spoken_button_focus_announcement": "Manage site search button, press Enter to manage site search and your default search engine"
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         },
         {
           "id": 39,
@@ -11056,7 +11077,7 @@
             "spoken_suggestion_description_suffix": "$1, Press tab then Enter to personalize your accessibility tools in Chrome OS settings.",
             "spoken_button_focus_announcement": "Manage accessibility settings button, Enter to personalize your accessibility tools in Chrome OS settings"
           },
-          "date_modified_omnibox_ui_strings": "2021-09-09T00:42:07.559Z"
+          "date_modified_omnibox_ui_strings": "2021-09-22T19:11:13.609Z"
         }
       ],
       "tokenize_each_character": false

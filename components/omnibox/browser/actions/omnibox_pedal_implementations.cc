@@ -30,6 +30,10 @@
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
 
+// This is the blue for some pedals that refer to settings pages,
+// taken to match existing icons e.g. the blue chrome://settings gear.
+constexpr SkColor kChromePagesBlue = SkColorSetARGB(255, 60, 115, 229);
+
 // =============================================================================
 
 class OmniboxPedalClearBrowsingData : public OmniboxPedal {
@@ -1162,6 +1166,8 @@ class OmniboxPedalManageChromeSettings : public OmniboxPedal {
   }
 #endif
 
+  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
+
  protected:
   ~OmniboxPedalManageChromeSettings() override = default;
 };
@@ -1186,6 +1192,8 @@ class OmniboxPedalManageChromeDownloads : public OmniboxPedal {
   }
 #endif
 
+  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
+
  protected:
   ~OmniboxPedalManageChromeDownloads() override = default;
 };
@@ -1209,6 +1217,8 @@ class OmniboxPedalViewChromeHistory : public OmniboxPedal {
     return omnibox::kClockIcon;
   }
 #endif
+
+  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
 
  protected:
   ~OmniboxPedalViewChromeHistory() override = default;
@@ -1267,6 +1277,8 @@ class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
   }
 #endif
 
+  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
+
  protected:
   ~OmniboxPedalManageChromeAccessibility() override = default;
 };
@@ -1290,6 +1302,8 @@ class OmniboxPedalManageChromeOSAccessibility : public OmniboxPedal {
     return omnibox::kAccessibilityIcon;
   }
 #endif
+
+  SkColor GetVectorIconColor() const override { return kChromePagesBlue; }
 
   OmniboxPedalId GetMetricsId() const override {
     return OmniboxPedalId::MANAGE_CHROME_ACCESSIBILITY;

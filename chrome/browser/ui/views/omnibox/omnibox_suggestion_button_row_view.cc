@@ -47,7 +47,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
       : MdTextButton(std::move(callback), text, CONTEXT_OMNIBOX_PRIMARY),
         icon_(&icon),
         popup_contents_view_(popup_contents_view),
-        selection_(selection) {
+        selection_(selection),
+        icon_color_(SK_ColorTRANSPARENT) {
     views::InstallPillHighlightPathGenerator(this);
     SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -90,8 +91,10 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     // We can't use colors from NativeTheme as the omnibox theme might be
     // different (for example, if the NTP colors are customized).
     SkColor icon_color =
-        GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_ICON,
-                        OmniboxPartState::NORMAL);
+        icon_color_ != SK_ColorTRANSPARENT
+            ? icon_color_
+            : GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_ICON,
+                              OmniboxPartState::NORMAL);
     SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(*icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
@@ -120,9 +123,11 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     node_data->role = ax::mojom::Role::kListBoxOption;
   }
 
-  void SetIcon(const gfx::VectorIcon& icon) {
-    if (icon_ != &icon) {
+  void SetIcon(const gfx::VectorIcon& icon,
+               SkColor icon_color = SK_ColorTRANSPARENT) {
+    if (icon_ != &icon || icon_color != icon_color_) {
       icon_ = &icon;
+      icon_color_ = icon_color;
       OnThemeChanged();
     }
   }
@@ -132,6 +137,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   OmniboxPopupContentsView* popup_contents_view_;
   OmniboxPopupSelection selection_;
   absl::optional<SkColor> omnibox_bg_color_;
+  SkColor icon_color_;
 };
 
 BEGIN_METADATA(OmniboxSuggestionRowButton, views::MdTextButton)
@@ -217,7 +223,8 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     pedal_button_->SetText(pedal_strings.hint);
     pedal_button_->SetTooltipText(pedal_strings.suggestion_contents);
     pedal_button_->SetAccessibleName(pedal_strings.accessibility_hint);
-    pedal_button_->SetIcon(match().action->GetVectorIcon());
+    pedal_button_->SetIcon(match().action->GetVectorIcon(),
+                           match().action->GetVectorIconColor());
   }
 
   bool is_any_button_visible = keyword_button_->GetVisible() ||
