@@ -3347,6 +3347,14 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     // is invalid.
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE);
+    return;
+  }
+  if (owner_type == blink::mojom::FrameOwnerElementType::kPortal) {
+    // Portals are not created through this child frame code path.
+    bad_message::ReceivedBadMessage(
+        GetProcess(),
+        bad_message::RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE);
+    return;
   }
 
   DCHECK(devtools_frame_token);

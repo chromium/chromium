@@ -7685,6 +7685,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="247" label="MDDH_INVALID_PERMITTED_ORIGIN"/>
   <int value="248" label="MDDH_NOT_TOP_LEVEL"/>
   <int value="249" label="RFH_DID_CHANGE_IFRAME_ATTRIBUTE"/>
+  <int value="250" label="FARI_LOGOUT_BAD_ENDPOINT"/>
+  <int value="251" label="RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
