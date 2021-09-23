@@ -38,9 +38,25 @@ class NetworkingLog {
   void UpdateNetworkState(mojom::NetworkPtr network);
 
  private:
+  // Writes the `event_string` to the `event_log_`.
   void LogEvent(const std::string& event_string);
+
+  // Logs an event whenever a new network is seen in the network list
+  // sent to UpdateNetworkList().
   void LogNetworkAdded(const mojom::NetworkPtr& network);
+
+  // Logs an event whenever a network is removed from the network list
+  // sent to UpdateNetworkList().
   void LogNetworkRemoved(const mojom::NetworkPtr& network);
+
+  // Top level function that determines which state changes should be
+  // logged and calls the appropriate specialized method below.
+  void LogNetworkChanges(const mojom::NetworkPtr& network);
+
+  // Logs when the state of the network changes.
+  void LogNetworkStateChanged(const mojom::NetworkPtr& old_state,
+                              const mojom::NetworkPtr& new_state);
+
   AsyncLog event_log_;
   std::string active_guid_;
   base::flat_map<std::string, mojom::NetworkPtr> latest_network_states_;

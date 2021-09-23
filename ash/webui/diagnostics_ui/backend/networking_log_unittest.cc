@@ -229,7 +229,7 @@ TEST_F(NetworkingLogTest, DetailedLogContentsCellular) {
   ExpectCorrectLogLine(expected_line, events_lines[1]);
 }
 
-TEST_F(NetworkingLogTest, RemoveNetworkEvent) {
+TEST_F(NetworkingLogTest, NetworkEvents) {
   const std::string expected_guid = "guid";
   const std::string expected_name = "name";
   const std::string expected_mac_address = "84:C5:A6:30:3F:31";
@@ -240,24 +240,42 @@ TEST_F(NetworkingLogTest, RemoveNetworkEvent) {
 
   NetworkingLog log(temp_dir_.GetPath());
 
-  // Add then remove ethernet network.
+  // Add the network.
   log.UpdateNetworkList({expected_guid}, expected_guid);
   log.UpdateNetworkState(test_info.Clone());
+
+  // Change the state of the network from Online to Disabled.
+  mojom::NetworkPtr new_state = test_info.Clone();
+  new_state->state = mojom::NetworkState::kDisabled;
+  log.UpdateNetworkState(std::move(new_state));
+  task_environment_.RunUntilIdle();
+
+  // Remove the network.
   log.UpdateNetworkList({}, "expected_guid");
   task_environment_.RunUntilIdle();
 
-  // Expect one title and one event for adding the network and one
-  // for removing.
+  // Split the log for verification.
   const std::string events_log = log.GetNetworkEvents();
   const std::vector<std::string> events_lines = GetLogLines(events_log);
-  EXPECT_EQ(3u, events_lines.size());
-  EXPECT_EQ("--- Network Events ---", events_lines[0]);
+  EXPECT_EQ(4u, events_lines.size());
 
+  // Verify section header.
+  size_t upto_line = 0;
+  EXPECT_EQ("--- Network Events ---", events_lines[upto_line++]);
+
+  // Verify add event.
   std::string expected_line =
       "Ethernet network [" + expected_mac_address + "] started in state Online";
-  ExpectCorrectLogLine(expected_line, events_lines[1]);
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+
+  // Verify state change event.
+  expected_line = "Ethernet network [" + expected_mac_address +
+                  "] changed state from Online to Disabled";
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+
+  // Verify remove event.
   expected_line = "Ethernet network [" + expected_mac_address + "] removed";
-  ExpectCorrectLogLine(expected_line, events_lines[2]);
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
 }
 
 }  // namespace diagnostics

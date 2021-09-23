@@ -53,6 +53,8 @@ const char kEventLogFilename[] = "network_events.log";
 const char kNetworkAddedEventTemplate[] =
     "%s network [%s] started in state %s\n";
 const char kNetworkRemovedEventTemplate[] = "%s network [%s] removed\n";
+const char kNetworkStateChangedEventTemplate[] =
+    "%s network [%s] changed state from %s to %s\n";
 
 std::string GetSubnetMask(int prefix) {
   uint32_t mask = (0xFFFFFFFF << (32 - prefix)) & 0xFFFFFFFF;
@@ -240,8 +242,11 @@ void NetworkingLog::UpdateNetworkList(
 void NetworkingLog::UpdateNetworkState(mojom::NetworkPtr network) {
   if (!base::Contains(latest_network_states_, network->observer_guid)) {
     LogNetworkAdded(network);
+    latest_network_states_.emplace(network->observer_guid, std::move(network));
+    return;
   }
 
+  LogNetworkChanges(network);
   latest_network_states_[network->observer_guid] = std::move(network);
 }
 
@@ -263,6 +268,26 @@ void NetworkingLog::LogNetworkRemoved(const mojom::NetworkPtr& network) {
   const std::string line = base::StringPrintf(
       kNetworkRemovedEventTemplate, GetNetworkType(network->type).c_str(),
       network->mac_address.value_or("").c_str());
+  LogEvent(line);
+}
+
+void NetworkingLog::LogNetworkChanges(const mojom::NetworkPtr& new_state) {
+  DCHECK(base::Contains(latest_network_states_, new_state->observer_guid));
+  const mojom::NetworkPtr& old_state =
+      latest_network_states_.at(new_state->observer_guid);
+  if (old_state->state != new_state->state) {
+    LogNetworkStateChanged(old_state, new_state);
+  }
+}
+
+void NetworkingLog::LogNetworkStateChanged(const mojom::NetworkPtr& old_state,
+                                           const mojom::NetworkPtr& new_state) {
+  const std::string line =
+      base::StringPrintf(kNetworkStateChangedEventTemplate,
+                         GetNetworkType(new_state->type).c_str(),
+                         new_state->mac_address.value_or("").c_str(),
+                         GetNetworkStateString(old_state->state).c_str(),
+                         GetNetworkStateString(new_state->state).c_str());
   LogEvent(line);
 }
 
