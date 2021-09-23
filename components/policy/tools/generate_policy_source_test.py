@@ -211,6 +211,17 @@ class CppGenerationTest(unittest.TestCase):
         self._assertCallsEqual(mocked_file().write.call_args_list,
                                expected_formatted)
 
+  def testWritePolicyProto(self):
+    output_path = 'mock_write_policy_proto'
+
+    with patch('codecs.open', mock_open()) as mocked_file:
+      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+        generate_policy_source._WritePolicyProto(f, self.policies[0])
+
+    mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
+    self._assertCallsEqual(mocked_file().write.call_args_list,
+                           test_data.EXPECTED_POLICY_PROTO)
+
   def testGetMetapoliciesOfType(self):
     merge_metapolicies = generate_policy_source._GetMetapoliciesOfType(
         self.policies, "merge")

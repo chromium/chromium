@@ -1463,7 +1463,7 @@ import "policy_common_definitions{full_runtime_suffix}.proto";
 RESERVED_IDS = 2
 
 
-def _WritePolicyProto(f, policy, fields):
+def _WritePolicyProto(f, policy):
   _OutputComment(f, policy.caption + '\n\n' + policy.desc)
   if policy.items is not None:
     _OutputComment(f, '\nValid values:')
@@ -1484,10 +1484,6 @@ def _WritePolicyProto(f, policy, fields):
   f.write('  optional PolicyOptions policy_options = 1;\n')
   f.write('  optional %s %s = 2;\n' % (policy.protobuf_type, policy.name))
   f.write('}\n\n')
-  fields += [
-      '  optional %sProto %s = %s;\n' % (policy.name, policy.name,
-                                         policy.id + RESERVED_IDS)
-  ]
 
 
 def _WriteChromeSettingsProtobuf(policies,
@@ -1510,7 +1506,13 @@ def _WriteChromeSettingsProtobuf(policies,
     # Note: This protobuf also gets the unsupported policies, since it's an
     # exhaustive list of all the supported user policies on any platform.
     if not policy.is_device_only:
-      _WritePolicyProto(f, policy, fields)
+      # Write the individual policy proto into the file
+      _WritePolicyProto(f, policy)
+      # Add to |fields| in order to eventually add to ChromeSettingsProto
+      fields += [
+          '  optional %sProto %s = %s;\n' %
+          (policy.name, policy.name, policy.id + RESERVED_IDS)
+      ]
 
   f.write('// --------------------------------------------------\n'
           '// Big wrapper PB containing the above groups.\n\n'

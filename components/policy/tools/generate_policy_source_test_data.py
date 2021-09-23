@@ -86,6 +86,18 @@ message ChromeSettingsProto {
 }
 """
 
+EXPECTED_POLICY_PROTO = '''\
+// ExampleStringPolicy caption
+//
+// ExampleStringPolicy desc
+//
+// Supported on: chrome_os
+message ExampleStringPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional string ExampleStringPolicy = 2;
+}
+'''
+
 EXPECTED_POLICY_CONSTANTS_HEADER = '''
 #ifndef COMPONENTS_POLICY_POLICY_CONSTANTS_H_
 #define COMPONENTS_POLICY_POLICY_CONSTANTS_H_
