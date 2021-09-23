@@ -52,13 +52,6 @@ class HistogramController {
   // Contact all processes and get their histogram data.
   void GetHistogramData(int sequence_number);
 
-  // Notify the |subscriber_| that it should expect at least |pending_processes|
-  // additional calls to OnHistogramDataCollected().  OnPendingProcess() may be
-  // called repeatedly; the last call will have |end| set to true, indicating
-  // that there is no longer a possibility for the count of pending processes to
-  // increase.  This is called on the UI thread.
-  void OnPendingProcesses(int sequence_number, int pending_processes, bool end);
-
   // Send the |histogram| back to the |subscriber_|.
   // This can be called from any thread.
   void OnHistogramDataCollected(
@@ -75,11 +68,6 @@ class HistogramController {
 
  private:
   friend struct base::LeakySingletonTraits<HistogramController>;
-
-  // Contact PLUGIN and GPU child processes and get their histogram data.
-  // TODO(rtenneti): Enable getting histogram data for other processes like
-  // PPAPI and NACL.
-  void GetHistogramDataFromChildProcesses(int sequence_number);
 
   HistogramSubscriber* subscriber_;
 
