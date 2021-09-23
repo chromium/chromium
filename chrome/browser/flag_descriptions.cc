@@ -5367,6 +5367,22 @@ const char kPaintPreviewStartupDescription[] =
     "instead.";
 #endif  // ENABLE_PAINT_PREVIEW && defined(OS_ANDROID)
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+const char kSideSearchName[] = "Side search";
+const char kSideSearchDescription[] =
+    "Enables an easily accessible way to access your most recent Google search "
+    "results page embedded in a browser side panel";
+
+const char kSideSearchClearCacheWhenClosedName[] =
+    "Side search clear cache when closed";
+const char kSideSearchClearCacheWhenClosedDescription[] =
+    "Clears the side search cache when the side panel is closed.";
+
+const char kSideSearchStatePerTabName[] = "Side search state per tab";
+const char kSideSearchStatePerTabDescription[] =
+    "Enables a per-tab toggled state for the side search side panel";
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 const char kWebUITabStripName[] = "WebUI tab strip";
 const char kWebUITabStripDescription[] =

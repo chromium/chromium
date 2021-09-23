@@ -73,6 +73,12 @@ extern const base::Feature kSettingsLandingPageRedesign;
 extern const base::Feature kSidePanel;
 extern const base::Feature kSidePanelDragAndDrop;
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+extern const base::Feature kSideSearch;
+extern const base::Feature kSideSearchClearCacheWhenClosed;
+extern const base::Feature kSideSearchStatePerTab;
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 extern const base::Feature kSyncConfirmationUpdatedText;
 
 extern const base::Feature kTabGroupsAutoCreate;

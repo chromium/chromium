@@ -83,6 +83,22 @@ const base::Feature kReadLaterNewBadgePromo{"ReadLaterNewBadgePromo",
 const base::Feature kReadLaterAddFromDialog{"ReadLaterAddFromDialog",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+// Enables the side search feature for Google Search. Presents recent Google
+// search results in a browser side panel (crbug.com/1242730).
+const base::Feature kSideSearch{"SideSearch",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the side contents for all tabs in a given window are cleared
+// away when the side panel is closed.
+const base::Feature kSideSearchClearCacheWhenClosed{
+    "SideSearchClearCacheWhenClosed", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the state of side search is set at a per tab level.
+const base::Feature kSideSearchStatePerTab{"SideSearchStatePerTab",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 

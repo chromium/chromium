@@ -58,6 +58,10 @@ declare_args() {
   # Android stores them separately on the Java side.
   enable_session_service = !is_android && !is_chromecast
 
+  # Enables usage of the side search feature, which is disabled by default.
+  # This feature is only approved for release on ChromeOS at this time.
+  enable_side_search = is_chromeos
+
   enable_supervised_users = is_chromeos_ash || is_android
 
   # Enables usage of the system-provided notification center.
@@ -85,6 +89,7 @@ chrome_grit_defines = [
   "enable_print_preview=$enable_print_preview",
   "enable_printing=$enable_basic_printing",
   "enable_service_discovery=$enable_service_discovery",
+  "enable_side_search=$enable_side_search",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
   "enable_webui_tab_strip=$enable_webui_tab_strip",

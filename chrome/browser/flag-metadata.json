@@ -5180,6 +5180,21 @@
     "expiry_milestone" : 96
   },
   {
+    "name" : "side-search",
+    "owners": [ "chrome-cros@google.com", "tluk" ],
+    "expiry_milestone" : 100
+  },
+  {
+    "name" : "side-search-clear-cache-when-closed",
+    "owners": [ "chrome-cros@google.com", "tluk" ],
+    "expiry_milestone" : 100
+  },
+  {
+    "name" : "side-search-state-per-tab",
+    "owners": [ "chrome-cros@google.com", "tluk" ],
+    "expiry_milestone" : 100
+  },
+  {
     "name": "simplify-sign-out-ios",
     "owners": [ "jlebel", "msarda", "fernandex" ],
     "expiry_milestone": 95

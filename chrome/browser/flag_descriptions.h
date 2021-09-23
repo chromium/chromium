@@ -3109,6 +3109,17 @@ extern const char kPaintPreviewStartupName[];
 extern const char kPaintPreviewStartupDescription[];
 #endif  // ENABLE_PAINT_PREVIEW && defined(OS_ANDROID)
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+extern const char kSideSearchName[];
+extern const char kSideSearchDescription[];
+
+extern const char kSideSearchClearCacheWhenClosedName[];
+extern const char kSideSearchClearCacheWhenClosedDescription[];
+
+extern const char kSideSearchStatePerTabName[];
+extern const char kSideSearchStatePerTabDescription[];
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 extern const char kWebUITabStripName[];
 extern const char kWebUITabStripDescription[];

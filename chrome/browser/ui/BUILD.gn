@@ -5131,6 +5131,19 @@ static_library("ui") {
       "webui/tab_strip/thumbnail_tracker.h",
     ]
   }
+
+  if (enable_side_search) {
+    sources += [
+      "side_search/side_search_side_contents_helper.cc",
+      "side_search/side_search_side_contents_helper.h",
+      "side_search/side_search_tab_contents_helper.cc",
+      "side_search/side_search_tab_contents_helper.h",
+      "side_search/side_search_utils.cc",
+      "side_search/side_search_utils.h",
+      "views/side_search/side_search_browser_controller.cc",
+      "views/side_search/side_search_browser_controller.h",
+    ]
+  }
 }
 
 # In GYP this is part of test_support_common.

@@ -88,6 +88,10 @@ class LensSidePanelController;
 }  // namespace lens
 #endif
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+class SideSearchBrowserController;
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 namespace ui {
 class NativeTheme;
 }  // namespace ui
@@ -200,6 +204,12 @@ class BrowserView : public BrowserWindow,
     return lens_side_panel_controller_.get();
   }
 #endif
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  SideSearchBrowserController* side_search_controller() {
+    return side_search_controller_.get();
+  }
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
@@ -952,6 +962,11 @@ class BrowserView : public BrowserWindow,
   // A controller that handles content hosted in the Lens side panel.
   std::unique_ptr<lens::LensSidePanelController> lens_side_panel_controller_;
 #endif
+
+  // Controls the browser window's side panel for the Side Search feature.
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  std::unique_ptr<SideSearchBrowserController> side_search_controller_;
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

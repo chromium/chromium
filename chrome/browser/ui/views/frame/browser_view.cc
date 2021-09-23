@@ -277,6 +277,11 @@
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/side_search/side_search_utils.h"
+#include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 using base::TimeDelta;
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
@@ -698,14 +703,33 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 #endif
 
+  // Only either Side Search or the extensions side panel experiment should be
+  // occupying the left aligned side panel at a given time.
+  const bool side_search_enabled =
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+      IsSideSearchEnabled(browser_->profile());
+#else
+      false;
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
   if (browser_->is_type_normal() &&
-      base::FeatureList::IsEnabled(features::kExtensionsSidePanel)) {
+      (side_search_enabled ||
+       base::FeatureList::IsEnabled(features::kExtensionsSidePanel))) {
     left_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>());
     left_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
-    extensions_side_panel_controller_ =
-        std::make_unique<ExtensionsSidePanelController>(
-            left_aligned_side_panel_, this);
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+    if (side_search_enabled) {
+      side_search_controller_ = std::make_unique<SideSearchBrowserController>(
+          left_aligned_side_panel_, this);
+    }
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+    if (!side_search_enabled) {
+      extensions_side_panel_controller_ =
+          std::make_unique<ExtensionsSidePanelController>(
+              left_aligned_side_panel_, this);
+    }
   }
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but

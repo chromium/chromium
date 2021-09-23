@@ -210,6 +210,11 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 using content::WebContents;
 
 namespace {
@@ -505,6 +510,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
 #endif
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  if (IsSideSearchEnabled(profile))
+    SideSearchTabContentsHelper::CreateForWebContents(web_contents);
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   // --- Section 4: The warning ---
 

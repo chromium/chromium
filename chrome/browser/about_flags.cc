@@ -7723,6 +7723,21 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kU2FPermissionPromptDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kU2fPermissionPrompt)},
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+    {"side-search", flag_descriptions::kSideSearchName,
+     flag_descriptions::kSideSearchDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSideSearch)},
+
+    {"side-search-clear-cache-when-closed",
+     flag_descriptions::kSideSearchClearCacheWhenClosedName,
+     flag_descriptions::kSideSearchClearCacheWhenClosedDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSideSearchClearCacheWhenClosed)},
+
+    {"side-search-state-per-tab", flag_descriptions::kSideSearchStatePerTabName,
+     flag_descriptions::kSideSearchStatePerTabDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSideSearchStatePerTab)},
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
