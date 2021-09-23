@@ -65,8 +65,7 @@ class PepperInternalFileRefBackend : public PepperFileRefBackend {
                  const IPC::Message& msg,
                  base::File::Error error);
 
-  // Helper methods called on IO thread when the PpapiHost runs on the UI
-  // thread.
+  // Helper methods called on IO thread.
   static void DidFinishOnIOThread(
       base::WeakPtr<PepperInternalFileRefBackend> weak_ptr,
       ppapi::host::ReplyMessageContext reply_context,

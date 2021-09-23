@@ -108,7 +108,7 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
       mojo::ScopedDataPipeProducerHandle send_stream);
-  void OnAcceptCompletedOnProcessThread(
+  void OnAcceptCompletedOnUIThread(
       const ppapi::host::ReplyMessageContext& context,
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
       mojo::PendingReceiver<network::mojom::SocketObserver>

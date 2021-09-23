@@ -19,7 +19,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/socket_permission_request.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -141,7 +140,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgListen(
 
   SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
-          content::SocketPermissionRequest::TCP_LISTEN, addr);
+          SocketPermissionRequest::TCP_LISTEN, addr);
   if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_,
                                              private_api_,
                                              &request,
@@ -330,19 +329,16 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompleted(
     return;
   }
 
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? content::GetUIThreadTaskRunner({})
-                         : content::GetIOThreadTaskRunner({});
-  task_runner->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnProcessThread,
+          &PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnUIThread,
           this, context, std::move(connected_socket),
           std::move(socket_observer_receiver), std::move(receive_stream),
           std::move(send_stream), bound_addr_, pp_remote_addr));
 }
 
-void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnProcessThread(
+void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnUIThread(
     const ppapi::host::ReplyMessageContext& context,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
     mojo::PendingReceiver<network::mojom::SocketObserver>
@@ -351,9 +347,7 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnProcessThread(
     mojo::ScopedDataPipeProducerHandle send_stream,
     PP_NetAddress_Private pp_local_addr,
     PP_NetAddress_Private pp_remote_addr) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!host_->IsValidInstance(instance_)) {
     // The instance has been removed while Accept was in progress. This object

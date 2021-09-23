@@ -22,7 +22,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/socket_permission_request.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -92,9 +91,7 @@ PepperTCPSocketMessageFilter::PepperTCPSocketMessageFilter(
       is_potentially_secure_plugin_context_(
           host->IsPotentiallySecurePluginContext(instance)) {
   DCHECK(host);
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ++g_num_tcp_filter_instances;
   host_->AddInstanceObserver(instance_, this);
@@ -110,9 +107,7 @@ void PepperTCPSocketMessageFilter::SetConnectedSocket(
         socket_observer_receiver,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // This method grabs a reference to |this|, and releases a reference on the UI
   // thread, so something should be holding on to a reference on the current
   // thread to prevent the object from being deleted before this method returns.
@@ -127,9 +122,7 @@ void PepperTCPSocketMessageFilter::SetConnectedSocket(
 }
 
 PepperTCPSocketMessageFilter::~PepperTCPSocketMessageFilter() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (host_)
     host_->RemoveInstanceObserver(instance_, this);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -227,9 +220,7 @@ int32_t PepperTCPSocketMessageFilter::OnResourceMessageReceived(
 }
 
 void PepperTCPSocketMessageFilter::OnHostDestroyed() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   host_->RemoveInstanceObserver(instance_, this);
   host_ = nullptr;
 }
@@ -417,9 +408,9 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnectWithNetAddress(
     const PP_NetAddress_Private& net_addr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  content::SocketPermissionRequest request =
+  SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
-          content::SocketPermissionRequest::TCP_CONNECT, net_addr);
+          SocketPermissionRequest::TCP_CONNECT, net_addr);
   if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_, IsPrivateAPI(),
                                              &request, render_process_id_,
                                              render_frame_id_)) {
@@ -573,9 +564,9 @@ int32_t PepperTCPSocketMessageFilter::OnMsgListen(
     return PP_ERROR_NOACCESS;
   }
 
-  content::SocketPermissionRequest request =
+  SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
-          content::SocketPermissionRequest::TCP_LISTEN, bind_input_addr_);
+          SocketPermissionRequest::TCP_LISTEN, bind_input_addr_);
   if (!pepper_socket_utils::CanUseSocketAPIs(
           external_plugin_, false /* private_api */, &request,
           render_process_id_, render_frame_id_)) {
@@ -1103,10 +1094,7 @@ void PepperTCPSocketMessageFilter::OnAcceptCompleted(
   // already.
   DCHECK(success);
 
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? content::GetUIThreadTaskRunner({})
-                         : content::GetIOThreadTaskRunner({});
-  task_runner->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&PepperTCPSocketMessageFilter::OnAcceptCompletedOnIOThread,
                      this, context, std::move(connected_socket),
@@ -1124,9 +1112,7 @@ void PepperTCPSocketMessageFilter::OnAcceptCompletedOnIOThread(
     mojo::ScopedDataPipeProducerHandle send_stream,
     PP_NetAddress_Private pp_local_addr,
     PP_NetAddress_Private pp_remote_addr) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!host_->IsValidInstance(instance_)) {
     // The instance has been removed while Accept was in progress. This object

@@ -16,7 +16,6 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "net/base/mime_util.h"
 #include "ppapi/c/pp_errors.h"
@@ -392,19 +391,11 @@ void PepperFileSystemBrowserHost::OpenExisting(const GURL& root_url,
   called_open_ = true;
   // Get the file system context asynchronously, and then complete the Open
   // operation by calling |callback|.
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&IOThreadState::OpenExistingFileSystem, io_thread_state_,
-                       root_url, std::move(callback),
-                       GetFileSystemContextFromRenderId(render_process_id)));
-  } else {
-    GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetFileSystemContextFromRenderId, render_process_id),
-        base::BindOnce(&IOThreadState::OpenExistingFileSystem, io_thread_state_,
-                       root_url, std::move(callback)));
-  }
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&IOThreadState::OpenExistingFileSystem, io_thread_state_,
+                     root_url, std::move(callback),
+                     GetFileSystemContextFromRenderId(render_process_id)));
 }
 
 int32_t PepperFileSystemBrowserHost::OnResourceMessageReceived(
@@ -436,13 +427,6 @@ GURL PepperFileSystemBrowserHost::GetRootUrl() const {
   return io_thread_state_->root_url();
 }
 
-scoped_refptr<storage::FileSystemContext>
-PepperFileSystemBrowserHost::GetFileSystemContext() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!base::FeatureList::IsEnabled(features::kProcessHostOnUI));
-  return io_thread_state_->file_system_context();
-}
-
 PepperFileSystemBrowserHost::GetOperationRunnerCallback
 PepperFileSystemBrowserHost::GetFileSystemOperationRunner() const {
   return base::BindRepeating(
@@ -462,19 +446,11 @@ void PepperFileSystemBrowserHost::OpenQuotaFile(
     return;
   }
 
-  OpenQuotaFileCallback callback_wrapper;
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    callback_wrapper =
-        base::BindOnce(RunOpenQuotaCallbackOnUI, std::move(callback));
-  } else {
-    callback_wrapper = std::move(callback);
-  }
-
   base::PostTaskAndReplyWithResult(
       io_thread_state_->file_system_context()->default_file_task_runner(),
       FROM_HERE,
       base::BindOnce(&QuotaReservation::OpenFile, quota_reservation_, id, url),
-      std::move(callback_wrapper));
+      base::BindOnce(RunOpenQuotaCallbackOnUI, std::move(callback)));
 }
 
 void PepperFileSystemBrowserHost::CloseQuotaFile(
@@ -532,19 +508,11 @@ int32_t PepperFileSystemBrowserHost::OnHostMsgOpen(
 
   GURL origin =
       browser_ppapi_host_->GetDocumentURLForInstance(pp_instance()).GetOrigin();
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&IOThreadState::OpenFileSystem, io_thread_state_, origin,
-                       context->MakeReplyMessageContext(), file_system_type,
-                       GetFileSystemContextFromRenderId(render_process_id)));
-  } else {
-    GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetFileSystemContextFromRenderId, render_process_id),
-        base::BindOnce(&IOThreadState::OpenFileSystem, io_thread_state_, origin,
-                       context->MakeReplyMessageContext(), file_system_type));
-  }
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&IOThreadState::OpenFileSystem, io_thread_state_, origin,
+                     context->MakeReplyMessageContext(), file_system_type,
+                     GetFileSystemContextFromRenderId(render_process_id)));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -577,21 +545,12 @@ int32_t PepperFileSystemBrowserHost::OnHostMsgInitIsolatedFileSystem(
 
   const std::string& plugin_id = GeneratePluginId(GetPluginMimeType());
 
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&IOThreadState::OpenIsolatedFileSystem, io_thread_state_,
-                       origin, root_url, plugin_id,
-                       context->MakeReplyMessageContext(), fsid, type,
-                       GetFileSystemContextFromRenderId(render_process_id)));
-  } else {
-    GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetFileSystemContextFromRenderId, render_process_id),
-        base::BindOnce(&IOThreadState::OpenIsolatedFileSystem, io_thread_state_,
-                       origin, root_url, plugin_id,
-                       context->MakeReplyMessageContext(), fsid, type));
-  }
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&IOThreadState::OpenIsolatedFileSystem, io_thread_state_,
+                     origin, root_url, plugin_id,
+                     context->MakeReplyMessageContext(), fsid, type,
+                     GetFileSystemContextFromRenderId(render_process_id)));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -613,18 +572,12 @@ int32_t PepperFileSystemBrowserHost::OnHostMsgReserveQuota(
       &PepperFileSystemBrowserHost::GotReservedQuota,
       weak_factory_.GetWeakPtr(), context->MakeReplyMessageContext());
 
-  QuotaReservation::ReserveQuotaCallback callback_wrapper;
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    callback_wrapper =
-        base::BindOnce(RunReserveQuotaCallbackOnUI, std::move(callback));
-  } else {
-    callback_wrapper = std::move(callback);
-  }
-
   io_thread_state_->file_system_context()->default_file_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&QuotaReservation::ReserveQuota,
-                                quota_reservation_, reservation_amount,
-                                file_growths, std::move(callback_wrapper)));
+      FROM_HERE,
+      base::BindOnce(
+          &QuotaReservation::ReserveQuota, quota_reservation_,
+          reservation_amount, file_growths,
+          base::BindOnce(RunReserveQuotaCallbackOnUI, std::move(callback))));
 
   return PP_OK_COMPLETIONPENDING;
 }

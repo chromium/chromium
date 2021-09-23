@@ -12,6 +12,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/pepper/pepper_file_ref_host.h"
 #include "content/browser/renderer_host/pepper/pepper_file_system_browser_host.h"
 #include "content/browser/renderer_host/pepper/pepper_security_helper.h"
@@ -21,7 +22,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ppapi/c/pp_errors.h"
@@ -226,20 +226,9 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
             open_flags, render_process_id_, file_system_url_))
       return PP_ERROR_NOACCESS;
 
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      GotUIThreadStuffForInternalFileSystems(
-          context->MakeReplyMessageContext(), platform_file_flags,
-          GetUIThreadStuffForInternalFileSystems(render_process_id_));
-    } else {
-      GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&GetUIThreadStuffForInternalFileSystems,
-                         render_process_id_),
-          base::BindOnce(
-              &PepperFileIOHost::GotUIThreadStuffForInternalFileSystems,
-              AsWeakPtr(), context->MakeReplyMessageContext(),
-              platform_file_flags));
-    }
+    GotUIThreadStuffForInternalFileSystems(
+        context->MakeReplyMessageContext(), platform_file_flags,
+        GetUIThreadStuffForInternalFileSystems(render_process_id_));
   } else {
     base::FilePath path = file_ref_host->GetExternalFilePath();
     if (!CanOpenWithPepperFlags(open_flags, render_process_id_, path))
@@ -259,9 +248,7 @@ void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
     ppapi::host::ReplyMessageContext reply_context,
     int platform_file_flags,
     UIThreadStuff ui_thread_stuff) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   resolved_render_process_id_ = ui_thread_stuff.resolved_render_process_id;
   if (resolved_render_process_id_ == base::kNullProcessId ||
       !ui_thread_stuff.file_system_context.get()) {
@@ -287,18 +274,11 @@ void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
       base::BindOnce(&DidOpenFile, AsWeakPtr(), task_runner_,
                      base::BindOnce(&PepperFileIOHost::DidOpenInternalFile,
                                     AsWeakPtr(), reply_context));
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            CallOpenFile, file_system_host_->GetFileSystemOperationRunner(),
-            file_system_url_, platform_file_flags, std::move(open_callback)));
-  } else {
-    DCHECK(file_system_host_->GetFileSystemOperationRunner());
-
-    file_system_host_->GetFileSystemOperationRunner().Run()->OpenFile(
-        file_system_url_, platform_file_flags, std::move(open_callback));
-  }
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          CallOpenFile, file_system_host_->GetFileSystemOperationRunner(),
+          file_system_url_, platform_file_flags, std::move(open_callback)));
 }
 
 void PepperFileIOHost::DidOpenInternalFile(
@@ -330,9 +310,7 @@ void PepperFileIOHost::GotResolvedRenderProcessId(
     base::FilePath path,
     int file_flags,
     base::ProcessId resolved_render_process_id) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   resolved_render_process_id_ = resolved_render_process_id;
   file_.CreateOrOpen(path, file_flags,
                      base::BindOnce(&PepperFileIOHost::OnLocalFileOpened,
@@ -453,9 +431,7 @@ int32_t PepperFileIOHost::OnHostMsgRequestOSFileHandle(
 void PepperFileIOHost::GotPluginAllowedToCallRequestOSFileHandle(
     ppapi::host::ReplyMessageContext reply_context,
     bool plugin_allowed) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!browser_ppapi_host_->external_plugin() ||
       host()->permissions().HasPermission(ppapi::PERMISSION_PRIVATE) ||
       plugin_allowed) {

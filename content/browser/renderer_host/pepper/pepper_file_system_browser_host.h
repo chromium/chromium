@@ -65,9 +65,6 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
   bool IsOpened() const;
   GURL GetRootUrl() const;
 
-  // Can only call this if ProcessHostOnUI is disabled.
-  scoped_refptr<storage::FileSystemContext> GetFileSystemContext() const;
-
   // Returns a callback which can be run on the IO thread to return a
   // FileSystemOperationRunner  Supports FileIOs direct access on the host side.
   // Non-NULL only for PP_FILESYSTEMTYPE_LOCAL{PERSISTENT,TEMPORARY}.
