@@ -4736,4 +4736,17 @@ TEST_F(StyleEngineSimTest, UserAndAuthorFontFaceOverrideWithCascadeLayers) {
   EXPECT_EQ(80, target->OffsetWidth());
 }
 
+TEST_F(StyleEngineTest, CascadeLayerActiveStyleSheetVectorNullRuleSetCrash) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  // This creates an ActiveStyleSheetVector where the first entry has no
+  // RuleSet, and the second entry has a layer rule difference.
+  GetDocument().documentElement()->setInnerHTML(
+      "<style media=invalid></style>"
+      "<style>@layer {}</style>");
+
+  // Should not crash
+  UpdateAllLifecyclePhases();
+}
+
 }  // namespace blink

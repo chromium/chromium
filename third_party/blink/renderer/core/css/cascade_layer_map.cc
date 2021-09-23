@@ -46,9 +46,8 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
 
   CanonicalLayerMap canonical_layer_map;
   for (const auto& sheet : sheets) {
-    DCHECK(sheet.second);
     const RuleSet* rule_set = sheet.second;
-    if (rule_set->HasCascadeLayers()) {
+    if (rule_set && rule_set->HasCascadeLayers()) {
       AddLayers(canonical_root_layer, rule_set->CascadeLayers(),
                 canonical_layer_map);
     }
