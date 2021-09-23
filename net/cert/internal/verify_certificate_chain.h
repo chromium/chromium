@@ -90,7 +90,9 @@ class NET_EXPORT VerifyCertificateChainDelegate {
 //  * The end-entity's KeyUsage before using its SPKI.
 //  * The end-entity's name/subjectAltName. Name constraints from intermediates
 //    will have already been applied, so it is sufficient to check the
-//    end-entity for a match.
+//    end-entity for a match. The caller MUST NOT check hostnames on the
+//    commonName field because this implementation does not apply dnsName
+//    constraints on commonName.
 //
 // ---------
 // Inputs
