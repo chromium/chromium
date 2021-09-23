@@ -237,6 +237,78 @@ export function shortcutCustomizationAppTest() {
     assertEquals(']', actualAccelerator.key_display);
   });
 
+  test('AddAccelerator', async () => {
+    await flushTasks();
+
+    // Open dialog for first accelerator in View Desk subsection.
+    await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
+    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+
+    // Grab the first accelerator from Virtual Desks subsection.
+    let dialogAccels = editDialog.shadowRoot.querySelector('cr-dialog')
+                           .querySelectorAll('accelerator-edit-view');
+    // Expect only 1 accelerator initially.
+    assertEquals(1, dialogAccels.length);
+
+    // Click on add button.
+    editDialog.shadowRoot.querySelector('#addAcceleratorButton').click();
+
+    await flushTasks();
+
+    const editElement =
+        editDialog.shadowRoot.querySelector('#pendingAccelerator');
+
+    // Assert no error has occurred prior to pressing a shortcut.
+    assertFalse(editElement.hasError);
+
+    const viewElement =
+        editElement.shadowRoot.querySelector('#acceleratorItem');
+
+    // Alt + ']' is a conflict, expect the error message to appear.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: '221',
+      code: 'Key]',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+
+    assertTrue(editElement.hasError);
+
+    // Press the shortcut again, this time it will add and remove the preexsting
+    // accelerator.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: '221',
+      code: 'Key]',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+
+    // Requery all accelerators.
+    dialogAccels = editDialog.shadowRoot.querySelector('cr-dialog')
+                       .querySelectorAll('accelerator-edit-view');
+    // Expect 2 accelerators now.
+    assertEquals(2, dialogAccels.length);
+    const newAccel = dialogAccels[1];
+
+    const actualAccelerator =
+        newAccel.shadowRoot.querySelector('#acceleratorItem')
+            .acceleratorInfo.accelerator;
+    assertEquals(Modifier.ALT, actualAccelerator.modifiers);
+    assertEquals(221, actualAccelerator.key);
+    assertEquals(']', actualAccelerator.key_display);
+  });
+
   suite('FakeMojoProviderTest', () => {
     test('SettingGettingTestProvider', () => {
       // TODO(zentaro): Replace with fake when built.

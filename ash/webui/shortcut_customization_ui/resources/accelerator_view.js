@@ -471,31 +471,34 @@ export class AcceleratorViewElement extends PolymerElement {
    */
   requestUpdateAccelerator_(newKeys) {
     if (this.viewState === ViewState.EDIT) {
-      this.requestReplaceAccelerator_(newKeys);
-      return;
+      this.shortcutProvider_
+          .replaceAccelerator(
+              this.source, this.action, this.acceleratorInfo.accelerator,
+              newKeys)
+          .then((result) => {
+            // TODO(jimmyxgong): Handle other error cases.
+            if (result === AcceleratorConfigResult.kSuccess) {
+              this.lookupManager_.replaceAccelerator(
+                  this.source, this.action, this.acceleratorInfo.accelerator,
+                  newKeys);
+              this.fireUpdateEvent_();
+            }
+          });
+      ;
     }
-    // TODO(jimmyxgong): Handle ViewState.ADD.
-  }
 
-  /**
-   * @param {!AcceleratorKeys} newKeys
-   * @private
-   */
-  requestReplaceAccelerator_(newKeys) {
-    this.shortcutProvider_
-        .replaceAccelerator(
-            this.source, this.action, this.acceleratorInfo.accelerator, newKeys)
-        .then((result) => {
-          // TODO(jimmyxgong): Handle other error cases.
-          if (result === AcceleratorConfigResult.kSuccess) {
-            this.lookupManager_.replaceAccelerator(
-                this.source, this.action, this.acceleratorInfo.accelerator,
-                newKeys);
-            // End capture and update accelerators.
-            this.fireUpdateEvent_();
-            this.endCapture_();
-          }
-        });
+    if (this.viewState === ViewState.ADD) {
+      this.shortcutProvider_
+          .addUserAccelerator(this.source, this.action, newKeys)
+          .then((result) => {
+            // TODO(jimmyxgong): Handle other error cases.
+            if (result === AcceleratorConfigResult.kSuccess) {
+              this.lookupManager_.addAccelerator(
+                  this.source, this.action, newKeys);
+              this.fireUpdateEvent_();
+            }
+          });
+    }
   }
 
   /** @private */
@@ -505,6 +508,9 @@ export class AcceleratorViewElement extends PolymerElement {
       composed: true,
       detail: {source: this.source, action: this.action}
     }));
+
+    // Always end input capturing if an update event was fired.
+    this.endCapture_();
   }
 }
 
