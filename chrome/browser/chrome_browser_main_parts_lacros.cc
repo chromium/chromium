@@ -9,11 +9,13 @@
 #include "chrome/browser/lacros/metrics_reporting_observer.h"
 #include "chrome/browser/lacros/prefs_ash_observer.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/common/chrome_switches.h"
 #include "chromeos/lacros/lacros_dbus_helper.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/common/result_codes.h"
+#include "ui/wm/core/wm_core_switches.h"
 
 ChromeBrowserMainPartsLacros::ChromeBrowserMainPartsLacros(
     const content::MainFunctionParams& parameters,
@@ -52,6 +54,19 @@ void ChromeBrowserMainPartsLacros::PreProfileInit() {
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::BROWSER_PROCESS_LACROS,
         KeepAliveRestartOption::ENABLED);
+  }
+
+  // Apply specific flags if this is a Web Kiosk session.
+  if (chromeos::LacrosService::Get()->init_params()->session_type ==
+      crosapi::mojom::SessionType::kWebKioskSession) {
+    // Hide certain system UI elements.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kForceAppMode);
+
+    // Disable window animation since kiosk app runs in a single full screen
+    // window and window animation causes start-up janks.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        wm::switches::kWindowAnimationsDisabled);
   }
 }
 
