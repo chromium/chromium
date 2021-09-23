@@ -260,6 +260,12 @@ void NGTextPainter::PaintDecorationsExceptLineThrough(
                                                  text_item.Style(), nullptr);
 
   if (svg_text_paint_state_.has_value()) {
+    GraphicsContextStateSaver state_saver(paint_info.context, false);
+    if (paint_info.IsRenderingResourceSubtree()) {
+      state_saver.SaveIfNeeded();
+      paint_info.context.Scale(
+          1, text_item.SvgScalingFactor() / decoration_info.ScalingFactor());
+    }
     PaintSvgDecorationsExceptLineThrough(
         decoration_offset, decoration_info, paint_info,
         style.AppliedTextDecorations(), text_style,
@@ -280,6 +286,12 @@ void NGTextPainter::PaintDecorationsOnlyLineThrough(
     TextDecorationInfo& decoration_info,
     const PhysicalRect& decoration_rect) {
   if (svg_text_paint_state_.has_value()) {
+    GraphicsContextStateSaver state_saver(paint_info.context, false);
+    if (paint_info.IsRenderingResourceSubtree()) {
+      state_saver.SaveIfNeeded();
+      paint_info.context.Scale(
+          1, text_item.SvgScalingFactor() / decoration_info.ScalingFactor());
+    }
     PaintSvgDecorationsOnlyLineThrough(decoration_info, paint_info,
                                        style.AppliedTextDecorations(),
                                        text_style);

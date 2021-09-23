@@ -45,7 +45,8 @@ class CORE_EXPORT TextDecorationInfo {
       const ComputedStyle& style,
       const Font& scaled_font,
       const absl::optional<AppliedTextDecoration> selection_text_decoration,
-      const ComputedStyle* decorating_box_style);
+      const ComputedStyle* decorating_box_style,
+      float scaling_factor = 1.0f);
 
   // Set the decoration to use when painting and returning values.
   // Must be set before calling any other method, and can be called
@@ -70,6 +71,10 @@ class CORE_EXPORT TextDecorationInfo {
   const ComputedStyle& Style() const { return style_; }
   float ComputedFontSize() const { return computed_font_size_; }
   const SimpleFontData* FontData() const { return font_data_; }
+  // Returns the scaling factor for the decoration.
+  // It can be different from NGFragmentItem::SvgScalingFactor() if the
+  // text works as a resource.
+  float ScalingFactor() const { return scaling_factor_; }
   ResolvedUnderlinePosition UnderlinePosition() const {
     return underline_position_;
   }
@@ -117,6 +122,7 @@ class CORE_EXPORT TextDecorationInfo {
   const SimpleFontData* font_data_;
   const float baseline_;
   const float computed_font_size_;
+  const float scaling_factor_;
   ResolvedUnderlinePosition underline_position_;
   FloatPoint local_origin_;
   bool antialias_;

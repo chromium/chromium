@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -51,10 +52,36 @@ void NGTextDecorationPainter::Begin(Phase phase) {
             ? selection_->GetSelectionStyle().selection_text_decoration
             : absl::nullopt;
 
-    decoration_info_.emplace(decoration_rect_.offset, decoration_rect_.Width(),
-                             style_.GetFontBaseline(), style_,
-                             text_item_.ScaledFont(),
-                             effective_selection_decoration, nullptr);
+    if (text_item_.Type() == NGFragmentItem::kSvgText &&
+        paint_info_.IsRenderingResourceSubtree()) {
+      // Need to recompute a scaled font and a scaling factor because they
+      // depend on the scaling factor of an element referring to the text.
+      float scaling_factor = 1;
+      Font scaled_font;
+      LayoutSVGInlineText::ComputeNewScaledFontForStyle(
+          *text_item_.GetLayoutObject(), scaling_factor, scaled_font);
+      DCHECK(scaling_factor);
+      // Adjust the origin of the decoration because
+      // NGTextPainter::PaintDecorationsExceptLineThrough() will change the
+      // scaling of the GraphicsContext.
+      LayoutUnit top = decoration_rect_.offset.top;
+      // In svg/text/text-decorations-in-scaled-pattern.svg, the size of
+      // ScaledFont() is zero, and the top position is unreliable. So we
+      // adjust the baseline position, then shift it for scaled_font.
+      top +=
+          text_item_.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent();
+      top *= scaling_factor / text_item_.SvgScalingFactor();
+      top -= scaled_font.PrimaryFont()->GetFontMetrics().FixedAscent();
+      decoration_info_.emplace(
+          PhysicalOffset(decoration_rect_.offset.left, top),
+          decoration_rect_.Width(), style_.GetFontBaseline(), style_,
+          scaled_font, effective_selection_decoration, nullptr, scaling_factor);
+    } else {
+      decoration_info_.emplace(
+          decoration_rect_.offset, decoration_rect_.Width(),
+          style_.GetFontBaseline(), style_, text_item_.ScaledFont(),
+          effective_selection_decoration, nullptr);
+    }
 
     if (UNLIKELY(selection_)) {
       clip_rect_.emplace(selection_->RectInWritingModeSpace());

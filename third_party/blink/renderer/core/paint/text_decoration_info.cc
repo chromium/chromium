@@ -153,7 +153,8 @@ TextDecorationInfo::TextDecorationInfo(
     const ComputedStyle& style,
     const Font& scaled_font,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
-    const ComputedStyle* decorating_box_style)
+    const ComputedStyle* decorating_box_style,
+    float scaling_factor)
     : style_(style),
       selection_text_decoration_(selection_text_decoration),
       baseline_type_(baseline_type),
@@ -161,6 +162,7 @@ TextDecorationInfo::TextDecorationInfo(
       font_data_(scaled_font.PrimaryFont()),
       baseline_(font_data_ ? font_data_->GetFontMetrics().FloatAscent() : 0),
       computed_font_size_(scaled_font.GetFontDescription().ComputedSize()),
+      scaling_factor_(scaling_factor),
       underline_position_(ResolveUnderlinePosition(style_, baseline_type_)),
       local_origin_(FloatPoint(local_origin)),
       antialias_(ShouldSetDecorationAntialias(style)),
