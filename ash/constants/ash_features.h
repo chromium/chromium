@@ -330,6 +330,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPreferConstantFrameRate;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorFeaturePod;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorAnnotator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersTranslation;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kQuickAnswersV2;
@@ -545,6 +546,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinSetupForManagedUsersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPipRoundedCornersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorFeaturePodEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAnnotatorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2TranslationDisabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2SettingsSubToggleEnabled();

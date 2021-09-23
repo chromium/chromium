@@ -7,6 +7,7 @@
 #include "ash/accessibility/caption_bubble_context_ash.h"
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/ui/projector_bar_view.h"
@@ -47,6 +48,8 @@ void AddExcludedWindowToFastInkController(aura::Window* window) {
   DCHECK(window);
   Shell::Get()->laser_pointer_controller()->AddExcludedWindow(window);
   MarkerController::Get()->AddExcludedWindow(window);
+  // TODO(b/200341176): Add excluded windows to RecordingOverlayView instead of
+  // MarkerController.
 }
 
 void EnableLaserPointer(bool enabled) {
@@ -56,6 +59,20 @@ void EnableLaserPointer(bool enabled) {
 }
 
 void EnableMarker(bool enabled) {
+  if (features::IsProjectorAnnotatorEnabled()) {
+    auto* capture_mode_controller = CaptureModeController::Get();
+    // TODO(b/200292852): This check should not be necessary, but because
+    // several Projector unit tests that rely on mocking and don't test the real
+    // code path, we can end up calling |ToggleRecordingOverlayEnabled()|
+    // without ever starting a Projector recording session.
+    // |CaptureModeController| asserts all invariants via DCHECKs, and those
+    // tests would crash. Remove any unnecessary mocks and test the real thing
+    // if possible.
+    if (capture_mode_controller->is_recording_in_progress())
+      capture_mode_controller->ToggleRecordingOverlayEnabled();
+    return;
+  }
+  // TODO(b/200341176): Remove the older marker tools.
   auto* marker_controller = MarkerController::Get();
   DCHECK(marker_controller);
   marker_controller->SetEnabled(enabled);
@@ -248,15 +265,6 @@ void ProjectorUiController::OnMarkerPressed() {
   auto* marker_controller = MarkerController::Get();
   DCHECK(marker_controller);
   EnableMarker(!marker_controller->is_enabled());
-  auto* capture_mode_controller = CaptureModeController::Get();
-  // TODO(b/200292852): This check should not be necessary, but because several
-  // Projector unit tests that rely on mocking and don't test the real code
-  // path, we can end up calling |ToggleRecordingOverlayEnabled()| without ever
-  // starting a Projector recording session. |CaptureModeController| asserts all
-  // invariants via DCHECKs, and those tests would crash. Remove any unnecessary
-  // mocks and test the real thing if possible.
-  if (capture_mode_controller->is_recording_in_progress())
-    capture_mode_controller->ToggleRecordingOverlayEnabled();
   RecordToolbarMetrics(ProjectorToolbar::kMarkerTool);
 }
 

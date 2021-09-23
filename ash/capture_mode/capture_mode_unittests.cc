@@ -4372,7 +4372,10 @@ class ProjectorCaptureModeIntegrationTests
 
   // CaptureModeTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kProjector);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kProjector,
+                              features::kProjectorAnnotator},
+        /*disabled_features=*/{});
     CaptureModeTest::SetUp();
     auto* projector_controller = ProjectorController::Get();
     projector_controller->SetClient(&projector_client_);

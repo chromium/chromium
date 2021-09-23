@@ -33,10 +33,19 @@ constexpr char kProjectorMarkerColorHistogramName[] =
 
 }  // namespace
 
-class ProjectorUiControllerTest : public AshTestBase {
+class ProjectorUiControllerTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*annotator_enabled=*/bool> {
  public:
   ProjectorUiControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kProjector);
+    std::vector<base::Feature> enabled_features = {features::kProjector};
+    std::vector<base::Feature> disabled_features;
+    if (IsAnnotatorEnabled()) {
+      enabled_features.push_back(features::kProjectorAnnotator);
+    } else {
+      disabled_features.push_back(features::kProjectorAnnotator);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ProjectorUiControllerTest(const ProjectorUiControllerTest&) = delete;
@@ -50,6 +59,8 @@ class ProjectorUiControllerTest : public AshTestBase {
     controller_ = Shell::Get()->projector_controller()->ui_controller();
   }
 
+  bool IsAnnotatorEnabled() const { return GetParam(); }
+
  protected:
   ProjectorUiController* controller_;
 
@@ -58,8 +69,8 @@ class ProjectorUiControllerTest : public AshTestBase {
 };
 
 // Verifies that toggling on the laser pointer on Projector tools propagates to
-// the laser pointer controller and marker controller.
-TEST_F(ProjectorUiControllerTest, EnablingDisablingLaserPointer) {
+// the laser pointer controller.
+TEST_P(ProjectorUiControllerTest, EnablingDisablingLaserPointer) {
   auto* laser_pointer_controller_ = Shell::Get()->laser_pointer_controller();
   auto* marker_controller_ = MarkerController::Get();
   controller_->ShowToolbar();
@@ -83,7 +94,8 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingLaserPointer) {
   EXPECT_TRUE(marker_controller_->is_enabled());
   EXPECT_FALSE(laser_pointer_controller_->is_enabled());
   controller_->OnLaserPointerPressed();
-  EXPECT_FALSE(marker_controller_->is_enabled());
+  if (!IsAnnotatorEnabled())
+    EXPECT_FALSE(marker_controller_->is_enabled());
   EXPECT_TRUE(laser_pointer_controller_->is_enabled());
 
   // Verify that toggling laser pointer disables magnifier when it was enabled.
@@ -98,7 +110,10 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingLaserPointer) {
 
 // Verifies that toggling on the marker on Projector tools propagates to
 // the laser pointer controller and marker controller.
-TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
+TEST_P(ProjectorUiControllerTest, EnablingDisablingMarker) {
+  if (IsAnnotatorEnabled())
+    return;
+
   auto* laser_pointer_controller_ = Shell::Get()->laser_pointer_controller();
   auto* marker_controller_ = MarkerController::Get();
   controller_->ShowToolbar();
@@ -148,7 +163,10 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
 
 // Verifies that clicking the Clear All Markers button and disabling marker mode
 // clears all markers.
-TEST_F(ProjectorUiControllerTest, ClearAllMarkers) {
+TEST_P(ProjectorUiControllerTest, ClearAllMarkers) {
+  if (IsAnnotatorEnabled())
+    return;
+
   auto* marker_controller_ = MarkerController::Get();
   auto marker_controller_test_api_ =
       std::make_unique<MarkerControllerTestApi>(marker_controller_);
@@ -186,7 +204,7 @@ TEST_F(ProjectorUiControllerTest, ClearAllMarkers) {
 }
 
 // Verifies that the bar view buttons are enabled/disabled with recording state.
-TEST_F(ProjectorUiControllerTest, RecordingState) {
+TEST_P(ProjectorUiControllerTest, RecordingState) {
   controller_->ShowToolbar();
   ProjectorBarView* bar_view_ = controller_->projector_bar_view();
   EXPECT_FALSE(bar_view_->IsKeyIdeaButtonEnabled());
@@ -200,7 +218,7 @@ TEST_F(ProjectorUiControllerTest, RecordingState) {
   EXPECT_FALSE(bar_view_->IsClosedCaptionEnabled());
 }
 
-TEST_F(ProjectorUiControllerTest, CaptionBubbleVisible) {
+TEST_P(ProjectorUiControllerTest, CaptionBubbleVisible) {
   controller_->ShowToolbar();
   controller_->SetCaptionBubbleState(true);
   EXPECT_TRUE(controller_->IsCaptionBubbleModelOpen());
@@ -209,14 +227,15 @@ TEST_F(ProjectorUiControllerTest, CaptionBubbleVisible) {
   EXPECT_FALSE(controller_->IsCaptionBubbleModelOpen());
 }
 
-TEST_F(ProjectorUiControllerTest, EnablingDisablingMagnifierGlass) {
+TEST_P(ProjectorUiControllerTest, EnablingDisablingMagnifierGlass) {
   // Ensure that enabling magnifier disables marker if it was enabled.
   controller_->ShowToolbar();
   auto* marker_controller_ = MarkerController::Get();
   marker_controller_->SetEnabled(true);
   EXPECT_TRUE(marker_controller_->is_enabled());
   controller_->OnMagnifierButtonPressed(true);
-  EXPECT_FALSE(marker_controller_->is_enabled());
+  if (!IsAnnotatorEnabled())
+    EXPECT_FALSE(marker_controller_->is_enabled());
 
   // Ensures that enabling magnifier disables laser pointer if it was enabled.
   auto* laser_pointer_controller_ = Shell::Get()->laser_pointer_controller();
@@ -226,7 +245,7 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMagnifierGlass) {
   EXPECT_FALSE(laser_pointer_controller_->is_enabled());
 }
 
-TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
+TEST_P(ProjectorUiControllerTest, UmaMetricsTest) {
   base::HistogramTester histogram_tester;
 
   MockProjectorClient mock_client;
@@ -274,12 +293,14 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
       kProjectorToolbarHistogramName,
       /*sample=*/ProjectorToolbar::kStartMagnifier,
       /*count=*/1);
-  // Magnifier and marker are mutually exclusive, so enabling magnifier also
-  // disables marker. Leaving marker mode also clears all markers.
-  histogram_tester.ExpectBucketCount(
-      kProjectorToolbarHistogramName,
-      /*sample=*/ProjectorToolbar::kClearAllMarkers,
-      /*count=*/2);
+  if (!IsAnnotatorEnabled()) {
+    // Magnifier and marker are mutually exclusive, so enabling magnifier also
+    // disables marker. Leaving marker mode also clears all markers.
+    histogram_tester.ExpectBucketCount(
+        kProjectorToolbarHistogramName,
+        /*sample=*/ProjectorToolbar::kClearAllMarkers,
+        /*count=*/2);
+  }
   bar_view_->OnMagnifierButtonPressed(/*enabled=*/false);
   histogram_tester.ExpectBucketCount(
       kProjectorToolbarHistogramName,
@@ -356,8 +377,13 @@ TEST_F(ProjectorUiControllerTest, UmaMetricsTest) {
       kProjectorToolbarHistogramName,
       /*sample=*/ProjectorToolbar::kToolbarClosed,
       /*count=*/1);
+  int expected_count = IsAnnotatorEnabled() ? 21 : 22;
   histogram_tester.ExpectTotalCount(kProjectorToolbarHistogramName,
-                                    /*count=*/22);
+                                    expected_count);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ProjectorUiControllerTest,
+                         /*IsAnnotatorEnabled=*/testing::Bool());
 
 }  // namespace ash

@@ -876,6 +876,13 @@ const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable Projector annotator or marker tools.
+// The annotator tools are newer and based on the ink library.
+// The marker tools are older and based on fast ink.
+// We are deprecating the old marker tools in favor of the annotator tools.
+const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether to enable quick answers V2 features.
 const base::Feature kQuickAnswersV2{"QuickAnswersV2",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1559,6 +1566,11 @@ bool IsProjectorEnabled() {
 bool IsProjectorFeaturePodEnabled() {
   return IsProjectorEnabled() &&
          base::FeatureList::IsEnabled(kProjectorFeaturePod);
+}
+
+bool IsProjectorAnnotatorEnabled() {
+  return IsProjectorEnabled() &&
+         base::FeatureList::IsEnabled(kProjectorAnnotator);
 }
 
 bool IsQuickAnswersV2Enabled() {
