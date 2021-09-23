@@ -166,7 +166,7 @@ export function scanPreviewTest() {
   test('positionActionToolbarOnSubsequentScans', () => {
     const scannedImagesDiv =
         /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
-    scanPreview.objectUrls = ['image'];
+    scanPreview.objectUrls = [];
     scanPreview.isMultiPageScan = true;
     scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
     return flushTasks()

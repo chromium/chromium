@@ -26,6 +26,13 @@ const PROGRESS_TIMER_MS = 3000;
 const SCANNED_IMG_MARGIN_BOTTOM_PX = 12;
 
 /**
+ * The bottom margin for the action toolbar from the bottom edge of the
+ * viewport.
+ * @type {number}
+ */
+const ACTION_TOOLBAR_BOTTOM_MARGIN_PX = 40;
+
+/**
  * @fileoverview
  * 'scan-preview' shows a preview of a scanned document.
  */
@@ -183,7 +190,7 @@ Polymer({
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
     this.onWindowResized_ = () => this.setActionToolbarPosition_();
     this.previewAreaResizeObserver_ =
-        new ResizeObserver(() => this.setMultiPageScanProgessHeight_());
+        new ResizeObserver(() => this.updatePreviewElements_());
   },
 
   /** @override */
@@ -407,7 +414,9 @@ Polymer({
     this.setFocusedScannedImage_(
         scannedImages, this.getCurrentPageInView_(scannedImages));
 
-    // The below actions only needed for the first scanned image load.
+    this.updatePreviewElements_();
+
+    // Scrolling to a page is only needed for the first scanned image load.
     if (this.scannedImagesLoaded_) {
       return;
     }
@@ -416,7 +425,6 @@ Polymer({
 
     // |e.model| is populated by the dom-repeat element.
     this.scrollToPage_(e.model.index);
-    this.setActionToolbarPosition_();
   },
 
   /**
@@ -449,12 +457,17 @@ Polymer({
       return;
     }
 
+    const actionToolbar = this.$$('action-toolbar');
     const scannedImageRect = scannedImage.getBoundingClientRect();
-    const topPosition = scannedImageRect.height * .85;
+
+    // Set the toolbar position from the bottom edge of the viewport.
+    const topPosition = this.$$('#previewDiv').offsetHeight -
+        ACTION_TOOLBAR_BOTTOM_MARGIN_PX - (actionToolbar.offsetHeight / 2);
     this.style.setProperty('--action-toolbar-top', topPosition + 'px');
 
+    // Position the toolbar in the middle of the viewport.
     const leftPosition = scannedImageRect.x + (scannedImageRect.width / 2) -
-        (this.$$('action-toolbar').offsetWidth / 2);
+        (actionToolbar.offsetWidth / 2);
     this.style.setProperty('--action-toolbar-left', leftPosition + 'px');
   },
 
@@ -596,7 +609,7 @@ Polymer({
    * Make the scan progress height match the preview area height.
    * @private
    */
-  setMultiPageScanProgessHeight_() {
+  setMultiPageScanProgressHeight_() {
     this.style.setProperty(
         '--multi-page-scan-progress-height',
         this.$$('#previewDiv').offsetHeight + 'px');
@@ -612,5 +625,15 @@ Polymer({
     if (this.objectUrls.length === 0) {
       this.currentPageInView_ = -1;
     }
+  },
+
+  /**
+   * Sets the size and positioning of elements that depend on the size of the
+   * scan preview area.
+   * @private
+   */
+  updatePreviewElements_() {
+    this.setMultiPageScanProgressHeight_();
+    this.setActionToolbarPosition_();
   },
 });
