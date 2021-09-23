@@ -220,15 +220,17 @@ export function waitForAppWindow(windowUrl) {
 
 /**
  * Get all the browser windows.
+ * @param {number} expectedInitialCount The number of windows expected before
+ *     opening a new one.
  * @return {Object} Object returned from chrome.windows.getAll().
  */
-export async function getBrowserWindows() {
+export async function getBrowserWindows(expectedInitialCount = 0) {
   const caller = getCaller();
   return repeatUntil(async () => {
     const result = await new Promise(function(fulfill) {
       chrome.windows.getAll({'populate': true}, fulfill);
     });
-    if (result.length == 0) {
+    if (result.length === expectedInitialCount) {
       return pending(caller, 'getBrowserWindows ' + result.length);
     }
     return result;

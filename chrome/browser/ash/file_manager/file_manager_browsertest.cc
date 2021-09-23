@@ -360,9 +360,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenSniffedFiles, /* open_sniffed_files.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("pdfOpenDownloads"),
+                      TestCase("pdfOpenDownloads").FilesSwa(),
                       TestCase("pdfOpenDrive"),
+                      TestCase("pdfOpenDrive").FilesSwa(),
                       TestCase("textOpenDownloads"),
-                      TestCase("textOpenDrive")));
+                      TestCase("textOpenDownloads").FilesSwa(),
+                      TestCase("textOpenDrive"),
+                      TestCase("textOpenDrive").FilesSwa()));
 
 // TODO(crbug.com/1240426) Make these tests work with the new ZIP systems.
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
