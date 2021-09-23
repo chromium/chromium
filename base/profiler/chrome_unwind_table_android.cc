@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/profiler/chrome_unwind_info_android.h"
 
 namespace base {
 namespace {

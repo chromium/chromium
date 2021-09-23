@@ -4,6 +4,7 @@
 
 #include "base/profiler/chrome_unwind_table_android.h"
 
+#include "base/profiler/chrome_unwind_info_android.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
