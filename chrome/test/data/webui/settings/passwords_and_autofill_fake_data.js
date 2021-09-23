@@ -384,7 +384,12 @@ export class PasswordSectionElementFactory {
   createPasswordEditDialog(passwordEntry, passwords) {
     const passwordDialog = this.document.createElement('password-edit-dialog');
     passwordDialog.entry = passwordEntry;
-    passwordDialog.password = '';
+    if (!passwordEntry.federationText) {
+      // Edit dialog is always opened with plaintext password for non-federated
+      // credentials since user authentication is required before opening the
+      // edit dialog.
+      passwordDialog.entry.password = 'password';
+    }
     passwordDialog.savedPasswords = passwords ? passwords : [];
     this.document.body.appendChild(passwordDialog);
     flush();

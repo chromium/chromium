@@ -14,7 +14,7 @@ type Constructor<T> = new (...args: any[]) => T;
 
 /**
  * This mixin bundles functionality required to show a password to the user.
- * It is used by both <password-list-item> and <password-edit-dialog>.
+ * It is used by <password-list-item>.
  */
 export const ShowPasswordMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&

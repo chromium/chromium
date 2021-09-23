@@ -205,19 +205,16 @@ function detailsDialogPartsAreShownCorrectly(passwordDialog) {
  */
 async function changeSavedPasswordTestHelper(
     editDialog, entryIds, passwordManager) {
-  const PASSWORD1 = 'hello_world';
-  const USERNAME1 = 'new_username';
-  editDialog.set('entry.password', PASSWORD1);
-  assertEquals(PASSWORD1, editDialog.$.passwordInput.value);
+  const NEW_USERNAME = 'new_username';
+  const NEW_PASSWORD = 'new_password';
 
-  // Empty password should be consider invalid and disables the save button.
+  // Empty password should be considered invalid and disable the save button.
   editDialog.$.passwordInput.value = '';
   assertTrue(editDialog.$.passwordInput.invalid);
   assertTrue(editDialog.$.actionButton.disabled);
 
-  const PASSWORD2 = 'hello_world_2';
-  editDialog.$.usernameInput.value = USERNAME1;
-  editDialog.$.passwordInput.value = PASSWORD2;
+  editDialog.$.usernameInput.value = NEW_USERNAME;
+  editDialog.$.passwordInput.value = NEW_PASSWORD;
   assertFalse(editDialog.$.passwordInput.invalid);
   assertFalse(editDialog.$.actionButton.disabled);
 
@@ -226,8 +223,8 @@ async function changeSavedPasswordTestHelper(
   // Check that the changeSavedPassword is called with the right arguments.
   const {ids, newUsername, newPassword} =
       await passwordManager.whenCalled('changeSavedPassword');
-  assertEquals(USERNAME1, newUsername);
-  assertEquals(PASSWORD2, newPassword);
+  assertEquals(NEW_USERNAME, newUsername);
+  assertEquals(NEW_PASSWORD, newPassword);
 
   assertEquals(entryIds.length, ids.length);
   entryIds.forEach(entryId => assertTrue(ids.includes(entryId)));
@@ -1145,11 +1142,14 @@ suite('PasswordsSection', function() {
   });
 
   test('editDialogChangeUsernameFailsWhenReused', async function() {
-
-    const accountEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 0});
-    const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
-    editDialog.usernamesForSameOrigin = new Set(['mark', 'bart']);
+    const accountPasswords = [
+      createMultiStorePasswordEntry(
+          {url: 'goo.gl', username: 'bart', accountId: 0}),
+      createMultiStorePasswordEntry(
+          {url: 'goo.gl', username: 'mark', accountId: 0})
+    ];
+    const editDialog = elementFactory.createPasswordEditDialog(
+        accountPasswords[0], accountPasswords);
 
     editDialog.$.usernameInput.value = 'mark';
     assertTrue(editDialog.$.usernameInput.invalid);
@@ -1160,7 +1160,7 @@ suite('PasswordsSection', function() {
     assertFalse(editDialog.$.actionButton.disabled);
 
     changeSavedPasswordTestHelper(
-        editDialog, [accountEntry.accountId], passwordManager);
+        editDialog, [accountPasswords[0].accountId], passwordManager);
   });
 
   test('editDialogChangeUsernameWhenReusedForDifferentStore', async function() {

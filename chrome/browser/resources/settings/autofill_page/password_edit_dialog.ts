@@ -23,11 +23,8 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
 interface PasswordEditDialogElement {
   $: {
@@ -38,8 +35,8 @@ interface PasswordEditDialogElement {
 }
 
 const PasswordEditDialogElementBase =
-    mixinBehaviors([I18nBehavior], ShowPasswordMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nBehavior & ShowPasswordMixinInterface};
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
 class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   static get is() {
@@ -52,6 +49,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   static get properties() {
     return {
+      entry: Object,
+
       shouldShowStorageDetails: {type: Boolean, value: false},
 
       /**
@@ -67,7 +66,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
        * Usernames for the same website. Used for the fast check whether edited
        * username is already used.
        */
-      usernamesForSameOrigin: {
+      usernamesForSameOrigin_: {
         type: Object,
         value: null,
       },
@@ -112,8 +111,9 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   }
 
   shouldShowStorageDetails: boolean;
+  entry: MultiStorePasswordUiEntry;
   savedPasswords: Array<MultiStorePasswordUiEntry>;
-  private usernamesForSameOrigin: Set<string>|null;
+  private usernamesForSameOrigin_: Set<string>|null;
   private isEditDialog_: boolean;
   private isPasswordVisible_: boolean;
   private usernameInputInvalid_: boolean;
@@ -124,7 +124,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     super.connectedCallback();
 
     this.$.dialog.showModal();
-    this.usernamesForSameOrigin =
+    this.usernamesForSameOrigin_ =
         new Set(this.savedPasswords
                     .filter(
                         item => item.urls.shown === this.entry.urls.shown &&
@@ -155,67 +155,51 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   }
 
   /**
-   * Gets the password input's type. Should be 'text' when password is visible
-   * or when there's federated text otherwise 'password'.
+   * Gets the password input's type. Should be 'text' when input content is
+   * visible otherwise 'password'. If the entry is a federated credential,
+   * the content (federation text) is always visible.
    */
   private getPasswordInputType_(): string {
-    if (this.isEditDialog_) {
-      return this.isPasswordVisible_ || this.entry.federationText ? 'text' :
-                                                                    'password';
-    } else {
-      return this.getPasswordInputType();
+    // Not edit dialog implies a view dialog for a federated credential.
+    if (!this.isEditDialog_) {
+      return 'text';
     }
+
+    return this.isPasswordVisible_ ? 'text' : 'password';
   }
 
   /**
-   * Gets the title text for the show/hide icon.
-   * @param hide The i18n text to use for 'Hide'
-   * @param show The i18n text to use for 'Show'
+   * Gets the title text for the show/hide icon, visible only in edit dialog.
    */
-  private showPasswordTitle_(
-      password: string, isPasswordVisible: boolean, hide: string,
-      show: string): string {
-    if (this.isEditDialog_) {
-      return isPasswordVisible ? hide : show;
-    } else {
-      return this.showPasswordTitle(password, hide, show);
-    }
+  private showPasswordTitle_(): string {
+    return this.isPasswordVisible_ ? this.i18n('hidePassword') :
+                                     this.i18n('showPassword');
   }
 
   /**
-   * Get the right icon to display when hiding/showing a password.
+   * Get the right icon to display when hiding/showing a password, visible
+   * only in edit dialog.
    */
   private getIconClass_(): string {
-    if (this.isEditDialog_) {
-      return this.isPasswordVisible_ ? 'icon-visibility-off' :
-                                       'icon-visibility';
-    } else {
-      return this.getIconClass();
-    }
+    return this.isPasswordVisible_ ? 'icon-visibility-off' : 'icon-visibility';
   }
 
   /**
-   * Gets the text of the password. Will use the value of |entry.password|
-   * unless it cannot be shown, in which case it will be a fixed number of
-   * spaces. It can also be the federated text.
+   * Gets the text to show in the password input: the password for a regular
+   * credential or the federation text for a federated credential.
    */
   private getPassword_(): string {
-    if (this.isEditDialog_) {
-      return this.entry.password;
-    } else {
-      return this.getPassword();
-    }
+    return this.isEditDialog_ ?
+        this.entry.password :
+        // Not edit dialog implies a view dialog for a federated credential.
+        this.entry.federationText!;
   }
 
   /**
-   * Handler for tapping the show/hide button.
+   * Handler for tapping the show/hide button, visible only in edit dialog.
    */
   private onShowPasswordButtonTap_() {
-    if (this.isEditDialog_) {
-      this.isPasswordVisible_ = !this.isPasswordVisible_;
-    } else {
-      this.onShowPasswordButtonTap();
-    }
+    this.isPasswordVisible_ = !this.isPasswordVisible_;
   }
 
   /**
@@ -297,7 +281,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private validateUsername_() {
     if (this.entry.username !== this.$.usernameInput.value) {
       this.usernameInputInvalid_ =
-          this.usernamesForSameOrigin!.has(this.$.usernameInput.value);
+          this.usernamesForSameOrigin_!.has(this.$.usernameInput.value);
     } else {
       this.usernameInputInvalid_ = false;
     }
