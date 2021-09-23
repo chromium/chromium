@@ -21,6 +21,7 @@ import './reimaging_provisioning_page.js';
 import './shimless_rma_shared_css.js';
 import './wrapup_repair_complete_page.js';
 import './wrapup_restock_page.js';
+import './wrapup_wait_for_manual_wp_enable_page.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -156,7 +157,12 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
-  // TODO(gavindodd): kWaitForManualWpEnable
+  [RmaState.kWaitForManualWPEnable]: {
+    componentIs: 'wrapup-wait-for-manual-wp-enable-page',
+    btnNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.HIDDEN,
+    buttonBack: ButtonState.HIDDEN,
+  },
   [RmaState.kRestock]: {
     componentIs: 'wrapup-restock-page',
     btnNext: ButtonState.VISIBLE,

@@ -22,6 +22,7 @@ import {reimagingProvisioningPageTest} from './reimaging_provisioning_page_test.
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
 import {wrapupRepairCompletePageTest} from './wrapup_repair_complete_page_test.js';
 import {wrapupRestockPageTest} from './wrapup_restock_page_test.js';
+import {wrapupWaitForManualWpEnablePageTest} from './wrapup_wait_for_manual_wp_enable_page_test.js';
 
 window.test_suites_list = [];
 
@@ -58,3 +59,5 @@ runSuite('ReimagingProvisioningPageTest', reimagingProvisioningPageTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
 runSuite('WrapupRepairCompletePageTest', wrapupRepairCompletePageTest);
 runSuite('WrapupRestockPageTest', wrapupRestockPageTest);
+runSuite(
+    'WrapupWaitForManualWpEnablePageTest', wrapupWaitForManualWpEnablePageTest);
