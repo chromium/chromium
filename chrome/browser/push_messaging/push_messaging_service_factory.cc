@@ -22,7 +22,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #endif
 
 // static
@@ -53,8 +53,8 @@ PushMessagingServiceFactory::PushMessagingServiceFactory()
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(ash::android_sms::AndroidSmsServiceFactory::GetInstance());
-  DependsOn(chromeos::multidevice_setup::MultiDeviceSetupClientFactory::
-                GetInstance());
+  DependsOn(
+      ash::multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
 #endif
 }
 

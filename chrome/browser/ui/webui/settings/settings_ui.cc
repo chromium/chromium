@@ -104,9 +104,9 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/account_manager_handler.h"
@@ -412,19 +412,18 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
             profile);
     chromeos::phonehub::PhoneHubManager* phone_hub_manager =
         chromeos::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
-    web_ui()->AddMessageHandler(
-        std::make_unique<chromeos::settings::MultideviceHandler>(
-            profile->GetPrefs(),
-            chromeos::multidevice_setup::MultiDeviceSetupClientFactory::
-                GetForProfile(profile),
-            phone_hub_manager
-                ? phone_hub_manager->GetNotificationAccessManager()
-                : nullptr,
-            android_sms_service
-                ? android_sms_service->android_sms_pairing_state_tracker()
-                : nullptr,
-            android_sms_service ? android_sms_service->android_sms_app_manager()
-                                : nullptr));
+    web_ui()->AddMessageHandler(std::make_unique<
+                                chromeos::settings::MultideviceHandler>(
+        profile->GetPrefs(),
+        ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
+            profile),
+        phone_hub_manager ? phone_hub_manager->GetNotificationAccessManager()
+                          : nullptr,
+        android_sms_service
+            ? android_sms_service->android_sms_pairing_state_tracker()
+            : nullptr,
+        android_sms_service ? android_sms_service->android_sms_app_manager()
+                            : nullptr));
   }
 }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)

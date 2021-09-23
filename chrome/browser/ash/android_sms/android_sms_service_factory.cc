@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 
 #include "chrome/browser/ash/android_sms/pairing_lost_notifier.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,8 +67,7 @@ AndroidSmsServiceFactory::AndroidSmsServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(app_list::AppListSyncableServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
-  DependsOn(chromeos::multidevice_setup::MultiDeviceSetupClientFactory::
-                GetInstance());
+  DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
@@ -81,8 +80,7 @@ KeyedService* AndroidSmsServiceFactory::BuildServiceInstanceFor(
 
   return new AndroidSmsService(
       profile, HostContentSettingsMapFactory::GetForProfile(profile),
-      chromeos::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
-          profile),
+      multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile),
       web_app::WebAppProvider::GetDeprecated(profile),
       app_list::AppListSyncableServiceFactory::GetForProfile(profile));
 }

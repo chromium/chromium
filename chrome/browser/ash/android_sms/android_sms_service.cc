@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/android_sms/connection_manager.h"
 #include "chrome/browser/ash/android_sms/fcm_connection_establisher.h"
 #include "chrome/browser/ash/android_sms/pairing_lost_notifier.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"

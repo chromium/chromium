@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -20,8 +20,12 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace multidevice_setup {
+
+// TODO(https://crbug.com/1164001): remove when
+// chromeos/services/multidevice_setup is migrated.
+namespace mojom = ::chromeos::multidevice_setup::mojom;
 
 namespace {
 
@@ -116,4 +120,4 @@ bool MultiDeviceSetupClientFactory::ServiceIsNULLWhileTesting() const {
 }
 
 }  // namespace multidevice_setup
-}  // namespace chromeos
+}  // namespace ash

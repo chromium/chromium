@@ -55,7 +55,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #endif
 
 using content::BrowserThread;
@@ -302,8 +302,9 @@ bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
   if (test_multidevice_setup_client_) {
     multidevice_setup_client = test_multidevice_setup_client_;
   } else {
-    multidevice_setup_client = chromeos::multidevice_setup::
-        MultiDeviceSetupClientFactory::GetForProfile(profile_);
+    multidevice_setup_client =
+        ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
+            profile_);
   }
 
   if (!multidevice_setup_client)

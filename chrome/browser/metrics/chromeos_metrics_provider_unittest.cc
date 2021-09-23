@@ -12,8 +12,8 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -91,7 +91,7 @@ class ChromeOSMetricsProviderTest : public testing::Test {
     // Set up a PowerManagerClient instance for PerfProvider.
     chromeos::PowerManagerClient::InitializeFake();
 
-    chromeos::multidevice_setup::MultiDeviceSetupClientFactory::GetInstance()
+    ash::multidevice_setup::MultiDeviceSetupClientFactory::GetInstance()
         ->SetServiceIsNULLWhileTestingForTesting(false);
     auto fake_multidevice_setup_client = std::make_unique<
         chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();

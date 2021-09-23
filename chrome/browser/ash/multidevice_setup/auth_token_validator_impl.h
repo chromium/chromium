@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
+#define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chromeos/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace chromeos {
+namespace ash {
+
+namespace quick_unlock {
+class QuickUnlockStorage;
+}
+
 namespace multidevice_setup {
 
 // Concrete AuthTokenValidator implementation.
@@ -39,6 +42,6 @@ class AuthTokenValidatorImpl : public AuthTokenValidator, public KeyedService {
 
 }  // namespace multidevice_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_

@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/multidevice_setup/auth_token_validator_factory.h"
+#include "chrome/browser/ash/multidevice_setup/auth_token_validator_factory.h"
 
 #include "base/macros.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/chromeos/multidevice_setup/auth_token_validator_impl.h"
+#include "chrome/browser/ash/multidevice_setup/auth_token_validator_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace multidevice_setup {
 
 // static
@@ -42,5 +41,4 @@ KeyedService* AuthTokenValidatorFactory::BuildServiceInstanceFor(
 }
 
 }  // namespace multidevice_setup
-
-}  // namespace chromeos
+}  // namespace ash
