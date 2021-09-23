@@ -4099,6 +4099,11 @@ const char kArcRtVcpuQuadCoreDesc[] =
     "Enable ARC real time vcpu on a device with 3+ logical cores online to "
     "reduce media playback glitch.";
 
+const char kArcUsbDeviceDefaultAttachToVmName[] =
+    "Attach unclaimed USB devices to ARCVM";
+const char kArcUsbDeviceDefaultAttachToVmDescription[] =
+    "When ARCVM is enabled, always attach unclaimed USB devices to ARCVM";
+
 const char kArcUseHighMemoryDalvikProfileName[] =
     "Enable ARC high-memory dalvik profile";
 const char kArcUseHighMemoryDalvikProfileDesc[] =

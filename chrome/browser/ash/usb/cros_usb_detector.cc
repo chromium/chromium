@@ -31,6 +31,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
@@ -587,6 +588,20 @@ void CrosUsbDetector::OnDeviceChecked(
   }
 
   SignalUsbDeviceObservers();
+
+  // Temporarily allow User to attach un claimed USB devices to ARC VM.
+  // This part as well as the emperiment flag should go away once UI permission
+  // is integrated in |ShowNotificationForDevice|.
+  if (arc::IsArcVmEnabled() &&
+      base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm)) {
+    if (has_supported_interface || new_device.allowed_interfaces_mask != 0) {
+      // USB devices not claimed by Chrome OS get automatically attached to the
+      // ARCVM. Note that this relies on the underlying VM (ARCVM) having
+      // its own permission model to restrict access to the device.
+      AttachUsbDeviceToVm(arc::kArcVmName, guid, base::DoNothing());
+      return;
+    }
+  }
 
   // Some devices should not trigger the notification.
   if (hide_notification || !ShouldShowNotification(result.first->second)) {

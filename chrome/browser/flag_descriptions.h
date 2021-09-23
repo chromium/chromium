@@ -2340,6 +2340,9 @@ extern const char kArcRtVcpuDualCoreDesc[];
 extern const char kArcRtVcpuQuadCoreName[];
 extern const char kArcRtVcpuQuadCoreDesc[];
 
+extern const char kArcUsbDeviceDefaultAttachToVmName[];
+extern const char kArcUsbDeviceDefaultAttachToVmDescription[];
+
 extern const char kArcUseHighMemoryDalvikProfileName[];
 extern const char kArcUseHighMemoryDalvikProfileDesc[];
 

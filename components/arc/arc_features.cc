@@ -91,6 +91,10 @@ const base::Feature kRtVcpuDualCore{"ArcRtVcpuDualCore",
 const base::Feature kRtVcpuQuadCore{"ArcRtVcpuQuadCore",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, unclaimed USB device will be attached to ARCVM by default.
+const base::Feature kUsbDeviceDefaultAttachToArcVm{
+    "UsbDeviceDefaultAttachToArcVm", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls ARC high-memory dalvik profile in ARCVM.
 // When enabled, Android tries to use dalvik memory profile tuned for
 // high-memory devices like 8G and 16G. This is enabled without conditions

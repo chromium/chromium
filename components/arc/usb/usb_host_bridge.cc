@@ -243,9 +243,6 @@ void ArcUsbHostBridge::GetDeviceInfo(const std::string& guid,
 }
 
 void ArcUsbHostBridge::OnConnectionReady() {
-  if (delegate_)
-    delegate_->AttachDevicesToArcVm();
-
   // Receive mojo::Remote<UsbDeviceManager> from DeviceService.
   content::GetDeviceService().BindUsbDeviceManager(
       usb_manager_.BindNewPipeAndPassReceiver());
@@ -275,6 +272,8 @@ void ArcUsbHostBridge::SetUiDelegate(ArcUsbHostUiDelegate* ui_delegate) {
   ui_delegate_ = ui_delegate;
 }
 
+// TODO(lgcheng) Remove these part. For ARCVM the usb_host_bridge will not be
+// connected.
 void ArcUsbHostBridge::SetDelegate(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
 }
