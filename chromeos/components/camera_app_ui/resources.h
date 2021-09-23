@@ -68,6 +68,8 @@ const struct {
     {"label_30fps", IDS_LABEL_30FPS},
     {"label_60fps", IDS_LABEL_60FPS},
     {"label_back_camera", IDS_LABEL_BACK_CAMERA},
+    {"label_current_and_maximal_record_time",
+     IDS_LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME},
     {"label_detail_photo_resolution", IDS_LABEL_DETAIL_PHOTO_RESOLUTION},
     {"label_external_camera", IDS_LABEL_EXTERNAL_CAMERA},
     {"label_front_camera", IDS_LABEL_FRONT_CAMERA},

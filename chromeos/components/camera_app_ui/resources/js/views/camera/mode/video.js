@@ -37,7 +37,7 @@ import {WaitableEvent} from '../../../waitable_event.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {PhotoResult} from './photo.js';  // eslint-disable-line no-unused-vars
-import {RecordTime} from './record_time.js';
+import {GifRecordTime, RecordTime} from './record_time.js';
 
 /**
  * Maps from board name to its default encoding profile and bitrate multiplier.
@@ -63,7 +63,7 @@ const MINIMUM_VIDEO_DURATION_IN_MILLISECONDS = 500;
 /**
  * The maximal length of the longer side of gif width or height.
  */
-export const GIF_MAX_SIDE = 640;
+const GIF_MAX_SIDE = 640;
 
 /**
  * Maximum recording time for GIF animation mode.
@@ -304,6 +304,14 @@ export class Video extends ModeBase {
     this.recordTime_ = new RecordTime();
 
     /**
+     * Record-time for the elapsed gif recording time.
+     * @type {!GifRecordTime}
+     * @private
+     */
+    this.gifRecordTime_ = new GifRecordTime(
+        {maxTime: MAX_GIF_DURATION_MS, onMaxTimeout: () => this.stop_()});
+
+    /**
      * Record type of ongoing recording.
      * @type {!RecordType}
      * @private
@@ -520,11 +528,15 @@ export class Video extends ModeBase {
     this.recordingType_ = this.getToggledRecordOption_();
     if (this.recordingType_ === RecordType.GIF) {
       state.set(state.State.RECORDING_GIF, true);
+      this.gifRecordTime_.start({resume: false});
+
       const gifSaver = await this.captureGif_();
       state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, true);
       await this.handler_.handleResultGif(gifSaver);
       state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
+
       state.set(state.State.RECORDING_GIF, false);
+      this.gifRecordTime_.stop({pause: false});
     } else {
       this.recordTime_.start({resume: false});
       let /** ?VideoSaver */ videoSaver = null;
@@ -623,7 +635,7 @@ export class Video extends ModeBase {
         if (start === 0.0) {
           start = now;
         }
-        if (!this.isRecordingGif_ || now - start > MAX_GIF_DURATION_MS) {
+        if (!this.isRecordingGif_) {
           resolve();
           return;
         }

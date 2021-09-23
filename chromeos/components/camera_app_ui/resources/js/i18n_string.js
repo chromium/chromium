@@ -59,6 +59,8 @@ export const I18nString = {
   LABEL_30FPS: 'label_30fps',
   LABEL_60FPS: 'label_60fps',
   LABEL_BACK_CAMERA: 'label_back_camera',
+  LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME:
+      'label_current_and_maximal_record_time',
   LABEL_DETAIL_PHOTO_RESOLUTION: 'label_detail_photo_resolution',
   LABEL_EXTERNAL_CAMERA: 'label_external_camera',
   LABEL_FRONT_CAMERA: 'label_front_camera',
