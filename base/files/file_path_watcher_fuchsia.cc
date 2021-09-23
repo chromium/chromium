@@ -5,7 +5,7 @@
 #include "base/files/file_path_watcher.h"
 
 #include "base/files/file_path.h"
-#include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
@@ -19,30 +19,24 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   FilePathWatcherImpl& operator=(const FilePathWatcherImpl&) = delete;
   ~FilePathWatcherImpl() override = default;
 
+  // FilePathWatcher::PlatformDelegate:
   bool Watch(const FilePath& path,
              Type type,
              const FilePathWatcher::Callback& callback) override;
-
   void Cancel() override;
-
- private:
-  FilePathWatcher::Callback callback_;
-  FilePath target_;
 };
 
 bool FilePathWatcherImpl::Watch(const FilePath& path,
                                 Type type,
                                 const FilePathWatcher::Callback& callback) {
   DCHECK(!callback.is_null());
-  DCHECK(callback_.is_null());
 
-  callback_ = callback;
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void FilePathWatcherImpl::Cancel() {
-  NOTIMPLEMENTED();
+  set_cancelled();
 }
 
 }  // namespace
