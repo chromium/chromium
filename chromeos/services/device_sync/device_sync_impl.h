@@ -330,4 +330,11 @@ class DeviceSyncImpl : public DeviceSyncBase,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::DeviceSyncImpl;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_DEVICE_SYNC_IMPL_H_

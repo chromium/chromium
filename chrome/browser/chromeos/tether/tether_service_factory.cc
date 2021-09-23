@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
+#include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/chromeos/tether/fake_tether_service.h"
@@ -50,7 +50,7 @@ TetherServiceFactory::TetherServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "TetherService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::device_sync::DeviceSyncClientFactory::GetInstance());
+  DependsOn(ash::device_sync::DeviceSyncClientFactory::GetInstance());
   DependsOn(chromeos::multidevice_setup::MultiDeviceSetupClientFactory::
                 GetInstance());
 }
@@ -69,7 +69,7 @@ KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
     FakeTetherService* fake_tether_service = new FakeTetherService(
         Profile::FromBrowserContext(context),
         chromeos::PowerManagerClient::Get(),
-        chromeos::device_sync::DeviceSyncClientFactory::GetForProfile(
+        ash::device_sync::DeviceSyncClientFactory::GetForProfile(
             Profile::FromBrowserContext(context)),
         chromeos::secure_channel::SecureChannelClientProvider::GetInstance()
             ->GetClient(),
@@ -89,7 +89,7 @@ KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
 
   return new TetherService(
       Profile::FromBrowserContext(context), chromeos::PowerManagerClient::Get(),
-      chromeos::device_sync::DeviceSyncClientFactory::GetForProfile(
+      ash::device_sync::DeviceSyncClientFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
       chromeos::secure_channel::SecureChannelClientProvider::GetInstance()
           ->GetClient(),

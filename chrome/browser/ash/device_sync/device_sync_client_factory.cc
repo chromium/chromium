@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
+#include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
@@ -24,8 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace device_sync {
 
 namespace {
@@ -126,5 +125,4 @@ bool DeviceSyncClientFactory::ServiceIsNULLWhileTesting() const {
 }
 
 }  // namespace device_sync
-
-}  // namespace chromeos
+}  // namespace ash

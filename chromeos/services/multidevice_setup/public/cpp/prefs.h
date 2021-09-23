@@ -63,8 +63,9 @@ bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
 // source migration is finished.
 namespace ash {
 namespace multidevice_setup {
+using ::chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed;
 using ::chromeos::multidevice_setup::IsFeatureAllowed;
-}
+}  // namespace multidevice_setup
 }  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_PREFS_H_
