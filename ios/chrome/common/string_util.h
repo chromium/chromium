@@ -7,6 +7,7 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #include <string>
 #include <vector>
@@ -84,5 +85,9 @@ NSString* SubstringOfWidth(NSString* string,
                            NSDictionary* attributes,
                            CGFloat targetWidth,
                            BOOL trailing);
+
+// Returns the bound of an attributed string with NSRange
+// |characterRange| in the |textView|.
+CGRect TextViewLinkBound(UITextView* textView, NSRange characterRange);
 
 #endif  // IOS_CHROME_COMMON_STRING_UTIL_H_

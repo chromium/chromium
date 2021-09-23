@@ -8,6 +8,10 @@
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
+#import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -21,9 +25,17 @@ namespace {
 // Width of the identity control if nothing is contraining it.
 const CGFloat kIdentityControlMaxWidth = 327;
 const CGFloat kIdentityTopMargin = 16;
+
+// URL for the learn more text.
+// Need to set a value so the delegate gets called.
+NSString* const kLearnMoreUrl = @"internal://learn-more";
+
+NSString* const kLearnMoreTextViewAccessibilityIdentifier =
+    @"kLearnMoreTextViewAccessibilityIdentifier";
+
 }  // namespace
 
-@interface SigninScreenViewController ()
+@interface SigninScreenViewController () <UITextViewDelegate>
 
 // Button controlling the display of the selected identity.
 @property(nonatomic, strong) IdentityButtonControl* identityControl;
@@ -34,6 +46,10 @@ const CGFloat kIdentityTopMargin = 16;
 
 // Scrim displayed above the view when the UI is disabled.
 @property(nonatomic, strong) ActivityOverlayView* overlay;
+
+// Text view that displays an attributed string with the "Learn More" link that
+// opens a popover.
+@property(nonatomic, strong) UITextView* learnMoreTextView;
 
 @end
 
@@ -57,13 +73,30 @@ const CGFloat kIdentityTopMargin = 16;
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
   }
 
-  // No secondary action button for forced signin mode.
-  if (!self.forcedSignin) {
+  [self.specificContentView addSubview:self.identityControl];
+
+  // Add Learn More text label for the forced signin policy.
+  if (self.forcedSignin) {
+    self.learnMoreTextView.delegate = self;
+    [self.specificContentView addSubview:self.learnMoreTextView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [self.learnMoreTextView.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.identityControl
+                                                   .bottomAnchor],
+      [self.learnMoreTextView.bottomAnchor
+          constraintEqualToAnchor:self.specificContentView.bottomAnchor],
+      [self.learnMoreTextView.centerXAnchor
+          constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+      [self.learnMoreTextView.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.specificContentView
+                                                .widthAnchor],
+    ]];
+  } else {
+    // Only add "Don't Sign In" button when signin is not required.
     self.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
   }
-
-  [self.specificContentView addSubview:self.identityControl];
 
   NSLayoutConstraint* widthConstraint = [self.identityControl.widthAnchor
       constraintEqualToConstant:kIdentityControlMaxWidth];
@@ -117,6 +150,43 @@ const CGFloat kIdentityTopMargin = 16;
   return _overlay;
 }
 
+- (UITextView*)learnMoreTextView {
+  if (!_learnMoreTextView) {
+    _learnMoreTextView = [[UITextView alloc] init];
+    _learnMoreTextView.scrollEnabled = NO;
+    _learnMoreTextView.editable = NO;
+    _learnMoreTextView.adjustsFontForContentSizeCategory = YES;
+    _learnMoreTextView.accessibilityIdentifier =
+        kLearnMoreTextViewAccessibilityIdentifier;
+
+    _learnMoreTextView.linkTextAttributes =
+        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+    _learnMoreTextView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    NSMutableParagraphStyle* paragraphStyle =
+        [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+
+    NSDictionary* textAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+      NSParagraphStyleAttributeName : paragraphStyle
+    };
+
+    NSDictionary* linkAttributes =
+        @{NSLinkAttributeName : [NSURL URLWithString:kLearnMoreUrl]};
+
+    NSAttributedString* learnMoreTextAttributedString =
+        AttributedStringFromStringWithLink(
+            l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_REQUIRES_SIGNIN),
+            textAttributes, linkAttributes);
+
+    _learnMoreTextView.attributedText = learnMoreTextAttributedString;
+  }
+  return _learnMoreTextView;
+}
+
 #pragma mark - SignInScreenConsumer
 
 - (void)setSelectedIdentityUserName:(NSString*)userName
@@ -165,6 +235,44 @@ const CGFloat kIdentityTopMargin = 16;
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
   }
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  DCHECK(textView == self.learnMoreTextView);
+
+  // Open signin popover.
+  EnterpriseInfoPopoverViewController* bubbleViewController =
+      [[EnterpriseInfoPopoverViewController alloc]
+                 initWithMessage:l10n_util::GetNSString(
+                                     IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE)
+                  enterpriseName:nil  // TODO(crbug.com/1251986): Remove this
+                                      // variable.
+          isPresentingFromButton:NO
+                addLearnMoreLink:NO];
+  [self presentViewController:bubbleViewController animated:YES completion:nil];
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView =
+      self.learnMoreTextView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      TextViewLinkBound(textView, characterRange);
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
+
+  // The handler is already handling the tap.
+  return NO;
+}
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the |selectedTextRange| to |nil| to prevent users from
+  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // since it makes links inside the text view untappable.
+  textView.selectedTextRange = nil;
 }
 
 @end

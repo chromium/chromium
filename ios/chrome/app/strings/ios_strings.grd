@@ -1878,8 +1878,20 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORDS" desc="Title for the view in Settings for managing saved passwords. [Length: 15em] [iOS only]">
         Passwords
       </message>
+      <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Force Sign In) [iOS only]">
+          Your organization requires you to sign in.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION" desc="Text displayed to inform the user that the browser is managed by Enterprise policies (without link). [iOS only]">
+        Managed by your organization.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_INFO" desc="Text displayed to inform the user that the browser is managed by one or more Enterprise policies. [iOS only]">
         Managed by your organization. Some features may be unavailable. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_REQUIRES_SIGNIN" desc="Text displayed to inform the user that they must signin. [iOS only]">
+          Your browser is managed and has requirements for signing in. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Details<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Restrict Accounts To Patterns) [iOS only]">
+          Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.
       </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITH_COMPANY_NAME" desc="Text displayed to inform the user that the browser is managed by Enterprise policies. MANAGER can be a domain or an email address. [iOS only]">
         Managed by <ph name="MANAGER">$1<ex>Google</ex></ph>. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
