@@ -355,7 +355,7 @@
   {
     "name": "autofill-address-save-prompt",
     "owners": [ "mamir", "koerber" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
       "name": "autofill-address-verification-in-save-prompt",
