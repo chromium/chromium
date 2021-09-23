@@ -11,7 +11,7 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -24,23 +24,17 @@ import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '.
 import {updateHighlights} from './highlight_utils.js';
 
 // <if expr="chromeos or lacros">
-/** @enum {number} */
-const DestinationConfigStatus = {
-  IDLE: 0,
-  IN_PROGRESS: 1,
-  FAILED: 2,
-};
+enum DestinationConfigStatus {
+  IDLE = 0,
+  IN_PROGRESS = 1,
+  FAILED = 2,
+}
 // </if>
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const PrintPreviewDestinationListItemElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): I18nBehavior & PolymerElement};
 
-/** @polymer */
 export class PrintPreviewDestinationListItemElement extends
     PrintPreviewDestinationListItemElementBase {
   static get is() {
@@ -53,29 +47,23 @@ export class PrintPreviewDestinationListItemElement extends
 
   static get properties() {
     return {
-      /** @type {!Destination} */
       destination: Object,
 
-      /** @type {?RegExp} */
       searchQuery: Object,
 
-      /** @private */
       destinationIcon_: {
         type: String,
         computed: 'computeDestinationIcon_(destination, ' +
             'destination.printerStatusReason)',
       },
 
-      /** @private */
       stale_: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      /** @private {string} */
       searchHint_: String,
 
-      /** @private */
       statusText_: {
         type: String,
         computed:
@@ -84,14 +72,12 @@ export class PrintPreviewDestinationListItemElement extends
       },
 
       // <if expr="chromeos or lacros">
-      /** @private */
       isDestinationCrosLocal_: {
         type: Boolean,
         computed: 'computeIsDestinationCrosLocal_(destination)',
         reflectToAttribute: true,
       },
 
-      /** @private {!DestinationConfigStatus} */
       configurationStatus_: {
         type: Number,
         value: DestinationConfigStatus.IDLE,
@@ -99,7 +85,6 @@ export class PrintPreviewDestinationListItemElement extends
 
       /**
        * Mirroring the enum so that it can be used from HTML bindings.
-       * @private
        */
       statusEnum_: {
         type: Object,
@@ -121,19 +106,26 @@ export class PrintPreviewDestinationListItemElement extends
     ];
   }
 
-  constructor() {
-    super();
+  destination: Destination;
+  searchQuery: RegExp|null;
+  destinationIcon_: string;
+  private stale_: boolean;
+  private searchHint_: string;
+  private statusText_: string;
 
-    /** @private {!Array<!Node>} */
-    this.highlights_ = [];
-  }
+  // <if expr="chromeos or lacros">
+  private isDestinationCrosLocal_: boolean;
+  private configurationStatus_: DestinationConfigStatus;
+  // </if>
 
-  /** @private */
-  onDestinationPropertiesChange_() {
+  private highlights_: Node[] = [];
+
+  private onDestinationPropertiesChange_() {
     this.title = this.destination.displayName;
     this.stale_ = this.destination.isOfflineOrInvalid;
     if (this.destination.isExtension) {
-      const icon = this.shadowRoot.querySelector('.extension-icon');
+      const icon =
+          this.shadowRoot!.querySelector('.extension-icon')! as HTMLElement;
       icon.style.backgroundImage = '-webkit-image-set(' +
           'url(chrome://extension-icon/' + this.destination.extensionId +
           '/24/1) 1x,' +
@@ -157,46 +149,38 @@ export class PrintPreviewDestinationListItemElement extends
 
   /**
    * Called when the printer configuration request completes.
-   * @param {boolean} success Whether configuration was successful.
+   * @param success Whether configuration was successful.
    */
-  onConfigureComplete(success) {
+  onConfigureComplete(success: boolean) {
     this.configurationStatus_ =
         success ? DestinationConfigStatus.IDLE : DestinationConfigStatus.FAILED;
   }
 
   /**
-   * @param {!DestinationConfigStatus} status
-   * @return {boolean} Whether the current configuration status is |status|.
-   * @private
+   * @return Whether the current configuration status is |status|.
    */
-  checkConfigurationStatus_(status) {
+  private checkConfigurationStatus_(status: DestinationConfigStatus): boolean {
     return this.configurationStatus_ === status;
   }
   // </if>
 
-  /** @private */
-  updateHighlightsAndHint_() {
+  private updateHighlightsAndHint_() {
     this.updateSearchHint_();
     removeHighlights(this.highlights_);
     this.highlights_ = updateHighlights(this, this.searchQuery, new Map);
   }
 
-  /** @private */
-  updateSearchHint_() {
+  private updateSearchHint_() {
     const matches = !this.searchQuery ?
         [] :
         this.destination.extraPropertiesToMatch.filter(
-            p => p.match(this.searchQuery));
+            p => p.match(this.searchQuery!));
     this.searchHint_ = matches.length === 0 ?
         (this.destination.extraPropertiesToMatch.find(p => !!p) || '') :
         matches.join(' ');
   }
 
-  /**
-   * @return {string} A tooltip for the extension printer icon.
-   * @private
-   */
-  getExtensionPrinterTooltip_() {
+  private getExtensionPrinterTooltip_(): string {
     if (!this.destination.isExtension) {
       return '';
     }
@@ -205,12 +189,11 @@ export class PrintPreviewDestinationListItemElement extends
   }
 
   /**
-   * @return {string} If the destination is a local CrOS printer, this returns
+   * @return If the destination is a local CrOS printer, this returns
    *    the error text associated with the printer status. For all other
    *    printers this returns the connection status text.
-   * @private
    */
-  computeStatusText_() {
+  private computeStatusText_(): string {
     if (!this.destination) {
       return '';
     }
@@ -223,7 +206,7 @@ export class PrintPreviewDestinationListItemElement extends
       }
 
       const printerStatusReason = this.destination.printerStatusReason;
-      if (!printerStatusReason ||
+      if (printerStatusReason === null ||
           printerStatusReason === PrinterStatusReason.NO_ERROR ||
           printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
         return '';
@@ -239,11 +222,7 @@ export class PrintPreviewDestinationListItemElement extends
         '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeDestinationIcon_() {
+  private computeDestinationIcon_(): string {
     if (!this.destination) {
       return '';
     }
@@ -262,16 +241,13 @@ export class PrintPreviewDestinationListItemElement extends
   // <if expr="chromeos or lacros">
   /**
    * True when the destination is a CrOS local printer.
-   * @return {boolean}
-   * @private
    */
-  computeIsDestinationCrosLocal_() {
+  private computeIsDestinationCrosLocal_(): boolean {
     return this.destination &&
         this.destination.origin === DestinationOrigin.CROS;
   }
 
-  /** @private */
-  requestPrinterStatus_() {
+  private requestPrinterStatus_() {
     // Requesting printer status only allowed for local CrOS printers.
     if (this.destination.origin !== DestinationOrigin.CROS) {
       return;
@@ -281,11 +257,7 @@ export class PrintPreviewDestinationListItemElement extends
         destinationKey => this.onPrinterStatusReceived_(destinationKey));
   }
 
-  /**
-   * @param {string} destinationKey
-   * @private
-   */
-  onPrinterStatusReceived_(destinationKey) {
+  private onPrinterStatusReceived_(destinationKey: string) {
     if (this.destination.key === destinationKey) {
       // Notify printerStatusReason to trigger icon and status text update.
       this.notifyPath(`destination.printerStatusReason`);

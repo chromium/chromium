@@ -11,8 +11,9 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 import './throbber_css.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,26 +31,26 @@ import {DestinationStore} from '../data/destination_store.js';
 
 /**
  * States that the provisional destination resolver can be in.
- * @enum {string}
  */
-const ResolverState = {
-  INITIAL: 'INITIAL',
-  ACTIVE: 'ACTIVE',
-  GRANTING_PERMISSION: 'GRANTING_PERMISSION',
-  ERROR: 'ERROR',
-  DONE: 'DONE'
-};
+enum ResolverState {
+  INITIAL = 'INITIAL',
+  ACTIVE = 'ACTIVE',
+  GRANTING_PERMISSION = 'GRANTING_PERMISSION',
+  ERROR = 'ERROR',
+  DONE = 'DONE'
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
+export interface PrintPreviewProvisionalDestinationResolverElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 const PrintPreviewProvisionalDestinationResolverElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
-class PrintPreviewProvisionalDestinationResolverElement extends
+export class PrintPreviewProvisionalDestinationResolverElement extends
     PrintPreviewProvisionalDestinationResolverElementBase {
   static get is() {
     return 'print-preview-provisional-destination-resolver';
@@ -61,16 +62,13 @@ class PrintPreviewProvisionalDestinationResolverElement extends
 
   static get properties() {
     return {
-      /** @type {?DestinationStore} */
       destinationStore: Object,
 
-      /** @private {?Destination} */
       destination_: {
         type: Object,
         value: null,
       },
 
-      /** @private {!ResolverState} */
       state_: {
         type: String,
         value: ResolverState.INITIAL,
@@ -78,85 +76,69 @@ class PrintPreviewProvisionalDestinationResolverElement extends
     };
   }
 
-  constructor() {
-    super();
+  destinationStore: DestinationStore;
+  private destination_: Destination|null;
+  private state_: ResolverState;
+  private promiseResolver_: PromiseResolver<Destination>|null = null;
 
-    /**
-     * Promise resolver for promise returned by {@code this.resolveDestination}.
-     * @private {?PromiseResolver<!Destination>}
-     */
-    this.promiseResolver_ = null;
-  }
-
-  /** @override */
   ready() {
     super.ready();
-    this.addEventListener(
-        'keydown', e => this.onKeydown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('keydown', (e: KeyboardEvent) => this.onKeydown_(e));
   }
 
   /**
-   * @param {!Destination} destination The destination this
-   *     dialog is needed to resolve.
-   * @return {!Promise} Promise that is resolved when the destination has been
-   *     resolved.
+   * @param destination The destination this dialog is needed to resolve.
+   * @return Promise that is resolved when the destination has been resolved.
    */
-  resolveDestination(destination) {
+  resolveDestination(destination: Destination): Promise<Destination> {
     this.state_ = ResolverState.ACTIVE;
     this.destination_ = destination;
     this.$.dialog.showModal();
-    const icon = this.shadowRoot.querySelector('.extension-icon');
+    const icon =
+        this.shadowRoot!.querySelector('.extension-icon')! as HTMLElement;
     icon.style.backgroundImage = '-webkit-image-set(' +
-        'url(chrome://extension-icon/' + this.destination_.extensionId +
+        'url(chrome://extension-icon/' + this.destination_!.extensionId +
         '/24/1) 1x,' +
-        'url(chrome://extension-icon/' + this.destination_.extensionId +
+        'url(chrome://extension-icon/' + this.destination_!.extensionId +
         '/48/1) 2x)';
     this.promiseResolver_ = new PromiseResolver();
-    return this.promiseResolver_.promise;
+    return this.promiseResolver_!.promise;
   }
 
   /**
    * Handler for click on OK button. It attempts to resolve the destination.
    * If successful, promiseResolver_.promise is resolved with the
    * resolved destination and the dialog closes.
-   * @private
    */
-  startResolveDestination_() {
+  private startResolveDestination_() {
     assert(
         this.state_ === ResolverState.ACTIVE,
         'Invalid state in request grant permission');
 
     this.state_ = ResolverState.GRANTING_PERMISSION;
-    const destination =
-        /** @type {!Destination} */ (this.destination_);
+    const destination = this.destination_!;
     this.destinationStore.resolveProvisionalDestination(destination)
-        .then(
-            /** @param {?Destination} resolvedDestination */
-            (resolvedDestination) => {
-              if (this.state_ !== ResolverState.GRANTING_PERMISSION) {
-                return;
-              }
+        .then((resolvedDestination: Destination|null) => {
+          if (this.state_ !== ResolverState.GRANTING_PERMISSION) {
+            return;
+          }
 
-              if (destination.id !== this.destination_.id) {
-                return;
-              }
+          if (destination.id !== this.destination_!.id) {
+            return;
+          }
 
-              if (resolvedDestination) {
-                this.state_ = ResolverState.DONE;
-                this.promiseResolver_.resolve(resolvedDestination);
-                this.promiseResolver_ = null;
-                this.$.dialog.close();
-              } else {
-                this.state_ = ResolverState.ERROR;
-              }
-            });
+          if (resolvedDestination) {
+            this.state_ = ResolverState.DONE;
+            this.promiseResolver_!.resolve(resolvedDestination!);
+            this.promiseResolver_ = null;
+            this.$.dialog.close();
+          } else {
+            this.state_ = ResolverState.ERROR;
+          }
+        });
   }
 
-  /**
-   * @param {!KeyboardEvent} e Event containing the key
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
     if (e.key === 'Escape') {
       this.$.dialog.cancel();
@@ -164,50 +146,45 @@ class PrintPreviewProvisionalDestinationResolverElement extends
     }
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  /** @private */
-  onCancel_() {
-    this.promiseResolver_.reject();
+  private onCancel_() {
+    this.promiseResolver_!.reject();
     this.state_ = ResolverState.INITIAL;
   }
 
   /**
-   * @return {string} The USB permission message to display.
-   * @private
+   * @return The USB permission message to display.
    */
-  getPermissionMessage_() {
+  private getPermissionMessage_(): string {
     return this.state_ === ResolverState.ERROR ?
         this.i18n(
             'resolveExtensionUSBErrorMessage',
-            this.destination_.extensionName) :
+            this.destination_!.extensionName) :
         this.i18n('resolveExtensionUSBPermissionMessage');
   }
 
   /**
-   * @return {boolean} Whether the resolver is in the ERROR state.
-   * @private
+   * @return Whether the resolver is in the ERROR state.
    */
-  isInErrorState_() {
+  private isInErrorState_(): boolean {
     return this.state_ === ResolverState.ERROR;
   }
 
   /**
-   * @return {boolean} Whether the resolver is in the ACTIVE state.
-   * @private
+   * @return Whether the resolver is in the ACTIVE state.
    */
-  isInActiveState_() {
+  private isInActiveState_(): boolean {
     return this.state_ === ResolverState.ACTIVE;
   }
 
   /**
-   * @return {string} 'throbber' if the resolver is in the GRANTING_PERMISSION
-   *     state, empty otherwise.
+   * @return 'throbber' if the resolver is in the GRANTING_PERMISSION state,
+   *     empty otherwise.
    */
-  getThrobberClass_() {
+  private getThrobberClass_(): string {
     return this.state_ === ResolverState.GRANTING_PERMISSION ? 'throbber' : '';
   }
 }

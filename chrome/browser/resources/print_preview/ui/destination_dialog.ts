@@ -21,9 +21,10 @@ import '../strings.m.js';
 import './throbber_css.js';
 import './destination_list_item.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,17 +34,19 @@ import {DestinationSearchBucket, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
 import {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
+import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 
+export interface PrintPreviewDestinationDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    searchBox: PrintPreviewSearchBoxElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {ListPropertyUpdateBehaviorInterface}
- */
 const PrintPreviewDestinationDialogElementBase =
-    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement);
+    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement) as
+    {new (): PolymerElement & ListPropertyUpdateBehavior};
 
-/** @polymer */
 export class PrintPreviewDestinationDialogElement extends
     PrintPreviewDestinationDialogElementBase {
   static get is() {
@@ -56,7 +59,6 @@ export class PrintPreviewDestinationDialogElement extends
 
   static get properties() {
     return {
-      /** @type {?DestinationStore} */
       destinationStore: {
         type: Object,
         observer: 'onDestinationStoreSet_',
@@ -69,25 +71,20 @@ export class PrintPreviewDestinationDialogElement extends
 
       currentDestinationAccount: String,
 
-      /** @type {!Array<string>} */
       users: Array,
 
-      /** @private {!Array<!Destination>} */
       destinations_: {
         type: Array,
         value: [],
       },
 
-      /** @private {boolean} */
       loadingDestinations_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!MetricsContext} */
       metrics_: Object,
 
-      /** @private {?RegExp} */
       searchQuery_: {
         type: Object,
         value: null,
@@ -95,44 +92,35 @@ export class PrintPreviewDestinationDialogElement extends
     };
   }
 
-  constructor() {
-    super();
+  destinationStore: DestinationStore;
+  activeUser: string;
+  currentDestinationAccount: string;
+  users: string[];
+  private destinations_: Destination[];
+  private loadingDestinations_: boolean;
+  private metrics_: MetricsContext;
+  private searchQuery_: RegExp|null;
 
-    /** @private {!EventTracker} */
-    this.tracker_ = new EventTracker();
+  private tracker_: EventTracker = new EventTracker();
+  private initialized_: boolean = false;
 
-    /** @private {boolean} */
-    this.initialized_ = false;
-  }
-
-  /** @override */
   ready() {
     super.ready();
-    this.addEventListener(
-        'keydown', e => this.onKeydown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('keydown', (e: KeyboardEvent) => this.onKeydown_(e));
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
     this.tracker_.removeAll();
   }
 
-  /**
-   * @param {string} account
-   * @private
-   */
-  fireAccountChange_(account) {
+  private fireAccountChange_(account: string) {
     this.dispatchEvent(new CustomEvent(
         'account-change', {bubbles: true, composed: true, detail: account}));
   }
 
-  /**
-   * @param {!KeyboardEvent} e Event containing the key
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
     const searchInput = this.$.searchBox.getSearchInput();
     if (e.key === 'Escape' &&
@@ -142,8 +130,7 @@ export class PrintPreviewDestinationDialogElement extends
     }
   }
 
-  /** @private */
-  onDestinationStoreSet_() {
+  private onDestinationStoreSet_() {
     assert(this.destinations_.length === 0);
     const destinationStore = assert(this.destinationStore);
     this.tracker_.add(
@@ -155,17 +142,15 @@ export class PrintPreviewDestinationDialogElement extends
     this.initialized_ = true;
   }
 
-  /** @private */
-  onActiveUserChange_() {
+  private onActiveUserChange_() {
     if (this.activeUser) {
-      this.shadowRoot.querySelector('select').value = this.activeUser;
+      this.shadowRoot!.querySelector('select')!.value = this.activeUser;
     }
 
     this.updateDestinations_();
   }
 
-  /** @private */
-  updateDestinations_() {
+  private updateDestinations_() {
     if (this.destinationStore === undefined || !this.initialized_) {
       return;
     }
@@ -178,18 +163,13 @@ export class PrintPreviewDestinationDialogElement extends
         this.destinationStore.isPrintDestinationSearchInProgress;
   }
 
-  /**
-   * @return {!Array<!Destination>}
-   * @private
-   */
-  getDestinationList_() {
+  private getDestinationList_(): Destination[] {
     const destinations = this.destinationStore.destinations(this.activeUser);
 
     return destinations;
   }
 
-  /** @private */
-  onCloseOrCancel_() {
+  private onCloseOrCancel_() {
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
     }
@@ -203,17 +183,15 @@ export class PrintPreviewDestinationDialogElement extends
     }
   }
 
-  /** @private */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
   /**
-   * @param {!CustomEvent<!PrintPreviewDestinationListItemElement>} e Event
-   *     containing the selected destination list item element.
-   * @private
+   * @param e Event containing the selected destination list item element.
    */
-  onDestinationSelected_(e) {
+  private onDestinationSelected_(
+      e: CustomEvent<PrintPreviewDestinationListItemElement>) {
     const listItem = e.detail;
     const destination = listItem.destination;
 
@@ -223,11 +201,7 @@ export class PrintPreviewDestinationDialogElement extends
     this.selectDestination_(destination);
   }
 
-  /**
-   * @param {!Destination} destination The destination to select.
-   * @private
-   */
-  selectDestination_(destination) {
+  private selectDestination_(destination: Destination) {
     this.destinationStore.selectDestination(destination);
     this.$.dialog.close();
   }
@@ -241,20 +215,19 @@ export class PrintPreviewDestinationDialogElement extends
         this.destinationStore.isPrintDestinationSearchInProgress;
     this.metrics_.record(DestinationSearchBucket.DESTINATION_SHOWN);
     if (this.activeUser) {
-      beforeNextRender(assert(this.shadowRoot.querySelector('select')), () => {
-        this.shadowRoot.querySelector('select').value = this.activeUser;
+      beforeNextRender(assert(this.shadowRoot!.querySelector('select')), () => {
+        this.shadowRoot!.querySelector('select')!.value = this.activeUser;
       });
     }
   }
 
-  /** @return {boolean} Whether the dialog is open. */
-  isOpen() {
+  /** @return Whether the dialog is open. */
+  isOpen(): boolean {
     return this.$.dialog.hasAttribute('open');
   }
 
-  /** @private */
-  onUserChange_() {
-    const select = this.shadowRoot.querySelector('select');
+  private onUserChange_() {
+    const select = this.shadowRoot!.querySelector('select')!;
     const account = select.value;
     if (account) {
       this.loadingDestinations_ = true;
@@ -267,8 +240,7 @@ export class PrintPreviewDestinationDialogElement extends
     }
   }
 
-  /** @private */
-  onManageButtonClick_() {
+  private onManageButtonClick_() {
     this.metrics_.record(DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
     NativeLayerImpl.getInstance().managePrinters();
   }

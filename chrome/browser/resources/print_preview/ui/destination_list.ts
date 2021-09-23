@@ -10,22 +10,24 @@ import './print_preview_vars_css.js';
 import '../strings.m.js';
 import './throbber_css.js';
 
-import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 
 const DESTINATION_ITEM_HEIGHT = 32;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {ListPropertyUpdateBehaviorInterface}
- */
-const PrintPreviewDestinationListElementBase =
-    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement);
+export interface PrintPreviewDestinationListElement {
+  $: {
+    list: IronListElement,
+  };
+}
 
-/** @polymer */
+const PrintPreviewDestinationListElementBase =
+    mixinBehaviors([ListPropertyUpdateBehavior], PolymerElement) as
+    {new (): ListPropertyUpdateBehavior & PolymerElement};
+
 export class PrintPreviewDestinationListElement extends
     PrintPreviewDestinationListElementBase {
   static get is() {
@@ -38,37 +40,30 @@ export class PrintPreviewDestinationListElement extends
 
   static get properties() {
     return {
-      /** @type {Array<!Destination>} */
       destinations: Array,
 
-      /** @type {?RegExp} */
       searchQuery: Object,
 
-      /** @type {boolean} */
       loadingDestinations: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!Array<!Destination>} */
       matchingDestinations_: {
         type: Array,
         value: () => [],
       },
 
-      /** @private {boolean} */
       hasDestinations_: {
         type: Boolean,
         value: true,
       },
 
-      /** @private {boolean} */
       throbberHidden_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       hideList_: {
         type: Boolean,
         value: false,
@@ -76,22 +71,23 @@ export class PrintPreviewDestinationListElement extends
     };
   }
 
+  destinations: Destination[];
+  searchQuery: RegExp|null;
+  loadingDestinations: boolean;
+  private matchingDestinations_: Destination[];
+  private hasDestinations_: boolean;
+  private throbberHidden_: boolean;
+  private hideList_: boolean;
+
+  private boundUpdateHeight_: ((e: Event) => void)|null = null;
+
   static get observers() {
     return [
       'updateMatchingDestinations_(' +
           'destinations.*, searchQuery, loadingDestinations)',
-
     ];
   }
 
-  constructor() {
-    super();
-
-    /** @private {?function(Event)} */
-    this.boundUpdateHeight_ = null;
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -99,11 +95,10 @@ export class PrintPreviewDestinationListElement extends
     window.addEventListener('resize', this.boundUpdateHeight_);
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    window.removeEventListener('resize', this.boundUpdateHeight_);
+    window.removeEventListener('resize', this.boundUpdateHeight_!);
     this.boundUpdateHeight_ = null;
   }
 
@@ -114,17 +109,12 @@ export class PrintPreviewDestinationListElement extends
    * (a known iron-list issue). The event needs to be fired while the list is
    * visible, so firing it immediately when the change occurs does not always
    * work.
-   * @private
    */
-  forceIronResize_() {
+  private forceIronResize_() {
     this.$.list.fire('iron-resize');
   }
 
-  /**
-   * @param {number=} numDestinations
-   * @private
-   */
-  updateHeight_(numDestinations) {
+  private updateHeight_(numDestinations?: number) {
     const count = numDestinations === undefined ?
         this.matchingDestinations_.length :
         numDestinations;
@@ -149,15 +139,13 @@ export class PrintPreviewDestinationListElement extends
         `${DESTINATION_ITEM_HEIGHT}px`;
   }
 
-  /** @private */
-  updateMatchingDestinations_() {
+  private updateMatchingDestinations_() {
     if (this.destinations === undefined) {
       return;
     }
 
     const matchingDestinations = this.searchQuery ?
-        this.destinations.filter(
-            d => d.matches(/** @type {!RegExp} */ (this.searchQuery))) :
+        this.destinations.filter(d => d.matches(this.searchQuery!)) :
         this.destinations.slice();
 
     // Update the height before updating the list.
@@ -169,11 +157,7 @@ export class PrintPreviewDestinationListElement extends
     this.forceIronResize_();
   }
 
-  /**
-   * @param {!KeyboardEvent} e Event containing the destination and key.
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Enter') {
       this.onDestinationSelected_(e);
       e.stopPropagation();
@@ -181,11 +165,10 @@ export class PrintPreviewDestinationListElement extends
   }
 
   /**
-   * @param {!Event} e Event containing the destination that was selected.
-   * @private
+   * @param e Event containing the destination that was selected.
    */
-  onDestinationSelected_(e) {
-    if (e.composedPath()[0].tagName === 'A') {
+  private onDestinationSelected_(e: Event) {
+    if ((e.composedPath()[0] as HTMLElement).tagName === 'A') {
       return;
     }
 
@@ -196,11 +179,8 @@ export class PrintPreviewDestinationListElement extends
 
   /**
    * Returns a 1-based index for aria-rowindex.
-   * @param {number} index
-   * @return {number}
-   * @private
    */
-  getAriaRowindex_(index) {
+  private getAriaRowindex_(index: number): number {
     return index + 1;
   }
 }
