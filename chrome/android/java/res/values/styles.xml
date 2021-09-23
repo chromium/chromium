@@ -293,32 +293,29 @@
     </style>
 
     <!-- Tab Layout -->
-    <style name="TabLayoutStyle">
+    <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">@android:color/transparent</item>
         <item name="tabIndicator">@drawable/tab_indicator</item>
+        <item name="tabIndicatorColor">?attr/default_icon_color_accent1</item>
         <item name="tabIndicatorFullWidth">false</item>
         <item name="tabIndicatorHeight">@dimen/tab_indicator_height</item>
-        <item name="tabPaddingStart">5dp</item>
-        <item name="tabPaddingEnd">5dp</item>
         <item name="tabMode">fixed</item>
         <item name="tabGravity">fill</item>
         <item name="tabMaxWidth">0dp</item>
         <item name="tabTextAppearance">@style/TextAppearance.TextMediumThick</item>
-        <item name="tabTextColor">@color/default_text_color_secondary</item>
-        <item name="tabSelectedTextColor">@color/tab_layout_selected_tab_color</item>
-        <item name="android:background">@color/default_bg_color</item>
+        <item name="tabTextColor">@color/default_text_color_secondary_list</item>
+        <item name="tabSelectedTextColor">?attr/default_text_color_accent1</item>
     </style>
 
     <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
-        <item name="tabIndicatorColor">?attr/default_icon_color_blue</item>
         <item name="tabTextAppearance">@style/TextAppearance.TextAccentMediumThick</item>
         <item name="tabGravity">center</item>
-        <item name="android:background">@android:color/transparent</item>
         <item name="tabPaddingEnd">7dp</item>
         <item name="tabPaddingStart">7dp</item>
     </style>
 
     <style name="TextAppearance.TabLayout" parent="TextAppearance.TextAccentMediumThick">
-      <item name="android:textColor">@color/tab_layout_colors</item>
+      <item name="android:textColor">@color/tab_layout_text_color_list</item>
     </style>
 
     <!-- Misc styles -->

@@ -5,7 +5,7 @@
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:alpha="@dimen/default_disabled_alpha"
-      android:color="@color/default_text_color_secondary" android:state_enabled="false"/>
-  <item android:color="@color/tab_layout_selected_tab_color" android:state_selected="true"/>
-  <item android:color="@color/default_text_color_secondary" />
+      android:color="?attr/colorOnSurfaceVariant" android:state_enabled="false"/>
+  <item android:color="?attr/default_text_color_accent1" android:state_selected="true"/>
+  <item android:color="?attr/colorOnSurfaceVariant" />
 </selector>

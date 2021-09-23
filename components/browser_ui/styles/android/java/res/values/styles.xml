@@ -20,6 +20,7 @@
 
         <!-- Spinner styles -->
         <item name="spinnerStyle">@style/SpinnerStyle</item>
+        <item name="android:progressBarStyle">@style/ProgressBarStyle</item>
 
         <!-- Popup styles -->
         <!-- Set android popup menu attributes for context menu styles because the context menus are
@@ -128,6 +129,10 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">viewStart</item>
         <item name="android:paddingTop">10dp</item>
+    </style>
+
+    <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">?attr/default_icon_color_accent1</item>
     </style>
 
     <!-- Spinner styles -->

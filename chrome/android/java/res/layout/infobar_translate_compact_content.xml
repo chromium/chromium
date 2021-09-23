@@ -10,7 +10,6 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal">
-    <!-- TODO(huayinz): Change app:tabIndicatorColor to some common color reference -->
     <org.chromium.components.translate.TranslateTabLayout
         android:id="@+id/translate_infobar_tabs"
         android:layout_width="0dp"
@@ -18,14 +17,8 @@
         android:layout_weight="1"
         android:requiresFadingEdge="horizontal"
         android:fadingEdgeLength="@dimen/infobar_translate_fade_edge_length"
-        app:tabIndicator="@drawable/tab_indicator"
-        app:tabIndicatorFullWidth="false"
-        app:tabIndicatorHeight="3dp"
-        app:tabSelectedTextColor="@color/tab_layout_selected_tab_color"
-        app:tabIndicatorColor="@color/tab_layout_selected_tab_color"
-        app:tabGravity="fill"
-        android:background="@android:color/transparent"
-        app:tabMode="scrollable" />
+        app:tabMode="scrollable"
+        style="@style/TabLayoutStyle"/>
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/translate_infobar_menu_button"
