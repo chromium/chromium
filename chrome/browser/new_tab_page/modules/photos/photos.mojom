@@ -26,4 +26,9 @@ interface PhotosHandler {
   DismissModule();
   // Restores the module immediately.
   RestoreModule();
+  // Returns whether to show opt-in surface in the module.
+  ShouldShowOptInScreen() => (bool show_opt_in_screen);
+  // Stores in profile prefs whether the user has opt-in
+  // see the module content.
+  OnUserOptIn(bool accept);
 };

@@ -67,6 +67,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // static
 const char PhotosService::kLastDismissedTimePrefName[] =
     "NewTabPage.Photos.LastDimissedTime";
+const char PhotosService::kOptInAcknowledgedPrefName[] =
+    "NewTabPage.Photos.OptInAcknowledged";
 
 // static
 const base::TimeDelta PhotosService::kDismissDuration =
@@ -85,6 +87,7 @@ PhotosService::PhotosService(
 // static
 void PhotosService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
+  registry->RegisterBooleanPref(kOptInAcknowledgedPrefName, false);
 }
 
 void PhotosService::GetMemories(GetMemoriesCallback callback) {
@@ -122,6 +125,14 @@ void PhotosService::DismissModule() {
 
 void PhotosService::RestoreModule() {
   pref_service_->SetTime(kLastDismissedTimePrefName, base::Time());
+}
+
+bool PhotosService::ShouldShowOptInScreen() {
+  return !pref_service_->GetBoolean(kOptInAcknowledgedPrefName);
+}
+
+void PhotosService::OnUserOptIn(bool accept) {
+  pref_service_->SetBoolean(kOptInAcknowledgedPrefName, accept);
 }
 
 void PhotosService::OnTokenReceived(GoogleServiceAuthError error,

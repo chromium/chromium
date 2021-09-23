@@ -329,3 +329,17 @@ TEST_F(PhotosServiceTest, RestoreModule) {
   EXPECT_EQ(base::Time(),
             prefs_.GetTime(PhotosService::kLastDismissedTimePrefName));
 }
+
+TEST_F(PhotosServiceTest, OptInShown) {
+  EXPECT_TRUE(service_->ShouldShowOptInScreen());
+
+  // If user does not accept opt-in, we should keep showing screen.
+  service_->OnUserOptIn(false);
+  EXPECT_TRUE(service_->ShouldShowOptInScreen());
+  EXPECT_FALSE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
+
+  // If user accept opt-in, we should stop showing screen.
+  service_->OnUserOptIn(true);
+  EXPECT_FALSE(service_->ShouldShowOptInScreen());
+  EXPECT_TRUE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
+}

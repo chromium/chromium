@@ -29,6 +29,7 @@ class PrimaryAccountAccessTokenFetcher;
 class PhotosService : public KeyedService {
  public:
   static const char kLastDismissedTimePrefName[];
+  static const char kOptInAcknowledgedPrefName[];
   static const base::TimeDelta kDismissDuration;
 
   PhotosService(const PhotosService&) = delete;
@@ -47,6 +48,10 @@ class PhotosService : public KeyedService {
   void DismissModule();
   // Makes the service return data again even if dimiss time is not yet over.
   void RestoreModule();
+  // Returns whether to show opt-in surface in the module.
+  bool ShouldShowOptInScreen();
+  // Stores whether the user has opt-in to see the module content.
+  void OnUserOptIn(bool accept);
 
  private:
   void OnTokenReceived(GoogleServiceAuthError error,
