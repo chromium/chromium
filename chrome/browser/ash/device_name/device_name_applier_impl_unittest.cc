@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name/device_name_applier_impl.h"
+#include "chrome/browser/ash/device_name/device_name_applier_impl.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -11,7 +11,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 using ::testing::_;
@@ -146,4 +146,4 @@ TEST_F(DeviceNameApplierImplTest, MultipleCallsToSetDeviceName) {
   VerifyNameInBluetoothAdapterAndNetworkStateHandler("TestName2");
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name/device_name_store_impl.h"
+#include "chrome/browser/ash/device_name/device_name_store_impl.h"
 
+#include "chrome/browser/ash/device_name/device_name_applier_impl.h"
+#include "chrome/browser/ash/device_name/device_name_validator.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/device_name/device_name_applier_impl.h"
-#include "chrome/browser/chromeos/device_name/device_name_validator.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const char kDefaultDeviceName[] = "ChromeOS";
@@ -177,8 +177,8 @@ void DeviceNameStoreImpl::AttemptDeviceNameStateUpdate(bool is_user_owner) {
 void DeviceNameStoreImpl::OnProfileAdded(Profile* profile) {
   DCHECK(profile);
 
-  ash::OwnerSettingsServiceAsh* service =
-      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
+  OwnerSettingsServiceAsh* service =
+      OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
   if (service) {
     service->IsOwnerAsync(
         base::BindOnce(&DeviceNameStoreImpl::AttemptDeviceNameStateUpdate,
@@ -193,4 +193,4 @@ void DeviceNameStoreImpl::OnProfileManagerDestroying() {
   profile_manager_observer_.Reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

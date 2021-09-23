@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name/device_name_store_impl.h"
+#include "chrome/browser/ash/device_name/device_name_store_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/device_name/fake_device_name_applier.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/policy/handlers/fake_device_name_policy_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/chromeos/device_name/fake_device_name_applier.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,7 +25,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 class FakeObserver : public DeviceNameStore::Observer {
@@ -81,13 +81,13 @@ class DeviceNameStoreImplTest : public ::testing::Test {
 
     TestingProfile* mock_profile = mock_profile_manager_.CreateTestingProfile(
         test_account_id.GetUserEmail(),
-        {{ash::OwnerSettingsServiceAshFactory::GetInstance(),
+        {{OwnerSettingsServiceAshFactory::GetInstance(),
           base::BindRepeating(
               &DeviceNameStoreImplTest::CreateOwnerSettingsServiceAsh,
               base::Unretained(this))}});
     owner_settings_service_ash_ =
-        ash::OwnerSettingsServiceAshFactory::GetInstance()
-            ->GetForBrowserContext(mock_profile);
+        OwnerSettingsServiceAshFactory::GetInstance()->GetForBrowserContext(
+            mock_profile);
   }
 
   void FlushActiveProfileCallbacks(bool is_owner) {
@@ -105,12 +105,10 @@ class DeviceNameStoreImplTest : public ::testing::Test {
   void InitializeDeviceNameStore(
       bool is_hostname_setting_flag_enabled,
       const absl::optional<std::string>& name_in_prefs = absl::nullopt) {
-    if (is_hostname_setting_flag_enabled) {
-      feature_list_.InitAndEnableFeature(ash::features::kEnableHostnameSetting);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          ash::features::kEnableHostnameSetting);
-    }
+    if (is_hostname_setting_flag_enabled)
+      feature_list_.InitAndEnableFeature(features::kEnableHostnameSetting);
+    else
+      feature_list_.InitAndDisableFeature(features::kEnableHostnameSetting);
 
     // Set the device name from the previous session of the user if any.
     if (name_in_prefs)
@@ -166,12 +164,12 @@ class DeviceNameStoreImplTest : public ::testing::Test {
   // Test backing store for prefs.
   TestingPrefServiceSimple local_state_;
 
-  ash::FakeChromeUserManager* fake_user_manager_;
+  FakeChromeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingProfileManager mock_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  ash::OwnerSettingsServiceAsh* owner_settings_service_ash_;
-  ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
+  OwnerSettingsServiceAsh* owner_settings_service_ash_;
+  ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   base::test::ScopedFeatureList feature_list_;
 
   FakeDeviceNameApplier* fake_device_name_applier_;
@@ -599,4 +597,4 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceOwnerPolicyChanges) {
   EXPECT_EQ(3u, GetNumObserverCalls());
 }
 
-}  // namespace chromeos
+}  // namespace ash

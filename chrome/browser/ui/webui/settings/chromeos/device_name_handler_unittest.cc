@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/device_name/fake_device_name_store.h"
+#include "chrome/browser/ash/device_name/fake_device_name_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"

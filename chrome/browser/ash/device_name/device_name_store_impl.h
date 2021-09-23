@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
+#define CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
 
-#include "chrome/browser/chromeos/device_name/device_name_store.h"
+#include "chrome/browser/ash/device_name/device_name_store.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 class DeviceNameApplier;
 
@@ -100,6 +100,6 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   base::WeakPtrFactory<DeviceNameStoreImpl> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_

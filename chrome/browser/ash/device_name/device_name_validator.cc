@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name/device_name_validator.h"
+#include "chrome/browser/ash/device_name/device_name_validator.h"
 
 #include "base/strings/string_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // For maximum compatibility with existing network services (e.g., Active
@@ -35,4 +35,4 @@ bool IsValidDeviceName(const std::string& device_name) {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

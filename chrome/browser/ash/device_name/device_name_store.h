@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_H_
-#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_H_
+#ifndef CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_H_
+#define CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_H_
 
 #include <string>
 
@@ -18,7 +18,7 @@ namespace policy {
 class DeviceNamePolicyHandler;
 }  // namespace policy
 
-namespace chromeos {
+namespace ash {
 
 // DeviceNameStore is a device-persistent model of the device name which
 // clients use to display the device name to the user and broadcast the device
@@ -123,6 +123,11 @@ class DeviceNameStore {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_H_
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::DeviceNameStore;
+}
+
+#endif  // CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_STORE_H_

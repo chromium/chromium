@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_FAKE_DEVICE_NAME_STORE_H_
-#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_FAKE_DEVICE_NAME_STORE_H_
+#ifndef CHROME_BROWSER_ASH_DEVICE_NAME_FAKE_DEVICE_NAME_STORE_H_
+#define CHROME_BROWSER_ASH_DEVICE_NAME_FAKE_DEVICE_NAME_STORE_H_
 
-#include "chrome/browser/chromeos/device_name/device_name_store.h"
+#include "chrome/browser/ash/device_name/device_name_store.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake DeviceNameStore implementation
 class FakeDeviceNameStore : public DeviceNameStore {
@@ -31,6 +31,11 @@ class FakeDeviceNameStore : public DeviceNameStore {
       DeviceNameStore::DeviceNameState::kCanBeModified;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_FAKE_DEVICE_NAME_STORE_H_
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::FakeDeviceNameStore;
+}
+
+#endif  // CHROME_BROWSER_ASH_DEVICE_NAME_FAKE_DEVICE_NAME_STORE_H_

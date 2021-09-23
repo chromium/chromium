@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/device_name/device_name_store.h"
+#include "chrome/browser/ash/device_name/device_name_store.h"
 #include "content/public/browser/web_ui.h"
 
 namespace chromeos {

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_FAKE_DEVICE_NAME_APPLIER_H_
-#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_FAKE_DEVICE_NAME_APPLIER_H_
+#ifndef CHROME_BROWSER_ASH_DEVICE_NAME_FAKE_DEVICE_NAME_APPLIER_H_
+#define CHROME_BROWSER_ASH_DEVICE_NAME_FAKE_DEVICE_NAME_APPLIER_H_
 
-#include "chrome/browser/chromeos/device_name/device_name_applier.h"
+#include "chrome/browser/ash/device_name/device_name_applier.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake DeviceNameApplier implementation
 class FakeDeviceNameApplier : public DeviceNameApplier {
@@ -24,6 +24,6 @@ class FakeDeviceNameApplier : public DeviceNameApplier {
   std::string hostname_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_FAKE_DEVICE_NAME_APPLIER_H_
+#endif  // CHROME_BROWSER_ASH_DEVICE_NAME_FAKE_DEVICE_NAME_APPLIER_H_

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
+#define CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
 
-#include "chrome/browser/chromeos/device_name/device_name_applier.h"
+#include "chrome/browser/ash/device_name/device_name_applier.h"
 #include "chromeos/network/network_state_handler.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "net/base/backoff_entry.h"
 
-namespace chromeos {
+namespace ash {
 
 // DeviceNameApplier implementation which uses NetworkStateHandler and
 // BluetoothAdapter to set the device name via DHCP and Bluetooth respectively.
@@ -57,6 +57,6 @@ class DeviceNameApplierImpl : public DeviceNameApplier {
       this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_DEVICE_NAME_DEVICE_NAME_APPLIER_IMPL_H_
