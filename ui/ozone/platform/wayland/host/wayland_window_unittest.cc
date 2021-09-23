@@ -13,8 +13,10 @@
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
+#include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2801,7 +2803,16 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
   test_popup = GetTestXdgPopupByWindow(popup.get());
   ASSERT_TRUE(test_popup);
 
-  EXPECT_EQ(test_popup->grab_serial(), touch_down_serial);
+  uint32_t expected_serial = touch_down_serial;
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto env = base::Environment::Create();
+  if (base::nix::GetDesktopEnvironment(env.get()) ==
+      base::nix::DESKTOP_ENVIRONMENT_GNOME) {
+    // We do not grab with touch events on gnome shell.
+    expected_serial = 0u;
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_EQ(test_popup->grab_serial(), expected_serial);
 }
 
 // Tests nested menu windows get the topmost window in the stack of windows

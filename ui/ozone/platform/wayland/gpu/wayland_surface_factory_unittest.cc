@@ -756,6 +756,10 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
     EXPECT_EQ(wl_shm_buffer_get_width(buffer), bounds_px.width());
     EXPECT_EQ(wl_shm_buffer_get_height(buffer), bounds_px.height());
 
+    // Release the buffer immediately as the test always attaches the same
+    // buffer.
+    surface_->ReleaseBufferFenced(buffer_resource, {});
+
     surface_->SendFrameCallback();
 
     Sync();
