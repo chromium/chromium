@@ -266,3 +266,18 @@ export function getRoutineFailureMessage(routineType) {
       return '';
   }
 }
+
+/**
+ * @param {!NetworkState} state
+ * @return {boolean}
+ */
+export function isConnectedOrOnline(state) {
+  switch (state) {
+    case NetworkState.kOnline:
+    case NetworkState.kConnected:
+    case NetworkState.kConnecting:
+      return true;
+    default:
+      return false;
+  }
+}

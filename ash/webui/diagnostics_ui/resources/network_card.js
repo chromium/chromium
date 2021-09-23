@@ -12,9 +12,12 @@ import './network_troubleshooting.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkHealthProviderInterface, NetworkState, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType} from './diagnostics_types.js';
-import {formatMacAddress, getNetworkState, getNetworkType} from './diagnostics_utils.js';
+import {Network, NetworkHealthProviderInterface, NetworkState, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, TroubleshootingInfo} from './diagnostics_types.js';
+import {formatMacAddress, getNetworkState, getNetworkType, isConnectedOrOnline} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+
+const BASE_SUPPORT_URL = 'https://support.google.com/chromebook?p=diagnostics_';
+const SETTINGS_URL = 'chrome://os-settings/';
 
 /**
  * @fileoverview
@@ -69,15 +72,21 @@ Polymer({
     },
 
     /** @protected {boolean} */
-    showTroubleConnectingState_: {
+    showTroubleshootingCard_: {
       type: Boolean,
-      computed: 'computeShouldShowTroubleConnecting_(network.state)',
+      value: false,
     },
 
     /** @protected {string} */
     macAddress_: {
       type: String,
       value: '',
+    },
+
+    /** @protected {TroubleshootingInfo} */
+    troubleshootingInfo_: {
+      type: Object,
+      computed: 'computeTroubleshootingInfo_(network.*)',
     },
   },
 
@@ -192,5 +201,47 @@ Polymer({
       return '';
     }
     return formatMacAddress(this.macAddress_);
+  },
+
+  /**
+   * @private
+   * @return {!TroubleshootingInfo}
+   */
+  getDisabledTroubleshootingInfo_() {
+    return {
+      header: this.i18n('disabledText', this.networkType_),
+          linkText: this.i18n('reconnectLinkText'), url: SETTINGS_URL,
+    }
+  },
+
+  /**
+   * @private
+   * @return {!TroubleshootingInfo}
+   */
+  getNotConnectedTroubleshootingInfo_() {
+    return {
+      header: this.i18n('troubleshootingText', this.networkType_),
+          linkText: this.i18n('troubleConnecting'), url: BASE_SUPPORT_URL,
+    }
+  },
+
+  /**
+   * @private
+   * @return {!TroubleshootingInfo}
+   */
+  computeTroubleshootingInfo_() {
+    if (!this.network || isConnectedOrOnline(this.network.state)) {
+      this.showTroubleshootingCard_ = false;
+      return {
+        header: '',
+        linkText: '',
+        url: '',
+      };
+    }
+
+    this.showTroubleshootingCard_ = true;
+    let disabled = this.network.state === NetworkState.kDisabled;
+    return disabled ? this.getDisabledTroubleshootingInfo_() :
+                      this.getNotConnectedTroubleshootingInfo_();
   },
 });

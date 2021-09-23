@@ -3,11 +3,10 @@
 <diagnostics-card is-networking-card
     hide-data-points="[[!showNetworkDataPoints_]]">
     <!-- TODO(michaelcheco): Add localized strings. -->
-  <template is="dom-if" if="[[showTroubleConnectingState_]]">
+  <template is="dom-if" if="[[showTroubleshootingCard_]]">
     <network-troubleshooting id="networkTroubleshooting"
         slot="left-panel"
-        network-type="[[networkType_]]"
-        disabled="[[isNetworkDisabled_(network.state)]]">
+        troubleshooting-info="[[troubleshootingInfo_]]">
     </network-troubleshooting>
   </template>
   <div id="cardTitle" slot="title">

@@ -412,6 +412,15 @@ export let ChannelProperties;
 export let RoutineProperties;
 
 /**
+ * @typedef {{
+ *   header: string,
+ *   linkText: string,
+ *   url: string,
+ * }}
+ */
+export let TroubleshootingInfo;
+
+/**
  * Type alias for ConnectionType.
  * @typedef {ash.diagnostics.mojom.ConnectionType}
  */

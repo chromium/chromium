@@ -6,8 +6,9 @@ import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {TroubleshootingInfo} from './diagnostics_types.js';
 
 /**
  * @constructor
@@ -30,35 +31,16 @@ export class NetworkTroubleshootingElement extends
 
   static get properties() {
     return {
-      networkType: {type: String, value: ''}, disabled: {type: Boolean},
+      /** @type {TroubleshootingInfo} */
+      troubleshootingInfo: {
+        type: Object,
+      },
     }
   }
 
   /** @protected */
-  onTroubleConnectingClicked_() {
-    let url = this.disabled ?
-        'chrome://os-settings/' :
-        'https://support.google.com/chromebook?p=diagnostics_';
-    // TODO(michaelcheco): Add correct support URL.
-    window.open(url);
-  }
-
-  /**
-   * @protected
-   * @return {string}
-   */
-  computeTroubleConnectingText_() {
-    let stringId = this.disabled ? 'disabledText' : 'troubleshootingText';
-    return loadTimeData.getStringF(stringId, this.networkType);
-  }
-
-  /**
-   * @protected
-   * @return {string}
-   */
-  computeLinkText_() {
-    return loadTimeData.getString(
-        this.disabled ? 'reconnectLinkText' : 'troubleConnecting');
+  onLinkTextClicked_() {
+    window.open(this.troubleshootingInfo.url);
   }
 }
 
