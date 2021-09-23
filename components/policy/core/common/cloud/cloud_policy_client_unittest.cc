@@ -10,9 +10,11 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
@@ -204,9 +206,12 @@ struct MockResponseCallbackObserver {
 class FakeClientDataDelegate : public ClientDataDelegate {
  public:
   void FillRegisterBrowserRequest(
-      enterprise_management::RegisterBrowserRequest* request) const override {
-    request->set_os_platform(policy::GetOSPlatform());
-    request->set_os_version(policy::GetOSVersion());
+      enterprise_management::RegisterBrowserRequest* request,
+      base::OnceClosure callback) const override {
+    request->set_os_platform(GetOSPlatform());
+    request->set_os_version(GetOSVersion());
+
+    std::move(callback).Run();
   }
 };
 
@@ -343,8 +348,8 @@ em::DeviceManagementRequest GetEnrollmentRequest() {
 
   em::RegisterBrowserRequest* enrollment_request =
       request.mutable_register_browser_request();
-  enrollment_request->set_os_platform(policy::GetOSPlatform());
-  enrollment_request->set_os_version(policy::GetOSVersion());
+  enrollment_request->set_os_platform(GetOSPlatform());
+  enrollment_request->set_os_version(GetOSVersion());
   return request;
 }
 #endif
@@ -1765,11 +1770,11 @@ TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
               *payload->FindStringPath(
                   ReportingJobConfigurationBase::BrowserDictionaryBuilder::
                       GetMachineUserPath()));
-    EXPECT_EQ(policy::GetOSPlatform(),
+    EXPECT_EQ(GetOSPlatform(),
               *payload->FindStringPath(
                   ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                       GetOSPlatformPath()));
-    EXPECT_EQ(policy::GetOSVersion(),
+    EXPECT_EQ(GetOSVersion(),
               *payload->FindStringPath(
                   ReportingJobConfigurationBase::DeviceDictionaryBuilder::
                       GetOSVersionPath()));

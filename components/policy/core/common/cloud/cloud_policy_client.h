@@ -39,8 +39,9 @@ class SharedURLLoaderFactory;
 namespace policy {
 
 class ClientDataDelegate;
-class SigningService;
 class DMServerJobConfiguration;
+class RegistrationJobConfiguration;
+class SigningService;
 
 // Implements the core logic required to talk to the device management service.
 // Also keeps track of the current state of the association with the service,
@@ -794,9 +795,10 @@ class POLICY_EXPORT CloudPolicyClient {
   // Used for issuing requests to the cloud.
   DeviceManagementService* service_ = nullptr;
 
-  // Only one outstanding policy fetch is allowed, so this is tracked in
-  // its own member variable.
-  std::unique_ptr<DeviceManagementService::Job> policy_fetch_request_job_;
+  // Only one outstanding policy fetch or device/user registration request is
+  // allowed. Using a separate job to track those requests. If multiple
+  // requests have been started, only the last one will be kept.
+  std::unique_ptr<DeviceManagementService::Job> unique_request_job_;
 
   // All of the outstanding non-policy-fetch request jobs. These jobs are
   // silently cancelled if Unregister() is called.
@@ -857,6 +859,10 @@ class POLICY_EXPORT CloudPolicyClient {
   // Executes a job to upload a certificate. Onwership of the job is
   // retained by this method.
   void ExecuteCertUploadJob(std::unique_ptr<DMServerJobConfiguration> config);
+
+  // Sets `unique_request_job_` with a new job created with `config`.
+  void CreateUniqueRequestJob(
+      std::unique_ptr<RegistrationJobConfiguration> config);
 
   // Used to store a copy of the previously used |dm_token_|. This is used
   // during re-registration, which gets triggered by a failed policy fetch with
