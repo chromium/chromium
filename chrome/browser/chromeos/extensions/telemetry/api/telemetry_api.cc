@@ -24,14 +24,11 @@ TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
 OsTelemetryGetVpdInfoFunction::~OsTelemetryGetVpdInfoFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsTelemetryGetVpdInfoFunction::RunIfAllowed() {
+void OsTelemetryGetVpdInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetVpdInfoFunction::OnResult, this);
 
   remote_probe_service_->ProbeTelemetryInfo(
       {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData}, std::move(cb));
-
-  return RespondLater();
 }
 
 void OsTelemetryGetVpdInfoFunction::OnResult(
@@ -73,21 +70,19 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
 OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
 OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsTelemetryGetOemDataFunction::RunIfAllowed() {
+void OsTelemetryGetOemDataFunction::RunIfAllowed() {
   // Protect accessing the serial number by a runtime permission.
   if (!extension()->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber)) {
-    return RespondNow(
+    Respond(
         Error("Unauthorized access to chrome.os.telemetry.getOemData. Extension"
               " doesn't have the permission."));
+    return;
   }
 
   auto cb = base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this);
 
   remote_probe_service_->GetOemData(std::move(cb));
-
-  return RespondLater();
 }
 
 void OsTelemetryGetOemDataFunction::OnResult(

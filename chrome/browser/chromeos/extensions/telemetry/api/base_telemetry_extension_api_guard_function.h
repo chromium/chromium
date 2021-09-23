@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_BASE_TELEMETRY_EXTENSION_API_GUARD_FUNCTION_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_BASE_TELEMETRY_EXTENSION_API_GUARD_FUNCTION_H_
 
+#include <string>
+
 #include "extensions/browser/extension_function.h"
 
 namespace chromeos {
@@ -28,7 +30,9 @@ class BaseTelemetryExtensionApiGuardFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() final;
 
-  virtual ResponseAction RunIfAllowed() = 0;
+  void OnGetManufacturer(std::string manufacturer);
+
+  virtual void RunIfAllowed() = 0;
 };
 
 }  // namespace chromeos

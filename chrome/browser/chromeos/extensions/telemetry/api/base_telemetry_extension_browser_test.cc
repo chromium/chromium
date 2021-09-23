@@ -4,9 +4,15 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
+#include "base/callback.h"
+#include "base/location.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -49,12 +55,16 @@ BaseTelemetryExtensionBrowserTest::~BaseTelemetryExtensionBrowserTest() =
 void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
   extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
-  // Make sure that current user is not a device owner.
+  // Make sure that current user is a device owner.
   auto* const user_manager =
       static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
-  user_manager->AddUser(regular_user);
-  user_manager->SetOwnerId(regular_user);
+  user_manager->SetOwnerId(
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+
+  hardware_info_delegate_factory_ =
+      std::make_unique<FakeHardwareInfoDelegate::Factory>("HP\n");
+  HardwareInfoDelegate::Factory::SetForTesting(
+      hardware_info_delegate_factory_.get());
 }
 
 const extensions::Extension*
@@ -89,21 +99,6 @@ void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
   ASSERT_TRUE(extension);
 
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-}
-
-BaseTelemetryExtensionApiAllowedBrowserTest::
-    BaseTelemetryExtensionApiAllowedBrowserTest() = default;
-BaseTelemetryExtensionApiAllowedBrowserTest::
-    ~BaseTelemetryExtensionApiAllowedBrowserTest() = default;
-
-void BaseTelemetryExtensionApiAllowedBrowserTest::SetUpOnMainThread() {
-  BaseTelemetryExtensionBrowserTest::SetUpOnMainThread();
-
-  // Make sure that current user is a device owner.
-  auto* const user_manager =
-      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-  user_manager->SetOwnerId(
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
 }
 
 }  // namespace chromeos

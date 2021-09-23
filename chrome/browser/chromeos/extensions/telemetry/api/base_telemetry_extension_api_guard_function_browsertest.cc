@@ -2,25 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/string_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
-using TelemetryExtensionBaseApiGuardBrowserTest =
-    BaseTelemetryExtensionBrowserTest;
+namespace {
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
-                       OnlyDeviceOwnerCanCallThisApiError) {
-  CreateExtensionAndRunServiceWorker(R"(
+std::string GetServiceWorkerForError(const std::string& error) {
+  std::string service_worker = R"(
     chrome.test.runTests([
       // Telemetry APIs.
       async function getVpdInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getVpdInfo(),
             'Error: Unauthorized access to chrome.os.telemetry.getVpdInfo. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -28,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getOemData(),
             'Error: Unauthorized access to chrome.os.telemetry.getOemData. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -39,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             chrome.os.diagnostics.getAvailableRoutines(),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.getAvailableRoutines. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -53,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             ),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.getRoutineUpdate. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -62,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             chrome.os.diagnostics.runBatteryCapacityRoutine(),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runBatteryCapacityRoutine. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -76,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             ),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runBatteryChargeRoutine. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -90,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             ),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runBatteryDischargeRoutine. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -99,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             chrome.os.diagnostics.runBatteryHealthRoutine(),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runBatteryHealthRoutine. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -112,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             ),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runCpuCacheRoutine. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -125,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             ),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runCpuStressRoutine. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
@@ -134,12 +136,44 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBaseApiGuardBrowserTest,
             chrome.os.diagnostics.runMemoryRoutine(),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runMemoryRoutine. ' +
-            'This extension is not run by the device owner'
+            '%s'
         );
         chrome.test.succeed();
       },
     ]);
-  )");
+  )";
+
+  base::ReplaceSubstringsAfterOffset(&service_worker, /*start_offset=*/0, "%s",
+                                     error);
+  return service_worker;
+}
+
+}  // namespace
+
+using TelemetryExtensionApiGuardBrowserTest = BaseTelemetryExtensionBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
+                       ActiveUserNotOwner) {
+  // Make sure that current user is not a device owner.
+  auto* const user_manager =
+      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+  const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
+  user_manager->AddUser(regular_user);
+  user_manager->SetOwnerId(regular_user);
+
+  CreateExtensionAndRunServiceWorker(GetServiceWorkerForError(
+      "This extension is not run by the device owner"));
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
+                       NotAllowedDeviceManufacturer) {
+  hardware_info_delegate_factory_ =
+      std::make_unique<FakeHardwareInfoDelegate::Factory>("Google\n");
+  HardwareInfoDelegate::Factory::SetForTesting(
+      hardware_info_delegate_factory_.get());
+
+  CreateExtensionAndRunServiceWorker(GetServiceWorkerForError(
+      "This extension is not allowed to access the API on this device"));
 }
 
 }  // namespace chromeos

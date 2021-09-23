@@ -29,14 +29,11 @@ OsDiagnosticsGetAvailableRoutinesFunction::
 OsDiagnosticsGetAvailableRoutinesFunction::
     ~OsDiagnosticsGetAvailableRoutinesFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsGetAvailableRoutinesFunction::RunIfAllowed() {
+void OsDiagnosticsGetAvailableRoutinesFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsDiagnosticsGetAvailableRoutinesFunction::OnResult,
                            this);
 
   remote_diagnostics_service_->GetAvailableRoutines(std::move(cb));
-
-  return RespondLater();
 }
 
 void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
@@ -60,11 +57,14 @@ OsDiagnosticsGetRoutineUpdateFunction::OsDiagnosticsGetRoutineUpdateFunction() =
 OsDiagnosticsGetRoutineUpdateFunction::
     ~OsDiagnosticsGetRoutineUpdateFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsGetRoutineUpdateFunction::RunIfAllowed() {
+void OsDiagnosticsGetRoutineUpdateFunction::RunIfAllowed() {
   std::unique_ptr<api::os_diagnostics::GetRoutineUpdate::Params> params(
       api::os_diagnostics::GetRoutineUpdate::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
 
   auto cb =
       base::BindOnce(&OsDiagnosticsGetRoutineUpdateFunction::OnResult, this);
@@ -73,8 +73,6 @@ OsDiagnosticsGetRoutineUpdateFunction::RunIfAllowed() {
       params->request.id,
       converters::ConvertRoutineCommand(params->request.command),
       /* include_output= */ true, std::move(cb));
-
-  return RespondLater();
 }
 
 void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
@@ -145,14 +143,11 @@ OsDiagnosticsRunBatteryCapacityRoutineFunction::
 OsDiagnosticsRunBatteryCapacityRoutineFunction::
     ~OsDiagnosticsRunBatteryCapacityRoutineFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsRunBatteryCapacityRoutineFunction::RunIfAllowed() {
+void OsDiagnosticsRunBatteryCapacityRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunBatteryCapacityRoutine(std::move(cb));
-
-  return RespondLater();
 }
 
 // OsDiagnosticsRunBatteryChargeRoutineFunction --------------------------------
@@ -162,11 +157,14 @@ OsDiagnosticsRunBatteryChargeRoutineFunction::
 OsDiagnosticsRunBatteryChargeRoutineFunction::
     ~OsDiagnosticsRunBatteryChargeRoutineFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsRunBatteryChargeRoutineFunction::RunIfAllowed() {
+void OsDiagnosticsRunBatteryChargeRoutineFunction::RunIfAllowed() {
   std::unique_ptr<api::os_diagnostics::RunBatteryChargeRoutine::Params> params(
       api::os_diagnostics::RunBatteryChargeRoutine::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
 
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
@@ -174,8 +172,6 @@ OsDiagnosticsRunBatteryChargeRoutineFunction::RunIfAllowed() {
   remote_diagnostics_service_->RunBatteryChargeRoutine(
       params->request.length_seconds,
       params->request.minimum_charge_percent_required, std::move(cb));
-
-  return RespondLater();
 }
 
 // OsDiagnosticsRunBatteryDischargeRoutineFunction -----------------------------
@@ -185,12 +181,15 @@ OsDiagnosticsRunBatteryDischargeRoutineFunction::
 OsDiagnosticsRunBatteryDischargeRoutineFunction::
     ~OsDiagnosticsRunBatteryDischargeRoutineFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsRunBatteryDischargeRoutineFunction::RunIfAllowed() {
+void OsDiagnosticsRunBatteryDischargeRoutineFunction::RunIfAllowed() {
   std::unique_ptr<api::os_diagnostics::RunBatteryDischargeRoutine::Params>
       params(api::os_diagnostics::RunBatteryDischargeRoutine::Params::Create(
           args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
 
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
@@ -198,8 +197,6 @@ OsDiagnosticsRunBatteryDischargeRoutineFunction::RunIfAllowed() {
   remote_diagnostics_service_->RunBatteryDischargeRoutine(
       params->request.length_seconds,
       params->request.maximum_discharge_percent_allowed, std::move(cb));
-
-  return RespondLater();
 }
 
 // OsDiagnosticsRunBatteryHealthRoutineFunction --------------------------------
@@ -209,14 +206,11 @@ OsDiagnosticsRunBatteryHealthRoutineFunction::
 OsDiagnosticsRunBatteryHealthRoutineFunction::
     ~OsDiagnosticsRunBatteryHealthRoutineFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsRunBatteryHealthRoutineFunction::RunIfAllowed() {
+void OsDiagnosticsRunBatteryHealthRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunBatteryHealthRoutine(std::move(cb));
-
-  return RespondLater();
 }
 
 // OsDiagnosticsRunCpuCacheRoutineFunction -------------------------------------
@@ -226,19 +220,20 @@ OsDiagnosticsRunCpuCacheRoutineFunction::
 OsDiagnosticsRunCpuCacheRoutineFunction::
     ~OsDiagnosticsRunCpuCacheRoutineFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsRunCpuCacheRoutineFunction::RunIfAllowed() {
+void OsDiagnosticsRunCpuCacheRoutineFunction::RunIfAllowed() {
   std::unique_ptr<api::os_diagnostics::RunCpuCacheRoutine::Params> params(
       api::os_diagnostics::RunCpuCacheRoutine::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
 
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunCpuCacheRoutine(
       params->request.length_seconds, std::move(cb));
-
-  return RespondLater();
 }
 
 // OsDiagnosticsRunCpuStressRoutineFunction ------------------------------------
@@ -248,19 +243,20 @@ OsDiagnosticsRunCpuStressRoutineFunction::
 OsDiagnosticsRunCpuStressRoutineFunction::
     ~OsDiagnosticsRunCpuStressRoutineFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsRunCpuStressRoutineFunction::RunIfAllowed() {
+void OsDiagnosticsRunCpuStressRoutineFunction::RunIfAllowed() {
   std::unique_ptr<api::os_diagnostics::RunCpuStressRoutine::Params> params(
       api::os_diagnostics::RunCpuStressRoutine::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
 
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunCpuStressRoutine(
       params->request.length_seconds, std::move(cb));
-
-  return RespondLater();
 }
 
 // OsDiagnosticsRunMemoryRoutineFunction ---------------------------------------
@@ -270,14 +266,11 @@ OsDiagnosticsRunMemoryRoutineFunction::OsDiagnosticsRunMemoryRoutineFunction() =
 OsDiagnosticsRunMemoryRoutineFunction::
     ~OsDiagnosticsRunMemoryRoutineFunction() = default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
+void OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunMemoryRoutine(std::move(cb));
-
-  return RespondLater();
 }
 
 }  // namespace chromeos

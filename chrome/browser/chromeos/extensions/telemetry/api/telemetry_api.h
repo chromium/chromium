@@ -43,7 +43,7 @@ class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
   ~OsTelemetryGetVpdInfoFunction() override;
 
   // BaseTelemetryExtensionApiGuardFunction:
-  ResponseAction RunIfAllowed() override;
+  void RunIfAllowed() override;
 
   void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
 };
@@ -61,7 +61,7 @@ class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
   ~OsTelemetryGetOemDataFunction() override;
 
   // BaseTelemetryExtensionApiGuardFunction:
-  ResponseAction RunIfAllowed() override;
+  void RunIfAllowed() override;
 
   void OnResult(ash::health::mojom::OemDataPtr ptr);
 };

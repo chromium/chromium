@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -40,21 +41,9 @@ class BaseTelemetryExtensionBrowserTest
       const std::string& service_worker_content);
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);
-};
 
-class BaseTelemetryExtensionApiAllowedBrowserTest
-    : public BaseTelemetryExtensionBrowserTest {
- public:
-  BaseTelemetryExtensionApiAllowedBrowserTest();
-  ~BaseTelemetryExtensionApiAllowedBrowserTest() override;
-
-  BaseTelemetryExtensionApiAllowedBrowserTest(
-      const BaseTelemetryExtensionApiAllowedBrowserTest&) = delete;
-  BaseTelemetryExtensionApiAllowedBrowserTest& operator=(
-      const BaseTelemetryExtensionApiAllowedBrowserTest&) = delete;
-
-  // BrowserTestBase:
-  void SetUpOnMainThread() override;
+  std::unique_ptr<HardwareInfoDelegate::Factory>
+      hardware_info_delegate_factory_;
 };
 
 }  // namespace chromeos

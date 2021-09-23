@@ -4,11 +4,20 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_api_guard_function.h"
 
+#include <string>
+
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_function.h"
 
 namespace chromeos {
+
+namespace {
+
+constexpr char kAllowedManufacturer[] = "HP";
+
+}  // namespace
 
 BaseTelemetryExtensionApiGuardFunction::
     BaseTelemetryExtensionApiGuardFunction() = default;
@@ -24,7 +33,30 @@ BaseTelemetryExtensionApiGuardFunction::Run() {
                            name())));
   }
 
-  return RunIfAllowed();
+  // TODO(b/200676085): figure out a better way to async check different
+  // conditions.
+  HardwareInfoDelegate::Factory::Create()->GetManufacturer(base::BindOnce(
+      &BaseTelemetryExtensionApiGuardFunction::OnGetManufacturer, this));
+
+  return RespondLater();
+}
+
+void BaseTelemetryExtensionApiGuardFunction::OnGetManufacturer(
+    std::string manufacturer) {
+  base::TrimWhitespaceASCII(manufacturer, base::TrimPositions::TRIM_ALL,
+                            &manufacturer);
+
+  // TODO(b/200676336): create more general approach to verify manufacturers and
+  // extension IDs.
+  if (manufacturer != kAllowedManufacturer) {
+    Respond(Error(base::StringPrintf(
+        "Unauthorized access to chrome.%s. "
+        "This extension is not allowed to access the API on this device",
+        name())));
+    return;
+  }
+
+  RunIfAllowed();
 }
 
 }  // namespace chromeos

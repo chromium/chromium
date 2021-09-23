@@ -18,6 +18,8 @@ source_set("api") {
     "diagnostics_api.h",
     "diagnostics_api_converters.cc",
     "diagnostics_api_converters.h",
+    "hardware_info_delegate.cc",
+    "hardware_info_delegate.h",
     "telemetry_api.cc",
     "telemetry_api.h",
   ]
@@ -56,6 +58,8 @@ source_set("browser_tests") {
     "base_telemetry_extension_browser_test.cc",
     "base_telemetry_extension_browser_test.h",
     "diagnostics_api_browsertest.cc",
+    "fake_hardware_info_delegate.cc",
+    "fake_hardware_info_delegate.h",
     "telemetry_api_browsertest.cc",
     "telemetry_extension_capabilities_browser_test.cc",
   ]
