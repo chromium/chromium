@@ -227,7 +227,7 @@ void BluetoothDetailedViewLegacy::UpdateDeviceScrollList(
     index = AddSameTypeDevicesToScrollList(paired_not_connected_devices,
                                            old_device_map, index, false, false);
   } else if (paired_devices_heading_) {
-    scroll_content()->RemoveChildView(paired_devices_heading_);
+    scroll_content()->RemoveChildViewT(paired_devices_heading_);
     paired_devices_heading_ = nullptr;
   }
 
@@ -245,7 +245,7 @@ void BluetoothDetailedViewLegacy::UpdateDeviceScrollList(
 
   if (unpaired_devices_heading_ &&
       (discovered_not_paired_devices.empty() || !has_paired_devices)) {
-    scroll_content()->RemoveChildView(unpaired_devices_heading_);
+    scroll_content()->RemoveChildViewT(unpaired_devices_heading_);
     unpaired_devices_heading_ = nullptr;
   }
 
@@ -259,14 +259,14 @@ void BluetoothDetailedViewLegacy::UpdateDeviceScrollList(
       scroll_content()->ReorderChildView(bluetooth_discovering_label_, index++);
     }
   } else if (bluetooth_discovering_label_) {
-    scroll_content()->RemoveChildView(bluetooth_discovering_label_);
+    scroll_content()->RemoveChildViewT(bluetooth_discovering_label_);
     bluetooth_discovering_label_ = nullptr;
   }
 
   // Remove views for devices from old_device_map that are not in device_map_.
   for (auto& view_and_address : old_device_map) {
     if (device_map_.find(view_and_address.first) == device_map_.end()) {
-      scroll_content()->RemoveChildView(view_and_address.first);
+      scroll_content()->RemoveChildViewT(view_and_address.first);
     }
   }
 
