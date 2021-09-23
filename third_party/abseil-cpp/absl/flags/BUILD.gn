@@ -114,8 +114,17 @@ absl_source_set("reflection") {
   ]
 }
 
+config("absl_flag_internal_config") {
+  if (is_clang) {
+    # TODO(crbug.com/1251757): Figure out what to do with this.
+    cflags = [ "-Wno-unused-value" ]
+  }
+}
+
+
 absl_source_set("flag_internal") {
   sources = [ "internal/flag.cc" ]
+  public_configs = [ ":absl_flag_internal_config" ]
   public = [
     "internal/flag.h",
     "internal/sequence_lock.h",
