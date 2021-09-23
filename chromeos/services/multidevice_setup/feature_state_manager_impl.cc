@@ -572,6 +572,15 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
       return true;
     }
 
+    // Edge Case: Eche is considered activated on the host when Phone Hub is
+    // enabled and Eche's state is kSupported or kEnabled.
+    if (feature == mojom::Feature::kEche) {
+      return feature_state == multidevice::SoftwareFeatureState::kSupported &&
+             host_device.GetSoftwareFeatureState(
+                 multidevice::SoftwareFeature::kPhoneHubHost) ==
+                 multidevice::SoftwareFeatureState::kEnabled;
+    }
+
     // Edge Case: Wifi Sync is considered activated on host when the state is
     // kSupported or kEnabled. kEnabled/kSupported correspond to on/off for Wifi
     // Sync Host.

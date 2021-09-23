@@ -877,7 +877,7 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, Eche) {
   // Together users; they must go to settings to explicitly enable PhoneHub.
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kEcheHost,
-                          multidevice::SoftwareFeatureState::kEnabled);
+                          multidevice::SoftwareFeatureState::kSupported);
   VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
                      mojom::Feature::kEche);
   VerifyFeatureStateChange(
