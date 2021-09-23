@@ -86,9 +86,10 @@ class BaseSiteIsolationTest : public testing::Test {
       return strict_isolation_enabled_;
     }
 
-    bool ShouldDisableSiteIsolation() override {
+    bool ShouldDisableSiteIsolation(
+        content::SiteIsolationMode site_isolation_mode) override {
       return SiteIsolationPolicy::
-          ShouldDisableSiteIsolationDueToMemoryThreshold();
+          ShouldDisableSiteIsolationDueToMemoryThreshold(site_isolation_mode);
     }
 
     std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override {
@@ -170,9 +171,9 @@ class WebTriggeredIsolatedOriginsPolicyTest : public SiteIsolationPolicyTest {
     // threshold.  To ensure that COOP isolation is also enabled on those
     // machines, set a very low 128MB threshold.
     base::test::ScopedFeatureList::FeatureAndParams memory_threshold_feature = {
-        site_isolation::features::kSitePerProcessOnlyForHighMemoryClients,
+        site_isolation::features::kSiteIsolationMemoryThresholds,
         {{site_isolation::features::
-              kSitePerProcessOnlyForHighMemoryClientsParamName,
+              kPartialSiteIsolationMemoryThresholdParamName,
           "128"}}};
 
     feature_list_.InitWithFeaturesAndParameters(
@@ -459,20 +460,25 @@ class SitePerProcessMemoryThresholdBrowserTest
           SitePerProcessMemoryThresholdBrowserTestParams> {
  public:
   SitePerProcessMemoryThresholdBrowserTest() {
+    // When a memory threshold is specified, set it for both strict site
+    // isolation and partial site isolation modes, since these tests care about
+    // both. For example, UseDedicatedProcessesForAllSites() depends on the
+    // former, while isolated origins specified via field trials use the
+    // latter.
     switch (GetParam().threshold) {
       case SitePerProcessMemoryThreshold::kNone:
         break;
       case SitePerProcessMemoryThreshold::k128MB:
         threshold_feature_.InitAndEnableFeatureWithParameters(
-            features::kSitePerProcessOnlyForHighMemoryClients,
-            {{features::kSitePerProcessOnlyForHighMemoryClientsParamName,
-              "128"}});
+            features::kSiteIsolationMemoryThresholds,
+            {{features::kStrictSiteIsolationMemoryThresholdParamName, "128"},
+             {features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
         break;
       case SitePerProcessMemoryThreshold::k768MB:
         threshold_feature_.InitAndEnableFeatureWithParameters(
-            features::kSitePerProcessOnlyForHighMemoryClients,
-            {{features::kSitePerProcessOnlyForHighMemoryClientsParamName,
-              "768"}});
+            features::kSiteIsolationMemoryThresholds,
+            {{features::kStrictSiteIsolationMemoryThresholdParamName, "768"},
+             {features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
         break;
     }
 
@@ -752,8 +758,8 @@ TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, BelowThreshold) {
   // now be disabled.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
 
   EXPECT_FALSE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 
@@ -789,8 +795,8 @@ TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, AboveThreshold) {
   // still be enabled.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 
@@ -834,8 +840,8 @@ TEST_F(DisabledPasswordSiteIsolationFieldTrialTest,
   // this feature via command line.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
 
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 }
@@ -859,8 +865,8 @@ TEST_F(DisabledPasswordSiteIsolationFieldTrialTest,
 
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 }
@@ -958,8 +964,8 @@ TEST_F(EnabledStrictOriginIsolationFieldTrialTest,
   // still be enabled.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kStrictSiteIsolationMemoryThresholdParamName, "128"}});
   EXPECT_TRUE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
 
   // Simulate disabling strict origin isolation from command line.  (Note that
@@ -1001,8 +1007,8 @@ TEST_F(DisabledStrictOriginIsolationFieldTrialTest,
   // this feature via command line.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kStrictSiteIsolationMemoryThresholdParamName, "768"}});
 
   EXPECT_TRUE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
 }
@@ -1038,8 +1044,8 @@ TEST_F(BuiltInIsolatedOriginsTest, DefaultThreshold) {
   // effect.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   // Ensure that isolated origins that are normally loaded on browser
   // startup are applied.
@@ -1080,8 +1086,8 @@ TEST_F(BuiltInIsolatedOriginsTest, BelowThreshold) {
   // take effect.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
 
   // Ensure that isolated origins that are normally loaded on browser
   // startup are applied.
@@ -1112,8 +1118,8 @@ TEST_F(BuiltInIsolatedOriginsTest, NotAppliedWithFullSiteIsolation) {
   // be disabled by the memory threshold.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   // Ensure that isolated origins that are normally loaded on browser
   // startup are applied.
@@ -1177,8 +1183,8 @@ TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
   // should still take effect.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "768"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "768"}});
 
   EXPECT_FALSE(content::SiteIsolationPolicy::
                    IsProcessIsolationForOriginAgentClusterEnabled());
@@ -1227,8 +1233,8 @@ TEST_F(OptInOriginIsolationPolicyTest, AboveThreshold) {
   // enabled.
   base::test::ScopedFeatureList memory_feature;
   memory_feature.InitAndEnableFeatureWithParameters(
-      features::kSitePerProcessOnlyForHighMemoryClients,
-      {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
+      features::kSiteIsolationMemoryThresholds,
+      {{features::kPartialSiteIsolationMemoryThresholdParamName, "128"}});
 
   EXPECT_TRUE(content::SiteIsolationPolicy::
                   IsProcessIsolationForOriginAgentClusterEnabled());

@@ -98,40 +98,51 @@ bool SiteIsolationPolicy::IsEnterprisePolicyApplicable() {
 }
 
 // static
-bool SiteIsolationPolicy::ShouldDisableSiteIsolationDueToMemoryThreshold() {
+bool SiteIsolationPolicy::ShouldDisableSiteIsolationDueToMemoryThreshold(
+    content::SiteIsolationMode site_isolation_mode) {
   // The memory threshold behavior differs for desktop and Android:
-  // - Android uses a 1900MB default threshold, which is the threshold used by
-  //   password-triggered site isolation - see docs in
-  //   https://crbug.com/849815.  This can be overridden via a param defined in
-  //   a kSitePerProcessOnlyForHighMemoryClients field trial.
+  // - Android uses a 1900MB default threshold for partial site isolation modes
+  //   and a 3200MB default threshold for strict site isolation. See docs in
+  //   https://crbug.com/849815. The thresholds roughly correspond to 2GB+ and
+  //   4GB+ devices and are lower to account for memory carveouts, which
+  //   reduce the amount of memory seen by AmountOfPhysicalMemoryMB(). Both
+  //   partial and strict site isolation thresholds can be overridden via
+  //   params defined in a kSiteIsolationMemoryThresholds field trial.
   // - Desktop does not enforce a default memory threshold, but for now we
-  //   still support a threshold defined via a
-  //   kSitePerProcessOnlyForHighMemoryClients field trial.  The trial
-  //   typically carries the threshold in a param; if it doesn't, use a default
-  //   that's slightly higher than 1GB (see https://crbug.com/844118).
-  //
-  // TODO(alexmos): currently, this threshold applies to all site isolation
-  // modes.  Eventually, we may need separate thresholds for different modes,
-  // such as full site isolation vs. password-triggered site isolation.
+  //   still support a threshold defined via a kSiteIsolationMemoryThresholds
+  //   field trial.  The trial typically carries the threshold in a param; if
+  //   it doesn't, use a default that's slightly higher than 1GB (see
+  //   https://crbug.com/844118).
+  int default_memory_threshold_mb;
 #if defined(OS_ANDROID)
-  constexpr int kDefaultMemoryThresholdMb = 1900;
+  if (site_isolation_mode == content::SiteIsolationMode::kStrictSiteIsolation) {
+    default_memory_threshold_mb = 3200;
+  } else {
+    default_memory_threshold_mb = 1900;
+  }
 #else
-  constexpr int kDefaultMemoryThresholdMb = 1077;
+  default_memory_threshold_mb = 1077;
 #endif
 
-  // TODO(acolwell): Rename feature since it now affects more than just the
-  // site-per-process case.
-  if (base::FeatureList::IsEnabled(
-          features::kSitePerProcessOnlyForHighMemoryClients)) {
+  if (base::FeatureList::IsEnabled(features::kSiteIsolationMemoryThresholds)) {
+    std::string param_name;
+    switch (site_isolation_mode) {
+      case content::SiteIsolationMode::kStrictSiteIsolation:
+        param_name = features::kStrictSiteIsolationMemoryThresholdParamName;
+        break;
+      case content::SiteIsolationMode::kPartialSiteIsolation:
+        param_name = features::kPartialSiteIsolationMemoryThresholdParamName;
+        break;
+    }
     int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
-        features::kSitePerProcessOnlyForHighMemoryClients,
-        features::kSitePerProcessOnlyForHighMemoryClientsParamName,
-        kDefaultMemoryThresholdMb);
+        features::kSiteIsolationMemoryThresholds, param_name,
+        default_memory_threshold_mb);
     return base::SysInfo::AmountOfPhysicalMemoryMB() <= memory_threshold_mb;
   }
 
 #if defined(OS_ANDROID)
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= kDefaultMemoryThresholdMb) {
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
+      default_memory_threshold_mb) {
     return true;
   }
 #endif

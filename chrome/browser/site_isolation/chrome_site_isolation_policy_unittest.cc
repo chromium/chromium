@@ -59,11 +59,13 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
     mode_feature_.InitAndEnableFeature(features::kSitePerProcess);
   }
 
+  // Note that this only sets the memory threshold for strict site isolation,
+  // which is the only mode this test currently cares about.
   void SetMemoryThreshold(const std::string& threshold) {
     threshold_feature_.InitAndEnableFeatureWithParameters(
-        site_isolation::features::kSitePerProcessOnlyForHighMemoryClients,
+        site_isolation::features::kSiteIsolationMemoryThresholds,
         {{site_isolation::features::
-              kSitePerProcessOnlyForHighMemoryClientsParamName,
+              kStrictSiteIsolationMemoryThresholdParamName,
           threshold}});
   }
 

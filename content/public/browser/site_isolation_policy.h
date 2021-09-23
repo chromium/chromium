@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/site_isolation_mode.h"
 #include "url/origin.h"
 
 namespace content {

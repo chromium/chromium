@@ -641,9 +641,10 @@ void ContentBrowserClientImpl::OverridePageVisibilityState(
   }
 }
 
-bool ContentBrowserClientImpl::ShouldDisableSiteIsolation() {
+bool ContentBrowserClientImpl::ShouldDisableSiteIsolation(
+    content::SiteIsolationMode site_isolation_mode) {
   return site_isolation::SiteIsolationPolicy::
-      ShouldDisableSiteIsolationDueToMemoryThreshold();
+      ShouldDisableSiteIsolationDueToMemoryThreshold(site_isolation_mode);
 }
 
 std::vector<std::string>

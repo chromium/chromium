@@ -905,7 +905,8 @@ size_t AwContentBrowserClient::GetMaxRendererProcessCountOverride() {
   return 1u;
 }
 
-bool AwContentBrowserClient::ShouldDisableSiteIsolation() {
+bool AwContentBrowserClient::ShouldDisableSiteIsolation(
+    content::SiteIsolationMode site_isolation_mode) {
   // Since AW does not yet support OOPIFs, we must return true here to disable
   // features that may trigger OOPIFs, such as origin isolation.
   //

@@ -34,9 +34,9 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
  public:
   SiteIsolationBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{site_isolation::features::kSitePerProcessOnlyForHighMemoryClients,
+        {{site_isolation::features::kSiteIsolationMemoryThresholds,
           {{site_isolation::features::
-                kSitePerProcessOnlyForHighMemoryClientsParamName,
+                kPartialSiteIsolationMemoryThresholdParamName,
             "128"}}},
          {site_isolation::features::kSiteIsolationForPasswordSites, {}}},
         {});

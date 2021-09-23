@@ -55,11 +55,18 @@ class SiteIsolationPolicyTest : public testing::Test {
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
   }
 
+  // Sets the same memory threshold for both strict site isolation and partial
+  // site isolation modes, since these tests care about both. For example,
+  // UseDedicatedProcessesForAllSites() depends on the former, while preloaded
+  // isolated origins use the latter.
   void SetMemoryThreshold(const std::string& threshold) {
     threshold_feature_.InitAndEnableFeatureWithParameters(
-        site_isolation::features::kSitePerProcessOnlyForHighMemoryClients,
+        site_isolation::features::kSiteIsolationMemoryThresholds,
         {{site_isolation::features::
-              kSitePerProcessOnlyForHighMemoryClientsParamName,
+              kStrictSiteIsolationMemoryThresholdParamName,
+          threshold},
+         {site_isolation::features::
+              kPartialSiteIsolationMemoryThresholdParamName,
           threshold}});
   }
 

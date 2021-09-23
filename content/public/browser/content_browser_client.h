@@ -196,6 +196,7 @@ class FileSystemBackend;
 
 namespace content {
 enum class PermissionType;
+enum class SiteIsolationMode;
 enum class SmsFetchFailureType;
 class AuthenticatorRequestClientDelegate;
 class BluetoothDelegate;
@@ -588,9 +589,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Allows the embedder to programmatically control whether Site Isolation
   // should be disabled.  Note that this takes precedence over
   // ShouldEnableStrictSiteIsolation() if both return true.
+  // `site_isolation_mode` specifies the site isolation mode to check; this
+  // allows strict site isolation and partial site isolation to be disabled
+  // according to different policies (e.g., different memory thresholds) on
+  // Android.
   //
   // Note that for correctness, the same value should be consistently returned.
-  virtual bool ShouldDisableSiteIsolation();
+  virtual bool ShouldDisableSiteIsolation(
+      SiteIsolationMode site_isolation_mode);
 
   // Retrieves names of any additional site isolation modes from the embedder.
   virtual std::vector<std::string> GetAdditionalSiteIsolationModes();

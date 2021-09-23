@@ -13,6 +13,7 @@
 class GURL;
 
 namespace content {
+enum class SiteIsolationMode;
 class BrowserContext;
 }
 
@@ -74,13 +75,12 @@ class SiteIsolationPolicy {
                                  const GURL& signed_in_url);
 
   // Determines whether Site Isolation should be disabled because the device
-  // does not have the minimum required amount of memory.
-  //
-  // TODO(alexmos): Currently, the memory threshold is shared for all site
-  // isolation modes, including strict site isolation and password site
-  // isolation.  In the future, some site isolation modes may require their own
-  // memory threshold.
-  static bool ShouldDisableSiteIsolationDueToMemoryThreshold();
+  // does not have the minimum required amount of memory. `site_isolation_mode`
+  // determines the type of memory threshold to apply; for example, strict site
+  // isolation on Android might require a higher memory threshold than partial
+  // site isolation.
+  static bool ShouldDisableSiteIsolationDueToMemoryThreshold(
+      content::SiteIsolationMode site_isolation_mode);
 
   // Returns true if the PDF compositor should be enabled to allow out-of-
   // process iframes (OOPIF's) to print properly.
