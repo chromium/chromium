@@ -70,6 +70,18 @@ class CandidateWindowBorder : public views::BubbleBorder {
     if (bounds.x() < work_area.x())
       bounds.set_x(work_area.x());
 
+    // For vertical offscreen, we need to check the arrow position first. Only
+    // move the candidate window up when the arrow is at the bottom, and only
+    // move it down when the arrow is on the top. Otherwise the candidate window
+    // will cover the input text which is very bad for user experience. Note
+    // that when the arrow is on top and the candidate window is out of the
+    // bottom edge of the screen, some other code will change the arrow to
+    // bottom to make the candidate window inside screen.
+    if (!is_arrow_on_top(arrow()) && bounds.bottom() > work_area.bottom())
+      bounds.set_y(work_area.bottom() - bounds.height());
+    if (is_arrow_on_top(arrow()) && bounds.y() < work_area.y())
+      bounds.set_y(work_area.y());
+
     return bounds;
   }
 
