@@ -57,6 +57,7 @@ namespace file_manager {
 
 SystemNotificationManager::SystemNotificationManager(Profile* profile)
     : profile_(profile),
+      app_name_(l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME)),
       swa_enabled_(ash::features::IsFileManagerSwaEnabled()) {}
 
 SystemNotificationManager::~SystemNotificationManager() = default;
@@ -74,7 +75,7 @@ SystemNotificationManager::CreateNotification(
     const scoped_refptr<message_center::NotificationDelegate>& delegate) {
   return ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      std::u16string(), GURL(), message_center::NotifierId(),
+      app_name_, GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(), delegate, kProductIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
@@ -150,7 +151,7 @@ SystemNotificationManager::CreateProgressNotification(
   rich_data->progress = progress;
   return ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
-      message, std::u16string(), GURL(), message_center::NotifierId(),
+      message, app_name_, GURL(), message_center::NotifierId(),
       *rich_data.get(),
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&SystemNotificationManager::HandleProgressClick,
