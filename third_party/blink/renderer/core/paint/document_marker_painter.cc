@@ -220,7 +220,8 @@ void DocumentMarkerPainter::PaintDocumentMarker(
     const PhysicalOffset& box_origin,
     const ComputedStyle& style,
     DocumentMarker::MarkerType marker_type,
-    const PhysicalRect& local_rect) {
+    const PhysicalRect& local_rect,
+    absl::optional<Color> custom_marker_color) {
   // IMPORTANT: The misspelling underline is not considered when calculating the
   // text bounds, so we have to make sure to fit within those bounds.  This
   // means the top pixel(s) of the underline will overlap the bottom pixel(s) of
@@ -247,6 +248,7 @@ void DocumentMarkerPainter::PaintDocumentMarker(
     // prevent a big gap.
     underline_offset = baseline + 2 * zoom;
   }
+
   DEFINE_STATIC_LOCAL(
       PaintRecord*, spelling_marker,
       (RecordMarker(
@@ -258,9 +260,16 @@ void DocumentMarkerPainter::PaintDocumentMarker(
            LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor())
            .release()));
 
-  auto* const marker = marker_type == DocumentMarker::kSpelling
-                           ? spelling_marker
-                           : grammar_marker;
+  sk_sp<PaintRecord> custom_paint_record;
+  if (custom_marker_color)
+    custom_paint_record = RecordMarker(*custom_marker_color);
+
+  auto* const marker = custom_marker_color
+                           ? custom_paint_record.get()
+                           : marker_type == DocumentMarker::kSpelling
+                                 ? spelling_marker
+                                 : grammar_marker;
+
   DrawDocumentMarker(paint_info.context,
                      FloatPoint((box_origin.left + local_rect.X()).ToFloat(),
                                 (box_origin.top + underline_offset).ToFloat()),

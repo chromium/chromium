@@ -304,10 +304,16 @@ void NGHighlightPainter::Paint(Phase phase) {
           break;
         if (phase == kBackground)
           continue;
+
         DocumentMarkerPainter::PaintDocumentMarker(
             paint_info_, box_origin_, style_, marker->GetType(),
             MarkerRectForForeground(fragment_item_, text, paint_start_offset,
-                                    paint_end_offset));
+                                    paint_end_offset),
+            HighlightPaintingUtils::HighlightTextDecorationColor(
+                style_, node_,
+                marker->GetType() == DocumentMarker::kSpelling
+                    ? kPseudoIdSpellingError
+                    : kPseudoIdGrammarError));
       } break;
 
       case DocumentMarker::kTextFragment:

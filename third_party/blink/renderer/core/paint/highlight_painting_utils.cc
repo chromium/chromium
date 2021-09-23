@@ -140,7 +140,7 @@ scoped_refptr<const ComputedStyle>
 HighlightPseudoStyleWithOriginatingInheritance(
     Node* node,
     PseudoId pseudo,
-    const AtomicString& pseudo_argument) {
+    const AtomicString& pseudo_argument = g_null_atom) {
   if (!node)
     return nullptr;
 
@@ -188,7 +188,7 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
     Node* node,
     const ComputedStyle& style,
     PseudoId pseudo,
-    const AtomicString& pseudo_argument) {
+    const AtomicString& pseudo_argument = g_null_atom) {
   if (!RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
     return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
                                                           pseudo_argument);
@@ -389,6 +389,24 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
     highlight_style.shadow = nullptr;
 
   return highlight_style;
+}
+
+absl::optional<Color> HighlightPaintingUtils::HighlightTextDecorationColor(
+    const ComputedStyle& style,
+    Node* node,
+    PseudoId pseudo) {
+  DCHECK(pseudo == kPseudoIdSpellingError || pseudo == kPseudoIdGrammarError);
+
+  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled())
+    return absl::nullopt;
+
+  if (scoped_refptr<const ComputedStyle> pseudo_style =
+          HighlightPseudoStyle(node, style, pseudo)) {
+    return pseudo_style->VisitedDependentColor(
+        GetCSSPropertyTextDecorationColor());
+  }
+
+  return absl::nullopt;
 }
 
 }  // namespace blink

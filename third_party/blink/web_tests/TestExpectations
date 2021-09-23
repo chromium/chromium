@@ -1551,6 +1551,10 @@ crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-004.html [ Fail
 crbug.com/995106 external/wpt/css/css-pseudo/first-letter-exclude-inline-marker.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-pseudo/first-letter-exclude-inline-child-marker.html [ Failure ]
 crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-digraph.html [ Failure ]
+crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-003.html [ Failure ]
+crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-dynamic-001.html [ Failure ]
+crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-003.html [ Failure ]
+crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-001.html [ Failure ]
 
 crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
 crbug.com/1207788 external/wpt/css/css-will-change/will-change-stacking-context-mask-1.html [ Failure ]
