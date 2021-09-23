@@ -304,7 +304,7 @@ void TestDownloadHttpResponse::SendResponseHeaders() {
   if (GetResponseForRangeRequest(&response, &delay_response)) {
     if (delay_response) {
       delayed_response_callback_ =
-          base::BindOnce(bytes_sender_, response, GenerateResultClosure()),
+          base::BindOnce(bytes_sender_, response, GenerateResultClosure());
       bytes_sender_.Run(GetDefaultResponseHeaders(), base::DoNothing());
     } else {
       bytes_sender_.Run(response, GenerateResultClosure());
