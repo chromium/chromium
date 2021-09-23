@@ -47,9 +47,6 @@ Status ReportQueueConfiguration::CheckPolicy() const {
 }
 
 Status ReportQueueConfiguration::SetDMToken(base::StringPiece dm_token) {
-  if (dm_token.empty()) {
-    return Status(error::INVALID_ARGUMENT, "DMToken must be valid");
-  }
   dm_token_ = std::string(dm_token);
   return Status::StatusOK();
 }

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,65 +17,93 @@
 namespace reporting {
 namespace {
 
-using PolicyCheckCallback = ReportQueueConfiguration::PolicyCheckCallback;
+using testing::_;
+using testing::Invoke;
+using testing::WithArgs;
 
 constexpr char kDmToken[] = "dm_token";
 
-PolicyCheckCallback GetSuccessfulCallback() {
-  return base::BindRepeating([]() { return Status::StatusOK(); });
-}
+class ReportQueueConfigurationTest : public testing::Test {
+ protected:
+  using PolicyCheckCallback = ReportQueueConfiguration::PolicyCheckCallback;
+
+  const Destination kInvalidDestination = Destination::UNDEFINED_DESTINATION;
+  const Destination kValidDestination = Destination::UPLOAD_EVENTS;
+  const PolicyCheckCallback kValidCallback = GetSuccessfulCallback();
+  const PolicyCheckCallback kInvalidCallback = GetInvalidCallback();
+
+  static PolicyCheckCallback GetSuccessfulCallback() {
+    return base::BindRepeating([]() { return Status::StatusOK(); });
+  }
+
+  static PolicyCheckCallback GetInvalidCallback() {
+    return base::RepeatingCallback<Status(void)>();
+  }
+
+  ReportQueueConfigurationTest() = default;
+};
 
 // Tests to ensure that only valid parameters are used to generate a
 // ReportQueueConfiguration.
-TEST(ReportQueueConfigurationTest, ParametersMustBeValid) {
-  // Invalid Parameters
-  const Destination invalid_destination = Destination::UNDEFINED_DESTINATION;
-  const PolicyCheckCallback invalid_callback;
-
-  // Valid Parameters
-  const Destination valid_destination = Destination::UPLOAD_EVENTS;
-  const PolicyCheckCallback valid_callback = GetSuccessfulCallback();
-
-  // Test Invalid DMToken.
-  EXPECT_FALSE(ReportQueueConfiguration::Create(
-                   /*dm_token=*/"", valid_destination, valid_callback)
+TEST_F(ReportQueueConfigurationTest,
+       ValidateConfigurationWithInvalidDestination) {
+  EXPECT_FALSE(ReportQueueConfiguration::Create(kDmToken, kInvalidDestination,
+                                                kValidCallback)
                    .ok());
-
-  // Test Invalid Destination.
-  EXPECT_FALSE(ReportQueueConfiguration::Create(kDmToken, invalid_destination,
-                                                valid_callback)
-                   .ok());
-
-  // Test Invalid Callback.
-  EXPECT_FALSE(ReportQueueConfiguration::Create(kDmToken, valid_destination,
-                                                invalid_callback)
-                   .ok());
-
-  EXPECT_TRUE(ReportQueueConfiguration::Create(kDmToken, valid_destination,
-                                               GetSuccessfulCallback())
-                  .ok());
 }
 
-class TestCallbackHandler {
- public:
-  TestCallbackHandler() = default;
-  MOCK_METHOD(Status, Callback, (), ());
-};
+TEST_F(ReportQueueConfigurationTest,
+       ValidateConfigurationWithInvalidDestinationInvalidCallback) {
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   /*dm_token=*/kDmToken, kInvalidDestination, kInvalidCallback)
+                   .ok());
+}
 
-TEST(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
+TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithValidParams) {
+  EXPECT_OK(ReportQueueConfiguration::Create(
+      /*dm_token*=*/kDmToken, kValidDestination, kValidCallback));
+}
+
+TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithNoDMToken) {
+  EXPECT_OK(ReportQueueConfiguration::Create(
+      /*dm_token*=*/"", kValidDestination, kValidCallback));
+}
+
+TEST_F(ReportQueueConfigurationTest,
+       ValidateConfigurationWithNoDMTokenInvalidDestination) {
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   /*dm_token*=*/"", kInvalidDestination, kValidCallback)
+                   .ok());
+}
+
+TEST_F(ReportQueueConfigurationTest,
+       ValidateConfigurationWithNoDMTokenInvalidCallback) {
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   /*dm_token=*/"", kValidDestination, kInvalidCallback)
+                   .ok());
+}
+
+TEST_F(ReportQueueConfigurationTest,
+       ValidateConfigurationWithNoDMTokenInvalidDestinationInvalidCallback) {
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   /*dm_token*=*/"", kInvalidDestination, kInvalidCallback)
+                   .ok());
+}
+
+TEST_F(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
   const Destination destination = Destination::UPLOAD_EVENTS;
 
-  TestCallbackHandler handler;
+  testing::MockFunction<Status(void)> mock_handler;
+  EXPECT_CALL(mock_handler, Call())
+      .WillOnce(::testing::Return(Status::StatusOK()));
+
   auto config_result = ReportQueueConfiguration::Create(
       kDmToken, destination,
-      base::BindRepeating(&TestCallbackHandler::Callback,
-                          base::Unretained(&handler)));
-  EXPECT_TRUE(config_result.ok());
+      base::BindRepeating(&testing::MockFunction<Status(void)>::Call,
+                          base::Unretained(&mock_handler)));
+  EXPECT_OK(config_result);
 
   auto config = std::move(config_result.ValueOrDie());
-
-  EXPECT_CALL(handler, Callback())
-      .WillOnce(::testing::Return(Status::StatusOK()));
   EXPECT_OK(config->CheckPolicy());
 }
 

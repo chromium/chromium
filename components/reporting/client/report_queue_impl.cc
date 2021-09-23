@@ -84,7 +84,12 @@ Record ReportQueueImpl::AugmentRecord(base::StringPiece record_data) const {
   Record record;
   record.set_data(std::string(record_data));
   record.set_destination(config_->destination());
-  record.set_dm_token(config_->dm_token());
+
+  // record with no DM token is assumed to be associated with device DM token
+  if (!config_->dm_token().empty()) {
+    record.set_dm_token(config_->dm_token());
+  }
+
   // Calculate timestamp in microseconds - to match Spanner expectations.
   const int64_t time_since_epoch_us =
       base::Time::Now().ToJavaTime() * base::Time::kMicrosecondsPerMillisecond;

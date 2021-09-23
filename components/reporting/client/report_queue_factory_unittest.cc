@@ -81,10 +81,11 @@ TEST_F(ReportQueueFactoryTest, EmptyDmToken) {
   EXPECT_FALSE(consumer_->GetReportQueue());
   reporting::ReportQueueFactory::Create("", destination_,
                                         consumer_->GetReportQueueSetter());
-  EXPECT_CALL(*provider_.get(), InitOnCompletedCalled()).Times(0);
+  EXPECT_CALL(*provider_.get(), InitOnCompletedCalled()).Times(1);
+  provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   task_environment_.RunUntilIdle();
-  // we expect the report queue to not be existing in the consumer.
-  EXPECT_FALSE(consumer_->GetReportQueue());
+  // we expect the report queue to be existing in the consumer.
+  EXPECT_TRUE(consumer_->GetReportQueue());
 }
 
 // Tests if two consumers use the same provider and create two queues.

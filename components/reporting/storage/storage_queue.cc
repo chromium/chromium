@@ -1280,11 +1280,6 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
                       "Malformed record: missing destination"));
       return;
     }
-    if (!record_.has_dm_token()) {
-      Response(Status(error::FAILED_PRECONDITION,
-                      "Malformed record: missing dm_token"));
-      return;
-    }
 
     // Wrap the record.
     WrappedRecord wrapped_record;
