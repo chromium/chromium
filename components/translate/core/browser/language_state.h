@@ -90,14 +90,21 @@ class LanguageState {
   // language.
   bool HasLanguageChanged() const;
 
-  std::string href_translate() const { return href_translate_; }
+  const std::string& href_translate() const { return href_translate_; }
   bool navigation_from_google() const { return navigation_from_google_; }
 
-  std::string GetPredefinedTargetLanguage() const {
+  const std::string& GetPredefinedTargetLanguage() const {
     return predefined_target_language_;
   }
-  void SetPredefinedTargetLanguage(const std::string& language) {
+  void SetPredefinedTargetLanguage(const std::string& language,
+                                   bool should_auto_translate) {
     predefined_target_language_ = language;
+    should_auto_translate_to_predefined_target_language_ =
+        should_auto_translate;
+  }
+
+  bool should_auto_translate_to_predefined_target_language() const {
+    return should_auto_translate_to_predefined_target_language_;
   }
 
  private:
@@ -160,6 +167,10 @@ class LanguageState {
 
   // Target language set by client.
   std::string predefined_target_language_;
+
+  // Indicates that the page should be automatically translated to
+  // |predefined_target_language_| if possible.
+  bool should_auto_translate_to_predefined_target_language_ = false;
 };
 
 }  // namespace translate

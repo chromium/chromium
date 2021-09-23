@@ -83584,6 +83584,7 @@ Full version information for the fingerprint enum values:
   <int value="22"
       label="Identical language translation, use source language Unknown"/>
   <int value="23" label="Disabled because Autofill Assistant is running."/>
+  <int value="24" label="Auto translation for predefined target language"/>
 </enum>
 
 <enum name="TranslateLanguage">

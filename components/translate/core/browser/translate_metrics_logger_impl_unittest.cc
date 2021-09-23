@@ -787,6 +787,36 @@ TEST_F(TranslateMetricsLoggerImplTest, LogHrefOverrideTriggerDecision) {
 }
 
 TEST_F(TranslateMetricsLoggerImplTest,
+       LogAutotranslateToPredefinedTargetOverrideTriggerDecision) {
+  // Check that the TriggerDecision::kAutomaticTranslationToPredefinedTarget
+  // overrides the earlier trigger decision.
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kDisabledDoesntNeedTranslation);
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kAutomaticTranslationToPredefinedTarget);
+  translate_metrics_logger()->RecordMetrics(true);
+
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadTriggerDecision,
+      TriggerDecision::kAutomaticTranslationToPredefinedTarget, 1);
+
+  // Check that TriggerDecision::kAutomaticTranslationToPredefinedTarget doesn't
+  // override TriggerDecision::kAutomaticTranslationByHref.
+  ResetTest();
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kDisabledDoesntNeedTranslation);
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kAutomaticTranslationByHref);
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kAutomaticTranslationToPredefinedTarget);
+  translate_metrics_logger()->RecordMetrics(true);
+
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadTriggerDecision,
+      TriggerDecision::kAutomaticTranslationByHref, 1);
+}
+
+TEST_F(TranslateMetricsLoggerImplTest,
        LogAutofillAssistantDeferredTriggerDecision) {
   TriggerDecision trigger_decision = TriggerDecision::kShowUI;
 

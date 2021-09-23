@@ -223,8 +223,12 @@ class TranslateManager {
   // is the target language that would be shown in the UI.
   bool ShouldSuppressBubbleUI(const std::string& target_language);
 
-  // Sets target language.
-  void SetPredefinedTargetLanguage(const std::string& language_code);
+  // Sets target language. Note that if |should_auto_translate| is set to true,
+  // automatic translation might still not happen in certain situations, e.g. if
+  // the translation is prevented by user prefs, if |language_code| isn't a
+  // valid target language, if the translate service isn't reachable, etc.
+  void SetPredefinedTargetLanguage(const std::string& language_code,
+                                   bool should_auto_translate = false);
 
   // Returns a reference to |active_translate_metrics_logger_|. In the event
   // that this value is null, a |NullTranslateMetricsLogger| (a null
