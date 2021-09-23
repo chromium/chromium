@@ -57,9 +57,11 @@ void SetProcessNameForPCScan(const std::string& process_type) {
 
 bool EnablePCScanForMallocPartitionsIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+  using Config = base::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
-    base::allocator::EnablePCScan(/*dcscan*/ false);
+    base::allocator::EnablePCScan({Config::WantedWriteProtectionMode::kEnabled,
+                                   Config::SafepointMode::kEnabled});
     return true;
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
@@ -68,16 +70,19 @@ bool EnablePCScanForMallocPartitionsIfNeeded() {
 
 bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+  using Config = base::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)) {
-    const bool dcscan_wanted =
-        base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan);
+    const Config::WantedWriteProtectionMode wp_mode =
+        base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan)
+            ? Config::WantedWriteProtectionMode::kEnabled
+            : Config::WantedWriteProtectionMode::kDisabled;
 #if !defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
-    CHECK(!dcscan_wanted)
+    CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
-    base::allocator::EnablePCScan(dcscan_wanted);
+    base::allocator::EnablePCScan({wp_mode, Config::SafepointMode::kEnabled});
     return true;
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
@@ -86,16 +91,19 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 
 bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+  using Config = base::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanRendererOnly)) {
-    const bool dcscan_wanted =
-        base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan);
+    const Config::WantedWriteProtectionMode wp_mode =
+        base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan)
+            ? Config::WantedWriteProtectionMode::kEnabled
+            : Config::WantedWriteProtectionMode::kDisabled;
 #if !defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
-    CHECK(!dcscan_wanted)
+    CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
-    base::allocator::EnablePCScan(dcscan_wanted);
+    base::allocator::EnablePCScan({wp_mode, Config::SafepointMode::kDisabled});
     return true;
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)

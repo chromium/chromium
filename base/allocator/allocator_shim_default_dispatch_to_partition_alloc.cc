@@ -527,13 +527,13 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #if defined(PA_ALLOW_PCSCAN)
-void EnablePCScan(bool dcscan) {
-  internal::PCScan::Initialize(
-      dcscan ? internal::PCScan::WantedWriteProtectionMode::kEnabled
-             : internal::PCScan::WantedWriteProtectionMode::kDisabled);
+void EnablePCScan(base::internal::PCScan::InitConfig config) {
+  internal::PCScan::Initialize(config);
+
   internal::PCScan::RegisterScannableRoot(Allocator());
   if (Allocator() != AlignedAllocator())
     internal::PCScan::RegisterScannableRoot(AlignedAllocator());
+
   internal::NonScannableAllocator::Instance().EnablePCScan();
 }
 #endif  // defined(PA_ALLOW_PCSCAN)

@@ -54,7 +54,7 @@ class PCScanInternal final {
 
   ~PCScanInternal();
 
-  void Initialize(PCScan::WantedWriteProtectionMode);
+  void Initialize(PCScan::InitConfig);
   bool is_initialized() const { return is_initialized_; }
 
   void PerformScan(PCScan::InvocationMode);
@@ -102,7 +102,7 @@ class PCScanInternal final {
   void UnprotectPages(uintptr_t begin, size_t size);
 
   void ClearRootsForTesting();                               // IN-TEST
-  void ReinitForTesting(PCScan::WantedWriteProtectionMode);  // IN-TEST
+  void ReinitForTesting(PCScan::InitConfig);                 // IN-TEST
   void FinishScanForTesting();                               // IN-TEST
 
  private:

@@ -471,10 +471,9 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
     explicit SyncScope(PCScanTask& task) : task_(task) {
       task_.number_of_scanning_threads_.fetch_add(1, std::memory_order_relaxed);
       if (context == Context::kScanner) {
-        // Publish the change of the state so that the mutators can join
-        // scanning and expect the consistent state.
         task_.pcscan_.state_.store(PCScan::State::kScanning,
-                                   std::memory_order_release);
+                                   std::memory_order_relaxed);
+        task_.pcscan_.SetJoinableIfSafepointEnabled(true);
       }
     }
     ~SyncScope() {
@@ -485,6 +484,8 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
         // Otherwise, sweeping may free a page that can later be accessed by a
         // descheduled mutator.
         WaitForOtherThreads();
+        task_.pcscan_.state_.store(PCScan::State::kSweepingAndFinishing,
+                                   std::memory_order_relaxed);
       }
     }
 
@@ -501,13 +502,8 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
           // Notify that scan is done and there is no need to enter
           // the safepoint. This also helps a mutator to avoid repeating
           // entering. Since the scanner thread waits for all threads to finish,
-          // there is no ABA problem here. There is technically no need to have
-          // CAS here, since |state_| is under the mutex and can only be changed
-          // here, but we keep it for safety.
-          PCScan::State expected = PCScan::State::kScanning;
-          task_.pcscan_.state_.compare_exchange_strong(
-              expected, PCScan::State::kSweepingAndFinishing,
-              std::memory_order_relaxed, std::memory_order_relaxed);
+          // there is no ABA problem here.
+          task_.pcscan_.SetJoinableIfSafepointEnabled(false);
         }
       }
       task_.condvar_.notify_all();
@@ -961,6 +957,8 @@ void SweepSuperPageAndDiscardMarkedQuarantine(ThreadSafePartitionRoot* root,
 }  // namespace
 
 void PCScanTask::SweepQuarantine() {
+  // Check that scan is unjoinable by this time.
+  PA_DCHECK(!pcscan_.IsJoinable());
   // Discard marked quarantine memory on every Nth scan.
   // TODO(bikineev): Find a better signal (e.g. memory pressure, high
   // survival rate, etc).
@@ -1004,7 +1002,7 @@ void PCScanTask::FinishScanner() {
       PCScanInternal::Instance().CalculateTotalHeapSize());
 
   PCScanInternal::Instance().ResetCurrentPCScanTask();
-  // Check that concurrent task can't be scheduled twice.
+  // Change the state and check that concurrent task can't be scheduled twice.
   PA_CHECK(pcscan_.state_.exchange(PCScan::State::kNotRunning,
                                    std::memory_order_acq_rel) ==
            PCScan::State::kSweepingAndFinishing);
@@ -1185,7 +1183,7 @@ PCScanInternal::PCScanInternal() : simd_support_(DetectSimdSupport()) {}
 
 PCScanInternal::~PCScanInternal() = default;
 
-void PCScanInternal::Initialize(PCScan::WantedWriteProtectionMode wpmode) {
+void PCScanInternal::Initialize(PCScan::InitConfig config) {
   PA_DCHECK(!is_initialized_);
 #if defined(PA_HAS_64_BITS_POINTERS)
   // Make sure that GigaCage is initialized.
@@ -1193,7 +1191,8 @@ void PCScanInternal::Initialize(PCScan::WantedWriteProtectionMode wpmode) {
 #endif
   CommitCardTable();
 #if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
-  if (wpmode == PCScan::WantedWriteProtectionMode::kEnabled)
+  if (config.write_protection ==
+      PCScan::InitConfig::WantedWriteProtectionMode::kEnabled)
     write_protector_ = std::make_unique<UserFaultFDWriteProtector>();
   else
     write_protector_ = std::make_unique<NoWriteProtector>();
@@ -1201,6 +1200,10 @@ void PCScanInternal::Initialize(PCScan::WantedWriteProtectionMode wpmode) {
   write_protector_ = std::make_unique<NoWriteProtector>();
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
   PCScan::SetClearType(write_protector_->SupportedClearType());
+
+  if (config.safepoint == PCScan::InitConfig::SafepointMode::kEnabled) {
+    PCScan::Instance().EnableSafepoints();
+  }
   scannable_roots_ = RootsMap();
   nonscannable_roots_ = RootsMap();
   is_initialized_ = true;
@@ -1239,6 +1242,7 @@ void PCScanInternal::PerformScan(PCScan::InvocationMode invocation_mode) {
                PCScan::InvocationMode::kScheduleOnlyForTesting)) {
     // Immediately change the state to enable safepoint testing.
     frontend.state_.store(PCScan::State::kScanning, std::memory_order_release);
+    frontend.SetJoinableIfSafepointEnabled(true);
     return;
   }
 
@@ -1269,11 +1273,9 @@ void PCScanInternal::PerformDelayedScan(TimeDelta delay) {
 }
 
 void PCScanInternal::JoinScan() {
-#if !PCSCAN_DISABLE_SAFEPOINTS
   // Current task can be destroyed by the scanner. Check that it's valid.
   if (auto current_task = CurrentPCScanTask())
     current_task->RunFromMutator();
-#endif
 }
 
 PCScanInternal::TaskHandle PCScanInternal::CurrentPCScanTask() const {
@@ -1476,10 +1478,10 @@ void PCScanInternal::ClearRootsForTesting() {
   write_protector_.reset();
 }
 
-void PCScanInternal::ReinitForTesting(PCScan::WantedWriteProtectionMode mode) {
+void PCScanInternal::ReinitForTesting(PCScan::InitConfig config) {
   is_initialized_ = false;
   auto* new_this = new (this) PCScanInternal;
-  new_this->Initialize(mode);
+  new_this->Initialize(config);
 }
 
 void PCScanInternal::FinishScanForTesting() {

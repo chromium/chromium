@@ -44,7 +44,9 @@ class PartitionAllocPCScanTest : public testing::Test {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
     // Previous test runs within the same process decommit GigaCage, therefore
     // we need to make sure that the card table is recommitted for each run.
-    PCScan::ReinitForTesting(PCScan::WantedWriteProtectionMode::kDisabled);
+    PCScan::ReinitForTesting(
+        {PCScan::InitConfig::WantedWriteProtectionMode::kDisabled,
+         PCScan::InitConfig::SafepointMode::kEnabled});
     allocator_.init({PartitionOptions::AlignedAlloc::kAllowed,
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,
@@ -531,7 +533,6 @@ TEST_F(PartitionAllocPCScanTest, DoubleFree) {
 }
 #endif
 
-#if !PCSCAN_DISABLE_SAFEPOINTS
 namespace {
 template <typename SourceList, typename ValueList>
 void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
@@ -592,7 +593,6 @@ TEST_F(PartitionAllocPCScanTest, Safepoint) {
 
   TestDanglingReferenceWithSafepoint(*this, source, value);
 }
-#endif  // PCSCAN_DISABLE_SAFEPOINTS
 
 TEST_F(PartitionAllocPCScanTest, StackScanning) {
   using ValueList = List<8>;

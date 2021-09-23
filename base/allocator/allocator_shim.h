@@ -6,11 +6,16 @@
 #define BASE_ALLOCATOR_ALLOCATOR_SHIM_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#endif
 
 namespace base {
 namespace allocator {
@@ -172,7 +177,7 @@ BASE_EXPORT void ConfigurePartitionBackupRefPtrSupport(bool enable_brp);
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
-BASE_EXPORT void EnablePCScan(bool dcscan);
+BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);
 #endif
 
 }  // namespace allocator
