@@ -560,6 +560,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/resourced:resourced",
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/session_manager:login_manager_proto",
+    "//chromeos/dbus/tpm_manager:tpm_manager",
     "//chromeos/dbus/upstart",
     "//chromeos/disks:test_support",
     "//chromeos/network:test_support",

@@ -28,6 +28,8 @@ static_library("enterprise") {
     "//chromeos/dbus:dbus",
     "//chromeos/dbus/arc:arc",
     "//chromeos/dbus/power",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/dbus/upstart:upstart",
     "//components/arc:prefs",
     "//components/prefs",
