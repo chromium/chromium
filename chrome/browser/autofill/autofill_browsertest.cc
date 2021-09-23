@@ -718,7 +718,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
 // Test that autocomplete available string attribute is correctly set on
 // accessibility node. Test autocomplete in this file since it uses the same
 // infrastructure as autofill.
-IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutocompleteState) {
+// Test is flaky: http://crbug.com/1239099
+IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest,
+                       DISABLED_TestAutocompleteState) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   // Navigate to url and wait for accessibility notification
   GURL url =
