@@ -158,15 +158,6 @@ void DetailedViewDelegate::ShowStickyHeaderSeparator(views::View* view,
   view->SchedulePaint();
 }
 
-views::Separator* DetailedViewDelegate::CreateListSubHeaderSeparator() {
-  views::Separator* separator = new views::Separator();
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kSeparatorColor));
-  separator->SetBorder(views::CreateEmptyBorder(
-      kMenuSeparatorVerticalPadding - views::Separator::kThickness, 0, 0, 0));
-  return separator;
-}
-
 HoverHighlightView* DetailedViewDelegate::CreateScrollListItem(
     ViewClickListener* listener,
     const gfx::VectorIcon& icon,

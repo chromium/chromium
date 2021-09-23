@@ -71,11 +71,6 @@ class ASH_EXPORT DetailedViewDelegate {
   virtual void ShowStickyHeaderSeparator(views::View* view,
                                          bool show_separator);
 
-  // Create a horizontal separator line to be drawn between rows in a detailed
-  // view above the sub-header rows. Caller takes ownership of the returned
-  // view.
-  virtual views::Separator* CreateListSubHeaderSeparator();
-
   // Return a targetable row containing |icon| and |text|. Caller takes
   // ownership of the returned view.
   virtual HoverHighlightView* CreateScrollListItem(ViewClickListener* listener,

@@ -25,7 +25,6 @@ class ImageView;
 class Label;
 class ProgressBar;
 class ScrollView;
-class Separator;
 }  // namespace views
 
 namespace ash {
@@ -120,11 +119,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   views::Button* CreateSettingsButton(views::Button::PressedCallback callback,
                                       int setting_accessible_name_id);
   views::Button* CreateHelpButton(views::Button::PressedCallback callback);
-
-  // Create a horizontal separator line to be drawn between rows in a detailed
-  // view above the sub-header rows. Caller takes ownership of the returned
-  // view.
-  views::Separator* CreateListSubHeaderSeparator();
 
   // Closes the bubble that contains the detailed view.
   void CloseBubble();

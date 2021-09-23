@@ -36,7 +36,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_targeter.h"
@@ -421,10 +420,6 @@ views::Button* TrayDetailedView::CreateSettingsButton(
 views::Button* TrayDetailedView::CreateHelpButton(
     views::Button::PressedCallback callback) {
   return delegate_->CreateHelpButton(std::move(callback));
-}
-
-views::Separator* TrayDetailedView::CreateListSubHeaderSeparator() {
-  return delegate_->CreateListSubHeaderSeparator();
 }
 
 void TrayDetailedView::HandleViewClicked(views::View* view) {

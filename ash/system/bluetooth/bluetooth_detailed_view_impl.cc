@@ -158,7 +158,8 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   row_view->AddView(TriView::Container::CENTER, label.release());
 
   const gfx::Insets padding =
-      pair_new_device_view_->AddChildView(CreateListSubHeaderSeparator())
+      pair_new_device_view_
+          ->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator())
           ->GetInsets();
 
   // The "pair new device" button does not have top padding by default, so add

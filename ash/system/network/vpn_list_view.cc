@@ -431,7 +431,8 @@ void VPNListView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
                                          const NetworkStateList& networks) {
   // Add a visual separator, unless this is the topmost entry in the list.
   if (!list_empty_) {
-    scroll_content()->AddChildView(CreateListSubHeaderSeparator());
+    scroll_content()->AddChildView(
+        TrayPopupUtils::CreateListSubHeaderSeparator());
   }
   std::string vpn_name =
       vpn_provider->type == VpnType::kOpenVPN

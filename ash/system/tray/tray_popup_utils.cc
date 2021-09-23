@@ -309,6 +309,15 @@ void TrayPopupUtils::InstallHighlightPathGenerator(
       host, std::make_unique<HighlightPathGenerator>(ink_drop_style));
 }
 
+views::Separator* TrayPopupUtils::CreateListSubHeaderSeparator() {
+  views::Separator* separator = new views::Separator();
+  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
+  separator->SetBorder(views::CreateEmptyBorder(
+      kMenuSeparatorVerticalPadding - views::Separator::kThickness, 0, 0, 0));
+  return separator;
+}
+
 views::Separator* TrayPopupUtils::CreateListItemSeparator(bool left_inset) {
   views::Separator* separator = new views::Separator();
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(

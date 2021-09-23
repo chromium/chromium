@@ -748,7 +748,7 @@ int NetworkListView::UpdateNetworkSectionHeader(
   // visible when the header row is not at the top of the list.
   if (child_index > 0) {
     if (!*separator_view)
-      *separator_view = CreateListSubHeaderSeparator();
+      *separator_view = TrayPopupUtils::CreateListSubHeaderSeparator();
     PlaceViewAtIndex(*separator_view, child_index++);
   } else {
     if (*separator_view)

@@ -169,7 +169,8 @@ void AudioDetailedView::UpdateScrollableList() {
   }
 
   if (has_output_devices) {
-    scroll_content()->AddChildView(CreateListSubHeaderSeparator());
+    scroll_content()->AddChildView(
+        TrayPopupUtils::CreateListSubHeaderSeparator());
   }
 
   // Add audio input devices.

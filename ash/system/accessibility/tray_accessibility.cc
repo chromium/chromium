@@ -309,7 +309,8 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
   }
 
   if (controller->IsAdditionalSettingsSeparatorVisibleInTray())
-    scroll_content()->AddChildView(CreateListSubHeaderSeparator());
+    scroll_content()->AddChildView(
+        TrayPopupUtils::CreateListSubHeaderSeparator());
 
   if (controller->IsAdditionalSettingsViewVisibleInTray()) {
     AddScrollListSubHeader(
