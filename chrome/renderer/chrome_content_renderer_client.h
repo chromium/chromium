@@ -33,7 +33,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 #if defined(OS_WIN)
 #include "chrome/common/conflicts/remote_module_watcher_win.h"

@@ -12,7 +12,8 @@
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace gin {
 class Arguments;

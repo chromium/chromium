@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "v8/include/v8-isolate.h"
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 // V8 requires the embedder to establish the architecture define.
