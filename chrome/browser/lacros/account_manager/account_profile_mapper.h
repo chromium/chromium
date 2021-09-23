@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -87,8 +88,7 @@ class AccountProfileMapper
  private:
   // Computes the stale accounts (accounts that are in Lacros but no longer in
   // the system) and removes them from the `ProfileAttributesStorage`.
-  std::vector<std::pair<base::FilePath, std::string>> RemoveStaleAccounts(
-      const base::flat_set<std::string>& system_gaia_ids);
+  std::vector<std::pair<base::FilePath, std::string>> RemoveStaleAccounts();
 
   // Computes the new accounts (accounts that are in the system but not in
   // Lacros) and adds them to `entry_for_new_accounts`. If the entry is nullptr,
@@ -119,6 +119,9 @@ class AccountProfileMapper
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
       account_manager_facade_observation_{this};
+
+  // Map of account_manager::Account keyed by GaiaID.
+  base::flat_map<std::string, account_manager::Account> account_cache_;
 
   base::WeakPtrFactory<AccountProfileMapper> weak_factory_{this};
 };
