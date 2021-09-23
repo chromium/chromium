@@ -5058,6 +5058,13 @@ test("unit_tests") {
     ]
   }
 
+  if (enable_side_search) {
+    sources += [
+      "../browser/ui/side_search/side_search_side_contents_helper_unittest.cc",
+      "../browser/ui/side_search/side_search_tab_contents_helper_unittest.cc",
+    ]
+  }
+
   configs += [ "//build/config:precompiled_headers" ]
   configs += [ ":disable_thinlto_cache_flags" ]
 

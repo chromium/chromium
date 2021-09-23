@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_TAB_CONTENTS_HELPER_H_
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_TAB_CONTENTS_HELPER_H_
 
+#include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -14,14 +15,18 @@ class WebContents;
 }  // namespace content
 
 class GURL;
-class SideSearchSideContentsHelper;
 
 // Side Search helper for the WebContents hosted in the browser's main tab area.
 class SideSearchTabContentsHelper
-    : public content::WebContentsObserver,
+    : public SideSearchSideContentsHelper::Delegate,
+      public content::WebContentsObserver,
       public content::WebContentsUserData<SideSearchTabContentsHelper> {
  public:
   ~SideSearchTabContentsHelper() override;
+
+  // SideContentsWrapper::Delegate:
+  void NavigateInTabContents(const content::OpenURLParams& params) override;
+  void LastSearchURLUpdated(const GURL& url) override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -31,6 +36,29 @@ class SideSearchTabContentsHelper
   // currently exist.
   content::WebContents* GetSidePanelContents();
 
+  // Called by clients as a hint to the tab helper to clear away its
+  // `side_panel_contents_` if it exists. Caching strategies can leverage this
+  // hint and reset the `side_panel_contents_` at some later point in time.
+  void ClearSidePanelContents();
+
+  // Returns true if the side panel can be shown for the currently committed
+  // navigation entry.
+  bool CanShowSidePanelForCommittedNavigation();
+
+  bool toggled_open() const { return toggled_open_; }
+  void set_toggled_open(bool toggled_open) { toggled_open_ = toggled_open; }
+
+  void SetSidePanelContentsForTesting(
+      std::unique_ptr<content::WebContents> side_panel_contents);
+
+  content::WebContents* side_panel_contents_for_testing() const {
+    return side_panel_contents_.get();
+  }
+
+  const absl::optional<GURL>& last_search_url_for_testing() {
+    return last_search_url_;
+  }
+
  private:
   friend class content::WebContentsUserData<SideSearchTabContentsHelper>;
   explicit SideSearchTabContentsHelper(content::WebContents* web_contents);
@@ -38,12 +66,20 @@ class SideSearchTabContentsHelper
   // Gets the helper for the side contents.
   SideSearchSideContentsHelper* GetSideContentsHelper();
 
+  // Navigates `side_panel_contents_` to the tab's `last_search_url_` if needed.
+  // Should only be called when `side_contents_active_`.
+  void UpdateSideContentsNavigation();
+
   // Creates the `side_panel_contents_` associated with this helper's tab
   // contents.
   void CreateSidePanelContents();
 
   // The last Google search URL encountered by this tab contents.
   absl::optional<GURL> last_search_url_;
+
+  // A flag to track whether the current tab has its side panel toggled open.
+  // Only used with the kSideSearchStatePerTab flag.
+  bool toggled_open_ = false;
 
   // The side panel contents associated with this tab contents.
   // TODO(tluk): Update the way we manage the `side_panel_contents_` to avoid

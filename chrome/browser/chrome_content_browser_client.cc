@@ -137,6 +137,7 @@
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
@@ -581,6 +582,11 @@
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !defined(OS_ANDROID)
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #endif
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 #if defined(_WINDOWS_)
 // This source file doesn't need windows.h and its associated namespace
@@ -4180,6 +4186,14 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
             profile->GetPrefs()),
         &throttles);
   }
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  if (profile && IsSideSearchEnabled(profile)) {
+    MaybeAddThrottle(
+        SideSearchSideContentsHelper::MaybeCreateThrottleFor(handle),
+        &throttles);
+  }
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   return throttles;
 }
