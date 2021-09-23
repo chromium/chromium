@@ -13,8 +13,8 @@
 #include "ash/shell.h"
 #include "ash/wm/ash_focus_rules.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/switchable_windows.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
@@ -303,7 +303,7 @@ void MruWindowTracker::OnWindowActivated(ActivationReason reason,
   SetActiveWindow(gained_active);
 
   if (gained_active && full_restore::features::IsFullRestoreEnabled())
-    FullRestoreController::Get()->OnWindowActivated(gained_active);
+    WindowRestoreController::Get()->OnWindowActivated(gained_active);
 }
 
 void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {
@@ -327,7 +327,7 @@ void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
   // their MRU order.
   window->AddObserver(this);
   mru_windows_.insert(
-      FullRestoreController::GetWindowToInsertBefore(window, mru_windows_),
+      WindowRestoreController::GetWindowToInsertBefore(window, mru_windows_),
       window);
 }
 

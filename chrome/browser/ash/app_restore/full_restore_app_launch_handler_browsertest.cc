@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   ASSERT_TRUE(app_window);
 
   // Toggle immersive fullscreen by simulating what happens when F4 is pressed.
-  // FullRestoreController will save to file when the state changes.
+  // WindowRestoreController will save to file when the state changes.
   const ash::WMEvent event(ash::WM_EVENT_TOGGLE_FULLSCREEN);
   ash::WindowState::Get(app_window->GetNativeWindow())->OnWMEvent(&event);
 

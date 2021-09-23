@@ -22,7 +22,6 @@
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -38,6 +37,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_resizer.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
@@ -786,12 +786,12 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
   if (!WindowState::Get(window)->CanSnap())
     return false;
 
-  // Windows created by full restore are not activatable while being restored.
+  // Windows created by window restore are not activatable while being restored.
   // However, we still want to be able to snap these windows at this point.
   bool restoring_snap_state = false;
   if (full_restore::features::IsFullRestoreEnabled()) {
     restoring_snap_state =
-        FullRestoreController::Get()->is_restoring_snap_state();
+        WindowRestoreController::Get()->is_restoring_snap_state();
   }
 
   // TODO(sammiequon): Investigate if we need to check for window activation.

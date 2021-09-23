@@ -17,7 +17,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/drag_window_resizer.h"
-#include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -27,6 +26,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_window_resizer.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_resizer.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -2879,9 +2879,10 @@ TEST_F(ClientControlledShellSurfaceFullRestoreTest,
   EXPECT_EQ(hidden_container_parent,
             wide_frame->GetWidget()->GetNativeWindow()->parent());
 
-  // Call the FullRestoreController, simulating the ARC task becoming ready. The
-  // surface should be reparented and the WideFrameView should follow it.
-  ash::FullRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(window);
+  // Call the WindowRestoreController, simulating the ARC task becoming ready.
+  // The surface should be reparented and the WideFrameView should follow it.
+  ash::WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+      window);
   EXPECT_NE(hidden_container_parent, window->parent());
   wide_frame = shell_surface->wide_frame_for_test();
   EXPECT_TRUE(wide_frame);

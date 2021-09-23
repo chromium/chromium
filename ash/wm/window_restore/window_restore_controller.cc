@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/full_restore/full_restore_controller.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 
 #include <cstdint>
 
@@ -15,10 +15,10 @@
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/full_restore/full_restore_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/auto_reset.h"
@@ -42,11 +42,11 @@ namespace ash {
 
 namespace {
 
-FullRestoreController* g_instance = nullptr;
+WindowRestoreController* g_instance = nullptr;
 
 // Callback for testing which is run when `SaveWindowImpl()` triggers a write to
 // file.
-FullRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
+WindowRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
 
 // The list of possible app window parents.
 constexpr ShellWindowId kAppParentContainers[10] = {
@@ -62,9 +62,9 @@ constexpr ShellWindowId kAppParentContainers[10] = {
     kShellWindowId_UnparentedContainer,
 };
 
-// The types of apps currently supported by full restore.
+// The types of apps currently supported by window restore.
 // TODO(crbug.com/1164472): Checking app type is temporary solution until we
-// can get windows which are allowed to full restore from the
+// can get windows which are allowed to window restore from the
 // FullRestoreService.
 constexpr AppType kSupportedAppTypes[3] = {
     AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP};
@@ -130,7 +130,7 @@ class ParentChangeObserver : public aura::WindowObserver {
                              aura::Window* parent) override {
     if (!parent)
       return;
-    FullRestoreController::Get()->SaveAllWindows();
+    WindowRestoreController::Get()->SaveAllWindows();
     delete this;
   }
   void OnWindowDestroying(aura::Window* window) override { delete this; }
@@ -141,7 +141,7 @@ class ParentChangeObserver : public aura::WindowObserver {
 
 }  // namespace
 
-FullRestoreController::FullRestoreController() {
+WindowRestoreController::WindowRestoreController() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 
@@ -150,18 +150,18 @@ FullRestoreController::FullRestoreController() {
       full_restore::FullRestoreInfo::GetInstance());
 }
 
-FullRestoreController::~FullRestoreController() {
+WindowRestoreController::~WindowRestoreController() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
 }
 
 // static
-FullRestoreController* FullRestoreController::Get() {
+WindowRestoreController* WindowRestoreController::Get() {
   return g_instance;
 }
 
 // static
-bool FullRestoreController::CanActivateFullRestoredWindow(
+bool WindowRestoreController::CanActivateFullRestoredWindow(
     const aura::Window* window) {
   if (!window->GetProperty(app_restore::kLaunchedFromFullRestoreKey))
     return true;
@@ -196,7 +196,7 @@ bool FullRestoreController::CanActivateFullRestoredWindow(
 }
 
 // static
-bool FullRestoreController::CanActivateAppList(const aura::Window* window) {
+bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   if (!tablet_mode_controller || !tablet_mode_controller->InTabletMode())
     return true;
@@ -229,7 +229,7 @@ bool FullRestoreController::CanActivateAppList(const aura::Window* window) {
 
 // static
 std::vector<aura::Window*>::const_iterator
-FullRestoreController::GetWindowToInsertBefore(
+WindowRestoreController::GetWindowToInsertBefore(
     aura::Window* window,
     const std::vector<aura::Window*>& windows) {
   int32_t* activation_index =
@@ -253,11 +253,11 @@ FullRestoreController::GetWindowToInsertBefore(
   return it;
 }
 
-void FullRestoreController::SaveWindow(WindowState* window_state) {
+void WindowRestoreController::SaveWindow(WindowState* window_state) {
   SaveWindowImpl(window_state, /*activation_index=*/absl::nullopt);
 }
 
-void FullRestoreController::SaveAllWindows() {
+void WindowRestoreController::SaveAllWindows() {
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
   for (int i = 0; i < static_cast<int>(mru_windows.size()); ++i) {
@@ -269,29 +269,29 @@ void FullRestoreController::SaveAllWindows() {
   }
 }
 
-void FullRestoreController::OnWindowActivated(aura::Window* gained_active) {
+void WindowRestoreController::OnWindowActivated(aura::Window* gained_active) {
   SaveAllWindows();
 }
 
-void FullRestoreController::OnTabletModeStarted() {
+void WindowRestoreController::OnTabletModeStarted() {
   SaveAllWindows();
 }
 
-void FullRestoreController::OnTabletModeEnded() {
+void WindowRestoreController::OnTabletModeEnded() {
   SaveAllWindows();
 }
 
-void FullRestoreController::OnTabletControllerDestroyed() {
+void WindowRestoreController::OnTabletControllerDestroyed() {
   tablet_mode_observation_.Reset();
 }
 
-void FullRestoreController::OnRestorePrefChanged(const AccountId& account_id,
-                                                 bool could_restore) {
+void WindowRestoreController::OnRestorePrefChanged(const AccountId& account_id,
+                                                   bool could_restore) {
   if (could_restore)
     SaveAllWindows();
 }
 
-void FullRestoreController::OnAppLaunched(aura::Window* window) {
+void WindowRestoreController::OnAppLaunched(aura::Window* window) {
   // Non ARC windows will already be saved as this point, as this is for cases
   // where an ARC window is created without a task.
   if (!IsArcWindow(window))
@@ -309,7 +309,7 @@ void FullRestoreController::OnAppLaunched(aura::Window* window) {
   new ParentChangeObserver(window);
 }
 
-void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
+void WindowRestoreController::OnWidgetInitialized(views::Widget* widget) {
   DCHECK(widget);
 
   aura::Window* window = widget->GetNativeWindow();
@@ -327,7 +327,7 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
   MaybeRestoreOutOfBoundsWindows(window);
 }
 
-void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
+void WindowRestoreController::OnARCTaskReadyForUnparentedWindow(
     aura::Window* window) {
   DCHECK(window);
   DCHECK(window->GetProperty(app_restore::kParentToHiddenContainerKey));
@@ -351,16 +351,16 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
   UpdateAndObserveWindow(window);
 }
 
-void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
-                                                    const void* key,
-                                                    intptr_t old) {
+void WindowRestoreController::OnWindowPropertyChanged(aura::Window* window,
+                                                      const void* key,
+                                                      intptr_t old) {
   // If the ARC ghost window becomes ARC app's window, it should be applied
   // the activation delay.
   if (key == app_restore::kRealArcTaskWindow &&
       window->GetProperty(app_restore::kRealArcTaskWindow)) {
     window->SetProperty(app_restore::kLaunchedFromFullRestoreKey, true);
     restore_property_clear_callbacks_.emplace(
-        window, base::BindOnce(&FullRestoreController::ClearLaunchedKey,
+        window, base::BindOnce(&WindowRestoreController::ClearLaunchedKey,
                                weak_ptr_factory_.GetWeakPtr(), window));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, restore_property_clear_callbacks_[window].callback(),
@@ -382,8 +382,8 @@ void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
     CancelAndRemoveRestorePropertyClearCallback(window);
 }
 
-void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
-                                                      bool visible) {
+void WindowRestoreController::OnWindowVisibilityChanged(aura::Window* window,
+                                                        bool visible) {
   // `OnWindowVisibilityChanged` fires for children of a window as well, but we
   // are only interested in the window we originally observed.
   if (!windows_observation_.IsObservingSource(window))
@@ -414,7 +414,7 @@ void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
     app_list_widget->Deactivate();
 }
 
-void FullRestoreController::OnWindowDestroying(aura::Window* window) {
+void WindowRestoreController::OnWindowDestroying(aura::Window* window) {
   DCHECK(windows_observation_.IsObservingSource(window));
   windows_observation_.RemoveObservation(window);
 
@@ -422,7 +422,7 @@ void FullRestoreController::OnWindowDestroying(aura::Window* window) {
     ClearLaunchedKey(window);
 }
 
-void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
+void WindowRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   DCHECK(window);
   DCHECK(window->parent());
   windows_observation_.AddObservation(window);
@@ -449,12 +449,12 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   // Stack the window.
   auto siblings = window->parent()->children();
   auto insertion_point =
-      FullRestoreController::GetWindowToInsertBefore(window, siblings);
+      WindowRestoreController::GetWindowToInsertBefore(window, siblings);
   if (insertion_point != siblings.end())
     window->parent()->StackChildBelow(window, *insertion_point);
 }
 
-void FullRestoreController::SaveWindowImpl(
+void WindowRestoreController::SaveWindowImpl(
     WindowState* window_state,
     absl::optional<int> activation_index) {
   DCHECK(window_state);
@@ -495,7 +495,7 @@ void FullRestoreController::SaveWindowImpl(
     g_save_window_callback_for_testing.Run(*window_info);
 }
 
-void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
+void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
     aura::Window* window) {
   app_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (window_info) {
@@ -525,8 +525,8 @@ void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
     }
   }
 
-  // Window that are launched from full restore are not activatable initially to
-  // prevent them from taking activation when Widget::Show() is called. Make
+  // Window that are launched from window restore are not activatable initially
+  // to prevent them from taking activation when Widget::Show() is called. Make
   // these windows activatable once they are launched. Use a post task since it
   // is quite common for some widgets to explicitly call Show() after
   // initialized.
@@ -534,7 +534,7 @@ void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
   // and enabling it here, use ShowInactive() instead of Show() when the widget
   // is created.
   restore_property_clear_callbacks_.emplace(
-      window, base::BindOnce(&FullRestoreController::ClearLaunchedKey,
+      window, base::BindOnce(&WindowRestoreController::ClearLaunchedKey,
                              weak_ptr_factory_.GetWeakPtr(), window));
 
   // Also, for some ARC and chrome apps, the client can request activation after
@@ -555,7 +555,7 @@ void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
       FROM_HERE, restore_property_clear_callbacks_[window].callback(), delay);
 }
 
-void FullRestoreController::ClearLaunchedKey(aura::Window* window) {
+void WindowRestoreController::ClearLaunchedKey(aura::Window* window) {
   CancelAndRemoveRestorePropertyClearCallback(window);
 
   // If the window is destroying then prevent extra work by not clearing the
@@ -564,7 +564,7 @@ void FullRestoreController::ClearLaunchedKey(aura::Window* window) {
     window->SetProperty(app_restore::kLaunchedFromFullRestoreKey, false);
 }
 
-void FullRestoreController::CancelAndRemoveRestorePropertyClearCallback(
+void WindowRestoreController::CancelAndRemoveRestorePropertyClearCallback(
     aura::Window* window) {
   DCHECK(window);
   DCHECK(base::Contains(restore_property_clear_callbacks_, window));
@@ -573,7 +573,7 @@ void FullRestoreController::CancelAndRemoveRestorePropertyClearCallback(
   restore_property_clear_callbacks_.erase(window);
 }
 
-void FullRestoreController::SetSaveWindowCallbackForTesting(
+void WindowRestoreController::SetSaveWindowCallbackForTesting(
     SaveWindowCallback callback) {
   g_save_window_callback_for_testing = std::move(callback);
 }

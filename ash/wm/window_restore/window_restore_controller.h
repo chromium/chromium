@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_FULL_RESTORE_FULL_RESTORE_CONTROLLER_H_
-#define ASH_WM_FULL_RESTORE_FULL_RESTORE_CONTROLLER_H_
+#ifndef ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_CONTROLLER_H_
+#define ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_CONTROLLER_H_
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -30,7 +30,7 @@ namespace ash {
 
 class WindowState;
 
-class ASH_EXPORT FullRestoreController
+class ASH_EXPORT WindowRestoreController
     : public TabletModeObserver,
       public full_restore::FullRestoreInfo::Observer,
       public aura::WindowObserver {
@@ -38,14 +38,14 @@ class ASH_EXPORT FullRestoreController
   using SaveWindowCallback =
       base::RepeatingCallback<void(const app_restore::WindowInfo&)>;
 
-  FullRestoreController();
-  FullRestoreController(const FullRestoreController&) = delete;
-  FullRestoreController& operator=(const FullRestoreController&) = delete;
-  ~FullRestoreController() override;
+  WindowRestoreController();
+  WindowRestoreController(const WindowRestoreController&) = delete;
+  WindowRestoreController& operator=(const WindowRestoreController&) = delete;
+  ~WindowRestoreController() override;
 
   // Convenience function to get the controller which is created and owned by
   // Shell.
-  static FullRestoreController* Get();
+  static WindowRestoreController* Get();
 
   // Returns whether a Full Restore'd window can be activated. Only ghost
   // windows, windows without the `app_restore::kLaunchedFromFullRestoreKey`,
@@ -104,7 +104,7 @@ class ASH_EXPORT FullRestoreController
   bool is_restoring_snap_state() const { return is_restoring_snap_state_; }
 
  private:
-  friend class FullRestoreControllerTest;
+  friend class WindowRestoreControllerTest;
 
   // Updates the window state, activation and stacking of `window`. Also
   // observes `window` as we need to do further updates when the window is
@@ -135,7 +135,7 @@ class ASH_EXPORT FullRestoreController
   void CancelAndRemoveRestorePropertyClearCallback(aura::Window* window);
 
   // Sets a callback for testing that will be fired immediately when
-  // SaveWindowImpl is about to notify the full restore component we want to
+  // SaveWindowImpl is about to notify the window restore component we want to
   // write to file.
   void SetSaveWindowCallbackForTesting(SaveWindowCallback callback);
 
@@ -160,13 +160,13 @@ class ASH_EXPORT FullRestoreController
                           full_restore::FullRestoreInfo::Observer>
       full_restore_info_observation_{this};
 
-  // Observes windows launched by full restore.
+  // Observes windows launched by window restore.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       windows_observation_{this};
 
-  base::WeakPtrFactory<FullRestoreController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WindowRestoreController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_WM_FULL_RESTORE_FULL_RESTORE_CONTROLLER_H_
+#endif  // ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_CONTROLLER_H_

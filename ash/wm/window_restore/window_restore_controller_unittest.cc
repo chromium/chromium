@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/full_restore/full_restore_controller.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -54,28 +54,29 @@ void SetResizable(views::Widget* widget) {
 
 }  // namespace
 
-class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
+class WindowRestoreControllerTest : public AshTestBase,
+                                    public aura::EnvObserver {
  public:
-  // Struct which is the data in our fake full restore file.
+  // Struct which is the data in our fake window restore file.
   struct WindowInfo {
     int call_count = 0;
     std::unique_ptr<app_restore::WindowInfo> info;
   };
 
-  FullRestoreControllerTest() = default;
-  FullRestoreControllerTest(const FullRestoreControllerTest&) = delete;
-  FullRestoreControllerTest& operator=(const FullRestoreControllerTest&) =
+  WindowRestoreControllerTest() = default;
+  WindowRestoreControllerTest(const WindowRestoreControllerTest&) = delete;
+  WindowRestoreControllerTest& operator=(const WindowRestoreControllerTest&) =
       delete;
-  ~FullRestoreControllerTest() override = default;
+  ~WindowRestoreControllerTest() override = default;
 
   // Returns the number of times |window| has been saved to file since the last
   // ResetSaveWindowsCount call.
   int GetSaveWindowsCount(aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!base::Contains(fake_full_restore_file_, restore_window_id))
+    if (!base::Contains(fake_window_restore_file_, restore_window_id))
       return 0;
-    return fake_full_restore_file_.at(restore_window_id).call_count;
+    return fake_window_restore_file_.at(restore_window_id).call_count;
   }
 
   // Returns the total number of saves since the last ResetSaveWindowsCount
@@ -83,14 +84,14 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   int GetTotalSaveWindowsCount() const {
     int count = 0;
     for (const std::pair<int32_t, WindowInfo>& member :
-         fake_full_restore_file_) {
+         fake_window_restore_file_) {
       count += member.second.call_count;
     }
     return count;
   }
 
   void ResetSaveWindowsCount() {
-    for (std::pair<int32_t, WindowInfo>& member : fake_full_restore_file_)
+    for (std::pair<int32_t, WindowInfo>& member : fake_window_restore_file_)
       member.second.call_count = 0;
   }
 
@@ -98,9 +99,9 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   app_restore::WindowInfo* GetWindowInfo(aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!base::Contains(fake_full_restore_file_, restore_window_id))
+    if (!base::Contains(fake_window_restore_file_, restore_window_id))
       return nullptr;
-    return fake_full_restore_file_.at(restore_window_id).info.get();
+    return fake_window_restore_file_.at(restore_window_id).info.get();
   }
 
   // Returns the stored activation index for |window|.
@@ -115,17 +116,17 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // Returns the restore property clear callbacks.
   const std::map<aura::Window*, base::CancelableOnceClosure>&
   GetRestorePropertyClearCallbacks() {
-    return FullRestoreController::Get()->restore_property_clear_callbacks_;
+    return WindowRestoreController::Get()->restore_property_clear_callbacks_;
   }
 
-  // Mocks creating a widget that is launched from full restore service.
+  // Mocks creating a widget that is launched from window restore service.
   views::Widget* CreateTestFullRestoredWidget(
       int32_t activation_index,
       const gfx::Rect& bounds = gfx::Rect(200, 200),
       aura::Window* root_window = Shell::GetPrimaryRootWindow()) {
     // If this is a new window, finds and sets a new restore window id.
     int32_t restore_window_id = 1;
-    while (fake_full_restore_file_.contains(restore_window_id))
+    while (fake_window_restore_file_.contains(restore_window_id))
       ++restore_window_id;
 
     AddEntryToFakeFile(restore_window_id, bounds,
@@ -138,17 +139,17 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   }
 
   // Mocks creating a widget based on the window info in
-  // `fake_full_restore_file_`. Returns nullptr if there is not an entry that
+  // `fake_window_restore_file_`. Returns nullptr if there is not an entry that
   // matches `restore_window_id`.
   views::Widget* CreateTestFullRestoredWidgetFromRestoreId(
       int32_t restore_window_id,
       AppType app_type,
       bool is_taskless_arc_app) {
-    if (!fake_full_restore_file_.contains(restore_window_id))
+    if (!fake_window_restore_file_.contains(restore_window_id))
       return nullptr;
 
     app_restore::WindowInfo* info =
-        fake_full_restore_file_[restore_window_id].info.get();
+        fake_window_restore_file_[restore_window_id].info.get();
     DCHECK(info);
     DCHECK(info->current_bounds);
     DCHECK(info->window_state_type);
@@ -163,9 +164,9 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
       context = Shell::GetPrimaryRootWindow();
     DCHECK(context->IsRootWindow());
 
-    // Full restore widgets are inactive when created as we do not want to take
-    // activation from a possible activated window, and we want to stack them in
-    // a certain order.
+    // Window restore widgets are inactive when created as we do not want to
+    // take activation from a possible activated window, and we want to stack
+    // them in a certain order.
     TestWidgetBuilder widget_builder;
     widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
         .SetBounds(*info->current_bounds)
@@ -184,7 +185,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
     SetResizable(widget);
     if (!is_taskless_arc_app)
-      FullRestoreController::Get()->OnWidgetInitialized(widget);
+      WindowRestoreController::Get()->OnWidgetInitialized(widget);
     if (info->window_state_type != chromeos::WindowStateType::kMinimized)
       widget->Show();
     return widget;
@@ -206,8 +207,8 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
       EXPECT_EQ(children[i], expected_windows[i]);
   }
 
-  // Adds an entry to the fake full restore file. Calling
-  // If `CreateTestFullRestoreWidget` is called with a matching
+  // Adds an entry to the fake window restore file. If
+  // `CreateTestFullRestoreWidget` is called with a matching
   // `restore_window_id`, it will read and set the values set here.
   void AddEntryToFakeFile(int restore_window_id,
                           const gfx::Rect& bounds,
@@ -215,14 +216,14 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
                           int32_t activation_index,
                           int64_t display_id,
                           int32_t desk_id) {
-    DCHECK(!fake_full_restore_file_.contains(restore_window_id));
+    DCHECK(!fake_window_restore_file_.contains(restore_window_id));
     auto window_info = std::make_unique<app_restore::WindowInfo>();
     window_info->current_bounds = bounds;
     window_info->window_state_type = window_state_type;
     window_info->activation_index = activation_index;
     window_info->display_id = display_id;
     window_info->desk_id = desk_id;
-    fake_full_restore_file_[restore_window_id].info = std::move(window_info);
+    fake_window_restore_file_[restore_window_id].info = std::move(window_info);
   }
 
   void AddEntryToFakeFile(int restore_window_id,
@@ -258,8 +259,8 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
     AshTestBase::SetUp();
 
-    FullRestoreController::Get()->SetSaveWindowCallbackForTesting(
-        base::BindRepeating(&FullRestoreControllerTest::OnSaveWindow,
+    WindowRestoreController::Get()->SetSaveWindowCallbackForTesting(
+        base::BindRepeating(&WindowRestoreControllerTest::OnSaveWindow,
                             base::Unretained(this)));
     env_observation_.Observe(aura::Env::GetInstance());
 
@@ -288,51 +289,51 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     // If this is a new window, finds and sets a new restore window id.
     if (window->GetProperty(app_restore::kRestoreWindowIdKey) == 0) {
       int32_t restore_window_id = 1;
-      while (fake_full_restore_file_.contains(restore_window_id))
+      while (fake_window_restore_file_.contains(restore_window_id))
         ++restore_window_id;
       window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     }
 
-    // FullRestoreController relies on getting OnWindowInitialized events from
+    // WindowRestoreController relies on getting OnWindowInitialized events from
     // aura::Env via full_restore::FullRestoreInfo. That object does not exist
     // for ash unit tests, so we will observe aura::Env ourselves and forward
-    // the event to FullRestoreController.
-    FullRestoreController::Get()->OnWindowInitialized(window);
+    // the event to WindowRestoreController.
+    WindowRestoreController::Get()->OnWindowInitialized(window);
   }
 
  private:
-  // Called when FullRestoreController saves a window to the file. Immediately
-  // writes to our fake file |fake_full_restore_file_|.
+  // Called when WindowRestoreController saves a window to the file. Immediately
+  // writes to our fake file |fake_window_restore_file_|.
   void OnSaveWindow(const app_restore::WindowInfo& window_info) {
     aura::Window* window = window_info.window;
     DCHECK(window);
 
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (fake_full_restore_file_.contains(restore_window_id)) {
-      fake_full_restore_file_[restore_window_id].call_count++;
+    if (fake_window_restore_file_.contains(restore_window_id)) {
+      fake_window_restore_file_[restore_window_id].call_count++;
     } else {
-      fake_full_restore_file_[restore_window_id].info =
+      fake_window_restore_file_[restore_window_id].info =
           std::make_unique<app_restore::WindowInfo>();
     }
 
     CopyWindowInfo(window_info,
-                   fake_full_restore_file_[restore_window_id].info.get());
+                   fake_window_restore_file_[restore_window_id].info.get());
   }
 
-  // Callback function that is run when FullRestoreController tries to read
+  // Callback function that is run when WindowRestoreController tries to read
   // window data from the file. Immediately reads from our fake file
-  // `fake_full_restore_file_`.
+  // `fake_window_restore_file_`.
   std::unique_ptr<app_restore::WindowInfo> OnGetWindowInfo(
       aura::Window* window) {
     DCHECK(window);
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!fake_full_restore_file_.contains(restore_window_id))
+    if (!fake_window_restore_file_.contains(restore_window_id))
       return nullptr;
 
     auto window_info = std::make_unique<app_restore::WindowInfo>();
-    CopyWindowInfo(*fake_full_restore_file_[restore_window_id].info,
+    CopyWindowInfo(*fake_window_restore_file_[restore_window_id].info,
                    window_info.get());
     return window_info;
   }
@@ -349,8 +350,8 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     out_dst->display_id = src.display_id;
   }
 
-  // A map which is a fake representation of the full restore file.
-  base::flat_map<int32_t, WindowInfo> fake_full_restore_file_;
+  // A map which is a fake representation of the window restore file.
+  base::flat_map<int32_t, WindowInfo> fake_window_restore_file_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
 
@@ -358,13 +359,13 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 };
 
 // Tests window save with setting on or off.
-TEST_F(FullRestoreControllerTest, WindowSaveDisabled) {
+TEST_F(WindowRestoreControllerTest, WindowSaveDisabled) {
   auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
   auto window1 = CreateAppWindow(gfx::Rect(600, 600), AppType::BROWSER);
   auto window2 = CreateAppWindow(gfx::Rect(600, 600), AppType::BROWSER);
   ResetSaveWindowsCount();
 
-  // Disable full restore.
+  // Disable window restore.
   full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id,
                                                                false);
 
@@ -378,7 +379,7 @@ TEST_F(FullRestoreControllerTest, WindowSaveDisabled) {
   EXPECT_EQ(0, GetSaveWindowsCount(window1.get()));
   EXPECT_EQ(0, GetSaveWindowsCount(window2.get()));
 
-  // Enable full restore.
+  // Enable window restore.
   full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(account_id,
                                                                true);
 
@@ -389,7 +390,7 @@ TEST_F(FullRestoreControllerTest, WindowSaveDisabled) {
 }
 
 // Tests that data gets saved when changing a window's window state.
-TEST_F(FullRestoreControllerTest, WindowStateChanged) {
+TEST_F(WindowRestoreControllerTest, WindowStateChanged) {
   auto window = CreateAppWindow(gfx::Rect(600, 600), AppType::BROWSER);
   ResetSaveWindowsCount();
 
@@ -417,7 +418,7 @@ TEST_F(FullRestoreControllerTest, WindowStateChanged) {
 }
 
 // Tests that data gets saved when moving a window to another desk.
-TEST_F(FullRestoreControllerTest, WindowMovedDesks) {
+TEST_F(WindowRestoreControllerTest, WindowMovedDesks) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(0, desks_controller->GetDeskIndex(
@@ -437,7 +438,7 @@ TEST_F(FullRestoreControllerTest, WindowMovedDesks) {
 }
 
 // Tests that data gets saved when assigning a window to all desks.
-TEST_F(FullRestoreControllerTest, AssignToAllDesks) {
+TEST_F(WindowRestoreControllerTest, AssignToAllDesks) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(0, desks_controller->GetDeskIndex(
@@ -459,7 +460,7 @@ TEST_F(FullRestoreControllerTest, AssignToAllDesks) {
 
 // Tests that data gets saved when moving a window to another display using the
 // accelerator.
-TEST_F(FullRestoreControllerTest, WindowMovedDisplay) {
+TEST_F(WindowRestoreControllerTest, WindowMovedDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto window = CreateAppWindow(gfx::Rect(50, 50, 100, 100), AppType::BROWSER);
@@ -474,7 +475,7 @@ TEST_F(FullRestoreControllerTest, WindowMovedDisplay) {
 }
 
 // Tests that data gets saved when dragging a window.
-TEST_F(FullRestoreControllerTest, WindowDragged) {
+TEST_F(WindowRestoreControllerTest, WindowDragged) {
   auto window = CreateAppWindow(gfx::Rect(400, 400), AppType::BROWSER);
   ResetSaveWindowsCount();
 
@@ -490,7 +491,7 @@ TEST_F(FullRestoreControllerTest, WindowDragged) {
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
 }
 
-TEST_F(FullRestoreControllerTest, TabletModeChange) {
+TEST_F(WindowRestoreControllerTest, TabletModeChange) {
   // Tests that with no windows, nothing gets save when entering or exiting
   // tablet mode.
   TabletModeControllerTestApi().EnterTabletMode();
@@ -517,7 +518,7 @@ TEST_F(FullRestoreControllerTest, TabletModeChange) {
   EXPECT_GT(GetSaveWindowsCount(window2.get()), 1);
 }
 
-TEST_F(FullRestoreControllerTest, DisplayAddRemove) {
+TEST_F(WindowRestoreControllerTest, DisplayAddRemove) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto window = CreateAppWindow(gfx::Rect(800, 0, 400, 400), AppType::BROWSER);
@@ -544,7 +545,7 @@ TEST_F(FullRestoreControllerTest, DisplayAddRemove) {
   EXPECT_EQ(3, GetSaveWindowsCount(window.get()));
 }
 
-TEST_F(FullRestoreControllerTest, Activation) {
+TEST_F(WindowRestoreControllerTest, Activation) {
   auto window1 = CreateAppWindow(gfx::Rect(400, 400), AppType::BROWSER);
   auto window2 = CreateAppWindow(gfx::Rect(400, 400), AppType::BROWSER);
   auto window3 = CreateAppWindow(gfx::Rect(400, 400), AppType::BROWSER);
@@ -564,9 +565,9 @@ TEST_F(FullRestoreControllerTest, Activation) {
   EXPECT_EQ(0, GetActivationIndex(window3.get()));
 }
 
-// Tests that the mock widget created from full restore we will use in other
+// Tests that the mock widget created from window restore we will use in other
 // tests works as expected.
-TEST_F(FullRestoreControllerTest, TestFullRestoredWidget) {
+TEST_F(WindowRestoreControllerTest, TestFullRestoredWidget) {
   const int32_t kActivationIndex = 2;
   views::Widget* widget = CreateTestFullRestoredWidget(kActivationIndex);
   int32_t* activation_index =
@@ -586,7 +587,7 @@ TEST_F(FullRestoreControllerTest, TestFullRestoredWidget) {
 
 // Tests that widgets are restored to their proper stacking order, even if they
 // are restored out-of-order.
-TEST_F(FullRestoreControllerTest, Stacking) {
+TEST_F(WindowRestoreControllerTest, Stacking) {
   // Create a window that is a child of the active desk's container.
   auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
       Shell::Get()->GetPrimaryRootWindow());
@@ -622,7 +623,7 @@ TEST_F(FullRestoreControllerTest, Stacking) {
 
 // Tests that widgets are restored to their proper stacking order in a
 // multi-display scenario.
-TEST_F(FullRestoreControllerTest, StackingMultiDisplay) {
+TEST_F(WindowRestoreControllerTest, StackingMultiDisplay) {
   UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
 
   auto root_windows = Shell::GetAllRootWindows();
@@ -686,12 +687,12 @@ TEST_F(FullRestoreControllerTest, StackingMultiDisplay) {
                       {window_3_3, window_3_2, window_3_1});
 }
 
-// Tests clamshell snapped window functionality when creating a window from full
-// restore.
-TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
+// Tests clamshell snapped window functionality when creating a window from
+// window restore.
+TEST_F(WindowRestoreControllerTest, ClamshellSnapWindow) {
   UpdateDisplay("800x700");
 
-  // Add two entries to our fake full restore file, one snapped left and the
+  // Add two entries to our fake window restore file, one snapped left and the
   // other snapped right.
   const gfx::Rect restored_bounds(200, 200);
   AddEntryToFakeFile(/*restore_window_id=*/2, restored_bounds,
@@ -699,7 +700,7 @@ TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
   AddEntryToFakeFile(/*restore_window_id=*/3, restored_bounds,
                      chromeos::WindowStateType::kSecondarySnapped);
 
-  // Create two full restore windows with the same restore window ids as the
+  // Create two window restore windows with the same restore window ids as the
   // entries we added. Test they are snapped and have snapped bounds.
   aura::Window* left_window =
       CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
@@ -728,9 +729,9 @@ TEST_F(FullRestoreControllerTest, ClamshellSnapWindow) {
   EXPECT_EQ(restored_bounds, right_window->GetBoundsInScreen());
 }
 
-// Tests full restore behavior when a display is disconnected before
+// Tests window restore behavior when a display is disconnected before
 // restoration.
-TEST_F(FullRestoreControllerTest, DisconnectedDisplay) {
+TEST_F(WindowRestoreControllerTest, DisconnectedDisplay) {
   UpdateDisplay("800x700");
   const gfx::Rect display_1_bounds(0, 0, 200, 200);
   const gfx::Rect display_2_bounds(801, 0, 200, 200);
@@ -800,7 +801,7 @@ TEST_F(FullRestoreControllerTest, DisconnectedDisplay) {
 }
 
 // Tests that the splitview data in tablet is saved properly.
-TEST_F(FullRestoreControllerTest, TabletSplitviewWindow) {
+TEST_F(WindowRestoreControllerTest, TabletSplitviewWindow) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   const gfx::Rect bounds(300, 300);
@@ -827,10 +828,10 @@ TEST_F(FullRestoreControllerTest, TabletSplitviewWindow) {
   EXPECT_EQ(bounds, *window2_info->current_bounds);
 }
 
-// Tests tablet snapped window functionality when creating a window from full
+// Tests tablet snapped window functionality when creating a window from window
 // restore.
-TEST_F(FullRestoreControllerTest, TabletSnapWindow) {
-  // Add two entries to our fake full restore file, one snapped left and the
+TEST_F(WindowRestoreControllerTest, TabletSnapWindow) {
+  // Add two entries to our fake window restore file, one snapped left and the
   // other snapped right.
   const gfx::Rect restored_bounds(200, 200);
   AddEntryToFakeFile(/*restore_window_id=*/2, restored_bounds,
@@ -840,7 +841,7 @@ TEST_F(FullRestoreControllerTest, TabletSnapWindow) {
 
   TabletModeControllerTestApi().EnterTabletMode();
 
-  // Create two full restore windows with the same restore window ids as the
+  // Create two window restore windows with the same restore window ids as the
   // entries we added. Test they are snapped and have snapped bounds.
   aura::Window* left_window =
       CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/2)
@@ -873,8 +874,8 @@ TEST_F(FullRestoreControllerTest, TabletSnapWindow) {
   EXPECT_EQ(restored_bounds, right_window->GetBoundsInScreen());
 }
 
-// Tests full restore behavior when a display size changes.
-TEST_F(FullRestoreControllerTest, DisplaySizeChange) {
+// Tests window restore behavior when a display size changes.
+TEST_F(WindowRestoreControllerTest, DisplaySizeChange) {
   constexpr int kRestoreId = 1;
   UpdateDisplay("500x400");
 
@@ -895,9 +896,9 @@ TEST_F(FullRestoreControllerTest, DisplaySizeChange) {
   EXPECT_TRUE(WindowState::Get(restored_window)->IsNormalStateType());
 }
 
-// Tests full restore behavior for when a window saved in clamshell mode is
+// Tests window restore behavior for when a window saved in clamshell mode is
 // restored as expected in tablet mode.
-TEST_F(FullRestoreControllerTest, ClamshellToTablet) {
+TEST_F(WindowRestoreControllerTest, ClamshellToTablet) {
   constexpr int kRestoreId = 1;
 
   // Add a normal window to the fake file.
@@ -919,9 +920,9 @@ TEST_F(FullRestoreControllerTest, ClamshellToTablet) {
   EXPECT_EQ(clamshell_bounds, restored_window->GetBoundsInScreen());
 }
 
-// Tests full restore behavior for when a window saved in tablet mode is
+// Tests window restore behavior for when a window saved in tablet mode is
 // restored as expected in clamshell mode.
-TEST_F(FullRestoreControllerTest, TabletToClamshell) {
+TEST_F(WindowRestoreControllerTest, TabletToClamshell) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   // The tablet mode window manager watches windows when they are added, then
@@ -958,7 +959,7 @@ TEST_F(FullRestoreControllerTest, TabletToClamshell) {
 
   const int restore_id = window->GetProperty(app_restore::kRestoreWindowIdKey);
 
-  // Leave tablet mode, and then mock creating the window from full restore
+  // Leave tablet mode, and then mock creating the window from window restore
   // file. Test that the state and bounds are as expected in clamshell mode.
   TabletModeControllerTestApi().LeaveTabletMode();
   auto* restored_window =
@@ -969,7 +970,7 @@ TEST_F(FullRestoreControllerTest, TabletToClamshell) {
 
 // Tests that when windows are restored in tablet mode the hotseat is hidden.
 // See crbug.com/1202923.
-TEST_F(FullRestoreControllerTest, HotseatIsHiddenOnRestoration) {
+TEST_F(WindowRestoreControllerTest, HotseatIsHiddenOnRestoration) {
   // Enter tablet mode and check that the hotseat is not hidden.
   TabletModeControllerTestApi().EnterTabletMode();
   HotseatWidget* hotseat_widget = GetPrimaryShelf()->hotseat_widget();
@@ -1004,7 +1005,7 @@ TEST_F(FullRestoreControllerTest, HotseatIsHiddenOnRestoration) {
 
 // Tests that the app list isn't deactivated when all restored windows are
 // minimized.
-TEST_F(FullRestoreControllerTest,
+TEST_F(WindowRestoreControllerTest,
        AppListNotDeactivatedWhenAllWindowsMinimized) {
   // Enter tablet mode and ensure the app list is active.
   TabletModeControllerTestApi().EnterTabletMode();
@@ -1035,7 +1036,7 @@ TEST_F(FullRestoreControllerTest,
 // Tests that the posted task for clearing a window's
 // `app_restore::kLaunchedFromFullRestoreKey` is cancelled when that window is
 // destroyed.
-TEST_F(FullRestoreControllerTest, RestorePropertyClearCallback) {
+TEST_F(WindowRestoreControllerTest, RestorePropertyClearCallback) {
   // Restore a window.
   AddEntryToFakeFile(/*restore_window_id=*/1, gfx::Rect(200, 200),
                      chromeos::WindowStateType::kNormal);
@@ -1051,9 +1052,9 @@ TEST_F(FullRestoreControllerTest, RestorePropertyClearCallback) {
   EXPECT_EQ(0u, GetRestorePropertyClearCallbacks().size());
 }
 
-// Tests full restore behavior for when a ARC window is created without an
+// Tests window restore behavior for when a ARC window is created without an
 // associated task.
-TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
+TEST_F(WindowRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
   constexpr int kRestoreId = 1;
 
   // Create enough desks so that we can parent to the expected desk.
@@ -1079,7 +1080,7 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
 
   // Simulate having the task ready. Our `restored_window` should now be
   // parented to the desk associated with desk 3, which is desk D.
-  FullRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
       restored_window);
   EXPECT_EQ(Shell::GetContainer(root_window, kShellWindowId_DeskContainerD),
             restored_window->parent());
@@ -1087,7 +1088,8 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
 
 // Tests that parenting ARC windows to hidden container works in the multi
 // display scenario, including if a display gets disconnected partway through.
-TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
+TEST_F(WindowRestoreControllerTest,
+       ArcAppWindowCreatedWithoutTaskMultiDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
 
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
@@ -1123,7 +1125,7 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
                                 kShellWindowId_UnparentedContainer),
             restored_window1->parent());
-  FullRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
       restored_window1);
   EXPECT_EQ(
       Shell::GetContainer(secondary_root_window, kShellWindowId_DeskContainerD),
@@ -1145,7 +1147,7 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
   display_info_list.push_back(primary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-  FullRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
       restored_window2);
   EXPECT_EQ(
       Shell::GetContainer(primary_root_window, kShellWindowId_DeskContainerD),
@@ -1154,7 +1156,7 @@ TEST_F(FullRestoreControllerTest, ArcAppWindowCreatedWithoutTaskMultiDisplay) {
 
 // Tests that windows that are out-of-bounds of the display they're being
 // restored to are properly restored.
-TEST_F(FullRestoreControllerTest, OutOfBoundsWindows) {
+TEST_F(WindowRestoreControllerTest, OutOfBoundsWindows) {
   UpdateDisplay("800x700");
   const gfx::Rect kScreenBounds(0, 0, 800, 800);
   const gfx::Rect kPartialBounds(-100, 100, 200, 200);
@@ -1202,7 +1204,7 @@ TEST_F(FullRestoreControllerTest, OutOfBoundsWindows) {
 
 // Tests that when the topmost window is a Full Restore'd window, it is
 // activatable. See crbug.com/1229928.
-TEST_F(FullRestoreControllerTest, TopmostWindowIsActivatable) {
+TEST_F(WindowRestoreControllerTest, TopmostWindowIsActivatable) {
   // Create a window that is not restored and activate it.
   auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
       Shell::Get()->GetPrimaryRootWindow());
@@ -1246,7 +1248,7 @@ TEST_F(FullRestoreControllerTest, TopmostWindowIsActivatable) {
 
 // Tests that when the topmost window is minimized, the next highest unminimized
 // window is activated.
-TEST_F(FullRestoreControllerTest, NextTopmostWindowIsActivatable) {
+TEST_F(WindowRestoreControllerTest, NextTopmostWindowIsActivatable) {
   auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
       Shell::Get()->GetPrimaryRootWindow());
 
@@ -1298,7 +1300,7 @@ TEST_F(FullRestoreControllerTest, NextTopmostWindowIsActivatable) {
 
 // Tests that when a window is restored to an inactive desk it is not
 // activatable. See crbug.com/1237158.
-TEST_F(FullRestoreControllerTest, WindowsOnInactiveDeskAreNotActivatable) {
+TEST_F(WindowRestoreControllerTest, WindowsOnInactiveDeskAreNotActivatable) {
   // Create two desks and switch to the first desk. There should now be three in
   // total.
   auto* desks_controller = DesksController::Get();

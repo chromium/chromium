@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_FULL_RESTORE_FULL_RESTORE_UTIL_H_
-#define ASH_WM_FULL_RESTORE_FULL_RESTORE_UTIL_H_
+#ifndef ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_UTIL_H_
+#define ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_UTIL_H_
 
 #include "components/app_restore/window_info.h"
 
@@ -24,4 +24,4 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
 
 }  // namespace ash
 
-#endif  // ASH_WM_FULL_RESTORE_FULL_RESTORE_UTIL_H_
+#endif  // ASH_WM_WINDOW_RESTORE_WINDOW_RESTORE_UTIL_H_

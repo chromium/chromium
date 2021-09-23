@@ -219,9 +219,9 @@ class SplitViewMetricsController : public TabletModeObserver,
   // Observed windows on the active desk.
   std::vector<aura::Window*> observed_windows_;
 
-  // Windows that recovered by full restore have no parents at the initialize
+  // Windows that recovered by window restore have no parents at the initialize
   // stage, so their window states cannot be observed when are inserted into
-  // `observed_windows_` list. This set contains the windows recovered by full
+  // `observed_windows_` list. This set contains the windows recovered by window
   // restored whose window states have not been observed yet.
   std::set<aura::Window*> no_state_observed_windows_;
 

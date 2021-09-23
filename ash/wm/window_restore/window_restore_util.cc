@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/full_restore/full_restore_util.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
@@ -55,7 +55,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     window_info->current_bounds = window_state->HasRestoreBounds()
                                       ? window_state->GetRestoreBoundsInScreen()
                                       : window->GetBoundsInScreen();
-    // Full restore does not support restoring fullscreen windows. If a window
+    // Window restore does not support restoring fullscreen windows. If a window
     // is fullscreen save the pre-fullscreen window state instead.
     window_info->window_state_type =
         window_state->IsFullscreen()

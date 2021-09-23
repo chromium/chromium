@@ -20,12 +20,12 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
-#include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
@@ -199,12 +199,12 @@ void ReportAshPipAndroidPipUseTime(base::TimeDelta duration) {
                              base::TimeDelta::FromHours(10), 50);
 }
 
-// Notifies the full restore controller to write to file.
-void SaveWindowForFullRestore(WindowState* window_state) {
+// Notifies the window restore controller to write to file.
+void SaveWindowForWindowRestore(WindowState* window_state) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return;
 
-  auto* controller = FullRestoreController::Get();
+  auto* controller = WindowRestoreController::Get();
   if (controller)
     controller->SaveWindow(window_state);
 }
@@ -605,7 +605,7 @@ void WindowState::OnCompleteDrag(const gfx::PointF& location) {
   DCHECK(drag_details_);
   if (delegate_)
     delegate_->OnDragFinished(/*canceled=*/false, location);
-  SaveWindowForFullRestore(this);
+  SaveWindowForWindowRestore(this);
 }
 
 void WindowState::OnRevertDrag(const gfx::PointF& location) {
@@ -774,7 +774,7 @@ void WindowState::NotifyPostStateTypeChange(
   for (auto& observer : observer_list_)
     observer.OnPostWindowStateTypeChange(this, old_window_state_type);
   OnPostPipStateChange(old_window_state_type);
-  SaveWindowForFullRestore(this);
+  SaveWindowForWindowRestore(this);
 }
 
 void WindowState::OnPostPipStateChange(WindowStateType old_window_state_type) {
@@ -964,8 +964,8 @@ WindowState* WindowState::Get(aura::Window* window) {
   DCHECK(window->parent());
 
   // WindowState is only for windows in top level container, unless they are
-  // temporarily hidden when launched by full restore. The will be reparented to
-  // a top level container soon, and need a WindowState.
+  // temporarily hidden when launched by window restore. The will be reparented
+  // to a top level container soon, and need a WindowState.
   if (!IsToplevelContainer(window->parent()) &&
       !IsTemporarilyHiddenForFullrestore(window)) {
     return nullptr;
@@ -1023,13 +1023,13 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
   if (key == aura::client::kWindowWorkspaceKey) {
-    // Save the window for full restore purposes unless
+    // Save the window for window restore purposes unless
     // |ignore_property_change_| is true. Note that moving windows across
     // displays will also trigger a kWindowWorkspaceKey change, even if the
     // value stays the same, so we do not need to save the window when it
     // changes root windows (OnWindowAddedToRootWindow).
     if (!ignore_property_change_)
-      SaveWindowForFullRestore(this);
+      SaveWindowForWindowRestore(this);
     return;
   }
 
@@ -1087,7 +1087,7 @@ void WindowState::OnWindowBoundsChanged(aura::Window* window,
   }
 
   if (reason != ui::PropertyChangeReason::FROM_ANIMATION && !is_dragged())
-    SaveWindowForFullRestore(this);
+    SaveWindowForWindowRestore(this);
 }
 
 }  // namespace ash
