@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
@@ -432,6 +433,16 @@ void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,
 void AppServiceProxyLacros::AddPreferredApp(
     const std::string& app_id,
     const apps::mojom::IntentPtr& intent) {
+  NOTIMPLEMENTED();
+}
+
+void AppServiceProxyLacros::SetSupportedLinksPreference(
+    const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
+void AppServiceProxyLacros::RemoveSupportedLinksPreference(
+    const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 

@@ -217,6 +217,16 @@ class AppServiceProxyLacros : public KeyedService,
   void AddPreferredApp(const std::string& app_id,
                        const apps::mojom::IntentPtr& intent);
 
+  // Sets |app_id| as the preferred app for all of its supported links ('view'
+  // intent filters with a scheme and host). Any existing preferred apps for
+  // those links will have all their supported links unset, as if
+  // RemoveSupportedLinksPreference was called for that app.
+  void SetSupportedLinksPreference(const std::string& app_id);
+
+  // Removes all supported link filters from the preferred app list for
+  // |app_id|.
+  void RemoveSupportedLinksPreference(const std::string& app_id);
+
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 
