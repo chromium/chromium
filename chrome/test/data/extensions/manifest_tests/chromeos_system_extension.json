@@ -18,5 +18,6 @@
       "matches": [
         "http://www.google.com/*"
       ]
-    }
+    },
+    "options_page": "options.html"
 }

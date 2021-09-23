@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
@@ -23,9 +24,8 @@
 
 namespace chromeos {
 
-namespace {
-
-constexpr char kManifest[] = R"(
+// static
+const char BaseTelemetryExtensionBrowserTest::kManifestFile[] = R"(
       {
         // Sample telemetry extension public key. Currently, this is the only
         // allowed extension to declare "chromeos_system_extension" key.
@@ -44,11 +44,10 @@ constexpr char kManifest[] = R"(
           "matches": [
             "http://www.google.com/*"
           ]
-        }
+        },
+        "options_page": "options.html"
       }
     )";
-
-}  // namespace
 
 // static
 const char BaseTelemetryExtensionBrowserTest::kPwaPageUrlString[] =
@@ -83,35 +82,18 @@ void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
   }
 }
 
-const extensions::Extension*
-BaseTelemetryExtensionBrowserTest::LoadExtensionWithManifestAndServiceWorker(
-    extensions::TestExtensionDir& test_dir,
-    const std::string& manifest_content,
-    const std::string& service_worker_content) {
-  test_dir.WriteManifest(manifest_content);
-  test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), service_worker_content);
-
-  return LoadExtension(test_dir.UnpackedPath());
-}
-
-const extensions::Extension*
-BaseTelemetryExtensionBrowserTest::LoadExtensionWithServiceWorker(
-    extensions::TestExtensionDir& test_dir,
-    const std::string& service_worker_content) {
-  return LoadExtensionWithManifestAndServiceWorker(test_dir, kManifest,
-                                                   service_worker_content);
-}
-
 void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
     const std::string& service_worker_content) {
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifestFile);
+  test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), service_worker_content);
+  test_dir.WriteFile(FILE_PATH_LITERAL("options.html"), "");
 
   // Must be initialised before loading extension.
   extensions::ResultCatcher result_catcher;
 
-  const auto* extension = LoadExtensionWithManifestAndServiceWorker(
-      test_dir, kManifest, service_worker_content);
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
