@@ -42,6 +42,8 @@ public class WebContentsAccessibilityEventsTest {
             "Test expectations were null, perhaps the file is missing?";
     private static final String RESULTS_NULL =
             "Test results were null, did you remember to add the tracker to WCAI?";
+    private static final String MISSING_FILE_ERROR =
+            "Input file could not be read, perhaps the file is missing?";
 
     // Member variables required for testing framework
     private static final String BASE_DIRECTORY = "/chromium_tests_root";
@@ -62,6 +64,9 @@ public class WebContentsAccessibilityEventsTest {
      */
     /* @Before */
     protected void setupTestFromFile(String filepath) {
+        // Verify file exists before beginning the test.
+        verifyInputFile(filepath);
+
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.getIsolatedTestFileUrl(filepath));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFramework();
@@ -175,6 +180,17 @@ public class WebContentsAccessibilityEventsTest {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    /**
+     * Check that a given file exists on disk.
+     * @param fileName      String - file to check
+     */
+    private void verifyInputFile(String fileName) {
+        String directory = Environment.getExternalStorageDirectory().getPath() + BASE_DIRECTORY;
+
+        File expectedFile = new File(directory, "/" + fileName);
+        Assert.assertTrue(MISSING_FILE_ERROR, expectedFile.exists());
     }
 
     // Helper pass-through methods to make tests easier to read.
@@ -881,12 +897,6 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     public void test_menulistNext() {
         performTest("menulist-next.html", EMPTY_EXPECTATIONS_FILE);
-    }
-
-    @Test
-    @SmallTest
-    public void test_menulistPopup() {
-        performTest("menulist-popup.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
