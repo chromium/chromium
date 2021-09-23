@@ -340,6 +340,7 @@ def main():
 
         # Profile runtime (used by profiler and code coverage).
         'lib/clang/$V/lib/linux/libclang_rt.profile-i386.a',
+        'lib/clang/$V/lib/linux/libclang_rt.profile-i686-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-x86_64.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-aarch64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-arm-android.a',
