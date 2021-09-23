@@ -5,4 +5,4 @@ possible tests should be upstreamed to the
 [equivalent Web Platform Tests directory] instead.
 
 [equivalent Web Platform Tests directory]: ../../external/wpt/webusb
-[Web Serial API]: https://wicg.github.io/webusb
+[WebUSB API]: https://wicg.github.io/webusb
