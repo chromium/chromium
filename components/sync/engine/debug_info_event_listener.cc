@@ -17,7 +17,7 @@ DebugInfoEventListener::DebugInfoEventListener()
       cryptographer_has_pending_keys_(false),
       cryptographer_can_encrypt_(false) {}
 
-DebugInfoEventListener::~DebugInfoEventListener() {}
+DebugInfoEventListener::~DebugInfoEventListener() = default;
 
 void DebugInfoEventListener::InitializationComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -169,26 +169,27 @@ void DebugInfoEventListener::OnDataTypeConfigureComplete(
     const std::vector<DataTypeConfigurationStats>& configuration_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (size_t i = 0; i < configuration_stats.size(); ++i) {
-    DCHECK(ProtocolTypes().Has(configuration_stats[i].model_type));
+  for (const DataTypeConfigurationStats& configuration_stat :
+       configuration_stats) {
+    DCHECK(ProtocolTypes().Has(configuration_stat.model_type));
     sync_pb::DebugEventInfo association_event;
     sync_pb::DatatypeAssociationStats* datatype_stats =
         association_event.mutable_datatype_association_stats();
-    datatype_stats->set_data_type_id(GetSpecificsFieldNumberFromModelType(
-        configuration_stats[i].model_type));
+    datatype_stats->set_data_type_id(
+        GetSpecificsFieldNumberFromModelType(configuration_stat.model_type));
     datatype_stats->set_download_wait_time_us(
-        configuration_stats[i].download_wait_time.InMicroseconds());
+        configuration_stat.download_wait_time.InMicroseconds());
     datatype_stats->set_download_time_us(
-        configuration_stats[i].download_time.InMicroseconds());
+        configuration_stat.download_time.InMicroseconds());
 
     for (ModelType type :
-         configuration_stats[i].high_priority_types_configured_before) {
+         configuration_stat.high_priority_types_configured_before) {
       datatype_stats->add_high_priority_type_configured_before(
           GetSpecificsFieldNumberFromModelType(type));
     }
 
     for (ModelType type :
-         configuration_stats[i].same_priority_types_configured_before) {
+         configuration_stat.same_priority_types_configured_before) {
       datatype_stats->add_same_priority_type_configured_before(
           GetSpecificsFieldNumberFromModelType(type));
     }

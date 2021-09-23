@@ -234,9 +234,7 @@ class SyncSchedulerImplTest : public testing::Test {
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::ThreadPoolExecutionMode::
                 ASYNC,
-            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
-        syncer_(nullptr),
-        delay_(nullptr) {}
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   class MockDelayProvider : public BackoffDelayProvider {
    public:
@@ -457,8 +455,8 @@ class SyncSchedulerImplTest : public testing::Test {
   std::unique_ptr<SyncCycleContext> context_;
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
   MockNudgeHandler mock_nudge_handler_;
-  MockSyncer* syncer_;
-  MockDelayProvider* delay_;
+  MockSyncer* syncer_ = nullptr;
+  MockDelayProvider* delay_ = nullptr;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
   base::WeakPtrFactory<SyncSchedulerImplTest> weak_ptr_factory_{this};
 };

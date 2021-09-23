@@ -77,8 +77,8 @@ void MockModelTypeProcessor::SetSynchronousExecution(bool is_synchronous) {
 }
 
 void MockModelTypeProcessor::RunQueuedTasks() {
-  for (auto it = pending_tasks_.begin(); it != pending_tasks_.end(); ++it) {
-    std::move(*it).Run();
+  for (base::OnceClosure& pending_task : pending_tasks_) {
+    std::move(pending_task).Run();
   }
   pending_tasks_.clear();
 }
@@ -254,10 +254,9 @@ void MockModelTypeProcessor::OnCommitCompletedImpl(
     const FailedCommitResponseDataList& error_response_list) {
   received_commit_responses_.push_back(committed_response_list);
   type_states_received_on_commit_.push_back(type_state);
-  for (auto it = committed_response_list.begin();
-       it != committed_response_list.end(); ++it) {
-    const ClientTagHash& tag_hash = it->client_tag_hash;
-    commit_response_items_.insert(std::make_pair(tag_hash, *it));
+  for (const CommitResponseData& response : committed_response_list) {
+    const ClientTagHash& tag_hash = response.client_tag_hash;
+    commit_response_items_.insert(std::make_pair(tag_hash, response));
 
     if (pending_deleted_hashes_.find(tag_hash) !=
         pending_deleted_hashes_.end()) {
@@ -269,8 +268,8 @@ void MockModelTypeProcessor::OnCommitCompletedImpl(
       pending_deleted_hashes_.erase(tag_hash);
     } else {
       // Server wins.  Set the model's base version.
-      SetBaseVersion(tag_hash, it->response_version);
-      SetServerAssignedId(tag_hash, it->id);
+      SetBaseVersion(tag_hash, response.response_version);
+      SetServerAssignedId(tag_hash, response.id);
     }
   }
 }
@@ -279,13 +278,13 @@ void MockModelTypeProcessor::OnUpdateReceivedImpl(
     const sync_pb::ModelTypeState& type_state,
     UpdateResponseDataList response_list) {
   type_states_received_on_update_.push_back(type_state);
-  for (auto it = response_list.begin(); it != response_list.end(); ++it) {
-    const ClientTagHash& client_tag_hash = it->entity.client_tag_hash;
+  for (const UpdateResponseData& response : response_list) {
+    const ClientTagHash& client_tag_hash = response.entity.client_tag_hash;
     // Server wins.  Set the model's base version.
-    SetBaseVersion(client_tag_hash, it->response_version);
-    SetServerAssignedId(client_tag_hash, it->entity.id);
+    SetBaseVersion(client_tag_hash, response.response_version);
+    SetServerAssignedId(client_tag_hash, response.entity.id);
 
-    update_response_items_.insert(std::make_pair(client_tag_hash, &(*it)));
+    update_response_items_.insert(std::make_pair(client_tag_hash, &response));
   }
   received_update_responses_.push_back(std::move(response_list));
 }

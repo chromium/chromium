@@ -73,7 +73,7 @@ ProcessorEntity::ProcessorEntity(const std::string& storage_key,
   metadata_ = std::move(metadata);
 }
 
-ProcessorEntity::~ProcessorEntity() {}
+ProcessorEntity::~ProcessorEntity() = default;
 
 void ProcessorEntity::SetStorageKey(const std::string& storage_key) {
   DCHECK(storage_key_.empty());

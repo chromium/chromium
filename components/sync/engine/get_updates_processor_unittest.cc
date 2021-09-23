@@ -376,8 +376,8 @@ TEST_F(GetUpdatesProcessorTest, NormalResponseTest) {
 // one of them.
 class GetUpdatesProcessorApplyUpdatesTest : public GetUpdatesProcessorTest {
  public:
-  GetUpdatesProcessorApplyUpdatesTest() {}
-  ~GetUpdatesProcessorApplyUpdatesTest() override {}
+  GetUpdatesProcessorApplyUpdatesTest() = default;
+  ~GetUpdatesProcessorApplyUpdatesTest() override = default;
 
   void SetUp() override {
     bookmarks_handler_ = AddUpdateHandler(BOOKMARKS);
@@ -453,8 +453,8 @@ TEST_F(GetUpdatesProcessorApplyUpdatesTest, Poll) {
 
 class DownloadUpdatesDebugInfoTest : public ::testing::Test {
  public:
-  DownloadUpdatesDebugInfoTest() {}
-  ~DownloadUpdatesDebugInfoTest() override {}
+  DownloadUpdatesDebugInfoTest() = default;
+  ~DownloadUpdatesDebugInfoTest() override = default;
 
   StatusController* status() { return &status_; }
 

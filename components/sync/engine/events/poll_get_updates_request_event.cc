@@ -13,7 +13,7 @@ PollGetUpdatesRequestEvent::PollGetUpdatesRequestEvent(
     const sync_pb::ClientToServerMessage& request)
     : timestamp_(timestamp), request_(request) {}
 
-PollGetUpdatesRequestEvent::~PollGetUpdatesRequestEvent() {}
+PollGetUpdatesRequestEvent::~PollGetUpdatesRequestEvent() = default;
 
 std::unique_ptr<ProtocolEvent> PollGetUpdatesRequestEvent::Clone() const {
   return std::make_unique<PollGetUpdatesRequestEvent>(timestamp_, request_);

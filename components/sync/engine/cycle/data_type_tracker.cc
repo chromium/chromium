@@ -202,9 +202,9 @@ void DataTypeTracker::RecordSuccessfulSyncCycle() {
   // crash before writing all our state, we should wait until the results of
   // this sync cycle have been written to disk before updating the invalidations
   // state.  See crbug.com/324996.
-  for (auto it = pending_invalidations_.begin();
-       it != pending_invalidations_.end(); ++it) {
-    (*it)->Acknowledge();
+  for (const std::unique_ptr<InvalidationInterface>& pending_invalidation :
+       pending_invalidations_) {
+    pending_invalidation->Acknowledge();
   }
   pending_invalidations_.clear();
 
@@ -295,10 +295,10 @@ void DataTypeTracker::FillGetUpdatesTriggersMessage(
   // Fill the list of payloads, if applicable.  The payloads must be ordered
   // oldest to newest, so we insert them in the same order as we've been storing
   // them internally.
-  for (auto it = pending_invalidations_.begin();
-       it != pending_invalidations_.end(); ++it) {
-    if (!(*it)->IsUnknownVersion()) {
-      msg->add_notification_hint((*it)->GetPayload());
+  for (const std::unique_ptr<InvalidationInterface>& pending_invalidation :
+       pending_invalidations_) {
+    if (!pending_invalidation->IsUnknownVersion()) {
+      msg->add_notification_hint(pending_invalidation->GetPayload());
     }
   }
 

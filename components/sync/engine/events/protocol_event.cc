@@ -6,9 +6,9 @@
 
 namespace syncer {
 
-ProtocolEvent::ProtocolEvent() {}
+ProtocolEvent::ProtocolEvent() = default;
 
-ProtocolEvent::~ProtocolEvent() {}
+ProtocolEvent::~ProtocolEvent() = default;
 
 std::unique_ptr<base::DictionaryValue> ProtocolEvent::ToValue(
     bool include_specifics) const {

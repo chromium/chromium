@@ -17,7 +17,7 @@ namespace syncer {
 FakeModelTypeControllerDelegate::FakeModelTypeControllerDelegate(ModelType type)
     : type_(type) {}
 
-FakeModelTypeControllerDelegate::~FakeModelTypeControllerDelegate() {}
+FakeModelTypeControllerDelegate::~FakeModelTypeControllerDelegate() = default;
 
 void FakeModelTypeControllerDelegate::SetModelTypeStateForActivationResponse(
     const sync_pb::ModelTypeState& model_type_state) {

@@ -17,7 +17,7 @@ ModelTypeConnectorProxy::ModelTypeConnectorProxy(
     const base::WeakPtr<ModelTypeConnector>& model_type_connector)
     : task_runner_(task_runner), model_type_connector_(model_type_connector) {}
 
-ModelTypeConnectorProxy::~ModelTypeConnectorProxy() {}
+ModelTypeConnectorProxy::~ModelTypeConnectorProxy() = default;
 
 void ModelTypeConnectorProxy::ConnectDataType(
     ModelType type,

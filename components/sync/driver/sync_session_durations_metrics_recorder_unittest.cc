@@ -29,7 +29,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
     sync_service_.SetDisableReasons(SyncService::DISABLE_REASON_NOT_SIGNED_IN);
   }
 
-  ~SyncSessionDurationsMetricsRecorderTest() override {}
+  ~SyncSessionDurationsMetricsRecorderTest() override = default;
 
   void EnableSync() {
     identity_test_env_.MakePrimaryAccountAvailable("foo@gmail.com",

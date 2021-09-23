@@ -58,7 +58,7 @@ DeviceInfoPrefs::DeviceInfoPrefs(PrefService* pref_service,
   DCHECK(clock_);
 }
 
-DeviceInfoPrefs::~DeviceInfoPrefs() {}
+DeviceInfoPrefs::~DeviceInfoPrefs() = default;
 
 bool DeviceInfoPrefs::IsRecentLocalCacheGuid(
     const std::string& cache_guid) const {

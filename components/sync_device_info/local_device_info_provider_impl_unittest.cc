@@ -47,7 +47,7 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
   MockDeviceInfoSyncClient(const MockDeviceInfoSyncClient&) = delete;
   MockDeviceInfoSyncClient& operator=(const MockDeviceInfoSyncClient&) = delete;
 
-  ~MockDeviceInfoSyncClient() = default;
+  ~MockDeviceInfoSyncClient() override = default;
 
   MOCK_METHOD(std::string, GetSigninScopedDeviceId, (), (const override));
   MOCK_METHOD(bool, GetSendTabToSelfReceivingEnabled, (), (const override));
@@ -72,8 +72,8 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
 
 class LocalDeviceInfoProviderImplTest : public testing::Test {
  public:
-  LocalDeviceInfoProviderImplTest() {}
-  ~LocalDeviceInfoProviderImplTest() override {}
+  LocalDeviceInfoProviderImplTest() = default;
+  ~LocalDeviceInfoProviderImplTest() override = default;
 
   void SetUp() override {
     provider_ = std::make_unique<LocalDeviceInfoProviderImpl>(

@@ -106,7 +106,7 @@ class LevelDbWriteBatch : public BlockingModelTypeStoreImpl::WriteBatch {
         leveldb_write_batch_(std::make_unique<leveldb::WriteBatch>()),
         metadata_change_list_(type, leveldb_write_batch_.get()) {}
 
-  ~LevelDbWriteBatch() override {}
+  ~LevelDbWriteBatch() override = default;
 
   ModelType GetModelType() const { return type_; }
 

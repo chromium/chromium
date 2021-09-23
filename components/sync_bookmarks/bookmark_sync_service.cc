@@ -18,7 +18,7 @@ BookmarkSyncService::BookmarkSyncService(
           bookmark_undo_service);
 }
 
-BookmarkSyncService::~BookmarkSyncService() {}
+BookmarkSyncService::~BookmarkSyncService() = default;
 
 std::string BookmarkSyncService::EncodeBookmarkSyncMetadata() {
   if (!bookmark_model_type_processor_) {

@@ -74,7 +74,7 @@ class TestModelTypeController : public ModelTypeController {
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode)
       : ModelTypeController(kTestModelType,
                             std::move(delegate_for_full_sync_mode)) {}
-  ~TestModelTypeController() override {}
+  ~TestModelTypeController() override = default;
 
   using ModelTypeController::ReportModelError;
 };
@@ -94,7 +94,7 @@ class ModelTypeControllerTest : public testing::Test {
       : controller_(std::make_unique<ForwardingModelTypeControllerDelegate>(
             &mock_delegate_)) {}
 
-  ~ModelTypeControllerTest() {}
+  ~ModelTypeControllerTest() override = default;
 
   bool LoadModels(bool initial_sync_done = false) {
     base::MockCallback<DataTypeController::ModelLoadCallback> load_models_done;

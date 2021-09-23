@@ -100,7 +100,7 @@ DeviceInfo::DeviceInfo(
       fcm_registration_token_(fcm_registration_token),
       interested_data_types_(interested_data_types) {}
 
-DeviceInfo::~DeviceInfo() {}
+DeviceInfo::~DeviceInfo() = default;
 
 const std::string& DeviceInfo::guid() const {
   return guid_;

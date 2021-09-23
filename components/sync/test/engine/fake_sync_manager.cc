@@ -31,7 +31,7 @@ FakeSyncManager::FakeSyncManager(ModelTypeSet initial_sync_ended_types,
       configure_fail_types_(configure_fail_types),
       last_configure_reason_(CONFIGURE_REASON_UNKNOWN) {}
 
-FakeSyncManager::~FakeSyncManager() {}
+FakeSyncManager::~FakeSyncManager() = default;
 
 ModelTypeSet FakeSyncManager::GetAndResetDownloadedTypes() {
   ModelTypeSet downloaded_types = downloaded_types_;

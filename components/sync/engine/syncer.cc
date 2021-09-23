@@ -35,7 +35,7 @@ void HandleCycleBegin(SyncCycle* cycle) {
 Syncer::Syncer(CancelationSignal* cancelation_signal)
     : cancelation_signal_(cancelation_signal), is_syncing_(false) {}
 
-Syncer::~Syncer() {}
+Syncer::~Syncer() = default;
 
 bool Syncer::IsSyncing() const {
   return is_syncing_;

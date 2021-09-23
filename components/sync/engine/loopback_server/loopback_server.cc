@@ -124,7 +124,7 @@ class UpdateSieve {
   UpdateSieve(const sync_pb::GetUpdatesMessage& message,
               const std::map<ModelType, int>& server_migration_versions)
       : UpdateSieve(MessageToVersionMap(message, server_migration_versions)) {}
-  ~UpdateSieve() {}
+  ~UpdateSieve() = default;
 
   // Verifies if MIGRATION_DONE should be exercised. It intentionally returns
   // migrations in the order that they were triggered.  Doing it this way

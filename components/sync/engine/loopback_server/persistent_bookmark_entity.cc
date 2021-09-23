@@ -28,7 +28,7 @@ bool IsBookmark(const sync_pb::SyncEntity& client_entity) {
 
 }  // namespace
 
-PersistentBookmarkEntity::~PersistentBookmarkEntity() {}
+PersistentBookmarkEntity::~PersistentBookmarkEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(

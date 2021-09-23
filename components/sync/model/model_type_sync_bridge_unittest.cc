@@ -26,7 +26,7 @@ class ModelTypeSyncBridgeTest : public ::testing::Test {
  public:
   ModelTypeSyncBridgeTest()
       : bridge_(mock_processor_.CreateForwardingProcessor()) {}
-  ~ModelTypeSyncBridgeTest() override {}
+  ~ModelTypeSyncBridgeTest() override = default;
 
   StubModelTypeSyncBridge* bridge() { return &bridge_; }
   MockModelTypeChangeProcessor* processor() { return &mock_processor_; }

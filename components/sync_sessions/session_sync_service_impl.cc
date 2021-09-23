@@ -31,7 +31,7 @@ SessionSyncServiceImpl::SessionSyncServiceImpl(
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)));
 }
 
-SessionSyncServiceImpl::~SessionSyncServiceImpl() {}
+SessionSyncServiceImpl::~SessionSyncServiceImpl() = default;
 
 syncer::GlobalIdMapper* SessionSyncServiceImpl::GetGlobalIdMapper() const {
   return bridge_->GetGlobalIdMapper();

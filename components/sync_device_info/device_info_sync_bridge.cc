@@ -555,9 +555,9 @@ std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
 std::vector<std::unique_ptr<DeviceInfo>>
 DeviceInfoSyncBridge::GetAllDeviceInfo() const {
   std::vector<std::unique_ptr<DeviceInfo>> list;
-  for (auto iter = all_data_.begin(); iter != all_data_.end(); ++iter) {
-    if (IsChromeClient(*iter->second)) {
-      list.push_back(SpecificsToModel(*iter->second));
+  for (const auto& id_and_specifics : all_data_) {
+    if (IsChromeClient(*id_and_specifics.second)) {
+      list.push_back(SpecificsToModel(*id_and_specifics.second));
     }
   }
   return list;

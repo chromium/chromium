@@ -37,7 +37,7 @@ const char kSyncSuppressStart[] = "sync.suppress_start";
 
 }  // namespace
 
-SyncPrefObserver::~SyncPrefObserver() {}
+SyncPrefObserver::~SyncPrefObserver() = default;
 
 SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
   DCHECK(pref_service);

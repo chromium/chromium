@@ -16,7 +16,7 @@ using syncer::ModelType;
 
 namespace syncer {
 
-PersistentTombstoneEntity::~PersistentTombstoneEntity() {}
+PersistentTombstoneEntity::~PersistentTombstoneEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity>

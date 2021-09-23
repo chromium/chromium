@@ -63,7 +63,7 @@ class LocalSessionWriteBatch : public LocalSessionEventHandlerImpl::WriteBatch {
     DCHECK(processor_->IsTrackingMetadata());
   }
 
-  ~LocalSessionWriteBatch() override {}
+  ~LocalSessionWriteBatch() override = default;
 
   // WriteBatch implementation.
   void Delete(int tab_node_id) override {
@@ -454,8 +454,8 @@ void SessionSyncBridge::ReportError(const syncer::ModelError& error) {
   change_processor()->ReportError(error);
 }
 
-SessionSyncBridge::SyncingState::SyncingState() {}
+SessionSyncBridge::SyncingState::SyncingState() = default;
 
-SessionSyncBridge::SyncingState::~SyncingState() {}
+SessionSyncBridge::SyncingState::~SyncingState() = default;
 
 }  // namespace sync_sessions

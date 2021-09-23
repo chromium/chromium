@@ -866,7 +866,7 @@ TEST_F(NudgeTrackerTest, DoNotUpdateDelayIfTooSmall) {
 
 class NudgeTrackerAckTrackingTest : public NudgeTrackerTest {
  public:
-  NudgeTrackerAckTrackingTest() {}
+  NudgeTrackerAckTrackingTest() = default;
 
   bool IsInvalidationUnacknowledged(int tracking_id) {
     return tracker_.IsUnacked(tracking_id);

@@ -267,7 +267,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
 //   metadata in storage on the bridge side.
 class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
  public:
-  ClientTagBasedModelTypeProcessorTest() {}
+  ClientTagBasedModelTypeProcessorTest() = default;
   ~ClientTagBasedModelTypeProcessorTest() override { CheckPostConditions(); }
 
   void SetUp() override {

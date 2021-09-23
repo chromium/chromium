@@ -83,10 +83,7 @@ class SyncerTest : public testing::Test,
                    public SyncCycle::Delegate,
                    public SyncEngineEventListener {
  protected:
-  SyncerTest()
-      : extensions_activity_(new ExtensionsActivity),
-        syncer_(nullptr),
-        last_client_invalidation_hint_buffer_size_(10) {}
+  SyncerTest() = default;
 
   // SyncCycle::Delegate implementation.
   void OnThrottled(const base::TimeDelta& throttle_duration) override {
@@ -243,12 +240,13 @@ class SyncerTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   FakeSyncEncryptionHandler encryption_handler_;
-  scoped_refptr<ExtensionsActivity> extensions_activity_;
+  scoped_refptr<ExtensionsActivity> extensions_activity_ =
+      new ExtensionsActivity;
   std::unique_ptr<MockConnectionManager> mock_server_;
   CancelationSignal cancelation_signal_;
   std::map<ModelType, MockModelTypeProcessor> mock_model_type_processors_;
 
-  Syncer* syncer_;
+  Syncer* syncer_ = nullptr;
 
   std::unique_ptr<SyncCycle> cycle_;
   MockNudgeHandler mock_nudge_handler_;
@@ -258,7 +256,7 @@ class SyncerTest : public testing::Test,
   base::TimeDelta last_poll_interval_received_;
   base::TimeDelta last_sessions_commit_delay_;
   base::TimeDelta last_bookmarks_commit_delay_;
-  int last_client_invalidation_hint_buffer_size_;
+  int last_client_invalidation_hint_buffer_size_ = 10;
 
   ModelTypeSet enabled_datatypes_;
   NudgeTracker nudge_tracker_;

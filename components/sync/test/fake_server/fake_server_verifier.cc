@@ -65,7 +65,7 @@ string ConvertFakeServerContentsToString(
 FakeServerVerifier::FakeServerVerifier(FakeServer* fake_server)
     : fake_server_(fake_server) {}
 
-FakeServerVerifier::~FakeServerVerifier() {}
+FakeServerVerifier::~FakeServerVerifier() = default;
 
 AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     size_t expected_count,

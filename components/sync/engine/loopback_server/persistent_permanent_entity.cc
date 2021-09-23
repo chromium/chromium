@@ -25,7 +25,7 @@ static const char kRootParentTag[] = "0";
 
 namespace syncer {
 
-PersistentPermanentEntity::~PersistentPermanentEntity() {}
+PersistentPermanentEntity::~PersistentPermanentEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateNew(

@@ -29,7 +29,7 @@ namespace {
 //
 class MemoryUsageVisitor {
  public:
-  MemoryUsageVisitor() : memory_usage_(0) {}
+  MemoryUsageVisitor() = default;
 
   size_t memory_usage() const { return memory_usage_; }
 
@@ -109,7 +109,7 @@ class MemoryUsageVisitor {
   }
 
  private:
-  size_t memory_usage_;
+  size_t memory_usage_ = 0;
 };
 
 }  // namespace

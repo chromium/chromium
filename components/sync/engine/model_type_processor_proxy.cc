@@ -17,7 +17,7 @@ ModelTypeProcessorProxy::ModelTypeProcessorProxy(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : processor_(processor), task_runner_(task_runner) {}
 
-ModelTypeProcessorProxy::~ModelTypeProcessorProxy() {}
+ModelTypeProcessorProxy::~ModelTypeProcessorProxy() = default;
 
 void ModelTypeProcessorProxy::ConnectSync(std::unique_ptr<CommitQueue> worker) {
   task_runner_->PostTask(

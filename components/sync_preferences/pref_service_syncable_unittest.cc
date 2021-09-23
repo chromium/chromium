@@ -195,7 +195,7 @@ SyncData CreateRemoteSyncData(const std::string& name,
 
 class PrefServiceSyncableTest : public testing::Test {
  public:
-  PrefServiceSyncableTest() : pref_sync_service_(nullptr) {}
+  PrefServiceSyncableTest() = default;
 
   void SetUp() override {
     prefs_.registry()->RegisterStringPref(kUnsyncedPreferenceName,
@@ -263,7 +263,7 @@ class PrefServiceSyncableTest : public testing::Test {
  protected:
   TestingPrefServiceSyncable prefs_;
 
-  PrefModelAssociator* pref_sync_service_;
+  PrefModelAssociator* pref_sync_service_ = nullptr;
 };
 
 TEST_F(PrefServiceSyncableTest, CreatePrefSyncData) {
@@ -363,13 +363,13 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationWithDataTypeMismatch) {
 
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
-  TestPrefModelAssociatorClient() {}
+  TestPrefModelAssociatorClient() = default;
 
   TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
   TestPrefModelAssociatorClient& operator=(
       const TestPrefModelAssociatorClient&) = delete;
 
-  ~TestPrefModelAssociatorClient() override {}
+  ~TestPrefModelAssociatorClient() override = default;
 
   // PrefModelAssociatorClient implementation.
   bool IsMergeableListPreference(const std::string& pref_name) const override {
@@ -397,12 +397,7 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
 class PrefServiceSyncableMergeTest : public testing::Test {
  public:
   PrefServiceSyncableMergeTest()
-      : pref_registry_(
-            base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()),
-        pref_notifier_(new PrefNotifierImpl),
-        managed_prefs_(base::MakeRefCounted<TestingPrefStore>()),
-        user_prefs_(base::MakeRefCounted<TestingPrefStore>()),
-        prefs_(
+      : prefs_(
             std::unique_ptr<PrefNotifierImpl>(pref_notifier_),
             std::make_unique<PrefValueStore>(managed_prefs_.get(),
                                              new TestingPrefStore,
@@ -416,8 +411,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
             pref_registry_,
             &client_,
             /*read_error_callback=*/base::DoNothing(),
-            /*async=*/false),
-        pref_sync_service_(nullptr) {}
+            /*async=*/false) {}
 
   void SetUp() override {
     pref_registry_->RegisterStringPref(kUnsyncedPreferenceName,
@@ -498,14 +492,17 @@ class PrefServiceSyncableMergeTest : public testing::Test {
   }
 
  protected:
-  scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
+  scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_ =
+      base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
   // Owned by prefs_;
-  PrefNotifierImpl* pref_notifier_;
-  scoped_refptr<TestingPrefStore> managed_prefs_;
-  scoped_refptr<TestingPrefStore> user_prefs_;
+  PrefNotifierImpl* const pref_notifier_ = new PrefNotifierImpl;
+  scoped_refptr<TestingPrefStore> managed_prefs_ =
+      base::MakeRefCounted<TestingPrefStore>();
+  scoped_refptr<TestingPrefStore> user_prefs_ =
+      base::MakeRefCounted<TestingPrefStore>();
   TestPrefModelAssociatorClient client_;
   PrefServiceSyncable prefs_;
-  PrefModelAssociator* pref_sync_service_;
+  PrefModelAssociator* pref_sync_service_ = nullptr;
 };
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
@@ -634,8 +631,8 @@ TEST_F(PrefServiceSyncableMergeTest, KeepPriorityPreferencesSeparately) {
 
 class ShouldNotBeNotifedObserver : public SyncedPrefObserver {
  public:
-  ShouldNotBeNotifedObserver() {}
-  ~ShouldNotBeNotifedObserver() {}
+  ShouldNotBeNotifedObserver() = default;
+  ~ShouldNotBeNotifedObserver() = default;
 
   void OnSyncedPrefChanged(const std::string& path, bool from_sync) override {
     ADD_FAILURE() << "Unexpected notification about a pref change with path: '"

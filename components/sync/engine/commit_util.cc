@@ -25,12 +25,12 @@ void AddExtensionsActivityToMessage(
   activity->GetAndClearRecords(extensions_activity_buffer);
 
   const ExtensionsActivity::Records& records = *extensions_activity_buffer;
-  for (auto it = records.begin(); it != records.end(); ++it) {
+  for (const auto& id_and_record : records) {
     sync_pb::ChromiumExtensionsActivity* activity_message =
         message->add_extensions_activity();
-    activity_message->set_extension_id(it->second.extension_id);
+    activity_message->set_extension_id(id_and_record.second.extension_id);
     activity_message->set_bookmark_writes_since_last_commit(
-        it->second.bookmark_write_count);
+        id_and_record.second.bookmark_write_count);
   }
 }
 

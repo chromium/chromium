@@ -13,7 +13,7 @@
 
 namespace syncer {
 
-MigrationObserver::~MigrationObserver() {}
+MigrationObserver::~MigrationObserver() = default;
 
 BackendMigrator::BackendMigrator(
     const std::string& name,
@@ -29,7 +29,7 @@ BackendMigrator::BackendMigrator(
   DCHECK(!migration_done_callback_.is_null());
 }
 
-BackendMigrator::~BackendMigrator() {}
+BackendMigrator::~BackendMigrator() = default;
 
 // Helper macros to log with the syncer thread name; useful when there
 // are multiple syncer threads involved.

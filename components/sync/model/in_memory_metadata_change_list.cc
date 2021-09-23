@@ -8,8 +8,8 @@
 
 namespace syncer {
 
-InMemoryMetadataChangeList::InMemoryMetadataChangeList() {}
-InMemoryMetadataChangeList::~InMemoryMetadataChangeList() {}
+InMemoryMetadataChangeList::InMemoryMetadataChangeList() = default;
+InMemoryMetadataChangeList::~InMemoryMetadataChangeList() = default;
 
 void InMemoryMetadataChangeList::TransferChangesTo(MetadataChangeList* other) {
   DCHECK(other);

@@ -21,7 +21,7 @@ ProxyTabsDataTypeController::ProxyTabsDataTypeController(
       state_changed_cb_(state_changed_cb),
       state_(NOT_RUNNING) {}
 
-ProxyTabsDataTypeController::~ProxyTabsDataTypeController() {}
+ProxyTabsDataTypeController::~ProxyTabsDataTypeController() = default;
 
 void ProxyTabsDataTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,

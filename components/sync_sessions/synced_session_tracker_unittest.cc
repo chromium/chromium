@@ -63,7 +63,7 @@ MATCHER_P(HasSessionTag, expected_tag, "") {
 class SyncedSessionTrackerTest : public testing::Test {
  public:
   SyncedSessionTrackerTest() : tracker_(&sessions_client_) {}
-  ~SyncedSessionTrackerTest() override {}
+  ~SyncedSessionTrackerTest() override = default;
 
   TabNodePool* GetLocalTabNodePool() {
     return &tracker_.LookupTrackedSession(tracker_.local_session_tag_)

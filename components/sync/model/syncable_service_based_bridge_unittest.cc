@@ -99,7 +99,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
             });
   }
 
-  ~SyncableServiceBasedBridgeTest() override {}
+  ~SyncableServiceBasedBridgeTest() override = default;
 
   void InitializeBridge(ModelType model_type = kModelType) {
     real_processor_ =

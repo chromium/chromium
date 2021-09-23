@@ -23,7 +23,7 @@ using testing::NotNull;
 
 class FakeTickClock : public base::TickClock {
  public:
-  FakeTickClock() : call_count_(0) {}
+  FakeTickClock() = default;
 
   // How much the mock clock advances after each call to the mocked
   // base::TimeTicks::Now(). We do this because we are testing functions which
@@ -40,7 +40,7 @@ class FakeTickClock : public base::TickClock {
   int call_count() const { return call_count_; }
 
  private:
-  mutable int call_count_;
+  mutable int call_count_ = 0;
 };
 
 constexpr base::TimeDelta FakeTickClock::kTicksAdvanceAfterEachCall;

@@ -20,19 +20,20 @@ class HasModelTypesMatcher : public ::testing::MatcherInterface<ModelTypeSet> {
   explicit HasModelTypesMatcher(ModelTypeSet expected_types)
       : expected_types_(expected_types) {}
 
-  virtual ~HasModelTypesMatcher() {}
+  ~HasModelTypesMatcher() override = default;
 
-  virtual bool MatchAndExplain(ModelTypeSet model_types,
-                               ::testing::MatchResultListener* listener) const {
+  bool MatchAndExplain(
+      ModelTypeSet model_types,
+      ::testing::MatchResultListener* listener) const override {
     // No need to annotate listener since we already define PrintTo().
     return model_types == expected_types_;
   }
 
-  virtual void DescribeTo(::std::ostream* os) const {
+  void DescribeTo(::std::ostream* os) const override {
     *os << "has model types " << ModelTypeSetToString(expected_types_);
   }
 
-  virtual void DescribeNegationTo(::std::ostream* os) const {
+  void DescribeNegationTo(::std::ostream* os) const override {
     *os << "doesn't have model types " << ModelTypeSetToString(expected_types_);
   }
 

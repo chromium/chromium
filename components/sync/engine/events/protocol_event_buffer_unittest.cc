@@ -26,9 +26,9 @@ class ProtocolEventBufferTest : public ::testing::Test {
   ProtocolEventBuffer buffer_;
 };
 
-ProtocolEventBufferTest::ProtocolEventBufferTest() {}
+ProtocolEventBufferTest::ProtocolEventBufferTest() = default;
 
-ProtocolEventBufferTest::~ProtocolEventBufferTest() {}
+ProtocolEventBufferTest::~ProtocolEventBufferTest() = default;
 
 std::unique_ptr<ProtocolEvent> ProtocolEventBufferTest::MakeTestEvent(
     int64_t id) {

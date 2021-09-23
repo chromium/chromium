@@ -131,7 +131,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
         is_encrypted_type_(is_encrypted_type),
         mock_server_(std::make_unique<SingleTypeMockServer>(model_type)) {}
 
-  ~ModelTypeWorkerTest() override {}
+  ~ModelTypeWorkerTest() override = default;
 
   // One of these Initialize functions should be called at the beginning of
   // each test.

@@ -162,7 +162,7 @@ class SyncManagerImplTest : public testing::Test {
 
   ~SyncManagerImplTest() override = default;
 
-  void SetUp() {
+  void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     extensions_activity_ = new ExtensionsActivity();

@@ -123,8 +123,8 @@ namespace {
 //
 class ToValueVisitor {
  public:
-  ToValueVisitor(bool include_specifics = true,
-                 base::DictionaryValue* value = nullptr)
+  explicit ToValueVisitor(bool include_specifics = true,
+                          base::DictionaryValue* value = nullptr)
       : value_(value), include_specifics_(include_specifics) {}
 
   template <class P>

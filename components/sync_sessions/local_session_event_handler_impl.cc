@@ -107,7 +107,7 @@ LocalSessionEventHandlerImpl::LocalSessionEventHandlerImpl(
   }
 }
 
-LocalSessionEventHandlerImpl::~LocalSessionEventHandlerImpl() {}
+LocalSessionEventHandlerImpl::~LocalSessionEventHandlerImpl() = default;
 
 void LocalSessionEventHandlerImpl::OnSessionRestoreComplete() {
   std::unique_ptr<WriteBatch> batch = delegate_->CreateLocalSessionWriteBatch();

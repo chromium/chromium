@@ -330,9 +330,9 @@ sync_pb::SessionTab SessionTabToSyncData(
   return sync_data;
 }
 
-SyncedSessionWindow::SyncedSessionWindow() {}
+SyncedSessionWindow::SyncedSessionWindow() = default;
 
-SyncedSessionWindow::~SyncedSessionWindow() {}
+SyncedSessionWindow::~SyncedSessionWindow() = default;
 
 sync_pb::SessionWindow SyncedSessionWindow::ToSessionWindowProto() const {
   sync_pb::SessionWindow sync_data;
@@ -349,7 +349,7 @@ sync_pb::SessionWindow SyncedSessionWindow::ToSessionWindowProto() const {
 SyncedSession::SyncedSession()
     : session_tag("invalid"), device_type(sync_pb::SyncEnums::TYPE_UNSET) {}
 
-SyncedSession::~SyncedSession() {}
+SyncedSession::~SyncedSession() = default;
 
 sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
   sync_pb::SessionHeader header;

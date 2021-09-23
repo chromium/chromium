@@ -19,7 +19,7 @@ SingleTypeMockServer::SingleTypeMockServer(ModelType type)
       type_root_id_(ModelTypeToRootTag(type)),
       progress_marker_token_("non_null_progress_token") {}
 
-SingleTypeMockServer::~SingleTypeMockServer() {}
+SingleTypeMockServer::~SingleTypeMockServer() = default;
 
 sync_pb::SyncEntity SingleTypeMockServer::TypeRootUpdate() {
   sync_pb::SyncEntity entity;

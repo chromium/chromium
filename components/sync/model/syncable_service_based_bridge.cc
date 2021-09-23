@@ -118,7 +118,7 @@ class LocalChangeProcessor : public SyncChangeProcessor {
     DCHECK(other);
   }
 
-  ~LocalChangeProcessor() override {}
+  ~LocalChangeProcessor() override = default;
 
   absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,

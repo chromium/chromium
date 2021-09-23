@@ -36,7 +36,7 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     }
   }
 
-  ~ControllerDelegate() override {}
+  ~ControllerDelegate() override = default;
 
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override {

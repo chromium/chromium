@@ -184,7 +184,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
     EXPECT_CALL(mock_processor_, ReportError).Times(0);
   }
 
-  ~SessionSyncBridgeTest() override {}
+  ~SessionSyncBridgeTest() override = default;
 
   void InitializeBridge() {
     real_processor_ =

@@ -538,7 +538,7 @@ BookmarkModelMerger::BookmarkModelMerger(
       "Sync.BookmarkModelMerger.ReachableInputUpdates", num_updates_in_forest);
 }
 
-BookmarkModelMerger::~BookmarkModelMerger() {}
+BookmarkModelMerger::~BookmarkModelMerger() = default;
 
 void BookmarkModelMerger::Merge() {
   TRACE_EVENT0("sync", "BookmarkModelMerger::Merge");

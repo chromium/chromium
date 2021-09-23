@@ -15,7 +15,7 @@ DeviceCountMetricsProvider::DeviceCountMetricsProvider(
     const ProvideTrackersCallback& provide_trackers)
     : provide_trackers_(provide_trackers) {}
 
-DeviceCountMetricsProvider::~DeviceCountMetricsProvider() {}
+DeviceCountMetricsProvider::~DeviceCountMetricsProvider() = default;
 
 int DeviceCountMetricsProvider::MaxActiveDeviceCount() const {
   std::vector<const DeviceInfoTracker*> trackers;

@@ -62,8 +62,7 @@ constexpr char kTestUser[] = "test_user@gmail.com";
 
 class TestSyncServiceObserver : public SyncServiceObserver {
  public:
-  TestSyncServiceObserver()
-      : setup_in_progress_(false), auth_error_(GoogleServiceAuthError()) {}
+  TestSyncServiceObserver() = default;
 
   void OnStateChanged(SyncService* sync) override {
     setup_in_progress_ = sync->IsSetupInProgress();
@@ -74,7 +73,7 @@ class TestSyncServiceObserver : public SyncServiceObserver {
   GoogleServiceAuthError auth_error() const { return auth_error_; }
 
  private:
-  bool setup_in_progress_;
+  bool setup_in_progress_ = false;
   GoogleServiceAuthError auth_error_;
 };
 
@@ -85,8 +84,8 @@ class TestSyncServiceObserver : public SyncServiceObserver {
 // testing the SyncEngine.
 class SyncServiceImplTest : public ::testing::Test {
  protected:
-  SyncServiceImplTest() {}
-  ~SyncServiceImplTest() override {}
+  SyncServiceImplTest() = default;
+  ~SyncServiceImplTest() override = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

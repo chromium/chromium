@@ -77,7 +77,7 @@ HttpBridge::URLFetchState::URLFetchState()
       request_succeeded(false),
       http_status_code(-1),
       net_error_code(-1) {}
-HttpBridge::URLFetchState::~URLFetchState() {}
+HttpBridge::URLFetchState::~URLFetchState() = default;
 
 HttpBridge::HttpBridge(const std::string& user_agent,
                        std::unique_ptr<network::PendingSharedURLLoaderFactory>

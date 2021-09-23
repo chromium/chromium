@@ -176,7 +176,7 @@ class SessionStoreOpenTest : public ::testing::Test {
                 underlying_store_.get())));
   }
 
-  ~SessionStoreOpenTest() override {}
+  ~SessionStoreOpenTest() override = default;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;

@@ -34,8 +34,8 @@ const char kAuthHeaderPrefix[] = "Bearer ";
 
 class SyncStoppedReporterTest : public testing::Test {
  protected:
-  SyncStoppedReporterTest() {}
-  ~SyncStoppedReporterTest() override {}
+  SyncStoppedReporterTest() = default;
+  ~SyncStoppedReporterTest() override = default;
 
   void SetUp() override {
     test_shared_loader_factory_ =

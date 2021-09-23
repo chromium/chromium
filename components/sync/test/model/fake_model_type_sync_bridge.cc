@@ -35,7 +35,7 @@ class TestMetadataChangeList : public MetadataChangeList {
  public:
   explicit TestMetadataChangeList(FakeModelTypeSyncBridge::Store* db)
       : db_(db) {}
-  ~TestMetadataChangeList() override {}
+  ~TestMetadataChangeList() override = default;
 
   // MetadataChangeList implementation.
   void UpdateModelTypeState(
@@ -96,8 +96,8 @@ std::unique_ptr<EntityData> FakeModelTypeSyncBridge::GenerateEntityData(
   return entity_data;
 }
 
-FakeModelTypeSyncBridge::Store::Store() {}
-FakeModelTypeSyncBridge::Store::~Store() {}
+FakeModelTypeSyncBridge::Store::Store() = default;
+FakeModelTypeSyncBridge::Store::~Store() = default;
 
 void FakeModelTypeSyncBridge::Store::PutData(const std::string& key,
                                              const EntityData& data) {

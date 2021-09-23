@@ -182,7 +182,7 @@ bool Nigori::Keys::InitByImport(const std::string& user_key_str,
   return true;
 }
 
-Nigori::~Nigori() {}
+Nigori::~Nigori() = default;
 
 // static
 std::unique_ptr<Nigori> Nigori::CreateByDerivation(

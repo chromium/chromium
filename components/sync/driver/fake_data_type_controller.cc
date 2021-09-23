@@ -24,7 +24,7 @@ FakeDataTypeController::FakeDataTypeController(ModelType type,
               ? std::make_unique<FakeModelTypeControllerDelegate>(type)
               : nullptr) {}
 
-FakeDataTypeController::~FakeDataTypeController() {}
+FakeDataTypeController::~FakeDataTypeController() = default;
 
 void FakeDataTypeController::SetPreconditionState(PreconditionState state) {
   precondition_state_ = state;

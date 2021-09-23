@@ -180,7 +180,7 @@ GetUpdatesProcessor::GetUpdatesProcessor(UpdateHandlerMap* update_handler_map,
                                          const GetUpdatesDelegate& delegate)
     : update_handler_map_(update_handler_map), delegate_(delegate) {}
 
-GetUpdatesProcessor::~GetUpdatesProcessor() {}
+GetUpdatesProcessor::~GetUpdatesProcessor() = default;
 
 SyncerError GetUpdatesProcessor::DownloadUpdates(ModelTypeSet* request_types,
                                                  SyncCycle* cycle) {

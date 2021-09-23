@@ -34,7 +34,7 @@ class SyncAuthManagerTest : public testing::Test {
 
   SyncAuthManagerTest() : identity_env_(&test_url_loader_factory_) {}
 
-  ~SyncAuthManagerTest() override {}
+  ~SyncAuthManagerTest() override = default;
 
   std::unique_ptr<SyncAuthManager> CreateAuthManager() {
     return CreateAuthManager(base::DoNothing(), base::DoNothing());

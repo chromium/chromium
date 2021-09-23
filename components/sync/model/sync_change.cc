@@ -17,7 +17,7 @@ SyncChange::SyncChange(const base::Location& from_here,
   DCHECK(IsValid()) << " from " << from_here.ToString();
 }
 
-SyncChange::~SyncChange() {}
+SyncChange::~SyncChange() = default;
 
 bool SyncChange::IsValid() const {
   // TODO(crbug.com/1152824): This implementation could be simplified if the

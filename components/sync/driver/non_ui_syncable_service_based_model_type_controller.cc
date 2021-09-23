@@ -159,6 +159,6 @@ NonUiSyncableServiceBasedModelTypeController::
 }
 
 NonUiSyncableServiceBasedModelTypeController::
-    ~NonUiSyncableServiceBasedModelTypeController() {}
+    ~NonUiSyncableServiceBasedModelTypeController() = default;
 
 }  // namespace syncer

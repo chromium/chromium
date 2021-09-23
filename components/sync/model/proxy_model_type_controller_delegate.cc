@@ -74,7 +74,7 @@ ProxyModelTypeControllerDelegate::ProxyModelTypeControllerDelegate(
   DCHECK(task_runner_);
 }
 
-ProxyModelTypeControllerDelegate::~ProxyModelTypeControllerDelegate() {}
+ProxyModelTypeControllerDelegate::~ProxyModelTypeControllerDelegate() = default;
 
 void ProxyModelTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,

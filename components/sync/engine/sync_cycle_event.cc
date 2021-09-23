@@ -8,6 +8,6 @@ namespace syncer {
 
 SyncCycleEvent::SyncCycleEvent(EventCause cause) : what_happened(cause) {}
 
-SyncCycleEvent::~SyncCycleEvent() {}
+SyncCycleEvent::~SyncCycleEvent() = default;
 
 }  // namespace syncer

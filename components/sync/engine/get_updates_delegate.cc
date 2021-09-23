@@ -19,7 +19,7 @@ NormalGetUpdatesDelegate::NormalGetUpdatesDelegate(
     const NudgeTracker& nudge_tracker)
     : nudge_tracker_(nudge_tracker) {}
 
-NormalGetUpdatesDelegate::~NormalGetUpdatesDelegate() {}
+NormalGetUpdatesDelegate::~NormalGetUpdatesDelegate() = default;
 
 // This function assumes the progress markers have already been populated.
 void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
@@ -65,7 +65,7 @@ ConfigureGetUpdatesDelegate::ConfigureGetUpdatesDelegate(
     sync_pb::SyncEnums::GetUpdatesOrigin origin)
     : origin_(origin) {}
 
-ConfigureGetUpdatesDelegate::~ConfigureGetUpdatesDelegate() {}
+ConfigureGetUpdatesDelegate::~ConfigureGetUpdatesDelegate() = default;
 
 void ConfigureGetUpdatesDelegate::HelpPopulateGuMessage(
     sync_pb::GetUpdatesMessage* get_updates) const {
@@ -85,9 +85,9 @@ ConfigureGetUpdatesDelegate::GetNetworkRequestEvent(
                                                            request);
 }
 
-PollGetUpdatesDelegate::PollGetUpdatesDelegate() {}
+PollGetUpdatesDelegate::PollGetUpdatesDelegate() = default;
 
-PollGetUpdatesDelegate::~PollGetUpdatesDelegate() {}
+PollGetUpdatesDelegate::~PollGetUpdatesDelegate() = default;
 
 void PollGetUpdatesDelegate::HelpPopulateGuMessage(
     sync_pb::GetUpdatesMessage* get_updates) const {
