@@ -35,34 +35,70 @@ enum class FactoryUser {
   kExtensionProcess,
 };
 
-bool DoExtensionPermissionsCoverHttpOrHttpsOrigins(const Extension& extension) {
-  // TODO(lukasza): https://crbug.com/1016904: Return false if the |extension|'s
-  // permissions do not actually cover http or https origins.  For now we
-  // conservatively return true so that *all* extensions get relaxed CORS
-  // treatment.
-  return true;
-}
-
-bool DoContentScriptsDependOnRelaxedCors(const Extension& extension) {
-  // Content scripts injected by Chrome Apps (e.g. into <webview> tag) may need
-  // to run with relaxed CORS.
+bool DoContentScriptsDependOnRelaxedCorbOrCors(const Extension& extension) {
+  // Content scripts injected by Chrome Apps (e.g. into <webview> tag) need to
+  // run with relaxed CORB.
   //
   // TODO(https://crbug.com/1152550): Remove this exception once Chrome Platform
   // Apps are gone.
   if (extension.is_platform_app())
-    return DoExtensionPermissionsCoverHttpOrHttpsOrigins(extension);
+    return true;
 
-  // Content scripts are not granted an ability to relax CORS.
+  // Content scripts are not granted an ability to relax CORB and/or CORS.
   return false;
+}
+
+bool DoExtensionPermissionsCoverHttpOrHttpsOrigins(const Extension& extension) {
+  // TODO(lukasza): https://crbug.com/1016904: Return false if the |extension|'s
+  // permissions do not actually cover http or https origins.  For now we
+  // conservatively return true so that *all* extensions get relaxed CORS/CORB
+  // treatment.
+  return true;
+}
+
+// Returns whether the default URLLoaderFactoryParams::is_corb_enabled should be
+// overridden and changed to false.
+bool ShouldDisableCorb(const Extension& extension, FactoryUser factory_user) {
+  if (!DoExtensionPermissionsCoverHttpOrHttpsOrigins(extension))
+    return false;
+
+  switch (factory_user) {
+    case FactoryUser::kContentScript:
+      return DoContentScriptsDependOnRelaxedCorbOrCors(extension);
+    case FactoryUser::kExtensionProcess:
+      return true;
+  }
+}
+
+// Returns whether URLLoaderFactoryParams::ignore_isolated_world_origin should
+// be overridden and changed to false.
+bool ShouldInspectIsolatedWorldOrigin(const Extension& extension,
+                                      FactoryUser factory_user) {
+  if (!DoExtensionPermissionsCoverHttpOrHttpsOrigins(extension))
+    return false;
+
+  switch (factory_user) {
+    case FactoryUser::kContentScript:
+      return DoContentScriptsDependOnRelaxedCorbOrCors(extension);
+    case FactoryUser::kExtensionProcess:
+      return false;
+  }
+}
+
+bool ShouldCreateSeparateFactoryForContentScripts(const Extension& extension) {
+  return ShouldDisableCorb(extension, FactoryUser::kContentScript) ||
+         ShouldInspectIsolatedWorldOrigin(extension,
+                                          FactoryUser::kContentScript);
 }
 
 void OverrideFactoryParams(const Extension& extension,
                            FactoryUser factory_user,
                            network::mojom::URLLoaderFactoryParams* params) {
-  if (factory_user == FactoryUser::kContentScript &&
-      DoContentScriptsDependOnRelaxedCors(extension)) {
+  if (ShouldDisableCorb(extension, factory_user))
+    params->is_corb_enabled = false;
+
+  if (ShouldInspectIsolatedWorldOrigin(extension, factory_user))
     params->ignore_isolated_world_origin = false;
-  }
 
   // TODO(lukasza): Do not override |unsafe_non_webby_initiator| unless
   // DoExtensionPermissionsCoverHttpOrHttpsOrigins(extension).
@@ -93,8 +129,7 @@ void URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
 
   std::vector<url::Origin> initiators_requiring_separate_factory;
   for (const Extension* extension : extensions) {
-    // Do nothing if a separate URLLoaderFactory is not needed.
-    if (!DoContentScriptsDependOnRelaxedCors(*extension))
+    if (!ShouldCreateSeparateFactoryForContentScripts(*extension))
       continue;
 
     initiators_requiring_separate_factory.push_back(extension->origin());
@@ -117,8 +152,7 @@ void URLLoaderFactoryManager::WillProgrammaticallyInjectContentScript(
     base::PassKey<ContentScriptTracker> pass_key,
     content::RenderFrameHost* frame,
     const Extension& extension) {
-  // Do nothing if a separate URLLoaderFactory is not needed.
-  if (!DoContentScriptsDependOnRelaxedCors(extension))
+  if (!ShouldCreateSeparateFactoryForContentScripts(extension))
     return;
 
   // When WillExecuteCode runs, the frame already received the initial
@@ -145,7 +179,7 @@ void URLLoaderFactoryManager::OverrideURLLoaderFactoryParams(
 
   // Opaque origins normally don't inherit security properties of their
   // precursor origins, but here opaque origins (e.g. think data: URIs) created
-  // by an extension should inherit CORS treatment of the extension.
+  // by an extension should inherit CORS/CORB treatment of the extension.
   url::SchemeHostPort precursor_origin =
       origin.GetTupleOrPrecursorTupleIfOpaque();
 
