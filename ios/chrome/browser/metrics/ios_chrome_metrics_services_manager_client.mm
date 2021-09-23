@@ -18,7 +18,6 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"

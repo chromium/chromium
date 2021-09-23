@@ -7,7 +7,6 @@
 #include <set>
 #include <vector>
 
-#include "base/base_switches.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -169,7 +168,8 @@ void ChromeFeatureListCreator::SetupFieldTrials() {
   browser_field_trials_ =
       std::make_unique<ChromeBrowserFieldTrials>(local_state_.get());
 
-  metrics_services_manager_->InstantiateFieldTrialList();
+  metrics_services_manager_->InstantiateFieldTrialList(
+      cc::switches::kEnableGpuBenchmarking);
   auto feature_list = std::make_unique<base::FeatureList>();
 
   // Associate parameters chosen in about:flags and create trial/group for them.
@@ -181,8 +181,7 @@ void ChromeFeatureListCreator::SetupFieldTrials() {
   variations::VariationsService* variations_service =
       metrics_services_manager_->GetVariationsService();
   variations_service->SetupFieldTrials(
-      cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
-      switches::kDisableFeatures, variation_ids,
+      variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());

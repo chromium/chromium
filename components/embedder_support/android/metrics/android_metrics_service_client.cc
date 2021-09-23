@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "cc/base/switches.h"
 #include "components/embedder_support/android/metrics/android_metrics_log_uploader.h"
 #include "components/embedder_support/android/metrics/jni/AndroidMetricsServiceClient_jni.h"
 #include "components/metrics/android_metrics_provider.h"
@@ -250,7 +251,8 @@ void AndroidMetricsServiceClient::Initialize(
   // unique experiment combinations. This is better for privacy (since
   // experiment state doesn't identify users), but also means fewer combinations
   // are tested in the wild.
-  metrics_state_manager_->InstantiateFieldTrialList(EntropyProviderType::kLow);
+  metrics_state_manager_->InstantiateFieldTrialList(
+      cc::switches::kEnableGpuBenchmarking, EntropyProviderType::kLow);
 
   init_finished_ = true;
 

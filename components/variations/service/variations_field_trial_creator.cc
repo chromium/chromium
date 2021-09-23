@@ -174,9 +174,6 @@ std::string VariationsFieldTrialCreator::GetLatestCountry() const {
 }
 
 bool VariationsFieldTrialCreator::SetupFieldTrials(
-    const char* kEnableGpuBenchmarking,
-    const char* kEnableFeatures,
-    const char* kDisableFeatures,
     const std::vector<std::string>& variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<const base::FieldTrial::EntropyProvider>
@@ -194,11 +191,6 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kEnableBenchmarking) ||
-      command_line->HasSwitch(kEnableGpuBenchmarking)) {
-    base::FieldTrial::EnableBenchmarking();
-  }
-
   if (command_line->HasSwitch(switches::kForceFieldTrialParams)) {
     bool result = AssociateParamsFromString(
         command_line->GetSwitchValueASCII(switches::kForceFieldTrialParams));
@@ -269,8 +261,8 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
   }
 
   feature_list->InitializeFromCommandLine(
-      command_line->GetSwitchValueASCII(kEnableFeatures),
-      command_line->GetSwitchValueASCII(kDisableFeatures));
+      command_line->GetSwitchValueASCII(::switches::kEnableFeatures),
+      command_line->GetSwitchValueASCII(::switches::kDisableFeatures));
 
   // This needs to happen here: After the InitializeFromCommandLine() call,
   // because the explicit cmdline --disable-features and --enable-features

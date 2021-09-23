@@ -232,7 +232,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // be done from the UI thread.
   void SetForced();
 
-  // Enable benchmarking sets field trials to a common setting.
+  // Supports benchmarking by causing field trials' default groups to be chosen.
   static void EnableBenchmarking();
 
   // Creates a FieldTrial object with the specified parameters, to be used for
@@ -381,8 +381,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // Reference to related field trial struct and data in shared memory.
   FieldTrialRef ref_;
 
-  // When benchmarking is enabled, field trials all revert to the 'default'
-  // group.
+  // Denotes whether benchmarking is enabled. In this case, field trials all
+  // revert to the default group.
   static bool enable_benchmarking_;
 };
 
@@ -424,15 +424,16 @@ class BASE_EXPORT FieldTrialList {
   // Destructor Release()'s references to all registered FieldTrial instances.
   ~FieldTrialList();
 
-  // Get a FieldTrial instance from the factory.
+  // Gets a FieldTrial instance from the factory.
   //
-  // |name| is used to register the instance with the FieldTrialList class,
-  // and can be used to find the trial (only one trial can be present for each
-  // name). |default_group_name| is the name of the default group which will
-  // be chosen if none of the subsequent appended groups get to be chosen.
+  // |trial_name| (a) is used to register the instance with the FieldTrialList
+  // class and (b) can be used to find the trial (only one trial can be present
+  // for each name). |default_group_name| is the name of the group that is
+  // chosen if none of the subsequent appended groups are chosen. Note that the
+  // default group is also chosen whenever |enable_benchmarking_| is true.
   // |default_group_number| can receive the group number of the default group as
   // AppendGroup returns the number of the subsequence groups. |trial_name| and
-  // |default_group_name| may not be empty but |default_group_number| can be
+  // |default_group_name| must not be empty, but |default_group_number| can be
   // null if the value is not needed.
   //
   // Group probabilities that are later supplied must sum to less than or equal

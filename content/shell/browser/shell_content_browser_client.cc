@@ -616,15 +616,16 @@ std::unique_ptr<PrefService> ShellContentBrowserClient::CreateLocalState() {
 }
 
 void ShellContentBrowserClient::SetUpFieldTrials() {
-  if (!base::FieldTrialList::GetInstance()) {
-    // Note: This is intentionally leaked since it needs to live for the
-    // duration of the browser process and there's no benefit in cleaning it up
-    // at exit.
-    base::FieldTrialList* leaked_field_trial_list =
-        new base::FieldTrialList(nullptr);
-    ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
-    ignore_result(leaked_field_trial_list);
-  }
+  metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/false,
+                                                           /*enabled=*/false);
+  base::FilePath path;
+  base::PathService::Get(SHELL_DIR_USER_DATA, &path);
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
+      metrics::MetricsStateManager::Create(
+          local_state_.get(), &enabled_state_provider, std::wstring(),
+          path.AppendASCII("Local State"));
+  metrics_state_manager->InstantiateFieldTrialList(
+      cc::switches::kEnableGpuBenchmarking);
 
   std::vector<std::string> variation_ids;
   auto feature_list = std::make_unique<base::FeatureList>();
@@ -647,22 +648,13 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
           /*signature_verification_enabled=*/true),
       variations::UIStringOverrider());
 
-  metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/false,
-                                                           /*enabled=*/false);
-  base::FilePath path;
-  base::PathService::Get(SHELL_DIR_USER_DATA, &path);
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
-      metrics::MetricsStateManager::Create(
-          local_state_.get(), &enabled_state_provider, std::wstring(),
-          path.AppendASCII("Local State"));
   variations::SafeSeedManager safe_seed_manager(local_state_.get());
 
   // Since this is a test-only code path, some arguments to SetupFieldTrials are
   // null.
   // TODO(crbug/1248066): Consider passing a low entropy provider and source.
   field_trial_creator.SetupFieldTrials(
-      cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
-      switches::kDisableFeatures, variation_ids,
+      variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       /*low_entropy_provider=*/nullptr, std::move(feature_list),

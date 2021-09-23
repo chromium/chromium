@@ -305,10 +305,11 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   bool SetupFieldTrials(bool extend_variations_safe_mode = true) {
     TestPlatformFieldTrials platform_field_trials;
     return VariationsFieldTrialCreator::SetupFieldTrials(
-        "", "", "", std::vector<std::string>(),
-        std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
-        std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
-        &platform_field_trials, safe_seed_manager_, absl::nullopt,
+        /*variation_ids=*/std::vector<std::string>(),
+        std::vector<base::FeatureList::FeatureOverrideInfo>(),
+        /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
+        metrics_state_manager_.get(), &platform_field_trials,
+        safe_seed_manager_, /*low_entropy_source_value=*/absl::nullopt,
         extend_variations_safe_mode);
   }
 
@@ -810,10 +811,11 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_LoadsCountryOnFirstRun) {
   // |initial_seed| included the country code for India, this study should be
   // active.
   EXPECT_TRUE(field_trial_creator.SetupFieldTrials(
-      "", "", "", std::vector<std::string>(),
-      std::vector<base::FeatureList::FeatureOverrideInfo>(), nullptr,
-      std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager, absl::nullopt));
+      /*variation_ids=*/std::vector<std::string>(),
+      std::vector<base::FeatureList::FeatureOverrideInfo>(),
+      /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
+      metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
+      /*low_entropy_source_value=*/absl::nullopt));
 
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));

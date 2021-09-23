@@ -18,7 +18,6 @@
 #include "android_webview/browser/variations/variations_seed_loader.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"
-#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -28,7 +27,6 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/base/switches.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/embedder_support/origin_trials/origin_trial_prefs.h"
@@ -226,8 +224,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // platforms, pass false for |extend_variations_safe_mode| to opt out of the
   // Extended Variations Safe Mode experiment. See crbug/1220131 for more info.
   variations_field_trial_creator_->SetupFieldTrials(
-      cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
-      switches::kDisableFeatures, variation_ids,
+      variation_ids,
       GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       /*low_entropy_provider=*/nullptr, std::move(feature_list),

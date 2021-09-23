@@ -190,9 +190,6 @@ class VariationsService
   // Wrapper around VariationsFieldTrialCreator::SetupFieldTrials().
   // TODO(crbug/1245646): Remove |extend_variations_safe_mode| param.
   bool SetupFieldTrials(
-      const char* kEnableGpuBenchmarking,
-      const char* kEnableFeatures,
-      const char* kDisableFeatures,
       const std::vector<std::string>& variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,

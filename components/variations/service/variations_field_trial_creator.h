@@ -101,8 +101,6 @@ class VariationsFieldTrialCreator {
   // Sets up field trials based on stored variations seed data. Returns whether
   // setup completed successfully.
   //
-  // |kEnableGpuBenchmarking|, |kEnableFeatures|, |kDisableFeatures| are
-  // feature-controlling flags not directly accessible from variations.
   // |variation_ids| allows for forcing ids selected in chrome://flags and/or
   // specified using the command-line flag.
   // |extra_overrides| gives a list of feature overrides that should be applied
@@ -131,9 +129,6 @@ class VariationsFieldTrialCreator {
   // take precedence over |extra_overrides|, which takes precedence over the
   // field trials.
   bool SetupFieldTrials(
-      const char* kEnableGpuBenchmarking,
-      const char* kEnableFeatures,
-      const char* kDisableFeatures,
       const std::vector<std::string>& variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,

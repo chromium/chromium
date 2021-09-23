@@ -106,14 +106,17 @@ class MetricsStateManager final {
     return startup_visibility_ == StartupVisibility::kForeground;
   }
 
-  // Instantiates the FieldTrialList. Uses |entropy_provider_type| to determine
-  // the type of EntropyProvider to use for one-time randomization. See
-  // CreateLowEntropyProvider() and CreateDefaultEntropyProvider() for more
-  // details.
+  // Instantiates the FieldTrialList. Uses |enable_gpu_benchmarking_switch| to
+  // set up the FieldTrialList for benchmarking runs. Uses
+  // |entropy_provider_type| to determine the type of EntropyProvider to use for
+  // one-time randomization. See CreateLowEntropyProvider() and
+  // CreateDefaultEntropyProvider() for more details.
   //
   // Side effect: Initializes |clean_exit_beacon_|.
-  void InstantiateFieldTrialList(EntropyProviderType entropy_provider_type =
-                                     EntropyProviderType::kDefault);
+  void InstantiateFieldTrialList(
+      const char* enable_gpu_benchmarking_switch = nullptr,
+      EntropyProviderType entropy_provider_type =
+          EntropyProviderType::kDefault);
 
   // Signals whether the session has shutdown cleanly if |update_beacon| is
   // true. Passing `false` for |has_session_shutdown_cleanly| means that Chrome

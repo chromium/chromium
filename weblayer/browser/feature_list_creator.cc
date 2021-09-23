@@ -6,7 +6,6 @@
 
 #include "base/base_switches.h"
 #include "build/build_config.h"
-#include "cc/base/switches.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
@@ -80,8 +79,7 @@ void FeatureListCreator::SetUpFieldTrials() {
   // Extended Variations Safe Mode experiment.
   // TODO(crbug/1245347): Enable the experiment on Android WebLayer.
   variations_service_->SetupFieldTrials(
-      cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
-      switches::kDisableFeatures, variation_ids,
+      variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), &weblayer_field_trials_,

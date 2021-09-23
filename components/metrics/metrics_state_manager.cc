@@ -13,6 +13,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/guid.h"
@@ -35,11 +36,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/variations_switches.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics {
-
 namespace {
 
 // The argument used to generate a non-identifying entropy source. We want no
@@ -268,6 +269,7 @@ int MetricsStateManager::GetLowEntropySource() {
 }
 
 void MetricsStateManager::InstantiateFieldTrialList(
+    const char* enable_gpu_benchmarking_switch,
     EntropyProviderType entropy_provider_type) {
   // Instantiate the FieldTrialList to support field trials. If an instance
   // already exists, this is likely a test scenario with a ScopedFeatureList, so
@@ -285,6 +287,19 @@ void MetricsStateManager::InstantiateFieldTrialList(
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
     ignore_result(leaked_field_trial_list);
   }
+
+  // When benchmarking is enabled, field trials' default groups are chosen, so
+  // see whether benchmarking needs to be enabled here, before any field trials
+  // are created.
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  // TODO(crbug/1251680): See whether it's possible to consolidate the switches.
+  if (command_line->HasSwitch(variations::switches::kEnableBenchmarking) ||
+      (enable_gpu_benchmarking_switch &&
+       command_line->HasSwitch(enable_gpu_benchmarking_switch))) {
+    base::FieldTrial::EnableBenchmarking();
+  }
+
   // Initializing the CleanExitBeacon is done after FieldTrialList instantiation
   // to allow experimentation on the CleanExitBeacon.
   clean_exit_beacon_.Initialize();
