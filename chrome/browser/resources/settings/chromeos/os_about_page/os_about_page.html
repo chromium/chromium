@@ -49,6 +49,12 @@
   #regulatoryInfo img {
     width: 330px;
   }
+
+  @media(prefers-color-scheme: dark) {
+    #regulatoryInfo img {
+      filter: invert(1);
+    }
+  }
 </style>
 <settings-section page-title="$i18n{aboutOsPageTitle}" section="about">
   <settings-animated-pages id="pages" section="about"
