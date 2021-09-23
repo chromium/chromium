@@ -7,13 +7,18 @@ import './advanced_settings_dialog.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {Settings} from '../data/model.js';
 
+interface PrintPreviewAdvancedOptionsSettingsElement {
+  $: {
+    button: CrButtonElement,
+  }
+}
 
-/** @polymer */
 class PrintPreviewAdvancedOptionsSettingsElement extends PolymerElement {
   static get is() {
     return 'print-preview-advanced-options-settings';
@@ -26,14 +31,9 @@ class PrintPreviewAdvancedOptionsSettingsElement extends PolymerElement {
   static get properties() {
     return {
       disabled: Boolean,
-
-      /** @type {!Destination} */
       destination: Object,
-
-      /** @type {!Settings} */
       settings: Object,
 
-      /** @private {boolean} */
       showAdvancedDialog_: {
         type: Boolean,
         value: false,
@@ -41,13 +41,16 @@ class PrintPreviewAdvancedOptionsSettingsElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  onButtonClick_() {
+  disabled: boolean;
+  destination: Destination;
+  settings: Settings;
+  private showAdvancedDialog_: boolean;
+
+  private onButtonClick_() {
     this.showAdvancedDialog_ = true;
   }
 
-  /** @private */
-  onDialogClose_() {
+  private onDialogClose_() {
     this.showAdvancedDialog_ = false;
     this.$.button.focus();
   }

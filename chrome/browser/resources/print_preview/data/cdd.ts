@@ -6,9 +6,14 @@ type OptionWithDefault = {
   is_default?: boolean
 };
 
+export type LocalizedString = {
+  locale: string,
+  value: string,
+};
+
 export type VendorCapabilitySelectOption = {
-  display_name: string,
-  type?: string, value: number|string|boolean,
+  display_name?: string,
+  display_name_localized?: LocalizedString[], value: number|string|boolean,
 }&OptionWithDefault;
 
 /**
@@ -39,8 +44,8 @@ type RangeCapability = {
  */
 export type VendorCapability = {
   id: string,
-  display_name: string,
-  localized_display_name?: string, type: string,
+  display_name?: string,
+  display_name_localized?: LocalizedString[], type: string,
   select_cap?: SelectCapability,
   typed_value_cap?: TypedValueCapability,
   range_cap?: RangeCapability,

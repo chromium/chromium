@@ -1,10 +1,12 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {IronIconsetSvgElement} from 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
 import {inDarkMode} from './dark_mode_mixin.js';
+import {LocalizedString} from './data/cdd.js';
 
 type Range = {
   to: number,
@@ -25,11 +27,6 @@ export function areRangesEqual(array1: Range[], array2: Range[]): boolean {
   }
   return true;
 }
-
-type LocalizedString = {
-  locale: string,
-  value: string,
-};
 
 /**
  * @param localizedStrings An array of strings with corresponding locales.

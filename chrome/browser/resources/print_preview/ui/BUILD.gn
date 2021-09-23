@@ -7,9 +7,9 @@ import("//tools/polymer/html_to_js.gni")
 
 html_to_js("web_components") {
   js_files = [
-    "advanced_options_settings.js",
-    "advanced_settings_dialog.js",
-    "advanced_settings_item.js",
+    "advanced_options_settings.ts",
+    "advanced_settings_dialog.ts",
+    "advanced_settings_item.ts",
     "app.js",
     "button_strip.js",
     "color_settings.js",
@@ -35,7 +35,7 @@ html_to_js("web_components") {
     "pages_per_sheet_settings.js",
     "pages_settings.js",
     "preview_area.js",
-    "print_preview_search_box.js",
+    "print_preview_search_box.ts",
     "print_preview_shared_css.js",
     "print_preview_vars_css.js",
     "scaling_settings.js",

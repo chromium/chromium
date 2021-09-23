@@ -11,25 +11,28 @@ import './print_preview_shared_css.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
+import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {SettingsBehaviorInterface}
- */
-const PrintPreviewAdvancedSettingsDialogElementBase =
-    mixinBehaviors([SettingsBehavior, I18nBehavior], PolymerElement);
+export interface PrintPreviewAdvancedSettingsDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    searchBox: PrintPreviewSearchBoxElement,
+  };
+}
 
-/** @polymer */
+const PrintPreviewAdvancedSettingsDialogElementBase =
+    mixinBehaviors([SettingsBehavior, I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & SettingsBehaviorInterface & I18nBehavior};
+
 export class PrintPreviewAdvancedSettingsDialogElement extends
     PrintPreviewAdvancedSettingsDialogElementBase {
   static get is() {
@@ -42,16 +45,13 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!Destination} */
       destination: Object,
 
-      /** @private {?RegExp} */
       searchQuery_: {
         type: Object,
         value: null,
       },
 
-      /** @private {boolean} */
       hasMatching_: {
         type: Boolean,
         notify: true,
@@ -60,28 +60,19 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     };
   }
 
-  constructor() {
-    super();
+  destination: Destination;
+  private searchQuery_: RegExp|null;
+  private hasMatching_: boolean;
+  private highlights_: HTMLElement[] = [];
+  private bubbles_: Map<HTMLElement, number> = new Map();
+  private metrics_: MetricsContext = MetricsContext.printSettingsUi();
 
-    /** @private {!Array<!Node>} */
-    this.highlights_ = [];
-
-    /** @private {!Map<!Node, number>} */
-    this.bubbles_ = new Map();
-
-    /** @private {!MetricsContext} */
-    this.metrics_ = MetricsContext.printSettingsUi();
-  }
-
-  /** @override */
   ready() {
     super.ready();
 
-    this.addEventListener(
-        'keydown', e => this.onKeydown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('keydown', e => this.onKeydown_(e as KeyboardEvent));
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -89,11 +80,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     this.$.dialog.showModal();
   }
 
-  /**
-   * @param {!KeyboardEvent} e Event containing the key
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     e.stopPropagation();
     const searchInput = this.$.searchBox.getSearchInput();
     const eventInSearchBox = e.composedPath().includes(searchInput);
@@ -105,7 +92,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     }
 
     if (e.key === 'Enter' && !eventInSearchBox) {
-      const activeElementTag = e.composedPath()[0].tagName;
+      const activeElementTag = (e.composedPath()[0] as HTMLElement).tagName;
       if (['CR-BUTTON', 'SELECT'].includes(activeElementTag)) {
         return;
       }
@@ -116,29 +103,27 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   }
 
   /**
-   * @return {boolean} Whether there is more than one vendor item to display.
-   * @private
+   * @return Whether there is more than one vendor item to display.
    */
-  hasMultipleItems_() {
-    return this.destination.capabilities.printer.vendor_capability.length > 1;
+  private hasMultipleItems_(): boolean {
+    return this.destination.capabilities!.printer.vendor_capability!.length > 1;
   }
 
   /**
-   * @return {boolean} Whether there is a setting matching the query.
-   * @private
+   * @return Whether there is a setting matching the query.
    */
-  computeHasMatching_() {
+  private computeHasMatching_(): boolean {
     if (!this.shadowRoot) {
       return true;
     }
 
     removeHighlights(this.highlights_);
-    this.bubbles_.forEach((number, bubble) => bubble.remove());
+    this.bubbles_.forEach((_number, bubble) => bubble.remove());
     this.highlights_ = [];
     this.bubbles_.clear();
 
-    const listItems = this.shadowRoot.querySelectorAll(
-        'print-preview-advanced-settings-item');
+    const listItems = this.shadowRoot!.querySelectorAll(
+        'print-preview-advanced-settings-item')!;
     let hasMatch = false;
     listItems.forEach(item => {
       const matches = item.hasMatch(this.searchQuery_);
@@ -151,15 +136,13 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   }
 
   /**
-   * @return {boolean} Whether the no matching settings hint should be shown.
-   * @private
+   * @return Whether the no matching settings hint should be shown.
    */
-  shouldShowHint_() {
+  private shouldShowHint_(): boolean {
     return !!this.searchQuery_ && !this.hasMatching_;
   }
 
-  /** @private */
-  onCloseOrCancel_() {
+  private onCloseOrCancel_() {
     if (this.searchQuery_) {
       this.$.searchBox.setValue('');
     }
@@ -169,18 +152,17 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     }
   }
 
-  /** @private */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
-  /** @private */
-  onApplyButtonClick_() {
-    const settingsValues = {};
-    this.shadowRoot.querySelectorAll('print-preview-advanced-settings-item')
-        .forEach(item => {
-          settingsValues[item.capability.id] = item.getCurrentValue();
-        });
+  private onApplyButtonClick_() {
+    const settingsValues: {[settingName: string]: any} = {};
+    const itemList = this.shadowRoot!.querySelectorAll(
+        'print-preview-advanced-settings-item');
+    itemList.forEach(item => {
+      settingsValues[item.capability.id] = item.getCurrentValue();
+    });
     this.setSetting('vendorItems', settingsValues);
     this.$.dialog.close();
   }
@@ -189,11 +171,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     this.$.dialog.close();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  isSearching_() {
+  private isSearching_(): string {
     return this.searchQuery_ ? 'searching' : '';
   }
 }

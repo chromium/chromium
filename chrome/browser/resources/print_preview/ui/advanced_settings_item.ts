@@ -10,25 +10,21 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
+import {LocalizedString, VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
 import {Destination} from '../data/destination.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
 import {updateHighlights} from './highlight_utils.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsBehaviorInterface}
- */
 const PrintPreviewAdvancedSettingsItemElementBase =
-    mixinBehaviors([SettingsBehavior], PolymerElement);
+    mixinBehaviors([SettingsBehavior], PolymerElement) as
+    {new (): PolymerElement & SettingsBehaviorInterface};
 
-/** @polymer */
 export class PrintPreviewAdvancedSettingsItemElement extends
     PrintPreviewAdvancedSettingsItemElementBase {
   static get is() {
@@ -41,10 +37,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
 
   static get properties() {
     return {
-      /** @type {!VendorCapability} */
       capability: Object,
-
-      /** @private {string} */
       currentValue_: String,
     };
   }
@@ -55,8 +48,10 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     ];
   }
 
-  /** @private */
-  updateFromSettings_() {
+  capability: VendorCapability;
+  private currentValue_: string;
+
+  private updateFromSettings_() {
     const settings = this.getSetting('vendorItems').value;
 
     // The settings may not have a property with the id if they were populated
@@ -75,105 +70,90 @@ export class PrintPreviewAdvancedSettingsItemElement extends
       }
     } else {
       this.currentValue_ = value;
-      this.shadowRoot.querySelector('cr-input').value = this.currentValue_;
+      this.shadowRoot!.querySelector('cr-input')!.value = this.currentValue_;
     }
   }
 
   /**
-   * @param {!VendorCapability |
-   *         !VendorCapabilitySelectOption} item
-   * @return {string} The display name for the setting.
-   * @private
+   * @return The display name for the setting.
    */
-  getDisplayName_(item) {
+  private getDisplayName_(item: VendorCapability|
+                          VendorCapabilitySelectOption): string {
     let displayName = item.display_name;
     if (!displayName && item.display_name_localized) {
-      displayName = getStringForCurrentLocale(item.display_name_localized);
+      displayName = getStringForCurrentLocale(item.display_name_localized!);
     }
     return displayName || '';
   }
 
   /**
-   * @return {boolean} Whether the capability represented by this item is
-   *     of type select.
-   * @private
+   * @return Whether the capability represented by this item is of type select.
    */
-  isCapabilityTypeSelect_() {
+  private isCapabilityTypeSelect_(): boolean {
     return this.capability.type === 'SELECT';
   }
 
   /**
-   * @return {boolean} Whether the capability represented by this item is
-   *     of type checkbox.
-   * @private
+   * @return Whether the capability represented by this item is of type
+   *     checkbox.
    */
-  isCapabilityTypeCheckbox_() {
+  private isCapabilityTypeCheckbox_(): boolean {
     return this.capability.type === 'TYPED_VALUE' &&
-        this.capability.typed_value_cap.value_type === 'BOOLEAN';
+        this.capability.typed_value_cap!.value_type === 'BOOLEAN';
   }
 
   /**
-   * @return {boolean} Whether the capability represented by this item is
-   *     of type input.
-   * @private
+   * @return Whether the capability represented by this item is of type input.
    */
-  isCapabilityTypeInput_() {
+  private isCapabilityTypeInput_(): boolean {
     return !this.isCapabilityTypeSelect_() && !this.isCapabilityTypeCheckbox_();
   }
 
   /**
-   * @return {boolean} Whether the checkbox setting is checked.
-   * @private
+   * @return Whether the checkbox setting is checked.
    */
-  isChecked_() {
+  private isChecked_(): boolean {
     return this.currentValue_ === 'true';
   }
 
   /**
-   * @param {!VendorCapabilitySelectOption} option The option
-   *     for a select capability.
-   * @return {boolean} Whether the option is selected.
-   * @private
+   * @param option The option for a select capability.
+   * @return Whether the option is selected.
    */
-  isOptionSelected_(option) {
+  private isOptionSelected_(option: VendorCapabilitySelectOption): boolean {
     return this.currentValue_ === undefined ?
         !!option.is_default :
         option.value === this.currentValue_;
   }
 
   /**
-   * @return {string} The placeholder value for the capability's text input.
-   * @private
+   * @return The placeholder value for the capability's text input.
    */
-  getCapabilityPlaceholder_() {
+  private getCapabilityPlaceholder_(): string {
     if (this.capability.type === 'TYPED_VALUE' &&
         this.capability.typed_value_cap &&
-        this.capability.typed_value_cap.default !== undefined) {
-      return this.capability.typed_value_cap.default.toString() || '';
+        this.capability.typed_value_cap!.default !== undefined) {
+      return this.capability.typed_value_cap!.default.toString() || '';
     }
     if (this.capability.type === 'RANGE' && this.capability.range_cap &&
-        this.capability.range_cap.default !== undefined) {
-      return this.capability.range_cap.default.toString() || '';
+        this.capability.range_cap!.default !== undefined) {
+      return this.capability.range_cap!.default.toString() || '';
     }
     return '';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasOptionWithValue_(value) {
+  private hasOptionWithValue_(value: string): boolean {
     return !!this.capability.select_cap &&
-        !!this.capability.select_cap.option &&
-        this.capability.select_cap.option.some(
+        !!this.capability.select_cap!.option &&
+        this.capability.select_cap!.option.some(
             option => option.value === value);
   }
 
   /**
-   * @param {?RegExp} query The current search query.
-   * @return {boolean} Whether the item has a match for the query.
+   * @param query The current search query.
+   * @return Whether the item has a match for the query.
    */
-  hasMatch(query) {
+  hasMatch(query: RegExp|null): boolean {
     if (!query || this.getDisplayName_(this.capability).match(query)) {
       return true;
     }
@@ -182,9 +162,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
       return false;
     }
 
-    for (const option of
-         /** @type {!Array<!VendorCapabilitySelectOption>} */ (
-             this.capability.select_cap.option)) {
+    for (const option of this.capability.select_cap!.option!) {
       if (this.getDisplayName_(option).match(query)) {
         return true;
       }
@@ -192,45 +170,44 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     return false;
   }
 
-  /**
-   * @param {!Event} e Event containing the new value.
-   * @private
-   */
-  onUserInput_(e) {
-    this.currentValue_ = e.target.value;
+  private onUserInput_(e: Event) {
+    this.currentValue_ = (e.target! as CrInputElement).value;
+  }
+
+  private onCheckboxInput_(e: Event) {
+    this.currentValue_ =
+        (e.target! as CrCheckboxElement).checked ? 'true' : 'false';
   }
 
   /**
-   * @param {!Event} e Event containing the new value.
-   * @private
+   * @return The current value of the setting, or the empty string if it is not
+   *     set.
    */
-  onCheckboxInput_(e) {
-    this.currentValue_ = e.target.checked ? 'true' : 'false';
-  }
-
-  /**
-   * @return {string} The current value of the setting, or the empty string if
-   *     it is not set.
-   */
-  getCurrentValue() {
+  getCurrentValue(): string {
     return this.currentValue_ || '';
   }
 
   /**
    * Only used in tests.
-   * @param {string} value A value to set the setting to.
+   * @param value A value to set the setting to.
    */
-  setCurrentValueForTest(value) {
+  setCurrentValueForTest(value: string) {
     this.currentValue_ = value;
   }
 
   /**
-   * @param {?RegExp} query The current search query.
-   * @param {!Map<!Node, number>} bubbles
-   * @return {!Array<!Node>} The highlight wrappers and that were created.
+   * @return The highlight wrappers and that were created.
    */
-  updateHighlighting(query, bubbles) {
+  updateHighlighting(query: RegExp|null, bubbles: Map<HTMLElement, number>):
+      HTMLElement[] {
     return updateHighlights(this, query, bubbles);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-advanced-settings-item':
+        PrintPreviewAdvancedSettingsItemElement;
   }
 }
 

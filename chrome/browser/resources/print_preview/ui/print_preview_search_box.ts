@@ -8,25 +8,31 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import './print_preview_shared_css.js';
 
-import {CrSearchFieldBehavior, CrSearchFieldBehaviorInterface} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {CrSearchFieldBehavior} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
 import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @type {!RegExp} */
-const SANITIZE_REGEX = /[-[\]{}()*+?.,\\^$|#\s]/g;
+declare global {
+  interface HTMLElementEventMap {
+    'search-changed': CustomEvent<string>;
+  }
+}
 
+const SANITIZE_REGEX: RegExp = /[-[\]{}()*+?.,\\^$|#\s]/g;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrSearchFieldBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const PrintPreviewSearchBoxElementBase = mixinBehaviors(
-    [CrSearchFieldBehavior, WebUIListenerBehaviorInterface], PolymerElement);
+export interface PrintPreviewSearchBoxElement {
+  $: {
+    searchInput: CrInputElement,
+  };
+}
 
-/** @polymer */
+const PrintPreviewSearchBoxElementBase =
+    mixinBehaviors(
+        [CrSearchFieldBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior & CrSearchFieldBehavior};
+
 export class PrintPreviewSearchBoxElement extends
     PrintPreviewSearchBoxElementBase {
   static get is() {
@@ -41,7 +47,6 @@ export class PrintPreviewSearchBoxElement extends
     return {
       autofocus: Boolean,
 
-      /** @type {?RegExp} */
       searchQuery: {
         type: Object,
         notify: true,
@@ -49,39 +54,25 @@ export class PrintPreviewSearchBoxElement extends
     };
   }
 
-  constructor() {
-    super();
+  autofocus: boolean;
+  searchQuery: RegExp|null;
+  private lastQuery_: string = '';
 
-    /**
-     * The last search query.
-     * @private {string}
-     */
-    this.lastQuery_ = '';
-  }
-
-  /** @override */
   ready() {
     super.ready();
 
-    this.addEventListener(
-        'search-changed',
-        e => this.onSearchChanged_(/** @type {!CustomEvent<string>} */ (e)));
+    this.addEventListener('search-changed', e => this.onSearchChanged_(e));
   }
 
-  /** @return {!CrInputElement} */
-  getSearchInput() {
-    return /** @type {!CrInputElement} */ (this.$.searchInput);
+  getSearchInput(): CrInputElement {
+    return this.$.searchInput;
   }
 
   focus() {
     this.$.searchInput.focus();
   }
 
-  /**
-   * @param {!CustomEvent<string>} e Event containing the new search.
-   * @private
-   */
-  onSearchChanged_(e) {
+  private onSearchChanged_(e: CustomEvent<string>) {
     const strippedQuery = stripDiacritics(e.detail.trim());
     const safeQuery = strippedQuery.replace(SANITIZE_REGEX, '\\$&');
     if (safeQuery === this.lastQuery_) {
@@ -93,8 +84,7 @@ export class PrintPreviewSearchBoxElement extends
         safeQuery.length > 0 ? new RegExp(`(${safeQuery})`, 'ig') : null;
   }
 
-  /** @private */
-  onClearClick_() {
+  private onClearClick_() {
     this.setValue('');
     this.$.searchInput.focus();
   }
