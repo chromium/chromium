@@ -109,6 +109,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         super.onConfigurationChanged(newConfig);
         NightModeUtils.updateConfigurationForNightMode(
                 this, mNightModeStateProvider.isInNightMode(), newConfig, mThemeResId);
+        // newConfig will have the default system locale so reapply the app locale override if
+        // needed: https://crbug.com/1248944
+        GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
     }
 
     // Implementation of ModalDialogManagerHolder
