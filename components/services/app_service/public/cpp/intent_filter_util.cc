@@ -232,27 +232,45 @@ std::set<std::string> AppManagementGetSupportedLinks(
 }
 
 bool IsSupportedLink(const apps::mojom::IntentFilterPtr& intent_filter) {
+  bool action = false;
   bool scheme = false;
   bool host = false;
+  bool pattern = false;
   for (auto& condition : intent_filter->conditions) {
-    if (condition->condition_type == apps::mojom::ConditionType::kScheme) {
-      for (auto& condition_value : condition->condition_values) {
-        if (condition_value->value == "http" ||
-            condition_value->value == "https") {
-          scheme = true;
-          break;
+    switch (condition->condition_type) {
+      case apps::mojom::ConditionType::kAction:
+        for (auto& condition_value : condition->condition_values) {
+          if (condition_value->value == apps_util::kIntentActionView) {
+            action = true;
+            break;
+          }
         }
-      }
-    } else if (condition->condition_type == apps::mojom::ConditionType::kHost) {
-      host = true;
+        break;
+      case apps::mojom::ConditionType::kScheme:
+        for (auto& condition_value : condition->condition_values) {
+          if (condition_value->value == "http" ||
+              condition_value->value == "https") {
+            scheme = true;
+            break;
+          }
+        }
+        break;
+      case apps::mojom::ConditionType::kHost:
+        host = true;
+        break;
+      case apps::mojom::ConditionType::kPattern:
+        pattern = true;
+        break;
+      default:
+        break;
     }
 
-    if (scheme && host) {
-      break;
+    if (action && scheme && host && pattern) {
+      return true;
     }
   }
 
-  return scheme && host;
+  return false;
 }
 
 }  // namespace apps_util

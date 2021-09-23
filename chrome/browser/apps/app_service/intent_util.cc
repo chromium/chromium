@@ -498,9 +498,12 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter) {
   auto intent_filter = apps::mojom::IntentFilter::New();
 
+  bool has_view_action = false;
+
   std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
   for (auto& arc_action : arc_intent_filter.actions()) {
     const char* action = ConvertArcToAppServiceIntentAction(arc_action);
+    has_view_action = has_view_action || action == kIntentActionView;
 
     if (!action) {
       continue;
@@ -555,6 +558,16 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     }
     path_condition_values.push_back(
         apps_util::MakeConditionValue(path.pattern(), match_type));
+  }
+
+  // For ARC apps, specifying a path is optional. For any intent filters which
+  // match every URL on a host with a "view" action, add a path which matches
+  // everything to ensure the filter is treated as a supported link.
+  if (path_condition_values.empty() && has_view_action &&
+      arc_intent_filter.authorities().size() > 0 &&
+      arc_intent_filter.schemes().size() > 0) {
+    path_condition_values.push_back(apps_util::MakeConditionValue(
+        "/", apps::mojom::PatternMatchType::kPrefix));
   }
   if (!path_condition_values.empty()) {
     auto path_condition = apps_util::MakeCondition(

@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/arc/intent_helper/intent_constants.h"
+#include "components/arc/intent_helper/intent_filter.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -333,4 +334,36 @@ TEST_F(IntentUtilsTest, CreateShareIntentFromFiles_GetFileUrls) {
   EXPECT_EQ(intent_with_text_and_title_str,
             apps_util::CreateLaunchIntent("com.android.vending",
                                           intent_with_text_and_title));
+}
+
+// Converting an Arc Intent filter for a URL view intent filter should add a
+// condition covering every possible path.
+TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kHost = "www.google.com";
+  const char* kPath = "/";
+  const char* kScheme = "https";
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities1;
+  authorities1.emplace_back(kHost, 0);
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+  patterns.emplace_back(kPath, arc::mojom::PatternType::PATTERN_PREFIX);
+
+  arc::IntentFilter filter_with_path(kPackageName, {arc::kIntentActionView},
+                                     std::move(authorities1),
+                                     std::move(patterns), {kScheme}, {});
+
+  IntentFilterPtr app_service_filter1 =
+      apps_util::ConvertArcToAppServiceIntentFilter(filter_with_path);
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities2;
+  authorities2.emplace_back(kHost, 0);
+  arc::IntentFilter filter_without_path(kPackageName, {arc::kIntentActionView},
+                                        std::move(authorities2), {}, {kScheme},
+                                        {});
+
+  IntentFilterPtr app_service_filter2 =
+      apps_util::ConvertArcToAppServiceIntentFilter(filter_without_path);
+
+  ASSERT_EQ(app_service_filter1, app_service_filter2);
 }

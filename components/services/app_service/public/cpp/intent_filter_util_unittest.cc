@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -30,6 +31,10 @@ class IntentFilterUtilTest : public testing::Test {
       std::string path,
       apps::mojom::PatternMatchType pattern) {
     auto intent_filter = apps::mojom::IntentFilter::New();
+
+    apps_util::AddSingleValueCondition(
+        apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
+        apps::mojom::PatternMatchType::kNone, intent_filter);
 
     apps_util::AddSingleValueCondition(
         apps::mojom::ConditionType::kScheme, scheme,
@@ -217,4 +222,40 @@ TEST_F(IntentFilterUtilTest, HttpAndHttpsSchemes) {
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
+}
+
+TEST_F(IntentFilterUtilTest, IsSupportedLink) {
+  auto filter = MakeFilter("https", "www.google.com", "/maps",
+                           apps::mojom::PatternMatchType::kLiteral);
+  ASSERT_TRUE(apps_util::IsSupportedLink(filter));
+
+  filter = MakeFilter("https", "www.google.com", ".*",
+                      apps::mojom::PatternMatchType::kGlob);
+  ASSERT_TRUE(apps_util::IsSupportedLink(filter));
+}
+
+TEST_F(IntentFilterUtilTest, NotSupportedLink) {
+  ASSERT_FALSE(apps_util::IsSupportedLink(
+      apps_util::CreateIntentFilterForMimeType("image/png")));
+
+  auto browser_filter = apps::mojom::IntentFilter::New();
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
+      apps::mojom::PatternMatchType::kNone, browser_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kScheme, "https",
+      apps::mojom::PatternMatchType::kNone, browser_filter);
+  ASSERT_FALSE(apps_util::IsSupportedLink(browser_filter));
+
+  auto host_filter = apps::mojom::IntentFilter::New();
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
+      apps::mojom::PatternMatchType::kNone, host_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kScheme, "https",
+      apps::mojom::PatternMatchType::kNone, host_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kHost, "www.example.com",
+      apps::mojom::PatternMatchType::kNone, host_filter);
+  ASSERT_FALSE(apps_util::IsSupportedLink(browser_filter));
 }
