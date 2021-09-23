@@ -1326,19 +1326,6 @@ bool PrepareToAddNewPluginExceptions(int process_id) {
   return true;  // success
 }
 
-void AddAllowedRequestInitiatorForPluginOnUIThread(
-    int process_id,
-    const url::Origin& allowed_request_initiator) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!PrepareToAddNewPluginExceptions(process_id))
-    return;
-
-  GetPluginExceptionsForNetworkService()[process_id]
-      .allowed_request_initiators.insert(allowed_request_initiator);
-  GetNetworkService()->AddAllowedRequestInitiatorForPlugin(
-      process_id, allowed_request_initiator);
-}
-
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 static constexpr size_t kUnknownPlatformProcessLimit = 0;
 
@@ -1736,13 +1723,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   if (!GetBrowserContext()->IsOffTheRecord() &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableGpuShaderDiskCache)) {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      CacheShaderInfo(GetID(), storage_partition_impl_->GetPath());
-    } else {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&CacheShaderInfo, GetID(),
-                                    storage_partition_impl_->GetPath()));
-    }
+    CacheShaderInfo(GetID(), storage_partition_impl_->GetPath());
   }
 
   // This instance of PushMessagingManager is only used from clients
@@ -1849,12 +1830,7 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableGpuShaderDiskCache)) {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      RemoveShaderInfo(GetID());
-    } else {
-      GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&RemoveShaderInfo, GetID()));
-    }
+    RemoveShaderInfo(GetID());
   }
 
   if (cleanup_network_service_plugin_exceptions_upon_destruction_)
@@ -2347,13 +2323,15 @@ bool RenderProcessHostImpl::IsProcessShutdownDelayedForTesting() {
 void RenderProcessHostImpl::AddAllowedRequestInitiatorForPlugin(
     int process_id,
     const url::Origin& allowed_request_initiator) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&AddAllowedRequestInitiatorForPluginOnUIThread,
-                                process_id, allowed_request_initiator));
+  if (!PrepareToAddNewPluginExceptions(process_id))
+    return;
+
+  GetPluginExceptionsForNetworkService()[process_id]
+      .allowed_request_initiators.insert(allowed_request_initiator);
+  GetNetworkService()->AddAllowedRequestInitiatorForPlugin(
+      process_id, allowed_request_initiator);
 }
 
 void RenderProcessHostImpl::

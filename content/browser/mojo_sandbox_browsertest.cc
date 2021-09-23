@@ -21,7 +21,6 @@
 #include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_service.mojom.h"
@@ -41,46 +40,7 @@ class MojoSandboxTest : public ContentBrowserTest {
 
   using BeforeStartCallback = base::OnceCallback<void(UtilityProcessHost*)>;
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetProcessTaskRunner() {
-    return base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-               ? GetUIThreadTaskRunner({})
-               : GetIOThreadTaskRunner({});
-  }
-
   void StartProcess(BeforeStartCallback callback = BeforeStartCallback()) {
-    base::RunLoop run_loop;
-    GetProcessTaskRunner()->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&MojoSandboxTest::StartUtilityProcessOnIoThread,
-                       base::Unretained(this), std::move(callback)),
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  mojo::Remote<mojom::TestService> BindTestService() {
-    mojo::Remote<mojom::TestService> test_service;
-    GetProcessTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&MojoSandboxTest::BindTestServiceOnIoThread,
-                                  base::Unretained(this),
-                                  test_service.BindNewPipeAndPassReceiver()));
-    return test_service;
-  }
-
-  void TearDownOnMainThread() override {
-    base::RunLoop run_loop;
-    GetProcessTaskRunner()->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&MojoSandboxTest::StopUtilityProcessOnIoThread,
-                       base::Unretained(this)),
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
- protected:
-  std::unique_ptr<UtilityProcessHost> host_;
-
- private:
-  void StartUtilityProcessOnIoThread(BeforeStartCallback callback) {
     host_ = std::make_unique<UtilityProcessHost>();
     host_->SetMetricsName("mojo_sandbox_test_process");
     if (callback)
@@ -88,12 +48,19 @@ class MojoSandboxTest : public ContentBrowserTest {
     ASSERT_TRUE(host_->Start());
   }
 
-  void BindTestServiceOnIoThread(
-      mojo::PendingReceiver<mojom::TestService> receiver) {
-    host_->GetChildProcess()->BindReceiver(std::move(receiver));
+  mojo::Remote<mojom::TestService> BindTestService() {
+    mojo::Remote<mojom::TestService> test_service;
+    host_->GetChildProcess()->BindReceiver(
+        test_service.BindNewPipeAndPassReceiver());
+    return test_service;
   }
 
-  void StopUtilityProcessOnIoThread() { host_.reset(); }
+  void TearDownOnMainThread() override { host_.reset(); }
+
+ protected:
+  std::unique_ptr<UtilityProcessHost> host_;
+
+ private:
 
   DISALLOW_COPY_AND_ASSIGN(MojoSandboxTest);
 };

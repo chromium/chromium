@@ -1047,8 +1047,7 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
 
   ShutDownNetworkService();
 
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI))
-    BrowserProcessIOThread::ProcessHostCleanUp();
+  BrowserProcessIOThread::ProcessHostCleanUp();
 
 #if defined(OS_MAC)
   BrowserCompositorMac::DisableRecyclingForShutdown();
@@ -1183,11 +1182,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   // Initialize the GPU shader cache. This needs to be initialized before
   // BrowserGpuChannelHostFactory below, since that depends on an initialized
   // ShaderCacheFactory.
-  auto process_task_runner =
-      base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-          ? GetUIThreadTaskRunner({})
-          : GetIOThreadTaskRunner({});
-  InitShaderCacheFactorySingleton(process_task_runner);
+  InitShaderCacheFactorySingleton();
 
   // Initialize the FontRenderParams on IO thread. This needs to be initialized
   // before gpu process initialization below.
@@ -1334,7 +1329,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   if (!established_gpu_channel && always_uses_gpu) {
     TRACE_EVENT_INSTANT0("gpu", "Post task to launch GPU process",
                          TRACE_EVENT_SCOPE_THREAD);
-    process_task_runner->PostTask(
+    GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&GpuProcessHost::Get),
                        GPU_PROCESS_KIND_SANDBOXED, true /* force_create */));

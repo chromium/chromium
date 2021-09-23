@@ -4,8 +4,6 @@
 
 #include "content/browser/gpu/shader_cache_factory.h"
 
-#include "base/bind.h"
-#include "base/single_thread_task_runner.h"
 #include "gpu/ipc/host/shader_disk_cache.h"
 
 namespace content {
@@ -21,13 +19,8 @@ void CreateFactoryInstance() {
 
 }  // namespace
 
-void InitShaderCacheFactorySingleton(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  if (task_runner->BelongsToCurrentThread()) {
-    CreateFactoryInstance();
-  } else {
-    task_runner->PostTask(FROM_HERE, base::BindOnce(&CreateFactoryInstance));
-  }
+void InitShaderCacheFactorySingleton() {
+  CreateFactoryInstance();
 }
 
 gpu::ShaderCacheFactory* GetShaderCacheFactorySingleton() {

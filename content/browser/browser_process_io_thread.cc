@@ -20,7 +20,6 @@
 #include "content/browser/utility_process_host.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "net/url_request/url_fetcher.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -96,12 +95,8 @@ void BrowserProcessIOThread::CleanUp() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
   // Run extra cleanup if this thread represents BrowserThread::IO.
-  if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
+  if (BrowserThread::CurrentlyOn(BrowserThread::IO))
     IOThreadCleanUp();
-
-    if (!base::FeatureList::IsEnabled(features::kProcessHostOnUI))
-      ProcessHostCleanUp();
-  }
 
   notification_service_.reset();
 
