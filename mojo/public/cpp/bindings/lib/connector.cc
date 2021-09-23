@@ -66,6 +66,10 @@ bool EnableTaskPerMessage() {
 class Connector::ActiveDispatchTracker {
  public:
   explicit ActiveDispatchTracker(const base::WeakPtr<Connector>& connector);
+
+  ActiveDispatchTracker(const ActiveDispatchTracker&) = delete;
+  ActiveDispatchTracker& operator=(const ActiveDispatchTracker&) = delete;
+
   ~ActiveDispatchTracker();
 
   void NotifyBeginNesting();
@@ -75,8 +79,6 @@ class Connector::ActiveDispatchTracker {
   RunLoopNestingObserver* const nesting_observer_;
   ActiveDispatchTracker* outer_tracker_ = nullptr;
   ActiveDispatchTracker* inner_tracker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveDispatchTracker);
 };
 
 // Watches the MessageLoop on the current thread. Notifies the current chain of
@@ -87,6 +89,9 @@ class Connector::RunLoopNestingObserver
   RunLoopNestingObserver() {
     base::RunLoop::AddNestingObserverOnCurrentThread(this);
   }
+
+  RunLoopNestingObserver(const RunLoopNestingObserver&) = delete;
+  RunLoopNestingObserver& operator=(const RunLoopNestingObserver&) = delete;
 
   ~RunLoopNestingObserver() override {
     base::RunLoop::RemoveNestingObserverOnCurrentThread(this);
@@ -113,8 +118,6 @@ class Connector::RunLoopNestingObserver
   friend class ActiveDispatchTracker;
 
   ActiveDispatchTracker* top_tracker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RunLoopNestingObserver);
 };
 
 Connector::ActiveDispatchTracker::ActiveDispatchTracker(

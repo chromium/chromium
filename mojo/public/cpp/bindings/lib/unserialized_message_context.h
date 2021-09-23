@@ -23,6 +23,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) UnserializedMessageContext {
   UnserializedMessageContext(const Tag* tag,
                              uint32_t message_name,
                              uint32_t message_flags);
+
+  UnserializedMessageContext(const UnserializedMessageContext&) = delete;
+  UnserializedMessageContext& operator=(const UnserializedMessageContext&) =
+      delete;
+
   virtual ~UnserializedMessageContext();
 
   template <typename MessageType>
@@ -50,8 +55,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) UnserializedMessageContext {
   // Message implementation which needs to query such metadata for both
   // serialized and unserialized message objects.
   MessageHeaderV1 header_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnserializedMessageContext);
 };
 
 }  // namespace internal

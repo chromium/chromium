@@ -104,6 +104,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // calling IsNull() on it will return |true|).
   static Message CreateFromMessageHandle(ScopedMessageHandle* message_handle);
 
+  Message(const Message&) = delete;
+  Message& operator=(const Message&) = delete;
+
   ~Message();
 
   // Moves |other| into a new Message object. The moved-from Message becomes
@@ -297,8 +300,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   const char* interface_name_ = nullptr;
   const char* method_name_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Message);
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFilter {
@@ -381,13 +382,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter
     : public MessageReceiver {
  public:
   PassThroughFilter();
+
+  PassThroughFilter(const PassThroughFilter&) = delete;
+  PassThroughFilter& operator=(const PassThroughFilter&) = delete;
+
   ~PassThroughFilter() override;
 
   // MessageReceiver:
   bool Accept(Message* message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PassThroughFilter);
 };
 
 // Reports the currently dispatching Message as bad. Note that this is only

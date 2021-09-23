@@ -65,6 +65,9 @@ class AssociatedRemote {
     Bind(std::move(pending_remote), std::move(task_runner));
   }
 
+  AssociatedRemote(const AssociatedRemote&) = delete;
+  AssociatedRemote& operator=(const AssociatedRemote&) = delete;
+
   ~AssociatedRemote() = default;
 
   AssociatedRemote& operator=(AssociatedRemote&& other) noexcept {
@@ -257,8 +260,6 @@ class AssociatedRemote {
  private:
   using State = internal::AssociatedInterfacePtrState<Interface>;
   mutable State internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedRemote);
 };
 
 }  // namespace mojo

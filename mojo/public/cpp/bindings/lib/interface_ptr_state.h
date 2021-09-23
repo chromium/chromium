@@ -40,6 +40,10 @@ namespace internal {
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfacePtrStateBase {
  public:
   InterfacePtrStateBase();
+
+  InterfacePtrStateBase(const InterfacePtrStateBase&) = delete;
+  InterfacePtrStateBase& operator=(const InterfacePtrStateBase&) = delete;
+
   ~InterfacePtrStateBase();
 
   MessagePipeHandle handle() const {
@@ -115,8 +119,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfacePtrStateBase {
   scoped_refptr<base::SequencedTaskRunner> runner_;
 
   uint32_t version_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfacePtrStateBase);
 };
 
 template <typename Interface>
@@ -125,6 +127,10 @@ class InterfacePtrState : public InterfacePtrStateBase {
   using Proxy = typename Interface::Proxy_;
 
   InterfacePtrState() = default;
+
+  InterfacePtrState(const InterfacePtrState&) = delete;
+  InterfacePtrState& operator=(const InterfacePtrState&) = delete;
+
   ~InterfacePtrState() = default;
 
   Proxy* instance() {
@@ -256,8 +262,6 @@ class InterfacePtrState : public InterfacePtrStateBase {
   }
 
   std::unique_ptr<Proxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfacePtrState);
 };
 
 }  // namespace internal

@@ -80,6 +80,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Event {
     char padding[7];
   };
 #pragma pack(pop)
+
+  Event(const Event&) = delete;
+  Event& operator=(const Event&) = delete;
+
   virtual ~Event();
 
   static ScopedEvent Deserialize(const void* buffer, size_t num_bytes);
@@ -106,13 +110,15 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Event {
  private:
   const Type type_;
   PortName port_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(Event);
 };
 
 class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessageEvent : public Event {
  public:
   explicit UserMessageEvent(size_t num_ports);
+
+  UserMessageEvent(const UserMessageEvent&) = delete;
+  UserMessageEvent& operator=(const UserMessageEvent&) = delete;
+
   ~UserMessageEvent() override;
 
   bool HasMessage() const { return !!message_; }
@@ -158,13 +164,15 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessageEvent : public Event {
   std::vector<PortDescriptor> port_descriptors_;
   std::vector<PortName> ports_;
   std::unique_ptr<UserMessage> message_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMessageEvent);
 };
 
 class COMPONENT_EXPORT(MOJO_CORE_PORTS) PortAcceptedEvent : public Event {
  public:
   explicit PortAcceptedEvent(const PortName& port_name);
+
+  PortAcceptedEvent(const PortAcceptedEvent&) = delete;
+  PortAcceptedEvent& operator=(const PortAcceptedEvent&) = delete;
+
   ~PortAcceptedEvent() override;
 
   static ScopedEvent Deserialize(const PortName& port_name,
@@ -174,8 +182,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) PortAcceptedEvent : public Event {
  private:
   size_t GetSerializedDataSize() const override;
   void SerializeData(void* buffer) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PortAcceptedEvent);
 };
 
 class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveProxyEvent : public Event {
@@ -185,6 +191,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveProxyEvent : public Event {
                     const PortName& proxy_port_name,
                     const NodeName& proxy_target_node_name,
                     const PortName& proxy_target_port_name);
+
+  ObserveProxyEvent(const ObserveProxyEvent&) = delete;
+  ObserveProxyEvent& operator=(const ObserveProxyEvent&) = delete;
+
   ~ObserveProxyEvent() override;
 
   const NodeName& proxy_node_name() const { return proxy_node_name_; }
@@ -209,13 +219,15 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveProxyEvent : public Event {
   const PortName proxy_port_name_;
   const NodeName proxy_target_node_name_;
   const PortName proxy_target_port_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserveProxyEvent);
 };
 
 class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveProxyAckEvent : public Event {
  public:
   ObserveProxyAckEvent(const PortName& port_name, uint64_t last_sequence_num);
+
+  ObserveProxyAckEvent(const ObserveProxyAckEvent&) = delete;
+  ObserveProxyAckEvent& operator=(const ObserveProxyAckEvent&) = delete;
+
   ~ObserveProxyAckEvent() override;
 
   uint64_t last_sequence_num() const { return last_sequence_num_; }
@@ -230,13 +242,15 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveProxyAckEvent : public Event {
   ScopedEvent Clone() const override;
 
   const uint64_t last_sequence_num_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserveProxyAckEvent);
 };
 
 class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveClosureEvent : public Event {
  public:
   ObserveClosureEvent(const PortName& port_name, uint64_t last_sequence_num);
+
+  ObserveClosureEvent(const ObserveClosureEvent&) = delete;
+  ObserveClosureEvent& operator=(const ObserveClosureEvent&) = delete;
+
   ~ObserveClosureEvent() override;
 
   uint64_t last_sequence_num() const { return last_sequence_num_; }
@@ -254,8 +268,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveClosureEvent : public Event {
   ScopedEvent Clone() const override;
 
   uint64_t last_sequence_num_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserveClosureEvent);
 };
 
 class COMPONENT_EXPORT(MOJO_CORE_PORTS) MergePortEvent : public Event {
@@ -263,6 +275,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MergePortEvent : public Event {
   MergePortEvent(const PortName& port_name,
                  const PortName& new_port_name,
                  const PortDescriptor& new_port_descriptor);
+
+  MergePortEvent(const MergePortEvent&) = delete;
+  MergePortEvent& operator=(const MergePortEvent&) = delete;
+
   ~MergePortEvent() override;
 
   const PortName& new_port_name() const { return new_port_name_; }
@@ -280,8 +296,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MergePortEvent : public Event {
 
   const PortName new_port_name_;
   const PortDescriptor new_port_descriptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(MergePortEvent);
 };
 
 class COMPONENT_EXPORT(MOJO_CORE_PORTS) UserMessageReadAckRequestEvent

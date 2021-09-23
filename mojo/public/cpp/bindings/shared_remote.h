@@ -54,14 +54,16 @@ class ThreadSafeForwarder : public internal::ThreadSafeForwarderBase {
   // method.
   explicit ThreadSafeForwarder(scoped_refptr<ThreadSafeProxy> thread_safe_proxy)
       : ThreadSafeForwarderBase(std::move(thread_safe_proxy)), proxy_(this) {}
+
+  ThreadSafeForwarder(const ThreadSafeForwarder&) = delete;
+  ThreadSafeForwarder& operator=(const ThreadSafeForwarder&) = delete;
+
   ~ThreadSafeForwarder() override = default;
 
   ProxyType& proxy() { return proxy_; }
 
  private:
   ProxyType proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSafeForwarder);
 };
 
 template <typename Interface>

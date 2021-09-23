@@ -699,6 +699,9 @@ class Channel::ReadBuffer {
     data_ = MakeAlignedBuffer(size_);
   }
 
+  ReadBuffer(const ReadBuffer&) = delete;
+  ReadBuffer& operator=(const ReadBuffer&) = delete;
+
   ~ReadBuffer() { DCHECK(data_); }
 
   const char* occupied_bytes() const {
@@ -782,8 +785,6 @@ class Channel::ReadBuffer {
 
   // The total number of occupied bytes, including discarded bytes.
   size_t num_occupied_bytes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadBuffer);
 };
 
 Channel::Channel(Delegate* delegate,

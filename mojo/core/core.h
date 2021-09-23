@@ -39,6 +39,10 @@ class PlatformSharedMemoryMapping;
 class MOJO_SYSTEM_IMPL_EXPORT Core {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   virtual ~Core();
 
   static Core* Get();
@@ -360,8 +364,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Core {
   using MappingTable =
       std::unordered_map<void*, std::unique_ptr<PlatformSharedMemoryMapping>>;
   MappingTable mapping_table_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 }  // namespace core

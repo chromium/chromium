@@ -74,6 +74,9 @@ class Receiver {
     Bind(std::move(pending_receiver), std::move(task_runner));
   }
 
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
+
   ~Receiver() = default;
 
   // Indicates whether this Receiver is bound, meaning it may continue to
@@ -301,8 +304,6 @@ class Receiver {
 
  private:
   internal::BindingState<Interface, ImplRefTraits> internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(Receiver);
 };
 
 }  // namespace mojo

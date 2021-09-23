@@ -35,6 +35,10 @@ class TriggerHelper {
   using ContextCallback = base::RepeatingCallback<void(const MojoTrapEvent&)>;
 
   TriggerHelper() = default;
+
+  TriggerHelper(const TriggerHelper&) = delete;
+  TriggerHelper& operator=(const TriggerHelper&) = delete;
+
   ~TriggerHelper() = default;
 
   MojoResult CreateTrap(MojoHandle* handle) {
@@ -65,6 +69,9 @@ class TriggerHelper {
     explicit NotificationContext(const ContextCallback& callback)
         : callback_(callback) {}
 
+    NotificationContext(const NotificationContext&) = delete;
+    NotificationContext& operator=(const NotificationContext&) = delete;
+
     ~NotificationContext() = default;
 
     void SetCancelCallback(base::OnceClosure cancel_callback) {
@@ -81,30 +88,28 @@ class TriggerHelper {
    private:
     const ContextCallback callback_;
     base::OnceClosure cancel_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(NotificationContext);
   };
 
   static void Notify(const MojoTrapEvent* event) {
     reinterpret_cast<NotificationContext*>(event->trigger_context)
         ->Notify(*event);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TriggerHelper);
 };
 
 class ThreadedRunner : public base::SimpleThread {
  public:
   explicit ThreadedRunner(base::OnceClosure callback)
       : SimpleThread("ThreadedRunner"), callback_(std::move(callback)) {}
+
+  ThreadedRunner(const ThreadedRunner&) = delete;
+  ThreadedRunner& operator=(const ThreadedRunner&) = delete;
+
   ~ThreadedRunner() override = default;
 
   void Run() override { std::move(callback_).Run(); }
 
  private:
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedRunner);
 };
 
 void ExpectNoNotification(const MojoTrapEvent* event) {

@@ -264,6 +264,9 @@ class MultiplexRouter::MessageWrapper {
   MessageWrapper(MessageWrapper&& other)
       : router_(other.router_), value_(std::move(other.value_)) {}
 
+  MessageWrapper(const MessageWrapper&) = delete;
+  MessageWrapper& operator=(const MessageWrapper&) = delete;
+
   ~MessageWrapper() {
     if (!router_ || value_.IsNull())
       return;
@@ -300,8 +303,6 @@ class MultiplexRouter::MessageWrapper {
  private:
   MultiplexRouter* router_ = nullptr;
   Message value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageWrapper);
 };
 
 struct MultiplexRouter::Task {

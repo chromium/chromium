@@ -96,6 +96,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
             scoped_refptr<base::SequencedTaskRunner> runner,
             const char* interface_name = "unknown interface");
 
+  Connector(const Connector&) = delete;
+  Connector& operator=(const Connector&) = delete;
+
   ~Connector() override;
 
   const char* interface_name() const { return interface_name_; }
@@ -358,8 +361,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // transferred (i.e., when |connected_| is set to false).
   base::WeakPtr<Connector> weak_self_;
   base::WeakPtrFactory<Connector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Connector);
 };
 
 }  // namespace mojo

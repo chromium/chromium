@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
                     const char* description,
                     ValidatorType validator_type);
 
+  ValidationContext(const ValidationContext&) = delete;
+  ValidationContext& operator=(const ValidationContext&) = delete;
+
   ~ValidationContext();
 
   // Claims the specified memory range.
@@ -134,12 +137,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
       ++ctx_->stack_depth_;
     }
 
+    ScopedDepthTracker(const ScopedDepthTracker&) = delete;
+    ScopedDepthTracker& operator=(const ScopedDepthTracker&) = delete;
+
     ~ScopedDepthTracker() { --ctx_->stack_depth_; }
 
    private:
     ValidationContext* ctx_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedDepthTracker);
   };
 
   // Returns true if the recursion depth limit has been reached.
@@ -174,8 +178,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
   uint32_t associated_endpoint_handle_end_;
 
   int stack_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidationContext);
 };
 
 }  // namespace internal

@@ -35,6 +35,9 @@ class MessagePipeTest : public test::MojoTestBase {
     CHECK_EQ(MOJO_RESULT_OK, MojoCreateMessagePipe(nullptr, &pipe0_, &pipe1_));
   }
 
+  MessagePipeTest(const MessagePipeTest&) = delete;
+  MessagePipeTest& operator=(const MessagePipeTest&) = delete;
+
   ~MessagePipeTest() override {
     if (pipe0_ != MOJO_HANDLE_INVALID)
       CHECK_EQ(MOJO_RESULT_OK, MojoClose(pipe0_));
@@ -78,9 +81,6 @@ class MessagePipeTest : public test::MojoTestBase {
   }
 
   MojoHandle pipe0_, pipe1_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagePipeTest);
 };
 
 using FuseMessagePipeTest = test::MojoTestBase;

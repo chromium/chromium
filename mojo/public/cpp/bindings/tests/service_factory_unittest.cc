@@ -39,6 +39,9 @@ class TestService1Impl : public mojom::TestService1 {
     ++num_instances_;
   }
 
+  TestService1Impl(const TestService1Impl&) = delete;
+  TestService1Impl& operator=(const TestService1Impl&) = delete;
+
   ~TestService1Impl() override {
     --num_instances_;
   }
@@ -55,14 +58,15 @@ class TestService1Impl : public mojom::TestService1 {
 
   Receiver<mojom::TestService1> receiver_;
   static int num_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestService1Impl);
 };
 
 class TestService2Impl : public mojom::TestService2 {
  public:
   explicit TestService2Impl(PendingReceiver<mojom::TestService2> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestService2Impl(const TestService2Impl&) = delete;
+  TestService2Impl& operator=(const TestService2Impl&) = delete;
 
   ~TestService2Impl() override = default;
 
@@ -73,8 +77,6 @@ class TestService2Impl : public mojom::TestService2 {
   }
 
   Receiver<mojom::TestService2> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestService2Impl);
 };
 
 int TestService1Impl::num_instances_ = 0;

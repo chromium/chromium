@@ -60,6 +60,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           uint32_t interface_version,
                           const char* interface_name);
+
+  InterfaceEndpointClient(const InterfaceEndpointClient&) = delete;
+  InterfaceEndpointClient& operator=(const InterfaceEndpointClient&) = delete;
+
   ~InterfaceEndpointClient() override;
 
   // Sets the error handler to receive notifications when an error is
@@ -217,15 +221,16 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   struct SyncResponseInfo {
    public:
     explicit SyncResponseInfo(bool* in_response_received);
+
+    SyncResponseInfo(const SyncResponseInfo&) = delete;
+    SyncResponseInfo& operator=(const SyncResponseInfo&) = delete;
+
     ~SyncResponseInfo();
 
     Message response;
 
     // Points to a stack-allocated variable.
     bool* response_received;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SyncResponseInfo);
   };
 
   using SyncResponseMap = std::map<uint64_t, std::unique_ptr<SyncResponseInfo>>;
@@ -235,6 +240,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   class HandleIncomingMessageThunk : public MessageReceiver {
    public:
     explicit HandleIncomingMessageThunk(InterfaceEndpointClient* owner);
+
+    HandleIncomingMessageThunk(const HandleIncomingMessageThunk&) = delete;
+    HandleIncomingMessageThunk& operator=(const HandleIncomingMessageThunk&) =
+        delete;
+
     ~HandleIncomingMessageThunk() override;
 
     // MessageReceiver implementation:
@@ -242,8 +252,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
    private:
     InterfaceEndpointClient* const owner_;
-
-    DISALLOW_COPY_AND_ASSIGN(HandleIncomingMessageThunk);
   };
 
   void InitControllerIfNecessary();
@@ -317,8 +325,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<InterfaceEndpointClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceEndpointClient);
 };
 
 }  // namespace mojo

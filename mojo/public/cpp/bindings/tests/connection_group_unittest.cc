@@ -38,6 +38,9 @@ class TestInterfaceImpl : public mojom::TestInterface {
         &TestInterfaceImpl::OnDisconnect, base::Unretained(this)));
   }
 
+  TestInterfaceImpl(const TestInterfaceImpl&) = delete;
+  TestInterfaceImpl& operator=(const TestInterfaceImpl&) = delete;
+
   ~TestInterfaceImpl() override = default;
 
   void WaitForDisconnect() {
@@ -60,8 +63,6 @@ class TestInterfaceImpl : public mojom::TestInterface {
 
   ReceiverSet<mojom::TestInterface> receivers_;
   base::OnceClosure wait_for_disconnect_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInterfaceImpl);
 };
 
 TEST_P(ConnectionGroupBindingsTest, RefCounting) {

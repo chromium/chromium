@@ -22,6 +22,10 @@ namespace {
 class GlobalSyncCallSettings {
  public:
   GlobalSyncCallSettings() = default;
+
+  GlobalSyncCallSettings(const GlobalSyncCallSettings&) = delete;
+  GlobalSyncCallSettings& operator=(const GlobalSyncCallSettings&) = delete;
+
   ~GlobalSyncCallSettings() = default;
 
   bool sync_call_allowed_by_default() const {
@@ -37,8 +41,6 @@ class GlobalSyncCallSettings {
  private:
   mutable base::Lock lock_;
   bool sync_call_allowed_by_default_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalSyncCallSettings);
 };
 
 GlobalSyncCallSettings& GetGlobalSettings() {

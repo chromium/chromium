@@ -28,6 +28,9 @@ class TestServiceImpl : public mojom::TestService, public mojom::KeepAlive {
   explicit TestServiceImpl(PendingReceiver<mojom::TestService> receiver)
       : receiver_(this, std::move(receiver)) {}
 
+  TestServiceImpl(const TestServiceImpl&) = delete;
+  TestServiceImpl& operator=(const TestServiceImpl&) = delete;
+
   ~TestServiceImpl() override = default;
 
   void HoldNextPingPong() { hold_next_ping_pong_ = true; }
@@ -58,8 +61,6 @@ class TestServiceImpl : public mojom::TestService, public mojom::KeepAlive {
 
   bool hold_next_ping_pong_ = false;
   base::OnceClosure last_ping_pong_reply_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestServiceImpl);
 };
 
 TEST_P(IdleTrackingTest, ControlMessagesDontExpectAck) {

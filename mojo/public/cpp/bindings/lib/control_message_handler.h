@@ -25,6 +25,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageHandler
 
   ControlMessageHandler(InterfaceEndpointClient* owner,
                         uint32_t interface_version);
+
+  ControlMessageHandler(const ControlMessageHandler&) = delete;
+  ControlMessageHandler& operator=(const ControlMessageHandler&) = delete;
+
   ~ControlMessageHandler() override;
 
   // Call the following methods only if IsControlMessage() returned true.
@@ -40,8 +44,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageHandler
 
   InterfaceEndpointClient* const owner_;
   uint32_t interface_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControlMessageHandler);
 };
 
 }  // namespace internal

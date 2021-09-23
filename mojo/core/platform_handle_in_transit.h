@@ -28,6 +28,10 @@ class PlatformHandleInTransit {
   PlatformHandleInTransit();
   explicit PlatformHandleInTransit(PlatformHandle handle);
   PlatformHandleInTransit(PlatformHandleInTransit&&);
+
+  PlatformHandleInTransit(const PlatformHandleInTransit&) = delete;
+  PlatformHandleInTransit& operator=(const PlatformHandleInTransit&) = delete;
+
   ~PlatformHandleInTransit();
 
   PlatformHandleInTransit& operator=(PlatformHandleInTransit&&);
@@ -97,8 +101,6 @@ class PlatformHandleInTransit {
 
   PlatformHandle handle_;
   base::Process owning_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformHandleInTransit);
 };
 
 }  // namespace core

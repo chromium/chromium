@@ -84,6 +84,9 @@ class Remote {
     Bind(std::move(pending_remote), std::move(task_runner));
   }
 
+  Remote(const Remote&) = delete;
+  Remote& operator=(const Remote&) = delete;
+
   ~Remote() = default;
 
   Remote& operator=(Remote&& other) noexcept {
@@ -385,8 +388,6 @@ class Remote {
  private:
   using State = internal::InterfacePtrState<Interface>;
   mutable State internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(Remote);
 };
 
 }  // namespace mojo

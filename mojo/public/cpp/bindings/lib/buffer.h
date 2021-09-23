@@ -53,6 +53,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Buffer {
          size_t size);
 
   Buffer(Buffer&& other);
+
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
   ~Buffer();
 
   Buffer& operator=(Buffer&& other);
@@ -122,8 +126,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Buffer {
   // The current write offset into |data_| if this Buffer is being used for
   // message creation.
   size_t cursor_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 }  // namespace internal

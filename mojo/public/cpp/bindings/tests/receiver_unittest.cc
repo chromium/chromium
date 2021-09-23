@@ -44,6 +44,9 @@ class ServiceImpl : public sample::Service {
   explicit ServiceImpl(base::OnceClosure destruction_callback)
       : destruction_callback_(std::move(destruction_callback)) {}
 
+  ServiceImpl(const ServiceImpl&) = delete;
+  ServiceImpl& operator=(const ServiceImpl&) = delete;
+
   ~ServiceImpl() override {
     if (destruction_callback_)
       std::move(destruction_callback_).Run();
@@ -60,8 +63,6 @@ class ServiceImpl : public sample::Service {
   void GetPort(PendingReceiver<sample::Port> port) override {}
 
   base::OnceClosure destruction_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceImpl);
 };
 
 using ReceiverTest = BindingsTestBase;
@@ -258,6 +259,10 @@ TEST_P(ReceiverTest, Unbind) {
 class IntegerAccessorImpl : public sample::IntegerAccessor {
  public:
   IntegerAccessorImpl() = default;
+
+  IntegerAccessorImpl(const IntegerAccessorImpl&) = delete;
+  IntegerAccessorImpl& operator=(const IntegerAccessorImpl&) = delete;
+
   ~IntegerAccessorImpl() override = default;
 
  private:
@@ -266,8 +271,6 @@ class IntegerAccessorImpl : public sample::IntegerAccessor {
     std::move(callback).Run(1, sample::Enum::VALUE);
   }
   void SetInteger(int64_t data, sample::Enum type) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(IntegerAccessorImpl);
 };
 
 TEST_P(ReceiverTest, PauseResume) {
@@ -323,6 +326,10 @@ TEST_P(ReceiverTest, ErrorHandleNotRunWhilePaused) {
 class PingServiceImpl : public test::PingService {
  public:
   PingServiceImpl() = default;
+
+  PingServiceImpl(const PingServiceImpl&) = delete;
+  PingServiceImpl& operator=(const PingServiceImpl&) = delete;
+
   ~PingServiceImpl() override = default;
 
   // test::PingService:
@@ -338,8 +345,6 @@ class PingServiceImpl : public test::PingService {
 
  private:
   base::RepeatingClosure ping_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingServiceImpl);
 };
 
 class CallbackFilter : public MessageFilter {
@@ -671,6 +676,10 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
     receiver_.set_disconnect_handler(base::BindOnce(
         &TestGenericBinderImpl::OnDisconnect, base::Unretained(this)));
   }
+
+  TestGenericBinderImpl(const TestGenericBinderImpl&) = delete;
+  TestGenericBinderImpl& operator=(const TestGenericBinderImpl&) = delete;
+
   ~TestGenericBinderImpl() override = default;
 
   bool connected() const { return connected_; }
@@ -739,8 +748,6 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
   absl::optional<base::RunLoop> wait_loop_;
   GenericPendingReceiver* next_receiver_storage_ = nullptr;
   GenericPendingAssociatedReceiver* next_associated_receiver_storage_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGenericBinderImpl);
 };
 
 using ReceiverSerializationTest = ReceiverTest;

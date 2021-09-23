@@ -24,6 +24,10 @@ class WatcherSet {
  public:
   // |owner| is the Dispatcher who owns this WatcherSet.
   explicit WatcherSet(Dispatcher* owner);
+
+  WatcherSet(const WatcherSet&) = delete;
+  WatcherSet& operator=(const WatcherSet&) = delete;
+
   ~WatcherSet();
 
   // Notifies all watchers of the handle's current signals state.
@@ -60,8 +64,6 @@ class WatcherSet {
   Dispatcher* const owner_;
   base::flat_map<WatcherDispatcher*, Entry> watchers_;
   absl::optional<HandleSignalsState> last_known_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherSet);
 };
 
 }  // namespace core

@@ -45,6 +45,10 @@ class DataPipeReader {
                    base::BindRepeating(&DataPipeReader::OnDataAvailable,
                                        base::Unretained(this)));
   }
+
+  DataPipeReader(const DataPipeReader&) = delete;
+  DataPipeReader& operator=(const DataPipeReader&) = delete;
+
   ~DataPipeReader() = default;
 
   const std::string& data() const { return data_; }
@@ -79,13 +83,14 @@ class DataPipeReader {
   base::OnceClosure on_read_done_;
   SimpleWatcher watcher_;
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeReader);
 };
 
 class DataPipeProducerTest : public testing::Test {
  public:
   DataPipeProducerTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
+
+  DataPipeProducerTest(const DataPipeProducerTest&) = delete;
+  DataPipeProducerTest& operator=(const DataPipeProducerTest&) = delete;
 
   ~DataPipeProducerTest() override = default;
 
@@ -135,8 +140,6 @@ class DataPipeProducerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   int tmp_file_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeProducerTest);
 };
 
 struct DataPipeObserverData {

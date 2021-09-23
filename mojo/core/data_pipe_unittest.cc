@@ -74,6 +74,9 @@ class DataPipeTest : public test::MojoTestBase {
   DataPipeTest()
       : producer_(MOJO_HANDLE_INVALID), consumer_(MOJO_HANDLE_INVALID) {}
 
+  DataPipeTest(const DataPipeTest&) = delete;
+  DataPipeTest& operator=(const DataPipeTest&) = delete;
+
   ~DataPipeTest() override {
     if (producer_ != MOJO_HANDLE_INVALID)
       CHECK_EQ(MOJO_RESULT_OK, MojoClose(producer_));
@@ -173,9 +176,6 @@ class DataPipeTest : public test::MojoTestBase {
   }
 
   MojoHandle producer_, consumer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DataPipeTest);
 };
 
 TEST_F(DataPipeTest, Basic) {

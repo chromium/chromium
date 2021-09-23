@@ -111,6 +111,9 @@ class BindingState : public BindingStateBase {
     stub_.set_sink(std::move(impl));
   }
 
+  BindingState(const BindingState&) = delete;
+  BindingState& operator=(const BindingState&) = delete;
+
   ~BindingState() { Close(); }
 
   void Bind(PendingReceiverState* receiver_state,
@@ -139,8 +142,6 @@ class BindingState : public BindingStateBase {
 
  private:
   typename Interface::template Stub_<ImplRefTraits> stub_;
-
-  DISALLOW_COPY_AND_ASSIGN(BindingState);
 };
 
 }  // namespace internal

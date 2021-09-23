@@ -41,6 +41,12 @@ class TestNativeStructWithAttachments {
   TestNativeStructWithAttachments(TestNativeStructWithAttachments&& other);
   TestNativeStructWithAttachments(const std::string& message,
                                   ScopedMessagePipeHandle pipe);
+
+  TestNativeStructWithAttachments(const TestNativeStructWithAttachments&) =
+      delete;
+  TestNativeStructWithAttachments& operator=(
+      const TestNativeStructWithAttachments&) = delete;
+
   ~TestNativeStructWithAttachments();
 
   TestNativeStructWithAttachments& operator=(
@@ -55,8 +61,6 @@ class TestNativeStructWithAttachments {
  private:
   std::string message_;
   mutable mojo::ScopedMessagePipeHandle pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeStructWithAttachments);
 };
 
 }  // namespace test

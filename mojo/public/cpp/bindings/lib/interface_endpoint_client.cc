@@ -233,6 +233,10 @@ class ResponderThunk : public MessageReceiverWithStatus {
       : endpoint_client_(endpoint_client),
         accept_was_invoked_(false),
         task_runner_(std::move(runner)) {}
+
+  ResponderThunk(const ResponderThunk&) = delete;
+  ResponderThunk& operator=(const ResponderThunk&) = delete;
+
   ~ResponderThunk() override {
     if (!accept_was_invoked_) {
       // The Service handled a message that was expecting a response
@@ -301,8 +305,6 @@ class ResponderThunk : public MessageReceiverWithStatus {
   bool accept_was_invoked_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ConnectionGroup::Ref connection_group_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResponderThunk);
 };
 
 }  // namespace

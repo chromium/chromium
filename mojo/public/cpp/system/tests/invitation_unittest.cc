@@ -59,6 +59,10 @@ class InvitationCppTest : public testing::Test,
                           public testing::WithParamInterface<TransportType> {
  public:
   InvitationCppTest() = default;
+
+  InvitationCppTest(const InvitationCppTest&) = delete;
+  InvitationCppTest& operator=(const InvitationCppTest&) = delete;
+
   ~InvitationCppTest() override = default;
 
  protected:
@@ -175,8 +179,6 @@ class InvitationCppTest : public testing::Test,
  private:
   base::test::TaskEnvironment task_environment_;
   base::Process child_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvitationCppTest);
 };
 
 class TestClientBase : public InvitationCppTest {

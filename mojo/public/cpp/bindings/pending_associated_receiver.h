@@ -59,6 +59,10 @@ class PendingAssociatedReceiver {
                 std::move(other))) {}
 #endif  // !defined(OS_NACL)
 
+  PendingAssociatedReceiver(const PendingAssociatedReceiver&) = delete;
+  PendingAssociatedReceiver& operator=(const PendingAssociatedReceiver&) =
+      delete;
+
   ~PendingAssociatedReceiver() = default;
 
   PendingAssociatedReceiver& operator=(PendingAssociatedReceiver&& other) {
@@ -121,8 +125,6 @@ class PendingAssociatedReceiver {
 
  private:
   ScopedInterfaceEndpointHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingAssociatedReceiver);
 };
 
 // Constructs an invalid PendingAssociatedReceiver of any arbitrary interface

@@ -37,6 +37,10 @@ class MOJO_CPP_SYSTEM_EXPORT HandleSignalTracker {
                       MojoHandleSignals signals,
                       scoped_refptr<base::SequencedTaskRunner> task_runner =
                           base::SequencedTaskRunnerHandle::Get());
+
+  HandleSignalTracker(const HandleSignalTracker&) = delete;
+  HandleSignalTracker& operator=(const HandleSignalTracker&) = delete;
+
   ~HandleSignalTracker();
 
   const HandleSignalsState& last_known_state() const {
@@ -67,8 +71,6 @@ class MOJO_CPP_SYSTEM_EXPORT HandleSignalTracker {
   // Watches for the signal(s) to be cleared. May only be armed when
   // |high_watcher_| is not.
   SimpleWatcher low_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleSignalTracker);
 };
 
 }  // namespace mojo

@@ -65,6 +65,9 @@ class MessageView {
 
   MessageView& operator=(MessageView&& other) = default;
 
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
+
   ~MessageView() {
     if (message_) {
       UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency",
@@ -111,8 +114,6 @@ class MessageView {
   size_t num_handles_sent_ = 0;
 
   base::TimeTicks start_time_ = base::TimeTicks::Now();
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 ChannelPosix::ChannelPosix(

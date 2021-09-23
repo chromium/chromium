@@ -80,6 +80,9 @@ class PendingReceiver {
             std::forward<T>(other))) {}
 #endif  // !defined(OS_NACL)
 
+  PendingReceiver(const PendingReceiver&) = delete;
+  PendingReceiver& operator=(const PendingReceiver&) = delete;
+
   ~PendingReceiver() = default;
 
   PendingReceiver& operator=(PendingReceiver&&) noexcept = default;
@@ -144,8 +147,6 @@ class PendingReceiver {
 
  private:
   internal::PendingReceiverState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingReceiver);
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) NullReceiver {

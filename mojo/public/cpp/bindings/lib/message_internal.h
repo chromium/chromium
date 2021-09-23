@@ -59,6 +59,10 @@ static_assert(sizeof(MessageHeaderV2) == 48, "Bad sizeof(MessageHeaderV2)");
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
  public:
   explicit MessageDispatchContext(Message* message);
+
+  MessageDispatchContext(const MessageDispatchContext&) = delete;
+  MessageDispatchContext& operator=(const MessageDispatchContext&) = delete;
+
   ~MessageDispatchContext();
 
   static MessageDispatchContext* current();
@@ -68,8 +72,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
  private:
   MessageDispatchContext* outer_context_;
   Message* message_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageDispatchContext);
 };
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)

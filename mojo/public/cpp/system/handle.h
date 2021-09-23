@@ -77,6 +77,10 @@ class ScopedHandleBase {
 
   ScopedHandleBase() {}
   explicit ScopedHandleBase(HandleType handle) : handle_(handle) {}
+
+  ScopedHandleBase(const ScopedHandleBase&) = delete;
+  ScopedHandleBase& operator=(const ScopedHandleBase&) = delete;
+
   ~ScopedHandleBase() { CloseIfNecessary(); }
 
   template <class CompatibleHandleType>
@@ -138,8 +142,6 @@ class ScopedHandleBase {
   }
 
   HandleType handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedHandleBase);
 };
 
 template <typename HandleType>

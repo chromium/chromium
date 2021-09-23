@@ -35,6 +35,10 @@ class MoveOnlyType {
   MoveOnlyType();
   MoveOnlyType(MoveOnlyType&& other);
   MoveOnlyType& operator=(MoveOnlyType&& other);
+
+  MoveOnlyType(const MoveOnlyType&) = delete;
+  MoveOnlyType& operator=(const MoveOnlyType&) = delete;
+
   ~MoveOnlyType();
 
   bool moved() const { return moved_; }
@@ -46,8 +50,6 @@ class MoveOnlyType {
   bool moved_;
   static size_t num_instances_;
   MoveOnlyType* ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveOnlyType);
 };
 
 }  // namespace mojo

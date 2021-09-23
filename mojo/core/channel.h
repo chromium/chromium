@@ -62,6 +62,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   // A message to be written to a channel.
   struct MOJO_SYSTEM_IMPL_EXPORT Message {
+    Message(const Message&) = delete;
+    Message& operator=(const Message&) = delete;
+
     virtual ~Message() = default;
 
     enum class MessageType : uint16_t {
@@ -234,8 +237,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     // be transmitted if the message is written to a channel. Includes all
     // headers and user payload.
     size_t size_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(Message);
   };
 
   // Error types which may be reported by a Channel instance to its delegate.

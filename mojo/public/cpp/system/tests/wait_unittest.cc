@@ -44,14 +44,16 @@ class ThreadedRunner : public base::SimpleThread {
  public:
   explicit ThreadedRunner(base::OnceClosure callback)
       : SimpleThread("ThreadedRunner"), callback_(std::move(callback)) {}
+
+  ThreadedRunner(const ThreadedRunner&) = delete;
+  ThreadedRunner& operator=(const ThreadedRunner&) = delete;
+
   ~ThreadedRunner() override { Join(); }
 
   void Run() override { std::move(callback_).Run(); }
 
  private:
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedRunner);
 };
 
 TEST_F(WaitTest, InvalidArguments) {

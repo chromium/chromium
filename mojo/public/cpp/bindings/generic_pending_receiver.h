@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
       : GenericPendingReceiver(Interface::Name_, request.PassMessagePipe()) {}
 
   GenericPendingReceiver(GenericPendingReceiver&&);
+
+  GenericPendingReceiver(const GenericPendingReceiver&) = delete;
+  GenericPendingReceiver& operator=(const GenericPendingReceiver&) = delete;
+
   ~GenericPendingReceiver();
 
   GenericPendingReceiver& operator=(GenericPendingReceiver&&);
@@ -69,8 +73,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
 
   absl::optional<std::string> interface_name_;
   mojo::ScopedMessagePipeHandle pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(GenericPendingReceiver);
 };
 
 }  // namespace mojo

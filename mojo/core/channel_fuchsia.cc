@@ -104,6 +104,9 @@ class MessageView {
 
   MessageView& operator=(MessageView&& other) = default;
 
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
+
   ~MessageView() = default;
 
   const void* data() const {
@@ -144,8 +147,6 @@ class MessageView {
   Channel::MessagePtr message_;
   size_t offset_;
   std::vector<PlatformHandleInTransit> handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 class ChannelFuchsia : public Channel,
