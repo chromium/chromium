@@ -549,6 +549,11 @@ void AppServiceProxyBase::OnPreferredAppRemoved(
   preferred_apps_.DeletePreferredApp(app_id, intent_filter);
 }
 
+void AppServiceProxyBase::OnPreferredAppsChanged(
+    apps::mojom::PreferredAppChangesPtr changes) {
+  preferred_apps_.ApplyBulkUpdate(std::move(changes));
+}
+
 void AppServiceProxyBase::InitializePreferredApps(
     PreferredAppsList::PreferredApps preferred_apps) {
   preferred_apps_.Init(preferred_apps);

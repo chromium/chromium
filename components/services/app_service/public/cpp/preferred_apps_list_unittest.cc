@@ -8,6 +8,7 @@
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -603,16 +604,20 @@ TEST_F(PreferredAppListTest, DeleteSupportedLinks) {
   auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
   preferred_apps_.AddPreferredApp(kAppId2, intent_filter_3);
 
-  preferred_apps_.DeleteSupportedLinks(kAppId1);
+  auto deleted = preferred_apps_.DeleteSupportedLinks(kAppId1);
 
   EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_1));
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(1u, deleted.size());
+  EXPECT_EQ(intent_filter_1, deleted[0]);
 
-  preferred_apps_.DeleteSupportedLinks(kAppId2);
+  deleted = preferred_apps_.DeleteSupportedLinks(kAppId2);
   EXPECT_EQ(absl::nullopt,
             preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+  EXPECT_EQ(1u, deleted.size());
+  EXPECT_EQ(intent_filter_3, deleted[0]);
 }
 
 // Test that DeleteSupportedLinks removes the entire preference, including
@@ -629,4 +634,73 @@ TEST_F(PreferredAppListTest, DeleteSupportedLinksForMultipleConditionValues) {
 
   EXPECT_EQ(absl::nullopt, preferred_apps_.FindPreferredAppForUrl(
                                GURL("ftp://www.example.com")));
+}
+
+TEST_F(PreferredAppListTest, ApplyBulkUpdateAdditions) {
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  GURL filter_url_2 = GURL("https://www.google.com/def");
+  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_2);
+  GURL filter_url_3 = GURL("https://www.google.com/hij");
+  auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
+
+  auto changes = apps::mojom::PreferredAppChanges::New();
+  changes->added_filters[kAppId1].push_back(intent_filter_1->Clone());
+  changes->added_filters[kAppId1].push_back(intent_filter_2->Clone());
+  changes->added_filters[kAppId2].push_back(intent_filter_3->Clone());
+
+  preferred_apps_.ApplyBulkUpdate(std::move(changes));
+
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+}
+
+// Test that you can add and remove overlapping filters with a single call to
+// ApplyBulkUpdate.
+TEST_F(PreferredAppListTest, ApplyBulkUpdateAddAndRemove) {
+  GURL filter_url_base = GURL("https://www.google.com/foo");
+  auto intent_filter_base =
+      apps_util::CreateIntentFilterForUrlScope(filter_url_base);
+  GURL filter_url_ext = GURL("https://www.google.com/foo/bar");
+  auto intent_filter_ext =
+      apps_util::CreateIntentFilterForUrlScope(filter_url_ext);
+
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_base);
+
+  auto changes = apps::mojom::PreferredAppChanges::New();
+  changes->added_filters[kAppId1].push_back(intent_filter_ext->Clone());
+  changes->removed_filters[kAppId1].push_back(intent_filter_base->Clone());
+
+  preferred_apps_.ApplyBulkUpdate(std::move(changes));
+
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_ext));
+  EXPECT_EQ(absl::nullopt,
+            preferred_apps_.FindPreferredAppForUrl(filter_url_base));
+}
+
+// Test that removing a filter using ApplyBulkUpdate only removes filters which
+// match exactly, and not anything that overlaps.
+TEST_F(PreferredAppListTest, ApplyBulkUpdateRemoveMatchesExactly) {
+  GURL filter_url_base = GURL("https://www.google.com/foo");
+  auto intent_filter_base =
+      apps_util::CreateIntentFilterForUrlScope(filter_url_base);
+  GURL filter_url_ext = GURL("https://www.google.com/foo/bar");
+  auto intent_filter_ext =
+      apps_util::CreateIntentFilterForUrlScope(filter_url_ext);
+
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_ext);
+
+  auto changes = apps::mojom::PreferredAppChanges::New();
+  changes->removed_filters[kAppId1].push_back(intent_filter_base->Clone());
+  preferred_apps_.ApplyBulkUpdate(std::move(changes));
+
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_ext));
+
+  changes = apps::mojom::PreferredAppChanges::New();
+  changes->removed_filters[kAppId1].push_back(intent_filter_ext->Clone());
+  preferred_apps_.ApplyBulkUpdate(std::move(changes));
+
+  EXPECT_EQ(absl::nullopt,
+            preferred_apps_.FindPreferredAppForUrl(filter_url_ext));
 }

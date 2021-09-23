@@ -300,6 +300,11 @@ interface Subscriber {
   // the change to all subscribers.
   OnPreferredAppRemoved(string app_id, IntentFilter intent_filter);
 
+  // Indicates that a changes have been made by App Service to the preferred
+  // apps list. All of the changes should be applied to the subscriber's copy of
+  // the list using PreferredAppsList::ApplyBulkUpdate.
+  OnPreferredAppsChanged(PreferredAppChanges changes);
+
   // Initialize the |preferred_apps| in the subscribers from the app service.
   InitializePreferredApps(array<PreferredApp> preferred_apps);
 };

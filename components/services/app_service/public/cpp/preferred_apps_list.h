@@ -92,8 +92,17 @@ class PreferredAppsList {
   bool DeleteAppId(const std::string& app_id);
 
   // Deletes all stored supported link preferences for an |app_id|.
-  // Returns true if any preferences were removed.
-  bool DeleteSupportedLinks(const std::string& app_id);
+  // Returns the deleted filters, if any.
+  std::vector<apps::mojom::IntentFilterPtr> DeleteSupportedLinks(
+      const std::string& app_id);
+
+  // Applies all of the |changes| in a single bulk update. This method is
+  // intended to only be called from |OnPreferredAppsChanged| App Service
+  // subscriber overrides.
+  // Note that removed filters are processed before new filters are added. If
+  // the same filter appears in both |changes->added_filters| and
+  // |changes->removed_filters|, it be removed and then immediately added back.
+  void ApplyBulkUpdate(apps::mojom::PreferredAppChangesPtr changes);
 
   // Initialize the preferred app with empty list or existing |preferred_apps|;
   void Init();

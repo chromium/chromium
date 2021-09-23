@@ -316,6 +316,8 @@ class AppServiceProxyBase : public KeyedService,
   void OnPreferredAppRemoved(
       const std::string& app_id,
       apps::mojom::IntentFilterPtr intent_filter) override;
+  void OnPreferredAppsChanged(
+      apps::mojom::PreferredAppChangesPtr changes) override;
   void InitializePreferredApps(
       PreferredAppsList::PreferredApps preferred_apps) override;
 

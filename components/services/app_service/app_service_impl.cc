@@ -4,10 +4,12 @@
 
 #include "components/services/app_service/app_service_impl.h"
 
+#include <iterator>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -422,39 +424,62 @@ void AppServiceImpl::SetSupportedLinksPreference(
     return;
   }
 
-  base::flat_set<std::string> removed_apps;
+  auto changes = apps::mojom::PreferredAppChanges::New();
+  auto& added = changes->added_filters;
+  auto& removed = changes->removed_filters;
 
-  for (const auto& filter : all_link_filters) {
+  for (auto& filter : all_link_filters) {
     apps::mojom::ReplacedAppPreferencesPtr replaced_apps =
         preferred_apps_.AddPreferredApp(app_id, filter);
+    added[app_id].push_back(std::move(filter));
 
-    // For any app which had overlapping filters, remove all Supported Links
-    // filters for that app. We only need to do this once per app.
-    for (const auto& replaced_app_and_filters :
-         replaced_apps->replaced_preference) {
-      if (!removed_apps.contains(replaced_app_and_filters.first)) {
-        preferred_apps_.DeleteSupportedLinks(replaced_app_and_filters.first);
-        removed_apps.insert(std::move(replaced_app_and_filters.first));
+    // If we removed overlapping intent filters when adding the new app, those
+    // affected apps no longer handle all their Supported Links filters and so
+    // need to have all their other Supported Links filters removed.
+    // Additionally, track all removals in the |removed| map so that subscribers
+    // can be notified correctly.
+    for (auto& replaced_app_and_filters : replaced_apps->replaced_preference) {
+      const std::string& removed_app_id = replaced_app_and_filters.first;
+      bool first_removal_for_app = !base::Contains(removed, app_id);
+
+      std::vector<apps::mojom::IntentFilterPtr>& removed_filters_for_app =
+          removed[removed_app_id];
+      removed_filters_for_app.insert(
+          removed_filters_for_app.end(),
+          std::make_move_iterator(replaced_app_and_filters.second.begin()),
+          std::make_move_iterator(replaced_app_and_filters.second.end()));
+
+      // We only need to remove other supported links once per app.
+      if (first_removal_for_app) {
+        std::vector<apps::mojom::IntentFilterPtr> removed_filters =
+            preferred_apps_.DeleteSupportedLinks(removed_app_id);
+        removed_filters_for_app.insert(
+            removed_filters_for_app.end(),
+            std::make_move_iterator(removed_filters.begin()),
+            std::make_move_iterator(removed_filters.end()));
       }
     }
   }
 
   WriteToJSON(profile_dir_, preferred_apps_);
 
+  for (auto& subscriber : subscribers_) {
+    subscriber->OnPreferredAppsChanged(changes->Clone());
+  }
+
   // Notify publishers: The new app has been set to open links, and all removed
   // apps no longer handle links.
   publisher_iter->second->OnSupportedLinksPreferenceChanged(
       app_id, /*open_in_app=*/true);
-  for (const std::string& removed_app : removed_apps) {
-    // We don't know what app type |removed_app| is, so we have to notify all
+  for (const auto& removed_app_and_filters : removed) {
+    // We don't know what app type the app is, so we have to notify all
     // publishers.
     for (const auto& iter : publishers_) {
-      iter.second->OnSupportedLinksPreferenceChanged(removed_app,
-                                                     /*open_in_app=*/false);
+      iter.second->OnSupportedLinksPreferenceChanged(
+          removed_app_and_filters.first,
+          /*open_in_app=*/false);
     }
   }
-
-  // TODO(crbug.com/1238647): Notify subscribers about the changes.
 }
 
 void AppServiceImpl::RemoveSupportedLinksPreference(
@@ -470,14 +495,22 @@ void AppServiceImpl::RemoveSupportedLinksPreference(
     return;
   }
 
-  if (preferred_apps_.DeleteSupportedLinks(app_id)) {
+  std::vector<apps::mojom::IntentFilterPtr> removed_filters =
+      preferred_apps_.DeleteSupportedLinks(app_id);
+
+  if (!removed_filters.empty()) {
     WriteToJSON(profile_dir_, preferred_apps_);
+
+    auto changes = apps::mojom::PreferredAppChanges::New();
+    changes->removed_filters.emplace(app_id, std::move(removed_filters));
+
+    for (auto& subscriber : subscribers_) {
+      subscriber->OnPreferredAppsChanged(changes->Clone());
+    }
   }
 
   iter->second->OnSupportedLinksPreferenceChanged(app_id,
                                                   /*open_in_app=*/false);
-
-  // TODO(crbug.com/1238647): Notify subscribers about the changes.
 }
 
 void AppServiceImpl::SetResizeLocked(apps::mojom::AppType app_type,

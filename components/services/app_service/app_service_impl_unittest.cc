@@ -232,6 +232,11 @@ class FakeSubscriber : public apps::mojom::Subscriber {
     preferred_apps_.DeletePreferredApp(app_id, intent_filter);
   }
 
+  void OnPreferredAppsChanged(
+      apps::mojom::PreferredAppChangesPtr changes) override {
+    preferred_apps_.ApplyBulkUpdate(std::move(changes));
+  }
+
   void InitializePreferredApps(
       PreferredAppsList::PreferredApps preferred_apps) override {
     preferred_apps_.Init(preferred_apps);
@@ -245,7 +250,6 @@ class FakeSubscriber : public apps::mojom::Subscriber {
 
 class AppServiceImplTest : public testing::Test {
  protected:
-  // base::test::TaskEnvironment task_environment_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 };
@@ -535,6 +539,9 @@ TEST_F(AppServiceImplTest, PreferredAppsSetSupportedLinks) {
   auto intent_filter_c =
       apps_util::CreateIntentFilterForUrlScope(GURL("https://www.c.com/"));
 
+  FakeSubscriber sub0(&impl);
+  task_environment_.RunUntilIdle();
+
   FakePublisher pub0(&impl, apps::mojom::AppType::kArc,
                      std::vector<std::string>{kAppId1, kAppId2, kAppId3});
   task_environment_.RunUntilIdle();
@@ -551,9 +558,17 @@ TEST_F(AppServiceImplTest, PreferredAppsSetSupportedLinks) {
                                    std::move(app_2_filters));
 
   task_environment_.RunUntilIdle();
+
   EXPECT_TRUE(pub0.AppHasSupportedLinksPreference(kAppId1));
   EXPECT_TRUE(pub0.AppHasSupportedLinksPreference(kAppId2));
   EXPECT_FALSE(pub0.AppHasSupportedLinksPreference(kAppId3));
+
+  EXPECT_EQ(kAppId1, sub0.PreferredApps().FindPreferredAppForUrl(
+                         GURL("https://www.a.com/")));
+  EXPECT_EQ(kAppId1, sub0.PreferredApps().FindPreferredAppForUrl(
+                         GURL("https://www.b.com/")));
+  EXPECT_EQ(kAppId2, sub0.PreferredApps().FindPreferredAppForUrl(
+                         GURL("https://www.c.com/")));
 
   // App 3 overlaps with both App 1 and 2. Both previous apps should have all
   // their supported link filters removed.
@@ -568,8 +583,12 @@ TEST_F(AppServiceImplTest, PreferredAppsSetSupportedLinks) {
   EXPECT_FALSE(pub0.AppHasSupportedLinksPreference(kAppId2));
   EXPECT_TRUE(pub0.AppHasSupportedLinksPreference(kAppId3));
 
-  // TODO(crbug.com/1238647): Once changes are synced back to subscribers,
-  // assert that FindPreferredAppForUrl returns the correct value.
+  EXPECT_EQ(absl::nullopt, sub0.PreferredApps().FindPreferredAppForUrl(
+                               GURL("https://www.a.com/")));
+  EXPECT_EQ(kAppId3, sub0.PreferredApps().FindPreferredAppForUrl(
+                         GURL("https://www.b.com/")));
+  EXPECT_EQ(kAppId3, sub0.PreferredApps().FindPreferredAppForUrl(
+                         GURL("https://www.c.com/")));
 
   // Setting App 3 as preferred again should not change anything.
   app_3_filters = std::vector<apps::mojom::IntentFilterPtr>();
@@ -578,11 +597,17 @@ TEST_F(AppServiceImplTest, PreferredAppsSetSupportedLinks) {
   impl.SetSupportedLinksPreference(apps::mojom::AppType::kArc, kAppId3,
                                    std::move(app_3_filters));
   task_environment_.RunUntilIdle();
+
   EXPECT_TRUE(pub0.AppHasSupportedLinksPreference(kAppId3));
+  EXPECT_EQ(kAppId3, sub0.PreferredApps().FindPreferredAppForUrl(
+                         GURL("https://www.c.com/")));
 
   impl.RemoveSupportedLinksPreference(apps::mojom::AppType::kArc, kAppId3);
   task_environment_.RunUntilIdle();
+
   EXPECT_FALSE(pub0.AppHasSupportedLinksPreference(kAppId3));
+  EXPECT_EQ(absl::nullopt, sub0.PreferredApps().FindPreferredAppForUrl(
+                               GURL("https://www.c.com/")));
 }
 
 }  // namespace apps

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -81,6 +82,11 @@ void SubscriberCrosapi::OnPreferredAppSet(
 void SubscriberCrosapi::OnPreferredAppRemoved(
     const std::string& app_id,
     apps::mojom::IntentFilterPtr intent_filter) {
+  NOTIMPLEMENTED();
+}
+
+void SubscriberCrosapi::OnPreferredAppsChanged(
+    apps::mojom::PreferredAppChangesPtr changes) {
   NOTIMPLEMENTED();
 }
 
