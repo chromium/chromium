@@ -1064,11 +1064,11 @@ void OverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
     UpdateControlsVisibility(true);
   }
 
-  // If there is no focus affordance on the buttons, only handle space key to
-  // for TogglePlayPause().
+  // If there is no focus affordance on the buttons and play/pause button is
+  // visible, only handle space key for TogglePlayPause().
   views::View* focused_view = GetFocusManager()->GetFocusedView();
   if (!focused_view && event->type() == ui::ET_KEY_PRESSED &&
-      event->key_code() == ui::VKEY_SPACE) {
+      event->key_code() == ui::VKEY_SPACE && show_play_pause_button_) {
     TogglePlayPause();
     event->SetHandled();
   }
