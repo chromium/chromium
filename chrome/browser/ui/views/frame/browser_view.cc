@@ -658,7 +658,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   devtools_web_view->SetVisible(false);
 
   auto contents_web_view =
-      std::make_unique<ContentsWebView>(browser_->profile(), this);
+      std::make_unique<ContentsWebView>(browser_->profile());
   contents_web_view->SetID(VIEW_ID_TAB_CONTAINER);
 
   auto contents_container = std::make_unique<views::View>();
@@ -1843,12 +1843,6 @@ void BrowserView::MaybeShowReadingListInSidePanelIPH() {
           reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
     feature_promo_controller_->MaybeShowPromo(
         feature_engagement::kIPHReadingListInSidePanelFeature);
-  }
-}
-
-void BrowserView::PaintAsActiveChanged() {
-  if (contents_web_view_) {
-    contents_web_view_->PaintAsActiveChanged();
   }
 }
 
@@ -3146,10 +3140,6 @@ void BrowserView::AddedToWidget() {
       ->AddOnInitializedCallback(
           base::BindOnce(&BrowserView::OnFeatureEngagementTrackerInitialized,
                          weak_ptr_factory_.GetWeakPtr()));
-
-  paint_as_active_subscription_ =
-      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-          &BrowserView::PaintAsActiveChanged, base::Unretained(this)));
 
   initialized_ = true;
 }
