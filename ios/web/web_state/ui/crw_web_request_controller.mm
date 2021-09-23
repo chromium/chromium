@@ -516,9 +516,6 @@ enum class BackForwardNavigationType {
     navigation = [self.webView loadFileURL:navigationNSURL
                    allowingReadAccessToURL:navigationNSURL];
   } else {
-    if (@available(iOS 15, *)) {
-      request.attribution = NSURLRequestAttributionUser;
-    }
     navigation = [self.webView loadRequest:request];
   }
   [self.navigationHandler.navigationStates
