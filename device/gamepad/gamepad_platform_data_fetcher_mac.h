@@ -32,6 +32,11 @@ class GamepadPlatformDataFetcherMac : public GamepadDataFetcher {
                                                 GAMEPAD_SOURCE_MAC_HID>;
 
   GamepadPlatformDataFetcherMac();
+
+  GamepadPlatformDataFetcherMac(const GamepadPlatformDataFetcherMac&) = delete;
+  GamepadPlatformDataFetcherMac& operator=(
+      const GamepadPlatformDataFetcherMac&) = delete;
+
   ~GamepadPlatformDataFetcherMac() override;
 
   // GamepadDataFetcher public implementation.
@@ -95,8 +100,6 @@ class GamepadPlatformDataFetcherMac : public GamepadDataFetcher {
 
   // A map of all devices using this data fetcher with the source_id as the key.
   std::unordered_map<int, std::unique_ptr<GamepadDeviceMac>> devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadPlatformDataFetcherMac);
 };
 
 }  // namespace device

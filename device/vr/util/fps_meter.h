@@ -17,6 +17,10 @@ class COMPONENT_EXPORT(DEVICE_VR_UTIL) FPSMeter {
  public:
   FPSMeter();
   explicit FPSMeter(size_t window_size);
+
+  FPSMeter(const FPSMeter&) = delete;
+  FPSMeter& operator=(const FPSMeter&) = delete;
+
   ~FPSMeter();
 
   void AddFrame(const base::TimeTicks& time_stamp);
@@ -31,7 +35,6 @@ class COMPONENT_EXPORT(DEVICE_VR_UTIL) FPSMeter {
  private:
   SampleQueue frame_times_;
   base::TimeTicks last_time_stamp_;
-  DISALLOW_COPY_AND_ASSIGN(FPSMeter);
 };
 
 }  // namespace device

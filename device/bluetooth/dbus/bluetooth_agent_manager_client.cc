@@ -26,6 +26,11 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
  public:
   BluetoothAgentManagerClientImpl() {}
 
+  BluetoothAgentManagerClientImpl(const BluetoothAgentManagerClientImpl&) =
+      delete;
+  BluetoothAgentManagerClientImpl& operator=(
+      const BluetoothAgentManagerClientImpl&) = delete;
+
   ~BluetoothAgentManagerClientImpl() override = default;
 
   // BluetoothAgentManagerClient override.
@@ -180,8 +185,6 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAgentManagerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAgentManagerClientImpl);
 };
 
 BluetoothAgentManagerClient::BluetoothAgentManagerClient() = default;

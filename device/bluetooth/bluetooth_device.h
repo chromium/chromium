@@ -203,6 +203,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
     virtual void AuthorizePairing(BluetoothDevice* device) = 0;
   };
 
+  BluetoothDevice(const BluetoothDevice&) = delete;
+  BluetoothDevice& operator=(const BluetoothDevice&) = delete;
+
   virtual ~BluetoothDevice();
 
   // Clamps numbers less than -128 to -128 and numbers greater than 127 to 127.
@@ -783,8 +786,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Mojo service, this field will be moved to BluetoothDeviceInfo.
   absl::optional<uint8_t> battery_percentage_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDevice);
 };
 
 }  // namespace device

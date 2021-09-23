@@ -196,6 +196,10 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
  public:
   BluetoothAdapterClientImpl() = default;
 
+  BluetoothAdapterClientImpl(const BluetoothAdapterClientImpl&) = delete;
+  BluetoothAdapterClientImpl& operator=(const BluetoothAdapterClientImpl&) =
+      delete;
+
   ~BluetoothAdapterClientImpl() override {
     // There is an instance of this client that is created but not initialized
     // on Linux. See 'Alternate D-Bus Client' note in bluez_dbus_manager.h.
@@ -607,8 +611,6 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterClientImpl);
 };
 
 BluetoothAdapterClient::BluetoothAdapterClient() = default;

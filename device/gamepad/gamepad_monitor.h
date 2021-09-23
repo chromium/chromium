@@ -19,6 +19,10 @@ class DEVICE_GAMEPAD_EXPORT GamepadMonitor : public GamepadConsumer,
                                              public mojom::GamepadMonitor {
  public:
   GamepadMonitor();
+
+  GamepadMonitor(const GamepadMonitor&) = delete;
+  GamepadMonitor& operator=(const GamepadMonitor&) = delete;
+
   ~GamepadMonitor() override;
 
   static void Create(mojo::PendingReceiver<mojom::GamepadMonitor> receiver);
@@ -42,8 +46,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadMonitor : public GamepadConsumer,
 
   // True if this monitor has been registered with the gamepad service.
   bool is_registered_consumer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadMonitor);
 };
 
 }  // namespace device

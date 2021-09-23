@@ -34,6 +34,11 @@ namespace bluez {
 // "Value" property.
 class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProvider {
  public:
+  BluetoothGattDescriptorServiceProvider(
+      const BluetoothGattDescriptorServiceProvider&) = delete;
+  BluetoothGattDescriptorServiceProvider& operator=(
+      const BluetoothGattDescriptorServiceProvider&) = delete;
+
   virtual ~BluetoothGattDescriptorServiceProvider();
 
   // Send a PropertyChanged signal to notify the Bluetooth daemon that the value
@@ -70,9 +75,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProvider {
 
  protected:
   BluetoothGattDescriptorServiceProvider();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattDescriptorServiceProvider);
 };
 
 }  // namespace bluez

@@ -68,6 +68,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
   class DEVICE_BLUETOOTH_EXPORT Data {
    public:
     explicit Data(AdvertisementType type);
+
+    Data(const Data&) = delete;
+    Data& operator=(const Data&) = delete;
+
     ~Data();
 
     AdvertisementType type() { return type_; }
@@ -119,8 +123,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
     std::unique_ptr<ServiceData> service_data_;
     std::unique_ptr<ScanResponseData> scan_response_data_;
     bool include_tx_power_;
-
-    DISALLOW_COPY_AND_ASSIGN(Data);
   };
 
   // Interface for observing changes to this advertisement.

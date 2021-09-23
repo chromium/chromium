@@ -41,6 +41,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   // Callers must ensure that WinWebAuthnApi::IsAvailable() returns true
   // before creating instances of this class.
   WinWebAuthnApiAuthenticator(HWND current_window, WinWebAuthnApi* win_api_);
+
+  WinWebAuthnApiAuthenticator(const WinWebAuthnApiAuthenticator&) = delete;
+  WinWebAuthnApiAuthenticator& operator=(const WinWebAuthnApiAuthenticator&) =
+      delete;
+
   ~WinWebAuthnApiAuthenticator() override;
 
   // ShowsPrivacyNotice returns true if the Windows native UI will show a
@@ -96,7 +101,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   // sequence.
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<WinWebAuthnApiAuthenticator> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WinWebAuthnApiAuthenticator);
 };
 
 }  // namespace device

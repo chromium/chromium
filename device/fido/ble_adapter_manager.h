@@ -24,6 +24,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BleAdapterManager
   //   a) Exposing API to trigger power Bluetooth adapter on/off.
   //   b) Notifying FidoRequestHandler when Bluetooth adapter power changes.
   explicit BleAdapterManager(FidoRequestHandlerBase* request_handler);
+
+  BleAdapterManager(const BleAdapterManager&) = delete;
+  BleAdapterManager& operator=(const BleAdapterManager&) = delete;
+
   ~BleAdapterManager() override;
 
   void SetAdapterPower(bool set_power_on);
@@ -41,8 +45,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BleAdapterManager
   bool adapter_powered_on_programmatically_ = false;
 
   base::WeakPtrFactory<BleAdapterManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleAdapterManager);
 };
 
 }  // namespace device

@@ -18,6 +18,10 @@ class FakeReadResponse {
  public:
   FakeReadResponse(uint16_t gatt_code,
                    const absl::optional<std::vector<uint8_t>>& value);
+
+  FakeReadResponse(const FakeReadResponse&) = delete;
+  FakeReadResponse& operator=(const FakeReadResponse&) = delete;
+
   ~FakeReadResponse();
 
   uint16_t gatt_code() { return gatt_code_; }
@@ -26,8 +30,6 @@ class FakeReadResponse {
  private:
   uint16_t gatt_code_;
   absl::optional<std::vector<uint8_t>> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeReadResponse);
 };
 
 }  // namespace bluetooth

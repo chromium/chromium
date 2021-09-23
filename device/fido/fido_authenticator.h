@@ -81,6 +81,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
           callback)>;
 
   FidoAuthenticator() = default;
+
+  FidoAuthenticator(const FidoAuthenticator&) = delete;
+  FidoAuthenticator& operator=(const FidoAuthenticator&) = delete;
+
   virtual ~FidoAuthenticator() = default;
 
   // Sends GetInfo request to connected authenticator. Once response to GetInfo
@@ -283,9 +287,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual bool IsChromeOSAuthenticator() const = 0;
 #endif
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FidoAuthenticator);
 };
 
 }  // namespace device

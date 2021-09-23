@@ -57,6 +57,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   AuthenticatorData(AuthenticatorData&& other);
   AuthenticatorData& operator=(AuthenticatorData&& other);
 
+  AuthenticatorData(const AuthenticatorData&) = delete;
+  AuthenticatorData& operator=(const AuthenticatorData&) = delete;
+
   ~AuthenticatorData();
 
   // Replaces device AAGUID in attested credential data section with zeros.
@@ -124,8 +127,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   absl::optional<AttestedCredentialData> attested_data_;
   // If |extensions_| has a value, then it will be a CBOR map.
   absl::optional<cbor::Value> extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorData);
 };
 
 }  // namespace device

@@ -30,6 +30,10 @@ class BluetoothRemoteGattCharacteristic;
 class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptor
     : public virtual BluetoothGattDescriptor {
  public:
+  BluetoothRemoteGattDescriptor(const BluetoothRemoteGattDescriptor&) = delete;
+  BluetoothRemoteGattDescriptor& operator=(
+      const BluetoothRemoteGattDescriptor&) = delete;
+
   ~BluetoothRemoteGattDescriptor() override;
 
   // The ValueCallback is used to return the value of a remote characteristic
@@ -67,9 +71,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptor
 
  protected:
   BluetoothRemoteGattDescriptor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattDescriptor);
 };
 
 }  // namespace device

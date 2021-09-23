@@ -26,6 +26,12 @@ class FakeDeviceInformationCustomPairingWinrt
   FakeDeviceInformationCustomPairingWinrt(
       Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
       std::string pin);
+
+  FakeDeviceInformationCustomPairingWinrt(
+      const FakeDeviceInformationCustomPairingWinrt&) = delete;
+  FakeDeviceInformationCustomPairingWinrt& operator=(
+      const FakeDeviceInformationCustomPairingWinrt&) = delete;
+
   ~FakeDeviceInformationCustomPairingWinrt() override;
 
   // IDeviceInformationCustomPairing:
@@ -78,8 +84,6 @@ class FakeDeviceInformationCustomPairingWinrt
       ABI::Windows::Devices::Enumeration::DeviceInformationCustomPairing*,
       ABI::Windows::Devices::Enumeration::DevicePairingRequestedEventArgs*>>
       pairing_requested_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceInformationCustomPairingWinrt);
 };
 
 }  // namespace device

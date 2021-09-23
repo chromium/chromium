@@ -54,6 +54,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
     : public ::device::fido::PlatformCredentialStore {
  public:
   explicit TouchIdCredentialStore(AuthenticatorConfig config);
+
+  TouchIdCredentialStore(const TouchIdCredentialStore&) = delete;
+  TouchIdCredentialStore& operator=(const TouchIdCredentialStore&) = delete;
+
   ~TouchIdCredentialStore() override;
 
   // An LAContext that has been successfully evaluated using |TouchIdContext|
@@ -137,8 +141,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
 
   AuthenticatorConfig config_;
   LAContext* authentication_context_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchIdCredentialStore);
 };
 
 }  // namespace mac

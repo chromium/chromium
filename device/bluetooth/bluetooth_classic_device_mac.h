@@ -27,6 +27,11 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
  public:
   explicit BluetoothClassicDeviceMac(BluetoothAdapterMac* adapter,
                                      IOBluetoothDevice* device);
+
+  BluetoothClassicDeviceMac(const BluetoothClassicDeviceMac&) = delete;
+  BluetoothClassicDeviceMac& operator=(const BluetoothClassicDeviceMac&) =
+      delete;
+
   ~BluetoothClassicDeviceMac() override;
 
   // BluetoothDevice override
@@ -94,8 +99,6 @@ class BluetoothClassicDeviceMac : public BluetoothDeviceMac {
       BluetoothHCITransmitPowerLevelType power_level_type) const;
 
   base::scoped_nsobject<IOBluetoothDevice> device_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothClassicDeviceMac);
 };
 
 }  // namespace device

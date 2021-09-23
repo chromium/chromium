@@ -26,6 +26,10 @@ namespace device {
 class COMPONENT_EXPORT(DEVICE_VR_BASE) VRDeviceBase : public mojom::XRRuntime {
  public:
   explicit VRDeviceBase(mojom::XRDeviceId id);
+
+  VRDeviceBase(const VRDeviceBase&) = delete;
+  VRDeviceBase& operator=(const VRDeviceBase&) = delete;
+
   ~VRDeviceBase() override;
 
   // XRRuntime implementation
@@ -81,8 +85,6 @@ class COMPONENT_EXPORT(DEVICE_VR_BASE) VRDeviceBase : public mojom::XRRuntime {
   device::mojom::XRDeviceData device_data_;
 
   mojo::Receiver<mojom::XRRuntime> runtime_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VRDeviceBase);
 };
 
 }  // namespace device

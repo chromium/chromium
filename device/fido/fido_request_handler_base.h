@@ -196,6 +196,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   FidoRequestHandlerBase(
       FidoDiscoveryFactory* fido_discovery_factory,
       const base::flat_set<FidoTransportProtocol>& available_transports);
+
+  FidoRequestHandlerBase(const FidoRequestHandlerBase&) = delete;
+  FidoRequestHandlerBase& operator=(const FidoRequestHandlerBase&) = delete;
+
   ~FidoRequestHandlerBase() override;
 
   // Triggers DispatchRequest() if |active_authenticators_| hold
@@ -327,7 +331,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   bool internal_authenticator_found_ = false;
 
   base::WeakPtrFactory<FidoRequestHandlerBase> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FidoRequestHandlerBase);
 };
 
 }  // namespace device

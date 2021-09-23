@@ -25,6 +25,10 @@ namespace device {
 class BluetoothTestCast : public BluetoothTestBase {
  public:
   BluetoothTestCast();
+
+  BluetoothTestCast(const BluetoothTestCast&) = delete;
+  BluetoothTestCast& operator=(const BluetoothTestCast&) = delete;
+
   ~BluetoothTestCast() override;
 
   // BluetoothTestBase overrides:
@@ -44,8 +48,6 @@ class BluetoothTestCast : public BluetoothTestBase {
 
   const std::unique_ptr<GattClientManager> gatt_client_manager_;
   ::chromecast::bluetooth::MockLeScanManager le_scan_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothTestCast);
 };
 
 // Defines common test fixture name. Use TEST_F(BluetoothTest, YourTestName).

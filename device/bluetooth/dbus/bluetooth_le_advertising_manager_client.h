@@ -38,6 +38,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLEAdvertisingManagerClient
         const dbus::ObjectPath& object_path) {}
   };
 
+  BluetoothLEAdvertisingManagerClient(
+      const BluetoothLEAdvertisingManagerClient&) = delete;
+  BluetoothLEAdvertisingManagerClient& operator=(
+      const BluetoothLEAdvertisingManagerClient&) = delete;
+
   ~BluetoothLEAdvertisingManagerClient() override;
 
   // Adds and removes observers for events which change the advertising
@@ -89,9 +94,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLEAdvertisingManagerClient
 
  protected:
   BluetoothLEAdvertisingManagerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLEAdvertisingManagerClient);
 };
 
 }  // namespace bluez

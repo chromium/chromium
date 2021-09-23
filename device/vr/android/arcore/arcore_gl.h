@@ -94,6 +94,10 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
                  public mojom::XRSessionController {
  public:
   explicit ArCoreGl(std::unique_ptr<ArImageTransport> ar_image_transport);
+
+  ArCoreGl(const ArCoreGl&) = delete;
+  ArCoreGl& operator=(const ArCoreGl&) = delete;
+
   ~ArCoreGl() override;
 
   void Initialize(
@@ -416,7 +420,6 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
 
   // Must be last.
   base::WeakPtrFactory<ArCoreGl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ArCoreGl);
 };
 
 }  // namespace device

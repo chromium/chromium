@@ -63,6 +63,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
   using NotifySessionCallback =
       base::OnceCallback<void(std::unique_ptr<BluetoothGattNotifySession>)>;
 
+  BluetoothRemoteGattCharacteristic(const BluetoothRemoteGattCharacteristic&) =
+      delete;
+  BluetoothRemoteGattCharacteristic& operator=(
+      const BluetoothRemoteGattCharacteristic&) = delete;
+
   ~BluetoothRemoteGattCharacteristic() override;
 
   // Returns the value of the characteristic. For remote characteristics, this
@@ -315,8 +320,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristic
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristic> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristic);
 };
 
 }  // namespace device

@@ -27,6 +27,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattConnection {
   BluetoothGattConnection(scoped_refptr<device::BluetoothAdapter> adapter,
                           const std::string& device_address);
 
+  BluetoothGattConnection(const BluetoothGattConnection&) = delete;
+  BluetoothGattConnection& operator=(const BluetoothGattConnection&) = delete;
+
   // Destructor automatically closes this GATT connection. If this is the last
   // remaining GATT connection and this results in a call to the OS, that call
   // may not always succeed. Users can make an explicit call to
@@ -65,8 +68,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattConnection {
 
  private:
   bool owns_reference_for_connection_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattConnection);
 };
 
 }  // namespace device

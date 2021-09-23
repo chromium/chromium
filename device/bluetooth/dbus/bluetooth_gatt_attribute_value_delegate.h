@@ -30,6 +30,12 @@ class BluetoothGattAttributeValueDelegate {
  public:
   explicit BluetoothGattAttributeValueDelegate(
       BluetoothLocalGattServiceBlueZ* service);
+
+  BluetoothGattAttributeValueDelegate(
+      const BluetoothGattAttributeValueDelegate&) = delete;
+  BluetoothGattAttributeValueDelegate& operator=(
+      const BluetoothGattAttributeValueDelegate&) = delete;
+
   virtual ~BluetoothGattAttributeValueDelegate();
 
   // This method will be called when a remote device requests to read the
@@ -93,8 +99,6 @@ class BluetoothGattAttributeValueDelegate {
 
  private:
   const BluetoothLocalGattServiceBlueZ* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattAttributeValueDelegate);
 };
 
 }  // namespace bluez

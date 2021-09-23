@@ -189,6 +189,10 @@ class WebXrPresentationState {
   static constexpr int kWebXrFrameCount = 3;
 
   WebXrPresentationState();
+
+  WebXrPresentationState(const WebXrPresentationState&) = delete;
+  WebXrPresentationState& operator=(const WebXrPresentationState&) = delete;
+
   ~WebXrPresentationState();
 
   void SetStateMachineType(StateMachineType type);
@@ -266,8 +270,6 @@ class WebXrPresentationState {
   base::queue<WebXrFrame*> idle_frames_;
 
   bool mailbox_bridge_ready_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebXrPresentationState);
 };
 
 }  // namespace device

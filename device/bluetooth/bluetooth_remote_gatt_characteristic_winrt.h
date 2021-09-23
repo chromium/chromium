@@ -34,6 +34,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                                  GenericAttributeProfile::IGattCharacteristic>
           characteristic);
+
+  BluetoothRemoteGattCharacteristicWinrt(
+      const BluetoothRemoteGattCharacteristicWinrt&) = delete;
+  BluetoothRemoteGattCharacteristicWinrt& operator=(
+      const BluetoothRemoteGattCharacteristicWinrt&) = delete;
+
   ~BluetoothRemoteGattCharacteristicWinrt() override;
 
   // BluetoothGattCharacteristic:
@@ -145,8 +151,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicWinrt>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicWinrt);
 };
 
 }  // namespace device

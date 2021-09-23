@@ -72,6 +72,10 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
       FidoRequestHandlerBase::TransportAvailabilityInfo>;
 
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   FidoRequestHandlerBase::TransportAvailabilityInfo
@@ -126,8 +130,6 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
  private:
   TransportAvailabilityNotificationReceiver
       transport_availability_notification_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 // Fake FidoTask implementation that sends an empty byte array to the device

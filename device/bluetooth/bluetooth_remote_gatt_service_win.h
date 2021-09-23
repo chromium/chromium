@@ -36,6 +36,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWin
       bool is_primary,
       BluetoothRemoteGattServiceWin* parent_service,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  BluetoothRemoteGattServiceWin(const BluetoothRemoteGattServiceWin&) = delete;
+  BluetoothRemoteGattServiceWin& operator=(
+      const BluetoothRemoteGattServiceWin&) = delete;
+
   ~BluetoothRemoteGattServiceWin() override;
 
   // Override BluetoothRemoteGattService interfaces.
@@ -110,7 +115,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWin
   int discovery_pending_count_ = 0;
 
   base::WeakPtrFactory<BluetoothRemoteGattServiceWin> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceWin);
 };
 
 }  // namespace device.

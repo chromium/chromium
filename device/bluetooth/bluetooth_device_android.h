@@ -37,6 +37,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
       const base::android::JavaRef<jobject>&
           bluetooth_device_wrapper);  // Java Type: bluetoothDeviceWrapper
 
+  BluetoothDeviceAndroid(const BluetoothDeviceAndroid&) = delete;
+  BluetoothDeviceAndroid& operator=(const BluetoothDeviceAndroid&) = delete;
+
   ~BluetoothDeviceAndroid() override;
 
   // Returns the associated ChromeBluetoothDevice Java object.
@@ -123,8 +126,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   base::android::ScopedJavaGlobalRef<jobject> j_device_;
 
   bool gatt_connected_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceAndroid);
 };
 
 }  // namespace device

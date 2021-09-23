@@ -99,6 +99,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   class DEVICE_BLUETOOTH_EXPORT GlobalValuesForTesting {
    public:
     GlobalValuesForTesting();
+
+    GlobalValuesForTesting(const GlobalValuesForTesting&) = delete;
+    GlobalValuesForTesting& operator=(const GlobalValuesForTesting&) = delete;
+
     ~GlobalValuesForTesting();
 
     void SetLESupported(bool supported) { le_supported_ = supported; }
@@ -111,7 +115,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
     bool le_supported_ = false;
 
     base::WeakPtrFactory<GlobalValuesForTesting> weak_ptr_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(GlobalValuesForTesting);
   };
 
   // Returns an object that clients can use to control the return values

@@ -55,6 +55,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
 
   struct DEVICE_BLUETOOTH_EXPORT ServiceRecordState {
     ServiceRecordState();
+
+    ServiceRecordState(const ServiceRecordState&) = delete;
+    ServiceRecordState& operator=(const ServiceRecordState&) = delete;
+
     ~ServiceRecordState();
     // Properties common to Bluetooth Classic and LE devices.
     std::string name;
@@ -68,13 +72,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
     // service must use service device path instead of resident device device
     // path.
     base::FilePath path;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ServiceRecordState);
   };
 
   struct DEVICE_BLUETOOTH_EXPORT DeviceState {
     DeviceState();
+
+    DeviceState(const DeviceState&) = delete;
+    DeviceState& operator=(const DeviceState&) = delete;
+
     ~DeviceState();
 
     bool is_bluetooth_classic() const { return path.empty(); }
@@ -90,9 +95,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
     uint32_t bluetooth_class;
     // Properties specific to Bluetooth LE devices.
     base::FilePath path;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DeviceState);
   };
 
   class DEVICE_BLUETOOTH_EXPORT Observer {

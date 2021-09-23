@@ -34,6 +34,12 @@ class FakeBluetoothLEAdvertisementWinrt
       absl::optional<int8_t> tx_power,
       BluetoothDevice::ServiceDataMap service_data,
       BluetoothDevice::ManufacturerDataMap manufacturer_data);
+
+  FakeBluetoothLEAdvertisementWinrt(const FakeBluetoothLEAdvertisementWinrt&) =
+      delete;
+  FakeBluetoothLEAdvertisementWinrt& operator=(
+      const FakeBluetoothLEAdvertisementWinrt&) = delete;
+
   ~FakeBluetoothLEAdvertisementWinrt() override;
 
   // IBluetoothLEAdvertisement:
@@ -73,8 +79,6 @@ class FakeBluetoothLEAdvertisementWinrt
   absl::optional<int8_t> tx_power_;
   BluetoothDevice::ServiceDataMap service_data_;
   BluetoothDevice::ManufacturerDataMap manufacturer_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothLEAdvertisementWinrt);
 };
 
 }  // namespace device

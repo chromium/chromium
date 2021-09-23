@@ -30,6 +30,10 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   class Observer : public BluetoothAdapter::Observer {
    public:
     Observer(scoped_refptr<BluetoothAdapter> adapter);
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     ~Observer() override;
 
     MOCK_METHOD2(AdapterPresentChanged, void(BluetoothAdapter*, bool));
@@ -45,8 +49,6 @@ class MockBluetoothAdapter : public BluetoothAdapter {
 
    private:
     const scoped_refptr<BluetoothAdapter> adapter_;
-
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   MockBluetoothAdapter();

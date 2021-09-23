@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
     : public FidoAuthenticator {
  public:
   explicit FidoDeviceAuthenticator(std::unique_ptr<FidoDevice> device);
+
+  FidoDeviceAuthenticator(const FidoDeviceAuthenticator&) = delete;
+  FidoDeviceAuthenticator& operator=(const FidoDeviceAuthenticator&) = delete;
+
   ~FidoDeviceAuthenticator() override;
 
   // FidoAuthenticator:
@@ -268,8 +272,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   absl::optional<PINUVAuthProtocol> chosen_pin_uv_auth_protocol_;
 
   base::WeakPtrFactory<FidoDeviceAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoDeviceAuthenticator);
 };
 
 }  // namespace device

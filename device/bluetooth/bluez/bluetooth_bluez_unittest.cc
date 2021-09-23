@@ -149,6 +149,10 @@ int GetDeviceIndexByAddress(const BluetoothAdapter::DeviceList& devices,
 class FakeBleScanParserImpl : public data_decoder::mojom::BleScanParser {
  public:
   FakeBleScanParserImpl() = default;
+
+  FakeBleScanParserImpl(const FakeBleScanParserImpl&) = delete;
+  FakeBleScanParserImpl& operator=(const FakeBleScanParserImpl&) = delete;
+
   ~FakeBleScanParserImpl() override = default;
 
   // mojom::BleScanParser:
@@ -156,8 +160,6 @@ class FakeBleScanParserImpl : public data_decoder::mojom::BleScanParser {
              ParseCallback callback) override {
     std::move(callback).Run(nullptr);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScanParserImpl);
 };
 #endif
 

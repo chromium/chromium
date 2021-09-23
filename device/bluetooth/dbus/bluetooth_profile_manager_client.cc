@@ -28,6 +28,11 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
  public:
   BluetoothProfileManagerClientImpl() {}
 
+  BluetoothProfileManagerClientImpl(const BluetoothProfileManagerClientImpl&) =
+      delete;
+  BluetoothProfileManagerClientImpl& operator=(
+      const BluetoothProfileManagerClientImpl&) = delete;
+
   ~BluetoothProfileManagerClientImpl() override = default;
 
   // BluetoothProfileManagerClient override.
@@ -251,8 +256,6 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothProfileManagerClientImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothProfileManagerClientImpl);
 };
 
 BluetoothProfileManagerClient::BluetoothProfileManagerClient() = default;

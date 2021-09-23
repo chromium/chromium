@@ -32,6 +32,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
       BluetoothRemoteGattServiceWin* parent_service,
       BTH_LE_GATT_CHARACTERISTIC* characteristic_info,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+
+  BluetoothRemoteGattCharacteristicWin(
+      const BluetoothRemoteGattCharacteristicWin&) = delete;
+  BluetoothRemoteGattCharacteristicWin& operator=(
+      const BluetoothRemoteGattCharacteristicWin&) = delete;
+
   ~BluetoothRemoteGattCharacteristicWin() override;
 
   // Override BluetoothRemoteGattCharacteristic interfaces.
@@ -130,7 +136,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWin
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicWin> weak_ptr_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicWin);
 };
 
 }  // namespace device

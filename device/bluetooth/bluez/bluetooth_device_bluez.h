@@ -50,6 +50,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   using GetServiceRecordsErrorCallback =
       base::OnceCallback<void(BluetoothServiceRecordBlueZ::ErrorCode)>;
 
+  BluetoothDeviceBlueZ(const BluetoothDeviceBlueZ&) = delete;
+  BluetoothDeviceBlueZ& operator=(const BluetoothDeviceBlueZ&) = delete;
+
   ~BluetoothDeviceBlueZ() override;
 
   // BluetoothDevice override
@@ -309,8 +312,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothDeviceBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceBlueZ);
 };
 
 }  // namespace bluez

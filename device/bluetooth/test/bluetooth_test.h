@@ -70,6 +70,10 @@ class BluetoothTestBase : public testing::Test {
   struct LowEnergyDeviceData {
     LowEnergyDeviceData();
     LowEnergyDeviceData(LowEnergyDeviceData&& data);
+
+    LowEnergyDeviceData(const LowEnergyDeviceData&) = delete;
+    LowEnergyDeviceData& operator=(const LowEnergyDeviceData&) = delete;
+
     ~LowEnergyDeviceData();
 
     absl::optional<std::string> name;
@@ -81,8 +85,6 @@ class BluetoothTestBase : public testing::Test {
     BluetoothDevice::ServiceDataMap service_data;
     BluetoothDevice::ManufacturerDataMap manufacturer_data;
     BluetoothTransport transport = BLUETOOTH_TRANSPORT_LE;
-
-    DISALLOW_COPY_AND_ASSIGN(LowEnergyDeviceData);
   };
 
   static const char kTestAdapterName[];

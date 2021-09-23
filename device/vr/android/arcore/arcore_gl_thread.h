@@ -24,6 +24,10 @@ class ArCoreGlThread : public base::android::JavaHandlerThread {
       std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge,
       base::OnceCallback<void()> initialized_callback);
+
+  ArCoreGlThread(const ArCoreGlThread&) = delete;
+  ArCoreGlThread& operator=(const ArCoreGlThread&) = delete;
+
   ~ArCoreGlThread() override;
   ArCoreGl* GetArCoreGl();
 
@@ -38,8 +42,6 @@ class ArCoreGlThread : public base::android::JavaHandlerThread {
 
   // Created on GL thread.
   std::unique_ptr<ArCoreGl> arcore_gl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArCoreGlThread);
 };
 
 }  // namespace device

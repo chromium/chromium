@@ -95,6 +95,10 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   using StartMode = FakeFidoDiscovery::StartMode;
 
   FakeFidoDiscoveryFactory();
+
+  FakeFidoDiscoveryFactory(const FakeFidoDiscoveryFactory&) = delete;
+  FakeFidoDiscoveryFactory& operator=(const FakeFidoDiscoveryFactory&) = delete;
+
   ~FakeFidoDiscoveryFactory() override;
 
   // Constructs a fake discovery to be returned from the next call to
@@ -119,8 +123,6 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   std::unique_ptr<FakeFidoDiscovery> next_nfc_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_cable_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_platform_discovery_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscoveryFactory);
 };
 
 }  // namespace test

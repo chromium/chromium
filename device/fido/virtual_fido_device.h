@@ -94,6 +94,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     RegistrationData(RegistrationData&& data);
     RegistrationData& operator=(RegistrationData&& other);
 
+    RegistrationData(const RegistrationData&) = delete;
+    RegistrationData& operator=(const RegistrationData&) = delete;
+
     ~RegistrationData();
 
     std::unique_ptr<PrivateKey> private_key = PrivateKey::FreshP256Key();
@@ -117,8 +120,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
     absl::optional<std::array<uint8_t, 32>> large_blob_key;
     absl::optional<std::vector<uint8_t>> cred_blob;
-
-    DISALLOW_COPY_AND_ASSIGN(RegistrationData);
   };
 
   // Stores the state of the device. Since |U2fDevice| objects only persist for

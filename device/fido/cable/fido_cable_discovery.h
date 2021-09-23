@@ -36,6 +36,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
       public FidoCableDevice::Observer {
  public:
   explicit FidoCableDiscovery(std::vector<CableDiscoveryData> discovery_data);
+
+  FidoCableDiscovery(const FidoCableDiscovery&) = delete;
+  FidoCableDiscovery& operator=(const FidoCableDiscovery&) = delete;
+
   ~FidoCableDiscovery() override;
 
   // FidoDeviceDiscovery:
@@ -178,8 +182,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   base::flat_set<CableV1DiscoveryEvent> recorded_events_;
 
   base::WeakPtrFactory<FidoCableDiscovery> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoCableDiscovery);
 };
 
 }  // namespace device

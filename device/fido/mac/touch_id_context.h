@@ -50,6 +50,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   static void TouchIdAvailable(AuthenticatorConfig config,
                                base::OnceCallback<void(bool is_available)>);
 
+  TouchIdContext(const TouchIdContext&) = delete;
+  TouchIdContext& operator=(const TouchIdContext&) = delete;
+
   virtual ~TouchIdContext();
 
   // PromptTouchId displays a local user authentication prompt with the provided
@@ -87,7 +90,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   base::WeakPtrFactory<TouchIdContext> weak_ptr_factory_;
 
   friend class ScopedTouchIdTestEnvironment;
-  DISALLOW_COPY_AND_ASSIGN(TouchIdContext);
 };
 
 }  // namespace mac

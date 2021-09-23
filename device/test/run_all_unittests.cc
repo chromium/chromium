@@ -19,6 +19,10 @@ namespace {
 class DeviceTestSuite : public base::TestSuite {
  public:
   DeviceTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+  DeviceTestSuite(const DeviceTestSuite&) = delete;
+  DeviceTestSuite& operator=(const DeviceTestSuite&) = delete;
+
   ~DeviceTestSuite() override = default;
 
  protected:
@@ -52,9 +56,6 @@ class DeviceTestSuite : public base::TestSuite {
 
     base::TestSuite::Shutdown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceTestSuite);
 };
 
 }  // namespace

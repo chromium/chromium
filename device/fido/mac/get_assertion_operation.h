@@ -39,6 +39,10 @@ class API_AVAILABLE(macosx(10.12.2))
   GetAssertionOperation(CtapGetAssertionRequest request,
                         TouchIdCredentialStore* credential_store,
                         Callback callback);
+
+  GetAssertionOperation(const GetAssertionOperation&) = delete;
+  GetAssertionOperation& operator=(const GetAssertionOperation&) = delete;
+
   ~GetAssertionOperation() override;
 
   // Operation:
@@ -60,8 +64,6 @@ class API_AVAILABLE(macosx(10.12.2))
   TouchIdCredentialStore* const credential_store_;
   Callback callback_;
   std::list<Credential> matching_credentials_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetAssertionOperation);
 };
 
 }  // namespace mac

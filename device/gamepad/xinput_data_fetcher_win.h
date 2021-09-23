@@ -53,6 +53,10 @@ class XInputDataFetcherWin : public GamepadDataFetcher {
       Factory;
 
   XInputDataFetcherWin();
+
+  XInputDataFetcherWin(const XInputDataFetcherWin&) = delete;
+  XInputDataFetcherWin& operator=(const XInputDataFetcherWin&) = delete;
+
   ~XInputDataFetcherWin() override;
 
   GamepadSource source() override;
@@ -105,8 +109,6 @@ class XInputDataFetcherWin : public GamepadDataFetcher {
 
   bool xinput_connected_[XUSER_MAX_COUNT];
   std::unique_ptr<XInputHapticGamepadWin> haptics_[XUSER_MAX_COUNT];
-
-  DISALLOW_COPY_AND_ASSIGN(XInputDataFetcherWin);
 };
 
 }  // namespace device

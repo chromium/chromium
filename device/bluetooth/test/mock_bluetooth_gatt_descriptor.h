@@ -28,6 +28,11 @@ class MockBluetoothGattDescriptor : public BluetoothRemoteGattDescriptor {
       const std::string& identifier,
       const BluetoothUUID& uuid,
       BluetoothRemoteGattCharacteristic::Permissions permissions);
+
+  MockBluetoothGattDescriptor(const MockBluetoothGattDescriptor&) = delete;
+  MockBluetoothGattDescriptor& operator=(const MockBluetoothGattDescriptor&) =
+      delete;
+
   ~MockBluetoothGattDescriptor() override;
 
   MOCK_CONST_METHOD0(GetIdentifier, std::string());
@@ -49,9 +54,6 @@ class MockBluetoothGattDescriptor : public BluetoothRemoteGattDescriptor {
                void(const std::vector<uint8_t>&,
                     base::OnceClosure&,
                     ErrorCallback&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBluetoothGattDescriptor);
 };
 
 }  // namespace device

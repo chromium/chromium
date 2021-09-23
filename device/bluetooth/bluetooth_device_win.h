@@ -36,6 +36,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
       const BluetoothTaskManagerWin::DeviceState& device_state,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<BluetoothSocketThread> socket_thread);
+
+  BluetoothDeviceWin(const BluetoothDeviceWin&) = delete;
+  BluetoothDeviceWin& operator=(const BluetoothDeviceWin&) = delete;
+
   ~BluetoothDeviceWin() override;
 
   // BluetoothDevice override
@@ -166,8 +170,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWin
   // BluetoothRemoteGattServiceWin instance.
   std::set<std::pair<BluetoothUUID, uint16_t>>
       discovery_completed_included_services_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceWin);
 };
 
 }  // namespace device

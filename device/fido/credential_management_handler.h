@@ -62,6 +62,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
       ReadyCallback ready_callback,
       GetPINCallback get_pin_callback,
       FinishedCallback finished_callback);
+
+  CredentialManagementHandler(const CredentialManagementHandler&) = delete;
+  CredentialManagementHandler& operator=(const CredentialManagementHandler&) =
+      delete;
+
   ~CredentialManagementHandler() override;
 
   // GetCredentials invokes a series of commands to fetch all credentials stored
@@ -137,8 +142,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
   FinishedCallback finished_callback_;
 
   base::WeakPtrFactory<CredentialManagementHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagementHandler);
 };
 
 }  // namespace device

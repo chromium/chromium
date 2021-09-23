@@ -24,6 +24,10 @@ namespace device {
 class OpenXrController {
  public:
   OpenXrController();
+
+  OpenXrController(const OpenXrController&) = delete;
+  OpenXrController& operator=(const OpenXrController&) = delete;
+
   ~OpenXrController();
 
   // The lifetime of OpenXRInputHelper is a superset of OpenXRController. Thus
@@ -166,8 +170,6 @@ class OpenXrController {
 
   const OpenXRPathHelper* path_helper_;
   const OpenXrExtensionHelper* extension_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenXrController);
 };
 
 }  // namespace device

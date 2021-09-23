@@ -45,6 +45,10 @@ using VisibilityChangedCallback =
 class OpenXrApiWrapper {
  public:
   OpenXrApiWrapper();
+
+  OpenXrApiWrapper(const OpenXrApiWrapper&) = delete;
+  OpenXrApiWrapper& operator=(const OpenXrApiWrapper&) = delete;
+
   ~OpenXrApiWrapper();
   bool IsInitialized() const;
 
@@ -206,8 +210,6 @@ class OpenXrApiWrapper {
   std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;
 
   base::WeakPtrFactory<OpenXrApiWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OpenXrApiWrapper);
 };
 
 }  // namespace device

@@ -30,6 +30,10 @@ class FakeDeferral
   explicit FakeDeferral(
       ComPtr<FakeDevicePairingRequestedEventArgsWinrt> pairing_requested)
       : pairing_requested_(std::move(pairing_requested)) {}
+
+  FakeDeferral(const FakeDeferral&) = delete;
+  FakeDeferral& operator=(const FakeDeferral&) = delete;
+
   ~FakeDeferral() override = default;
 
   // IDeferral:
@@ -40,8 +44,6 @@ class FakeDeferral
 
  private:
   ComPtr<FakeDevicePairingRequestedEventArgsWinrt> pairing_requested_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeferral);
 };
 
 }  // namespace

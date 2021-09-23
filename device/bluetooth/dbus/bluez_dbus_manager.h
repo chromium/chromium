@@ -186,6 +186,9 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
 
 class DEVICE_BLUETOOTH_EXPORT BluezDBusManagerSetter {
  public:
+  BluezDBusManagerSetter(const BluezDBusManagerSetter&) = delete;
+  BluezDBusManagerSetter& operator=(const BluezDBusManagerSetter&) = delete;
+
   ~BluezDBusManagerSetter();
 
   void SetBluetoothAdapterClient(
@@ -227,8 +230,6 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManagerSetter {
   friend class BluezDBusManager;
 
   BluezDBusManagerSetter();
-
-  DISALLOW_COPY_AND_ASSIGN(BluezDBusManagerSetter);
 };
 
 }  // namespace bluez

@@ -32,6 +32,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
       Properties properties,
       Permissions permissions,
       BluetoothLocalGattServiceBlueZ* service);
+
+  BluetoothLocalGattCharacteristicBlueZ(
+      const BluetoothLocalGattCharacteristicBlueZ&) = delete;
+  BluetoothLocalGattCharacteristicBlueZ& operator=(
+      const BluetoothLocalGattCharacteristicBlueZ&) = delete;
+
   ~BluetoothLocalGattCharacteristicBlueZ() override;
 
   // device::BluetoothGattCharacteristic overrides:
@@ -76,8 +82,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothLocalGattCharacteristicBlueZ> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattCharacteristicBlueZ);
 };
 
 }  // namespace bluez

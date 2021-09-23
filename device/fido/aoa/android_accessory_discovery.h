@@ -55,6 +55,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AndroidAccessoryDiscovery
   // device.
   AndroidAccessoryDiscovery(mojo::Remote<device::mojom::UsbDeviceManager>,
                             std::string request_description);
+
+  AndroidAccessoryDiscovery(const AndroidAccessoryDiscovery&) = delete;
+  AndroidAccessoryDiscovery& operator=(const AndroidAccessoryDiscovery&) =
+      delete;
+
   ~AndroidAccessoryDiscovery() override;
 
  private:
@@ -109,8 +114,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AndroidAccessoryDiscovery
   mojo::AssociatedReceiver<device::mojom::UsbDeviceManagerClient> receiver_{
       this};
   base::WeakPtrFactory<AndroidAccessoryDiscovery> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidAccessoryDiscovery);
 };
 
 }  // namespace device

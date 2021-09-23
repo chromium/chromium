@@ -48,6 +48,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
       Microsoft::WRL::ComPtr<
           ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice> ble_device,
       absl::optional<BluetoothUUID> service_uuid);
+
+  BluetoothGattDiscovererWinrt(const BluetoothGattDiscovererWinrt&) = delete;
+  BluetoothGattDiscovererWinrt& operator=(const BluetoothGattDiscovererWinrt&) =
+      delete;
+
   ~BluetoothGattDiscovererWinrt();
 
   // Note: In order to avoid running |callback| multiple times on errors,
@@ -106,8 +111,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattDiscovererWinrt> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattDiscovererWinrt);
 };
 
 }  // namespace device

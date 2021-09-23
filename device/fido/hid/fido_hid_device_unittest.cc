@@ -202,6 +202,12 @@ class FidoDeviceEnumerateCallbackReceiver
   explicit FidoDeviceEnumerateCallbackReceiver(
       device::mojom::HidManager* hid_manager)
       : hid_manager_(hid_manager) {}
+
+  FidoDeviceEnumerateCallbackReceiver(
+      const FidoDeviceEnumerateCallbackReceiver&) = delete;
+  FidoDeviceEnumerateCallbackReceiver& operator=(
+      const FidoDeviceEnumerateCallbackReceiver&) = delete;
+
   ~FidoDeviceEnumerateCallbackReceiver() = default;
 
   std::vector<std::unique_ptr<FidoHidDevice>> TakeReturnedDevicesFiltered() {
@@ -228,8 +234,6 @@ class FidoDeviceEnumerateCallbackReceiver
 
  private:
   device::mojom::HidManager* hid_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FidoDeviceEnumerateCallbackReceiver);
 };
 
 using TestDeviceCallbackReceiver =
