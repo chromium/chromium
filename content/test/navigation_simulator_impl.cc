@@ -571,7 +571,8 @@ void NavigationSimulatorImpl::ReadyToCommit() {
         ->PrepareForCommitDeprecatedForNavigationSimulator(
             remote_endpoint_, was_fetched_via_cache_,
             is_signed_exchange_inner_response_, http_connection_info_,
-            ssl_info_, response_headers_, response_dns_aliases_);
+            ssl_info_, response_headers_, std::move(response_body_),
+            response_dns_aliases_);
   }
 
   // Synchronous failure can cause the navigation to finish here.
@@ -988,6 +989,13 @@ void NavigationSimulatorImpl::SetResponseHeaders(
   CHECK_LE(state_, STARTED) << "The response headers cannot be set after the "
                                "navigation has committed or failed";
   response_headers_ = response_headers;
+}
+
+void NavigationSimulatorImpl::SetResponseBody(
+    mojo::ScopedDataPipeConsumerHandle response_body) {
+  CHECK_LE(state_, STARTED) << "The response body cannot be set after the "
+                               "navigation has committed or failed";
+  response_body_ = std::move(response_body);
 }
 
 void NavigationSimulatorImpl::SetLoadURLParams(
@@ -1451,10 +1459,15 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
     // Note: Error pages must commit in a unique origin. So it is left unset.
     params->url_is_unreachable = true;
   } else {
-    params->should_update_history = true;
     if (same_document) {
       params->origin = current_rfh->GetLastCommittedOrigin();
+      params->should_update_history = true;
     } else {
+      // This mirrors the calculation in
+      // RenderFrameImpl::MakeDidCommitProvisionalLoadParams.
+      // TODO(https://crbug.com/1158101): Reconsider how we calculate
+      // should_update_history.
+      params->should_update_history = response_headers_->response_code() != 404;
       params->origin = origin_.value_or(request_->GetOriginToCommit());
     }
   }

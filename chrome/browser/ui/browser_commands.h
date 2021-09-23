@@ -83,7 +83,7 @@ void Reload(Browser* browser, WindowOpenDisposition disposition);
 void ReloadBypassingCache(Browser* browser, WindowOpenDisposition disposition);
 bool CanReload(const Browser* browser);
 void Home(Browser* browser, WindowOpenDisposition disposition);
-void OpenCurrentURL(Browser* browser);
+base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser);
 void Stop(Browser* browser);
 void NewWindow(Browser* browser);
 void NewIncognitoWindow(Profile* profile);

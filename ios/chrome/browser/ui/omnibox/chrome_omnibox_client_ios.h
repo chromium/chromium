@@ -27,10 +27,6 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   // OmniboxClient.
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
-  std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternate_nav_match) override;
   bool CurrentPageExists() const override;
   const GURL& GetURL() const override;
   bool IsLoading() const override;
@@ -45,10 +41,10 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   int GetHttpsPortForTesting() const override;
   gfx::Image GetIconIfExtensionMatch(
       const AutocompleteMatch& match) const override;
-  bool ProcessExtensionKeyword(const TemplateURL* template_url,
+  bool ProcessExtensionKeyword(const std::u16string& text,
+                               const TemplateURL* template_url,
                                const AutocompleteMatch& match,
-                               WindowOpenDisposition disposition,
-                               OmniboxNavigationObserver* observer) override;
+                               WindowOpenDisposition disposition) override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
   void OnResultChanged(const AutocompleteResult& result,

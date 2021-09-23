@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/url_formatter/url_fixer.h"
@@ -699,4 +700,9 @@ size_t AutocompleteInput::EstimateMemoryUsage() const {
              : 0u;
 
   return res;
+}
+
+void AutocompleteInput::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("text", text_);
 }

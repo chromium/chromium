@@ -288,6 +288,11 @@ class NavigationSimulator {
   virtual void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
 
+  // Provides the response body received during |ReadyToCommit|. Must be
+  // specified before calling |ReadyToCommit| or |Commit|.
+  virtual void SetResponseBody(
+      mojo::ScopedDataPipeConsumerHandle response_body) = 0;
+
   // Whether or not the NavigationSimulator automatically advances the
   // navigation past the stage requested (e.g. through asynchronous
   // NavigationThrottles). Defaults to true. Useful for testing throttles which

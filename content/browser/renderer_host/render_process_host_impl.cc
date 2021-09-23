@@ -2426,6 +2426,8 @@ void RenderProcessHostImpl::WriteIntoTrace(
                                      FieldMetadata_BrowserContext>());
   }
 
+  // Pid() can be called only on valid process, so we should check for this
+  // before accessing it.
   // TODO(ssid): Consider moving this to ChildProcessLauncher proto field.
   if (child_process_launcher_) {
     const base::Process& process = child_process_launcher_->GetProcess();

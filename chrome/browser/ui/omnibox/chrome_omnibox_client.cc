@@ -20,6 +20,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/command_updater.h"
@@ -90,15 +91,6 @@ ChromeOmniboxClient::~ChromeOmniboxClient() {
 std::unique_ptr<AutocompleteProviderClient>
 ChromeOmniboxClient::CreateAutocompleteProviderClient() {
   return std::make_unique<ChromeAutocompleteProviderClient>(profile_);
-}
-
-std::unique_ptr<OmniboxNavigationObserver>
-ChromeOmniboxClient::CreateOmniboxNavigationObserver(
-    const std::u16string& text,
-    const AutocompleteMatch& match,
-    const AutocompleteMatch& alternate_nav_match) {
-  return std::make_unique<ChromeOmniboxNavigationObserver>(
-      profile_, text, match, alternate_nav_match);
 }
 
 bool ChromeOmniboxClient::CurrentPageExists() const {
@@ -214,10 +206,10 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
 }
 
 bool ChromeOmniboxClient::ProcessExtensionKeyword(
+    const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
-    WindowOpenDisposition disposition,
-    OmniboxNavigationObserver* observer) {
+    WindowOpenDisposition disposition) {
   if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION)
     return false;
 
@@ -232,8 +224,7 @@ bool ChromeOmniboxClient::ProcessExtensionKeyword(
       base::UTF16ToUTF8(match.fill_into_edit.substr(prefix_length)),
       disposition);
 
-  static_cast<ChromeOmniboxNavigationObserver*>(observer)
-      ->OnSuccessfulNavigation();
+  OnSuccessfulNavigation(profile_, text, match);
   return true;
 }
 
@@ -446,4 +437,17 @@ void ChromeOmniboxClient::OnBitmapFetched(const BitmapFetchedCallback& callback,
   else
     UMA_HISTOGRAM_TIMES("Omnibox.BitmapFetchLatency.Uncached", time_delta);
   callback.Run(result_index, bitmap);
+}
+
+// static
+void ChromeOmniboxClient::OnSuccessfulNavigation(
+    Profile* profile,
+    const std::u16string& text,
+    const AutocompleteMatch& match) {
+  auto shortcuts_backend = ShortcutsBackendFactory::GetForProfile(profile);
+  // Can be null in incognito.
+  if (!shortcuts_backend)
+    return;
+
+  shortcuts_backend->AddOrUpdateShortcut(text, match);
 }

@@ -354,11 +354,12 @@ void TestRenderFrameHost::DidEnforceInsecureRequestPolicy(
 }
 
 void TestRenderFrameHost::PrepareForCommit() {
-  PrepareForCommitInternal(net::IPEndPoint(),
-                           /* was_fetched_via_cache=*/false,
-                           /* is_signed_exchange_inner_response=*/false,
-                           net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
-                           absl::nullopt, nullptr, {} /* dns_aliases */);
+  PrepareForCommitInternal(
+      net::IPEndPoint(),
+      /* was_fetched_via_cache=*/false,
+      /* is_signed_exchange_inner_response=*/false,
+      net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN, absl::nullopt, nullptr,
+      mojo::ScopedDataPipeConsumerHandle(), {} /* dns_aliases */);
 }
 
 void TestRenderFrameHost::PrepareForCommitDeprecatedForNavigationSimulator(
@@ -368,10 +369,12 @@ void TestRenderFrameHost::PrepareForCommitDeprecatedForNavigationSimulator(
     net::HttpResponseInfo::ConnectionInfo connection_info,
     absl::optional<net::SSLInfo> ssl_info,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
+    mojo::ScopedDataPipeConsumerHandle response_body,
     const std::vector<std::string>& dns_aliases) {
   PrepareForCommitInternal(remote_endpoint, was_fetched_via_cache,
                            is_signed_exchange_inner_response, connection_info,
-                           ssl_info, response_headers, dns_aliases);
+                           ssl_info, response_headers, std::move(response_body),
+                           dns_aliases);
 }
 
 void TestRenderFrameHost::PrepareForCommitInternal(
@@ -381,6 +384,7 @@ void TestRenderFrameHost::PrepareForCommitInternal(
     net::HttpResponseInfo::ConnectionInfo connection_info,
     absl::optional<net::SSLInfo> ssl_info,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
+    mojo::ScopedDataPipeConsumerHandle response_body,
     const std::vector<std::string>& dns_aliases) {
   NavigationRequest* request = frame_tree_node_->navigation_request();
   CHECK(request);
@@ -429,7 +433,8 @@ void TestRenderFrameHost::PrepareForCommitInternal(
   response->dns_aliases = dns_aliases;
   // TODO(carlosk): Ideally, it should be possible someday to
   // fully commit the navigation at this call to CallOnResponseStarted.
-  url_loader->CallOnResponseStarted(std::move(response));
+  url_loader->CallOnResponseStarted(std::move(response),
+                                    std::move(response_body));
 }
 
 void TestRenderFrameHost::SimulateCommitProcessed(

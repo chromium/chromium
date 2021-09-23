@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
@@ -334,9 +335,10 @@ Profile* GetSourceProfile(NavigateParams* params) {
   return params->initiating_profile;
 }
 
-void LoadURLInContents(WebContents* target_contents,
-                       const GURL& url,
-                       NavigateParams* params) {
+base::WeakPtr<content::NavigationHandle> LoadURLInContents(
+    WebContents* target_contents,
+    const GURL& url,
+    NavigateParams* params) {
   NavigationController::LoadURLParams load_url_params(url);
   load_url_params.initiator_frame_token = params->initiator_frame_token;
   load_url_params.initiator_process_id = params->initiator_process_id;
@@ -374,7 +376,7 @@ void LoadURLInContents(WebContents* target_contents,
     load_url_params.post_data = params->post_data;
   }
 
-  target_contents->GetController().LoadURLWithParams(load_url_params);
+  return target_contents->GetController().LoadURLWithParams(load_url_params);
 }
 
 // This class makes sure the Browser object held in |params| is made visible
@@ -470,7 +472,9 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
 
 }  // namespace
 
-void Navigate(NavigateParams* params) {
+base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
+  TRACE_EVENT1("navigation", "chrome::Navigate", "disposition",
+               params->disposition);
   Browser* source_browser = params->browser;
   if (source_browser)
     params->initiating_profile = source_browser->profile();
@@ -479,7 +483,7 @@ void Navigate(NavigateParams* params) {
   if (source_browser &&
       platform_util::IsBrowserLockedFullscreen(source_browser)) {
     // Block any navigation requests in locked fullscreen mode.
-    return;
+    return nullptr;
   }
 
   // Open System Apps in their standalone window if necessary.
@@ -506,11 +510,11 @@ void Navigate(NavigateParams* params) {
     // app will either open in its own browser window, or navigate an existing
     // browser window exclusively used by this app. For the initiating browser,
     // the navigation should appear to be cancelled.
-    return;
+    return nullptr;
   }
 
   if (!AdjustNavigateParamsForURL(params))
-    return;
+    return nullptr;
 
   // Trying to open a background tab when in an app browser results in
   // focusing a regular browser window and opening a tab in the background
@@ -540,7 +544,7 @@ void Navigate(NavigateParams* params) {
   std::tie(params->browser, singleton_index) =
       GetBrowserAndTabForDisposition(*params);
   if (!params->browser)
-    return;
+    return nullptr;
   if (singleton_index != -1) {
     contents_to_navigate_or_insert =
         params->browser->tab_strip_model()->GetWebContentsAt(singleton_index);
@@ -552,7 +556,7 @@ void Navigate(NavigateParams* params) {
     // current tab if it's the NTP, otherwise open a new tab.
     params->disposition = WindowOpenDisposition::SINGLETON_TAB;
     ShowSingletonTabOverwritingNTP(params->browser, params);
-    return;
+    return nullptr;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_browser && source_browser != params->browser) {
@@ -580,7 +584,7 @@ void Navigate(NavigateParams* params) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (source_browser &&
       lacros_url_handling::MaybeInterceptNavigation(params->url)) {
-    return;
+    return nullptr;
   }
 #endif
 
@@ -626,6 +630,8 @@ void Navigate(NavigateParams* params) {
       params->transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR ||
       !ui::PageTransitionIsWebTriggerable(params->transition);
 
+  base::WeakPtr<content::NavigationHandle> navigation_handle;
+
   // If no target WebContents was specified (and we didn't seek and find a
   // singleton), we need to construct one if we are supposed to target a new
   // tab.
@@ -647,7 +653,8 @@ void Navigate(NavigateParams* params) {
       // Perform the actual navigation, tracking whether it came from the
       // renderer.
 
-      LoadURLInContents(contents_to_navigate_or_insert, params->url, params);
+      navigation_handle = LoadURLInContents(contents_to_navigate_or_insert,
+                                            params->url, params);
     }
   } else {
     // |contents_to_navigate_or_insert| was specified non-NULL, and so we assume
@@ -702,7 +709,8 @@ void Navigate(NavigateParams* params) {
           content::ReloadType::NORMAL, true);
     } else if (params->path_behavior == NavigateParams::IGNORE_AND_NAVIGATE &&
                contents_to_navigate_or_insert->GetURL() != params->url) {
-      LoadURLInContents(contents_to_navigate_or_insert, params->url, params);
+      navigation_handle = LoadURLInContents(contents_to_navigate_or_insert,
+                                            params->url, params);
     }
 
     // If the singleton tab isn't already selected, select it.
@@ -735,6 +743,7 @@ void Navigate(NavigateParams* params) {
   }
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;
+  return navigation_handle;
 }
 
 bool IsHostAllowedInIncognito(const GURL& url) {

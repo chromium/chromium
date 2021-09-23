@@ -36,7 +36,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
                                      OmniboxAction::Client& client) {
     OmniboxPedal::ExecutionContext context(
         client,
-        base::BindOnce(&TestOmniboxEditController::OnAutocompleteAccept,
+        base::BindOnce(&OmniboxEditController::OnAutocompleteAccept,
                        omnibox_edit_controller_->AsWeakPtr()),
         {}, WindowOpenDisposition::CURRENT_TAB);
     pedal->Execute(context);

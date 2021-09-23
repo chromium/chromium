@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -718,6 +719,10 @@ GURL AutocompleteResult::ComputeAlternateNavUrl(
                                 DISABLE_INTERCEPTION_CHECKS_ENABLE_INFOBARS ||
        redirector_policy == omnibox::IntranetRedirectorBehavior::
                                 ENABLE_INTERCEPTION_CHECKS_AND_INFOBARS);
+  TRACE_EVENT_INSTANT("omnibox", "AutocompleteResult::ComputeAlternateNavURL",
+                      "input", input, "match", match,
+                      "policy_allows_alternate_navs",
+                      policy_allows_alternate_navs);
   if (!policy_allows_alternate_navs)
     return GURL();
 

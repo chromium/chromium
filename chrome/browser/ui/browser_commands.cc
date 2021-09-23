@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -628,17 +629,18 @@ void Home(Browser* browser, WindowOpenDisposition disposition) {
   browser->OpenURL(params);
 }
 
-void OpenCurrentURL(Browser* browser) {
+base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
   base::RecordAction(UserMetricsAction("LoadURL"));
   LocationBar* location_bar = browser->window()->GetLocationBar();
   if (!location_bar)
-    return;
+    return nullptr;
 
   GURL url(location_bar->GetDestinationURL());
+  TRACE_EVENT1("navigation", "chrome::OpenCurrentURL", "url", url);
 
   if (ShouldInterceptChromeURLNavigationInIncognito(browser, url)) {
     ProcessInterceptedChromeURLNavigationInIncognito(browser, url);
-    return;
+    return nullptr;
   }
 
   NavigateParams params(browser, url, location_bar->GetPageTransition());
@@ -652,7 +654,7 @@ void OpenCurrentURL(Browser* browser) {
   params.input_start = location_bar->GetMatchSelectionTimestamp();
   params.is_using_https_as_default_scheme =
       location_bar->IsInputTypedUrlWithoutScheme();
-  Navigate(&params);
+  auto result = Navigate(&params);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK(extensions::ExtensionSystem::Get(browser->profile())
@@ -666,6 +668,7 @@ void OpenCurrentURL(Browser* browser) {
                                     extension->GetType());
   }
 #endif
+  return result;
 }
 
 void Stop(Browser* browser) {

@@ -48,13 +48,6 @@ class OmniboxClient {
   virtual std::unique_ptr<AutocompleteProviderClient>
   CreateAutocompleteProviderClient() = 0;
 
-  // Returns an OmniboxNavigationObserver specific to the embedder context. May
-  // return null if the embedder has no need to observe omnibox navigations.
-  virtual std::unique_ptr<OmniboxNavigationObserver>
-  CreateOmniboxNavigationObserver(const std::u16string& text,
-                                  const AutocompleteMatch& match,
-                                  const AutocompleteMatch& alternate_nav_match);
-
   // Returns whether there is any associated current page.  For example, during
   // startup or shutdown, the omnibox may exist but have no attached page.
   virtual bool CurrentPageExists() const;
@@ -112,10 +105,10 @@ class OmniboxClient {
   // that was created by CreateOmniboxNavigationObserver() for |match|; in some
   // embedding contexts, processing an extension keyword involves invoking
   // action on this observer.
-  virtual bool ProcessExtensionKeyword(const TemplateURL* template_url,
+  virtual bool ProcessExtensionKeyword(const std::u16string& text,
+                                       const TemplateURL* template_url,
                                        const AutocompleteMatch& match,
-                                       WindowOpenDisposition disposition,
-                                       OmniboxNavigationObserver* observer);
+                                       WindowOpenDisposition disposition);
 
   // Called to notify clients that the omnibox input state has changed.
   virtual void OnInputStateChanged() {}

@@ -46,7 +46,7 @@ class OmniboxEditModelTest : public testing::Test {
     return static_cast<TestOmniboxEditModel*>(view_->model());
   }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestOmniboxEditController> controller_;
   std::unique_ptr<TestOmniboxView> view_;
@@ -309,11 +309,12 @@ TEST_F(OmniboxEditModelTest, RevertZeroSuggestTemporaryText) {
 // resulting fill_into_edit.  Alternate nav matches are never shown, so there's
 // no need to ever try and strip this scheme.
 TEST_F(OmniboxEditModelTest, AlternateNavHasHTTP) {
-  const TestOmniboxClient* client =
-      static_cast<TestOmniboxClient*>(model()->client());
-  const AutocompleteMatch match(
-      model()->autocomplete_controller()->search_provider(), 0, false,
-      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  AutocompleteMatch match(model()->autocomplete_controller()->search_provider(),
+                          0, false,
+                          AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  // |match.destination_url| has to be set to ensure that OnAutocompleteAccept
+  // is called and |alternate_nav_match| is populated.
+  match.destination_url = GURL("https://foo/");
   const GURL alternate_nav_url("http://abcd/");
 
   model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
@@ -321,13 +322,13 @@ TEST_F(OmniboxEditModelTest, AlternateNavHasHTTP) {
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
                      alternate_nav_url, std::u16string(), 0);
   EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
-      client->alternate_nav_match().fill_into_edit));
+      controller_->alternate_nav_match().fill_into_edit));
 
   model()->SetUserText(u"abcd");
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
                      alternate_nav_url, std::u16string(), 0);
   EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
-      client->alternate_nav_match().fill_into_edit));
+      controller_->alternate_nav_match().fill_into_edit));
 }
 
 TEST_F(OmniboxEditModelTest, CurrentMatch) {

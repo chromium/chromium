@@ -51,7 +51,8 @@ class TestNavigationURLLoader
   void CallOnRequestRedirected(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head);
-  void CallOnResponseStarted(network::mojom::URLResponseHeadPtr response_head);
+  void CallOnResponseStarted(network::mojom::URLResponseHeadPtr response_head,
+                             mojo::ScopedDataPipeConsumerHandle response_body);
 
   int redirect_count() { return redirect_count_; }
 

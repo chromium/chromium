@@ -48,17 +48,6 @@ ChromeOmniboxClientIOS::CreateAutocompleteProviderClient() {
   return std::make_unique<AutocompleteProviderClientImpl>(browser_state_);
 }
 
-std::unique_ptr<OmniboxNavigationObserver>
-ChromeOmniboxClientIOS::CreateOmniboxNavigationObserver(
-    const std::u16string& text,
-    const AutocompleteMatch& match,
-    const AutocompleteMatch& alternate_nav_match) {
-  // TODO(blundell): Bring up an OmniboxNavigationObserver implementation on
-  // iOS if/once iOS wants to start using the ShortcutsProvider.
-  // crbug.com/511965
-  return nullptr;
-}
-
 bool ChromeOmniboxClientIOS::CurrentPageExists() const {
   return (controller_->GetWebState() != nullptr);
 }
@@ -119,10 +108,10 @@ gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
 }
 
 bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
+    const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
-    WindowOpenDisposition disposition,
-    OmniboxNavigationObserver* observer) {
+    WindowOpenDisposition disposition) {
   // Extensions are not supported on iOS.
   return false;
 }

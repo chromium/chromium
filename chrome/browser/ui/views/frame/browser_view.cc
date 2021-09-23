@@ -1969,7 +1969,8 @@ BrowserView::ShowScreenshotCapturedBubble(
       new sharing_hub::ScreenshotCapturedBubble(
           toolbar_button_provider()->GetAnchorView(
               PageActionIconType::kSharingHub),
-          contents, image, browser_->profile(), base::BindOnce(&Navigate));
+          contents, image, browser_->profile(),
+          base::BindOnce(base::IgnoreResult(&Navigate)));
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);

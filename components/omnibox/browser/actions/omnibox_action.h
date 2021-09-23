@@ -96,7 +96,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
                                 ui::PageTransition transition,
                                 AutocompleteMatchType::Type match_type,
                                 base::TimeTicks match_selection_timestamp,
-                                bool destination_url_entered_without_scheme)>;
+                                bool destination_url_entered_without_scheme,
+                                const std::u16string&,
+                                const AutocompleteMatch&,
+                                const AutocompleteMatch&)>;
 
     ExecutionContext(Client& client,
                      OpenUrlCallback callback,

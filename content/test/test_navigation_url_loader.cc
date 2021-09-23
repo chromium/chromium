@@ -82,7 +82,8 @@ void TestNavigationURLLoader::CallOnRequestRedirected(
 }
 
 void TestNavigationURLLoader::CallOnResponseStarted(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle response_body) {
   if (!response_head->parsed_headers)
     response_head->parsed_headers = network::mojom::ParsedHeaders::New();
   // Create a bidirectionnal communication pipe between a URLLoader and a
@@ -102,8 +103,7 @@ void TestNavigationURLLoader::CallOnResponseStarted(
 
   delegate_->OnResponseStarted(
       std::move(url_loader_client_endpoints), std::move(response_head),
-      mojo::ScopedDataPipeConsumerHandle(),
-      GlobalRequestID::MakeBrowserInitiated(), false,
+      std::move(response_body), GlobalRequestID::MakeBrowserInitiated(), false,
       blink::NavigationDownloadPolicy(),
       request_info_->isolation_info.network_isolation_key(), absl::nullopt,
       std::move(early_hints));

@@ -153,6 +153,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       net::HttpResponseInfo::ConnectionInfo connection_info,
       absl::optional<net::SSLInfo> ssl_info,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
+      mojo::ScopedDataPipeConsumerHandle response_body,
       const std::vector<std::string>& dns_aliases);
 
   // Used to simulate the commit of a navigation having been processed in the
@@ -258,6 +259,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       net::HttpResponseInfo::ConnectionInfo connection_info,
       absl::optional<net::SSLInfo> ssl_info,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
+      mojo::ScopedDataPipeConsumerHandle response_body,
       const std::vector<std::string>& dns_aliases);
 
   // Computes the page ID for a pending navigation in this RenderFrameHost;

@@ -25,17 +25,9 @@ class TestOmniboxClient : public OmniboxClient {
   TestOmniboxClient(const TestOmniboxClient&) = delete;
   TestOmniboxClient& operator=(const TestOmniboxClient&) = delete;
 
-  const AutocompleteMatch& alternate_nav_match() const {
-    return alternate_nav_match_;
-  }
-
   // OmniboxClient:
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
-  std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternate_nav_match) override;
   bool IsPasteAndGoEnabled() const override;
   const SessionID& GetSessionID() const override;
   void SetBookmarkModel(bookmarks::BookmarkModel* bookmark_model);
@@ -54,7 +46,6 @@ class TestOmniboxClient : public OmniboxClient {
   GURL GetPageUrlForLastFaviconRequest() const;
 
  private:
-  AutocompleteMatch alternate_nav_match_;
   SessionID session_id_;
   bookmarks::BookmarkModel* bookmark_model_;
   TemplateURLService* template_url_service_;

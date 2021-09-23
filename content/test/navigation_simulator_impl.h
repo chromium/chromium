@@ -94,6 +94,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetContentsMimeType(const std::string& contents_mime_type) override;
   void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
+  void SetResponseBody(
+      mojo::ScopedDataPipeConsumerHandle response_body) override;
   void SetAutoAdvance(bool auto_advance) override;
   void SetResolveErrorInfo(
       const net::ResolveErrorInfo& resolve_error_info) override;
@@ -363,6 +365,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   std::string contents_mime_type_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
   blink::ParsedPermissionsPolicy permissions_policy_header_;
+  mojo::ScopedDataPipeConsumerHandle response_body_;
   network::mojom::CSPDisposition should_check_main_world_csp_ =
       network::mojom::CSPDisposition::CHECK;
   net::HttpResponseInfo::ConnectionInfo http_connection_info_ =
