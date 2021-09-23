@@ -7,6 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/note_width"
     android:layout_height="280dp"
+    android:layout_marginBottom="24dp"
     android:orientation="vertical"
     android:layout_gravity="center_horizontal"
     android:layout_marginEnd="@dimen/note_side_padding"

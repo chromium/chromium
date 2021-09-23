@@ -14,6 +14,9 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -83,6 +86,7 @@ public class NoteCreationDialog extends DialogFragment {
         builder.setView(mContentView);
 
         setTitleTopMargin();
+        addOrRemoveScrollView();
 
         if (mIsPublishAvailable) {
             Button publishButton = (Button) mContentView.findViewById(R.id.publish);
@@ -108,6 +112,9 @@ public class NoteCreationDialog extends DialogFragment {
 
         // Title top margin depends on screen orientation.
         setTitleTopMargin();
+
+        // Add or remove scroll view as needed.
+        addOrRemoveScrollView();
 
         // Force recycler view to redraw to recalculate the left/right paddings for first/last
         // items.
@@ -332,5 +339,44 @@ public class NoteCreationDialog extends DialogFragment {
         params.topMargin = (int) (minTopMargin + (screenHeight - topMarginOffset) * 0.15f);
         titleView.setLayoutParams(params);
         titleView.requestLayout();
+    }
+
+    private void addScrollView() {
+        assert mContentView.findViewById(R.id.scrollview) == null;
+
+        ScrollView scrollView = new ScrollView(getActivity());
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        scrollView.setId(R.id.scrollview);
+
+        LinearLayout dialogLayout = mContentView.findViewById(R.id.dialog_layout);
+        RelativeLayout mainContent = dialogLayout.findViewById(R.id.main_content);
+        dialogLayout.removeView(mainContent);
+        scrollView.addView(mainContent);
+        dialogLayout.addView(scrollView);
+    }
+
+    private void removeScrollView() {
+        assert mContentView.findViewById(R.id.scrollview) != null;
+
+        LinearLayout dialogLayout = mContentView.findViewById(R.id.dialog_layout);
+        RelativeLayout mainContent = dialogLayout.findViewById(R.id.main_content);
+        ScrollView scrollView = dialogLayout.findViewById(R.id.scrollview);
+        scrollView.removeView(mainContent);
+        dialogLayout.removeView(scrollView);
+        dialogLayout.addView(mainContent);
+    }
+
+    private void addOrRemoveScrollView() {
+        int screenHeight = getActivity().getResources().getDisplayMetrics().heightPixels;
+        int dialogHeight =
+                (int) getActivity().getResources().getDimension(R.dimen.min_dialog_height);
+        if (dialogHeight < screenHeight && mContentView.findViewById(R.id.scrollview) != null) {
+            removeScrollView();
+        }
+
+        if (dialogHeight > screenHeight && mContentView.findViewById(R.id.scrollview) == null) {
+            addScrollView();
+        }
     }
 }
