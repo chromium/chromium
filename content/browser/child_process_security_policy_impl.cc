@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -161,12 +162,19 @@ base::debug::CrashKeyString* GetCanAccessDataKeepAliveDurationKey() {
   return keep_alive_duration_key;
 }
 
+base::debug::CrashKeyString* GetCanAccessDataShutdownDelayRefCountKey() {
+  static auto* shutdown_delay_key = base::debug::AllocateCrashKeyString(
+      "shutdown_delay_ref_count", base::debug::CrashKeySize::Size32);
+  return shutdown_delay_key;
+}
+
 void LogCanAccessDataForOriginCrashKeys(
     const std::string& expected_process_lock,
     const std::string& killed_process_origin_lock,
     const std::string& requested_origin,
     const std::string& failure_reason,
-    const std::string& keep_alive_durations) {
+    const std::string& keep_alive_durations,
+    const std::string& shutdown_delay_ref_count) {
   base::debug::SetCrashKeyString(GetExpectedProcessLockKey(),
                                  expected_process_lock);
   base::debug::SetCrashKeyString(GetKilledProcessOriginLockKey(),
@@ -177,6 +185,8 @@ void LogCanAccessDataForOriginCrashKeys(
                                  failure_reason);
   base::debug::SetCrashKeyString(GetCanAccessDataKeepAliveDurationKey(),
                                  keep_alive_durations);
+  base::debug::SetCrashKeyString(GetCanAccessDataShutdownDelayRefCountKey(),
+                                 shutdown_delay_ref_count);
 }
 
 }  // namespace
@@ -388,7 +398,7 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
   if (child_id_ == ChildProcessHost::kInvalidUniqueID) {
     LogCanAccessDataForOriginCrashKeys(
         "(unknown)", "(unknown)", origin.GetDebugString(), "handle_not_valid",
-        "no_keep_alive_durations");
+        "no_keep_alive_durations", "no shutdown delay ref count");
     return false;
   }
 
@@ -1827,9 +1837,13 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
 
   // Record the duration of KeepAlive requests to include in the crash keys.
   std::string keep_alive_durations;
+  std::string shutdown_delay_ref_count;
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
+    if (auto* process = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHostImpl::FromID(child_id))) {
       keep_alive_durations = process->GetKeepAliveDurations();
+      shutdown_delay_ref_count =
+          base::NumberToString(process->shutdown_delay_ref_count());
     }
   } else {
     keep_alive_durations = "no durations available: on IO thread.";
@@ -1837,10 +1851,10 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
 
   // Returning false here will result in a renderer kill.  Set some crash
   // keys that will help understand the circumstances of that kill.
-  LogCanAccessDataForOriginCrashKeys(expected_process_lock.ToString(),
-                                     GetKilledProcessOriginLock(security_state),
-                                     url.GetOrigin().spec(), failure_reason,
-                                     keep_alive_durations);
+  LogCanAccessDataForOriginCrashKeys(
+      expected_process_lock.ToString(),
+      GetKilledProcessOriginLock(security_state), url.GetOrigin().spec(),
+      failure_reason, keep_alive_durations, shutdown_delay_ref_count);
   return false;
 }
 

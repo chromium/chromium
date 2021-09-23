@@ -683,6 +683,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   size_t keep_alive_ref_count() const { return keep_alive_ref_count_; }
   size_t worker_ref_count() const { return worker_ref_count_; }
+  size_t shutdown_delay_ref_count() const { return shutdown_delay_ref_count_; }
 
   // Allows overriding the URLLoaderFactory creation via CreateURLLoaderFactory.
   // Passing a null callback will restore the default behavior.
