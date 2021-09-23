@@ -282,7 +282,8 @@ class FieldTrialTest : public ::testing::TestWithParam<std::string> {
 
 }  // namespace
 
-TEST_P(FieldTrialTest, ExtendedSafeModeEndToEnd) {
+// crbug.com/1252344 - Failing on some windows builders; disable temporarily.
+TEST_P(FieldTrialTest, DISABLED_ExtendedSafeModeEndToEnd) {
   SCOPED_TRACE(field_trial_group());
 
   // Reuse the browser_tests binary (i.e., that this test code is in), to
