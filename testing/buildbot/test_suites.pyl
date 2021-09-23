@@ -1711,6 +1711,11 @@
         ],
       },
       'content_browsertests': {},
+      'unit_tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',
+        ],
+      },
     },
 
     'fuchsia_gpu_telemetry_tests': {

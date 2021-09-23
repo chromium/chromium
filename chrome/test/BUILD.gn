@@ -7761,6 +7761,18 @@ test("unit_tests") {
     ]
     deps += [ "//chrome/browser/lens/region_search" ]
   }
+
+  if (is_fuchsia) {
+    data += [ "//testing/buildbot/filters/fuchsia.unit_tests.filter" ]
+
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/font_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+      "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    ]
+  }
 }
 
 static_library("test_support_unit") {
