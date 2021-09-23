@@ -47,13 +47,7 @@ class ReportQueueProviderTest : public ::testing::Test {
       base::BindRepeating([]() { return Status::StatusOK(); });
 };
 
-// Disable the test on Linux tsan due to flaky: crbug.com/1233804.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_CreateAndGetQueue DISABLED_CreateAndGetQueue
-#else
-#define MAYBE_CreateAndGetQueue CreateAndGetQueue
-#endif
-TEST_F(ReportQueueProviderTest, MAYBE_CreateAndGetQueue) {
+TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
   std::unique_ptr<MockReportQueueProvider> provider =
       std::make_unique<NiceMock<MockReportQueueProvider>>();
   report_queue_provider_test_helper::SetForTesting(provider.get());
