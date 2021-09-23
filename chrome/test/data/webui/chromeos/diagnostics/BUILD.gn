@@ -18,6 +18,7 @@ js_type_check("closure_compile") {
     ":data_point_test",
     ":diagnostics_app_test",
     ":diagnostics_app_unified_test",
+    ":diagnostics_sticky_banner_test",
     ":diagnostics_test_utils",
     ":diagnostics_utils_test",
     ":fake_network_health_provider_test",
@@ -113,6 +114,15 @@ js_library("diagnostics_app_test") {
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:fake_system_data_provider",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("diagnostics_sticky_banner_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/diagnostics_ui/resources:diagnostics_sticky_banner",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
