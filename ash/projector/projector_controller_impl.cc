@@ -34,12 +34,12 @@ bool CreateDirectory(const base::FilePath& path) {
 
   // The path is constructed from datetime which should be unique for most
   // cases. In case it is already exist, returns false.
-  if (base::PathExists(path.DirName())) {
+  if (base::PathExists(path)) {
     LOG(ERROR) << "Path has already existed: " << path;
     return false;
   }
 
-  if (!base::CreateDirectory(path.DirName())) {
+  if (!base::CreateDirectory(path)) {
     LOG(ERROR) << "Failed to create path: " << path;
     return false;
   }
