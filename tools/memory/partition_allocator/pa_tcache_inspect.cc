@@ -30,6 +30,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -388,6 +389,18 @@ bool PartitionRootInspector::GatherStatistics() {
   return false;
 }
 
+void DisplayBucket(const ThreadCacheInspector::BucketStats& bucket,
+                   bool is_limit) {
+  size_t bucket_memory = bucket.size * bucket.count;
+
+  std::string line = base::StringPrintf(
+      "% 4d\t% 4d\t% 4d\t% 4dkiB", static_cast<int>(bucket.size),
+      static_cast<int>(bucket.per_thread_limit), static_cast<int>(bucket.count),
+      static_cast<int>(bucket_memory / 1024));
+
+  std::cout << (is_limit ? "*" : " ") << line;
+}
+
 void DisplayPerThreadData(
     ThreadCacheInspector& inspector,
     std::map<base::PlatformThreadId, std::string>& tid_to_name) {
@@ -436,22 +449,27 @@ void DisplayPerThreadData(
 
 void DisplayPerBucketData(ThreadCacheInspector& inspector) {
   std::cout << "Per-bucket stats (All Threads):"
-            << "\nBucket Size\tPer-thread Limit\tCount\tTotal Memory\n"
+            << "\nSize\tLimit\tCount\tMemory\t| Size\t\tLimit\tCount\tMemory\n"
             << std::string(80, '-') << "\n";
 
   size_t total_memory = 0;
   auto bucket_stats = inspector.AccumulateThreadCacheBuckets();
-  for (size_t index = 0; index < bucket_stats.size(); index++) {
-    const auto& bucket = bucket_stats[index];
-    size_t bucket_memory = bucket.size * bucket.count;
+  for (size_t index = 0; index < bucket_stats.size() / 2; index++) {
+    size_t bucket_index = index;
+    auto& bucket = bucket_stats[bucket_index];
+    total_memory += bucket.size * bucket.count;
+    DisplayBucket(bucket,
+                  inspector.largest_active_bucket_index() == bucket_index);
 
-    std::cout << bucket.size << "\t\t" << bucket.per_thread_limit << "\t\t\t"
-              << bucket.count << "\t" << bucket_memory / 1024 << "kiB";
-    if (inspector.largest_active_bucket_index() == index)
-      std::cout << "  <---- Limit";
+    std::cout << "\t| ";
+
+    bucket_index = bucket_stats.size() / 2 + index;
+    bucket = bucket_stats[bucket_index];
+    total_memory += bucket.size * bucket.count;
+    DisplayBucket(bucket_stats[bucket_index],
+                  inspector.largest_active_bucket_index() == bucket_index);
+
     std::cout << "\n";
-
-    total_memory += bucket_memory;
   }
   std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB\n";
 }
@@ -522,6 +540,7 @@ int main(int argc, char** argv) {
   std::map<base::PlatformThreadId, std::string> tid_to_name;
 
   while (true) {
+    base::TimeTicks tick = base::TimeTicks::Now();
     bool ok = thread_cache_inspector.GetAllThreadCaches();
     if (!ok)
       continue;
@@ -539,9 +558,11 @@ int main(int argc, char** argv) {
         break;
       }
     }
+    int64_t gather_time_ms = (base::TimeTicks::Now() - tick).InMilliseconds();
 
     constexpr const char* kClearScreen = "\033[2J\033[1;1H";
-    std::cout << kClearScreen;
+    std::cout << kClearScreen << "Time to gather data = " << gather_time_ms
+              << "ms\n";
     DisplayPerThreadData(thread_cache_inspector, tid_to_name);
 
     std::cout << "\n\n";
