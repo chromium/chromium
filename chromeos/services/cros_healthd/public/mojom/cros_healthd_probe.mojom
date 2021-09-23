@@ -308,6 +308,14 @@ struct CpuInfo {
   array<PhysicalCpuInfo> physical_cpus;
   // Information about the CPU temperature channels.
   array<CpuTemperatureChannel> temperature_channels;
+  // Information about keylocker.
+  KeylockerInfo? keylocker_info;
+};
+
+// Information related to Keylocker.
+struct KeylockerInfo {
+  // Has Keylocker been configured or not.
+  bool keylocker_configured;
 };
 
 // Information related to a particular physical CPU.

@@ -194,6 +194,7 @@ constexpr cros_healthd::CpuArchitectureEnum kFakeMojoArchitecture =
     cros_healthd::CpuArchitectureEnum::kX86_64;
 constexpr em::CpuInfo::Architecture kFakeProtoArchitecture =
     em::CpuInfo::X86_64;
+constexpr bool kFakeKeylockerConfigurationState = false;
 constexpr uint32_t kFakeMaxClockSpeed = 3400000;
 constexpr uint32_t kFakeScalingMaxFrequency = 2700000;
 constexpr uint32_t kFakeScalingCurFrequency = 2400000;
@@ -613,10 +614,14 @@ std::vector<cros_healthd::CpuTemperatureChannelPtr> CreateTemperatureChannel() {
   return cpu_temps;
 }
 
+cros_healthd::KeylockerInfoPtr CreateKeylockerInfo() {
+  return cros_healthd::KeylockerInfo::New(kFakeKeylockerConfigurationState);
+}
+
 cros_healthd::CpuResultPtr CreateCpuResult() {
   return cros_healthd::CpuResult::NewCpuInfo(cros_healthd::CpuInfo::New(
       kFakeNumTotalThreads, kFakeMojoArchitecture, CreatePhysicalCpu(),
-      CreateTemperatureChannel()));
+      CreateTemperatureChannel(), CreateKeylockerInfo()));
 }
 
 cros_healthd::TimezoneResultPtr CreateTimezoneResult() {
