@@ -88679,6 +88679,7 @@ Called by update_scheduler_enums.py.-->
   <int value="24" label="Safety tip help opened"/>
   <int value="25" label="Chooser object deleted"/>
   <int value="26" label="Reset certificate decisions clicked"/>
+  <int value="27" label="Store info clicked"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">

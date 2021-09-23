@@ -95,7 +95,7 @@ public class MerchantTrustSignalsDataProviderTest {
         int callCount = callbackHelper.getCallCount();
         mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
                 OptimizationGuideDecision.FALSE, ANY_MERHCANT_TRUST_SIGNALS);
-        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
+        instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
         Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
     }
@@ -110,7 +110,7 @@ public class MerchantTrustSignalsDataProviderTest {
         int callCount = callbackHelper.getCallCount();
         mockOptimizationGuideResponse(
                 mMockOptimizationGuideBridgeJni, OptimizationGuideDecision.TRUE, null);
-        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
+        instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
         Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
     }
@@ -125,7 +125,7 @@ public class MerchantTrustSignalsDataProviderTest {
         int callCount = callbackHelper.getCallCount();
         mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
                 OptimizationGuideDecision.TRUE, Any.getDefaultInstance());
-        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
+        instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
         Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
     }
@@ -140,6 +140,71 @@ public class MerchantTrustSignalsDataProviderTest {
         int callCount = callbackHelper.getCallCount();
         mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
                 OptimizationGuideDecision.TRUE, ANY_MERHCANT_TRUST_SIGNALS);
+        instance.getDataForUrl(mMockDestinationGurl, callbackHelper::notifyCalled);
+        callbackHelper.waitForCallback(callCount);
+
+        MerchantTrustSignals result = callbackHelper.getMerchantTrustSignalsResult();
+        Assert.assertNotNull(result);
+        Assert.assertEquals(4.5f, result.getMerchantStarRating(), 0.0f);
+        Assert.assertEquals(100, result.getMerchantCountRating());
+        Assert.assertEquals("http://dummy/url", result.getMerchantDetailsPageUrl());
+    }
+
+    @Test
+    public void testGetDataForNavigationHandlerNoMetadata() throws TimeoutException {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+
+        MerchantTrustSignalsCallbackHelper callbackHelper =
+                new MerchantTrustSignalsCallbackHelper();
+
+        int callCount = callbackHelper.getCallCount();
+        mockOptimizationGuideAsyncResponse(mMockOptimizationGuideBridgeJni,
+                OptimizationGuideDecision.FALSE, ANY_MERHCANT_TRUST_SIGNALS);
+        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
+        callbackHelper.waitForCallback(callCount);
+        Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
+    }
+
+    @Test
+    public void testGetDataForNavigationHandlerNullMetadata() throws TimeoutException {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+
+        MerchantTrustSignalsCallbackHelper callbackHelper =
+                new MerchantTrustSignalsCallbackHelper();
+
+        int callCount = callbackHelper.getCallCount();
+        mockOptimizationGuideAsyncResponse(
+                mMockOptimizationGuideBridgeJni, OptimizationGuideDecision.TRUE, null);
+        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
+        callbackHelper.waitForCallback(callCount);
+        Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
+    }
+
+    @Test
+    public void testGetDataForNavigationHandlerInvalidMetadata() throws TimeoutException {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+
+        MerchantTrustSignalsCallbackHelper callbackHelper =
+                new MerchantTrustSignalsCallbackHelper();
+
+        int callCount = callbackHelper.getCallCount();
+        mockOptimizationGuideAsyncResponse(mMockOptimizationGuideBridgeJni,
+                OptimizationGuideDecision.TRUE, Any.getDefaultInstance());
+        instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
+        callbackHelper.waitForCallback(callCount);
+        Assert.assertNull(callbackHelper.getMerchantTrustSignalsResult());
+    }
+
+    @Test
+    public void testGetDataForNavigationHandlerValid() throws TimeoutException {
+        MerchantTrustSignalsDataProvider instance = getDataProvider();
+
+        MerchantTrustSignalsCallbackHelper callbackHelper =
+                new MerchantTrustSignalsCallbackHelper();
+
+        int callCount = callbackHelper.getCallCount();
+        mockOptimizationGuideAsyncResponse(mMockOptimizationGuideBridgeJni,
+                OptimizationGuideDecision.TRUE, ANY_MERHCANT_TRUST_SIGNALS);
         instance.getDataForNavigationHandle(mNavigationHandle, callbackHelper::notifyCalled);
         callbackHelper.waitForCallback(callCount);
 
@@ -148,6 +213,23 @@ public class MerchantTrustSignalsDataProviderTest {
         Assert.assertEquals(4.5f, result.getMerchantStarRating(), 0.0f);
         Assert.assertEquals(100, result.getMerchantCountRating());
         Assert.assertEquals("http://dummy/url", result.getMerchantDetailsPageUrl());
+    }
+
+    static void mockOptimizationGuideAsyncResponse(
+            OptimizationGuideBridge.Natives optimizationGuideJni,
+            @OptimizationGuideDecision int decision, Any metadata) {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                OptimizationGuideCallback callback =
+                        (OptimizationGuideCallback) invocation.getArguments()[3];
+                callback.onOptimizationGuideDecision(decision, metadata);
+                return null;
+            }
+        })
+                .when(optimizationGuideJni)
+                .canApplyOptimizationAsync(
+                        anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
     }
 
     static void mockOptimizationGuideResponse(OptimizationGuideBridge.Natives optimizationGuideJni,
@@ -162,7 +244,7 @@ public class MerchantTrustSignalsDataProviderTest {
             }
         })
                 .when(optimizationGuideJni)
-                .canApplyOptimizationAsync(
+                .canApplyOptimization(
                         anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
     }
 

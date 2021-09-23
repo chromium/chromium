@@ -18,10 +18,13 @@ import org.chromium.base.annotations.NativeMethods;
 @MainDex
 public class PageInfoFeatures extends Features {
     public static final String PAGE_INFO_HISTORY_NAME = "PageInfoHistory";
+    public static final String PAGE_INFO_STORE_INFO_NAME = "PageInfoStoreInfo";
 
     // This list must be kept in sync with kFeaturesExposedToJava in page_info_features.cc.
     public static final PageInfoFeatures PAGE_INFO_HISTORY =
             new PageInfoFeatures(0, PAGE_INFO_HISTORY_NAME);
+    public static final PageInfoFeatures PAGE_INFO_STORE_INFO =
+            new PageInfoFeatures(1, PAGE_INFO_STORE_INFO_NAME);
 
     private final int mOrdinal;
 

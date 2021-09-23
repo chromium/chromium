@@ -726,8 +726,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 if (webContents == null) return;
                 Activity activity = currentTab.getWindowAndroid().getActivity().get();
                 if (activity == null) return;
+                // For now we don't show "store info" row for custom tab.
                 new ChromePageInfo(mModalDialogManagerSupplier, getContentPublisher(),
-                        OpenedFromSource.TOOLBAR)
+                        OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null)
                         .show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             });
         }

@@ -62,6 +62,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
+import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.messages.ChromeMessageAutodismissDurationProvider;
 import org.chromium.chrome.browser.messages.ChromeMessageQueueMediator;
 import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
@@ -120,12 +123,14 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageContainer;
+import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -196,6 +201,9 @@ public class RootUiCoordinator
     private final ToolbarActionModeCallback mActionModeControllerCallback;
     private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier =
+            new ObservableSupplierImpl<>();
+    private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
     protected final ObservableSupplier<Profile> mProfileSupplier;
     private final ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -237,6 +245,7 @@ public class RootUiCoordinator
     private final AppMenuDelegate mAppMenuDelegate;
     private final StatusBarColorProvider mStatusBarColorProvider;
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
+    private final IntentRequestTracker mIntentRequestTracker;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -275,6 +284,7 @@ public class RootUiCoordinator
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
+     * @param intentRequestTracker Tracks intent requests.
      */
     public RootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -307,7 +317,8 @@ public class RootUiCoordinator
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
-            @NonNull StatusBarColorProvider statusBarColorProvider) {
+            @NonNull StatusBarColorProvider statusBarColorProvider,
+            @NonNull IntentRequestTracker intentRequestTracker) {
         mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
         mActivity = activity;
@@ -332,6 +343,7 @@ public class RootUiCoordinator
         mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
         mAppMenuDelegate = appMenuDelegate;
         mStatusBarColorProvider = statusBarColorProvider;
+        mIntentRequestTracker = intentRequestTracker;
 
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
@@ -505,6 +517,12 @@ public class RootUiCoordinator
             mCaptureController = null;
         }
 
+        if (mMerchantTrustSignalsCoordinator != null) {
+            mMerchantTrustSignalsCoordinator.destroy();
+            mMerchantTrustSignalsCoordinator = null;
+            mStoreInfoActionHandlerSupplier.set(null);
+        }
+
         mActivity = null;
     }
 
@@ -623,6 +641,35 @@ public class RootUiCoordinator
         }
         DownloadManagerService.getDownloadManagerService().onActivityLaunched(mActivity,
                 () -> mMessageDispatcher, mModalDialogManagerSupplier.get(), mActivityTabProvider);
+
+        initMerchantTrustSignals();
+    }
+
+    private void initMerchantTrustSignals() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER)
+                && shouldInitializeMerchantTrustSignals()) {
+            mMerchantTrustSignalsCoordinator =
+                    new MerchantTrustSignalsCoordinator(mActivity, mWindowAndroid,
+                            getBottomSheetController(), mActivity.getWindow().getDecorView(),
+                            MessageDispatcherProvider.from(mWindowAndroid), mActivityTabProvider,
+                            mProfileSupplier, new MerchantTrustMetrics(), mIntentRequestTracker);
+            mStoreInfoActionHandlerSupplier.set(mMerchantTrustSignalsCoordinator);
+        }
+    }
+
+    /**
+     * @return Whether the {@link MerchantTrustSignalsCoordinator} should be initialized in the
+     * context of this coordinator's UI.
+     **/
+    protected boolean shouldInitializeMerchantTrustSignals() {
+        return false;
+    }
+
+    /**
+     * Returns the supplier of {@link StoreInfoActionHandler}.
+     */
+    public Supplier<StoreInfoActionHandler> getStoreInfoActionHandlerSupplier() {
+        return mStoreInfoActionHandlerSupplier;
     }
 
     /**
@@ -855,7 +902,8 @@ public class RootUiCoordinator
                     mActivityLifecycleDispatcher, mStartSurfaceParentTabSupplier,
                     mBottomSheetController, mIsWarmOnResumeSupplier,
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
-                    mOverviewModeBehaviorSupplier, mSnackbarManagerSupplier.get(), mJankTracker);
+                    mOverviewModeBehaviorSupplier, mSnackbarManagerSupplier.get(), mJankTracker,
+                    getStoreInfoActionHandlerSupplier());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

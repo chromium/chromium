@@ -34,7 +34,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Coordinator for managing merchant trust signals experience.
  */
-public class MerchantTrustSignalsCoordinator {
+public class MerchantTrustSignalsCoordinator
+        implements PageInfoStoreInfoController.StoreInfoActionHandler {
     private final MerchantTrustSignalsMediator mMediator;
     private final MerchantTrustMessageScheduler mMessageScheduler;
     private final MerchantTrustBottomSheetCoordinator mDetailsTabCoordinator;
@@ -170,6 +171,11 @@ public class MerchantTrustSignalsCoordinator {
     @VisibleForTesting
     void onMessagePrimaryAction(MerchantTrustSignals trustSignals) {
         mMetrics.recordMetricsForMessageTapped();
+        launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
+    }
+
+    @Override
+    public void onStoreInfoClicked(MerchantTrustSignals trustSignals) {
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
     }
 

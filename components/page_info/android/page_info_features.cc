@@ -16,6 +16,7 @@ namespace {
 // replicated in the same order in PageInfoFeatures.java.
 const base::Feature* kFeaturesExposedToJava[] = {
     &kPageInfoHistory,
+    &kPageInfoStoreInfo,
 };
 
 }  // namespace
