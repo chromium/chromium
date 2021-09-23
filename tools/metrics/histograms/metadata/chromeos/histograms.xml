@@ -76,7 +76,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="ChromeOS.Apps.ExternalProtocolDialog"
-    enum="ArcIntentHandlerAction" expires_after="2021-11-21">
+    enum="ArcIntentHandlerAction" expires_after="2022-05-21">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
@@ -87,7 +87,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.ExternalProtocolDialog.Accepted"
-    enum="ArcExternalProtocolAction" expires_after="M94">
+    enum="ArcExternalProtocolAction" expires_after="2022-05-21">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
@@ -99,7 +99,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.ExternalProtocolDialog.Rejected"
-    enum="ArcExternalProtocolAction" expires_after="M94">
+    enum="ArcExternalProtocolAction" expires_after="2022-05-21">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
@@ -110,7 +110,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerAction"
-    enum="ArcIntentHandlerAction" expires_after="2021-12-19">
+    enum="ArcIntentHandlerAction" expires_after="2022-05-21">
   <owner>elijahtaylor@google.com</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>shihuis@google.com</owner>
@@ -121,7 +121,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
-    enum="ArcIntentHandlerDestinationPlatform" expires_after="2021-12-05">
+    enum="ArcIntentHandlerDestinationPlatform" expires_after="2022-05-21">
   <owner>elijahtaylor@google.com</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>shihuis@google.com</owner>
@@ -144,7 +144,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Apps.OpenBrowser" enum="OpenBrowserType"
-    expires_after="2020-12-14">
+    expires_after="2022-05-21">
   <owner>ajlinker@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
