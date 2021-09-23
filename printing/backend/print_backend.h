@@ -198,8 +198,6 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
   // This is usually a lighter implementation than GetPrinterCapsAndDefaults().
   // Implementations must check `printer_name` validity in the same way as
   // IsValidPrinter().
-  // NOTE: on some old platforms (WinXP without XPS pack)
-  // GetPrinterCapsAndDefaults() will fail, while this function will succeed.
   virtual mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) = 0;
