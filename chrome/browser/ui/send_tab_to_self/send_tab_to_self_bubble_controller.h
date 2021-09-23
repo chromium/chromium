@@ -48,7 +48,7 @@ class SendTabToSelfBubbleController
   // Hides send tab to self bubble.
   void HideBubble();
   // Displays send tab to self bubble.
-  void ShowBubble();
+  void ShowBubble(bool show_back_button = false);
 
   bool IsBubbleShown() { return bubble_shown_; }
 
@@ -68,8 +68,11 @@ class SendTabToSelfBubbleController
   // Handler for when user clicks the link to manage their available devices.
   void OnManageDevicesClicked(const ui::Event& event);
 
-  // Close the bubble when the user click on the close button.
+  // Close the bubble when the user clicks on the close button.
   void OnBubbleClosed();
+
+  // Close the bubble when the user clicks on the back button.
+  void OnBackButtonPressed();
 
   // Shows the confirmation message in the omnibox.
   void ShowConfirmationMessage();
@@ -79,6 +82,7 @@ class SendTabToSelfBubbleController
   bool InitialSendAnimationShown() const;
   void SetInitialSendAnimationShown(bool shown);
 
+  bool show_back_button() const { return show_back_button_; }
   bool show_message() const { return show_message_; }
   void set_show_message(bool show_message) { show_message_ = show_message; }
 
@@ -104,6 +108,8 @@ class SendTabToSelfBubbleController
   content::WebContents* web_contents_;
   // Weak reference. Will be nullptr if no bubble is currently shown.
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view_ = nullptr;
+  // True if the back button is currently shown.
+  bool show_back_button_ = false;
   // True if a confirmation message should be shown in the omnibox.
   bool show_message_ = false;
   // True if the bubble is currently shown.

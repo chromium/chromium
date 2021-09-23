@@ -37,7 +37,7 @@ class QRCodeGeneratorBubbleController
       content::WebContents* web_contents);
 
   // Displays the QR Code Generator bubble.
-  void ShowBubble(const GURL& url);
+  void ShowBubble(const GURL& url, bool show_back_button = false);
 
   // Hides the QR Code Generator bubble.
   void HideBubble();
@@ -49,6 +49,8 @@ class QRCodeGeneratorBubbleController
 
   // Handler for when the bubble is dismissed.
   void OnBubbleClosed();
+
+  void OnBackButtonPressed();
 
  protected:
   explicit QRCodeGeneratorBubbleController(content::WebContents* web_contents);

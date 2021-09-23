@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -56,7 +57,8 @@ void SendTabToSelfBubbleController::HideBubble() {
   }
 }
 
-void SendTabToSelfBubbleController::ShowBubble() {
+void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
+  show_back_button_ = show_back_button;
   bubble_shown_ = true;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   send_tab_to_self_bubble_view_ =
@@ -127,6 +129,15 @@ void SendTabToSelfBubbleController::OnBubbleClosed() {
                            web_contents_->GetBrowserContext())) {
     UpdateIcon();
   }
+}
+
+void SendTabToSelfBubbleController::OnBackButtonPressed() {
+  sharing_hub::SharingHubBubbleController* controller =
+      sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
+          web_contents_);
+  controller->ShowBubble();
+
+  UpdateIcon();
 }
 
 void SendTabToSelfBubbleController::ShowConfirmationMessage() {

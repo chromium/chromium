@@ -44,6 +44,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   QRCodeGeneratorBubble(views::View* anchor_view,
                         content::WebContents* web_contents,
                         base::OnceClosure on_closing,
+                        base::OnceClosure on_back_button_pressed,
                         const GURL& url);
   QRCodeGeneratorBubble(const QRCodeGeneratorBubble&) = delete;
   QRCodeGeneratorBubble& operator=(const QRCodeGeneratorBubble&) = delete;
@@ -94,6 +95,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   // views::BubbleDialogDelegateView:
   void Init() override;
+  void AddedToWidget() override;
 
   // TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -104,6 +106,8 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
                         const ui::MouseEvent& mouse_event) override;
 
   void DownloadButtonPressed();
+
+  void BackButtonPressed();
 
   // Callback for the request to the OOP service to generate a new image.
   void OnCodeGeneratorResponse(const mojom::GenerateQRCodeResponsePtr response);
@@ -124,6 +128,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   views::Label* bottom_error_label_ = nullptr;
 
   base::OnceClosure on_closing_;
+  base::OnceClosure on_back_button_pressed_;
   content::WebContents* web_contents_;           // weak.
 };
 
