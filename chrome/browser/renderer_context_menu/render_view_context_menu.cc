@@ -224,13 +224,9 @@
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
-#endif
-
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -617,7 +613,6 @@ bool ShouldUseShareMenu() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||    \
-    (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
         BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ui::MenuSourceType GetMenuSourceType(int event_flags) {
   if (event_flags & ui::EF_LEFT_MOUSE_BUTTON)
@@ -1664,8 +1659,7 @@ void RenderViewContextMenu::AppendPageItems() {
                                   IDS_CONTENT_CONTEXT_SAVEPAGEAS);
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendMediaRouterItem();
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (IsLensRegionSearchEnabled()) {
     AppendLensRegionSearchItem();
   }
@@ -3322,8 +3316,7 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
 }
 
 void RenderViewContextMenu::ExecLensRegionSearch(int event_flags) {
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!lens_region_search_controller_)
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>(source_web_contents_,

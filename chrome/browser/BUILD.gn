@@ -4990,10 +4990,10 @@ static_library("browser") {
       "lacros/metrics_reporting_observer.cc",
       "lacros/metrics_reporting_observer.h",
       "lacros/net/network_settings_translation.h",
-      "lacros/net/proxy_config_service_lacros.cc",
-      "lacros/net/proxy_config_service_lacros.h",
       "lacros/net/network_settings_translation_crosapi.cc",
       "lacros/net/network_settings_translation_net_proxy.cc",
+      "lacros/net/proxy_config_service_lacros.cc",
+      "lacros/net/proxy_config_service_lacros.h",
       "lacros/prefs_ash_observer.cc",
       "lacros/prefs_ash_observer.h",
       "lacros/snap_controller_lacros.cc",
@@ -5689,8 +5689,7 @@ static_library("browser") {
     ]
   }
 
-  if ((is_win || is_linux || is_chromeos) && is_chrome_branded) {
-    # TODO(crbug/1229334): Add Mac support for Lens Region Search feature.
+  if (!is_android && is_chrome_branded) {
     deps += [ "//chrome/browser/lens/region_search" ]
   }
 

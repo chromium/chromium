@@ -3,9 +3,7 @@
 # found in the LICENSE file.
 
 # Contained Lens dependencies are currently for desktop platforms only
-# TODO(crbug/1229334): Add Mac support for Lens Region Search feature.
-assert(is_chromeos || is_linux || is_win,
-       "Lens Region Search is for desktop platforms only, excluding Mac")
+assert(!is_android, "Lens Region Search is for desktop platforms only")
 
 static_library("region_search") {
   sources = [
