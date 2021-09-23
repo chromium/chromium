@@ -11,13 +11,15 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_status_code.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "url/gurl.h"
 
 PrefetchProxyProxyConfigurator::PrefetchProxyProxyConfigurator()
     : prefetch_proxy_server_(net::ProxyServer(
-          net::ProxyServer::GetSchemeFromURI(PrefetchProxyProxyHost().scheme()),
+          net::GetSchemeFromUriScheme(PrefetchProxyProxyHost().scheme()),
           net::HostPortPair::FromURL(PrefetchProxyProxyHost()))),
       clock_(base::DefaultClock::GetInstance()) {
   DCHECK(PrefetchProxyProxyHost().is_valid());

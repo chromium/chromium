@@ -40,6 +40,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_auth_scheme.h"
 #include "net/http/http_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -631,7 +632,7 @@ void SystemProxyManager::OnAuthenticationRequired(
   // is used on the Chrome OS side. We should change |origin()| to be a PAC
   // string (a more "standard" way of representing proxies) and call
   // |FromPacString()| to create |proxy_server|.
-  net::ProxyServer proxy_server = net::ProxyServer::FromURI(
+  net::ProxyServer proxy_server = net::ProxyUriToProxyServer(
       protection_space.origin(), net::ProxyServer::Scheme::SCHEME_HTTP);
 
   if (!proxy_server.is_valid()) {

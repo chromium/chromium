@@ -16,6 +16,8 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -158,7 +160,7 @@ class WindowsSystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
   void DoResolveProxyCompletedSynchronouslyTest() {
     // Make sure there would be a proxy result on success.
     const ProxyServer proxy_server =
-        ProxyServer::FromPacString("HTTPS foopy:8443");
+        PacResultElementToProxyServer("HTTPS foopy:8443");
     resolver()->add_server_to_proxy_list(proxy_server);
 
     ProxyInfo info;
@@ -228,7 +230,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
 
   // Make sure there would be a proxy result on success.
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS foopy:8443");
+      PacResultElementToProxyServer("HTTPS foopy:8443");
   resolver()->add_server_to_proxy_list(proxy_server);
 
   ProxyInfo info;
@@ -259,7 +261,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyEmptyResults) {
 TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyWithResults) {
   ProxyList expected_proxy_list;
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS foopy:8443");
+      PacResultElementToProxyServer("HTTPS foopy:8443");
   resolver()->add_server_to_proxy_list(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
 
@@ -270,7 +272,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
        MultipleProxyResolutionRequests) {
   ProxyList expected_proxy_list;
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS foopy:8443");
+      PacResultElementToProxyServer("HTTPS foopy:8443");
   resolver()->add_server_to_proxy_list(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
   NetLogWithSource log;
@@ -311,7 +313,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
        ProxyResolutionServiceDestructionWithInFlightRequests) {
   ProxyList expected_proxy_list;
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS foopy:8443");
+      PacResultElementToProxyServer("HTTPS foopy:8443");
   resolver()->add_server_to_proxy_list(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
   NetLogWithSource log;

@@ -25,6 +25,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -1310,8 +1311,8 @@ TEST_F(TransportClientSocketPoolTest, SOCKS) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout,
-      ProxyServer::FromURI("socks5://foopy",
-                           ProxyServer::SCHEME_HTTP /* default_scheme */),
+      ProxyUriToProxyServer("socks5://foopy",
+                            ProxyServer::SCHEME_HTTP /* default_scheme */),
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
   for (IoMode socket_io_mode : {SYNCHRONOUS, ASYNC}) {
@@ -1354,8 +1355,8 @@ TEST_F(TransportClientSocketPoolTest, SpdyOneConnectJobTwoRequestsError) {
   // Create a socket pool which only allows a single connection at a time.
   TransportClientSocketPool pool(
       1, 1, kUnusedIdleSocketTimeout,
-      ProxyServer::FromURI("https://unresolvable.proxy.name",
-                           ProxyServer::SCHEME_HTTP /* default_scheme */),
+      ProxyUriToProxyServer("https://unresolvable.proxy.name",
+                            ProxyServer::SCHEME_HTTP /* default_scheme */),
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
   // First connection attempt will get an error after creating the SpdyStream.
@@ -1446,8 +1447,8 @@ TEST_F(TransportClientSocketPoolTest, SpdyAuthOneConnectJobTwoRequests) {
   // Create a socket pool which only allows a single connection at a time.
   TransportClientSocketPool pool(
       1, 1, kUnusedIdleSocketTimeout,
-      ProxyServer::FromURI("https://unresolvable.proxy.name",
-                           ProxyServer::SCHEME_HTTP /* default_scheme */),
+      ProxyUriToProxyServer("https://unresolvable.proxy.name",
+                            ProxyServer::SCHEME_HTTP /* default_scheme */),
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
   SpdyTestUtil spdy_util;
@@ -1566,7 +1567,7 @@ TEST_F(TransportClientSocketPoolTest, HttpTunnelSetupRedirect) {
 
       TransportClientSocketPool proxy_pool(
           kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout,
-          ProxyServer::FromURI(
+          ProxyUriToProxyServer(
               use_https_proxy ? "https://proxy.test" : "http://proxy.test",
               ProxyServer::SCHEME_HTTP /* default_scheme */),
           false /* is_for_websockets */,
@@ -1697,7 +1698,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const char kHost[] = "bar.test";
-  const ProxyServer kProxyServer = ProxyServer::FromURI(
+  const ProxyServer kProxyServer = ProxyUriToProxyServer(
       "http://proxy.test", ProxyServer::SCHEME_HTTP /* default_scheme */);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1768,7 +1769,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const char kHost[] = "bar.test";
-  const ProxyServer kProxyServer = ProxyServer::FromURI(
+  const ProxyServer kProxyServer = ProxyUriToProxyServer(
       "https://proxy.test", ProxyServer::SCHEME_HTTP /* default_scheme */);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1840,7 +1841,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const char kHost[] = "bar.test";
-  const ProxyServer kProxyServer = ProxyServer::FromURI(
+  const ProxyServer kProxyServer = ProxyUriToProxyServer(
       "socks4://proxy.test", ProxyServer::SCHEME_HTTP /* default_scheme */);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1934,7 +1935,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const char kHost[] = "bar.test";
-  const ProxyServer kProxyServer = ProxyServer::FromURI(
+  const ProxyServer kProxyServer = ProxyUriToProxyServer(
       "socks5://proxy.test", ProxyServer::SCHEME_HTTP /* default_scheme */);
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -2138,8 +2139,8 @@ TEST_F(TransportClientSocketPoolTest, TagSOCKSProxy) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout,
-      ProxyServer::FromURI("socks5://proxy",
-                           ProxyServer::SCHEME_HTTP /* default_scheme */),
+      ProxyUriToProxyServer("socks5://proxy",
+                            ProxyServer::SCHEME_HTTP /* default_scheme */),
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
   SocketTag tag1(SocketTag::UNSET_UID, 0x12345678);
@@ -2443,8 +2444,8 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyNoTunnel) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout,
-      ProxyServer::FromURI("http://proxy",
-                           ProxyServer::SCHEME_HTTP /* default_scheme */),
+      ProxyUriToProxyServer("http://proxy",
+                            ProxyServer::SCHEME_HTTP /* default_scheme */),
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
   session_deps_.host_resolver->set_synchronous_mode(true);
@@ -2503,8 +2504,8 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
 
   TransportClientSocketPool proxy_pool(
       kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout,
-      ProxyServer::FromURI("http://proxy",
-                           ProxyServer::SCHEME_HTTP /* default_scheme */),
+      ProxyUriToProxyServer("http://proxy",
+                            ProxyServer::SCHEME_HTTP /* default_scheme */),
       false /* is_for_websockets */, tagging_common_connect_job_params_.get());
 
   session_deps_.host_resolver->set_synchronous_mode(true);

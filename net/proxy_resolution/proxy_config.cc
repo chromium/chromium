@@ -12,6 +12,8 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {
@@ -33,7 +35,7 @@ void AddProxyURIListToProxyList(std::string uri_list,
   base::StringTokenizer proxy_uri_list(uri_list, ",");
   while (proxy_uri_list.GetNext()) {
     proxy_list->AddProxyServer(
-        ProxyServer::FromURI(proxy_uri_list.token(), default_scheme));
+        ProxyUriToProxyServer(proxy_uri_list.token(), default_scheme));
   }
 }
 

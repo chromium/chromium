@@ -30,6 +30,8 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_verify_result.h"
@@ -284,7 +286,7 @@ base::Value NetLogSpdySessionCloseParams(int net_error,
 base::Value NetLogSpdySessionParams(const HostPortProxyPair& host_pair) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("host", host_pair.first.ToString());
-  dict.SetStringKey("proxy", host_pair.second.ToPacString());
+  dict.SetStringKey("proxy", ProxyServerToPacResultElement(host_pair.second));
   return dict;
 }
 
@@ -1627,7 +1629,8 @@ base::Value SpdySession::GetInfoAsValue() const {
     }
     dict.SetKey("aliases", std::move(alias_list));
   }
-  dict.SetStringKey("proxy", host_port_proxy_pair().second.ToURI());
+  dict.SetStringKey("proxy",
+                    ProxyServerToProxyUri(host_port_proxy_pair().second));
   dict.SetStringKey("network_isolation_key",
                     spdy_session_key_.network_isolation_key().ToDebugString());
 

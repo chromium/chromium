@@ -51,6 +51,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
@@ -3790,7 +3791,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
   EXPECT_EQ(407, response->headers->response_code());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
-  EXPECT_EQ(ProxyServer::FromPacString("PROXY myproxy:70"),
+  EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
             response->proxy_server);
 
   // TODO(crbug.com/986744): Fix handling of OnConnected() when proxy
@@ -3820,7 +3821,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(5, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-  EXPECT_EQ(ProxyServer::FromPacString("PROXY myproxy:70"),
+  EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
             response->proxy_server);
 
   TransportInfo expected_transport;
@@ -4039,7 +4040,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
     EXPECT_FALSE(response->did_use_http_auth);
-    EXPECT_EQ(ProxyServer::FromPacString("PROXY myproxy:70"),
+    EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
               response->proxy_server);
 
     TestCompletionCallback callback2;
@@ -4058,7 +4059,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
     EXPECT_TRUE(response->did_use_http_auth);
-    EXPECT_EQ(ProxyServer::FromPacString("PROXY myproxy:70"),
+    EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
               response->proxy_server);
 
     // Flush the idle socket before the NetLog and HttpNetworkTransaction go
@@ -7852,7 +7853,7 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyAuthRetry) {
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
   EXPECT_FALSE(response->did_use_http_auth);
-  EXPECT_EQ(ProxyServer::FromPacString("HTTPS myproxy:70"),
+  EXPECT_EQ(PacResultElementToProxyServer("HTTPS myproxy:70"),
             response->proxy_server);
 
   TestCompletionCallback callback2;
@@ -7876,7 +7877,7 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyAuthRetry) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->did_use_http_auth);
-  EXPECT_EQ(ProxyServer::FromPacString("HTTPS myproxy:70"),
+  EXPECT_EQ(PacResultElementToProxyServer("HTTPS myproxy:70"),
             response->proxy_server);
 
   // The password prompt info should not be set.
@@ -7968,7 +7969,7 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
   EXPECT_FALSE(response->did_use_http_auth);
-  EXPECT_EQ(ProxyServer::FromPacString("HTTPS myproxy:70"),
+  EXPECT_EQ(PacResultElementToProxyServer("HTTPS myproxy:70"),
             response->proxy_server);
 
   TestCompletionCallback callback2;
@@ -7992,7 +7993,7 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(response->did_use_http_auth);
-  EXPECT_EQ(ProxyServer::FromPacString("HTTPS myproxy:70"),
+  EXPECT_EQ(PacResultElementToProxyServer("HTTPS myproxy:70"),
             response->proxy_server);
 
   // The password prompt info should not be set.
@@ -8003,8 +8004,8 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
 // connection that requires a restart, with a proxy change occurring over the
 // restart.
 TEST_F(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
-  const auto proxy1 = ProxyServer::FromPacString("HTTPS myproxy:70");
-  const auto proxy2 = ProxyServer::FromPacString("HTTPS myproxy2:70");
+  const auto proxy1 = PacResultElementToProxyServer("HTTPS myproxy:70");
+  const auto proxy2 = PacResultElementToProxyServer("HTTPS myproxy2:70");
   auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
   proxy_delegate->set_proxy(proxy1);
 
@@ -8129,7 +8130,7 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
 // occurring over the restart.
 TEST_F(HttpNetworkTransactionTest,
        HttpsProxyAuthRetryNoKeepAliveChangeToDirect) {
-  const auto proxy = ProxyServer::FromPacString("HTTPS myproxy:70");
+  const auto proxy = PacResultElementToProxyServer("HTTPS myproxy:70");
   const auto direct = ProxyServer::Direct();
   auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
   proxy_delegate->set_proxy(proxy);
@@ -12861,7 +12862,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
     HttpNetworkSessionPeer peer(session.get());
 
     ProxyServer proxy_server(
-        ProxyServer::FromURI(tests[i].proxy_server, ProxyServer::SCHEME_HTTP));
+        ProxyUriToProxyServer(tests[i].proxy_server, ProxyServer::SCHEME_HTTP));
     ASSERT_TRUE(proxy_server.is_valid());
     CaptureGroupIdTransportSocketPool* socks_conn_pool =
         new CaptureGroupIdTransportSocketPool(&dummy_connect_job_params_);

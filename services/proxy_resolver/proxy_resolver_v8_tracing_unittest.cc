@@ -23,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -180,7 +181,7 @@ TEST_F(ProxyResolverV8TracingTest, Simple) {
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-  EXPECT_EQ("foo:99", proxy_info.proxy_server().ToURI());
+  EXPECT_EQ("foo:99", ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   EXPECT_EQ(0u, host_resolver.num_resolve());
 
@@ -238,7 +239,7 @@ TEST_F(ProxyResolverV8TracingTest, TooManyAlerts) {
   // Iteration1 does a DNS resolve
   // Iteration2 exceeds the alert buffer
   // Iteration3 runs in blocking mode and completes
-  EXPECT_EQ("foo:3", proxy_info.proxy_server().ToURI());
+  EXPECT_EQ("foo:3", ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   EXPECT_EQ(1u, host_resolver.num_resolve());
 
@@ -272,7 +273,7 @@ TEST_F(ProxyResolverV8TracingTest, TooManyEmptyAlerts) {
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-  EXPECT_EQ("foo:3", proxy_info.proxy_server().ToURI());
+  EXPECT_EQ("foo:3", ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   EXPECT_EQ(1u, host_resolver.num_resolve());
 
@@ -350,7 +351,7 @@ TEST_F(ProxyResolverV8TracingTest, Dns) {
       "166.155.144.44"    // dnsResolve('host1')
       ":99";
 
-  EXPECT_EQ(kExpectedResult, proxy_info.proxy_server().ToURI());
+  EXPECT_EQ(kExpectedResult, ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // No errors.
   EXPECT_TRUE(mock_bindings.GetErrors().empty());
@@ -392,7 +393,7 @@ TEST_F(ProxyResolverV8TracingTest, FallBackToSynchronous1) {
   EXPECT_EQ(3u, host_resolver.num_resolve());
 
   EXPECT_EQ("166.155.144.11-133.199.111.4:100",
-            proxy_info.proxy_server().ToURI());
+            ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // No errors.
   EXPECT_TRUE(mock_bindings.GetErrors().empty());
@@ -435,7 +436,8 @@ TEST_F(ProxyResolverV8TracingTest, FallBackToSynchronous2) {
 
   EXPECT_EQ(3u, host_resolver.num_resolve());
 
-  EXPECT_EQ("166.155.144.44:100", proxy_info.proxy_server().ToURI());
+  EXPECT_EQ("166.155.144.44:100",
+            ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // There were no alerts or errors.
   EXPECT_TRUE(mock_bindings.GetAlerts().empty());
@@ -478,7 +480,7 @@ TEST_F(ProxyResolverV8TracingTest, InfiniteDNSSequence) {
       "166.155.144.11-166.155.144.11-166.155.144.11-166.155.144.11-"
       "166.155.144.11-166.155.144.11-166.155.144.11-166.155.144.11-"
       "null:21",
-      proxy_info.proxy_server().ToURI());
+      ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // No errors.
   EXPECT_TRUE(mock_bindings.GetErrors().empty());
@@ -520,7 +522,7 @@ TEST_F(ProxyResolverV8TracingTest, InfiniteDNSSequence2) {
 
   EXPECT_EQ(20u, host_resolver.num_resolve());
 
-  EXPECT_EQ("null21:34", proxy_info.proxy_server().ToURI());
+  EXPECT_EQ("null21:34", ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // No errors.
   EXPECT_TRUE(mock_bindings.GetErrors().empty());
@@ -568,7 +570,7 @@ void DnsDuringInitHelper(bool synchronous_host_resolver) {
   EXPECT_EQ(4u, host_resolver.num_resolve());
 
   EXPECT_EQ("91.13.12.1-91.13.12.2-145.88.13.3-137.89.8.45:99",
-            proxy_info.proxy_server().ToURI());
+            ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // 2 alerts.
   ASSERT_EQ(2u, mock_bindings.GetAlerts().size());
@@ -684,7 +686,8 @@ TEST_F(ProxyResolverV8TracingTest, CancelWhilePendingCompletionTask) {
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
-  EXPECT_EQ("i-approve-this-message:42", proxy_info2.proxy_server().ToURI());
+  EXPECT_EQ("i-approve-this-message:42",
+            ProxyServerToProxyUri(proxy_info2.proxy_server()));
 }
 
 // This cancellation test exercises a more predictable cancellation codepath --
@@ -872,7 +875,7 @@ TEST_F(ProxyResolverV8TracingTest, Terminate) {
   // The test does 2 DNS resolutions.
   EXPECT_EQ(2u, host_resolver.num_resolve());
 
-  EXPECT_EQ("foopy:3", proxy_info.proxy_server().ToURI());
+  EXPECT_EQ("foopy:3", ProxyServerToProxyUri(proxy_info.proxy_server()));
 
   // No errors or alerts.
   EXPECT_TRUE(mock_bindings.GetErrors().empty());
@@ -990,7 +993,7 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
     size_t resolver_i = i % kNumResolvers;
     EXPECT_THAT(callback[i].WaitForResult(), IsOk());
 
-    std::string proxy_uri = proxy_info[i].proxy_server().ToURI();
+    std::string proxy_uri = ProxyServerToProxyUri(proxy_info[i].proxy_server());
 
     if (resolver_i == 0 || resolver_i == 1) {
       EXPECT_EQ(kExpectedForDnsJs, proxy_uri);

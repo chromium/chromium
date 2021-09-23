@@ -21,6 +21,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_list.h"
@@ -449,7 +450,8 @@ class WindowsSystemProxyResolverTest : public TestWithTaskEnvironment {
     winhttp_api_wrapper()->AddToProxyResults(INTERNET_SCHEME_HTTPS, L"foopy",
                                              8443);
     ProxyList proxy_list;
-    proxy_list.AddProxyServer(ProxyServer::FromPacString("HTTPS foopy:8443"));
+    proxy_list.AddProxyServer(
+        PacResultElementToProxyServer("HTTPS foopy:8443"));
 
     std::wstring pac_url;
     if (proxy_config.has_pac_url())
@@ -596,7 +598,7 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlCancelAndRestart) {
                                            8443);
   ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      ProxyServer::FromPacString("HTTPS foopy:8443"));
+      PacResultElementToProxyServer("HTTPS foopy:8443"));
 
   ASSERT_TRUE(InitializeResolver());
   TestCompletionCallback unused_callback;
@@ -647,7 +649,7 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlConfigPacUrl) {
 TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlConfigSingleProxy) {
   ProxyConfig config;
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS ignored:33");
+      PacResultElementToProxyServer("HTTPS ignored:33");
   config.proxy_rules().single_proxies.AddProxyServer(proxy_server);
   DoProxyConfigTest(config);
 }
@@ -666,7 +668,7 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlConfigMultipleSettings) {
   config.set_pac_url(pac_url);
 
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS ignored:33");
+      PacResultElementToProxyServer("HTTPS ignored:33");
   config.proxy_rules().single_proxies.AddProxyServer(proxy_server);
 
   DoProxyConfigTest(config);
@@ -691,7 +693,7 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlHTTP) {
                                            8080);
   ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      ProxyServer::FromPacString("PROXY foopy:8080"));
+      PacResultElementToProxyServer("PROXY foopy:8080"));
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
@@ -700,7 +702,7 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlHTTPS) {
                                            8443);
   ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      ProxyServer::FromPacString("HTTPS foopy:8443"));
+      PacResultElementToProxyServer("HTTPS foopy:8443"));
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
@@ -709,7 +711,7 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlSOCKS) {
                                            8080);
   ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      ProxyServer::FromPacString("SOCKS4 foopy:8080"));
+      PacResultElementToProxyServer("SOCKS4 foopy:8080"));
   DoGetProxyForUrlTest(expected_proxy_list);
 }
 
@@ -720,7 +722,7 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlIDNProxy) {
   // Expect L"föopy" to be ascii-encoded as "xn--fopy-5qa".
   ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      ProxyServer::FromPacString("HTTPS xn--fopy-5qa:8080"));
+      PacResultElementToProxyServer("HTTPS xn--fopy-5qa:8080"));
 
   DoGetProxyForUrlTest(expected_proxy_list);
 }
@@ -732,7 +734,7 @@ TEST_F(WindowsSystemProxyResolverTest, GetProxyForUrlMultipleResults) {
 
   ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      ProxyServer::FromPacString("HTTPS foopy:8443"));
+      PacResultElementToProxyServer("HTTPS foopy:8443"));
   expected_proxy_list.AddProxyServer(ProxyServer::Direct());
 
   DoGetProxyForUrlTest(expected_proxy_list);
@@ -745,7 +747,7 @@ TEST_F(WindowsSystemProxyResolverTest, MultipleCallsToGetProxyForUrl) {
 
   ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      ProxyServer::FromPacString("HTTPS foopy:8443"));
+      PacResultElementToProxyServer("HTTPS foopy:8443"));
   expected_proxy_list.AddProxyServer(ProxyServer::Direct());
 
   ASSERT_TRUE(InitializeResolver());
@@ -788,7 +790,7 @@ TEST_F(WindowsSystemProxyResolverTest,
 
   ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
-      ProxyServer::FromPacString("HTTPS foopy:8443"));
+      PacResultElementToProxyServer("HTTPS foopy:8443"));
   expected_proxy_list.AddProxyServer(ProxyServer::Direct());
 
   ASSERT_TRUE(InitializeResolver());

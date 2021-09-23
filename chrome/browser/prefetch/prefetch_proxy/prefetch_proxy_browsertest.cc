@@ -96,6 +96,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/base/proxy_string_util.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
@@ -664,7 +665,8 @@ class PrefetchProxyBrowserTest
       EXPECT_EQ(config->rules.proxies_for_https.size(), 0U);
     } else {
       ASSERT_EQ(config->rules.proxies_for_https.size(), 1U);
-      EXPECT_EQ(GURL(config->rules.proxies_for_https.Get().ToURI()),
+      EXPECT_EQ(GURL(net::ProxyServerToProxyUri(
+                    config->rules.proxies_for_https.Get())),
                 GetProxyURL());
     }
   }

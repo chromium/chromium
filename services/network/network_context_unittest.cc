@@ -63,6 +63,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -5002,8 +5003,8 @@ TEST_F(NetworkContextTest, ClearBadProxiesCache) {
   proxy_info.UseNamedProxy("http://foo1.com");
   proxy_resolution_service->ReportSuccess(proxy_info);
   std::vector<net::ProxyServer> proxies;
-  proxies.push_back(net::ProxyServer::FromURI("http://foo1.com",
-                                              net::ProxyServer::SCHEME_HTTP));
+  proxies.push_back(net::ProxyUriToProxyServer("http://foo1.com",
+                                               net::ProxyServer::SCHEME_HTTP));
   proxy_resolution_service->MarkProxiesAsBadUntil(
       proxy_info, base::TimeDelta::FromDays(1), proxies,
       net::NetLogWithSource());
@@ -5827,7 +5828,7 @@ class NetworkContextMockHostTest : public NetworkContextTest {
     // Remove slash from URL.
     base_url.pop_back();
     auto proxy_server =
-        net::ProxyServer::FromURI(base_url, net::ProxyServer::SCHEME_HTTP);
+        net::ProxyUriToProxyServer(base_url, net::ProxyServer::SCHEME_HTTP);
     EXPECT_TRUE(proxy_server.is_valid()) << base_url;
     return proxy_server;
   }
@@ -5856,7 +5857,8 @@ TEST_F(NetworkContextMockHostTest, MAYBE_CustomProxyUsesSpecifiedProxyList) {
 
   auto config = mojom::CustomProxyConfig::New();
   config->rules.ParseFromString(
-      "http=" + ConvertToProxyServer(proxy_test_server).ToURI());
+      "http=" +
+      net::ProxyServerToProxyUri(ConvertToProxyServer(proxy_test_server)));
   proxy_config_client->OnCustomProxyConfigUpdated(std::move(config));
   task_environment_.RunUntilIdle();
 

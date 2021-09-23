@@ -48,6 +48,7 @@
 #include "crypto/symmetric_key.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
@@ -384,7 +385,7 @@ net::ProxyServer ConvertOncProxyLocationToHostPort(
   std::string host = GetString(onc_proxy_location, ::onc::proxy::kHost);
   // Parse |host| according to the format [<scheme>"://"]<server>[":"<port>].
   net::ProxyServer proxy_server =
-      net::ProxyServer::FromURI(host, default_proxy_scheme);
+      net::ProxyUriToProxyServer(host, default_proxy_scheme);
   int port = GetInt(onc_proxy_location, ::onc::proxy::kPort, 0);
 
   // Replace the port parsed from |host| by the provided |port|.

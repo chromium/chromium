@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_config.h"
 
 namespace {
@@ -152,7 +154,7 @@ void ProxyConfigDictionary::EncodeAndAppendProxyServer(
     *spec += url_scheme;
     *spec += "=";
   }
-  *spec += server.ToURI();
+  *spec += net::ProxyServerToProxyUri(server);
 }
 
 bool ProxyConfigDictionary::GetString(const char* key, std::string* out) const {

@@ -28,6 +28,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_proxy_delegate.h"
@@ -3782,7 +3783,7 @@ TEST_F(SpdyNetworkTransactionTest, NoConnectionPoolingOverTunnel) {
 
   // A new SPDY session should have been created.
   SpdySessionKey key1(HostPortPair("www.example.org", 443),
-                      ProxyServer::FromPacString(kPacString),
+                      PacResultElementToProxyServer(kPacString),
                       PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
@@ -3843,10 +3844,11 @@ TEST_F(SpdyNetworkTransactionTest, NoConnectionPoolingOverTunnel) {
   EXPECT_EQ("hello!", response_data);
 
   // Inspect the new session.
-  SpdySessionKey key2(
-      HostPortPair("example.test", 443), ProxyServer::FromPacString(kPacString),
-      PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
-      SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+  SpdySessionKey key2(HostPortPair("example.test", 443),
+                      PacResultElementToProxyServer(kPacString),
+                      PRIVACY_MODE_DISABLED,
+                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> session2 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
           key2, true /* enable_ip_based_pooling */, false /* is_websocket */,
@@ -5986,7 +5988,7 @@ TEST_F(SpdyNetworkTransactionTest, DirectConnectProxyReconnect) {
   EXPECT_TRUE(HasSpdySession(spdy_session_pool, session_pool_key_direct));
   SpdySessionKey session_pool_key_proxy(
       host_port_pair_,
-      ProxyServer::FromURI("www.foo.com", ProxyServer::SCHEME_HTTP),
+      ProxyUriToProxyServer("www.foo.com", ProxyServer::SCHEME_HTTP),
       PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
       SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   EXPECT_FALSE(HasSpdySession(spdy_session_pool, session_pool_key_proxy));
@@ -9167,7 +9169,7 @@ TEST_F(SpdyNetworkTransactionTest,
 
   SpdySessionKey key(
       HostPortPair::FromURL(request_.url),
-      ProxyServer::FromURI("https://proxy:70", ProxyServer::SCHEME_HTTPS),
+      ProxyUriToProxyServer("https://proxy:70", ProxyServer::SCHEME_HTTPS),
       PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
       SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
 

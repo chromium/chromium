@@ -33,6 +33,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
@@ -5654,7 +5655,7 @@ class ClientSocketPoolBaseRefreshTest
             max_sockets, max_sockets_per_group, kUnusedIdleSocketTimeout,
             ClientSocketPool::used_idle_socket_timeout(),
             enable_backup_connect_jobs,
-            ProxyServer::FromPacString("HTTPS myproxy:70"));
+            PacResultElementToProxyServer("HTTPS myproxy:70"));
         break;
     }
   }
@@ -5858,7 +5859,7 @@ TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
                              kUnusedIdleSocketTimeout,
                              ClientSocketPool::used_idle_socket_timeout(),
                              false /* no backup connect jobs */,
-                             ProxyServer::FromPacString("HTTPS myproxy:70"));
+                             PacResultElementToProxyServer("HTTPS myproxy:70"));
 
   const ClientSocketPool::GroupId kGroupId1 =
       TestGroupId("a", 443, url::kHttpsScheme);

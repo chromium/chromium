@@ -18,6 +18,7 @@
 #include "base/threading/thread_checker.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_resolver.h"
@@ -337,10 +338,8 @@ int ProxyResolverMac::GetProxyForURL(
 
     CFStringRef proxy_type = base::mac::GetValueFromDictionary<CFStringRef>(
         proxy_dictionary, kCFProxyTypeKey);
-    ProxyServer proxy_server = ProxyServer::FromDictionary(
-        GetProxyServerScheme(proxy_type),
-        proxy_dictionary,
-        kCFProxyHostNameKey,
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        GetProxyServerScheme(proxy_type), proxy_dictionary, kCFProxyHostNameKey,
         kCFProxyPortNumberKey);
     if (!proxy_server.is_valid())
       continue;

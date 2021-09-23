@@ -1,25 +1,26 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 
 #include <CoreFoundation/CoreFoundation.h>
-
 #include <string>
 
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "net/base/host_port_pair.h"
+#include "net/base/proxy_server.h"
 
 namespace net {
 
-// static
-ProxyServer ProxyServer::FromDictionary(Scheme scheme,
-                                        CFDictionaryRef dict,
-                                        CFStringRef host_key,
-                                        CFStringRef port_key) {
-  if (scheme == SCHEME_INVALID || scheme == SCHEME_DIRECT) {
+ProxyServer ProxyDictionaryToProxyServer(ProxyServer::Scheme scheme,
+                                         CFDictionaryRef dict,
+                                         CFStringRef host_key,
+                                         CFStringRef port_key) {
+  if (scheme == ProxyServer::SCHEME_INVALID ||
+      scheme == ProxyServer::SCHEME_DIRECT) {
     // No hostname port to extract; we are done.
     return ProxyServer(scheme, HostPortPair());
   }
@@ -40,7 +41,7 @@ ProxyServer ProxyServer::FromDictionary(Scheme scheme,
   if (port_ref) {
     CFNumberGetValue(port_ref, kCFNumberIntType, &port);
   } else {
-    port = GetDefaultPortForScheme(scheme);
+    port = ProxyServer::GetDefaultPortForScheme(scheme);
   }
 
   return ProxyServer(scheme, HostPortPair(host, port));

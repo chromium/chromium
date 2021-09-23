@@ -17,6 +17,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -507,7 +508,7 @@ void SpdySessionPoolTest::RunIPPoolingTest(
   // the IP list matches.
   SpdySessionKey proxy_key(
       test_hosts[1].key.host_port_pair(),
-      ProxyServer::FromPacString("HTTP http://proxy.foo.com/"),
+      PacResultElementToProxyServer("HTTP http://proxy.foo.com/"),
       PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
       SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   EXPECT_FALSE(TryCreateAliasedSpdySession(spdy_session_pool_, proxy_key,
@@ -1441,7 +1442,7 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
   for (size_t i = 0; i < num_tests; i++) {
     SpdySessionKey key(
         HostPortPair::FromURL(GURL(kSSLServerTests[i].url)),
-        ProxyServer::FromPacString(kSSLServerTests[i].proxy_pac_string),
+        PacResultElementToProxyServer(kSSLServerTests[i].proxy_pac_string),
         PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
         SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
     sessions.push_back(

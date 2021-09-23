@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/proxy_config_mojom_traits.h"
 
+#include "net/base/proxy_string_util.h"
 #include "url/gurl.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -38,7 +39,7 @@ StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::proxies(
     const net::ProxyList& r) {
   std::vector<std::string> out;
   for (const auto& proxy : r.GetAll()) {
-    out.push_back(proxy.ToPacString());
+    out.push_back(net::ProxyServerToPacResultElement(proxy));
   }
   return out;
 }
@@ -50,7 +51,7 @@ bool StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::Read(
   if (!data.ReadProxies(&proxies))
     return false;
   for (const auto& proxy : proxies) {
-    net::ProxyServer proxy_server = net::ProxyServer::FromPacString(proxy);
+    net::ProxyServer proxy_server = net::PacResultElementToProxyServer(proxy);
     if (!proxy_server.is_valid())
       return false;
     out_proxy_list->AddProxyServer(proxy_server);

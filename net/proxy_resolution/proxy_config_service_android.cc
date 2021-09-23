@@ -21,6 +21,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/net_jni_headers/ProxyChangeListener_jni.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -214,7 +216,7 @@ std::string ParseOverrideRules(
   for (const auto& rule : override_rules) {
     // Parse the proxy URL.
     ProxyServer proxy_server =
-        ProxyServer::FromURI(rule.proxy_url, ProxyServer::Scheme::SCHEME_HTTP);
+        ProxyUriToProxyServer(rule.proxy_url, ProxyServer::Scheme::SCHEME_HTTP);
     if (!proxy_server.is_valid()) {
       return "Invalid Proxy URL: " + rule.proxy_url;
     } else if (proxy_server.is_quic()) {

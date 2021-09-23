@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -691,12 +693,12 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
     mock_quic_data_.AddWrite(SYNCHRONOUS,
                              ConstructSettingsPacket(packet_number++));
   }
-  mock_quic_data_.AddWrite(
-      SYNCHRONOUS,
-      ConstructConnectRequestPacketWithExtraHeaders(
-          packet_number++,
-          // Order matters! Keep these alphabetical.
-          {{"foo", proxy_server.ToURI()}, {"user-agent", kUserAgent}}));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacketWithExtraHeaders(
+                               packet_number++,
+                               // Order matters! Keep these alphabetical.
+                               {{"foo", ProxyServerToProxyUri(proxy_server)},
+                                {"user-agent", kUserAgent}}));
   mock_quic_data_.AddRead(
       ASYNC, ConstructServerConnectReplyPacketWithExtraHeaders(
                  1, !kFin, {{kResponseHeaderName, kResponseHeaderValue}}));

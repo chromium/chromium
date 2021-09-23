@@ -27,6 +27,8 @@
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
@@ -256,11 +258,12 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
       "Accept-Language: en-us,fr\r\n\r\n";
 
   const ProxyServer proxy_server =
-      ProxyServer::FromURI("http://origin.net:80", ProxyServer::SCHEME_HTTP);
+      ProxyUriToProxyServer("http://origin.net:80", ProxyServer::SCHEME_HTTP);
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResult(
-          proxy_server.ToPacString(), TRAFFIC_ANNOTATION_FOR_TESTS);
+          ProxyServerToPacResultElement(proxy_server),
+          TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleProxyGetMockWrite)};
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_CONNECTION_RESET)};
@@ -295,14 +298,13 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
 TEST_F(URLRequestHttpJobWithProxyTest,
        TestContentLengthSuccessfulRequestWithTwoProxies) {
   const ProxyServer proxy_server =
-      ProxyServer::FromURI("http://origin.net:80", ProxyServer::SCHEME_HTTP);
+      ProxyUriToProxyServer("http://origin.net:80", ProxyServer::SCHEME_HTTP);
 
   // Connection to |proxy_server| would fail. Request should be fetched over
   // DIRECT.
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResult(
-          proxy_server.ToPacString() + "; " +
-              ProxyServer::Direct().ToPacString(),
+          ProxyServerToPacResultElement(proxy_server) + "; DIRECT",
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};

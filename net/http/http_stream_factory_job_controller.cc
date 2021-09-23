@@ -19,6 +19,8 @@
 #include "net/base/host_mapping_rules.h"
 #include "net/base/load_flags.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/transport_security_state.h"
@@ -44,9 +46,10 @@ base::Value NetLogHttpStreamJobProxyServerResolved(
     const ProxyServer& proxy_server) {
   base::Value dict(base::Value::Type::DICTIONARY);
 
-  dict.SetStringKey("proxy_server", proxy_server.is_valid()
-                                        ? proxy_server.ToPacString()
-                                        : std::string());
+  dict.SetStringKey("proxy_server",
+                    proxy_server.is_valid()
+                        ? ProxyServerToPacResultElement(proxy_server)
+                        : std::string());
   return dict;
 }
 

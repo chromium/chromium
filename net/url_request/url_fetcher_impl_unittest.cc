@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_element_reader.h"
 #include "net/base/upload_file_element_reader.h"
@@ -509,7 +510,8 @@ TEST_F(URLFetcherTest, FetchedUsingProxy) {
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResult(
-          proxy_server.ToPacString(), TRAFFIC_ANNOTATION_FOR_TESTS);
+          ProxyServerToPacResultElement(proxy_server),
+          TRAFFIC_ANNOTATION_FOR_TESTS);
   context_getter->set_proxy_resolution_service(
       std::move(proxy_resolution_service));
 

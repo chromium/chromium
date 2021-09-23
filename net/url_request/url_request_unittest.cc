@@ -66,6 +66,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_module.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/transport_info.h"
@@ -1329,7 +1330,7 @@ TEST_F(URLRequestTest, NetworkDelegateProxyError) {
 
   // Check we see a failed request.
   // The proxy server should be set before failure.
-  EXPECT_EQ(ProxyServer::FromPacString("PROXY myproxy:70"),
+  EXPECT_EQ(PacResultElementToProxyServer("PROXY myproxy:70"),
             req->proxy_server());
   EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED, d.request_status());
   EXPECT_THAT(req->response_info().resolve_error_info.error,

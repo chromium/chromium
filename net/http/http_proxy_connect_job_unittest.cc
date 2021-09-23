@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -459,7 +460,7 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
       GetParam() == HTTP ? ProxyServer::SCHEME_HTTP : ProxyServer::SCHEME_HTTPS,
       HostPortPair(GetParam() == HTTP ? kHttpProxyHost : kHttpsProxyHost,
                    GetParam() == HTTP ? 80 : 443));
-  std::string proxy_server_uri = proxy_server.ToURI();
+  std::string proxy_server_uri = ProxyServerToProxyUri(proxy_server);
 
   std::string http1_request =
       "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
