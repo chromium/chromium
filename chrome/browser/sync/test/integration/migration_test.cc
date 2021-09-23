@@ -364,13 +364,7 @@ IN_PROC_BROWSER_TEST_F(MigrationTwoClientTest,
 
 // Migrate every datatype in sequence; the catch being that the server
 // will only tell the client about the migrations one at a time.
-// Flaky on Win and Linux. See https://crbug.com/1252008.
-#if defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_MigrationHellWithoutNigori DISABLED_MigrationHellWithoutNigori
-#else
-#define MAYBE_MigrationHellWithoutNigori MigrationHellWithoutNigori
-#endif
-IN_PROC_BROWSER_TEST_F(MigrationTwoClientTest, MAYBE_MigrationHellWithoutNigori) {
+IN_PROC_BROWSER_TEST_F(MigrationTwoClientTest, MigrationHellWithoutNigori) {
   ASSERT_TRUE(SetupClients());
   MigrationList migration_list = GetPreferredDataTypesList();
   // Let the first nudge be a datatype that's neither prefs nor bookmarks.
