@@ -83,6 +83,9 @@ void CSSSegmentedFontFace::FontFaceInvalidated() {
 
 void CSSSegmentedFontFace::AddFontFace(FontFace* font_face,
                                        bool css_connected) {
+  // TODO(crbug.com/1250831): Remove CHECKs once we get crash data.
+  CHECK(this);
+  CHECK(font_face);
   PruneTable();
   font_face->CssFontFace()->AddSegmentedFontFace(this);
   font_faces_->Insert(font_face, css_connected);
@@ -247,14 +250,16 @@ bool CascadePriorityHigherThan(const FontFace& new_font_face,
                                const FontFace& existing_font_face) {
   // We should reach here only for CSS-connected font faces, which must have an
   // owner document.
-  DCHECK(new_font_face.GetDocument());
-  DCHECK_EQ(new_font_face.GetDocument(), existing_font_face.GetDocument());
-  DCHECK(new_font_face.GetStyleRule());
-  DCHECK(existing_font_face.GetStyleRule());
+  // TODO(crbug.com/1250831): Convert to DCHECKs once we get crash data.
+  CHECK(new_font_face.GetDocument());
+  CHECK_EQ(new_font_face.GetDocument(), existing_font_face.GetDocument());
+  CHECK(new_font_face.GetStyleRule());
+  CHECK(existing_font_face.GetStyleRule());
   if (new_font_face.IsUserStyle() != existing_font_face.IsUserStyle())
     return existing_font_face.IsUserStyle();
   const CascadeLayerMap* map = nullptr;
   if (new_font_face.IsUserStyle()) {
+    CHECK(&new_font_face.GetDocument()->GetStyleEngine());
     map =
         new_font_face.GetDocument()->GetStyleEngine().GetUserCascadeLayerMap();
   } else if (new_font_face.GetDocument()->GetScopedStyleResolver()) {
@@ -272,6 +277,8 @@ bool CascadePriorityHigherThan(const FontFace& new_font_face,
 }  // namespace
 
 void FontFaceList::Insert(FontFace* font_face, bool css_connected) {
+  // TODO(crbug.com/1250831): Remove CHECKs once we get crash data.
+  CHECK(this);
   if (!css_connected) {
     non_css_connected_face_.insert(font_face);
     return;
@@ -281,6 +288,7 @@ void FontFaceList::Insert(FontFace* font_face, bool css_connected) {
   while (it != css_connected_face_.begin()) {
     auto prev = it;
     --prev;
+    CHECK(*prev);
     if (CascadePriorityHigherThan(*font_face, **prev))
       break;
     it = prev;
