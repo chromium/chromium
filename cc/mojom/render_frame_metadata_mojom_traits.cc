@@ -56,7 +56,9 @@ bool StructTraits<
          data.ReadViewportSizeInPixels(&out->viewport_size_in_pixels) &&
          data.ReadLocalSurfaceId(&out->local_surface_id) &&
          data.ReadNewVerticalScrollDirection(
-             &out->new_vertical_scroll_direction);
+             &out->new_vertical_scroll_direction) &&
+         data.ReadVisualPropertiesUpdateDuration(
+             &out->visual_properties_update_duration);
 }
 
 }  // namespace mojo

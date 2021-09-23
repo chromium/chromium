@@ -579,6 +579,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // another before the first has displayed. This can occur on pages that have
   // long layout and rendering time.
   std::deque<std::pair<base::TimeTicks, viz::LocalSurfaceId>> rotation_metrics_;
+  // Tracks the first surface that was allocated for rotation while hidden.
+  // Along with the total time the Renderer spent performing updates for these
+  // incremental surfaces.
+  viz::LocalSurfaceId first_hidden_local_surface_id_;
+  base::TimeDelta hidden_rotation_time_;
+
   // If true, then content was displayed before the completion of the initial
   // navigation. After any content has been displayed, we need to allocate a new
   // surface for all subsequent navigations.

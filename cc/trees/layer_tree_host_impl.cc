@@ -2355,6 +2355,9 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
   }
 
+  metadata.visual_properties_update_duration =
+      active_tree()->visual_properties_update_duration();
+
   return metadata;
 }
 
