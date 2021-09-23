@@ -3762,6 +3762,29 @@
             ]
         }
     ],
+    "FileTypePoliciesTag": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210914",
+                    "params": {
+                        "policy_omaha_tag": "46"
+                    },
+                    "enable_features": [
+                        "FileTypePoliciesTag"
+                    ]
+                }
+            ]
+        }
+    ],
     "FillingAcrossAffiliatedWebsites": [
         {
             "platforms": [
@@ -7732,29 +7755,6 @@
                     "enable_features": [
                         "SafeBrowsingRemoveCookies",
                         "SafeBrowsingSeparateNetworkContexts"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingRealTimeUrlLookupReferrerChain": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20200422",
-                    "params": {
-                        "SafeBrowsingRealTimeUrlLookupReferrerLengthParam": "2"
-                    },
-                    "enable_features": [
-                        "SafeBrowsingRealTimeUrlLookupReferrerChain"
                     ]
                 }
             ]
