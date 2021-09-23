@@ -7,7 +7,7 @@
       "backgroundColor": "#FF0000"
     },
     {
-      "name": "LayoutNGTableCellNew (relative positioned) TD id='cellToScroll' class='relative'",
+      "name": "LayoutNGTableCell (relative positioned) TD id='cellToScroll' class='relative'",
       "bounds": [681, 704],
       "transform": 1
     },
