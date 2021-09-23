@@ -222,40 +222,6 @@ namespace autofill {
 
 namespace {
 
-// Container view that holds one child view and limits its width to the
-// specified maximum.
-class ConstrainedWidthView : public views::View {
- public:
-  METADATA_HEADER(ConstrainedWidthView);
-  ConstrainedWidthView(std::unique_ptr<views::View> child, int max_width);
-  ConstrainedWidthView(const ConstrainedWidthView&) = delete;
-  ConstrainedWidthView& operator=(const ConstrainedWidthView&) = delete;
-  ~ConstrainedWidthView() override = default;
-
- private:
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
-  int max_width_;
-};
-
-ConstrainedWidthView::ConstrainedWidthView(std::unique_ptr<views::View> child,
-                                           int max_width)
-    : max_width_(max_width) {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(std::move(child));
-}
-
-gfx::Size ConstrainedWidthView::CalculatePreferredSize() const {
-  gfx::Size size = View::CalculatePreferredSize();
-  if (size.width() <= max_width_)
-    return size;
-  return gfx::Size(max_width_, GetHeightForWidth(max_width_));
-}
-
-BEGIN_METADATA(ConstrainedWidthView, views::View)
-END_METADATA
-
 class PopupSeparator : public views::Separator {
  public:
   METADATA_HEADER(PopupSeparator);
@@ -344,7 +310,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   virtual int GetPrimaryTextStyle() = 0;
   // Returns a main text label view. The label part is optional but allow caller
   // to keep track of all the labels for background color update.
-  virtual std::unique_ptr<views::View> CreateMainTextView();
+  virtual std::unique_ptr<views::Label> CreateMainTextView();
   // Returns a minor text label view. The label is shown side by side with the
   // main text view, but in a secondary style. Can be nullptr.
   virtual std::unique_ptr<views::View> CreateMinorTextView();
@@ -429,7 +395,7 @@ class PasswordPopupSuggestionView : public AutofillPopupSuggestionView {
 
  protected:
   // AutofillPopupItemView:
-  std::unique_ptr<views::View> CreateMainTextView() override;
+  std::unique_ptr<views::Label> CreateMainTextView() override;
   std::vector<std::unique_ptr<views::View>> CreateSubtextViews() override;
   std::unique_ptr<views::View> CreateDescriptionView() override;
   gfx::Font::Weight GetPrimaryTextWeight() const override;
@@ -742,7 +708,7 @@ std::unique_ptr<views::Background> AutofillPopupItemView::CreateBackground() {
                     : popup_view()->GetBackgroundColor());
 }
 
-std::unique_ptr<views::View> AutofillPopupItemView::CreateMainTextView() {
+std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
   // TODO(crbug.com/831603): Remove elision responsibilities from controller.
   std::u16string text =
       popup_view()->controller()->GetSuggestionMainTextAt(GetLineNumber());
@@ -886,11 +852,11 @@ PasswordPopupSuggestionView* PasswordPopupSuggestionView::Create(
   return result;
 }
 
-std::unique_ptr<views::View> PasswordPopupSuggestionView::CreateMainTextView() {
-  std::unique_ptr<views::View> label =
+std::unique_ptr<views::Label>
+PasswordPopupSuggestionView::CreateMainTextView() {
+  std::unique_ptr<views::Label> label =
       AutofillPopupSuggestionView::CreateMainTextView();
-  label = std::make_unique<ConstrainedWidthView>(
-      std::move(label), kAutofillPopupUsernameMaxWidth);
+  label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
   return label;
 }
 
@@ -901,11 +867,10 @@ PasswordPopupSuggestionView::CreateSubtextViews() {
       views::style::STYLE_SECONDARY);
   label->SetElideBehavior(gfx::TRUNCATE);
   KeepLabel(label.get());
+  label->SetMaximumWidthSingleLine(kAutofillPopupPasswordMaxWidth);
 
-  std::unique_ptr<views::View> result = std::make_unique<ConstrainedWidthView>(
-      std::move(label), kAutofillPopupPasswordMaxWidth);
   std::vector<std::unique_ptr<views::View>> labels;
-  labels.emplace_back(std::move(result));
+  labels.emplace_back(std::move(label));
   return labels;
 }
 
@@ -919,10 +884,8 @@ PasswordPopupSuggestionView::CreateDescriptionView() {
       views::style::STYLE_SECONDARY);
   label->SetElideBehavior(gfx::ELIDE_HEAD);
   KeepLabel(label.get());
-
-  std::unique_ptr<views::View> result = std::make_unique<ConstrainedWidthView>(
-      std::move(label), kAutofillPopupUsernameMaxWidth);
-  return result;
+  label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
+  return label;
 }
 
 gfx::Font::Weight PasswordPopupSuggestionView::GetPrimaryTextWeight() const {
