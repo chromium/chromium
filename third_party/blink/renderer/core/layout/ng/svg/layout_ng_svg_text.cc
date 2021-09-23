@@ -175,9 +175,6 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
 
   FloatRect old_boundaries = ObjectBoundingBox();
 
-  // Make sure we don't wrap text.
-  SetOverrideLogicalWidth(LayoutUnit::Max());
-
   UpdateNGBlockLayout();
   needs_update_bounding_box_ = true;
 

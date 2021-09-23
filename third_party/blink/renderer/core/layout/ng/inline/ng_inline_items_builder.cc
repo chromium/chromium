@@ -271,6 +271,8 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
     AppendGeneratedBreakOpportunity(LayoutObject* layout_object) {
+  if (block_flow_->IsNGSVGText())
+    return;
   DCHECK(layout_object);
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        nullptr);
