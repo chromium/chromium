@@ -67,13 +67,14 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
     }
   }
 
+  AutoLock(const AutoLock&) = delete;
+  AutoLock& operator=(const AutoLock&) = delete;
+
   ~AutoLock() UNLOCK_FUNCTION() = default;
 
  private:
   base::TimeTicks start_time_;
   base::AutoLockMaybe auto_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoLock);
 };
 
 SharedImageManager::SharedImageManager(bool thread_safe,

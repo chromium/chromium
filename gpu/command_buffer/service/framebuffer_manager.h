@@ -341,6 +341,10 @@ class GPU_GLES2_EXPORT FramebufferManager {
       uint32_t max_draw_buffers,
       uint32_t max_color_attachments,
       FramebufferCompletenessCache* framebuffer_combo_complete_cache);
+
+  FramebufferManager(const FramebufferManager&) = delete;
+  FramebufferManager& operator=(const FramebufferManager&) = delete;
+
   ~FramebufferManager();
 
   // Must call before destruction.
@@ -401,8 +405,6 @@ class GPU_GLES2_EXPORT FramebufferManager {
   uint32_t max_color_attachments_;
 
   FramebufferCompletenessCache* framebuffer_combo_complete_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FramebufferManager);
 };
 
 }  // namespace gles2

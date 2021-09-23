@@ -32,6 +32,10 @@ class Scheduler;
 // is used for a thread.
 class GL_IN_PROCESS_CONTEXT_EXPORT ScopedAllowScheduleGpuTask {
  public:
+  ScopedAllowScheduleGpuTask(const ScopedAllowScheduleGpuTask&) = delete;
+  ScopedAllowScheduleGpuTask& operator=(const ScopedAllowScheduleGpuTask&) =
+      delete;
+
   ~ScopedAllowScheduleGpuTask();
 
  private:
@@ -51,7 +55,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT ScopedAllowScheduleGpuTask {
 #if DCHECK_IS_ON()
   const bool original_value_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowScheduleGpuTask);
 };
 
 // SingleTaskSequence implementation that uses gpu scheduler sequences.
@@ -65,6 +68,9 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
 
   SchedulerSequence(Scheduler* scheduler,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  SchedulerSequence(const SchedulerSequence&) = delete;
+  SchedulerSequence& operator=(const SchedulerSequence&) = delete;
 
   // Note: this drops tasks not executed yet.
   ~SchedulerSequence() override;
@@ -85,8 +91,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
  private:
   Scheduler* const scheduler_;
   const SequenceId sequence_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulerSequence);
 };
 
 }  // namespace gpu

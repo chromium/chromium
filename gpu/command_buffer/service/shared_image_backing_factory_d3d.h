@@ -30,6 +30,11 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
     : public SharedImageBackingFactory {
  public:
   SharedImageBackingFactoryD3D();
+
+  SharedImageBackingFactoryD3D(const SharedImageBackingFactoryD3D&) = delete;
+  SharedImageBackingFactoryD3D& operator=(const SharedImageBackingFactoryD3D&) =
+      delete;
+
   ~SharedImageBackingFactoryD3D() override;
 
   // Returns true if DXGI swap chain shared images for overlays are supported.
@@ -38,15 +43,16 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
   struct GPU_GLES2_EXPORT SwapChainBackings {
     SwapChainBackings(std::unique_ptr<SharedImageBacking> front_buffer,
                       std::unique_ptr<SharedImageBacking> back_buffer);
+
+    SwapChainBackings(const SwapChainBackings&) = delete;
+    SwapChainBackings& operator=(const SwapChainBackings&) = delete;
+
     ~SwapChainBackings();
     SwapChainBackings(SwapChainBackings&&);
     SwapChainBackings& operator=(SwapChainBackings&&);
 
     std::unique_ptr<SharedImageBacking> front_buffer;
     std::unique_ptr<SharedImageBacking> back_buffer;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SwapChainBackings);
   };
 
   // Creates IDXGI Swap Chain and exposes front and back buffers as Shared Image
@@ -116,7 +122,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingFactoryD3D);
 };
 
 }  // namespace gpu

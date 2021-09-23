@@ -106,6 +106,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
  public:
   InProcessCommandBuffer(CommandBufferTaskExecutor* task_executor,
                          const GURL& active_url);
+
+  InProcessCommandBuffer(const InProcessCommandBuffer&) = delete;
+  InProcessCommandBuffer& operator=(const InProcessCommandBuffer&) = delete;
+
   ~InProcessCommandBuffer() override;
 
   // If |surface| is not null, use it directly; in this case, the command
@@ -451,8 +455,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
       this};
   base::WeakPtrFactory<InProcessCommandBuffer> gpu_thread_weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessCommandBuffer);
 };
 
 }  // namespace gpu

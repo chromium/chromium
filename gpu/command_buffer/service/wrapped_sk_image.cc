@@ -125,6 +125,9 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     DCHECK(!!context_state_);
   }
 
+  WrappedSkImage(const WrappedSkImage&) = delete;
+  WrappedSkImage& operator=(const WrappedSkImage&) = delete;
+
   ~WrappedSkImage() override {
     context_state_->MakeCurrent(nullptr);
     promise_texture_.reset();
@@ -338,8 +341,6 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   SharedMemoryRegionWrapper shared_memory_wrapper_;
 
   uint64_t tracing_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedSkImage);
 };
 
 class WrappedSkImage::RepresentationSkia

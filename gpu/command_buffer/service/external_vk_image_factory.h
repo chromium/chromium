@@ -26,6 +26,10 @@ class GPU_GLES2_EXPORT ExternalVkImageFactory
  public:
   explicit ExternalVkImageFactory(
       scoped_refptr<SharedContextState> context_state);
+
+  ExternalVkImageFactory(const ExternalVkImageFactory&) = delete;
+  ExternalVkImageFactory& operator=(const ExternalVkImageFactory&) = delete;
+
   ~ExternalVkImageFactory() override;
 
   // SharedImageBackingFactory implementation.
@@ -81,8 +85,6 @@ class GPU_GLES2_EXPORT ExternalVkImageFactory
   std::unique_ptr<VulkanCommandPool> command_pool_;
 
   const VulkanImageUsageCache image_usage_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalVkImageFactory);
 };
 
 }  // namespace gpu

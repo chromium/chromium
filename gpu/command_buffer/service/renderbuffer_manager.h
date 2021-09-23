@@ -153,6 +153,10 @@ class GPU_GLES2_EXPORT RenderbufferManager
                       GLint max_renderbuffer_size,
                       GLint max_samples,
                       FeatureInfo* feature_info);
+
+  RenderbufferManager(const RenderbufferManager&) = delete;
+  RenderbufferManager& operator=(const RenderbufferManager&) = delete;
+
   ~RenderbufferManager() override;
 
   GLint max_renderbuffer_size() const {
@@ -228,8 +232,6 @@ class GPU_GLES2_EXPORT RenderbufferManager
   typedef std::unordered_map<GLuint, scoped_refptr<Renderbuffer>>
       RenderbufferMap;
   RenderbufferMap renderbuffers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderbufferManager);
 };
 
 }  // namespace gles2

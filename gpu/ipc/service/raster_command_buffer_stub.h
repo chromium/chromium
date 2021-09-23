@@ -18,6 +18,10 @@ class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub
                           SequenceId sequence_id,
                           int32_t stream_id,
                           int32_t route_id);
+
+  RasterCommandBufferStub(const RasterCommandBufferStub&) = delete;
+  RasterCommandBufferStub& operator=(const RasterCommandBufferStub&) = delete;
+
   ~RasterCommandBufferStub() override;
 
   // This must leave the GL context associated with the newly-created
@@ -32,8 +36,6 @@ class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub
  private:
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void SetActiveURL(GURL url) override;
-
-  DISALLOW_COPY_AND_ASSIGN(RasterCommandBufferStub);
 };
 
 }  // namespace gpu

@@ -21,6 +21,11 @@ class SharedImageManager;
 class GPU_GLES2_EXPORT SharedImageBatchAccessManager {
  public:
   SharedImageBatchAccessManager();
+
+  SharedImageBatchAccessManager(const SharedImageBatchAccessManager&) = delete;
+  SharedImageBatchAccessManager& operator=(
+      const SharedImageBatchAccessManager&) = delete;
+
   ~SharedImageBatchAccessManager();
 
   bool IsDoingBatchReads();
@@ -39,8 +44,6 @@ class GPU_GLES2_EXPORT SharedImageBatchAccessManager {
 
   base::Lock lock_;
   base::flat_map<gl::GLApi*, SetOfBackings> backings_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBatchAccessManager);
 };
 
 }  // namespace gpu

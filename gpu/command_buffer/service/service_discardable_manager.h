@@ -30,6 +30,11 @@ class GPU_GLES2_EXPORT ServiceDiscardableManager
     : public base::trace_event::MemoryDumpProvider {
  public:
   explicit ServiceDiscardableManager(const GpuPreferences& preferences);
+
+  ServiceDiscardableManager(const ServiceDiscardableManager&) = delete;
+  ServiceDiscardableManager& operator=(const ServiceDiscardableManager&) =
+      delete;
+
   ~ServiceDiscardableManager() override;
 
   // base::trace_event::MemoryDumpProvider implementation.
@@ -127,8 +132,6 @@ class GPU_GLES2_EXPORT ServiceDiscardableManager
 
   // The limit above which the cache will start evicting resources.
   size_t cache_size_limit_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceDiscardableManager);
 };
 
 }  // namespace gpu

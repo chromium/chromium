@@ -47,12 +47,16 @@ class ThreadState {
   class AutoCurrentContextRestore {
    public:
     AutoCurrentContextRestore(ThreadState*);
+
+    AutoCurrentContextRestore(const AutoCurrentContextRestore&) = delete;
+    AutoCurrentContextRestore& operator=(const AutoCurrentContextRestore&) =
+        delete;
+
     ~AutoCurrentContextRestore();
     void SetCurrent(Surface*, Context*);
 
    private:
     ThreadState* thread_state_;
-    DISALLOW_COPY_AND_ASSIGN(AutoCurrentContextRestore);
   };
 
  private:

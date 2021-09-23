@@ -101,6 +101,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
       viz::VulkanContextProvider* vulkan_context_provider = nullptr,
       viz::MetalContextProvider* metal_context_provider = nullptr,
       viz::DawnContextProvider* dawn_context_provider = nullptr);
+
+  GpuChannelManager(const GpuChannelManager&) = delete;
+  GpuChannelManager& operator=(const GpuChannelManager&) = delete;
+
   ~GpuChannelManager() override;
 
   GpuChannelManagerDelegate* delegate() const { return delegate_; }
@@ -228,6 +232,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     GpuPeakMemoryMonitor(
         GpuChannelManager* channel_manager,
         scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+    GpuPeakMemoryMonitor(const GpuPeakMemoryMonitor&) = delete;
+    GpuPeakMemoryMonitor& operator=(const GpuPeakMemoryMonitor&) = delete;
+
     ~GpuPeakMemoryMonitor() override;
 
     base::flat_map<GpuPeakMemoryAllocationSource, uint64_t> GetPeakMemoryUsage(
@@ -277,7 +285,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
     std::unique_ptr<GpuMemoryAblationExperiment> ablation_experiment_;
     base::WeakPtrFactory<GpuPeakMemoryMonitor> weak_factory_;
-    DISALLOW_COPY_AND_ASSIGN(GpuPeakMemoryMonitor);
   };
 
   void InternalDestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id, int client_id);
@@ -379,8 +386,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // that any WeakPtrs to Controller are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
   base::WeakPtrFactory<GpuChannelManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuChannelManager);
 };
 
 }  // namespace gpu

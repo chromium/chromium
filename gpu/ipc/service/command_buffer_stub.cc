@@ -78,6 +78,10 @@ class DevToolsChannelData : public base::trace_event::ConvertableToTraceFormat {
  public:
   static std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
   CreateForChannel(GpuChannel* channel);
+
+  DevToolsChannelData(const DevToolsChannelData&) = delete;
+  DevToolsChannelData& operator=(const DevToolsChannelData&) = delete;
+
   ~DevToolsChannelData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
@@ -89,7 +93,6 @@ class DevToolsChannelData : public base::trace_event::ConvertableToTraceFormat {
  private:
   explicit DevToolsChannelData(base::Value* value) : value_(value) {}
   std::unique_ptr<base::Value> value_;
-  DISALLOW_COPY_AND_ASSIGN(DevToolsChannelData);
 };
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>

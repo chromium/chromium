@@ -23,6 +23,10 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
  public:
   PassthroughProgramCache(size_t max_cache_size_bytes,
                           bool disable_gpu_shader_disk_cache);
+
+  PassthroughProgramCache(const PassthroughProgramCache&) = delete;
+  PassthroughProgramCache& operator=(const PassthroughProgramCache&) = delete;
+
   ~PassthroughProgramCache() override;
 
   ProgramLoadResult LoadLinkedProgram(
@@ -64,6 +68,10 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
    public:
     ProgramCacheValue(Value&& program_blob,
                       PassthroughProgramCache* program_cache);
+
+    ProgramCacheValue(const ProgramCacheValue&) = delete;
+    ProgramCacheValue& operator=(const ProgramCacheValue&) = delete;
+
     ~ProgramCacheValue();
 
     ProgramCacheValue(ProgramCacheValue&& other);
@@ -74,8 +82,6 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
    private:
     Value program_blob_;
     PassthroughProgramCache* program_cache_;
-
-    DISALLOW_COPY_AND_ASSIGN(ProgramCacheValue);
   };
 
   void ClearBackend() override;
@@ -94,8 +100,6 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
 
   // TODO(syoussefi): take compression from memory_program_cache, see
   // compress_program_binaries_
-
-  DISALLOW_COPY_AND_ASSIGN(PassthroughProgramCache);
 };
 
 }  // namespace gles2

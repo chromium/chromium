@@ -52,6 +52,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
   explicit VulkanImplementation(bool use_swiftshader = false,
                                 bool allow_protected_memory = false);
 
+  VulkanImplementation(const VulkanImplementation&) = delete;
+  VulkanImplementation& operator=(const VulkanImplementation&) = delete;
+
   virtual ~VulkanImplementation();
 
   // Initialize VulkanInstance. If using_surface, VK_KHR_surface instance
@@ -146,7 +149,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
  private:
   const bool use_swiftshader_;
   const bool allow_protected_memory_;
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementation);
 };
 
 COMPONENT_EXPORT(VULKAN)

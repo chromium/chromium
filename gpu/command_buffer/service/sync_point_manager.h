@@ -259,6 +259,10 @@ class GPU_EXPORT SyncPointClientState
 class GPU_EXPORT SyncPointManager {
  public:
   SyncPointManager();
+
+  SyncPointManager(const SyncPointManager&) = delete;
+  SyncPointManager& operator=(const SyncPointManager&) = delete;
+
   ~SyncPointManager();
 
   scoped_refptr<SyncPointOrderData> CreateSyncPointOrderData();
@@ -341,8 +345,6 @@ class GPU_EXPORT SyncPointManager {
   SequenceId::Generator sequence_id_generator_;
 
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncPointManager);
 };
 
 }  // namespace gpu

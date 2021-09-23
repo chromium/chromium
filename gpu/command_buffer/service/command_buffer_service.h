@@ -75,6 +75,10 @@ class GPU_EXPORT CommandBufferService : public CommandBufferServiceBase {
 
   CommandBufferService(CommandBufferServiceClient* client,
                        MemoryTracker* memory_tracker);
+
+  CommandBufferService(const CommandBufferService&) = delete;
+  CommandBufferService& operator=(const CommandBufferService&) = delete;
+
   ~CommandBufferService() override;
 
   // CommandBufferServiceBase implementation:
@@ -143,8 +147,6 @@ class GPU_EXPORT CommandBufferService : public CommandBufferServiceBase {
   // Whether the scheduler is currently able to process more commands.
   bool scheduled_ = true;
   bool paused_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferService);
 };
 
 }  // namespace gpu

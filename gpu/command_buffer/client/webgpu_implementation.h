@@ -36,6 +36,10 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   explicit WebGPUImplementation(WebGPUCmdHelper* helper,
                                 TransferBufferInterface* transfer_buffer,
                                 GpuControl* gpu_control);
+
+  WebGPUImplementation(const WebGPUImplementation&) = delete;
+  WebGPUImplementation& operator=(const WebGPUImplementation&) = delete;
+
   ~WebGPUImplementation() override;
 
   gpu::ContextResult Initialize(const SharedMemoryLimits& limits);
@@ -161,8 +165,6 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   DawnRequestDeviceSerial request_device_serial_ = 0;
 
   std::atomic_bool lost_{false};
-
-  DISALLOW_COPY_AND_ASSIGN(WebGPUImplementation);
 };
 
 }  // namespace webgpu

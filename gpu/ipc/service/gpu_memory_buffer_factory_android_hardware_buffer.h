@@ -26,6 +26,12 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryAndroidHardwareBuffer
       public ImageFactory {
  public:
   GpuMemoryBufferFactoryAndroidHardwareBuffer();
+
+  GpuMemoryBufferFactoryAndroidHardwareBuffer(
+      const GpuMemoryBufferFactoryAndroidHardwareBuffer&) = delete;
+  GpuMemoryBufferFactoryAndroidHardwareBuffer& operator=(
+      const GpuMemoryBufferFactoryAndroidHardwareBuffer&) = delete;
+
   ~GpuMemoryBufferFactoryAndroidHardwareBuffer() override;
 
   // Overridden from GpuMemoryBufferFactory:
@@ -68,8 +74,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryAndroidHardwareBuffer
 
   base::Lock lock_;
   BufferMap buffer_map_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferFactoryAndroidHardwareBuffer);
 };
 
 }  // namespace gpu

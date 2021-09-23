@@ -63,6 +63,9 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       GpuControl* gpu_control,
       ImageDecodeAcceleratorInterface* image_decode_accelerator);
 
+  RasterImplementation(const RasterImplementation&) = delete;
+  RasterImplementation& operator=(const RasterImplementation&) = delete;
+
   ~RasterImplementation() override;
 
   gpu::ContextResult Initialize(const SharedMemoryLimits& limits);
@@ -453,8 +456,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
 
   // Tracing helpers.
   int raster_chromium_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RasterImplementation);
 };
 
 }  // namespace raster

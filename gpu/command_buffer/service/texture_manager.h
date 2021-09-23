@@ -829,6 +829,10 @@ class GPU_GLES2_EXPORT TextureManager
   class GPU_GLES2_EXPORT DestructionObserver {
    public:
     DestructionObserver();
+
+    DestructionObserver(const DestructionObserver&) = delete;
+    DestructionObserver& operator=(const DestructionObserver&) = delete;
+
     virtual ~DestructionObserver();
 
     // Called in ~TextureManager.
@@ -836,9 +840,6 @@ class GPU_GLES2_EXPORT TextureManager
 
     // Called via ~TextureRef.
     virtual void OnTextureRefDestroying(TextureRef* texture) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DestructionObserver);
   };
 
   enum DefaultAndBlackTextures {
@@ -861,6 +862,10 @@ class GPU_GLES2_EXPORT TextureManager
                  bool use_default_textures,
                  gl::ProgressReporter* progress_reporter,
                  ServiceDiscardableManager* discardable_manager);
+
+  TextureManager(const TextureManager&) = delete;
+  TextureManager& operator=(const TextureManager&) = delete;
+
   ~TextureManager() override;
 
   void AddFramebufferManager(FramebufferManager* framebuffer_manager);
@@ -1373,8 +1378,6 @@ class GPU_GLES2_EXPORT TextureManager
   gl::ProgressReporter* progress_reporter_;
 
   ServiceDiscardableManager* discardable_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureManager);
 };
 
 }  // namespace gles2

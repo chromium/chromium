@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
                   PlatformHandle handle);
   SemaphoreHandle(SemaphoreHandle&&);
 
+  SemaphoreHandle(const SemaphoreHandle&) = delete;
+  SemaphoreHandle& operator=(const SemaphoreHandle&) = delete;
+
   ~SemaphoreHandle();
 
   SemaphoreHandle& operator=(SemaphoreHandle&&);
@@ -68,8 +71,6 @@ class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
  private:
   VkExternalSemaphoreHandleTypeFlagBits type_;
   PlatformHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(SemaphoreHandle);
 };
 
 }  // namespace gpu

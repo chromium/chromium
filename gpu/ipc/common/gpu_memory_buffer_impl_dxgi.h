@@ -24,6 +24,9 @@ class GpuMemoryBufferManager;
 // Implementation of GPU memory buffer based on dxgi textures.
 class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
  public:
+  GpuMemoryBufferImplDXGI(const GpuMemoryBufferImplDXGI&) = delete;
+  GpuMemoryBufferImplDXGI& operator=(const GpuMemoryBufferImplDXGI&) = delete;
+
   ~GpuMemoryBufferImplDXGI() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType =
@@ -74,8 +77,6 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   // Used to store shared memory passed from the capturer.
   base::UnsafeSharedMemoryRegion unowned_region_;
   base::WritableSharedMemoryMapping unowned_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImplDXGI);
 };
 
 }  // namespace gpu

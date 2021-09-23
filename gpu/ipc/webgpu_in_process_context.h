@@ -33,6 +33,10 @@ class WebGPUImplementation;
 class WebGPUInProcessContext {
  public:
   WebGPUInProcessContext();
+
+  WebGPUInProcessContext(const WebGPUInProcessContext&) = delete;
+  WebGPUInProcessContext& operator=(const WebGPUInProcessContext&) = delete;
+
   ~WebGPUInProcessContext();
 
   // |attrib_list| must be null or a NONE-terminated list of attribute/value
@@ -64,8 +68,6 @@ class WebGPUInProcessContext {
   std::unique_ptr<webgpu::WebGPUImplementation> webgpu_implementation_;
   std::unique_ptr<InProcessCommandBuffer> command_buffer_;
   scoped_refptr<base::TestSimpleTaskRunner> client_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGPUInProcessContext);
 };
 
 }  // namespace gpu

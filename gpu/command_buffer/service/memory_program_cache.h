@@ -31,6 +31,10 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
                      bool disable_gpu_shader_disk_cache,
                      bool disable_program_caching_for_transform_feedback,
                      GpuProcessActivityFlags* activity_flags);
+
+  MemoryProgramCache(const MemoryProgramCache&) = delete;
+  MemoryProgramCache& operator=(const MemoryProgramCache&) = delete;
+
   ~MemoryProgramCache() override;
 
   ProgramLoadResult LoadLinkedProgram(
@@ -174,8 +178,6 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
   size_t curr_size_bytes_;
   ProgramMRUCache store_;
   GpuProcessActivityFlags* activity_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryProgramCache);
 };
 
 }  // namespace gles2

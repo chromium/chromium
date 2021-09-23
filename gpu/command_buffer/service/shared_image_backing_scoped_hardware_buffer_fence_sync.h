@@ -35,6 +35,12 @@ class GPU_GLES2_EXPORT SharedImageBackingScopedHardwareBufferFenceSync
       SkAlphaType alpha_type,
       uint32_t usage,
       bool is_thread_safe);
+
+  SharedImageBackingScopedHardwareBufferFenceSync(
+      const SharedImageBackingScopedHardwareBufferFenceSync&) = delete;
+  SharedImageBackingScopedHardwareBufferFenceSync& operator=(
+      const SharedImageBackingScopedHardwareBufferFenceSync&) = delete;
+
   ~SharedImageBackingScopedHardwareBufferFenceSync() override;
 
   // SharedImageBacking implementation.
@@ -89,8 +95,6 @@ class GPU_GLES2_EXPORT SharedImageBackingScopedHardwareBufferFenceSync
   // Fence which needs to be waited upon before reading the
   // |scoped_hardware_buffer_|.
   base::ScopedFD ahb_read_fence_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingScopedHardwareBufferFenceSync);
 };
 
 }  // namespace gpu

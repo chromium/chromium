@@ -32,6 +32,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
  public:
   // You must call Initialize() before using the context.
   GLInProcessContext();
+
+  GLInProcessContext(const GLInProcessContext&) = delete;
+  GLInProcessContext& operator=(const GLInProcessContext&) = delete;
+
   ~GLInProcessContext();
 
   // Initialize the GLInProcessContext, if |is_offscreen| is true, renders to an
@@ -70,8 +74,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
   std::unique_ptr<gles2::GLES2CmdHelper> gles2_helper_;
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   std::unique_ptr<gles2::GLES2Implementation> gles2_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLInProcessContext);
 };
 
 }  // namespace gpu

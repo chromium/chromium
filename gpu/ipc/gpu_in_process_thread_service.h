@@ -56,6 +56,11 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuInProcessThreadService
       const GpuPreferences& gpu_preferences,
       SharedImageManager* shared_image_manager,
       gles2::ProgramCache* program_cache);
+
+  GpuInProcessThreadService(const GpuInProcessThreadService&) = delete;
+  GpuInProcessThreadService& operator=(const GpuInProcessThreadService&) =
+      delete;
+
   ~GpuInProcessThreadService() override;
 
   // CommandBufferTaskExecutor implementation.
@@ -72,8 +77,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuInProcessThreadService
   GpuInProcessThreadServiceDelegate* const delegate_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Scheduler* scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuInProcessThreadService);
 };
 
 }  // namespace gpu

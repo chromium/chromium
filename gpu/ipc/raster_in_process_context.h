@@ -32,6 +32,10 @@ class RasterImplementation;
 class RasterInProcessContext {
  public:
   RasterInProcessContext();
+
+  RasterInProcessContext(const RasterInProcessContext&) = delete;
+  RasterInProcessContext& operator=(const RasterInProcessContext&) = delete;
+
   ~RasterInProcessContext();
 
   // |attrib_list| must be null or a NONE-terminated list of attribute/value
@@ -72,8 +76,6 @@ class RasterInProcessContext {
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   std::unique_ptr<raster::RasterImplementation> raster_implementation_;
   std::unique_ptr<InProcessCommandBuffer> command_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RasterInProcessContext);
 };
 
 }  // namespace gpu

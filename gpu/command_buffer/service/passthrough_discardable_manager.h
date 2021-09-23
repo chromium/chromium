@@ -20,6 +20,11 @@ class ContextGroup;
 class GPU_GLES2_EXPORT PassthroughDiscardableManager {
  public:
   explicit PassthroughDiscardableManager(const GpuPreferences& preferences);
+
+  PassthroughDiscardableManager(const PassthroughDiscardableManager&) = delete;
+  PassthroughDiscardableManager& operator=(
+      const PassthroughDiscardableManager&) = delete;
+
   ~PassthroughDiscardableManager();
 
   void InitializeTexture(uint32_t client_id,
@@ -99,8 +104,6 @@ class GPU_GLES2_EXPORT PassthroughDiscardableManager {
 
   // The limit above which the cache will start evicting resources.
   size_t cache_size_limit_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PassthroughDiscardableManager);
 };
 
 }  // namespace gpu

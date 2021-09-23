@@ -22,6 +22,10 @@ namespace gpu {
 // Implementation of GPU memory buffer based on IO surfaces.
 class GPU_EXPORT GpuMemoryBufferImplIOSurface : public GpuMemoryBufferImpl {
  public:
+  GpuMemoryBufferImplIOSurface(const GpuMemoryBufferImplIOSurface&) = delete;
+  GpuMemoryBufferImplIOSurface& operator=(const GpuMemoryBufferImplIOSurface&) =
+      delete;
+
   ~GpuMemoryBufferImplIOSurface() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType =
@@ -63,8 +67,6 @@ class GPU_EXPORT GpuMemoryBufferImplIOSurface : public GpuMemoryBufferImpl {
   // Cache the color space, because re-assigning the same value can be
   // expensive.
   gfx::ColorSpace color_space_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImplIOSurface);
 };
 
 }  // namespace gpu

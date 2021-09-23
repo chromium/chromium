@@ -52,6 +52,10 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       bool use_passthrough,
       base::span<const uint8_t> pixel_data);
 
+  SharedImageBackingEglImage(const SharedImageBackingEglImage&) = delete;
+  SharedImageBackingEglImage& operator=(const SharedImageBackingEglImage&) =
+      delete;
+
   ~SharedImageBackingEglImage() override;
 
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
@@ -122,8 +126,6 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
 
   const SharedImageBackingGLCommon::UnpackStateAttribs gl_unpack_attribs_;
   const bool use_passthrough_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingEglImage);
 };
 
 }  // namespace gpu

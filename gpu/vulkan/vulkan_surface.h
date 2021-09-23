@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanSurface {
                 VkSurfaceKHR surface,
                 uint64_t acquire_next_image_timeout_ns = UINT64_MAX);
 
+  VulkanSurface(const VulkanSurface&) = delete;
+  VulkanSurface& operator=(const VulkanSurface&) = delete;
+
   virtual ~VulkanSurface();
 
   bool Initialize(VulkanDeviceQueue* device_queue,
@@ -93,8 +96,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanSurface {
   gfx::OverlayTransform transform_ = gfx::OVERLAY_TRANSFORM_INVALID;
 
   std::unique_ptr<VulkanSwapChain> swap_chain_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanSurface);
 };
 
 }  // namespace gpu

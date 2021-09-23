@@ -124,6 +124,10 @@ class ScopedGLErrorSuppressor {
       : function_name_(function_name), error_state_(error_state) {
     ERRORSTATE_COPY_REAL_GL_ERRORS_TO_WRAPPER(error_state_, function_name_);
   }
+
+  ScopedGLErrorSuppressor(const ScopedGLErrorSuppressor&) = delete;
+  ScopedGLErrorSuppressor& operator=(const ScopedGLErrorSuppressor&) = delete;
+
   ~ScopedGLErrorSuppressor() {
     ERRORSTATE_CLEAR_REAL_GL_ERRORS(error_state_, function_name_);
   }
@@ -131,7 +135,6 @@ class ScopedGLErrorSuppressor {
  private:
   const char* function_name_;
   gles2::ErrorState* error_state_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedGLErrorSuppressor);
 };
 
 // Temporarily changes a decoder's bound texture and restore it when this
@@ -151,13 +154,14 @@ class ScopedTextureBinder {
       gr_context->resetContext(kTextureBinding_GrGLBackendState);
   }
 
+  ScopedTextureBinder(const ScopedTextureBinder&) = delete;
+  ScopedTextureBinder& operator=(const ScopedTextureBinder&) = delete;
+
   ~ScopedTextureBinder() { state_->api()->glBindTextureFn(target_, 0); }
 
  private:
   gles2::ContextState* state_;
   GLenum target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTextureBinder);
 };
 
 // Temporarily changes a decoder's PIXEL_UNPACK_BUFFER to 0 and set pixel
@@ -185,10 +189,11 @@ class ScopedPixelUnpackState {
                                kPixelStore_GrGLBackendState);
     }
   }
-  ~ScopedPixelUnpackState() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedPixelUnpackState);
+  ScopedPixelUnpackState(const ScopedPixelUnpackState&) = delete;
+  ScopedPixelUnpackState& operator=(const ScopedPixelUnpackState&) = delete;
+
+  ~ScopedPixelUnpackState() = default;
 };
 
 // Commands that are explicitly listed as OK to occur between
@@ -427,6 +432,10 @@ class RasterDecoderImpl final : public RasterDecoder,
                     SharedImageManager* shared_image_manager,
                     scoped_refptr<SharedContextState> shared_context_state,
                     bool is_privileged);
+
+  RasterDecoderImpl(const RasterDecoderImpl&) = delete;
+  RasterDecoderImpl& operator=(const RasterDecoderImpl&) = delete;
+
   ~RasterDecoderImpl() override;
 
   gles2::GLES2Util* GetGLES2Util() override { return &util_; }
@@ -970,8 +979,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   gl::GLApi* api_ = nullptr;
 
   base::WeakPtrFactory<DecoderContext> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RasterDecoderImpl);
 };
 
 constexpr RasterDecoderImpl::CommandInfo RasterDecoderImpl::command_info[] = {
@@ -3400,6 +3407,12 @@ class TransferCacheDeserializeHelperImpl final
       : raster_decoder_id_(raster_decoder_id), transfer_cache_(transfer_cache) {
     DCHECK(transfer_cache_);
   }
+
+  TransferCacheDeserializeHelperImpl(
+      const TransferCacheDeserializeHelperImpl&) = delete;
+  TransferCacheDeserializeHelperImpl& operator=(
+      const TransferCacheDeserializeHelperImpl&) = delete;
+
   ~TransferCacheDeserializeHelperImpl() override = default;
 
   void CreateLocalEntry(
@@ -3421,8 +3434,6 @@ class TransferCacheDeserializeHelperImpl final
 
   const int raster_decoder_id_;
   ServiceTransferCache* const transfer_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransferCacheDeserializeHelperImpl);
 };
 
 }  // namespace

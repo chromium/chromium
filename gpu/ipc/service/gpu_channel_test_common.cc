@@ -33,6 +33,11 @@ namespace gpu {
 class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
  public:
   TestGpuChannelManagerDelegate(Scheduler* scheduler) : scheduler_(scheduler) {}
+
+  TestGpuChannelManagerDelegate(const TestGpuChannelManagerDelegate&) = delete;
+  TestGpuChannelManagerDelegate& operator=(
+      const TestGpuChannelManagerDelegate&) = delete;
+
   ~TestGpuChannelManagerDelegate() override = default;
 
   // GpuChannelManagerDelegate implementation:
@@ -64,8 +69,6 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
  private:
   bool is_exiting_ = false;
   Scheduler* const scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGpuChannelManagerDelegate);
 };
 
 GpuChannelTestCommon::GpuChannelTestCommon(bool use_stub_bindings)

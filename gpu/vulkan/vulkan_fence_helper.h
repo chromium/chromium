@@ -26,6 +26,10 @@ class VulkanDeviceQueue;
 class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
  public:
   explicit VulkanFenceHelper(VulkanDeviceQueue* device_queue);
+
+  VulkanFenceHelper(const VulkanFenceHelper&) = delete;
+  VulkanFenceHelper& operator=(const VulkanFenceHelper&) = delete;
+
   ~VulkanFenceHelper();
 
   // Destroy the fence helper.
@@ -146,8 +150,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
   base::circular_deque<TasksForFence> cleanup_tasks_;
 
   base::WeakPtrFactory<VulkanFenceHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanFenceHelper);
 };
 
 template <typename T>

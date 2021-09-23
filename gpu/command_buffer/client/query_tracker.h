@@ -67,6 +67,10 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
   };
 
   explicit QuerySyncManager(MappedMemoryManager* manager);
+
+  QuerySyncManager(const QuerySyncManager&) = delete;
+  QuerySyncManager& operator=(const QuerySyncManager&) = delete;
+
   ~QuerySyncManager();
 
   bool Alloc(QueryInfo* info);
@@ -78,8 +82,6 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
 
   MappedMemoryManager* mapped_memory_;
   base::circular_deque<std::unique_ptr<Bucket>> buckets_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuerySyncManager);
 };
 
 class GLES2_IMPL_EXPORT QueryTrackerClient {

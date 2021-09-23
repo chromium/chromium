@@ -113,6 +113,10 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
       DCHECK(!representation_->has_scoped_access_);
       representation_->has_scoped_access_ = true;
     }
+
+    ScopedAccessBase(const ScopedAccessBase&) = delete;
+    ScopedAccessBase& operator=(const ScopedAccessBase&) = delete;
+
     ~ScopedAccessBase() {
       DCHECK(representation_->has_scoped_access_);
       representation_->has_scoped_access_ = false;
@@ -125,8 +129,6 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
 
    private:
     RepresentationClass* const representation_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedAccessBase);
   };
 
  private:

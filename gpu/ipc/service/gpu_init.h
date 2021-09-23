@@ -43,6 +43,10 @@ class GPU_IPC_SERVICE_EXPORT GpuSandboxHelper {
 class GPU_IPC_SERVICE_EXPORT GpuInit {
  public:
   GpuInit();
+
+  GpuInit(const GpuInit&) = delete;
+  GpuInit& operator=(const GpuInit&) = delete;
+
   ~GpuInit();
 
   void set_sandbox_helper(GpuSandboxHelper* helper) {
@@ -111,8 +115,6 @@ class GPU_IPC_SERVICE_EXPORT GpuInit {
 
   void SaveHardwareGpuInfoAndGpuFeatureInfo();
   void AdjustInfoToSwiftShader();
-
-  DISALLOW_COPY_AND_ASSIGN(GpuInit);
 };
 
 }  // namespace gpu

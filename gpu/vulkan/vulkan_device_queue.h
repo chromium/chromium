@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   };
 
   explicit VulkanDeviceQueue(VkInstance vk_instance);
+
+  VulkanDeviceQueue(const VulkanDeviceQueue&) = delete;
+  VulkanDeviceQueue& operator=(const VulkanDeviceQueue&) = delete;
+
   ~VulkanDeviceQueue();
 
   using GetPresentationSupportCallback =
@@ -127,8 +131,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
 #endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
 
   VkPhysicalDeviceProtectedMemoryFeatures protected_memory_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanDeviceQueue);
 };
 
 }  // namespace gpu

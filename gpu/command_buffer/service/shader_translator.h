@@ -79,12 +79,13 @@ class GPU_GLES2_EXPORT ShaderTranslator : public ShaderTranslatorInterface {
   class DestructionObserver {
    public:
     DestructionObserver();
+
+    DestructionObserver(const DestructionObserver&) = delete;
+    DestructionObserver& operator=(const DestructionObserver&) = delete;
+
     virtual ~DestructionObserver();
 
     virtual void OnDestruct(ShaderTranslator* translator) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DestructionObserver);
   };
 
   ShaderTranslator();
@@ -134,4 +135,3 @@ class GPU_GLES2_EXPORT ShaderTranslator : public ShaderTranslatorInterface {
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHADER_TRANSLATOR_H_
-

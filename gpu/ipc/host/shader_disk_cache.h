@@ -109,6 +109,10 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
 class ShaderCacheFactory : public base::ThreadChecker {
  public:
   ShaderCacheFactory();
+
+  ShaderCacheFactory(const ShaderCacheFactory&) = delete;
+  ShaderCacheFactory& operator=(const ShaderCacheFactory&) = delete;
+
   ~ShaderCacheFactory();
 
   // Clear the shader disk cache for the given |path|. This supports unbounded
@@ -157,8 +161,6 @@ class ShaderCacheFactory : public base::ThreadChecker {
   using ShaderClearQueue = base::queue<std::unique_ptr<ShaderClearHelper>>;
   using ShaderClearMap = std::map<base::FilePath, ShaderClearQueue>;
   ShaderClearMap shader_clear_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderCacheFactory);
 };
 
 }  // namespace gpu

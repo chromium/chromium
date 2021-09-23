@@ -50,6 +50,10 @@ class GPU_GLES2_EXPORT ServiceTransferCache
   };
 
   explicit ServiceTransferCache(const GpuPreferences& preferences);
+
+  ServiceTransferCache(const ServiceTransferCache&) = delete;
+  ServiceTransferCache& operator=(const ServiceTransferCache&) = delete;
+
   ~ServiceTransferCache() override;
 
   bool CreateLockedEntry(const EntryKey& key,
@@ -143,8 +147,6 @@ class GPU_GLES2_EXPORT ServiceTransferCache
 
   // The max number of entries we will hold in the cache.
   size_t max_cache_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceTransferCache);
 };
 
 }  // namespace gpu

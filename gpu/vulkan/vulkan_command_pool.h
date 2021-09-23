@@ -20,6 +20,10 @@ class VulkanDeviceQueue;
 class COMPONENT_EXPORT(VULKAN) VulkanCommandPool {
  public:
   explicit VulkanCommandPool(VulkanDeviceQueue* device_queue);
+
+  VulkanCommandPool(const VulkanCommandPool&) = delete;
+  VulkanCommandPool& operator=(const VulkanCommandPool&) = delete;
+
   ~VulkanCommandPool();
 
   bool Initialize();
@@ -41,8 +45,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandPool {
   VkCommandPool handle_ = VK_NULL_HANDLE;
   uint32_t command_buffer_count_ = 0;
   bool use_protected_memory_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanCommandPool);
 };
 
 }  // namespace gpu

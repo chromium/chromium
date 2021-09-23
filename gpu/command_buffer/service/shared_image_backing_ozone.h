@@ -47,6 +47,9 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
       scoped_refptr<gfx::NativePixmap> pixmap,
       scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
 
+  SharedImageBackingOzone(const SharedImageBackingOzone&) = delete;
+  SharedImageBackingOzone& operator=(const SharedImageBackingOzone&) = delete;
+
   ~SharedImageBackingOzone() override;
 
   // gpu::SharedImageBacking:
@@ -110,8 +113,6 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   // Set for shared memory GMB.
   SharedMemoryRegionWrapper shared_memory_wrapper_;
   scoped_refptr<SharedContextState> context_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingOzone);
 };
 
 }  // namespace gpu

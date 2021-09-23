@@ -139,6 +139,12 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
  public:
   explicit TransferCacheSerializeHelperImpl(RasterImplementation* ri)
       : ri_(ri) {}
+
+  TransferCacheSerializeHelperImpl(const TransferCacheSerializeHelperImpl&) =
+      delete;
+  TransferCacheSerializeHelperImpl& operator=(
+      const TransferCacheSerializeHelperImpl&) = delete;
+
   ~TransferCacheSerializeHelperImpl() final = default;
 
   uint32_t take_end_offset_of_last_inlined_entry() {
@@ -218,8 +224,6 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
 
   RasterImplementation* const ri_;
   uint32_t end_offset_of_last_inlined_entry_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(TransferCacheSerializeHelperImpl);
 };
 
 // Helper to copy PaintOps to the GPU service over the transfer buffer.
@@ -239,6 +243,9 @@ class RasterImplementation::PaintOpSerializer {
     buffer_ =
         static_cast<char*>(ri_->MapRasterCHROMIUM(initial_size, &free_bytes_));
   }
+
+  PaintOpSerializer(const PaintOpSerializer&) = delete;
+  PaintOpSerializer& operator=(const PaintOpSerializer&) = delete;
 
   ~PaintOpSerializer() {
     // Need to call SendSerializedData;
@@ -343,8 +350,6 @@ class RasterImplementation::PaintOpSerializer {
   uint32_t free_bytes_ = 0;
 
   size_t* max_op_size_hint_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintOpSerializer);
 };
 
 RasterImplementation::SingleThreadChecker::SingleThreadChecker(

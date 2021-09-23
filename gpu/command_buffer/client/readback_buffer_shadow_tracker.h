@@ -22,6 +22,10 @@ class ReadbackBufferShadowTracker {
   class Buffer : public base::SupportsWeakPtr<Buffer> {
    public:
     explicit Buffer(GLuint buffer_id, ReadbackBufferShadowTracker* tracker);
+
+    Buffer(const Buffer&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
+
     ~Buffer();
 
     uint32_t Alloc(int32_t* shm_id,
@@ -49,8 +53,6 @@ class ReadbackBufferShadowTracker {
     uint64_t serial_of_readback_data_ = 0;
     uint32_t size_ = 0;
     bool is_mapped_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Buffer);
   };
 
   ReadbackBufferShadowTracker(MappedMemoryManager* mapped_memory,

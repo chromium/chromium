@@ -169,6 +169,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                     MemoryTracker* memory_tracker,
                     gles2::Outputter* outputter,
                     const GpuPreferences& gpu_preferences);
+
+  WebGPUDecoderImpl(const WebGPUDecoderImpl&) = delete;
+  WebGPUDecoderImpl& operator=(const WebGPUDecoderImpl&) = delete;
+
   ~WebGPUDecoderImpl() override;
 
   // WebGPUDecoder implementation
@@ -483,8 +487,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   scoped_refptr<gl::GLSurface> gl_surface_;
 
   base::WeakPtrFactory<WebGPUDecoderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebGPUDecoderImpl);
 };
 
 constexpr WebGPUDecoderImpl::CommandInfo WebGPUDecoderImpl::command_info[] = {

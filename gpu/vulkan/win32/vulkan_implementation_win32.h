@@ -15,6 +15,11 @@ class COMPONENT_EXPORT(VULKAN_WIN32) VulkanImplementationWin32
     : public VulkanImplementation {
  public:
   explicit VulkanImplementationWin32(bool use_swiftshader);
+
+  VulkanImplementationWin32(const VulkanImplementationWin32&) = delete;
+  VulkanImplementationWin32& operator=(const VulkanImplementationWin32&) =
+      delete;
+
   ~VulkanImplementationWin32() override;
 
   // VulkanImplementation:
@@ -48,8 +53,6 @@ class COMPONENT_EXPORT(VULKAN_WIN32) VulkanImplementationWin32
 
  private:
   VulkanInstance vulkan_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationWin32);
 };
 
 }  // namespace gpu

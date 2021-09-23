@@ -33,6 +33,11 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
       SingleTaskSequence* task_sequence,
       DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller,
       std::unique_ptr<CommandBufferHelper> command_buffer_helper);
+
+  SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;
+  SharedImageInterfaceInProcess& operator=(
+      const SharedImageInterfaceInProcess&) = delete;
+
   ~SharedImageInterfaceInProcess() override;
 
   // The |SharedImageInterface| keeps ownership of the image until
@@ -235,8 +240,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   SyncPointManager* sync_point_manager_;
   scoped_refptr<SyncPointClientState> sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageInterfaceInProcess);
 };
 
 }  // namespace gpu

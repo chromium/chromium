@@ -101,6 +101,10 @@ struct PassthroughResources {
         std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
             representation);
     SharedImageData(SharedImageData&& other);
+
+    SharedImageData(const SharedImageData&) = delete;
+    SharedImageData& operator=(const SharedImageData&) = delete;
+
     ~SharedImageData();
     SharedImageData& operator=(SharedImageData&& other);
 
@@ -122,7 +126,6 @@ struct PassthroughResources {
         representation_;
     std::unique_ptr<SharedImageRepresentationGLTexturePassthrough::ScopedAccess>
         scoped_access_;
-    DISALLOW_COPY_AND_ASSIGN(SharedImageData);
   };
   // Mapping of client texture IDs to
   // SharedImageRepresentationGLTexturePassthroughs.

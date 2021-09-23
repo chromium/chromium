@@ -37,6 +37,10 @@ class GpuChannelTestCommon : public testing::Test {
   // Constructor which allows a custom set of GPU driver bug workarounds.
   GpuChannelTestCommon(std::vector<int32_t> enabled_workarounds,
                        bool use_stub_bindings);
+
+  GpuChannelTestCommon(const GpuChannelTestCommon&) = delete;
+  GpuChannelTestCommon& operator=(const GpuChannelTestCommon&) = delete;
+
   ~GpuChannelTestCommon() override;
 
  protected:
@@ -63,8 +67,6 @@ class GpuChannelTestCommon : public testing::Test {
   std::unique_ptr<Scheduler> scheduler_;
   std::unique_ptr<TestGpuChannelManagerDelegate> channel_manager_delegate_;
   std::unique_ptr<GpuChannelManager> channel_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuChannelTestCommon);
 };
 
 }  // namespace gpu

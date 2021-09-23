@@ -87,6 +87,9 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       unsigned array_slice,
       base::win::ScopedHandle shared_handle = base::win::ScopedHandle());
 
+  SharedImageBackingD3D(const SharedImageBackingD3D&) = delete;
+  SharedImageBackingD3D& operator=(const SharedImageBackingD3D&) = delete;
+
   ~SharedImageBackingD3D() override;
 
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
@@ -194,8 +197,6 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
 #if BUILDFLAG(USE_DAWN)
   std::unique_ptr<dawn_native::d3d12::ExternalImageDXGI> external_image_;
 #endif  // BUILDFLAG(USE_DAWN)
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingD3D);
 };
 
 }  // namespace gpu

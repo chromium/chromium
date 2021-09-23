@@ -73,6 +73,9 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
                          VulkanCommandPool* command_pool,
                          bool use_separate_gl_texture);
 
+  ExternalVkImageBacking(const ExternalVkImageBacking&) = delete;
+  ExternalVkImageBacking& operator=(const ExternalVkImageBacking&) = delete;
+
   ~ExternalVkImageBacking() override;
 
   SharedContextState* context_state() const { return context_state_.get(); }
@@ -218,8 +221,6 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   // When the backing is accessed by the vulkan device for GrContext, they can
   // be returned to ExternalSemaphorePool through VulkanFenceHelper.
   std::vector<ExternalSemaphore> pending_semaphores_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalVkImageBacking);
 };
 
 }  // namespace gpu

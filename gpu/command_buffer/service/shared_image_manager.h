@@ -31,6 +31,10 @@ class GPU_GLES2_EXPORT SharedImageManager {
   // that holds the display context.
   explicit SharedImageManager(bool thread_safe = false,
                               bool display_context_on_another_thread = false);
+
+  SharedImageManager(const SharedImageManager&) = delete;
+  SharedImageManager& operator=(const SharedImageManager&) = delete;
+
   ~SharedImageManager();
 
   // Registers a SharedImageBacking with the manager and returns a
@@ -131,8 +135,6 @@ class GPU_GLES2_EXPORT SharedImageManager {
 #endif
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageManager);
 };
 
 }  // namespace gpu

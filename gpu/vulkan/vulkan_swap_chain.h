@@ -31,6 +31,10 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   class COMPONENT_EXPORT(VULKAN) ScopedWrite {
    public:
     explicit ScopedWrite(VulkanSwapChain* swap_chain);
+
+    ScopedWrite(const ScopedWrite&) = delete;
+    ScopedWrite& operator=(const ScopedWrite&) = delete;
+
     ~ScopedWrite();
 
     bool success() const { return success_; }
@@ -50,8 +54,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
     VkImageUsageFlags image_usage_ = 0;
     VkSemaphore begin_semaphore_ = VK_NULL_HANDLE;
     VkSemaphore end_semaphore_ = VK_NULL_HANDLE;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedWrite);
   };
 
   explicit VulkanSwapChain(uint64_t acquire_next_image_timeout_ns);

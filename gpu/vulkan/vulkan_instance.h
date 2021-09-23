@@ -20,6 +20,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
  public:
   VulkanInstance();
 
+  VulkanInstance(const VulkanInstance&) = delete;
+  VulkanInstance& operator=(const VulkanInstance&) = delete;
+
   ~VulkanInstance();
 
   // Creates the vulkan instance.
@@ -46,8 +49,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanInstance {
   VkDebugReportCallbackEXT error_callback_ = VK_NULL_HANDLE;
   VkDebugReportCallbackEXT warning_callback_ = VK_NULL_HANDLE;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanInstance);
 };
 
 }  // namespace gpu

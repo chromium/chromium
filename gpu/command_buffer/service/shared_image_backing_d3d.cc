@@ -104,13 +104,15 @@ class ScopedRestoreTexture {
     prev_binding_ = binding;
   }
 
+  ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
+  ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;
+
   ~ScopedRestoreTexture() { api_->glBindTextureFn(target_, prev_binding_); }
 
  private:
   gl::GLApi* const api_;
   const GLenum target_;
   GLuint prev_binding_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(ScopedRestoreTexture);
 };
 
 scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(

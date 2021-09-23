@@ -243,6 +243,12 @@ class ImageDecodeAcceleratorStubTest
   ImageDecodeAcceleratorStubTest()
       : GpuChannelTestCommon(false /* use_stub_bindings */),
         image_decode_accelerator_worker_(GetParam()) {}
+
+  ImageDecodeAcceleratorStubTest(const ImageDecodeAcceleratorStubTest&) =
+      delete;
+  ImageDecodeAcceleratorStubTest& operator=(
+      const ImageDecodeAcceleratorStubTest&) = delete;
+
   ~ImageDecodeAcceleratorStubTest() override = default;
 
   SyncPointManager* sync_point_manager() const {
@@ -653,8 +659,6 @@ class ImageDecodeAcceleratorStubTest
   TestImageFactory image_factory_;
   base::test::ScopedFeatureList feature_list_;
   base::WeakPtrFactory<ImageDecodeAcceleratorStubTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodeAcceleratorStubTest);
 };
 
 // Tests the following flow: two decode requests are sent. One of the decodes is

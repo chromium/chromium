@@ -217,6 +217,10 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   class ScopedWriteUMA {
    public:
     ScopedWriteUMA() = default;
+
+    ScopedWriteUMA(const ScopedWriteUMA&) = delete;
+    ScopedWriteUMA& operator=(const ScopedWriteUMA&) = delete;
+
     ~ScopedWriteUMA() {
       UMA_HISTOGRAM_BOOLEAN("GPU.SharedImage.ContentConsumed",
                             content_consumed_);
@@ -227,7 +231,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
    private:
     bool content_consumed_ = false;
-    DISALLOW_COPY_AND_ASSIGN(ScopedWriteUMA);
   };
 
   const Mailbox mailbox_;

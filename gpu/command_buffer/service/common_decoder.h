@@ -64,6 +64,10 @@ class GPU_EXPORT CommonDecoder {
   class GPU_EXPORT Bucket {
    public:
     Bucket();
+
+    Bucket(const Bucket&) = delete;
+    Bucket& operator=(const Bucket&) = delete;
+
     ~Bucket();
 
     size_t size() const {
@@ -112,8 +116,6 @@ class GPU_EXPORT CommonDecoder {
 
     size_t size_;
     ::std::unique_ptr<int8_t[]> data_;
-
-    DISALLOW_COPY_AND_ASSIGN(Bucket);
   };
 
   explicit CommonDecoder(DecoderClient* client,
