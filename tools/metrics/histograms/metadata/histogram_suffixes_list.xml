@@ -16526,13 +16526,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="SharingMessage" separator=".">
   <suffix name="ACK_MESSAGE" label="Ack Message"/>
   <suffix name="CLICK_TO_CALL_MESSAGE" label="Click To Call Message"/>
-  <suffix name="ICE_CANDIDATE_MESSAGE" label="Ice Candidate Message"/>
+  <suffix name="DISCOVERY_REQUEST" label="Discovery Request Message"/>
+  <suffix name="OPTIMIZATION_GUIDE_PUSH_NOTIFICATION"
+      label="Optimization Guide Push Notification Message"/>
+  <suffix name="PEER_CONNECTION_ICE_CANDIDATES_MESSAGE"
+      label="Peer Connection Ice Candidates Message"/>
+  <suffix name="PEER_CONNECTION_OFFER_MESSAGE"
+      label="Peer Connection Offer Message"/>
   <suffix name="PING_MESSAGE" label="Ping Message"/>
   <suffix name="REMOTE_COPY_MESSAGE" label="Remote Copy Message"/>
   <suffix name="SHARED_CLIPBOARD_MESSAGE" label="Shared Clipboard Message"/>
-  <suffix name="SIGNALLING_MESSAGE" label="Signalling Message"/>
   <suffix name="SMS_FETCH_REQUEST" label="SMS Fetch Request"/>
   <suffix name="UNKNOWN_MESSAGE" label="Unknown Message"/>
+  <suffix name="WEB_RTC_SIGNALING_FRAME" label="Web RTC Signalling Message"/>
   <affected-histogram name="Sharing.DeviceLastUpdatedAge">
     <obsolete>
       Removed in M89.

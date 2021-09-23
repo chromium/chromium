@@ -76119,8 +76119,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="SharedClipboard"/>
   <int value="5" label="SmsFetchRequest"/>
   <int value="6" label="RemoteCopy"/>
-  <int value="7" label="SignallingMessage"/>
-  <int value="8" label="IceCandidateMessage"/>
+  <int value="7" label="PeerConnectionOffer"/>
+  <int value="8" label="PeerConnectionIceCandidate"/>
+  <int value="9" label="DiscoveryRequest"/>
+  <int value="10" label="WebRTCSignalingFrame"/>
+  <int value="11" label="OptimizationGuidePushNotification"/>
 </enum>
 
 <enum name="SharingRemoteCopyHandleMessageResult">

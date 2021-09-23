@@ -140,6 +140,9 @@ chrome_browser_sharing::MessageType SharingPayloadCaseToMessageType(
       return chrome_browser_sharing::DISCOVERY_REQUEST;
     case chrome_browser_sharing::SharingMessage::kWebRtcSignalingFrame:
       return chrome_browser_sharing::WEB_RTC_SIGNALING_FRAME;
+    case chrome_browser_sharing::SharingMessage::
+        kOptimizationGuidePushNotification:
+      return chrome_browser_sharing::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION;
   }
   // For proto3 enums unrecognized enum values are kept when parsing, and a new
   // payload case received over the network would not default to

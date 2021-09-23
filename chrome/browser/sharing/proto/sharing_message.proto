@@ -8,6 +8,7 @@ option java_multiple_files = true;
 option java_package = "org.chromium.chrome.browser.sharing.proto";
 
 import "click_to_call_message.proto";
+import "optimization_guide_push_notification.proto";
 import "peer_connection_messages.proto";
 import "remote_copy_message.proto";
 import "shared_clipboard_message.proto";
@@ -34,10 +35,11 @@ enum MessageType {
   PEER_CONNECTION_ICE_CANDIDATES_MESSAGE = 8;
   DISCOVERY_REQUEST = 9;
   WEB_RTC_SIGNALING_FRAME = 10;
+  OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 11;
 }
 
 // Message for sending between devices in Sharing.
-// Next tag: 16
+// Next tag: 17
 message SharingMessage {
   // Identifier of sender. required unless any of the following is true:
   // 1. payload is a AckMessage
@@ -57,6 +59,7 @@ message SharingMessage {
         11;
     DiscoveryRequest discovery_request = 13;
     WebRtcSignalingMessage web_rtc_signaling_frame = 14;
+    OptimizationGuidePushNotification optimization_guide_push_notification = 16;
   }
 
   oneof ack_channel_configuration {
