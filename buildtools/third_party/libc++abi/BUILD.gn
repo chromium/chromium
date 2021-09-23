@@ -88,6 +88,6 @@ source_set("libc++abi") {
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
 
-  # libc++abi depends on libc++ internals.
-  include_dirs = [ "../libc++/trunk/src" ]
+  # stdlib_stdexcept.cpp depends on libc++ internals.
+  include_dirs = [ "../libc++/trunk" ]
 }
