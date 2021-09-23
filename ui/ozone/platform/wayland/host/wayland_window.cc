@@ -860,7 +860,6 @@ bool WaylandWindow::CommitOverlays(
   UpdateVisualSize((*split)->bounds_rect.size());
 
   if (!wayland_overlay_delegation_enabled_) {
-    LOG(ERROR) << "Hint " << (*split)->priority_hint;
     root_surface_->SetViewportSource((*split)->crop_rect);
     // TODO(fangzhoug): Refactor some of this logic s.t. the decision of whether
     //   to apply viewport.destination is made at commit time.
