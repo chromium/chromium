@@ -8219,6 +8219,32 @@
             ]
         }
     ],
+    "UMA-NonUniformity-Trial-1-Percent": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "ios",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "group_01",
+                    "params": {
+                        "delta": "0.01"
+                    },
+                    "enable_features": [
+                        "NonUniformityValidation"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnidoPreferSync": [
         {
             "platforms": [
