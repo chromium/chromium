@@ -7327,6 +7327,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </if>
       </if>
 
+      <!-- Side Search -->
+      <if expr="enable_side_search">
+        <message name="IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON" desc="The accessible name for the side search toolbar button">
+          Toggle side search
+        </message>
+        <message name="IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON" desc="The tooltip for the side search toolbar button">
+          Toggle side search
+        </message>
+      </if>
+
       <!-- Tab Search -->
       <message name="IDS_TAB_SEARCH_PROMO" desc="Promo UI shown next to the tab search button to encourage it's use.">
         To search your tabs, click here

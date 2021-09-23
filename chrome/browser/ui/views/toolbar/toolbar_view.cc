@@ -122,6 +122,10 @@
 #include "ui/aura/window_occlusion_tracker.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
 using base::UserMetricsAction;
 using content::WebContents;
 
@@ -297,6 +301,16 @@ void ToolbarView::Init() {
   forward_ = AddChildView(std::move(forward));
   reload_ = AddChildView(std::move(reload));
   home_ = AddChildView(std::move(home));
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  // The side search button (if enabled) should sit between the location bar and
+  // the other navigation buttons.
+  if (browser_view_->side_search_controller()) {
+    left_side_panel_button_ = AddChildView(
+        browser_view_->side_search_controller()->CreateToolbarButton());
+  }
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
   location_bar_ = AddChildView(std::move(location_bar));
 
   if (extensions_container)
