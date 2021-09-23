@@ -116,30 +116,28 @@
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 #include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "chrome/browser/ui/startup/web_app_url_handling_startup_test_utils.h"
 #include "chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/url_handler_manager_impl.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
-#include "third_party/blink/public/common/features.h"
-#include "ui/views/test/dialog_test.h"
-#include "ui/views/widget/any_widget_observer.h"
-#include "ui/views/widget/widget.h"
+
+using web_app::StartupBrowserWebAppUrlHandlingTest;
 #endif
 
 using testing::Return;
@@ -288,13 +286,6 @@ void SessionsRestoredWaiter::OnSessionRestoreDone(int num_tabs_restored) {
     std::move(quit_closure_).Run();
 }
 
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-void AutoCloseDialog(views::Widget* widget) {
-  // Call CancelDialog to close the dialog, but the actual behavior will be
-  // determined by the ScopedTestDialogAutoConfirm configs.
-  views::test::CancelDialog(widget);
-}
-#endif
 
 }  // namespace
 
@@ -2005,70 +1996,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 #endif  // BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+// URL Handling tests.
 #if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
- protected:
-  StartupBrowserWebAppUrlHandlingTest()
-      : fake_web_app_provider_creator_(base::BindRepeating(
-            &StartupBrowserWebAppUrlHandlingTest::CreateFakeWebAppProvider)) {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableUrlHandlers);
-  }
-
-  web_app::AppId InstallWebAppWithUrlHandlers(
-      const std::vector<apps::UrlHandlerInfo>& url_handlers) {
-    return web_app::test::InstallWebAppWithUrlHandlers(
-        browser()->profile(), GURL(kStartUrl), kAppName, url_handlers);
-  }
-
-  base::CommandLine SetUpCommandLineWithUrl(const std::string& url) {
-    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.AppendArg(url);
-    return command_line;
-  }
-
-  void Start(const base::CommandLine& command_line) {
-    std::vector<Profile*> last_opened_profiles;
-    StartupBrowserCreator browser_creator;
-    browser_creator.Start(command_line,
-                          g_browser_process->profile_manager()->user_data_dir(),
-                          browser()->profile(), last_opened_profiles);
-  }
-
-  void SetUpCommandlineAndStart(const std::string& url) {
-    Start(SetUpCommandLineWithUrl(url));
-  }
-
- private:
-  static std::unique_ptr<KeyedService> CreateFakeWebAppProvider(
-      Profile* profile) {
-    auto provider = std::make_unique<web_app::FakeWebAppProvider>(profile);
-    provider->Start();
-    auto association_manager =
-        std::make_unique<web_app::FakeWebAppOriginAssociationManager>();
-    association_manager->set_pass_through(true);
-    auto& url_handler_manager =
-        provider->os_integration_manager().url_handler_manager_for_testing();
-    url_handler_manager.SetAssociationManagerForTesting(
-        std::move(association_manager));
-    return provider;
-  }
-
-  web_app::FakeWebAppProviderCreator fake_web_app_provider_creator_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
                        DialogCancelled_NoLaunch) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppUrlHandlerIntentPickerView");
 
   apps::UrlHandlerInfo url_handler;
-  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+  url_handler.origin = url::Origin::Create(GURL(start_url));
 
   web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
 
-  SetUpCommandlineAndStart(kStartUrl);
+  SetUpCommandlineAndStart(start_url);
 
   // The waiter will get the dialog when it shows up and close it.
   waiter.WaitIfNeededAndGet()->CloseWithReason(
@@ -2085,14 +2025,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
                                        "WebAppUrlHandlerIntentPickerView");
 
   apps::UrlHandlerInfo url_handler;
-  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+  url_handler.origin = url::Origin::Create(GURL(start_url));
 
   web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
 
   // Select the first choice, which is the browser.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 0);
-  SetUpCommandlineAndStart(kStartUrl);
+  SetUpCommandlineAndStart(start_url);
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
   // When dialog is closed, URL will be launched in a browser window.
@@ -2112,11 +2052,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   base::HistogramTester histogram_tester;
 
   apps::UrlHandlerInfo url_handler;
-  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+  url_handler.origin = url::Origin::Create(GURL(start_url));
 
   web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
 
-  auto command_line = SetUpCommandLineWithUrl(kStartUrl);
+  auto command_line = SetUpCommandLineWithUrl(start_url);
   // Get matches before dialog launch.
   auto url_handler_matches =
       web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line);
@@ -2172,11 +2112,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
                                        "WebAppUrlHandlerIntentPickerView");
   base::HistogramTester histogram_tester;
   apps::UrlHandlerInfo url_handler;
-  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+  url_handler.origin = url::Origin::Create(GURL(start_url));
 
   web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
 
-  auto command_line = SetUpCommandLineWithUrl(kStartUrl);
+  auto command_line = SetUpCommandLineWithUrl(start_url);
   // Get matches before dialog launch.
   auto url_handler_matches =
       web_app::UrlHandlerManagerImpl::GetUrlHandlerMatches(command_line);
@@ -2203,7 +2143,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   TabStripModel* tab_strip = app_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
-  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+  EXPECT_EQ(GURL(start_url), web_contents->GetVisibleURL());
 
   // Get matches after dialog is closed.
   auto new_url_handler_matches =
@@ -2228,15 +2168,15 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppUrlHandlerIntentPickerView");
   apps::UrlHandlerInfo url_handler;
-  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+  url_handler.origin = url::Origin::Create(GURL(start_url));
 
   web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
 
   // Select the second choice, which is the app.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 1);
-  // kStartUrl is in app scope.
-  SetUpCommandlineAndStart(kStartUrl);
+  // start_url is in app scope.
+  SetUpCommandlineAndStart(start_url);
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
   // Check for new app window.
@@ -2315,18 +2255,18 @@ IN_PROC_BROWSER_TEST_F(
   }
 
   apps::UrlHandlerInfo url_handler;
-  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+  url_handler.origin = url::Origin::Create(GURL(start_url));
 
   web_app::AppId app_id_1 = web_app::test::InstallWebAppWithUrlHandlers(
-      profile1, GURL(kStartUrl), kAppName, {url_handler});
+      profile1, GURL(start_url), app_name, {url_handler});
   web_app::AppId app_id_2 = web_app::test::InstallWebAppWithUrlHandlers(
-      profile2, GURL(kStartUrl), kAppName, {url_handler});
+      profile2, GURL(start_url), app_name, {url_handler});
 
   // Test that we should be able to select the 3rd option.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 2);
-  // kStartUrl is in app scope for both apps.
-  SetUpCommandlineAndStart(kStartUrl);
+  // start_url is in app scope for both apps.
+  SetUpCommandlineAndStart(start_url);
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
   // There should be one app window. No deterministic ordering of apps, so find
@@ -2355,11 +2295,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
                                        "WebAppUrlHandlerIntentPickerView");
 
   apps::UrlHandlerInfo url_handler;
-  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+  url_handler.origin = url::Origin::Create(GURL(start_url));
 
   web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
 
-  SetUpCommandlineAndStart(kStartUrl);
+  SetUpCommandlineAndStart(start_url);
 
   // The waiter will get the dialog when it shows up and close it.
   waiter.WaitIfNeededAndGet()->CloseWithReason(
