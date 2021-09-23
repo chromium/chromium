@@ -233,7 +233,7 @@ class SafeBrowsingPrivateEventRouter
 
   void OnPasswordBreach(
       const std::string& trigger,
-      const std::vector<std::pair<GURL, std::string>>& identities);
+      const std::vector<std::pair<GURL, std::u16string>>& identities);
 
   // Returns true if enterprise real-time reporting should be initialized,
   // checking both the feature flag. This function is public so that it can

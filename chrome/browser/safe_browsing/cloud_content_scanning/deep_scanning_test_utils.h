@@ -142,7 +142,7 @@ class EventReportValidator {
 
   void ExpectPasswordBreachEvent(
       const std::string& expected_trigger,
-      const std::vector<std::pair<std::string, std::string>>&
+      const std::vector<std::pair<std::string, std::u16string>>&
           expected_identities,
       const std::string& expected_username);
 
@@ -185,7 +185,7 @@ class EventReportValidator {
   std::string username_;
   absl::optional<bool> is_federated_ = absl::nullopt;
   absl::optional<std::string> federated_origin_ = absl::nullopt;
-  absl::optional<std::vector<std::pair<std::string, std::string>>>
+  absl::optional<std::vector<std::pair<std::string, std::u16string>>>
       password_breach_identities_ = absl::nullopt;
 
   // When multiple files generate events, we don't necessarily know in which

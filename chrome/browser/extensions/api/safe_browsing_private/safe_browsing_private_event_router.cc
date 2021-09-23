@@ -787,7 +787,7 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
 
 void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
     const std::string& trigger,
-    const std::vector<std::pair<GURL, std::string>>& identities) {
+    const std::vector<std::pair<GURL, std::u16string>>& identities) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
       GetReportingSettings();
   if (!settings.has_value() ||
@@ -798,7 +798,7 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
   base::Value event(base::Value::Type::DICTIONARY);
   std::vector<base::Value> identities_list;
   event.SetStringKey(kKeyTrigger, trigger);
-  for (const std::pair<GURL, std::string>& i : identities) {
+  for (const std::pair<GURL, std::u16string>& i : identities) {
     base::Value identity(base::Value::Type::DICTIONARY);
     identity.SetStringKey(kKeyPasswordBreachIdentitiesUrl, i.first.spec());
     identity.SetStringKey(kKeyPasswordBreachIdentitiesUsername, i.second);

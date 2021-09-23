@@ -221,12 +221,16 @@ class ChromePasswordManagerClient
       bool password_field_exists) override;
 
   void LogPasswordReuseDetectedEvent() override;
+
+  // Reporting these events is only supported on desktop platforms.
 #if !defined(OS_ANDROID)
-  // Reporting this event is only supported on desktop platforms.
   void MaybeReportEnterpriseLoginEvent(
       const GURL& url,
       bool is_federated,
       const url::Origin& federated_origin) const override;
+  void MaybeReportEnterprisePasswordBreachEvent(
+      const std::vector<std::pair<GURL, std::u16string>>& identities)
+      const override;
 #endif
 
   ukm::SourceId GetUkmSourceId() override;

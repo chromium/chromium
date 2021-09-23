@@ -181,6 +181,10 @@ typedef autofill::SavePasswordProgressLogger Logger;
 
 namespace {
 
+#if !defined(OS_ANDROID)
+static const char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
+#endif
+
 const syncer::SyncService* GetSyncService(Profile* profile) {
   if (SyncServiceFactory::HasSyncService(profile))
     return SyncServiceFactory::GetForProfile(profile);
@@ -883,6 +887,24 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
   // The router is responsible for checking if the reporting of this event type
   // is enabled by the admin.
   router->OnLoginEvent(url, is_federated, federated_origin);
+}
+
+void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
+    const std::vector<std::pair<GURL, std::u16string>>& identities) const {
+  if (!base::FeatureList::IsEnabled(
+          policy::features::kPasswordBreachEventReporting)) {
+    return;
+  }
+
+  extensions::SafeBrowsingPrivateEventRouter* router =
+      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+          profile_);
+  if (!router)
+    return;
+
+  // The router is responsible for checking if the reporting of this event type
+  // is enabled by the admin.
+  router->OnPasswordBreach(kPasswordBreachEntryTrigger, identities);
 }
 #endif
 

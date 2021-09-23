@@ -33,6 +33,9 @@ const base::Feature kCRDForManagedUserSessions{
 const base::Feature kLoginEventReporting{"LoginEventReporting",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPasswordBreachEventReporting{
+    "PasswordBreachEventReporting", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 }  // namespace policy

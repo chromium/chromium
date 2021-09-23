@@ -220,7 +220,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
   void TriggerOnPasswordBreachEvent(
       const std::string& trigger,
-      const std::vector<std::pair<GURL, std::string>>& identities) {
+      const std::vector<std::pair<GURL, std::u16string>>& identities) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnPasswordBreach(trigger, identities);
   }
@@ -788,16 +788,16 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {
   validator.ExpectPasswordBreachEvent(
       "SAFETY_CHECK",
       {
-          {"https://first.example.com/", "first_user_name"},
-          {"https://second.example.com/", "second_user_name"},
+          {"https://first.example.com/", u"first_user_name"},
+          {"https://second.example.com/", u"second_user_name"},
       },
       profile_->GetProfileUserName());
 
   TriggerOnPasswordBreachEvent(
       "SAFETY_CHECK",
       {
-          {GURL("https://first.example.com"), "first_user_name"},
-          {GURL("https://second.example.com"), "second_user_name"},
+          {GURL("https://first.example.com"), u"first_user_name"},
+          {GURL("https://second.example.com"), u"second_user_name"},
       });
 }
 

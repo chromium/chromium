@@ -37,7 +37,13 @@ POLICY_EXPORT extern const base::Feature kUploadBrowserDeviceIdentifier;
 // Enable Chrome Remote Desktop for Managed Guest Sessions and affiliated users.
 POLICY_EXPORT extern const base::Feature kCRDForManagedUserSessions;
 
+// Enable reporting Login events to the reporting connector when the Password
+// Manager detects that the user logged in to a web page.
 POLICY_EXPORT extern const base::Feature kLoginEventReporting;
+
+// Enable reporting password leaks to the reporting connector when the Password
+// Manager's Leak Detector has found some compromised credentials.
+POLICY_EXPORT extern const base::Feature kPasswordBreachEventReporting;
 
 }  // namespace features
 }  // namespace policy

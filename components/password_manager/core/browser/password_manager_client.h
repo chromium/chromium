@@ -381,6 +381,12 @@ class PasswordManagerClient {
       bool is_federated,
       const url::Origin& federated_origin) const {}
 
+  // If the feature is enabled send an event to the enterprise reporting
+  // connector server indicating that the user has some leaked credentials.
+  // |identities| contains the (url, username) pairs for each leaked identity.
+  virtual void MaybeReportEnterprisePasswordBreachEvent(
+      const std::vector<std::pair<GURL, std::u16string>>& identities) const {}
+
   // Gets a ukm::SourceId that is associated with the WebContents object
   // and its last committed main frame navigation.
   virtual ukm::SourceId GetUkmSourceId() = 0;

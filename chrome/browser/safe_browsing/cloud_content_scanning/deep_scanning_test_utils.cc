@@ -339,7 +339,8 @@ void EventReportValidator::ExpectLoginEvent(
 
 void EventReportValidator::ExpectPasswordBreachEvent(
     const std::string& expected_trigger,
-    const std::vector<std::pair<std::string, std::string>>& expected_identities,
+    const std::vector<std::pair<std::string, std::u16string>>&
+        expected_identities,
     const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyPasswordBreachEvent;
   trigger_ = expected_trigger;
@@ -421,13 +422,14 @@ void EventReportValidator::ValidateIdentities(base::Value* value) {
       for (const auto& actual_identity : identities) {
         const std::string* url = actual_identity.FindStringKey(
             SafeBrowsingPrivateEventRouter::kKeyPasswordBreachIdentitiesUrl);
-        const std::string* username = actual_identity.FindStringKey(
-            SafeBrowsingPrivateEventRouter::
-                kKeyPasswordBreachIdentitiesUsername);
+        std::u16string username;
+        EXPECT_TRUE(actual_identity
+                        .FindPath(SafeBrowsingPrivateEventRouter::
+                                      kKeyPasswordBreachIdentitiesUsername)
+                        ->GetAsString(&username));
         EXPECT_NE(nullptr, url);
-        EXPECT_NE(nullptr, username);
         if (expected_identity.first == *url &&
-            expected_identity.second == *username) {
+            expected_identity.second == username) {
           matched = true;
           break;
         }

@@ -51,6 +51,7 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
     return;
 
   std::u16string canonicalized_username = CanonicalizeUsername(username_);
+  std::vector<GURL> all_urls_with_leaked_credentials;
   for (const auto& form : partial_results_) {
     if (CanonicalizeUsername(form->username_value) == canonicalized_username &&
         form->password_value == password_) {
@@ -61,6 +62,7 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
           InsecureType::kLeaked,
           InsecurityMetadata(base::Time::Now(), IsMuted(false)));
       store.UpdateLogin(form_to_update);
+      all_urls_with_leaked_credentials.push_back(form->url);
     }
   }
 
@@ -71,7 +73,8 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
 
   IsReused is_reused(partial_results_.size() > (is_saved ? 1 : 0));
   std::move(callback_).Run(is_saved, is_reused, std::move(url_),
-                           std::move(username_));
+                           std::move(username_),
+                           std::move(all_urls_with_leaked_credentials));
 }
 
 }  // namespace password_manager
