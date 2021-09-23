@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -22,12 +21,6 @@
 #include "components/policy/policy_constants.h"
 
 namespace policy {
-
-const char kRestrictedExtensionSettings[] = R"({
-  "*" : {
-    "installation_mode": "blocked"
-  }
-})";
 
 DeviceLocalAccountPolicyProvider::DeviceLocalAccountPolicyProvider(
     const std::string& user_id,
@@ -187,8 +180,6 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
 // policies can be found here: go/restricted-managed-guest-session.
 void DeviceLocalAccountPolicyProvider::
     ApplyRestrictedManagedGuestSessionOverride(PolicyMap* chrome_policy) {
-  base::Value restricted_extension_settings_json =
-      *base::JSONReader::Read(kRestrictedExtensionSettings);
   std::pair<std::string, base::Value> policy_overrides[] = {
       {key::kPasswordManagerEnabled, base::Value(false)},
       {key::kAllowDeletingBrowserHistory, base::Value(true)},
@@ -205,7 +196,7 @@ void DeviceLocalAccountPolicyProvider::
       {key::kDeletePrintJobHistoryAllowed, base::Value(true)},
       {key::kLacrosSecondaryProfilesAllowed, base::Value(false)},
       {key::kLacrosAvailability, base::Value("lacros_disallowed")},
-      {key::kExtensionSettings, std::move(restricted_extension_settings_json)}};
+  };
 
   for (auto& policy_override : policy_overrides) {
     chrome_policy->Set(policy_override.first, POLICY_LEVEL_MANDATORY,
