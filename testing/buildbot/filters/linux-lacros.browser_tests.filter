@@ -9,7 +9,6 @@
 -All/HostedAppProcessModelTest.BackgroundPageWithAppCoveringDifferentSites/0
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp
--All/HostedOrWebAppTest.OpenLinkInNewTab*
 -All/IntentPickerBubbleViewBrowserTest.NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker*
 -All/MultiActionAPITest.PopupCreation/1
 -All/MultiActionAPITest.SessionStorageDoesNotPersistBetweenOpenings/1
@@ -184,11 +183,6 @@
 -TranslateLanguageBrowserTest.TranslateAndRevert
 -TranslateLanguageBrowserTestWithTranslateRecentTarget.RecentTargetLanguage
 -TranslateManagerBrowserTest.PageTranslationTimeoutError
--WebAppBrowserTest.CopyURL
--WebAppBrowserTest.InScopePWAPopupsHaveCorrectSize
--WebAppBrowserTest.OffScopePWAPopupsHaveCorrectSize
--WebAppEngagementBrowserTest.CommandLineWindow
--WebAppLinkCapturingBrowserTest.AboutBlankNavigationReparented
 -WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
 -WebViewTest.SelectShowHide
 -WebViewTest.Shim_TestDisplayNoneWebviewRemoveChild
