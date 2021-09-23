@@ -11,6 +11,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.tab.Tab;
 
 /** A SceneLayer that displays one or two tab content layers for toolbar swipe functionality. */
 @JNINamespace("android")
@@ -24,13 +25,13 @@ public class ToolbarSwipeSceneLayer extends SceneLayer {
     }
 
     public void update(LayoutTab tab, boolean isLeftTab, int backgroundColor) {
-        if (tab == null) return;
-
         final float dpToPx = mContext.getResources().getDisplayMetrics().density;
 
-        ToolbarSwipeSceneLayerJni.get().updateLayer(mNativePtr, this, tab.get(LayoutTab.TAB_ID),
-                isLeftTab, tab.get(LayoutTab.CAN_USE_LIVE_TEXTURE), backgroundColor,
-                tab.get(LayoutTab.X) * dpToPx, tab.get(LayoutTab.Y) * dpToPx);
+        ToolbarSwipeSceneLayerJni.get().updateLayer(mNativePtr, this,
+                tab != null ? tab.get(LayoutTab.TAB_ID) : Tab.INVALID_TAB_ID, isLeftTab,
+                tab != null ? tab.get(LayoutTab.CAN_USE_LIVE_TEXTURE) : false, backgroundColor,
+                tab != null ? tab.get(LayoutTab.X) * dpToPx : 0,
+                tab != null ? tab.get(LayoutTab.Y) * dpToPx : 0);
     }
 
     @Override
