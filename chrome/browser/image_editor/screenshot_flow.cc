@@ -199,6 +199,7 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
     case ui::ET_MOUSE_MOVED:
       SetCursor(ui::mojom::CursorType::kCross);
+      event->SetHandled();
       break;
     case ui::ET_MOUSE_PRESSED:
       if (event->IsLeftMouseButton()) {
