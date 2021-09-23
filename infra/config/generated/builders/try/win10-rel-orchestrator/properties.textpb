@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "win10-rel-compilator",
+    "compilator_watcher_git_revision": "ac4c95a90ea18c8ce70865c667a04ba18dfca1cd"
+  },
   "$build/code_coverage": {
     "coverage_test_types": [
       "unit",

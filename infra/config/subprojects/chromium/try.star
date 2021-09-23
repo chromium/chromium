@@ -1342,8 +1342,14 @@ try_.chromium_linux_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     properties = {
+        # TODO (kimstephanie): Remove first two when orchestrator recipe stops
+        # reading these
         "compilator": "linux-rel-compilator",
         "compilator_watcher_git_revision": compilator_watcher_git_revision,
+        "$build/chromium_orchestrator": {
+            "compilator": "linux-rel-compilator",
+            "compilator_watcher_git_revision": compilator_watcher_git_revision,
+        },
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
     tryjob = try_.job(
@@ -1971,8 +1977,14 @@ try_.chromium_win_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     properties = {
+        # TODO (kimstephanie): Remove first two when orchestrator recipe stops
+        # reading these
         "compilator": "win10-rel-compilator",
         "compilator_watcher_git_revision": compilator_watcher_git_revision,
+        "$build/chromium_orchestrator": {
+            "compilator": "win10-rel-compilator",
+            "compilator_watcher_git_revision": compilator_watcher_git_revision,
+        },
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
     tryjob = try_.job(
