@@ -310,5 +310,36 @@ public class ContextualSearchPolicyTest {
         });
     }
 
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+    public void testShouldPreviousGestureResolve() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mPolicy.shouldPreviousGestureResolve());
+
+            ContextualSearchPolicy.setContextualSearchPromoCardSelection(true);
+            Assert.assertTrue(mPolicy.shouldPreviousGestureResolve());
+
+            ContextualSearchPolicy.setContextualSearchFullyOptedIn(false);
+            Assert.assertFalse(mPolicy.shouldPreviousGestureResolve());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+    public void testIsContextualSearchFullyEnabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(mPolicy.isContextualSearchFullyEnabled());
+
+            ContextualSearchPolicy.setContextualSearchPromoCardSelection(true);
+            Assert.assertTrue(mPolicy.isContextualSearchFullyEnabled());
+
+            ContextualSearchPolicy.setContextualSearchFullyOptedIn(false);
+            Assert.assertFalse(mPolicy.isContextualSearchFullyEnabled());
+        });
+    }
     // TODO(donnd): This set of tests is not complete, add more tests.
 }
