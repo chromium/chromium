@@ -24,6 +24,18 @@ void SideSearchTabContentsHelper::LastSearchURLUpdated(const GURL& url) {
   last_search_url_ = url;
 }
 
+bool SideSearchTabContentsHelper::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return delegate_ ? delegate_->HandleKeyboardEvent(source, event) : false;
+}
+
+content::WebContents* SideSearchTabContentsHelper::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  return delegate_ ? delegate_->OpenURLFromTab(source, params) : nullptr;
+}
+
 void SideSearchTabContentsHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -64,6 +76,11 @@ bool SideSearchTabContentsHelper::CanShowSidePanelForCommittedNavigation() {
   return last_search_url_ && !google_util::IsGoogleSearchUrl(url) &&
          !google_util::IsGoogleHomePageUrl(url) &&
          url.spec() != chrome::kChromeUINewTabURL;
+}
+
+void SideSearchTabContentsHelper::SetDelegate(
+    base::WeakPtr<Delegate> delegate) {
+  delegate_ = std::move(delegate);
 }
 
 void SideSearchTabContentsHelper::SetSidePanelContentsForTesting(

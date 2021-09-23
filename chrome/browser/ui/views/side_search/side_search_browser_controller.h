@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_BROWSER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_BROWSER_CONTROLLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -19,7 +20,9 @@ class ToolbarButton;
 
 // Responsible for managing the WebContents hosted in the browser's side panel
 // for Side Search in addition to managing the state of the side panel itself.
-class SideSearchBrowserController : public content::WebContentsObserver {
+class SideSearchBrowserController
+    : public SideSearchTabContentsHelper::Delegate,
+      public content::WebContentsObserver {
  public:
   enum SideSearchViewID {
     VIEW_ID_NONE = 0,
@@ -31,6 +34,14 @@ class SideSearchBrowserController : public content::WebContentsObserver {
   SideSearchBrowserController& operator=(const SideSearchBrowserController&) =
       delete;
   ~SideSearchBrowserController() override;
+
+  // SideSearchTabContentsHelper::Delegate:
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -65,6 +76,12 @@ class SideSearchBrowserController : public content::WebContentsObserver {
   SidePanel* const side_panel_;
   BrowserView* const browser_view_;
   views::WebView* const web_view_;
+
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
+  base::WeakPtrFactory<SideSearchBrowserController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_BROWSER_CONTROLLER_H_

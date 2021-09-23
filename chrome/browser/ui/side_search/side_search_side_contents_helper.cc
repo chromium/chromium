@@ -68,7 +68,22 @@ class SideSearchContentsThrottle : public content::NavigationThrottle {
 
 }  // namespace
 
-SideSearchSideContentsHelper::~SideSearchSideContentsHelper() = default;
+bool SideSearchSideContentsHelper::Delegate::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return false;
+}
+
+content::WebContents* SideSearchSideContentsHelper::Delegate::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  return nullptr;
+}
+
+SideSearchSideContentsHelper::~SideSearchSideContentsHelper() {
+  if (web_contents())
+    web_contents()->SetDelegate(nullptr);
+}
 
 std::unique_ptr<content::NavigationThrottle>
 SideSearchSideContentsHelper::MaybeCreateThrottleFor(
@@ -95,6 +110,27 @@ void SideSearchSideContentsHelper::DidFinishNavigation(
   DCHECK(google_util::IsGoogleSearchUrl(url));
   DCHECK(delegate_);
   delegate_->LastSearchURLUpdated(url);
+}
+
+bool SideSearchSideContentsHelper::CanDragEnter(
+    content::WebContents* source,
+    const content::DropData& data,
+    blink::DragOperationsMask operations_allowed) {
+  return false;
+}
+
+bool SideSearchSideContentsHelper::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  DCHECK(delegate_);
+  return delegate_->HandleKeyboardEvent(source, event);
+}
+
+content::WebContents* SideSearchSideContentsHelper::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  DCHECK(delegate_);
+  return delegate_->OpenURLFromTab(source, params);
 }
 
 void SideSearchSideContentsHelper::NavigateInTabContents(
@@ -141,6 +177,8 @@ SideSearchSideContentsHelper::SideSearchSideContentsHelper(
   web_contents->SetRendererInitiatedUserAgentOverrideOption(
       content::NavigationController::UA_OVERRIDE_TRUE);
 #endif  // !defined(OS_CHROMEOS)
+
+  web_contents->SetDelegate(this);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SideSearchSideContentsHelper)

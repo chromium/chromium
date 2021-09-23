@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_TAB_CONTENTS_HELPER_H_
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_TAB_CONTENTS_HELPER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/side_search/side_search_side_contents_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -22,11 +23,28 @@ class SideSearchTabContentsHelper
       public content::WebContentsObserver,
       public content::WebContentsUserData<SideSearchTabContentsHelper> {
  public:
+  class Delegate {
+   public:
+    virtual bool HandleKeyboardEvent(
+        content::WebContents* source,
+        const content::NativeWebKeyboardEvent& event) = 0;
+
+    virtual content::WebContents* OpenURLFromTab(
+        content::WebContents* source,
+        const content::OpenURLParams& params) = 0;
+  };
+
   ~SideSearchTabContentsHelper() override;
 
   // SideContentsWrapper::Delegate:
   void NavigateInTabContents(const content::OpenURLParams& params) override;
   void LastSearchURLUpdated(const GURL& url) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -44,6 +62,8 @@ class SideSearchTabContentsHelper
   // Returns true if the side panel can be shown for the currently committed
   // navigation entry.
   bool CanShowSidePanelForCommittedNavigation();
+
+  void SetDelegate(base::WeakPtr<Delegate> delegate);
 
   bool toggled_open() const { return toggled_open_; }
   void set_toggled_open(bool toggled_open) { toggled_open_ = toggled_open; }
@@ -73,6 +93,10 @@ class SideSearchTabContentsHelper
   // Creates the `side_panel_contents_` associated with this helper's tab
   // contents.
   void CreateSidePanelContents();
+
+  // Use a weak ptr for the delegate to avoid issues whereby the tab contents
+  // could outlive the delegate.
+  base::WeakPtr<Delegate> delegate_;
 
   // The last Google search URL encountered by this tab contents.
   absl::optional<GURL> last_search_url_;

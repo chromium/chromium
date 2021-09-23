@@ -179,6 +179,19 @@ SideSearchBrowserController::~SideSearchBrowserController() {
   Observe(nullptr);
 }
 
+bool SideSearchBrowserController::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, browser_view_->GetFocusManager());
+}
+
+content::WebContents* SideSearchBrowserController::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  return browser_view_->browser()->OpenURL(params);
+}
+
 void SideSearchBrowserController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -196,6 +209,17 @@ void SideSearchBrowserController::DidFinishNavigation(
 void SideSearchBrowserController::UpdateSidePanelForContents(
     content::WebContents* new_contents,
     content::WebContents* old_contents) {
+  // Ensure that the controller acts as the delegate only to the currently
+  // active contents.
+  if (old_contents) {
+    SideSearchTabContentsHelper::FromWebContents(old_contents)
+        ->SetDelegate(nullptr);
+  }
+  if (new_contents) {
+    SideSearchTabContentsHelper::FromWebContents(new_contents)
+        ->SetDelegate(weak_factory_.GetWeakPtr());
+  }
+
   Observe(new_contents);
 
   // Update the state of the side panel to catch cases where we switch to a tab

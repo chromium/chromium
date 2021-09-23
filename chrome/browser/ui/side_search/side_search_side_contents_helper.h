@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_SIDE_CONTENTS_HELPER_H_
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_SIDE_CONTENTS_HELPER_H_
 
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -19,6 +20,7 @@ class GURL;
 // Side Search helper for the WebContents hosted in the side panel.
 class SideSearchSideContentsHelper
     : public content::WebContentsObserver,
+      public content::WebContentsDelegate,
       public content::WebContentsUserData<SideSearchSideContentsHelper> {
  public:
   class Delegate {
@@ -31,6 +33,16 @@ class SideSearchSideContentsHelper
     // Called when the last search URL encountered by the side panel has been
     // updated.
     virtual void LastSearchURLUpdated(const GURL& url) = 0;
+
+    // Passthrough for the side content's WebContentsDelegate.
+    virtual bool HandleKeyboardEvent(
+        content::WebContents* source,
+        const content::NativeWebKeyboardEvent& event);
+
+    // Passthrough for the side content's WebContentsDelegate.
+    virtual content::WebContents* OpenURLFromTab(
+        content::WebContents* source,
+        const content::OpenURLParams& params);
   };
 
   ~SideSearchSideContentsHelper() override;
@@ -42,6 +54,17 @@ class SideSearchSideContentsHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // content::WebContentsDelegate:
+  bool CanDragEnter(content::WebContents* source,
+                    const content::DropData& data,
+                    blink::DragOperationsMask operations_allowed) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
 
   // Navigates the associated tab contents to `url`.
   void NavigateInTabContents(const content::OpenURLParams& params);
