@@ -1304,10 +1304,18 @@ class ProfilePickerCreationFlowEphemeralProfileBrowserTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
+// Flaky on Windows: https://crbug.com/1247530.
+#if defined(OS_WIN)
+#define MAYBE_PRE_Signin DISABLED_PRE_Signin
+#define MAYBE_Signin DISABLED_Signin
+#else
+#define MAYBE_PRE_Signin PRE_Signin
+#define MAYBE_Signin Signin
+#endif
 // Checks that the new profile is no longer ephemeral at the end of the flow and
 // still exists after restart.
 IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
-                       PRE_Signin) {
+                       MAYBE_PRE_Signin) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(1u, profile_manager()->GetNumberOfProfiles());
   ASSERT_TRUE(OriginalProfileExists());
@@ -1347,7 +1355,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
-                       Signin) {
+                       MAYBE_Signin) {
   if (AreEphemeralProfilesForced()) {
     // If the policy is set, all profiles should have been deleted.
     EXPECT_EQ(1u, profile_manager()->GetNumberOfProfiles());
