@@ -9,6 +9,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "content/public/browser/render_frame_host.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
@@ -20,6 +21,8 @@ namespace chromeos {
 class BaseTelemetryExtensionBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
+  static const char kPwaPageUrlString[];
+
   BaseTelemetryExtensionBrowserTest();
   ~BaseTelemetryExtensionBrowserTest() override;
 
@@ -46,6 +49,7 @@ class BaseTelemetryExtensionBrowserTest
       hardware_info_delegate_factory_;
 
   bool should_open_pwa_ui_ = true;
+  content::RenderFrameHost* pwa_page_rfh_ = nullptr;
 };
 
 }  // namespace chromeos

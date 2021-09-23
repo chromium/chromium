@@ -13,10 +13,11 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/fake_hardware_info_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
-#include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -40,14 +41,18 @@ constexpr char kManifest[] = R"(
         "permissions": [ "os.diagnostics", "os.telemetry" ],
         "optional_permissions": [ "os.telemetry.serial_number" ],
         "externally_connectable": {
-          "ids": [
-            "*"
+          "matches": [
+            "http://www.google.com/*"
           ]
         }
       }
     )";
 
 }  // namespace
+
+// static
+const char BaseTelemetryExtensionBrowserTest::kPwaPageUrlString[] =
+    "http://www.google.com";
 
 BaseTelemetryExtensionBrowserTest::BaseTelemetryExtensionBrowserTest() =
     default;
@@ -70,9 +75,11 @@ void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
       hardware_info_delegate_factory_.get());
 
   if (should_open_pwa_ui_) {
+    host_resolver()->AddRule("*", "127.0.0.1");
     // Make sure PWA UI is open.
-    extensions::browsertest_util::AddTab(browser(),
-                                         GURL("http://www.google.com"));
+    pwa_page_rfh_ =
+        ui_test_utils::NavigateToURL(browser(), GURL(kPwaPageUrlString));
+    ASSERT_TRUE(pwa_page_rfh_);
   }
 }
 

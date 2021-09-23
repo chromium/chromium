@@ -79,6 +79,13 @@ class ChromeOSPermissionMessageUnittest : public testing::Test {
                .SetManifestKey("optional_permissions",
                                std::move(optional_permissions))
                .SetManifestKey("manifest_version", 3)
+               .SetManifestKey(
+                   "externally_connectable",
+                   extensions::DictionaryBuilder()
+                       .Set("matches", extensions::ListBuilder()
+                                           .Append("http://www.google.com/*")
+                                           .Build())
+                       .Build())
                .SetID(kChromeOSSystemExtensionId)  // only allowlisted id
                .SetLocation(ManifestLocation::kInternal)
                .Build();
