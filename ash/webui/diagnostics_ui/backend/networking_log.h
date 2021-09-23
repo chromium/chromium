@@ -57,6 +57,13 @@ class NetworkingLog {
   void LogNetworkStateChanged(const mojom::NetworkPtr& old_state,
                               const mojom::NetworkPtr& new_state);
 
+  // Logs when a WiFi network is joined.
+  void LogJoinedWiFiNetwork(const mojom::NetworkPtr& network);
+
+  // Logs when a WiFi network is left.
+  void LogLeftWiFiNetwork(const mojom::NetworkPtr& network,
+                          const std::string& old_ssid);
+
   AsyncLog event_log_;
   std::string active_guid_;
   base::flat_map<std::string, mojom::NetworkPtr> latest_network_states_;

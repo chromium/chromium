@@ -55,6 +55,8 @@ const char kNetworkAddedEventTemplate[] =
 const char kNetworkRemovedEventTemplate[] = "%s network [%s] removed\n";
 const char kNetworkStateChangedEventTemplate[] =
     "%s network [%s] changed state from %s to %s\n";
+const char kJoinedWiFiEventTemplate[] = "%s network [%s] joined SSID '%s'\n";
+const char kLeftWiFiEventTemplate[] = "%s network [%s] left SSID '%s'\n";
 
 std::string GetSubnetMask(int prefix) {
   uint32_t mask = (0xFFFFFFFF << (32 - prefix)) & 0xFFFFFFFF;
@@ -80,6 +82,24 @@ std::string GetSecurityType(mojom::SecurityType type) {
     case mojom::SecurityType::kWpaPsk:
       return "PSK (WPA or RSN)";
   }
+}
+
+std::string GetSsid(const mojom::NetworkPtr& network) {
+  DCHECK(network->type == mojom::NetworkType::kWiFi);
+  return network->type_properties ? network->type_properties->get_wifi()->ssid
+                                  : "";
+}
+
+bool HasJoinedWiFiNetwork(const mojom::NetworkPtr& old_state,
+                          const mojom::NetworkPtr& new_state) {
+  const std::string old_ssid = GetSsid(old_state);
+  return old_ssid.empty() && (old_ssid != GetSsid(new_state));
+}
+
+bool HasLeftWiFiNetwork(const mojom::NetworkPtr& old_state,
+                        const mojom::NetworkPtr& new_state) {
+  const std::string new_ssid = GetSsid(new_state);
+  return new_ssid.empty() && (new_ssid != GetSsid(old_state));
 }
 
 void AddWifiInfoToLog(const mojom::NetworkTypeProperties& type_props,
@@ -275,6 +295,15 @@ void NetworkingLog::LogNetworkChanges(const mojom::NetworkPtr& new_state) {
   DCHECK(base::Contains(latest_network_states_, new_state->observer_guid));
   const mojom::NetworkPtr& old_state =
       latest_network_states_.at(new_state->observer_guid);
+
+  if (new_state->type == mojom::NetworkType::kWiFi) {
+    if (HasJoinedWiFiNetwork(old_state, new_state)) {
+      LogJoinedWiFiNetwork(new_state);
+    } else if (HasLeftWiFiNetwork(old_state, new_state)) {
+      LogLeftWiFiNetwork(new_state, GetSsid(old_state));
+    }
+  }
+
   if (old_state->state != new_state->state) {
     LogNetworkStateChanged(old_state, new_state);
   }
@@ -288,6 +317,21 @@ void NetworkingLog::LogNetworkStateChanged(const mojom::NetworkPtr& old_state,
                          new_state->mac_address.value_or("").c_str(),
                          GetNetworkStateString(old_state->state).c_str(),
                          GetNetworkStateString(new_state->state).c_str());
+  LogEvent(line);
+}
+
+void NetworkingLog::LogJoinedWiFiNetwork(const mojom::NetworkPtr& network) {
+  const std::string line = base::StringPrintf(
+      kJoinedWiFiEventTemplate, GetNetworkType(network->type).c_str(),
+      network->mac_address.value_or("").c_str(), GetSsid(network).c_str());
+  LogEvent(line);
+}
+
+void NetworkingLog::LogLeftWiFiNetwork(const mojom::NetworkPtr& network,
+                                       const std::string& old_ssid) {
+  const std::string line = base::StringPrintf(
+      kLeftWiFiEventTemplate, GetNetworkType(network->type).c_str(),
+      network->mac_address.value_or("").c_str(), old_ssid.c_str());
   LogEvent(line);
 }
 

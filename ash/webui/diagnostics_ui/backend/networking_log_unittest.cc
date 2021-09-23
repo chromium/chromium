@@ -248,10 +248,11 @@ TEST_F(NetworkingLogTest, NetworkEvents) {
   mojom::NetworkPtr new_state = test_info.Clone();
   new_state->state = mojom::NetworkState::kDisabled;
   log.UpdateNetworkState(std::move(new_state));
-  task_environment_.RunUntilIdle();
 
   // Remove the network.
   log.UpdateNetworkList({}, "expected_guid");
+
+  // Make sure all the updates are committed.
   task_environment_.RunUntilIdle();
 
   // Split the log for verification.
@@ -275,6 +276,92 @@ TEST_F(NetworkingLogTest, NetworkEvents) {
 
   // Verify remove event.
   expected_line = "Ethernet network [" + expected_mac_address + "] removed";
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+}
+
+TEST_F(NetworkingLogTest, WiFiNetworkEvents) {
+  const uint32_t expected_signal_strength = 99;
+  const uint16_t expected_frequency = 5785;
+  const std::string expected_ssid = "ssid";
+  const std::string expected_bssid = "bssid";
+  const std::string expected_subnet_mask = "128.0.0.0";
+  const std::string expected_gateway = "192.0.0.1";
+  const std::string expected_ip_address = "192.168.1.1";
+  const std::string expected_security_type = "WEP";
+  const std::string name_server1 = "192.168.1.100";
+  const std::string name_server2 = "192.168.1.101";
+
+  std::vector<std::string> expected_name_servers = {name_server1, name_server2};
+  const std::string expected_guid = "guid";
+  const std::string expected_name = "name";
+  const std::string expected_mac_address = "84:C5:A6:30:3F:31";
+
+  mojom::NetworkPtr test_info = CreateWiFiNetworkPtr(
+      expected_signal_strength, expected_frequency, expected_ssid,
+      expected_bssid, /*routing_prefix=*/1, expected_gateway,
+      expected_ip_address, std::move(expected_name_servers), expected_guid,
+      expected_name, expected_mac_address, mojom::SecurityType::kWepPsk);
+
+  NetworkingLog log(temp_dir_.GetPath());
+
+  // Add the network.
+  log.UpdateNetworkList({expected_guid}, expected_guid);
+  log.UpdateNetworkState(test_info.Clone());
+
+  // Leave the WiFi network.
+  mojom::NetworkPtr new_state = test_info.Clone();
+  new_state->state = mojom::NetworkState::kNotConnected;
+  new_state->type_properties->get_wifi()->ssid = "";
+  log.UpdateNetworkState(std::move(new_state));
+
+  // Rejoin the WiFi network.
+  new_state = test_info.Clone();
+  new_state->state = mojom::NetworkState::kOnline;
+  new_state->type_properties->get_wifi()->ssid = expected_ssid;
+  log.UpdateNetworkState(std::move(new_state));
+
+  // Remove the network.
+  log.UpdateNetworkList({}, "expected_guid");
+
+  // Make sure all the updates are committed.
+  task_environment_.RunUntilIdle();
+
+  // Split the log for verification.
+  const std::string events_log = log.GetNetworkEvents();
+  const std::vector<std::string> events_lines = GetLogLines(events_log);
+  EXPECT_EQ(7u, events_lines.size());
+
+  // Verify section header.
+  size_t upto_line = 0;
+  EXPECT_EQ("--- Network Events ---", events_lines[upto_line++]);
+
+  // Verify add event.
+  std::string expected_line =
+      "WiFi network [" + expected_mac_address + "] started in state Online";
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+
+  // Verify network leave event.
+  expected_line = "WiFi network [" + expected_mac_address + "] left SSID '" +
+                  expected_ssid + "'";
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+
+  // Verify state change event.
+  expected_line = "WiFi network [" + expected_mac_address +
+                  "] changed state from Online to Not Connected";
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+
+  // Verify network join event.
+  expected_line = "WiFi network [" + expected_mac_address + "] joined SSID '" +
+                  expected_ssid + "'";
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+
+  // Verify state change event.
+  expected_line = "WiFi network [" + expected_mac_address +
+                  "] changed state from Not Connected to Online";
+  ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
+
+  // Verify remove event.
+  expected_line = "WiFi network [" + expected_mac_address + "] removed";
   ExpectCorrectLogLine(expected_line, events_lines[upto_line++]);
 }
 
