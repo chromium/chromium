@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/ash_notification_input_container.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -19,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_elider.h"
@@ -227,7 +229,13 @@ AshNotificationView::AshNotificationView(
   if (shown_in_popup_ && !notification.group_child()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{kMessagePopupCornerRadius});
+  } else if (!notification.group_child()) {
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{kMessageCenterNotificationCornerRadius});
   }
+  layer()->SetIsFastRoundedCorner(true);
 
   UpdateWithNotification(notification);
 }

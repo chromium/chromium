@@ -500,6 +500,14 @@ const char* StackedNotificationBar::GetClassName() const {
 }
 
 void StackedNotificationBar::UpdateVisibility() {
+  // In the refreshed message center view the notification bar is always
+  // visible.
+  if (features::IsNotificationsRefreshEnabled()) {
+    if (!GetVisible())
+      SetVisible(true);
+    return;
+  }
+
   int unpinned_count = total_notification_count_ - pinned_notification_count_;
 
   // In expanded state, clear all button should be visible when (rule is subject

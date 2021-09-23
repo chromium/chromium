@@ -238,6 +238,9 @@ class ASH_EXPORT UnifiedMessageListView
   // (e.g. crbug.com/933327) caused by the View destructor.
   bool is_deleting_removed_notifications_ = false;
 
+  const bool is_notifications_refresh_enabled_;
+  const int message_view_width_;
+
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
       message_center_observation_{this};

@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_scroll_bar.h"
 #include "ash/system/message_center/stacked_notification_bar.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
@@ -21,7 +23,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
@@ -259,6 +260,10 @@ gfx::Size UnifiedMessageCenterView::CalculatePreferredSize() const {
   } else if (collapsed_) {
     preferred_size.set_height(kStackedNotificationBarCollapsedHeight);
   }
+
+  if (features::IsNotificationsRefreshEnabled())
+    preferred_size.set_height(preferred_size.height() +
+                              kMessageCenterBottomPadding);
 
   return preferred_size;
 }
