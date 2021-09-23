@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
@@ -137,6 +138,9 @@ class WaylandSurface {
   // When display is removed, the WaylandOutput from `entered_outputs_` should
   // be removed.
   void RemoveEnteredOutput(uint32_t id);
+
+  // Sets the priority hint for the overlay that is committed via this surface.
+  void SetOverlayPriority(gfx::OverlayPriorityHint priority_hint);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,

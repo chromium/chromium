@@ -437,6 +437,11 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
     root_window_->OnEnteredOutputIdRemoved();
 }
 
+void WaylandSurface::SetOverlayPriority(
+    gfx::OverlayPriorityHint priority_hint) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 // static
 void WaylandSurface::FencedRelease(
     void* data,

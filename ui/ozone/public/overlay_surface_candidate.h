@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace ui {
@@ -72,6 +73,8 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   bool overlay_handled = false;
   // If this candidate requires an overlay for proper display.
   bool requires_overlay = false;
+  // Hints for overlay prioritization when delegated composition is used.
+  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
 };
 
 using OverlaySurfaceCandidateList = std::vector<OverlaySurfaceCandidate>;

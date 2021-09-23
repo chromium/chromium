@@ -7,6 +7,7 @@
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -41,6 +42,7 @@ class WaylandSubsurface {
   //     subsurface stack and inserted back to be immediately below/above the
   //     reference subsurface.
   //   |buffer_scale|: the scale factor of the next attached buffer.
+  //   |priority_hint|: specifies the augmented_surface_set_overlay_priority.
   //
   // The coordinate transformations from buffer pixel coordinates up to the
   // surface-local coordinates happen in the following order:
@@ -52,7 +54,8 @@ class WaylandSubsurface {
                                int32_t buffer_scale,
                                bool enable_blend,
                                const WaylandSurface* reference_below,
-                               const WaylandSurface* reference_above);
+                               const WaylandSurface* reference_above,
+                               gfx::OverlayPriorityHint priority_hint);
 
   // Assigns wl_subsurface role to the wl_surface so it is visible when a
   // wl_buffer is attached.

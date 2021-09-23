@@ -14,6 +14,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
+#include "ui/gfx/overlay_priority_hint.h"
 
 #if defined(OS_APPLE)
 #include "components/viz/service/display/overlay_processor_mac.h"
@@ -203,6 +204,7 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
   overlay_plane.enable_blending = has_alpha;
   overlay_plane.opacity = opacity;
   overlay_plane.mailbox = mailbox;
+  overlay_plane.priority_hint = gfx::OverlayPriorityHint::kNone;
 
   // Adjust transformation and display_rect based on display rotation.
   overlay_plane.display_rect =

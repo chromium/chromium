@@ -7,6 +7,7 @@ module ui.ozone.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
+import "ui/gfx/mojom/overlay_priority_hint.mojom";
 
 // This is not a mirror of ui::OverlayPlane, it only contains things that are
 // useful to ozone/wayland.
@@ -51,4 +52,8 @@ struct WaylandOverlayConfig {
   // be accessed by the display controller for overlay, or by the gpu for
   // compositing.
   gfx.mojom.GpuFenceHandle? access_fence_handle;
+
+  // Specifies priority of this overlay if delegated composition is supported
+  // and enabled.
+  gfx.mojom.OverlayPriorityHint priority_hint;
 };

@@ -795,7 +795,7 @@ bool WaylandWindow::CommitOverlays(
         (*iter)->ConfigureAndShowSurface(
             (*overlay_iter)->transform, (*overlay_iter)->bounds_rect,
             root_surface()->buffer_scale(), (*overlay_iter)->enable_blend,
-            nullptr, reference_above);
+            nullptr, reference_above, (*overlay_iter)->priority_hint);
         (*iter)->wayland_surface()->SetViewportSource(
             (*overlay_iter)->crop_rect);
         (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
@@ -833,7 +833,7 @@ bool WaylandWindow::CommitOverlays(
         (*iter)->ConfigureAndShowSurface(
             (*overlay_iter)->transform, (*overlay_iter)->bounds_rect,
             root_surface()->buffer_scale(), (*overlay_iter)->enable_blend,
-            reference_below, nullptr);
+            reference_below, nullptr, (*overlay_iter)->priority_hint);
         (*iter)->wayland_surface()->SetViewportSource(
             (*overlay_iter)->crop_rect);
         (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
@@ -860,6 +860,7 @@ bool WaylandWindow::CommitOverlays(
   UpdateVisualSize((*split)->bounds_rect.size());
 
   if (!wayland_overlay_delegation_enabled_) {
+    LOG(ERROR) << "Hint " << (*split)->priority_hint;
     root_surface_->SetViewportSource((*split)->crop_rect);
     // TODO(fangzhoug): Refactor some of this logic s.t. the decision of whether
     //   to apply viewport.destination is made at commit time.
@@ -884,7 +885,7 @@ bool WaylandWindow::CommitOverlays(
     primary_subsurface_->ConfigureAndShowSurface(
         (*split)->transform, (*split)->bounds_rect,
         root_surface()->buffer_scale(), (*split)->enable_blend, nullptr,
-        nullptr);
+        nullptr, (*split)->priority_hint);
     primary_subsurface_->wayland_surface()->SetViewportSource(
         (*split)->crop_rect);
     primary_subsurface_->wayland_surface()->SetOpacity((*split)->opacity);

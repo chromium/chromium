@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -2944,7 +2945,7 @@ TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
   EXPECT_TRUE(mock_surface_subsurface);
   wayland_subsurface->ConfigureAndShowSurface(
       gfx::OVERLAY_TRANSFORM_NONE, subsurface_bounds, 1 /*buffer_scale*/, true,
-      nullptr, nullptr);
+      nullptr, nullptr, gfx::OverlayPriorityHint::kNone);
   connection_->ScheduleFlush();
 
   Sync();

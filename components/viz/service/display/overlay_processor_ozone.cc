@@ -38,6 +38,7 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->opacity = primary_plane.opacity;
   ozone_candidate->plane_z_order = 0;
   ozone_candidate->buffer_size = primary_plane.resource_size;
+  ozone_candidate->priority_hint = primary_plane.priority_hint;
 }
 
 void ConvertToOzoneOverlaySurface(
@@ -53,6 +54,7 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->plane_z_order = overlay_candidate.plane_z_order;
   ozone_candidate->buffer_size = overlay_candidate.resource_size_in_pixels;
   ozone_candidate->requires_overlay = overlay_candidate.requires_overlay;
+  ozone_candidate->priority_hint = overlay_candidate.priority_hint;
 }
 
 uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {

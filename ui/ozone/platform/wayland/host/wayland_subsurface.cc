@@ -122,9 +122,11 @@ void WaylandSubsurface::ConfigureAndShowSurface(
     int32_t buffer_scale,
     bool enable_blend,
     const WaylandSurface* reference_below,
-    const WaylandSurface* reference_above) {
+    const WaylandSurface* reference_above,
+    gfx::OverlayPriorityHint priority_hint) {
   wayland_surface()->SetBufferTransform(transform);
   wayland_surface()->SetSurfaceBufferScale(buffer_scale);
+  wayland_surface()->SetOverlayPriority(priority_hint);
 
   auto old_bounds = bounds_px_;
   SetBounds(bounds_rect);

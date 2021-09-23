@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 
@@ -452,13 +453,13 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u,
       kDefaultScale, window_->GetBounds(), gfx::RectF(), window_->GetBounds(),
-      false, 1.0f, gfx::GpuFenceHandle()));
+      false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone));
 
   // Non-existing buffer id
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 2u, kDefaultScale,
       window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-      gfx::GpuFenceHandle()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone));
 
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
@@ -1694,15 +1695,15 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
       kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
       kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
       kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
   Sync();
