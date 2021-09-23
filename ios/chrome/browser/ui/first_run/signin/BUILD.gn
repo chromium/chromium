@@ -17,6 +17,7 @@ source_set("signin") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",

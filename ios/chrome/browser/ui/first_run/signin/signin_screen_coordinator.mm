@@ -5,11 +5,15 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#include "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -33,6 +37,19 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
+// instead of this when available.
+bool IsSigninForcedByPolicy() {
+  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
+      GetApplicationContext()->GetLocalState()->GetInteger(
+          prefs::kBrowserSigninPolicy));
+  return policy_mode == BrowserSigninMode::kForced;
+}
+
+}  // namespace
 
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
                                        PolicyWatcherBrowserAgentObserving,
@@ -65,10 +82,6 @@
     UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-
-// YES if it is in forced signin mode.
-// TODO(crbug.com/1242418): Handle the policy dynamic changes.
-@property(nonatomic, assign) BOOL forcedSignin;
 
 @end
 
@@ -118,7 +131,7 @@
 
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
-  self.viewController.forcedSignin = self.forcedSignin;
+  self.viewController.forcedSignin = IsSigninForcedByPolicy();
 
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(
