@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/nearby/nearby_process_manager_impl.h"
+#include "chrome/browser/ash/nearby/nearby_process_manager_impl.h"
 
 #include <memory>
 #include <utility>
@@ -14,10 +14,10 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
+#include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
+#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider.h"
+#include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/nearby/bluetooth_adapter_manager.h"
-#include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
-#include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -40,7 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 namespace {
 
@@ -293,4 +293,4 @@ TEST_F(NearbyProcessManagerImplTest,
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

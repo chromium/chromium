@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
+#include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 
+#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider_factory.h"
+#include "chrome/browser/ash/nearby/nearby_process_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider_factory.h"
-#include "chrome/browser/chromeos/nearby/nearby_process_manager_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 namespace {
 
@@ -84,4 +84,4 @@ bool NearbyProcessManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

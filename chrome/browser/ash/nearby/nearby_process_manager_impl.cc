@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/nearby/nearby_process_manager_impl.h"
+#include "chrome/browser/ash/nearby/nearby_process_manager_impl.h"
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/nearby/bluetooth_adapter_manager.h"
-#include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
+#include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
+#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 namespace {
 
@@ -291,4 +291,4 @@ void NearbyProcessManagerImpl::NotifyProcessStopped(
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

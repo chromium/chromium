@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/nearby/bluetooth_adapter_manager.h"
+#include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -17,7 +17,7 @@
 #include "device/bluetooth/dbus/fake_bluetooth_profile_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 class BluetoothAdapterManagerTest : public testing::Test {
@@ -116,4 +116,4 @@ TEST_F(BluetoothAdapterManagerTest, Shutdown_NeverInitialized) {
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

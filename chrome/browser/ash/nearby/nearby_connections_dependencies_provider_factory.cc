@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider_factory.h"
+#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider_factory.h"
 
-#include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
+#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 // static
@@ -51,4 +51,4 @@ bool NearbyConnectionsDependenciesProviderFactory::
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

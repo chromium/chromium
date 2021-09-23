@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
+#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/chromeos/nearby/bluetooth_adapter_manager.h"
+#include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 #include "chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.h"
@@ -19,7 +19,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/p2p_trusted.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 namespace {
 
@@ -187,4 +187,4 @@ NearbyConnectionsDependenciesProvider::GetWebRtcDependencies() {
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

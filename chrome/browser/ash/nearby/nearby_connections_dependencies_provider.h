@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
-#define CHROME_BROWSER_CHROMEOS_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
+#define CHROME_BROWSER_ASH_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -24,7 +24,7 @@ class Adapter;
 }
 }  // namespace bluetooth
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 class BluetoothAdapterManager;
@@ -72,6 +72,6 @@ class NearbyConnectionsDependenciesProvider : public KeyedService {
 };
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_

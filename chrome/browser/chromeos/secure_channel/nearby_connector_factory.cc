@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
 
-#include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
+#include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_impl.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"

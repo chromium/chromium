@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/nearby/bluetooth_adapter_manager.h"
+#include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 
 #include "chromeos/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "device/bluetooth/adapter.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace nearby {
 
 BluetoothAdapterManager::BluetoothAdapterManager() = default;
@@ -61,4 +61,4 @@ void BluetoothAdapterManager::Shutdown() {
 }
 
 }  // namespace nearby
-}  // namespace chromeos
+}  // namespace ash

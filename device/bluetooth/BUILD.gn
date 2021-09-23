@@ -69,8 +69,8 @@ source_set("deprecated_experimental_mojo") {
     # public/mojom/README.md
 
     # Approved clients:
+    "//chrome/browser/ash/nearby:*",
     "//chrome/browser/ui/webui/bluetooth_internals:*",
-    "//chrome/browser/chromeos/nearby:*",
 
     # Implementation tests
     # Ideally only device_unittests, however android & fushia generate

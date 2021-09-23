@@ -76,4 +76,11 @@ std::ostream& operator<<(
 }  // namespace nearby
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace nearby {
+using ::chromeos::nearby::NearbyProcessManager;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_PROCESS_MANAGER_H_
