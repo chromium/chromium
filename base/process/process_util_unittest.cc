@@ -72,6 +72,7 @@
 #include "third_party/lss/linux_syscall_support.h"
 #endif
 #if defined(OS_FUCHSIA)
+#include <lib/fdio/fdio.h>
 #include <lib/fdio/limits.h>
 #include <zircon/process.h>
 #include <zircon/processargs.h>
@@ -1118,10 +1119,15 @@ int ProcessUtilTest::CountOpenFDsInChild() {
 TEST_F(ProcessUtilTest, MAYBE_FDRemapping) {
   int fds_before = CountOpenFDsInChild();
 
-  // open some dummy fds to make sure they don't propagate over to the
+  // Open some dummy fds to make sure they don't propagate over to the
   // child process.
-  int dev_null = open("/dev/null", O_RDONLY);
-  DPCHECK(dev_null != -1);
+#if defined(OS_FUCHSIA)
+  base::ScopedFD dev_null(fdio_fd_create_null());
+#else
+  base::ScopedFD dev_null(open("/dev/null", O_RDONLY));
+#endif  // defined(OS_FUCHSIA)
+
+  DPCHECK(dev_null.get() > 0);
   int sockets[2];
   int ret = socketpair(AF_UNIX, SOCK_STREAM, 0, sockets);
   DPCHECK(ret == 0);
@@ -1133,8 +1139,6 @@ TEST_F(ProcessUtilTest, MAYBE_FDRemapping) {
   ret = IGNORE_EINTR(close(sockets[0]));
   DPCHECK(ret == 0);
   ret = IGNORE_EINTR(close(sockets[1]));
-  DPCHECK(ret == 0);
-  ret = IGNORE_EINTR(close(dev_null));
   DPCHECK(ret == 0);
 }
 
