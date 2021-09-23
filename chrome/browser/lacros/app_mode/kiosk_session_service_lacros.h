@@ -33,6 +33,11 @@ class KioskSessionServiceLacros {
   // the app.
   void InitWebKioskSession(Browser* browser);
 
+  // Get app session object for testing purpose only.
+  chromeos::AppSession* GetAppSessionForTesting() const {
+    return app_session_.get();
+  }
+
  protected:
   // Tell the ash-chrome to end the kiosk session and return the current user
   // to the login screen by calling the API provided by

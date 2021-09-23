@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "chrome/browser/chromeos/app_mode/app_session.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -51,6 +53,17 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
           EXPECT_EQ(result, CreationResult::kSuccess);
         }));
     EXPECT_TRUE(use_callback);
+
+    // Verify `AppSession` object is created when `NewFullscreenWindow` is
+    // called in the Web Kiosk session. Then, disable the `AttemptUserExit`
+    // method to do nothing.
+    if (chromeos::LacrosService::Get()->init_params()->session_type ==
+        SessionType::kWebKioskSession) {
+      chromeos::AppSession* app_session =
+          KioskSessionServiceLacros::Get()->GetAppSessionForTesting();
+      EXPECT_TRUE(app_session);
+      app_session->SetAttemptUserExitForTesting(base::DoNothing());
+    }
   }
 
   void CreateNewWindow() {
