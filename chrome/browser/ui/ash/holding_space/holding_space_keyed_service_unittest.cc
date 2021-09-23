@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time_override.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -301,7 +302,9 @@ class MockDownloadManager : public content::MockDownloadManager {
 class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   HoldingSpaceKeyedServiceTest()
-      : fake_user_manager_(new FakeChromeUserManager),
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
     HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(true);
   }
@@ -316,11 +319,16 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 
   // BrowserWithTestWindowTest:
   void SetUp() override {
+    // The test's task environment starts with a mock time close to the Unix
+    // epoch, but the files that back holding space items are created with
+    // accurate timestamps. Advance the clock so that the test's mock time and
+    // the time used for file operations are in sync for file age calculations.
+    task_environment()->AdvanceClock(base::subtle::TimeNowIgnoringOverride() -
+                                     base::Time::Now());
     // Needed by `file_manager::VolumeManager`.
     chromeos::disks::DiskMountManager::InitializeForTesting(
         new file_manager::FakeDiskMountManager);
     BrowserWithTestWindowTest::SetUp();
-    holding_space_util::SetNowForTesting(absl::nullopt);
   }
 
   void TearDown() override {
@@ -1583,8 +1591,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
   EXPECT_EQ(file_path_2, holding_space_model->items()[0]->file_path());
 }
 
-// Verifies that screenshots restored from persistence are not older than
-// kMaxFileAge.
+// Verifies that files restored from persistence are not older than
+// `kMaxFileAge`.
 TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1597,6 +1605,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
   HoldingSpaceModel::ItemList restored_holding_space_items;
   base::Value persisted_holding_space_items_after_restoration(
       base::Value::Type::LIST);
+  base::Time last_creation_time = base::Time::Now();
 
   // Create a secondary profile w/ a pre-populated pref store.
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
@@ -1621,7 +1630,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
 
           // Only pinned files are exempt from age checks. In this test, we
           // expect all holding space items of other types to be removed from
-          // persistence during restoration due to being older than kMaxFileAge.
+          // persistence during restoration due to being older than
+          // `kMaxFileAge`.
           if (type == HoldingSpaceItem::Type::kPinnedFile) {
             persisted_holding_space_items_after_restoration.Append(
                 fresh_holding_space_item->Serialize());
@@ -1629,20 +1639,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
                 std::move(fresh_holding_space_item));
           }
 
-          const base::FilePath stale_item_file =
-              downloads_mount->GetRootPath().AppendASCII(
-                  base::UnguessableToken::Create().ToString());
-          auto stale_holding_space_item =
-              HoldingSpaceItem::CreateFileBackedItem(
-                  type, stale_item_file,
-                  GetFileSystemUrl(GetProfile(), stale_item_file),
-                  base::BindOnce(&CreateTestHoldingSpaceImage));
-
-          // NOTE: While the `stale_holding_space_item` is persisted here, we do
-          // *not* expect it to be restored or to be persisted after model
-          // restoration since its backing file does *not* exist.
-          persisted_holding_space_items_before_restoration.Append(
-              stale_holding_space_item->Serialize());
+          base::File::Info file_info;
+          ASSERT_TRUE(base::GetFileInfo(file, &file_info));
+          last_creation_time = file_info.creation_time;
         }
 
         pref_store->SetValueSilently(
@@ -1652,7 +1651,10 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
 
-  holding_space_util::SetNowForTesting(base::Time::Now() + kMaxFileAge);
+  // Fast-forward to a point where the created files are too old to be restored
+  // from persistence.
+  task_environment()->FastForwardBy(last_creation_time - base::Time::Now() +
+                                    kMaxFileAge);
 
   ActivateSecondaryProfile();
   HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();

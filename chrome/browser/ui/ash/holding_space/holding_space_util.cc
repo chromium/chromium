@@ -21,12 +21,6 @@
 namespace ash {
 namespace holding_space_util {
 
-namespace {
-
-absl::optional<base::Time> now_for_testing;
-
-}  // namespace
-
 ValidityRequirement::ValidityRequirement() = default;
 ValidityRequirement::ValidityRequirement(const ValidityRequirement&) = default;
 ValidityRequirement::ValidityRequirement(ValidityRequirement&& other) = default;
@@ -47,9 +41,9 @@ void FilePathValid(Profile* profile,
             if (requirement.must_exist)
               valid = result == base::File::Error::FILE_OK;
             if (valid && requirement.must_be_newer_than) {
-              valid = file_info.creation_time >
-                      now_for_testing.value_or(base::Time::Now()) -
-                          requirement.must_be_newer_than.value();
+              valid =
+                  file_info.creation_time >
+                  base::Time::Now() - requirement.must_be_newer_than.value();
             }
             std::move(callback).Run(valid);
           },
@@ -205,10 +199,6 @@ std::unique_ptr<HoldingSpaceImage> ResolveImageWithPlaceholderImageSkiaResolver(
                     .Run(file_path, size, dark_background, is_folder);
           },
           placeholder_image_skia_resolver));
-}
-
-void SetNowForTesting(absl::optional<base::Time> now) {
-  now_for_testing = now;
 }
 
 }  // namespace holding_space_util
