@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -613,7 +614,10 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Accessibility Tests //
 class AutofillAccessibilityTest : public AutofillTest {
  protected:
-  AutofillAccessibilityTest() {}
+  AutofillAccessibilityTest() {
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        "vmodule", "accessibility_notification_waiter=1");
+  }
 
   // Returns true if kAutofillAvailable state is present AND  kAutoComplete
   // string attribute is missing; only one should be set at any given time.
@@ -636,6 +640,9 @@ class AutofillAccessibilityTest : public AutofillTest {
     }
     return false;
   }
+
+ private:
+  base::test::ScopedCommandLine command_line_;
 };
 
 // Test that autofill available state is correctly set on accessibility node.
