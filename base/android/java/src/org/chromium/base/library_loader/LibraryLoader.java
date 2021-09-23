@@ -71,6 +71,10 @@ public class LibraryLoader {
     private static final String REACHED_CODE_SAMPLING_INTERVAL_KEY =
             "reached_code_sampling_interval";
 
+    // Compile time switch for sharing RELRO between the browser and the app zygote.
+    // TODO(crbug.com/1154224): remove when the issue is closed.
+    private static final boolean ALLOW_CHROMIUM_LINKER_IN_ZYGOTE = false;
+
     // Default sampling interval for reached code profiler in microseconds.
     private static final int DEFAULT_REACHED_CODE_SAMPLING_INTERVAL_US = 10000;
 
@@ -153,6 +157,12 @@ public class LibraryLoader {
         int MAIN = 0;
         int ZYGOTE = 1;
         int CHILD_WITHOUT_ZYGOTE = 2;
+    }
+
+    // Returns true when sharing RELRO between the browser process and the app zygote should *not*
+    // be attempted.
+    public static boolean mainProcessIntendsToProvideRelroFd() {
+        return !ALLOW_CHROMIUM_LINKER_IN_ZYGOTE || Build.VERSION.SDK_INT <= Build.VERSION_CODES.R;
     }
 
     /**

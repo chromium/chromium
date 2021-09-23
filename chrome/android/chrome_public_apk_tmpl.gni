@@ -22,6 +22,7 @@ default_chrome_public_jinja_variables = [
   "channel=$android_channel",
   "enable_vr=$enable_vr",
   "include_arcore_manifest_flag=false",
+  "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 
 # Enable stack unwinding only on official build with specific channels. It is
