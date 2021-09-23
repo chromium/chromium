@@ -815,6 +815,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::AUTO_DARK_WEB_CONTENT:
       case ContentSettingsType::BACKGROUND_SYNC:
       case ContentSettingsType::COOKIES:
+      case ContentSettingsType::REQUEST_DESKTOP_SITE:
       case ContentSettingsType::JAVASCRIPT:
       case ContentSettingsType::POPUPS:
       case ContentSettingsType::SENSORS:

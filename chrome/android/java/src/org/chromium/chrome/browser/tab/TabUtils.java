@@ -16,6 +16,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -114,5 +117,17 @@ public class TabUtils {
                 /* Set a very large size as default to serve as a disabled screen width. */ 4096);
 
         return minWidthForDesktopSite <= windowWidth;
+    }
+
+    /**
+     * Check if request desktop site global setting is enabled.
+     * @param profile The profile of the tab.
+     *        Content settings have separate storage for incognito profiles.
+     *        For site-specific exceptions the actual profile is needed.
+     * @return Whether the desktop site should be requested.
+     */
+    public static boolean isDesktopSiteGlobalEnabled(Profile profile) {
+        return WebsitePreferenceBridge.isCategoryEnabled(
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
     }
 }

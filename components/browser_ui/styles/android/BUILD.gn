@@ -158,6 +158,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_business.xml",
     "java/res/drawable/ic_collections_grey.xml",
     "java/res/drawable/ic_data_viz_grey.xml",
+    "java/res/drawable/ic_desktop_windows.xml",
     "java/res/drawable/ic_done_blue.xml",
     "java/res/drawable/ic_drive_document_24dp.xml",
     "java/res/drawable/ic_drive_file_24dp.xml",

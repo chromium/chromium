@@ -487,7 +487,6 @@ chrome_java_resources = [
   "java/res/drawable/ic_checkmark_24dp.xml",
   "java/res/drawable/ic_cloud_offline_24dp.xml",
   "java/res/drawable/ic_credit_card_black.xml",
-  "java/res/drawable/ic_desktop_windows.xml",
   "java/res/drawable/ic_error.xml",
   "java/res/drawable/ic_file_download_scheduled_24dp.xml",
   "java/res/drawable/ic_find_in_page.xml",

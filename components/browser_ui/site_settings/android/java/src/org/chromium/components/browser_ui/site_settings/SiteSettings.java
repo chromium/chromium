@@ -112,6 +112,8 @@ public class SiteSettings
                 p.setSummary(ContentSettingsResources.getAdsBlockedListSummary());
             } else if (Type.SOUND == prefCategory && !checked) {
                 p.setSummary(ContentSettingsResources.getSoundBlockedListSummary());
+            } else if (Type.REQUEST_DESKTOP_SITE == prefCategory) {
+                p.setSummary(ContentSettingsResources.getDesktopSiteListSummary(checked));
             } else if (requiresTriStateSetting) {
                 p.setSummary(ContentSettingsResources.getCategorySummary(setting));
             } else {

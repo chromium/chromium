@@ -42,7 +42,7 @@ public class SiteSettingsCategory {
             Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION,
             Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
             Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
-            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT})
+            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // All updates here must also be reflected in {@link #preferenceKey(int)
@@ -71,10 +71,11 @@ public class SiteSettingsCategory {
         int VIRTUAL_REALITY = 21;
         int USE_STORAGE = 22;
         int AUTO_DARK_WEB_CONTENT = 23;
+        int REQUEST_DESKTOP_SITE = 24;
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 24;
+        int NUM_ENTRIES = 25;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -148,7 +149,7 @@ public class SiteSettingsCategory {
     /**
      * Convert Type into {@link ContentSettingsType}.
      */
-    public static int contentSettingsType(@Type int type) {
+    public static @ContentSettingsType int contentSettingsType(@Type int type) {
         // This switch statement is ordered by types alphabetically.
         switch (type) {
             case Type.ADS:
@@ -171,6 +172,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.CLIPBOARD_READ_WRITE;
             case Type.COOKIES:
                 return ContentSettingsType.COOKIES;
+            case Type.REQUEST_DESKTOP_SITE:
+                return ContentSettingsType.REQUEST_DESKTOP_SITE;
             case Type.DEVICE_LOCATION:
                 return ContentSettingsType.GEOLOCATION;
             case Type.IDLE_DETECTION:
@@ -198,7 +201,7 @@ public class SiteSettingsCategory {
             // case Type.ALL_SITES
             // case Type.USE_STORAGE
             default:
-                return -1; // Conversion unavailable.
+                return ContentSettingsType.DEFAULT; // Conversion unavailable.
         }
     }
 
@@ -245,6 +248,8 @@ public class SiteSettingsCategory {
                 return "clipboard";
             case Type.COOKIES:
                 return "cookies";
+            case Type.REQUEST_DESKTOP_SITE:
+                return "request_desktop_site";
             case Type.DEVICE_LOCATION:
                 return "device_location";
             case Type.IDLE_DETECTION:

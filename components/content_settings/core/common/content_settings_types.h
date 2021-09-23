@@ -288,6 +288,10 @@ enum class ContentSettingsType : int32_t {
   // web content.
   AUTO_DARK_WEB_CONTENT,
 
+  // Setting to indicate whether Chrome should request the desktop view of a
+  // site instead of the mobile one.
+  REQUEST_DESKTOP_SITE,
+
   NUM_TYPES,
 };
 

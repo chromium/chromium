@@ -102,6 +102,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::FORMFILL_METADATA, 81},
     {ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, 82},
     {ContentSettingsType::AUTO_DARK_WEB_CONTENT, 83},
+    {ContentSettingsType::REQUEST_DESKTOP_SITE, 84},
 };
 
 }  // namespace

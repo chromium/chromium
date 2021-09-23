@@ -159,6 +159,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             case SiteSettingsCategory.Type.BLUETOOTH_SCANNING:
                 return CommandLine.getInstance().hasSwitch(
                         ContentSwitches.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES);
+            case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
+                return ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL);
             case SiteSettingsCategory.Type.NFC:
                 return ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC);
             default:
