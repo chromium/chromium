@@ -118,7 +118,9 @@ void SnapshotSessionControllerImpl::OnSessionStateChanged() {
 bool SnapshotSessionControllerImpl::MaybeStartSession() {
   if (user_manager::UserManager::Get() &&
       user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
-    StartSession();
+    if (!session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
+      StartSession();
+    }
     return true;
   }
   return false;
