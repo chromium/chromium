@@ -829,7 +829,13 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
         break;
       new_column_block_size = FragmentainerSpaceAtBfcStart(ConstraintSpace());
     } else {
-      DCHECK(minimal_space_shortage != LayoutUnit::Max());
+      // minimal_space_shortage should be set to something meaningful during
+      // layout, but if the column block-size was already "infinite", that's not
+      // possible. We'll then stay at "infinite" block-size and break out of the
+      // loop, since we're not able to get any taller columns.
+      DCHECK(minimal_space_shortage != LayoutUnit::Max() ||
+             column_size.block_size == LayoutUnit::Max());
+
       new_column_block_size = column_size.block_size + minimal_space_shortage;
     }
     new_column_block_size =
