@@ -25,6 +25,11 @@ namespace chromecast {
 class CastActivityUrlFilterManager {
  public:
   CastActivityUrlFilterManager();
+
+  CastActivityUrlFilterManager(const CastActivityUrlFilterManager&) = delete;
+  CastActivityUrlFilterManager& operator=(const CastActivityUrlFilterManager&) =
+      delete;
+
   ~CastActivityUrlFilterManager();
 
   // Returns nullptr if no Activity URL filter exists for the render frame.
@@ -40,6 +45,10 @@ class CastActivityUrlFilterManager {
    public:
     explicit UrlFilterReceiver(content::RenderFrame* render_frame,
                                base::OnceCallback<void()> on_removed_callback);
+
+    UrlFilterReceiver(const UrlFilterReceiver&) = delete;
+    UrlFilterReceiver& operator=(const UrlFilterReceiver&) = delete;
+
     ~UrlFilterReceiver() override;
 
     // mojom::ActivityUrlFilterConfiguration implementation:
@@ -70,16 +79,12 @@ class CastActivityUrlFilterManager {
 
     base::WeakPtr<UrlFilterReceiver> weak_this_;
     base::WeakPtrFactory<UrlFilterReceiver> weak_factory_;
-
-    DISALLOW_COPY_AND_ASSIGN(UrlFilterReceiver);
   };
 
   base::flat_map<int, UrlFilterReceiver*> activity_url_filters_;
 
   base::WeakPtr<CastActivityUrlFilterManager> weak_this_;
   base::WeakPtrFactory<CastActivityUrlFilterManager> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastActivityUrlFilterManager);
 };
 
 }  // namespace chromecast

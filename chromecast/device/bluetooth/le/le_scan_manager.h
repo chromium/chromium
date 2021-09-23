@@ -47,13 +47,13 @@ class LeScanManager {
 
   class ScanHandle {
    public:
+    ScanHandle(const ScanHandle&) = delete;
+    ScanHandle& operator=(const ScanHandle&) = delete;
+
     virtual ~ScanHandle() = default;
 
    protected:
     ScanHandle() = default;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScanHandle);
   };
 
   static std::unique_ptr<LeScanManager> Create(

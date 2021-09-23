@@ -98,6 +98,9 @@ class CastContentBrowserClient
   // preflight checks.
   static std::vector<std::string> GetCorsExemptHeadersList();
 
+  CastContentBrowserClient(const CastContentBrowserClient&) = delete;
+  CastContentBrowserClient& operator=(const CastContentBrowserClient&) = delete;
+
   ~CastContentBrowserClient() override;
 
   // Generally we discourage Initialize methods. Unfortunately, we can't do
@@ -386,8 +389,6 @@ class CastContentBrowserClient
   std::unique_ptr<external_service_support::ExternalConnector> media_connector_;
 
   CastFeatureListCreator* cast_feature_list_creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastContentBrowserClient);
 };
 
 }  // namespace shell

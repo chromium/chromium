@@ -56,6 +56,10 @@ class WebContentController
   };
 
   explicit WebContentController(Client* client);
+
+  WebContentController(const WebContentController&) = delete;
+  WebContentController& operator=(const WebContentController&) = delete;
+
   ~WebContentController() override;
 
   virtual void Destroy() = 0;
@@ -173,22 +177,22 @@ class WebContentController
   std::unique_ptr<ui::InputMethodObserver> input_method_observer_;
 
   base::WeakPtrFactory<WebContentController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentController);
 };
 
 class WebContentJsChannels
     : public base::SupportsWeakPtr<WebContentJsChannels> {
  public:
   explicit WebContentJsChannels(WebContentController::Client* client);
+
+  WebContentJsChannels(const WebContentJsChannels&) = delete;
+  WebContentJsChannels& operator=(const WebContentJsChannels&) = delete;
+
   ~WebContentJsChannels();
 
   void SendMessage(const std::string& channel, const std::string& message);
 
  private:
   WebContentController::Client* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentJsChannels);
 };
 
 }  // namespace chromecast

@@ -31,6 +31,10 @@ class CastContentUtilityClient;
 class CastMainDelegate : public content::ContentMainDelegate {
  public:
   CastMainDelegate();
+
+  CastMainDelegate(const CastMainDelegate&) = delete;
+  CastMainDelegate& operator=(const CastMainDelegate&) = delete;
+
   ~CastMainDelegate() override;
 
   // content::ContentMainDelegate implementation:
@@ -65,8 +69,6 @@ class CastMainDelegate : public content::ContentMainDelegate {
 #endif  // defined(OS_ANDROID)
 
   std::unique_ptr<CastFeatureListCreator> cast_feature_list_creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMainDelegate);
 };
 
 }  // namespace shell

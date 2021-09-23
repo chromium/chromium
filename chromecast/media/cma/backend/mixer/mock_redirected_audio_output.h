@@ -29,6 +29,11 @@ class MockRedirectedAudioOutput
  public:
   explicit MockRedirectedAudioOutput(
       const mixer_service::RedirectedAudioConnection::Config& config);
+
+  MockRedirectedAudioOutput(const MockRedirectedAudioOutput&) = delete;
+  MockRedirectedAudioOutput& operator=(const MockRedirectedAudioOutput&) =
+      delete;
+
   ~MockRedirectedAudioOutput() override;
 
   ::media::AudioBus* last_buffer() const { return last_buffer_.get(); }
@@ -50,8 +55,6 @@ class MockRedirectedAudioOutput
 
   std::unique_ptr<::media::AudioBus> last_buffer_;
   int64_t last_output_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRedirectedAudioOutput);
 };
 
 }  // namespace media

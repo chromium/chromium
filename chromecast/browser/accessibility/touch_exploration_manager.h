@@ -36,6 +36,10 @@ class TouchExplorationManager : public ui::EventRewriter,
       AccessibilityFocusRingController* accessibility_focus_ring_controller,
       AccessibilitySoundPlayer* accessibility_sound_player,
       CastGestureHandler* cast_gesture_handler);
+
+  TouchExplorationManager(const TouchExplorationManager&) = delete;
+  TouchExplorationManager& operator=(const TouchExplorationManager&) = delete;
+
   ~TouchExplorationManager() override;
 
   // Enable or disable touch exploration.
@@ -78,8 +82,6 @@ class TouchExplorationManager : public ui::EventRewriter,
   AccessibilityFocusRingController* accessibility_focus_ring_controller_;
   AccessibilitySoundPlayer* accessibility_sound_player_;
   CastGestureHandler* cast_gesture_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationManager);
 };
 
 }  // namespace shell

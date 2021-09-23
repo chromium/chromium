@@ -34,6 +34,11 @@ class ApplicationMediaInfoManager
           receiver,
       std::string application_session_id,
       bool mixer_audio_enabled);
+
+  ApplicationMediaInfoManager(const ApplicationMediaInfoManager&) = delete;
+  ApplicationMediaInfoManager& operator=(const ApplicationMediaInfoManager&) =
+      delete;
+
   ~ApplicationMediaInfoManager() override;
 
   void SetRendererBlock(bool renderer_blocked);
@@ -49,8 +54,6 @@ class ApplicationMediaInfoManager
   bool mixer_audio_enabled_;
   // Flag to determine if renderer can start.
   bool renderer_blocked_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplicationMediaInfoManager);
 };
 
 void CreateApplicationMediaInfoManager(

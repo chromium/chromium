@@ -16,6 +16,10 @@ namespace media {
 class FuchsiaVolumeControl : public SystemVolumeControl {
  public:
   FuchsiaVolumeControl();
+
+  FuchsiaVolumeControl(const FuchsiaVolumeControl&) = delete;
+  FuchsiaVolumeControl& operator=(const FuchsiaVolumeControl&) = delete;
+
   ~FuchsiaVolumeControl() override;
 
   // SystemVolumeControl interface.
@@ -26,9 +30,6 @@ class FuchsiaVolumeControl : public SystemVolumeControl {
   void SetMuted(bool muted) override;
   void SetPowerSave(bool power_save_on) override;
   void SetLimit(float limit) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaVolumeControl);
 };
 
 }  // namespace media

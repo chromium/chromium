@@ -51,6 +51,10 @@ class SequencedTaskRunnerNoDelay : public base::SequencedTaskRunner {
 class TimeChangeObserver : public SystemTimeChangeNotifier::Observer {
  public:
   TimeChangeObserver() : num_time_changed_(0) {}
+
+  TimeChangeObserver(const TimeChangeObserver&) = delete;
+  TimeChangeObserver& operator=(const TimeChangeObserver&) = delete;
+
   ~TimeChangeObserver() override {}
 
   // SystemTimeChangeNotifier::Observer implementation:
@@ -60,8 +64,6 @@ class TimeChangeObserver : public SystemTimeChangeNotifier::Observer {
 
  private:
   int num_time_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeChangeObserver);
 };
 
 }  // namespace

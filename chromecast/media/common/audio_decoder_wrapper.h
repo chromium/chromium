@@ -33,6 +33,11 @@ class ActiveAudioDecoderWrapper : public DestructableAudioDecoder {
       MediaPipelineBackend::AudioDecoder* backend_decoder,
       AudioContentType type,
       MediaPipelineBackendManager::BufferDelegate* buffer_delegate);
+
+  ActiveAudioDecoderWrapper(const ActiveAudioDecoderWrapper&) = delete;
+  ActiveAudioDecoderWrapper& operator=(const ActiveAudioDecoderWrapper&) =
+      delete;
+
   ~ActiveAudioDecoderWrapper() override;
 
   AudioContentType content_type() const { return content_type_; }
@@ -59,8 +64,6 @@ class ActiveAudioDecoderWrapper : public DestructableAudioDecoder {
   float stream_volume_multiplier_;
 
   scoped_refptr<DecoderBufferBase> pushed_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveAudioDecoderWrapper);
 };
 
 class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
@@ -72,6 +75,10 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
       MediaPipelineBackendManager::BufferDelegate* buffer_delegate);
   // Create a "fake" AudioDecoder that's already in revoked state.
   AudioDecoderWrapper(AudioContentType type);
+
+  AudioDecoderWrapper(const AudioDecoderWrapper&) = delete;
+  AudioDecoderWrapper& operator=(const AudioDecoderWrapper&) = delete;
+
   ~AudioDecoderWrapper() override;
 
   void OnInitialized();
@@ -91,8 +98,6 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
   bool decoder_revoked_;
 
   std::unique_ptr<DestructableAudioDecoder> audio_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderWrapper);
 };
 
 }  // namespace media

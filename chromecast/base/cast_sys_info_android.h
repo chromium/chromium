@@ -22,6 +22,10 @@ namespace chromecast {
 class CastSysInfoAndroid : public CastSysInfo {
  public:
   CastSysInfoAndroid();
+
+  CastSysInfoAndroid(const CastSysInfoAndroid&) = delete;
+  CastSysInfoAndroid& operator=(const CastSysInfoAndroid&) = delete;
+
   ~CastSysInfoAndroid() override;
 
   // CastSysInfo implementation:
@@ -45,8 +49,6 @@ class CastSysInfoAndroid : public CastSysInfo {
 
  private:
   const base::android::BuildInfo* const build_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastSysInfoAndroid);
 };
 
 }  // namespace chromecast

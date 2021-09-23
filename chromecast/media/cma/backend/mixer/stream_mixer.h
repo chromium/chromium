@@ -68,6 +68,10 @@ class StreamMixer {
  public:
   StreamMixer(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner = nullptr);
+
+  StreamMixer(const StreamMixer&) = delete;
+  StreamMixer& operator=(const StreamMixer&) = delete;
+
   ~StreamMixer();
 
   int num_output_channels() const { return num_output_channels_; }
@@ -251,8 +255,6 @@ class StreamMixer {
   base::SequenceBound<MixerServiceReceiver> receiver_;
 
   base::WeakPtrFactory<StreamMixer> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMixer);
 };
 
 }  // namespace media

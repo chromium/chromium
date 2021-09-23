@@ -18,6 +18,10 @@ namespace media {
 class MixerOutputStreamFuchsia : public MixerOutputStream {
  public:
   MixerOutputStreamFuchsia();
+
+  MixerOutputStreamFuchsia(const MixerOutputStreamFuchsia&) = delete;
+  MixerOutputStreamFuchsia& operator=(const MixerOutputStreamFuchsia&) = delete;
+
   ~MixerOutputStreamFuchsia() override;
 
   // MixerOutputStream implementation:
@@ -63,8 +67,6 @@ class MixerOutputStreamFuchsia : public MixerOutputStream {
   // AudioRenderer::OnMinLeadTimeChanged event. Assume 50ms until we get the
   // first OnMinLeadTimeChanged event.
   base::TimeDelta min_lead_time_ = base::TimeDelta::FromMilliseconds(50);
-
-  DISALLOW_COPY_AND_ASSIGN(MixerOutputStreamFuchsia);
 };
 
 }  // namespace media

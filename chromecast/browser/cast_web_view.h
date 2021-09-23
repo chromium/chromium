@@ -51,6 +51,10 @@ class CastWebView {
   };
 
   CastWebView() = default;
+
+  CastWebView(const CastWebView&) = delete;
+  CastWebView& operator=(const CastWebView&) = delete;
+
   virtual ~CastWebView() = default;
 
   virtual CastContentWindow* window() const = 0;
@@ -64,9 +68,6 @@ class CastWebView {
   void BindReceivers(
       mojo::PendingReceiver<mojom::CastWebContents> web_contents_receiver,
       mojo::PendingReceiver<mojom::CastContentWindow> window_receiver);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastWebView);
 };
 
 }  // namespace chromecast

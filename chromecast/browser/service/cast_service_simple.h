@@ -30,6 +30,10 @@ class CastServiceSimple : public CastService, public CastWebView::Delegate {
  public:
   CastServiceSimple(content::BrowserContext* browser_context,
                     CastWindowManager* window_manager);
+
+  CastServiceSimple(const CastServiceSimple&) = delete;
+  CastServiceSimple& operator=(const CastServiceSimple&) = delete;
+
   ~CastServiceSimple() override;
 
  protected:
@@ -53,7 +57,6 @@ class CastServiceSimple : public CastService, public CastWebView::Delegate {
   GURL startup_url_;
 
   base::WeakPtrFactory<CastServiceSimple> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CastServiceSimple);
 };
 
 }  // namespace shell

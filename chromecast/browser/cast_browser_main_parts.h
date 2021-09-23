@@ -77,6 +77,10 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   // This class does not take ownership of |url_request_content_factory|.
   CastBrowserMainParts(const content::MainFunctionParams& parameters,
                        CastContentBrowserClient* cast_content_browser_client);
+
+  CastBrowserMainParts(const CastBrowserMainParts&) = delete;
+  CastBrowserMainParts& operator=(const CastBrowserMainParts&) = delete;
+
   ~CastBrowserMainParts() override;
 
   media::MediaPipelineBackendManager* media_pipeline_backend_manager();
@@ -152,8 +156,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
 #endif  // defined(USE_AURA) && !defined(OS_FUCHSIA)
 
   bool run_message_loop_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserMainParts);
 };
 
 }  // namespace shell

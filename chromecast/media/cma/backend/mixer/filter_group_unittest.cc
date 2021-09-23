@@ -46,6 +46,10 @@ class MockPostProcessingPipeline : public PostProcessingPipeline {
             testing::Invoke(this, &MockPostProcessingPipeline::StorePtr));
   }
 
+  MockPostProcessingPipeline(const MockPostProcessingPipeline&) = delete;
+  MockPostProcessingPipeline& operator=(const MockPostProcessingPipeline&) =
+      delete;
+
   ~MockPostProcessingPipeline() override {}
   MOCK_METHOD5(ProcessFrames,
                double(float* data,
@@ -81,8 +85,6 @@ class MockPostProcessingPipeline : public PostProcessingPipeline {
   float* output_buffer_;
   const int num_output_channels_;
   int sample_rate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPostProcessingPipeline);
 };
 
 // PostProcessor that inverts one channel.
@@ -95,6 +97,10 @@ class InvertChannelPostProcessor : public MockPostProcessingPipeline {
         .WillByDefault(testing::Invoke(
             this, &InvertChannelPostProcessor::DoInvertChannel));
   }
+
+  InvertChannelPostProcessor(const InvertChannelPostProcessor&) = delete;
+  InvertChannelPostProcessor& operator=(const InvertChannelPostProcessor&) =
+      delete;
 
   ~InvertChannelPostProcessor() override {}
 
@@ -127,8 +133,6 @@ class InvertChannelPostProcessor : public MockPostProcessingPipeline {
   std::string name() const { return "invert"; }
 
   int channel_to_invert_;
-
-  DISALLOW_COPY_AND_ASSIGN(InvertChannelPostProcessor);
 };
 
 }  // namespace

@@ -103,6 +103,9 @@ class IOBufferPool::Internal::Wrapper {
   Wrapper(char* data, IOBufferPool::Internal* pool)
       : buffer_(data), pool_(pool) {}
 
+  Wrapper(const Wrapper&) = delete;
+  Wrapper& operator=(const Wrapper&) = delete;
+
   ~Wrapper() = delete;
   static void operator delete(void*) = delete;
 
@@ -113,8 +116,6 @@ class IOBufferPool::Internal::Wrapper {
  private:
   Buffer buffer_;
   IOBufferPool::Internal* const pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(Wrapper);
 };
 
 union IOBufferPool::Internal::Storage {

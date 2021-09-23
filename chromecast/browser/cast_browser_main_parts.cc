@@ -267,10 +267,11 @@ CreateClientConnectionManager(
 class CastViewsDelegate : public views::ViewsDelegate {
  public:
   CastViewsDelegate() = default;
-  ~CastViewsDelegate() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastViewsDelegate);
+  CastViewsDelegate(const CastViewsDelegate&) = delete;
+  CastViewsDelegate& operator=(const CastViewsDelegate&) = delete;
+
+  ~CastViewsDelegate() override = default;
 };
 
 #endif  // defined(USE_AURA)

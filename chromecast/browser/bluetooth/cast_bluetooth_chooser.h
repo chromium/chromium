@@ -29,6 +29,10 @@ class CastBluetoothChooser : public content::BluetoothChooser,
   CastBluetoothChooser(content::BluetoothChooser::EventHandler event_handler,
                        mojo::PendingRemote<mojom::BluetoothDeviceAccessProvider>
                            pending_provider);
+
+  CastBluetoothChooser(const CastBluetoothChooser&) = delete;
+  CastBluetoothChooser& operator=(const CastBluetoothChooser&) = delete;
+
   ~CastBluetoothChooser() override;
 
  private:
@@ -57,8 +61,6 @@ class CastBluetoothChooser : public content::BluetoothChooser,
   std::unordered_set<std::string> available_devices_;
   std::unordered_set<std::string> approved_devices_;
   bool all_devices_approved_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CastBluetoothChooser);
 };
 
 }  // namespace chromecast

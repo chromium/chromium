@@ -103,6 +103,10 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
 class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
  public:
   explicit BufferFeeder(base::OnceClosure eos_cb);
+
+  BufferFeeder(const BufferFeeder&) = delete;
+  BufferFeeder& operator=(const BufferFeeder&) = delete;
+
   ~BufferFeeder() override {}
 
   static std::unique_ptr<BufferFeeder> LoadAudio(MediaPipelineBackend* backend,
@@ -166,8 +170,6 @@ class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
   VideoConfig video_config_;
   int64_t last_pushed_pts_;
   std::unique_ptr<::media::AudioTimestampHelper> timestamp_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferFeeder);
 };
 
 }  // namespace
@@ -184,6 +186,11 @@ class AudioVideoPipelineDeviceTest : public testing::Test {
   };
 
   AudioVideoPipelineDeviceTest();
+
+  AudioVideoPipelineDeviceTest(const AudioVideoPipelineDeviceTest&) = delete;
+  AudioVideoPipelineDeviceTest& operator=(const AudioVideoPipelineDeviceTest&) =
+      delete;
+
   ~AudioVideoPipelineDeviceTest() override;
 
   MediaPipelineBackend* backend() const { return backend_.get(); }
@@ -263,8 +270,6 @@ class AudioVideoPipelineDeviceTest : public testing::Test {
   // Pause settings
   std::vector<PauseInfo> pause_pattern_;
   size_t pause_pattern_idx_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioVideoPipelineDeviceTest);
 };
 
 namespace {

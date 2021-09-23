@@ -42,6 +42,10 @@ class GattClientManagerImpl
       base::TimeDelta::FromSeconds(10);
 
   explicit GattClientManagerImpl(bluetooth_v2_shlib::GattClient* gatt_client);
+
+  GattClientManagerImpl(const GattClientManagerImpl&) = delete;
+  GattClientManagerImpl& operator=(const GattClientManagerImpl&) = delete;
+
   ~GattClientManagerImpl() override;
 
   void InitializeOnIoThread();
@@ -192,7 +196,6 @@ class GattClientManagerImpl
 
   base::WeakPtr<GattClientManagerImpl> weak_this_;
   std::unique_ptr<base::WeakPtrFactory<GattClientManagerImpl>> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(GattClientManagerImpl);
 };
 
 }  // namespace bluetooth

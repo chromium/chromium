@@ -27,6 +27,9 @@ class ExternalMojoBroker {
  public:
   explicit ExternalMojoBroker(const std::string& broker_path);
 
+  ExternalMojoBroker(const ExternalMojoBroker&) = delete;
+  ExternalMojoBroker& operator=(const ExternalMojoBroker&) = delete;
+
   ~ExternalMojoBroker();
 
   // Initializes the embedded into a Chromium process (eg in cast_shell).
@@ -47,8 +50,6 @@ class ExternalMojoBroker {
 
   std::unique_ptr<ConnectorImpl> connector_;
   std::unique_ptr<ReadWatcher> read_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalMojoBroker);
 };
 
 }  // namespace external_mojo

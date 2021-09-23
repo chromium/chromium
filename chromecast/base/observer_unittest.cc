@@ -64,6 +64,9 @@ class ThreadedObserver {
     thread_.Start();
   }
 
+  ThreadedObserver(const ThreadedObserver&) = delete;
+  ThreadedObserver& operator=(const ThreadedObserver&) = delete;
+
   ~ThreadedObserver() {
     thread_.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&ThreadedObserver::DestroyOnThread,
@@ -104,8 +107,6 @@ class ThreadedObserver {
   base::Thread thread_;
   std::unique_ptr<Observer<int>> observer_;
   base::WaitableEvent observing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedObserver);
 };
 
 void RunCallback(std::function<void()> callback) {

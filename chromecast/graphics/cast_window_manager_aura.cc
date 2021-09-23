@@ -67,6 +67,10 @@ class CastLayoutManager : public aura::LayoutManager {
  public:
   CastLayoutManager(CastWindowManagerAura* window_manager,
                     aura::Window* parent);
+
+  CastLayoutManager(const CastLayoutManager&) = delete;
+  CastLayoutManager& operator=(const CastLayoutManager&) = delete;
+
   ~CastLayoutManager() override;
 
  private:
@@ -85,8 +89,6 @@ class CastLayoutManager : public aura::LayoutManager {
 
   CastWindowManagerAura* const window_manager_;
   aura::Window* const parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastLayoutManager);
 };
 
 CastLayoutManager::CastLayoutManager(CastWindowManagerAura* window_manager,

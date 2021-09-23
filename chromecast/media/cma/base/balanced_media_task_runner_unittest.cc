@@ -53,6 +53,11 @@ MediaTaskRunnerTestContext::~MediaTaskRunnerTestContext() {
 class BalancedMediaTaskRunnerTest : public testing::Test {
  public:
   BalancedMediaTaskRunnerTest();
+
+  BalancedMediaTaskRunnerTest(const BalancedMediaTaskRunnerTest&) = delete;
+  BalancedMediaTaskRunnerTest& operator=(const BalancedMediaTaskRunnerTest&) =
+      delete;
+
   ~BalancedMediaTaskRunnerTest() override;
 
   void SetupTest(base::TimeDelta max_delta,
@@ -82,8 +87,6 @@ class BalancedMediaTaskRunnerTest : public testing::Test {
   // For each media task runner, keep a track of which task has already been
   // scheduled.
   std::vector<MediaTaskRunnerTestContext> contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(BalancedMediaTaskRunnerTest);
 };
 
 BalancedMediaTaskRunnerTest::BalancedMediaTaskRunnerTest() {

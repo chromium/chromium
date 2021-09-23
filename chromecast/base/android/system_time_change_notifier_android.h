@@ -14,6 +14,12 @@ namespace chromecast {
 class SystemTimeChangeNotifierAndroid : public SystemTimeChangeNotifier {
  public:
   SystemTimeChangeNotifierAndroid();
+
+  SystemTimeChangeNotifierAndroid(const SystemTimeChangeNotifierAndroid&) =
+      delete;
+  SystemTimeChangeNotifierAndroid& operator=(
+      const SystemTimeChangeNotifierAndroid&) = delete;
+
   ~SystemTimeChangeNotifierAndroid() override;
 
   // Called from Java.
@@ -22,8 +28,6 @@ class SystemTimeChangeNotifierAndroid : public SystemTimeChangeNotifier {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTimeChangeNotifierAndroid);
 };
 
 }  // namespace chromecast

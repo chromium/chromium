@@ -36,6 +36,10 @@ class LRURendererCache {
  public:
   LRURendererCache(content::BrowserContext* browser_context,
                    size_t max_renderers);
+
+  LRURendererCache(const LRURendererCache&) = delete;
+  LRURendererCache& operator=(const LRURendererCache&) = delete;
+
   virtual ~LRURendererCache();
 
   // Returns a pre-launched renderer. Returns nullptr if a cached renderer isn't
@@ -72,8 +76,6 @@ class LRURendererCache {
   RendererPrelauncherFactory* factory_for_testing_ = nullptr;
 
   base::WeakPtrFactory<LRURendererCache> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(LRURendererCache);
 };
 
 }  // namespace chromecast

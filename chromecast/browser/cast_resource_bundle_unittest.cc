@@ -17,10 +17,11 @@ namespace ui {
 class CastResourceBundleTest : public testing::Test {
  public:
   CastResourceBundleTest() {}
-  ~CastResourceBundleTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastResourceBundleTest);
+  CastResourceBundleTest(const CastResourceBundleTest&) = delete;
+  CastResourceBundleTest& operator=(const CastResourceBundleTest&) = delete;
+
+  ~CastResourceBundleTest() override {}
 };
 
 TEST_F(CastResourceBundleTest, DelegateLoadLocalizedResourceBytes) {

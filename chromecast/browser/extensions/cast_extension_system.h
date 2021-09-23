@@ -32,6 +32,10 @@ class CastExtensionSystem : public ExtensionSystem,
                             public ExtensionRegistrar::Delegate {
  public:
   explicit CastExtensionSystem(content::BrowserContext* browser_context);
+
+  CastExtensionSystem(const CastExtensionSystem&) = delete;
+  CastExtensionSystem& operator=(const CastExtensionSystem&) = delete;
+
   ~CastExtensionSystem() override;
 
   // Loads an unpacked extension from a directory. Returns the extension on
@@ -136,8 +140,6 @@ class CastExtensionSystem : public ExtensionSystem,
   base::OneShotEvent ready_;
 
   base::WeakPtrFactory<CastExtensionSystem> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionSystem);
 };
 
 }  // namespace extensions

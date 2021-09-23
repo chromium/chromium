@@ -34,6 +34,10 @@ class ServiceManagerContext {
       shell::CastContentBrowserClient* cast_content_browser_client,
       scoped_refptr<base::SingleThreadTaskRunner>
           service_manager_thread_task_runner);
+
+  ServiceManagerContext(const ServiceManagerContext&) = delete;
+  ServiceManagerContext& operator=(const ServiceManagerContext&) = delete;
+
   ~ServiceManagerContext();
 
   // Returns a service_manager::Connector that can be used on the IO thread.
@@ -54,8 +58,6 @@ class ServiceManagerContext {
       service_manager_thread_task_runner_;
   scoped_refptr<InProcessServiceManagerContext> in_process_context_;
   base::WeakPtrFactory<ServiceManagerContext> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceManagerContext);
 };
 
 }  // namespace chromecast

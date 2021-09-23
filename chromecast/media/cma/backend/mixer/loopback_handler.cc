@@ -25,6 +25,10 @@ namespace media {
 class LoopbackHandler::LoopbackIO {
  public:
   LoopbackIO() = default;
+
+  LoopbackIO(const LoopbackIO&) = delete;
+  LoopbackIO& operator=(const LoopbackIO&) = delete;
+
   ~LoopbackIO() = default;
 
   void AddConnection(std::unique_ptr<MixerLoopbackConnection> connection) {
@@ -80,8 +84,6 @@ class LoopbackHandler::LoopbackIO {
   int sample_rate_ = 0;
   int num_channels_ = 0;
   int data_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackIO);
 };
 
 class LoopbackHandler::ExternalLoopbackHandler

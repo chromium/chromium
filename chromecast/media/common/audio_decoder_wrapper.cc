@@ -27,6 +27,11 @@ class RevokedAudioDecoderWrapper : public DestructableAudioDecoder {
       : rendering_delay_(rendering_delay),
         statistics_(statistics),
         requires_decryption_(requires_decryption) {}
+
+  RevokedAudioDecoderWrapper(const RevokedAudioDecoderWrapper&) = delete;
+  RevokedAudioDecoderWrapper& operator=(const RevokedAudioDecoderWrapper&) =
+      delete;
+
   ~RevokedAudioDecoderWrapper() override = default;
 
  private:
@@ -48,8 +53,6 @@ class RevokedAudioDecoderWrapper : public DestructableAudioDecoder {
   const RenderingDelay rendering_delay_;
   const Statistics statistics_;
   const bool requires_decryption_;
-
-  DISALLOW_COPY_AND_ASSIGN(RevokedAudioDecoderWrapper);
 };
 
 }  // namespace

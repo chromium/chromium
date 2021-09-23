@@ -44,6 +44,9 @@ class VolumeControlInternal {
     thread_.StartWithOptions(std::move(options));
   }
 
+  VolumeControlInternal(const VolumeControlInternal&) = delete;
+  VolumeControlInternal& operator=(const VolumeControlInternal&) = delete;
+
   ~VolumeControlInternal() = default;
 
   void AddVolumeObserver(VolumeObserver* observer) {
@@ -148,8 +151,6 @@ class VolumeControlInternal {
   std::vector<VolumeObserver*> volume_observers_;
 
   base::Thread thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeControlInternal);
 };
 
 VolumeControlInternal& GetVolumeControl() {

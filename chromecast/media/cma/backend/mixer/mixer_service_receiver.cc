@@ -45,6 +45,9 @@ class MixerServiceReceiver::ControlConnection
     socket_->SetDelegate(this);
   }
 
+  ControlConnection(const ControlConnection&) = delete;
+  ControlConnection& operator=(const ControlConnection&) = delete;
+
   ~ControlConnection() override = default;
 
   void OnStreamCountChanged() {
@@ -131,8 +134,6 @@ class MixerServiceReceiver::ControlConnection
   const std::unique_ptr<mixer_service::MixerSocket> socket_;
 
   bool send_stream_count_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ControlConnection);
 };
 
 MixerServiceReceiver::MixerServiceReceiver(StreamMixer* mixer,

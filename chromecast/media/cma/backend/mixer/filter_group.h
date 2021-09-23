@@ -48,6 +48,9 @@ class FilterGroup {
               std::unique_ptr<PostProcessingPipeline> pipeline,
               const base::Value* volume_limits);
 
+  FilterGroup(const FilterGroup&) = delete;
+  FilterGroup& operator=(const FilterGroup&) = delete;
+
   ~FilterGroup();
 
   int num_channels() const { return num_channels_; }
@@ -169,8 +172,6 @@ class FilterGroup {
   AlignedBuffer<float> interleaved_;
 
   std::unique_ptr<PostProcessingPipeline> post_processing_pipeline_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilterGroup);
 };
 
 }  // namespace media

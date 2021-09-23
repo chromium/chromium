@@ -23,6 +23,10 @@ class TaskRunnerImpl : public TaskRunner {
  public:
   TaskRunnerImpl();
   explicit TaskRunnerImpl(scoped_refptr<base::SingleThreadTaskRunner> runner);
+
+  TaskRunnerImpl(const TaskRunnerImpl&) = delete;
+  TaskRunnerImpl& operator=(const TaskRunnerImpl&) = delete;
+
   ~TaskRunnerImpl() override;
 
   bool PostTask(Task* task, uint64_t delay_milliseconds) override;
@@ -33,8 +37,6 @@ class TaskRunnerImpl : public TaskRunner {
 
  private:
   const scoped_refptr<base::SingleThreadTaskRunner> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskRunnerImpl);
 };
 
 }  // namespace chromecast

@@ -30,6 +30,10 @@ class CastCdmFactory : public ::media::CdmFactory {
   CastCdmFactory(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                  const url::Origin& cdm_origin,
                  MediaResourceTracker* media_resource_tracker);
+
+  CastCdmFactory(const CastCdmFactory&) = delete;
+  CastCdmFactory& operator=(const CastCdmFactory&) = delete;
+
   ~CastCdmFactory() override;
 
   // ::media::CdmFactory implementation:
@@ -54,8 +58,6 @@ class CastCdmFactory : public ::media::CdmFactory {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   const url::Origin cdm_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCdmFactory);
 };
 
 }  // namespace media

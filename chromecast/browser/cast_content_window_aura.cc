@@ -46,6 +46,9 @@ class TouchBlocker : public ui::EventHandler, public aura::WindowObserver {
     }
   }
 
+  TouchBlocker(const TouchBlocker&) = delete;
+  TouchBlocker& operator=(const TouchBlocker&) = delete;
+
   ~TouchBlocker() override {
     if (window_) {
       window_->RemoveObserver(this);
@@ -82,8 +85,6 @@ class TouchBlocker : public ui::EventHandler, public aura::WindowObserver {
 
   aura::Window* window_;
   bool activated_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchBlocker);
 };
 
 CastContentWindowAura::CastContentWindowAura(base::WeakPtr<Delegate> delegate,

@@ -24,6 +24,10 @@ class CastWebService;
 class CastWebViewFactory {
  public:
   explicit CastWebViewFactory(content::BrowserContext* browser_context);
+
+  CastWebViewFactory(const CastWebViewFactory&) = delete;
+  CastWebViewFactory& operator=(const CastWebViewFactory&) = delete;
+
   virtual ~CastWebViewFactory();
 
   virtual std::unique_ptr<CastWebView> CreateWebView(
@@ -36,8 +40,6 @@ class CastWebViewFactory {
  protected:
   content::BrowserContext* const browser_context_;
   base::RepeatingCallback<void(CastWebView*, int)> register_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastWebViewFactory);
 };
 
 }  // namespace chromecast

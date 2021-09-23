@@ -28,6 +28,12 @@ class CastSystemMemoryPressureEvaluator
  public:
   explicit CastSystemMemoryPressureEvaluator(
       std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
+
+  CastSystemMemoryPressureEvaluator(const CastSystemMemoryPressureEvaluator&) =
+      delete;
+  CastSystemMemoryPressureEvaluator& operator=(
+      const CastSystemMemoryPressureEvaluator&) = delete;
+
   ~CastSystemMemoryPressureEvaluator() override;
 
   // CastSystemMemoryPressureEvaluatorAdjuster implementation:
@@ -63,8 +69,6 @@ class CastSystemMemoryPressureEvaluator
   const int system_reserved_kb_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<CastSystemMemoryPressureEvaluator> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastSystemMemoryPressureEvaluator);
 };
 
 }  // namespace chromecast

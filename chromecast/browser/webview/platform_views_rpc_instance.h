@@ -33,6 +33,10 @@ class PlatformViewsRpcInstance : public WebContentController::Client,
       grpc::ServerCompletionQueue* cq,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       WebviewWindowManager* window_manager);
+
+  PlatformViewsRpcInstance(const PlatformViewsRpcInstance&) = delete;
+  PlatformViewsRpcInstance& operator=(const PlatformViewsRpcInstance&) = delete;
+
   ~PlatformViewsRpcInstance() override;
 
  protected:
@@ -88,8 +92,6 @@ class PlatformViewsRpcInstance : public WebContentController::Client,
   std::deque<std::unique_ptr<webview::WebviewResponse>> pending_messages_;
 
   grpc::WriteOptions write_options_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformViewsRpcInstance);
 };
 
 }  // namespace chromecast

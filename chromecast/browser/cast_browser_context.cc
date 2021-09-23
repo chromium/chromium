@@ -34,10 +34,11 @@ class CastBrowserContext::CastResourceContext
     : public content::ResourceContext {
  public:
   CastResourceContext() {}
-  ~CastResourceContext() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastResourceContext);
+  CastResourceContext(const CastResourceContext&) = delete;
+  CastResourceContext& operator=(const CastResourceContext&) = delete;
+
+  ~CastResourceContext() override {}
 };
 
 CastBrowserContext::CastBrowserContext()

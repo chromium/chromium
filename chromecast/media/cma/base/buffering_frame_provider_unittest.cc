@@ -36,6 +36,11 @@ namespace media {
 class BufferingFrameProviderTest : public testing::Test {
  public:
   BufferingFrameProviderTest();
+
+  BufferingFrameProviderTest(const BufferingFrameProviderTest&) = delete;
+  BufferingFrameProviderTest& operator=(const BufferingFrameProviderTest&) =
+      delete;
+
   ~BufferingFrameProviderTest() override;
 
   // Setup the test.
@@ -54,8 +59,6 @@ class BufferingFrameProviderTest : public testing::Test {
  private:
   void OnTestTimeout();
   void OnTestCompleted();
-
-  DISALLOW_COPY_AND_ASSIGN(BufferingFrameProviderTest);
 };
 
 BufferingFrameProviderTest::BufferingFrameProviderTest() {

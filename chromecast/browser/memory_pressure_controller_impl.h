@@ -17,6 +17,11 @@ namespace chromecast {
 class MemoryPressureControllerImpl : public mojom::MemoryPressureController {
  public:
   MemoryPressureControllerImpl();
+
+  MemoryPressureControllerImpl(const MemoryPressureControllerImpl&) = delete;
+  MemoryPressureControllerImpl& operator=(const MemoryPressureControllerImpl&) =
+      delete;
+
   ~MemoryPressureControllerImpl() override;
 
   void AddReceiver(
@@ -34,8 +39,6 @@ class MemoryPressureControllerImpl : public mojom::MemoryPressureController {
   mojo::ReceiverSet<mojom::MemoryPressureController> receivers_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryPressureControllerImpl);
 };
 
 }  // namespace chromecast

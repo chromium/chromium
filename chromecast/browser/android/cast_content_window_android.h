@@ -23,6 +23,10 @@ class CastContentWindowAndroid : public CastContentWindow {
  public:
   CastContentWindowAndroid(base::WeakPtr<Delegate> delegate,
                            mojom::CastWebViewParamsPtr params);
+
+  CastContentWindowAndroid(const CastContentWindowAndroid&) = delete;
+  CastContentWindowAndroid& operator=(const CastContentWindowAndroid&) = delete;
+
   ~CastContentWindowAndroid() override;
 
   // CastContentWindow implementation:
@@ -52,8 +56,6 @@ class CastContentWindowAndroid : public CastContentWindow {
  private:
   bool web_contents_attached_;
   base::android::ScopedJavaGlobalRef<jobject> java_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastContentWindowAndroid);
 };
 
 }  // namespace chromecast

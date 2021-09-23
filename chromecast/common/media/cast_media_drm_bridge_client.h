@@ -17,6 +17,10 @@ namespace media {
 class CastMediaDrmBridgeClient : public ::media::MediaDrmBridgeClient {
  public:
   CastMediaDrmBridgeClient();
+
+  CastMediaDrmBridgeClient(const CastMediaDrmBridgeClient&) = delete;
+  CastMediaDrmBridgeClient& operator=(const CastMediaDrmBridgeClient&) = delete;
+
   ~CastMediaDrmBridgeClient() override;
 
  private:
@@ -30,8 +34,6 @@ class CastMediaDrmBridgeClient : public ::media::MediaDrmBridgeClient {
 #endif  // BUILDFLAG(ENABLE_PLAYREADY)
 
   cdm::WidevineDrmDelegateAndroid widevine_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaDrmBridgeClient);
 };
 
 }  // namespace media

@@ -37,6 +37,12 @@ const int kMaxPtsDiffMs = 2000;
 class MultiDemuxerStreamAdaptersTest : public testing::Test {
  public:
   MultiDemuxerStreamAdaptersTest();
+
+  MultiDemuxerStreamAdaptersTest(const MultiDemuxerStreamAdaptersTest&) =
+      delete;
+  MultiDemuxerStreamAdaptersTest& operator=(
+      const MultiDemuxerStreamAdaptersTest&) = delete;
+
   ~MultiDemuxerStreamAdaptersTest() override;
 
   void Start();
@@ -69,7 +75,6 @@ class MultiDemuxerStreamAdaptersTest : public testing::Test {
   int running_stream_count_;
 
   scoped_refptr<BalancedMediaTaskRunnerFactory> media_task_runner_factory_;
-  DISALLOW_COPY_AND_ASSIGN(MultiDemuxerStreamAdaptersTest);
 };
 
 MultiDemuxerStreamAdaptersTest::MultiDemuxerStreamAdaptersTest() {

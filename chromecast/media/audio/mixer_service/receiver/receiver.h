@@ -26,6 +26,10 @@ class MixerSocket;
 class Receiver : public AudioSocketService::Delegate {
  public:
   Receiver();
+
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
+
   ~Receiver() override;
 
   virtual void CreateOutputStream(std::unique_ptr<MixerSocket> socket,
@@ -61,8 +65,6 @@ class Receiver : public AudioSocketService::Delegate {
       initial_sockets_;
 
   base::WeakPtrFactory<Receiver> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(Receiver);
 };
 
 }  // namespace mixer_service

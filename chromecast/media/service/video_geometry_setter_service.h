@@ -31,6 +31,11 @@ class VideoGeometrySetterService final
       public mojom::VideoGeometrySetter {
  public:
   VideoGeometrySetterService();
+
+  VideoGeometrySetterService(const VideoGeometrySetterService&) = delete;
+  VideoGeometrySetterService& operator=(const VideoGeometrySetterService&) =
+      delete;
+
   ~VideoGeometrySetterService() override;
 
   void GetVideoGeometryChangeSubscriber(
@@ -67,7 +72,6 @@ class VideoGeometrySetterService final
       this};
 
   base::WeakPtrFactory<VideoGeometrySetterService> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(VideoGeometrySetterService);
 };
 
 }  // namespace media

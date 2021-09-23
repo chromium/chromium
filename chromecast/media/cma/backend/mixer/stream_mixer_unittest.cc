@@ -245,14 +245,16 @@ class MockLoopbackAudioObserver
     : public mixer_service::LoopbackConnection::Delegate {
  public:
   MockLoopbackAudioObserver() = default;
+
+  MockLoopbackAudioObserver(const MockLoopbackAudioObserver&) = delete;
+  MockLoopbackAudioObserver& operator=(const MockLoopbackAudioObserver&) =
+      delete;
+
   ~MockLoopbackAudioObserver() override = default;
 
   MOCK_METHOD6(OnLoopbackAudio,
                void(int64_t, SampleFormat, int, int, uint8_t*, int));
   MOCK_METHOD1(OnLoopbackInterrupted, void(LoopbackInterruptReason));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLoopbackAudioObserver);
 };
 
 // Given |inputs|, returns mixed audio data according to the mixing method used

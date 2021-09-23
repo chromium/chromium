@@ -84,6 +84,9 @@ class ServiceManagerConnection::IOThreadContext
       base::CurrentThread::Get()->AddDestructionObserver(this);
     }
 
+    MessageLoopObserver(const MessageLoopObserver&) = delete;
+    MessageLoopObserver& operator=(const MessageLoopObserver&) = delete;
+
     ~MessageLoopObserver() override {
       base::CurrentThread::Get()->RemoveDestructionObserver(this);
     }
@@ -109,8 +112,6 @@ class ServiceManagerConnection::IOThreadContext
 
     bool is_active_ = true;
     base::WeakPtr<IOThreadContext> context_;
-
-    DISALLOW_COPY_AND_ASSIGN(MessageLoopObserver);
   };
 
   ~IOThreadContext() override {}

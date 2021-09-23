@@ -36,6 +36,10 @@ class AudioDecoderForMixer
   using BufferStatus = MediaPipelineBackend::BufferStatus;
 
   explicit AudioDecoderForMixer(MediaPipelineBackendForMixer* backend);
+
+  AudioDecoderForMixer(const AudioDecoderForMixer&) = delete;
+  AudioDecoderForMixer& operator=(const AudioDecoderForMixer&) = delete;
+
   ~AudioDecoderForMixer() override;
 
   virtual void Initialize();
@@ -128,8 +132,6 @@ class AudioDecoderForMixer
   bool start_playback_asap_ = false;
 
   base::WeakPtrFactory<AudioDecoderForMixer> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderForMixer);
 };
 
 }  // namespace media

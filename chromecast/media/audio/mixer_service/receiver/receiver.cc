@@ -88,6 +88,9 @@ class Receiver::InitialSocket : public MixerSocket::Delegate {
     socket_->SetDelegate(this);
   }
 
+  InitialSocket(const InitialSocket&) = delete;
+  InitialSocket& operator=(const InitialSocket&) = delete;
+
   ~InitialSocket() override = default;
 
  private:
@@ -120,8 +123,6 @@ class Receiver::InitialSocket : public MixerSocket::Delegate {
 
   Receiver* const receiver_;
   std::unique_ptr<MixerSocket> socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitialSocket);
 };
 
 Receiver::Receiver()

@@ -67,6 +67,10 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
 class TitleChangeObserver : public CastWebContentsObserver {
  public:
   TitleChangeObserver() = default;
+
+  TitleChangeObserver(const TitleChangeObserver&) = delete;
+  TitleChangeObserver& operator=(const TitleChangeObserver&) = delete;
+
   ~TitleChangeObserver() override = default;
 
   // Spins a Runloop until the title of the page matches the |expected_title|
@@ -97,8 +101,6 @@ class TitleChangeObserver : public CastWebContentsObserver {
   std::string expected_title_;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TitleChangeObserver);
 };
 
 // =============================================================================
@@ -107,12 +109,13 @@ class TitleChangeObserver : public CastWebContentsObserver {
 class MockWebContentsDelegate : public content::WebContentsDelegate {
  public:
   MockWebContentsDelegate() = default;
+
+  MockWebContentsDelegate(const MockWebContentsDelegate&) = delete;
+  MockWebContentsDelegate& operator=(const MockWebContentsDelegate&) = delete;
+
   ~MockWebContentsDelegate() override = default;
 
   MOCK_METHOD1(CloseContents, void(content::WebContents* source));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebContentsDelegate);
 };
 
 }  // namespace

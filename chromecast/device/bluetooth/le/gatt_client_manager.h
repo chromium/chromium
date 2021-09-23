@@ -71,6 +71,9 @@ class GattClientManager {
       BluetoothManagerPlatform* bluetooth_manager,
       LeScanManager* le_scan_manager);
 
+  GattClientManager(const GattClientManager&) = delete;
+  GattClientManager& operator=(const GattClientManager&) = delete;
+
   virtual ~GattClientManager() = default;
 
   virtual void Initialize(
@@ -130,9 +133,6 @@ class GattClientManager {
 
  protected:
   GattClientManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GattClientManager);
 };
 
 }  // namespace bluetooth

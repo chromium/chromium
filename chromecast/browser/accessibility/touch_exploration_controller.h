@@ -174,6 +174,11 @@ class TouchExplorationController : public ui::EventRewriter,
       aura::Window* root_window,
       TouchExplorationControllerDelegate* delegate,
       AccessibilitySoundPlayer* accessibility_sound_player);
+
+  TouchExplorationController(const TouchExplorationController&) = delete;
+  TouchExplorationController& operator=(const TouchExplorationController&) =
+      delete;
+
   ~TouchExplorationController() override;
 
   // Make synthesized touch events are anchored at this point. This is
@@ -509,8 +514,6 @@ class TouchExplorationController : public ui::EventRewriter,
   // Whether or not to trigger pass through mode when touch events come
   // in from the edges.
   bool side_gesture_pass_through_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationController);
 };
 
 }  // namespace shell

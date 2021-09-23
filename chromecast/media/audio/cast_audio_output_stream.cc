@@ -92,6 +92,10 @@ class CastAudioOutputStream::MixerServiceWrapper
  public:
   MixerServiceWrapper(const ::media::AudioParameters& audio_params,
                       const std::string& device_id);
+
+  MixerServiceWrapper(const MixerServiceWrapper&) = delete;
+  MixerServiceWrapper& operator=(const MixerServiceWrapper&) = delete;
+
   ~MixerServiceWrapper() override = default;
 
   void SetRunning(bool running);
@@ -130,8 +134,6 @@ class CastAudioOutputStream::MixerServiceWrapper
   // Task runner on |io_thread_|.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   THREAD_CHECKER(io_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MixerServiceWrapper);
 };
 
 CastAudioOutputStream::MixerServiceWrapper::MixerServiceWrapper(

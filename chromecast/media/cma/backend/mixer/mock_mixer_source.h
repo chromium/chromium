@@ -30,6 +30,10 @@ class MockMixerSource : public MixerInput::Source {
   MockMixerSource(int samples_per_second,
                   const std::string& device_id =
                       ::media::AudioDeviceDescription::kDefaultDeviceId);
+
+  MockMixerSource(const MockMixerSource&) = delete;
+  MockMixerSource& operator=(const MockMixerSource&) = delete;
+
   ~MockMixerSource() override;
 
   // MixerInput::Source implementation:
@@ -94,8 +98,6 @@ class MockMixerSource : public MixerInput::Source {
 
   std::unique_ptr<::media::AudioBus> data_;
   int data_offset_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMixerSource);
 };
 
 }  // namespace media

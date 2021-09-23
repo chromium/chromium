@@ -34,6 +34,9 @@ class TestMediaResourceTracker : public MediaResourceTracker {
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       MediaResourceTrackerTestMocks* test_mocks);
 
+  TestMediaResourceTracker(const TestMediaResourceTracker&) = delete;
+  TestMediaResourceTracker& operator=(const TestMediaResourceTracker&) = delete;
+
   ~TestMediaResourceTracker() override;
 
   size_t media_use_count() const { return media_use_count_; }
@@ -44,8 +47,6 @@ class TestMediaResourceTracker : public MediaResourceTracker {
   void DoFinalizeMediaLib() override;
 
   MediaResourceTrackerTestMocks* const test_mocks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaResourceTracker);
 };
 
 }  // namespace media

@@ -42,6 +42,10 @@ class WebviewController : public CastWebContentsObserver,
   WebviewController(std::unique_ptr<content::BrowserContext> browser_context,
                     Client* client,
                     bool enabled_for_dev);
+
+  WebviewController(const WebviewController&) = delete;
+  WebviewController& operator=(const WebviewController&) = delete;
+
   ~WebviewController() override;
 
   // Returns a navigation throttle for the current navigation request, if one is
@@ -111,8 +115,6 @@ class WebviewController : public CastWebContentsObserver,
       nullptr;  // Not owned.
 
   base::WeakPtrFactory<WebviewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebviewController);
 };
 
 }  // namespace chromecast

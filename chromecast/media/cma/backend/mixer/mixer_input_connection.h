@@ -64,6 +64,9 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
                        std::unique_ptr<mixer_service::MixerSocket> socket,
                        const mixer_service::OutputStreamParams& params);
 
+  MixerInputConnection(const MixerInputConnection&) = delete;
+  MixerInputConnection& operator=(const MixerInputConnection&) = delete;
+
   // Only public to allow task_runner->DeleteSoon() to work.
   ~MixerInputConnection() override;
 
@@ -225,8 +228,6 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
 
   base::WeakPtr<MixerInputConnection> weak_this_;
   base::WeakPtrFactory<MixerInputConnection> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerInputConnection);
 };
 
 }  // namespace media

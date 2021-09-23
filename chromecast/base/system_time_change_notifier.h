@@ -58,6 +58,12 @@ class SystemTimeChangeNotifierPeriodicMonitor
  public:
   explicit SystemTimeChangeNotifierPeriodicMonitor(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  SystemTimeChangeNotifierPeriodicMonitor(
+      const SystemTimeChangeNotifierPeriodicMonitor&) = delete;
+  SystemTimeChangeNotifierPeriodicMonitor& operator=(
+      const SystemTimeChangeNotifierPeriodicMonitor&) = delete;
+
   ~SystemTimeChangeNotifierPeriodicMonitor() override;
 
   // For unittests.
@@ -81,8 +87,6 @@ class SystemTimeChangeNotifierPeriodicMonitor
   base::Time fake_now_;
 
   base::WeakPtrFactory<SystemTimeChangeNotifierPeriodicMonitor> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTimeChangeNotifierPeriodicMonitor);
 };
 
 }  // namespace chromecast

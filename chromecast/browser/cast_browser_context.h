@@ -22,6 +22,10 @@ namespace shell {
 class CastBrowserContext final : public content::BrowserContext {
  public:
   CastBrowserContext();
+
+  CastBrowserContext(const CastBrowserContext&) = delete;
+  CastBrowserContext& operator=(const CastBrowserContext&) = delete;
+
   ~CastBrowserContext() override;
 
   // BrowserContext implementation:
@@ -60,8 +64,6 @@ class CastBrowserContext final : public content::BrowserContext {
   std::unique_ptr<CastResourceContext> resource_context_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserContext);
 };
 
 }  // namespace shell

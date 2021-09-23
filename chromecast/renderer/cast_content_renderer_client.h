@@ -54,6 +54,10 @@ class CastContentRendererClient
   // link in an implementation as needed.
   static std::unique_ptr<CastContentRendererClient> Create();
 
+  CastContentRendererClient(const CastContentRendererClient&) = delete;
+  CastContentRendererClient& operator=(const CastContentRendererClient&) =
+      delete;
+
   ~CastContentRendererClient() override;
 
   // ContentRendererClient implementation:
@@ -145,8 +149,6 @@ class CastContentRendererClient
   base::flat_map<int, scoped_refptr<IdentificationSettingsManager>>
       settings_managers_;
   std::unique_ptr<CastActivityUrlFilterManager> activity_url_filter_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastContentRendererClient);
 };
 
 }  // namespace shell

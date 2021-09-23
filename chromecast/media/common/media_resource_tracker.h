@@ -40,11 +40,14 @@ class MediaResourceTracker {
   class ScopedUsage {
    public:
     ScopedUsage(MediaResourceTracker* tracker);
+
+    ScopedUsage(const ScopedUsage&) = delete;
+    ScopedUsage& operator=(const ScopedUsage&) = delete;
+
     ~ScopedUsage();
 
    private:
     MediaResourceTracker* tracker_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedUsage);
   };
 
   MediaResourceTracker(

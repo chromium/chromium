@@ -59,6 +59,10 @@ class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
                base::OnceClosure eos_cb,
                double* rate_change_sequence,
                int num_rate_changes);
+
+  BufferFeeder(const BufferFeeder&) = delete;
+  BufferFeeder& operator=(const BufferFeeder&) = delete;
+
   ~BufferFeeder() override {}
 
   void Initialize();
@@ -120,8 +124,6 @@ class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
   scoped_refptr<DecoderBufferBase> pending_buffer_;
   base::ThreadChecker thread_checker_;
   int current_rate_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferFeeder);
 };
 
 double kTestRateSequence1[] = {0.5, 0.7, 0.99, 1.0, 1.01, 1.3, 2.0};
@@ -136,6 +138,10 @@ using TestParams = std::tuple<int /* sample rate */, double* /* sequence */>;
 class MultizoneBackendTest : public testing::TestWithParam<TestParams> {
  public:
   MultizoneBackendTest();
+
+  MultizoneBackendTest(const MultizoneBackendTest&) = delete;
+  MultizoneBackendTest& operator=(const MultizoneBackendTest&) = delete;
+
   ~MultizoneBackendTest() override;
 
   void SetUp() override {
@@ -164,8 +170,6 @@ class MultizoneBackendTest : public testing::TestWithParam<TestParams> {
   base::test::TaskEnvironment task_environment_;
   std::vector<std::unique_ptr<BufferFeeder>> effects_feeders_;
   std::unique_ptr<BufferFeeder> audio_feeder_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultizoneBackendTest);
 };
 
 namespace {

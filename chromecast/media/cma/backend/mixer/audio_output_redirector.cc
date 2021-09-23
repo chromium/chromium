@@ -73,6 +73,9 @@ class AudioOutputRedirector::RedirectionConnection
     socket_->SetDelegate(this);
   }
 
+  RedirectionConnection(const RedirectionConnection&) = delete;
+  RedirectionConnection& operator=(const RedirectionConnection&) = delete;
+
   ~RedirectionConnection() override = default;
 
   void SetStreamConfig(SampleFormat sample_format,
@@ -141,8 +144,6 @@ class AudioOutputRedirector::RedirectionConnection
 
   bool error_ = false;
   bool sent_stream_config_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RedirectionConnection);
 };
 
 class AudioOutputRedirector::InputImpl : public AudioOutputRedirectorInput {
@@ -150,6 +151,10 @@ class AudioOutputRedirector::InputImpl : public AudioOutputRedirectorInput {
   using RenderingDelay = MediaPipelineBackend::AudioDecoder::RenderingDelay;
 
   InputImpl(AudioOutputRedirector* output_redirector, MixerInput* mixer_input);
+
+  InputImpl(const InputImpl&) = delete;
+  InputImpl& operator=(const InputImpl&) = delete;
+
   ~InputImpl() override;
 
   // AudioOutputRedirectorInput implementation:
@@ -172,8 +177,6 @@ class AudioOutputRedirector::InputImpl : public AudioOutputRedirectorInput {
 
   std::unique_ptr<::media::ChannelMixer> channel_mixer_;
   std::unique_ptr<::media::AudioBus> temp_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputImpl);
 };
 
 AudioOutputRedirector::InputImpl::InputImpl(

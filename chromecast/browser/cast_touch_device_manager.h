@@ -19,6 +19,10 @@ namespace shell {
 class CastTouchDeviceManager : public ui::InputDeviceEventObserver {
  public:
   explicit CastTouchDeviceManager();
+
+  CastTouchDeviceManager(const CastTouchDeviceManager&) = delete;
+  CastTouchDeviceManager& operator=(const CastTouchDeviceManager&) = delete;
+
   ~CastTouchDeviceManager() override;
 
   // ui::InputDeviceEventObserver:
@@ -34,8 +38,6 @@ class CastTouchDeviceManager : public ui::InputDeviceEventObserver {
   int64_t display_id_;
   display::Display::Rotation display_rotation_;
   gfx::Rect native_display_bounds_in_pixel_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastTouchDeviceManager);
 };
 
 }  // namespace shell

@@ -53,6 +53,10 @@ class CastWebContentsImpl : public CastWebContents,
  public:
   CastWebContentsImpl(content::WebContents* web_contents,
                       mojom::CastWebViewParamsPtr params);
+
+  CastWebContentsImpl(const CastWebContentsImpl&) = delete;
+  CastWebContentsImpl& operator=(const CastWebContentsImpl&) = delete;
+
   ~CastWebContentsImpl() override;
 
   content::WebContents* web_contents() const override;
@@ -221,8 +225,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastWebContentsImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastWebContentsImpl);
 };
 
 }  // namespace chromecast

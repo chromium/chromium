@@ -40,6 +40,9 @@ class DumpInfo {
            const MinidumpParams& params,
            const std::vector<std::string>* attachments = nullptr);
 
+  DumpInfo(const DumpInfo&) = delete;
+  DumpInfo& operator=(const DumpInfo&) = delete;
+
   ~DumpInfo();
 
   const std::string& crashed_process_dump() const {
@@ -82,8 +85,6 @@ class DumpInfo {
   base::Time dump_time_;
   MinidumpParams params_;
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(DumpInfo);
 };
 
 }  // namespace chromecast

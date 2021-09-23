@@ -110,6 +110,10 @@ void SetupFeatures() {
 class CastFeaturesBrowserTest : public CastBrowserTest {
  public:
   CastFeaturesBrowserTest() { SetupFeatures(); }
+
+  CastFeaturesBrowserTest(const CastFeaturesBrowserTest&) = delete;
+  CastFeaturesBrowserTest& operator=(const CastFeaturesBrowserTest&) = delete;
+
   ~CastFeaturesBrowserTest() override { chromecast::ResetCastFeaturesForTesting(); }
 
   static PrefService* pref_service() {
@@ -154,9 +158,6 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
     pref_service()->Set(prefs::kActiveDCSExperiments, base::ListValue());
     pref_service()->CommitPendingWrite();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastFeaturesBrowserTest);
 };
 
 // Test that set features activate on the next boot. Part 1 of 3.

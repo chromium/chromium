@@ -27,6 +27,10 @@ namespace {
 class MockMediaSession : public content::MediaSession {
  public:
   MockMediaSession() {}
+
+  MockMediaSession(const MockMediaSession&) = delete;
+  MockMediaSession& operator=(const MockMediaSession&) = delete;
+
   ~MockMediaSession() override {}
 
   MOCK_METHOD1(Resume, void(content::MediaSession::SuspendType));
@@ -62,9 +66,6 @@ class MockMediaSession : public content::MediaSession {
   MOCK_METHOD0(HangUp, void());
   MOCK_METHOD0(Raise, void());
   MOCK_METHOD1(SetMute, void(bool));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMediaSession);
 };
 
 }  // namespace
@@ -72,6 +73,10 @@ class MockMediaSession : public content::MediaSession {
 class CastMediaBlockerTest : public content::RenderViewHostTestHarness {
  public:
   CastMediaBlockerTest() {}
+
+  CastMediaBlockerTest(const CastMediaBlockerTest&) = delete;
+  CastMediaBlockerTest& operator=(const CastMediaBlockerTest&) = delete;
+
   ~CastMediaBlockerTest() override {}
 
   void SetUp() override {
@@ -106,9 +111,6 @@ class CastMediaBlockerTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<MockMediaSession> media_session_;
   std::unique_ptr<CastMediaBlocker> media_blocker_;
   std::unique_ptr<content::WebContents> web_contents_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastMediaBlockerTest);
 };
 
 TEST_F(CastMediaBlockerTest, Block_Unblock_Suspended) {

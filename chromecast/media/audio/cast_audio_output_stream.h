@@ -107,6 +107,10 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
                         const ::media::AudioParameters& audio_params,
                         const std::string& device_id_or_group_id,
                         bool use_mixer_service);
+
+  CastAudioOutputStream(const CastAudioOutputStream&) = delete;
+  CastAudioOutputStream& operator=(const CastAudioOutputStream&) = delete;
+
   ~CastAudioOutputStream() override;
 
   // ::media::AudioOutputStream implementation.
@@ -156,8 +160,6 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   THREAD_CHECKER(audio_thread_checker_);
   base::WeakPtr<CastAudioOutputStream> audio_weak_this_;
   base::WeakPtrFactory<CastAudioOutputStream> audio_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioOutputStream);
 };
 
 }  // namespace media

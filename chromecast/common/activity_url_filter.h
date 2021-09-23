@@ -19,6 +19,10 @@ class ActivityUrlFilter {
  public:
   // |url_filters| are applied to network requests from the Activity.
   explicit ActivityUrlFilter(const std::vector<std::string>& url_filters);
+
+  ActivityUrlFilter(const ActivityUrlFilter&) = delete;
+  ActivityUrlFilter& operator=(const ActivityUrlFilter&) = delete;
+
   ~ActivityUrlFilter();
 
   // Returns true if the given url matches to any whitelisted URL.
@@ -26,8 +30,6 @@ class ActivityUrlFilter {
 
  private:
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityUrlFilter);
 };
 
 }  // namespace chromecast

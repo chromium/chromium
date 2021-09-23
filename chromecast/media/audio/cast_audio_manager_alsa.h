@@ -39,6 +39,10 @@ class CastAudioManagerAlsa : public CastAudioManager {
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       external_service_support::ExternalConnector* connector,
       bool use_mixer);
+
+  CastAudioManagerAlsa(const CastAudioManagerAlsa&) = delete;
+  CastAudioManagerAlsa& operator=(const CastAudioManagerAlsa&) = delete;
+
   ~CastAudioManagerAlsa() override;
 
   // CastAudioManager implementation.
@@ -74,8 +78,6 @@ class CastAudioManagerAlsa : public CastAudioManager {
                           ::media::AudioDeviceNames* device_names);
 
   std::unique_ptr<::media::AlsaWrapper> wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioManagerAlsa);
 };
 
 }  // namespace media

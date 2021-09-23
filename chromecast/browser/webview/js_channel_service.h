@@ -31,6 +31,10 @@ class JsChannelService : public mojom::JsChannelBindingProvider {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   explicit JsChannelService(int process_id);
+
+  JsChannelService(const JsChannelService&) = delete;
+  JsChannelService& operator=(const JsChannelService&) = delete;
+
   ~JsChannelService() override;
 
  private:
@@ -39,8 +43,6 @@ class JsChannelService : public mojom::JsChannelBindingProvider {
                 mojo::PendingRemote<mojom::JsChannelClient> client) override;
 
   int process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsChannelService);
 };
 
 class JsClientInstance {

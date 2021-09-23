@@ -41,6 +41,10 @@ class CastCrashdumpUploader {
       const CastCrashdumpData& data,
       std::unique_ptr<google_breakpad::LibcurlWrapper> http_layer);
   explicit CastCrashdumpUploader(const CastCrashdumpData& data);
+
+  CastCrashdumpUploader(const CastCrashdumpUploader&) = delete;
+  CastCrashdumpUploader& operator=(const CastCrashdumpUploader&) = delete;
+
   virtual ~CastCrashdumpUploader();
 
   virtual bool AddAttachment(const std::string& label,
@@ -59,8 +63,6 @@ class CastCrashdumpUploader {
 
   // Holds the following mapping for HTTP request params: <key, value>
   std::map<std::string, std::string> parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCrashdumpUploader);
 };
 
 }  // namespace chromecast

@@ -25,6 +25,10 @@ namespace media {
 class CastAudioDeviceFactory final : public blink::WebAudioDeviceFactory {
  public:
   CastAudioDeviceFactory();
+
+  CastAudioDeviceFactory(const CastAudioDeviceFactory&) = delete;
+  CastAudioDeviceFactory& operator=(const CastAudioDeviceFactory&) = delete;
+
   ~CastAudioDeviceFactory() override;
 
   scoped_refptr<::media::AudioRendererSink> CreateFinalAudioRendererSink(
@@ -46,9 +50,6 @@ class CastAudioDeviceFactory final : public blink::WebAudioDeviceFactory {
   scoped_refptr<::media::AudioCapturerSource> CreateAudioCapturerSource(
       const blink::LocalFrameToken& frame_token,
       const ::media::AudioSourceParameters& params) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastAudioDeviceFactory);
 };
 
 }  // namespace media

@@ -147,6 +147,9 @@ class RemoteDebuggingServer::WebContentsObserver
     Observe(contents);
   }
 
+  WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(const WebContentsObserver&) = delete;
+
   ~WebContentsObserver() override {}
 
   // content::WebContentsObserver implementation:
@@ -158,8 +161,6 @@ class RemoteDebuggingServer::WebContentsObserver
 
  private:
   RemoteDebuggingServer* const server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
 };
 
 RemoteDebuggingServer::RemoteDebuggingServer(bool start_immediately)

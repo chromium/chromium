@@ -33,6 +33,10 @@ class CastCdmContextImpl : public CastCdmContext {
   explicit CastCdmContextImpl(CastCdm* cast_cdm) : cast_cdm_(cast_cdm) {
     DCHECK(cast_cdm_);
   }
+
+  CastCdmContextImpl(const CastCdmContextImpl&) = delete;
+  CastCdmContextImpl& operator=(const CastCdmContextImpl&) = delete;
+
   ~CastCdmContextImpl() override = default;
 
   std::unique_ptr<::media::CallbackRegistration> RegisterEventCB(
@@ -59,8 +63,6 @@ class CastCdmContextImpl : public CastCdmContext {
  private:
   // The CastCdm object which owns |this|.
   CastCdm* const cast_cdm_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCdmContextImpl);
 };
 
 // Returns the HDCP version multiplied by ten.

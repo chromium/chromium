@@ -31,6 +31,10 @@ class CastContentWindowAura : public CastContentWindow,
   CastContentWindowAura(base::WeakPtr<Delegate> delegate,
                         mojom::CastWebViewParamsPtr params,
                         CastWindowManager* window_manager);
+
+  CastContentWindowAura(const CastContentWindowAura&) = delete;
+  CastContentWindowAura& operator=(const CastContentWindowAura&) = delete;
+
   ~CastContentWindowAura() override;
 
   // CastContentWindow implementation:
@@ -69,8 +73,6 @@ class CastContentWindowAura : public CastContentWindow,
   aura::Window* window_;
   bool has_screen_access_;
   bool resize_window_when_navigation_starts_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastContentWindowAura);
 };
 
 }  // namespace chromecast

@@ -24,6 +24,9 @@ class VideoDecoderWrapper : public CmaBackend::VideoDecoder {
   // Create a VideoDecoderWrapper that's already been revoked.
   VideoDecoderWrapper();
 
+  VideoDecoderWrapper(const VideoDecoderWrapper&) = delete;
+  VideoDecoderWrapper& operator=(const VideoDecoderWrapper&) = delete;
+
   ~VideoDecoderWrapper() override;
 
   void Revoke();
@@ -41,8 +44,6 @@ class VideoDecoderWrapper : public CmaBackend::VideoDecoder {
 
   MediaPipelineBackend::VideoDecoder* decoder_;
   std::unique_ptr<RevokedVideoDecoder> revoked_video_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderWrapper);
 };
 
 }  // namespace media

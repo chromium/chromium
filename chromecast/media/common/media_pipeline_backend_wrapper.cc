@@ -34,6 +34,11 @@ class RevokedMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
                                      int64_t current_pts)
       : content_type_(content_type), current_pts_(current_pts) {}
 
+  RevokedMediaPipelineBackendWrapper(
+      const RevokedMediaPipelineBackendWrapper&) = delete;
+  RevokedMediaPipelineBackendWrapper& operator=(
+      const RevokedMediaPipelineBackendWrapper&) = delete;
+
   ~RevokedMediaPipelineBackendWrapper() override = default;
 
   std::unique_ptr<AudioDecoderWrapper> CreateAudioDecoderWrapper() override {
@@ -68,8 +73,6 @@ class RevokedMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
  private:
   const AudioContentType content_type_;
   const int64_t current_pts_;
-
-  DISALLOW_COPY_AND_ASSIGN(RevokedMediaPipelineBackendWrapper);
 };
 
 }  // namespace
@@ -81,6 +84,12 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
       MediaPipelineBackendWrapper* wrapping_backend,
       MediaPipelineBackendManager* backend_manager,
       MediaResourceTracker* media_resource_tracker);
+
+  ActiveMediaPipelineBackendWrapper(const ActiveMediaPipelineBackendWrapper&) =
+      delete;
+  ActiveMediaPipelineBackendWrapper& operator=(
+      const ActiveMediaPipelineBackendWrapper&) = delete;
+
   ~ActiveMediaPipelineBackendWrapper() override;
 
   // DecoderCreatorCmaBackend implementation:
@@ -122,8 +131,6 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
   MediaResourceTracker::ScopedUsage media_resource_usage_;
 
   bool playing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveMediaPipelineBackendWrapper);
 };
 
 ActiveMediaPipelineBackendWrapper::ActiveMediaPipelineBackendWrapper(
