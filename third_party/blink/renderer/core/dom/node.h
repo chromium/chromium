@@ -738,7 +738,6 @@ class CORE_EXPORT Node : public EventTarget {
   // these functions.
   inline ComputedStyle* MutableComputedStyleForEditingDeprecated() const;
   inline const ComputedStyle* GetComputedStyle() const;
-  inline const ComputedStyle* ParentComputedStyle() const;
   inline const ComputedStyle& ComputedStyleRef() const;
   bool ShouldSkipMarkingStyleDirty() const;
 

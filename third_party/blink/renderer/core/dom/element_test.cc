@@ -564,4 +564,12 @@ TEST_F(ElementTest, CreateAndAttachShadowRootSuspendsPluginDisposal) {
   ASSERT_TRUE(plugin->DestroyCalled());
 }
 
+TEST_F(ElementTest, ParentComputedStyleForDocumentElement) {
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* document_element = GetDocument().documentElement();
+  ASSERT_TRUE(document_element);
+  EXPECT_FALSE(document_element->ParentComputedStyle());
+}
+
 }  // namespace blink

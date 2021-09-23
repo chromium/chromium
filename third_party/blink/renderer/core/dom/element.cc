@@ -2935,6 +2935,16 @@ void Element::MarkNonSlottedHostChildrenForStyleRecalc() {
   }
 }
 
+const ComputedStyle* Element::ParentComputedStyle() const {
+  Element* parent = LayoutTreeBuilderTraversal::ParentElement(*this);
+  if (parent && parent->ChildrenCanHaveStyle()) {
+    const ComputedStyle* parent_style = parent->GetComputedStyle();
+    if (parent_style && !parent_style->IsEnsuredInDisplayNone())
+      return parent_style;
+  }
+  return nullptr;
+}
+
 void Element::RecalcStyle(const StyleRecalcChange change,
                           const StyleRecalcContext& style_recalc_context) {
   DCHECK(InActiveDocument());
@@ -3123,6 +3133,12 @@ static const StyleRecalcChange ApplyComputedStyleDiff(
   return change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
 }
 
+static bool LayoutViewCanHaveChildren(Element& element) {
+  if (LayoutObject* view = element.GetDocument().GetLayoutView())
+    return view->CanHaveChildren();
+  return false;
+}
+
 StyleRecalcChange Element::RecalcOwnStyle(
     const StyleRecalcChange change,
     const StyleRecalcContext& style_recalc_context) {
@@ -3142,18 +3158,19 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
   StyleRecalcChange child_change = change.ForChildren(*this);
 
-  if (ParentComputedStyle()) {
-    if (old_style && change.IndependentInherit()) {
-      // When propagating inherited changes, we don't need to do a full style
-      // recalc if the only changed properties are independent. In this case, we
-      // can simply clone the old ComputedStyle and set these directly.
-      new_style = PropagateInheritedProperties();
-    }
-    if (!new_style)
-      new_style = StyleForLayoutObject(style_recalc_context);
-    if (new_style && !ShouldStoreComputedStyle(*new_style))
-      new_style = nullptr;
+  const ComputedStyle* parent_style = ParentComputedStyle();
+  if (parent_style && old_style && change.IndependentInherit()) {
+    // When propagating inherited changes, we don't need to do a full style
+    // recalc if the only changed properties are independent. In this case, we
+    // can simply clone the old ComputedStyle and set these directly.
+    new_style = PropagateInheritedProperties();
   }
+  if (!new_style && (parent_style || (GetDocument().documentElement() == this &&
+                                      LayoutViewCanHaveChildren(*this)))) {
+    new_style = StyleForLayoutObject(style_recalc_context);
+  }
+  if (new_style && !ShouldStoreComputedStyle(*new_style))
+    new_style = nullptr;
 
   ComputedStyle::Difference diff =
       ComputedStyle::ComputeDifference(old_style.get(), new_style.get());
@@ -3183,9 +3200,10 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (new_style->HasPseudoElementStyle(kPseudoIdSelection)) {
       scoped_refptr<StyleHighlightData> highlights =
           new_style->MutableHighlightData();
-      StyleRequest style_request{
-          kPseudoIdSelection,
-          ParentComputedStyle()->HighlightData()->Selection().get()};
+      const ComputedStyle* highlight_parent =
+          parent_style ? parent_style->HighlightData()->Selection().get()
+                       : nullptr;
+      StyleRequest style_request{kPseudoIdSelection, highlight_parent};
       highlights->SetSelection(
           StyleForPseudoElement(style_recalc_context, style_request));
     }
@@ -3193,9 +3211,10 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (new_style->HasPseudoElementStyle(kPseudoIdTargetText)) {
       scoped_refptr<StyleHighlightData> highlights =
           new_style->MutableHighlightData();
-      StyleRequest style_request{
-          kPseudoIdTargetText,
-          ParentComputedStyle()->HighlightData()->TargetText().get()};
+      const ComputedStyle* highlight_parent =
+          parent_style ? parent_style->HighlightData()->TargetText().get()
+                       : nullptr;
+      StyleRequest style_request{kPseudoIdTargetText, highlight_parent};
       highlights->SetTargetText(
           StyleForPseudoElement(style_recalc_context, style_request));
     }
@@ -3203,9 +3222,10 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (new_style->HasPseudoElementStyle(kPseudoIdSpellingError)) {
       scoped_refptr<StyleHighlightData> highlights =
           new_style->MutableHighlightData();
-      StyleRequest style_request{
-          kPseudoIdSpellingError,
-          ParentComputedStyle()->HighlightData()->SpellingError().get()};
+      const ComputedStyle* highlight_parent =
+          parent_style ? parent_style->HighlightData()->SpellingError().get()
+                       : nullptr;
+      StyleRequest style_request{kPseudoIdSpellingError, highlight_parent};
       highlights->SetSpellingError(
           StyleForPseudoElement(style_recalc_context, style_request));
     }
@@ -3213,9 +3233,10 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (new_style->HasPseudoElementStyle(kPseudoIdGrammarError)) {
       scoped_refptr<StyleHighlightData> highlights =
           new_style->MutableHighlightData();
-      StyleRequest style_request{
-          kPseudoIdGrammarError,
-          ParentComputedStyle()->HighlightData()->GrammarError().get()};
+      const ComputedStyle* highlight_parent =
+          parent_style ? parent_style->HighlightData()->GrammarError().get()
+                       : nullptr;
+      StyleRequest style_request{kPseudoIdGrammarError, highlight_parent};
       highlights->SetGrammarError(
           StyleForPseudoElement(style_recalc_context, style_request));
     }
@@ -4375,7 +4396,8 @@ bool Element::SupportsSpatialNavigationFocus() const {
   // pointer}, navigable because users shouldn't need to navigate through every
   // sub element that inherit this CSS.
   if (GetComputedStyle()->Cursor() == ECursor::kPointer &&
-      ParentComputedStyle()->Cursor() != ECursor::kPointer) {
+      (!ParentComputedStyle() ||
+       (ParentComputedStyle()->Cursor() != ECursor::kPointer))) {
     return true;
   }
 
@@ -5551,10 +5573,10 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
   const bool is_before_or_after = request.pseudo_id == kPseudoIdBefore ||
                                   request.pseudo_id == kPseudoIdAfter;
 
-  DCHECK(request.parent_override);
-  DCHECK(request.layout_parent_override);
-
   if (is_before_or_after) {
+    DCHECK(request.parent_override);
+    DCHECK(request.layout_parent_override);
+
     const ComputedStyle* layout_parent_style = request.parent_override;
     if (layout_parent_style->Display() == EDisplay::kContents) {
       // TODO(futhark@chromium.org): Calling getComputedStyle for elements
