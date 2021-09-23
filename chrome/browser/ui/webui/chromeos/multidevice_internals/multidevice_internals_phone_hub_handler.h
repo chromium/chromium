@@ -74,6 +74,7 @@ class MultidevicePhoneHubHandler
   void HandleResetShouldShowOnboardingUi(const base::ListValue* args);
   void HandleResetHasNotificationSetupUiBeenDismissed(
       const base::ListValue* args);
+  void HandleSetCameraRoll(const base::ListValue* args);
 
   void AddObservers();
   void RemoveObservers();

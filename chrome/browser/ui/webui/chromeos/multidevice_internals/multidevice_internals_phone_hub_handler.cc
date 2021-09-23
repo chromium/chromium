@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_phone_hub_handler.h"
 
 #include "ash/public/cpp/system_tray.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/components/phonehub/camera_roll_item.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -24,6 +26,7 @@ namespace {
 const int kIconSize = 16;
 const int kContactImageSize = 80;
 const int kSharedImageSize = 400;
+const int kCameraRollThumbnailSize = 96;
 
 // Fake image types used for fields that require gfx::Image().
 enum class ImageType {
@@ -119,6 +122,13 @@ void TryAddingMetadata(
   metadatas.push_back(metadata);
 }
 
+const SkBitmap RGB_Bitmap(U8CPU r, U8CPU g, U8CPU b, int size) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(size, size);
+  bitmap.eraseARGB(255, r, g, b);
+  return bitmap;
+}
+
 }  // namespace
 
 MultidevicePhoneHubHandler::MultidevicePhoneHubHandler() = default;
@@ -197,6 +207,11 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
       "resetHasNotificationSetupUiBeenDismissed",
       base::BindRepeating(&MultidevicePhoneHubHandler::
                               HandleResetHasNotificationSetupUiBeenDismissed,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "setCameraRoll",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetCameraRoll,
                           base::Unretained(this)));
 }
 
@@ -546,6 +561,40 @@ void MultidevicePhoneHubHandler::HandleResetHasNotificationSetupUiBeenDismissed(
   prefs->SetBoolean(chromeos::phonehub::prefs::kHasDismissedSetupRequiredUi,
                     false);
   PA_LOG(VERBOSE) << "Reset kHasDismissedSetupRequiredUi pref";
+}
+
+void MultidevicePhoneHubHandler::HandleSetCameraRoll(
+    const base::ListValue* args) {
+  const base::DictionaryValue* camera_roll_dict = nullptr;
+  CHECK(args->GetDictionary(0, &camera_roll_dict));
+
+  int number_of_thumbnails;
+  CHECK(camera_roll_dict->GetInteger("numberOfThumbnails",
+                                     &number_of_thumbnails));
+
+  if (number_of_thumbnails == 0) {
+    fake_phone_hub_manager_->fake_camera_roll_manager()->ClearCurrentItems();
+  } else {
+    std::vector<phonehub::CameraRollItem> items;
+    // Create items in descending key order
+    for (int i = number_of_thumbnails; i > 0; --i) {
+      phonehub::proto::CameraRollItemMetadata metadata;
+      metadata.set_key(base::NumberToString(i));
+      metadata.set_mime_type("image/jpeg");
+      metadata.set_last_modified_millis(1577865600 + i);
+      metadata.set_file_size_bytes(123456);
+      metadata.set_file_name("fake_file_" + base::NumberToString(i) + ".jpg");
+
+      gfx::Image thumbnail = gfx::Image::CreateFrom1xBitmap(
+          RGB_Bitmap(255 - i * 12, 63 + i * 12, 255, kCameraRollThumbnailSize));
+
+      items.emplace_back(metadata, thumbnail);
+    }
+    fake_phone_hub_manager_->fake_camera_roll_manager()->SetCurrentItems(items);
+  }
+
+  PA_LOG(VERBOSE) << "Setting Camera Roll to " << number_of_thumbnails
+                  << " thumbnails";
 }
 
 }  // namespace multidevice

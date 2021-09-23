@@ -249,3 +249,10 @@ export const findMyDeviceStatusToString = new Map([
   [FindMyDeviceStatus.OFF, 'Off'],
   [FindMyDeviceStatus.ON, 'On'],
 ]);
+
+/**
+ * @typedef {{
+ *   numberOfThumbnails: number,
+ * }}
+ */
+export let CameraRollManager;
