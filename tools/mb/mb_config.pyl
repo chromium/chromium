@@ -1128,7 +1128,7 @@
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
-      'mac-rel': 'gpu_tests_release_trybot_no_symbols',
+      'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac-rel-rts': 'gpu_tests_release_trybot_no_symbols',
       'mac11-arm64-rel': 'mac_arm64_release_trybot',
     },
@@ -2358,6 +2358,11 @@
 
     'gpu_tests_release_trybot_no_symbols': [
       'gpu_tests', 'release_trybot', 'no_symbols',
+    ],
+
+    'gpu_tests_release_trybot_no_symbols_mac_code_coverage': [
+      'gpu_tests', 'release_trybot', 'no_symbols',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation'
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange': [
