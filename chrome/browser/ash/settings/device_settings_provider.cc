@@ -136,6 +136,7 @@ const char* const kKnownSettings[] = {
     kReportDeviceNetworkInterfaces,
     kReportDeviceNetworkStatus,
     kReportDeviceSessionStatus,
+    kReportDeviceSecurityStatus,
     kReportDeviceTimezoneInfo,
     kReportDeviceGraphicsStatus,
     kReportDeviceMemoryInfo,
@@ -606,6 +607,10 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (reporting_policy.has_report_session_status()) {
       new_values_cache->SetBoolean(kReportDeviceSessionStatus,
                                    reporting_policy.report_session_status());
+    }
+    if (reporting_policy.has_report_security_status()) {
+      new_values_cache->SetBoolean(kReportDeviceSecurityStatus,
+                                   reporting_policy.report_security_status());
     }
     if (reporting_policy.has_report_graphics_status()) {
       new_values_cache->SetBoolean(kReportDeviceGraphicsStatus,

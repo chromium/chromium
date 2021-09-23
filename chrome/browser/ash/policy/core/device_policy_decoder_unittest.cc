@@ -218,6 +218,29 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceAudioStatus) {
   EXPECT_TRUE(report_device_audio_status_bool);
 }
 
+TEST_F(DevicePolicyDecoderTest, ReportDeviceSecurityStatus) {
+  PolicyBundle bundle;
+  PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
+
+  base::WeakPtr<ExternalDataManager> external_data_manager;
+
+  em::ChromeDeviceSettingsProto device_policy;
+  device_policy.mutable_device_reporting()->set_report_security_status(true);
+
+  DecodeDevicePolicy(device_policy, external_data_manager, &policies);
+
+  const base::Value* report_device_security_status_value =
+      policies.GetValue(key::kReportDeviceSecurityStatus);
+  ASSERT_NE(report_device_security_status_value, nullptr);
+  ASSERT_TRUE(report_device_security_status_value->is_bool());
+
+  bool report_device_security_status_bool = false;
+  report_device_security_status_value->GetAsBoolean(
+      &report_device_security_status_bool);
+
+  EXPECT_TRUE(report_device_security_status_bool);
+}
+
 TEST_F(DevicePolicyDecoderTest, ReportDeviceNetworkConfiguration) {
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));

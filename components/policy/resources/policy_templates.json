@@ -959,6 +959,7 @@
         'ReportDeviceMemoryInfo',
         'ReportDeviceBacklightInfo',
         'ReportDevicePowerStatus',
+        'ReportDeviceSecurityStatus',
         'ReportDeviceStorageStatus',
         'ReportDeviceAppInfo',
         'ReportDeviceBluetoothInfo',
@@ -10316,6 +10317,37 @@
       'desc': '''Setting the policy to Enabled or leaving it unset has enrolled devices report the active kiosk session information such as application ID and version.
 
       Setting the policy to Disabled means enrolled devices don't report kiosk session information.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
+    },
+    {
+      'name': 'ReportDeviceSecurityStatus',
+      'owners': ['cros-reporting-team@google.com', 'tylergarrett@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:96-'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Report security status',
+        },
+        {
+          'value': False,
+          'caption': 'Do not report security status',
+        },
+      ],
+      'example_value': False,
+      'default': False,
+      'id': 900,
+      'caption': '''Report device security status''',
+      'tags': ['admin-sharing'],
+      'desc': '''Setting the policy to enabled or leaving it unset has enrolled devices report device TPM security status.
+
+      Setting the policy to Disabled means enrolled devices don't record or report TPM security status.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -28234,6 +28266,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'ReportDeviceNetworkStatus': 'device_reporting.report_network_status',
     'ReportDeviceUsers': 'device_reporting.report_users',
     'ReportDeviceHardwareStatus': 'device_reporting.report_hardware_status',
+    'ReportDeviceSecurityStatus': 'device_reporting.report_security_status',
     'ReportDeviceSessionStatus': 'device_reporting.report_session_status',
     'ReportDeviceGraphicsStatus': 'device_reporting.report_graphics_status',
     'ReportDeviceCrashReportInfo': 'device_reporting.report_crash_report_info',
@@ -28705,6 +28738,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'ReportDeviceMemoryInfo',
         'ReportDeviceBacklightInfo',
         'ReportDevicePowerStatus',
+        'ReportDeviceSecurityStatus',
         'ReportDeviceStorageStatus',
         'ReportDeviceAppInfo',
         'ReportDeviceBluetoothInfo',
@@ -28816,6 +28850,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 899,
+  'highest_id_currently_used': 900,
   'highest_atomic_group_id_currently_used': 41
 }

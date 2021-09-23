@@ -10996,6 +10996,9 @@
   "ReportDeviceStorageStatus": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "ReportDeviceSecurityStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "ReportDeviceBoardStatus": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

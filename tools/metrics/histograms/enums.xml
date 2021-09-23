@@ -26392,6 +26392,7 @@ Called by update_document_policy_enum.py.-->
   <int value="897" label="FullRestoreEnabled"/>
   <int value="898" label="GhostWindowEnabled"/>
   <int value="899" label="CloudUserPolicyOverridesCloudMachinePolicy"/>
+  <int value="900" label="ReportDeviceSecurityStatus"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

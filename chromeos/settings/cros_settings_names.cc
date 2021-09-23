@@ -165,6 +165,11 @@ const char kReportDevicePowerStatus[] =
 const char kReportDeviceStorageStatus[] =
     "cros.device_status.report_storage_status";
 
+// A boolean pref that determines whether the security status should be
+// included in status reports to the device management server.
+const char kReportDeviceSecurityStatus[] =
+    "cros.device_status.report_security_status";
+
 // Determines whether the device reports recently logged in users in device
 // status reports to the device management server.
 const char kReportDeviceUsers[] = "cros.device_status.report_users";

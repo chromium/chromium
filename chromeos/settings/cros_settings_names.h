@@ -111,6 +111,8 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kReportDeviceUsers[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceHardwareStatus[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kReportDeviceSecurityStatus[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceSessionStatus[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceGraphicsStatus[];
@@ -411,6 +413,7 @@ using ::chromeos::kReportDeviceNetworkInterfaces;
 using ::chromeos::kReportDeviceNetworkStatus;
 using ::chromeos::kReportDevicePowerStatus;
 using ::chromeos::kReportDevicePrintJobs;
+using ::chromeos::kReportDeviceSecurityStatus;
 using ::chromeos::kReportDeviceSessionStatus;
 using ::chromeos::kReportDeviceStorageStatus;
 using ::chromeos::kReportDeviceSystemInfo;
