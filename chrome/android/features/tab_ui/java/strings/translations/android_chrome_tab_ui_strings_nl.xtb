@@ -9,6 +9,7 @@
 <translation id="1657719826150349398">Tabblad naar beneden verplaatsen</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="2118649612461486615">Winkelinformatie</translation>
+<translation id="2162620598375156287">Nu <ph name="CURRENT_PRICE" /> op <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Groepsnaam bewerken</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad uit groep verwijderen.}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen uit groep verwijderen.}}</translation>
 <translation id="2479148705183875116">Naar Instellingen</translation>
@@ -17,12 +18,15 @@
 <translation id="257674075312929031">Groep</translation>
 <translation id="2613747923081026172">Groep maken</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling</translation>
+<translation id="266935134738038806">Site bezoeken</translation>
 <translation id="2671423594960767771">Groep delen</translation>
 <translation id="2759453070259087442">De tabbladgroep <ph name="TITLE_OF_GROUP" /> uitvouwen met <ph name="NUMBER_OF_TABS" /> tabbladen.</translation>
 <translation id="2801787514987684416">Winkelinformatie bekijken?</translation>
 <translation id="2928243913527329289">Google | Over deze winkel</translation>
 <translation id="2977480621796371840">Uit groep verwijderen</translation>
+<translation id="3052964831964880138">Prijsdaling van <ph name="PRICE_DROP" /> voor <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">beoordeling</translation>
+<translation id="3267416433995960648">Melding uitzetten</translation>
 <translation id="3291470810748040983">Je krijgt een melding als er een lagere prijs is op een geopend tabblad</translation>
 <translation id="3328308545011660196">Suggestie: <ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -52,12 +56,14 @@
 <translation id="6054741997831917303">De prijs van dit item is recent verlaagd van <ph name="PREVIOUS_PRICE" /> naar <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
 <translation id="6228793724645064692">(winkelbeoordeling)</translation>
+<translation id="6333260925957816943">Informatie over deze winkel</translation>
 <translation id="6510648526783655549">Tabbladstrook sluiten</translation>
 <translation id="6549021453810473782">Winkelinformatie bekijken</translation>
 <translation id="6562820390860419811">Tabblad naar links verplaatsen</translation>
 <translation id="6615455863669487791">Tonen</translation>
 <translation id="6840760312327750441">Groepeer tabbladen door ze vast te houden en naar andere tabbladen te slepen.</translation>
 <translation id="6856809498882026482">Optie om meerdere tabbladen te selecteren verbergen</translation>
+<translation id="7129458170538955174">Informatie over deze winkel is op halve hoogte geopend</translation>
 <translation id="7151209024774799310">Tabbladen uit groep verwijderen</translation>
 <translation id="7204204600596740190">Optie om meerdere tabbladen te selecteren</translation>
 <translation id="7326879924029668159">Retourbeleid en meer bekijken</translation>
@@ -69,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
 <translation id="7885132941432959125">Tabblad naar rechts verplaatsen</translation>
 <translation id="7966321538264951561">Sluit de suggesties.</translation>
+<translation id="8029301326595421733">Informatie over deze winkel is op volledige hoogte geopend</translation>
 <translation id="814503310257431685">Alles bekijken</translation>
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
 <translation id="8304833501377495048">Tabbladstrook niet meer tonen?</translation>
@@ -78,6 +85,7 @@
 <translation id="8714939927607906138">Lagere prijs</translation>
 <translation id="8749939518995770034">Tabbladstrook gesloten</translation>
 <translation id="8820741577754260431">Prijsdalingen bekijken op je tabbladen</translation>
+<translation id="9090098097337832354">Informatie over deze winkel gesloten</translation>
 <translation id="9150694013019234766">Je kunt onderaan het scherm schakelen tussen tabbladen in je tabbladgroep</translation>
 <translation id="9169594135889675189">Nieuw tabblad aan groep toevoegen</translation>
 <translation id="959682366969460160">Georganiseerd werken</translation>

@@ -29,6 +29,7 @@
 <translation id="1398634363027580500">Zeer lange HTTPS-latentie</translation>
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="142228117786570094">Ik heb een sleutelpaar</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -47,6 +48,7 @@
 <translation id="1715359911173058521">Er is een communicatieprobleem met de scanner. Check het netwerk of de USB-aansluiting en probeer het opnieuw.</translation>
 <translation id="1717874160321062422">Beheerd door <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Naamservers</translation>
+<translation id="1731082422893354635">Bluetooth-touchpad</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
@@ -70,10 +72,12 @@
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
 <translation id="2209788852729124853">Verkeerstellers resetten</translation>
+<translation id="2212733584906323460">Naamresolutie</translation>
 <translation id="2217935453350629363">Huidige snelheid</translation>
 <translation id="2224337661447660594">Geen internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Activeringsstatus</translation>
+<translation id="2307344026739914387">Huidig sleutelpaar gebruiken</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Zet Bluetooth aan om apparaten in de buurt te vinden</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
@@ -107,6 +111,7 @@
 <translation id="3083667275341675831">Verbindingsdiagnose</translation>
 <translation id="3091839911843451378">Mislukt - Gestopt</translation>
 <translation id="3102119246920354026">Cachegeheugen</translation>
+<translation id="3122462699877998033"><ph name="TEST_NAME" />-test mislukt</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pagina verwijderen?}=1{Pagina {PAGE_NUMBER} verwijderen?}other{Pagina {PAGE_NUMBER} verwijderen?}}</translation>
 <translation id="315116470104423982">Mobiele data</translation>
@@ -159,11 +164,13 @@
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="409427325554347132">Testgegevens opslaan</translation>
+<translation id="4111761024568264522">USB-touchpad</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
 <translation id="4170700058716978431">MISLUKT</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
+<translation id="4213104098953699324">USB-toetsenbord</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
 <translation id="4244962993387259361">Je hebt minimaal 500 MB vrije ruimte nodig om een geheugentest uit te voeren. Ga naar Instellingen &gt; Opslagbeheer om ruimte vrij te maken.</translation>
@@ -255,6 +262,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Kies nu een nieuw wachtwoord</translation>
 <translation id="5333530671332546086">Onbekende portalstatus</translation>
+<translation id="5346687412805619883">Lokaal netwerk</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
 <translation id="5401938042319910061">Alle routines uitvoeren</translation>
 <translation id="5423849171846380976">Geactiveerd</translation>
@@ -285,6 +293,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5916084858004523819">Verboden</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Je bestand is gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Je bestanden zijn gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Bestand niet gevonden</translation>
+<translation id="594552776027197022">Willekeurig sleutelpaar genereren</translation>
 <translation id="5972388717451707488">Engine updaten</translation>
 <translation id="6037291330010597344">De documentinvoer van de scanner is leeg. Voeg documenten toe en probeer het opnieuw.</translation>
 <translation id="6040143037577758943">Sluiten</translation>
@@ -343,6 +352,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6756731097889387912">Kan scannen niet annuleren</translation>
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
+<translation id="680983167891198932">Sleutel</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
 <translation id="6905724422583748843">Terug naar <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">De klep van de scanner staat open. Sluit de klep en probeer het opnieuw.</translation>
@@ -386,6 +396,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7550715992156305117">Diagnostische routines</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7570674786725311828">USB-touchscreen</translation>
 <translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
 <translation id="763165478673169849">Laatste resettijd</translation>
@@ -403,12 +414,15 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>
 <translation id="7835501727204647447">CloudReady installeren</translation>
 <translation id="7846634333498149051">Toetsenbord</translation>
+<translation id="7856267634822906833">Bluetooth-touchscreen</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type provider</translation>
 <translation id="7882501334836096755">Openbare sleutel</translation>
+<translation id="7890841768028788197">Intern touchscreen</translation>
 <translation id="7895471513946376273">Ontdek tools voor tekenen en ontwerpen</translation>
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
 <translation id="7943235353293548836">Permanent keepalive-interval</translation>
+<translation id="7955587717700691983">Bluetooth-toetsenbord</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
 <translation id="7994702968232966508">EAP-methode</translation>
@@ -438,6 +452,8 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
 <translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8428073762635678092">Intern toetsenbord</translation>
+<translation id="843568408673868420">Internetverbinding</translation>
 <translation id="8461329675984532579">Naam thuisprovider</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
@@ -476,6 +492,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Draadloos</translation>
 <translation id="8936793075252196307">IP-adres van client</translation>
+<translation id="8945750210906526975">Interne touchpad</translation>
 <translation id="8968751544471797276">Oplaadsnelheid</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Pagina {NUMBER_OF_PAGES} scannen}other{Pagina {NUMBER_OF_PAGES} scannen}}</translation>

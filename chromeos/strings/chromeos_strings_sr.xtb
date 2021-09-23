@@ -29,6 +29,7 @@
 <translation id="1398634363027580500">Веома велико HTTPS кашњење</translation>
 <translation id="1413240736185167732">Није успело – филтер је отказао</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="142228117786570094">Имам пар кључева</translation>
 <translation id="1468664791493211953">Понуде</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управља овим уређајем и може да прати ваше активности.</translation>
 <translation id="1478594628797167447">Скенер</translation>
@@ -47,6 +48,7 @@
 <translation id="1715359911173058521">Дошло је до проблема у комуникацији са скенером. Проверите мрежну или USB везу и пробајте поново.</translation>
 <translation id="1717874160321062422">Управљају <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сервери имена</translation>
+<translation id="1731082422893354635">Bluetooth тачпед</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Отказује се скенирање</translation>
@@ -70,10 +72,12 @@
 <translation id="2157959690810728433">НА ЧЕКАЊУ</translation>
 <translation id="2161394479394250669">Откажи задатак штампања</translation>
 <translation id="2209788852729124853">Ресетуј бројаче саобраћаја</translation>
+<translation id="2212733584906323460">Разрешавање имена</translation>
 <translation id="2217935453350629363">Тренутна брзина</translation>
 <translation id="2224337661447660594">Нема интернета</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Статус активације</translation>
+<translation id="2307344026739914387">Користите актуелни пар кључева</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Укључите Bluetooth да бисте открили уређаје у близини</translation>
 <translation id="2364498172489649528">Прошло</translation>
@@ -107,6 +111,7 @@
 <translation id="3083667275341675831">Дијагностика повезивости</translation>
 <translation id="3091839911843451378">Није успело – заустављено је</translation>
 <translation id="3102119246920354026">Кеш</translation>
+<translation id="3122462699877998033">Тест <ph name="TEST_NAME" /> није успео</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Желите да уклоните страницу?}=1{Желите да уклоните {PAGE_NUMBER}. страницу?}one{Желите да уклоните {PAGE_NUMBER}. страницу?}few{Желите да уклоните {PAGE_NUMBER}. страницу?}other{Желите да уклоните {PAGE_NUMBER}. страницу?}}</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
@@ -159,11 +164,13 @@
 <translation id="4003384961948020559">Није успело – излаз је пун</translation>
 <translation id="4034824040120875894">Штампач</translation>
 <translation id="409427325554347132">Сачувај детаље теста</translation>
+<translation id="4111761024568264522">USB тачпед</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
 <translation id="4145784616224233563">HTTP заштитни зид</translation>
 <translation id="4155551848414053977">Проверите да ли је скенер укључен и доступан преко мреже или директне везе</translation>
 <translation id="4170700058716978431">НИЈЕ УСПЕЛО</translation>
 <translation id="4176463684765177261">Онемогућено</translation>
+<translation id="4213104098953699324">USB тастатура</translation>
 <translation id="4227825898293920515">Лозинка истиче за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ниједан задатак штампања није у току</translation>
 <translation id="4244962993387259361">Треба да имате слободно барем 500 MB да бисте покренули тест меморије. Да бисте ослободили простор, идите у Подешавања &gt; Управљање меморијским простором.</translation>
@@ -255,6 +262,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Одаберите нову</translation>
 <translation id="5333530671332546086">Стање портала није познато</translation>
+<translation id="5346687412805619883">Локална мрежа</translation>
 <translation id="5372659122375744710">WiFi мрежа није безбедна</translation>
 <translation id="5401938042319910061">Покрени све рутине</translation>
 <translation id="5423849171846380976">Активирано</translation>
@@ -285,6 +293,7 @@
 <translation id="5916084858004523819">Забрањено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Фајл је скениран и сачуван у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Фајл није пронађен</translation>
+<translation id="594552776027197022">Генеришите насумични пар кључева</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Механизам за увлачење докумената на скенеру је празан. Додајте документе и пробајте поново.</translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -343,6 +352,7 @@
 <translation id="6756731097889387912">Отказивање скенирања није успело</translation>
 <translation id="6766275201586212568">Неуспешна DNS разрешавања</translation>
 <translation id="6768237774506518020">Велика стопа неуспеха DNS разрешавања</translation>
+<translation id="680983167891198932">Кључ</translation>
 <translation id="6853312040151791195">Брзина пражњења</translation>
 <translation id="6905724422583748843">Вратите се на страницу <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Поклопац скенера је отворен. Затворите га и пробајте поново.</translation>
@@ -386,6 +396,7 @@
 <translation id="7550715992156305117">Дијагностичке рутине</translation>
 <translation id="7561454561030345039">Овим подешавањем управља администратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7570674786725311828">USB додирни екран</translation>
 <translation id="7595982850646262331">Још <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Сазнајте више у Центру за помоћ</translation>
 <translation id="763165478673169849">Време последњег ресетовања</translation>
@@ -403,12 +414,15 @@
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7835501727204647447">Инсталирај CloudReady</translation>
 <translation id="7846634333498149051">Тастатура</translation>
+<translation id="7856267634822906833">Bluetooth додирни екран</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип добављача</translation>
 <translation id="7882501334836096755">Јавни кључ</translation>
+<translation id="7890841768028788197">Интерни додирни екран</translation>
 <translation id="7895471513946376273">Откријте алатке за цртање и дизајн</translation>
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
 <translation id="7943235353293548836">Трајни интервал одржавања линка</translation>
+<translation id="7955587717700691983">Bluetooth тастатура</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7978412674231730200">Приватни кључ</translation>
 <translation id="7994702968232966508">EAP метод</translation>
@@ -438,6 +452,8 @@
 <translation id="8395584934117017006">Предузеће управља овим <ph name="DEVICE_TYPE" /> уређајем</translation>
 <translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8428073762635678092">Интерна тастатура</translation>
+<translation id="843568408673868420">Повезивање на интернет</translation>
 <translation id="8461329675984532579">Назив добављача за Home</translation>
 <translation id="8475690821716466388">WiFi мрежа је обезбеђена слабим протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Кашњење DNS-а у мањој мери премашује дозвољену граничну вредност</translation>
@@ -476,6 +492,7 @@
 <translation id="8930521118335213258">Релевантна апликација</translation>
 <translation id="8930622219860340959">Бежично</translation>
 <translation id="8936793075252196307">IP адреса клијента</translation>
+<translation id="8945750210906526975">Интерни тачпед</translation>
 <translation id="8968751544471797276">Брзина пуњења</translation>
 <translation id="8970109610781093811">Поново покрени</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES}. страницу}one{Скенирај {NUMBER_OF_PAGES}. страницу}few{Скенирај {NUMBER_OF_PAGES}. страницу}other{Скенирај {NUMBER_OF_PAGES}. страницу}}</translation>

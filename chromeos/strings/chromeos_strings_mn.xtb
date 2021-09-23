@@ -29,6 +29,7 @@
 <translation id="1398634363027580500">Маш өндөр HTTPS хоцролт</translation>
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="142228117786570094">Надад хос түлхүүр байгаа</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд таны үйл ажиллагааг хянах боломжтой байж болзошгүй.</translation>
 <translation id="1478594628797167447">Скан хийгч</translation>
@@ -47,6 +48,7 @@
 <translation id="1715359911173058521">Сканнертай холбогдоход асуудал гарлаа. Сүлжээ эсвэл USB холболтыг шалгаад, дахин оролдоно уу.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> болон <ph name="SECOND_MANAGER" />-р удирддаг</translation>
 <translation id="1726100011689679555">Нэрийн сервер</translation>
+<translation id="1731082422893354635">Bluetooth мэдрэгч самбар</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Хромэ</translation>
 <translation id="1792647875738159689">Скан хийхийг цуцалж байна</translation>
@@ -70,10 +72,12 @@
 <translation id="2157959690810728433">ЖАГСААСАН</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
 <translation id="2209788852729124853">Ачаалал тоологчийг шинэчлэх</translation>
+<translation id="2212733584906323460">Нэр тодорхойлох</translation>
 <translation id="2217935453350629363">Одоогийн хурд</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Идэвхжүүлэх статус</translation>
+<translation id="2307344026739914387">Одоогийн хос түлхүүрийг ашиглах</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ойролцоох төхөөрөмж хайхын тулд Bluetooth-г асаана уу</translation>
 <translation id="2364498172489649528">Давсан</translation>
@@ -107,6 +111,7 @@
 <translation id="3083667275341675831">Холболтын оношилгоо</translation>
 <translation id="3091839911843451378">Амжилтгүй болсон - Зогссон</translation>
 <translation id="3102119246920354026">Кэш</translation>
+<translation id="3122462699877998033"><ph name="TEST_NAME" /> туршилт амжилтгүй боллоо</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Хуудсыг хасах уу?}=1{{PAGE_NUMBER}-р хуудсыг хасах уу?}other{{PAGE_NUMBER}-р хуудсыг хасах уу?}}</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
@@ -159,11 +164,13 @@
 <translation id="4003384961948020559">Амжилтгүй болсон - Гаралт дүүрсэн</translation>
 <translation id="4034824040120875894">Хэвлэгч</translation>
 <translation id="409427325554347132">Туршилтын дэлгэрэнгүйг хадгалах</translation>
+<translation id="4111761024568264522">USB мэдрэгч самбар</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
 <translation id="4145784616224233563">HTTP галт хана</translation>
 <translation id="4155551848414053977">Сканнер асаалттай бөгөөд таны сүлжээ эсвэл шууд холболтоор боломжтой эсэхийг шалгана уу</translation>
 <translation id="4170700058716978431">АМЖИЛТГҮЙ БОЛЛОО</translation>
 <translation id="4176463684765177261">Хаасан</translation>
+<translation id="4213104098953699324">USB гар</translation>
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
 <translation id="4238516577297848345">Хэвлэж байгаа ажил алга</translation>
 <translation id="4244962993387259361">Танд Санах ойн туршилтыг ажиллуулахын тулд хамгийн багадаа 500 МБ-ын сул зай шаардлагатай. Сул зай гаргахын тулд Тохиргоо &gt; Хадгалах сангийн менежмент рүү очно уу.</translation>
@@ -255,6 +262,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Одоо шинийг сонгоно уу</translation>
 <translation id="5333530671332546086">Порталын тодорхойгүй төлөв</translation>
+<translation id="5346687412805619883">Дотоод сүлжээ</translation>
 <translation id="5372659122375744710">Wi-Fi сүлжээ аюулгүй биш байна</translation>
 <translation id="5401938042319910061">Бүх хэвшлийг ажиллуулах</translation>
 <translation id="5423849171846380976">Идэвхжүүлсэн байна</translation>
@@ -285,6 +293,7 @@
 <translation id="5916084858004523819">Хориглосон</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
+<translation id="594552776027197022">Санамсаргүй хос түлхүүр үүсгэх</translation>
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
 <translation id="6037291330010597344">Сканнерын документ дамжуулах тавиур хоосон байна. Документ нэмээд, дахин оролдоно уу.</translation>
 <translation id="6040143037577758943">Хаах</translation>
@@ -343,6 +352,7 @@
 <translation id="6756731097889387912">Скан хийхийг цуцалж чадсангүй</translation>
 <translation id="6766275201586212568">DNS-н тайлал амжилтгүй</translation>
 <translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
+<translation id="680983167891198932">Түлхүүр</translation>
 <translation id="6853312040151791195">Цэнэггүй болох хурд</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> руу буцах</translation>
 <translation id="6910312834584889076">Сканнерын таг нээлттэй байна. Тагийг хаагаад, дахин оролдоно уу.</translation>
@@ -386,6 +396,7 @@
 <translation id="7550715992156305117">Оношилгооны хэвшил</translation>
 <translation id="7561454561030345039">Энэ үйлдлийг таны администратор удирддаг</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7570674786725311828">USB мэдрэмтгий дэлгэц</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
 <translation id="763165478673169849">Хамгийн сүүлд шинэчилсэн цаг</translation>
@@ -403,12 +414,15 @@
 <translation id="7819857487979277519">PSK (WPA эсвэл RSN)</translation>
 <translation id="7835501727204647447">CloudReady-г суулгах</translation>
 <translation id="7846634333498149051">Гар</translation>
+<translation id="7856267634822906833">Bluetooth мэдрэмтгий дэлгэц</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
 <translation id="7882501334836096755">Нийтийн түлхүүр</translation>
+<translation id="7890841768028788197">Дотоод мэдрэмтгий дэлгэц</translation>
 <translation id="7895471513946376273">Дүрс болон дизайны хэрэгсэлтэй танилцаарай</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="7943235353293548836">Тогтмол keepalive интервал</translation>
+<translation id="7955587717700691983">Bluetooth гар</translation>
 <translation id="7960831585769876809">Температур</translation>
 <translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7994702968232966508">EAP арга</translation>
@@ -438,6 +452,8 @@
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8428073762635678092">Дотоод гар</translation>
+<translation id="843568408673868420">Интернэт холболт</translation>
 <translation id="8461329675984532579">Нүүр хуудас бэлтгэх нэр</translation>
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
@@ -476,6 +492,7 @@
 <translation id="8930521118335213258">Төстэй апп</translation>
 <translation id="8930622219860340959">Утасгүй</translation>
 <translation id="8936793075252196307">Клиентийн IP хаяг</translation>
+<translation id="8945750210906526975">Дотоод мэдрэгч самбар</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скан хийх}=1{{NUMBER_OF_PAGES} хуудас скан хийх}other{{NUMBER_OF_PAGES} хуудас скан хийх}}</translation>

@@ -1097,6 +1097,13 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="2299220924812062390">Etkinleştirilmiş eklentilerin listesini belirt</translation>
 <translation id="2301048990069984110">Windows, Mac ve Linux'taki Chrome Uygulamaları desteğini artırma.</translation>
 <translation id="2303795211377219696">Kredi kartları için Otomatik Doldurma özelliğini etkinleştirme</translation>
+<translation id="2304009805995145854">Site izolasyonu, 67. <ph name="PRODUCT_NAME" /> sürümünden itibaren tüm masaüstü platformlarda varsayılan olarak etkinleştirilerek her sitenin kendi işleminde çalışmasına neden olur. Site, şema artı eTLD+1 olarak tanımlanır (ör. https://example.com). Bu politikanın Etkin değerine ayarlanması bu davranışı değiştirmez, yalnızca kullanıcıların bu ayarı devre dışı bırakmasını (örneğin, chrome://flags'te Site izolasyonunu devre dışı bırak seçeneğini kullanarak) engeller. 76. <ph name="PRODUCT_NAME" /> sürümünden itibaren, bu politikanın Devre dışı değerine ayarlanması veya ayarlanmadan bırakılması, site izolasyonunu kapatmaz ancak kullanıcılar tarafından devre dışı bırakılmasına izin verir.
+
+      Siteden daha yüksek ayrıntı düzeyindeki belirli kaynakların (ör. https://a.example.com) izole edilmesinde <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> politikasından da yararlanılabilir.
+
+      76. ve önceki <ph name="PRODUCT_OS_NAME" /> sürümlerinde <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> cihaz politikasını aynı değere ayarlayın. (Değerlerin eşleşmemesi durumunda, kullanıcı oturumuna giriş sırasında gecikme yaşanabilir.)
+
+      Not: Android için bunun yerine <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="2307496301287881990">Ekran ve grafik durumlarını raporla</translation>
 <translation id="2309390639296060546">Varsayılan coğrafi konum ayarı</translation>
 <translation id="2331354174913096226">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonu. Birden fazla DNS-over-HTTPS çözümleyicisi belirlemek için karşılık gelen URI şablonlarını boşlukla ayırın.
@@ -1157,6 +1164,17 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (2 değeri) ayarlanırsa tarayıcıya hiçbir varyasyonun uygulanmasına izin verilmez. Bu modun, <ph name="PRODUCT_NAME" /> geliştiricilerinin kritik güvenlik düzeltmelerini zamanında sağlamalarını engelleyebileceğini ve dolayısıyla önerilmediğini lütfen unutmayın.</translation>
 <translation id="2402547085566757554">Ana sayfa olarak Yeni Sekme Sayfası'nı kullanma</translation>
+<translation id="240713331529749993">Bu politika ayarlanırsa virgülle ayrılmış listede adı verilen her kaynak Android üzerinde özel işlem içinde çalışır. Adı verilen her kaynağın işleminde yalnızca o kaynaktan ve kaynağın alt alan adlarından dokümanlar bulunabilir. Örneğin, https://a1.example.com/ alan adı tanımlandığında aynı işlem içerisinde https://a2.a1.example.com/ bulunabilir ancak https://example.com veya https://b.example.com bulunamaz. 77. <ph name="PRODUCT_NAME" /> sürümünden itibaren Android'in varsayılan olarak bazı hassas siteleri izole ettiğini, bu politikanın da söz konusu modun kapsamını bazı diğer kaynakları izole edecek şekilde genişlettiğini hatırlatmak isteriz.
+
+      77. <ph name="PRODUCT_NAME" /> sürümünden itibaren, joker karakter kullanarak izole edilecek bir kaynak aralığı belirlemek mümkündür. Örneğin, https://[*.]corp.example.com alan adı belirlenirse, https://corp.example.com alan adının kendisi, https://a1.corp.example.com ve https://a2.a1.corp.example.com dahil olmak üzere https://corp.example.com alan adının altında bulunan her bir kaynak kendi özel işlemi içinde çalışır.
+
+      Normalde aynı sitedeki iki doküman, document.domain değerlerini değiştirip eşleşerek aynı sitedeki diğer kaynaklardan komut dosyası çalıştırabilse de bu politika tarafından izole edilen kaynaklar, aynı sitedeki diğer kaynaklardan komut dosyası çalıştıramaz. Yöneticiler, bir kaynağı izole etmeden önce, yaygın olmayan bu davranışın ilgili kaynak üzerinde kullanılmadığından emin olmalıdır.
+
+      Politika, Devre Dışı değerine ayarlanırsa her türlü site izolasyonu devre dışı bırakılır. Hassas sitelerin izolasyonu, ayrıca IsolateOriginsAndroid ve SitePerProcessAndroid'in saha denemeleri ile diğer site izolasyonu modları da buna dahildir. Kullanıcılar isterlerse komut satırı işaretini kullanarak IsolateOrigins'i manuel olarak etkinleştirebilirler.
+
+      Politika ayarlanmadan bırakılırsa kullanıcılar bu ayarı değiştirebilir.
+
+      Not: Android'de çok fazla sitenin izole edilmesi bilhassa düşük bellekli cihazlarda performans sorunlarına yol açabilir. Bu politika yalnızca 1 GB'tan fazla RAM'i olan cihazlarda çalışan Android platformundaki Chrome için geçerlidir. Politikayı Android dışı platformlarda uygulamak için <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="2411629345938804022">Politikayı 3 değerine ayarlamak web sitelerinin yakınlardaki Bluetooth cihazlarına erişim istemesini sağlar. Politikayı 2 değerine ayarlamak yakınlardaki Bluetooth cihazlarına erişimi kısıtlar.
 
       Ayarlanmazsa politika açık kalır fakat kullanıcılar bu ayarı değiştirebilir.</translation>
@@ -2695,6 +2713,17 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
       Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar hücresel bağlantı kullanırken Drive'a dosya aktarabilir.</translation>
 <translation id="4248277954659222481">URL kalıpları izin verilenler listesinde medyanın otomatik olarak oynatılmasına izin ver</translation>
 <translation id="4250680216510889253">Hayır</translation>
+<translation id="4260027436474745627">Bu politika ayarlanırsa virgülle ayrılmış listede adı verilen her kaynak özel işlem içinde çalışır. Adı verilen her kaynağın işleminde yalnızca o kaynaktan ve kaynağın alt alan adlarından dokümanlar bulunabilir. Örneğin, https://a1.example.com/ alan adı tanımlandığında aynı işlem içerisinde https://a2.a1.example.com/ bulunabilir ancak https://example.com veya https://b.example.com bulunamaz.
+
+      77. <ph name="PRODUCT_NAME" /> sürümünden itibaren, joker karakter kullanarak izole edilecek bir kaynak aralığı belirlemek mümkündür. Örneğin, https://[*.]corp.example.com alan adı belirlenirse, https://corp.example.com alan adının kendisi, https://a1.corp.example.com ve https://a2.a1.corp.example.com dahil olmak üzere https://corp.example.com alan adının altında bulunan her bir kaynak kendi özel işlemi içinde çalışır.
+
+      <ph name="SITE_PER_PROCESS_POLICY_NAME" /> politikasında açıklandığı üzere masaüstü platformlarda tüm sitelerin (şema artı eTLD+1, örneğin, https://example.com) varsayılan olarak zaten izole olduğunu unutmayın. Bu <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> politikası, daha ince ayrıntı düzeyindeki belirli kaynakların (ör. https://a.example.com) izole edilmesinde faydalıdır.
+
+      Ayrıca, normalde aynı sitedeki iki doküman, document.domain değerlerini değiştirip eşleşerek aynı sitedeki diğer kaynaklardan komut dosyası çalıştırabilse de bu politika tarafından izole edilen kaynaklar, aynı sitedeki diğer kaynaklardan komut dosyası çalıştıramaz. Yöneticiler, bir kaynağı izole etmeden önce, yaygın olmayan bu davranışın ilgili kaynak üzerinde kullanılmadığından emin olmalıdır.
+
+      Politika devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar bu ayarı değiştirebilir.
+
+      Not: Android için bunun yerine <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="4261820385751181068">Cihaz oturum açma ekranı yerel ayarı</translation>
 <translation id="4266547484666068234">Politikanın ayarlanması <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasını * olarak ayarlamak tüm istekleri engeller, siz de bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Bu ayarı, (https://www.chromium.org/administrators/url-blocklist-filter-format) adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini, en spesifik filtre belirler. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
 
@@ -3563,6 +3592,15 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
           </translation>
 <translation id="5435888298115339571">Çok amaçlı adres çubuğu ve 3 noktalı menüde masaüstü paylaşımını etkinleştir</translation>
 <translation id="5442026853063570579">Bu politika Android Geliştirici Seçenekleri'ne erişimi de kontrol eder. Bu politikayı "DeveloperToolsDisallowed" (2 değeri) olarak ayarlarsanız kullanıcılar Geliştirici Seçenekleri'ne erişemez. Bu politikayı başka bir seçeneğe ayarlar veya ayarlamadan bırakırsanız kullanıcılar, Android ayarları uygulamasında derleme numarasına yedi kez dokunarak Geliştirici Seçenekleri'ne erişebilir.</translation>
+<translation id="5443582909255996887">Politika Etkin değerine ayarlanırsa Android üzerinde tüm siteler, kendi işlemini çalıştıracak şekilde izole edilir ve kullanıcıların bunu devre dışı bırakması engellenir. Site, şema artı eTLD+1 olarak tanımlanır (ör. https://example.com). 77. <ph name="PRODUCT_NAME" /> sürümünden itibaren Android'in varsayılan olarak bazı hassas siteleri izole ettiğini, bu politikanın da söz konusu varsayılan site izolasyonu modunun kapsamını tüm siteleri içine alacak şekilde genişlettiğini unutmayın.
+
+      Politika, Devre Dışı değerine ayarlanırsa her türlü site izolasyonu devre dışı bırakılır. Hassas sitelerin izolasyonu, ayrıca IsolateOriginsAndroid ve SitePerProcessAndroid'in saha denemeleri ile diğer site izolasyonu modları da buna dahildir. Kullanıcılar isterlerse politikayı manuel olarak etkinleştirebilirler.
+
+      Politika ayarlanmadan bırakılırsa kullanıcılar bu ayarı değiştirebilir.
+
+      Siteden daha yüksek ayrıntı düzeyindeki belirli kaynakların (ör. https://a.example.com) izole edilmesinde <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> politikasından da yararlanılabilir.
+
+      Not: Android'deki her sitenin izole edilmesi için verilen destek iyileştirilecek. Ancak bu durum şu anda bilhassa düşük özellikli cihazlarda performans sorunlarına yol açabilir. Bu politika yalnızca 1 GB'tan fazla RAM'i olan cihazlarda çalışan Android platformundaki Chrome için geçerlidir. Kullanıcılar açısından performans üzerindeki etkiyi sınırlandırırken belirli siteleri izole etmek için, izole etmek istediğiniz sitelerin listesiyle birlikte<ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> politikasını kullanın.  Politikayı Android dışı platformlarda uygulamak için <ph name="SITE_PER_PROCESS_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="5445596354079213552">Bu politika, yalnızca cihaz otomatik güncelleme süre sonuna ulaştığında ve <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> politikası aracılığıyla ayarlanan <ph name="PRODUCT_OS_NAME" /> ürününün izin verilen minimum sürümünü karşılamadığında geçerli olur.
 
       Bu politika boş olmayan bir dizeye ayarlandığında:
@@ -6126,6 +6164,7 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
       Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.
 
       Not: Dahili chrome://* URL'lerinin engellenmesi beklenmedik hatalara neden olabilir.</translation>
+<translation id="8626826495474944836">Her site için Site İzolasyonunu zorunlu tut</translation>
 <translation id="8631434304112909927"><ph name="UNTIL_VERSION" /> sürümüne kadar</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" /> kilit ekranında izin verilen not alma uygulamaları listesi</translation>
 <translation id="8637566476051166626">Açıkça izin verilen ağ bağlantı noktaları</translation>
