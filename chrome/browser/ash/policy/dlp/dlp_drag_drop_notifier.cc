@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/policy/dlp/dlp_drag_drop_notifier.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/ash/policy/dlp/dlp_clipboard_bubble_constants.h"
@@ -29,4 +31,44 @@ void DlpDragDropNotifier::NotifyBlockedAction(
   ShowBlockBubble(l10n_util::GetStringFUTF16(
       IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name));
 }
+
+void DlpDragDropNotifier::WarnOnDrop(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst,
+    base::OnceClosure drop_cb) {
+  DCHECK(data_src);
+  DCHECK(data_src->origin());
+
+  CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
+
+  const std::u16string host_name =
+      base::UTF8ToUTF16(data_src->origin()->host());
+
+  drop_cb_ = std::move(drop_cb);
+  auto proceed_cb = base::BindRepeating(&DlpDragDropNotifier::ProceedPressed,
+                                        base::Unretained(this));
+  auto cancel_cb = base::BindRepeating(&DlpDragDropNotifier::CancelPressed,
+                                       base::Unretained(this));
+
+  ShowWarningBubble(l10n_util::GetStringFUTF16(
+                        IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
+                    std::move(proceed_cb), std::move(cancel_cb));
+}
+
+void DlpDragDropNotifier::ProceedPressed(views::Widget* widget) {
+  if (drop_cb_)
+    std::move(drop_cb_).Run();
+  CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
+}
+
+void DlpDragDropNotifier::CancelPressed(views::Widget* widget) {
+  CloseWidget(widget, views::Widget::ClosedReason::kCancelButtonClicked);
+}
+
+void DlpDragDropNotifier::OnWidgetClosing(views::Widget* widget) {
+  drop_cb_.Reset();
+
+  DlpDataTransferNotifier::OnWidgetClosing(widget);
+}
+
 }  // namespace policy

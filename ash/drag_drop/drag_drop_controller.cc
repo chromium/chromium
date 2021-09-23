@@ -87,15 +87,17 @@ void DispatchGestureEndToWindow(aura::Window* window) {
   }
 }
 
-bool IsDragDropAllowed(const ui::OSExchangeData* drag_data,
-                       aura::client::DragUpdateInfo& drag_info,
-                       bool is_drop) {
+void DropIfAllowed(const ui::OSExchangeData* drag_data,
+                   aura::client::DragUpdateInfo& drag_info,
+                   base::OnceClosure drop_cb) {
   DCHECK(drag_data);
 
-  return ui::DataTransferPolicyController::HasInstance()
-             ? ui::DataTransferPolicyController::Get()->IsDragDropAllowed(
-                   drag_data->GetSource(), &drag_info.data_endpoint, is_drop)
-             : true;
+  if (ui::DataTransferPolicyController::HasInstance()) {
+    ui::DataTransferPolicyController::Get()->DropIfAllowed(
+        drag_data->GetSource(), &drag_info.data_endpoint, std::move(drop_cb));
+  } else {
+    std::move(drop_cb).Run();
+  }
 }
 
 }  // namespace
@@ -174,6 +176,8 @@ DragOperation DragDropController::StartDragAndDrop(
   if (!enabled_ || IsDragDropInProgress())
     return DragOperation::kNone;
 
+  drop_weak_factory_.InvalidateWeakPtrs();
+
   const ui::OSExchangeDataProvider* provider = &data->provider();
   // We do not support touch drag/drop without a drag image, unless it is a tab
   // drag/drop.
@@ -236,8 +240,8 @@ DragOperation DragDropController::StartDragAndDrop(
 
   if (TabDragDropDelegate::IsChromeTabDrag(*drag_data_)) {
     DCHECK(!tab_drag_drop_delegate_);
-    tab_drag_drop_delegate_.emplace(root_window, drag_source_window_,
-                                    start_location_);
+    tab_drag_drop_delegate_ = std::make_unique<TabDragDropDelegate>(
+        root_window, drag_source_window_, start_location_);
     static_cast<DragImageView*>(drag_image_widget_->GetContentsView())
         ->SetTouchDragOperationHintOff();
   }
@@ -491,19 +495,14 @@ void DragDropController::DragUpdate(aura::Window* target,
         aura::client::GetDragDropDelegate(drag_window_);
     if (delegate) {
       drag_info = delegate->OnDragUpdated(e);
-      bool is_drop_allowed = IsDragDropAllowed(drag_data_.get(), drag_info,
-                                               /*is_drop=*/false);
       gfx::NativeCursor cursor = ui::mojom::CursorType::kNoDrop;
-      if (is_drop_allowed) {
-        if (drag_info.drag_operation & ui::DragDropTypes::DRAG_COPY)
-          cursor = ui::mojom::CursorType::kCopy;
-        else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_LINK)
-          cursor = ui::mojom::CursorType::kAlias;
-        else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_MOVE)
-          cursor = ui::mojom::CursorType::kGrabbing;
-      } else {
-        drag_info.drag_operation = ui::DragDropTypes::DRAG_NONE;
-      }
+      if (drag_info.drag_operation & ui::DragDropTypes::DRAG_COPY)
+        cursor = ui::mojom::CursorType::kCopy;
+      else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_LINK)
+        cursor = ui::mojom::CursorType::kAlias;
+      else if (drag_info.drag_operation & ui::DragDropTypes::DRAG_MOVE)
+        cursor = ui::mojom::CursorType::kGrabbing;
+
       Shell::Get()->cursor_manager()->SetCursor(cursor);
     }
   }
@@ -548,48 +547,50 @@ void DragDropController::Drop(aura::Window* target,
     DragUpdate(target, event);
   DCHECK(target == drag_window_);
 
-  if (!IsDragDropAllowed(drag_data_.get(), current_drag_info_,
-                         /*is_drop=*/true)) {
-    DragCancel();
-    return;
-  }
-
   Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
 
   aura::client::DragDropDelegate* delegate =
       aura::client::GetDragDropDelegate(target);
-  if (delegate) {
-    ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
-                          event.root_location_f(), allowed_operations_);
-    e.set_flags(event.flags());
-    ui::Event::DispatcherApi(&e).set_target(target);
 
-    ui::OSExchangeData copied_data(drag_data_->provider().Clone());
-    operation_ = delegate->OnPerformDrop(e, std::move(drag_data_));
-    if (operation_ == DragOperation::kNone && tab_drag_drop_delegate_) {
-      gfx::Point location_in_screen = event.root_location();
-      ::wm::ConvertPointToScreen(target->GetRootWindow(), &location_in_screen);
-      tab_drag_drop_delegate_->Drop(location_in_screen, copied_data);
-      // Override the drag event's drop effect as a move to inform the front-end
-      // that the tab or group was moved. Otherwise, the WebUI tab strip does
-      // not know that a drop resulted in a tab being moved and will temporarily
-      // visually return the tab to its original position. (crbug.com/1081905)
-      operation_ = DragOperation::kMove;
-      drag_image_widget_.reset();
-    } else if (operation_ == DragOperation::kNone) {
-      StartCanceledAnimation(kCancelAnimationDuration);
-    } else {
-      drag_image_widget_.reset();
-    }
-  } else {
-    drag_image_widget_.reset();
-  }
+  aura::client::DragDropDelegate::DropCallback delegate_drop_cb =
+      base::DoNothing();
 
-  if (toplevel_window_drag_delegate_)
-    operation_ = toplevel_window_drag_delegate_->OnToplevelWindowDragDropped();
+  ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
+                        event.root_location_f(), allowed_operations_);
+  e.set_flags(event.flags());
+  ui::Event::DispatcherApi(&e).set_target(target);
+
+  if (delegate)
+    delegate_drop_cb = delegate->GetDropCallback(e);
+
+  base::ScopedClosureRunner drag_cancel(base::BindOnce(
+      &DragDropController::DragCancel, weak_factory_.GetWeakPtr()));
+
+  gfx::Point drop_location_in_screen = event.root_location();
+  ::wm::ConvertPointToScreen(target->GetRootWindow(), &drop_location_in_screen);
+
+  const bool is_tab_drag_drop = (tab_drag_drop_delegate_.get() != nullptr);
+
+  DropIfAllowed(
+      drag_data_.get(), current_drag_info_,
+      base::BindOnce(&DragDropController::PerformDrop,
+                     drop_weak_factory_.GetWeakPtr(), drop_location_in_screen,
+                     e, std::move(drag_data_), std::move(delegate_drop_cb),
+                     std::move(tab_drag_drop_delegate_),
+                     std::move(drag_cancel)));
 
   Cleanup();
-  if (should_block_during_drag_drop_)
+
+  // Tab drag-n-drop should never be async.
+  if (is_tab_drag_drop)
+    DCHECK(!drag_image_widget_);
+
+  // If the drop is async and cancelled animation isn't running, reset
+  // |drag_image_widget_|.
+  if (!cancel_animation_)
+    drag_image_widget_.reset();
+
+  if (should_block_during_drag_drop_ && quit_closure_)
     std::move(quit_closure_).Run();
 }
 
@@ -633,8 +634,10 @@ void DragDropController::DoDragCancel(
     toplevel_window_drag_delegate_->OnToplevelWindowDragCancelled();
 
   Cleanup();
-  StartCanceledAnimation(drag_cancel_animation_duration);
-  if (should_block_during_drag_drop_)
+  // If the drop is async, then |drag_image_widget_| is already reset.
+  if (drag_image_widget_)
+    StartCanceledAnimation(drag_cancel_animation_duration);
+  if (should_block_during_drag_drop_ && quit_closure_)
     std::move(quit_closure_).Run();
 }
 
@@ -698,6 +701,38 @@ void DragDropController::Cleanup() {
   // Cleanup can be called again while deleting DragDropTracker, so delete
   // the pointer with a local variable to avoid double free.
   std::unique_ptr<DragDropTracker> holder = std::move(drag_drop_tracker_);
+}
+
+void DragDropController::PerformDrop(
+    const gfx::Point drop_location_in_screen,
+    ui::DropTargetEvent event,
+    std::unique_ptr<ui::OSExchangeData> drag_data,
+    aura::client::DragDropDelegate::DropCallback drop_cb,
+    std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
+    base::ScopedClosureRunner drag_cancel) {
+  ui::OSExchangeData copied_data(drag_data->provider().Clone());
+  if (drop_cb)
+    std::move(drop_cb).Run(event, std::move(drag_data), operation_);
+
+  if (operation_ == DragOperation::kNone && tab_drag_drop_delegate) {
+    DCHECK(drag_image_widget_);
+    tab_drag_drop_delegate->Drop(drop_location_in_screen, copied_data);
+    // Override the drag event's drop effect as a move to inform the front-end
+    // that the tab or group was moved. Otherwise, the WebUI tab strip does
+    // not know that a drop resulted in a tab being moved and will temporarily
+    // visually return the tab to its original position. (crbug.com/1081905)
+    operation_ = DragOperation::kMove;
+    drag_image_widget_.reset();
+  } else if (operation_ == DragOperation::kNone) {
+    StartCanceledAnimation(kCancelAnimationDuration);
+  } else {
+    drag_image_widget_.reset();
+  }
+
+  if (toplevel_window_drag_delegate_) {
+    operation_ = toplevel_window_drag_delegate_->OnToplevelWindowDragDropped();
+  }
+  drag_cancel.ReplaceClosure(base::DoNothing());
 }
 
 }  // namespace ash

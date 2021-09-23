@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_DRAG_DROP_NOTIFIER_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_DRAG_DROP_NOTIFIER_H_
 
+#include "base/callback.h"
 #include "chrome/browser/ash/policy/dlp/dlp_data_transfer_notifier.h"
 
 namespace policy {
@@ -21,6 +22,24 @@ class DlpDragDropNotifier : public DlpDataTransferNotifier {
   void NotifyBlockedAction(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override;
+
+  // Warns the user that this drop action is not recommended.
+  void WarnOnDrop(const ui::DataTransferEndpoint* const data_src,
+                  const ui::DataTransferEndpoint* const data_dst,
+                  base::OnceClosure drop_cb);
+
+ protected:
+  // Added as protected so tests can refer to them.
+  void ProceedPressed(views::Widget* widget);
+
+  void CancelPressed(views::Widget* widget);
+
+  // views::WidgetObserver
+  void OnWidgetClosing(views::Widget* widget) override;
+
+ private:
+  // Drop callback.
+  base::OnceClosure drop_cb_;
 };
 
 }  // namespace policy

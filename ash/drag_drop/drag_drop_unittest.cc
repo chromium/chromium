@@ -65,13 +65,24 @@ class TargetView : public views::View {
   }
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override {
-    dropped_ = true;
-    return ui::mojom::DragOperation::kMove;
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    PerformDrop(event, output_drag_op);
+    return output_drag_op;
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    return base::BindOnce(&TargetView::PerformDrop, base::Unretained(this));
   }
 
   bool dropped() const { return dropped_; }
 
  private:
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op) {
+    dropped_ = true;
+    output_drag_op = ui::mojom::DragOperation::kMove;
+  }
+
   bool dropped_;
 };
 

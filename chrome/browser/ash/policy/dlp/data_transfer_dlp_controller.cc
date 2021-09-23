@@ -157,7 +157,7 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
       dlp_rules_manager_, data_src, data_dst, size, &src_pattern, &dst_pattern);
 
   ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
-              /*is_clipboard_event*/ true);
+              /*is_clipboard_event=*/true);
 
   bool notify_on_paste = ShouldNotifyOnPaste(data_dst);
 
@@ -245,30 +245,42 @@ void DataTransferDlpController::PasteIfAllowed(
   }
 }
 
-bool DataTransferDlpController::IsDragDropAllowed(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
-    const bool is_drop) {
+void DataTransferDlpController::DropIfAllowed(
+    const ui::DataTransferEndpoint* data_src,
+    const ui::DataTransferEndpoint* data_dst,
+    base::OnceClosure drop_cb) {
   std::string src_pattern;
   std::string dst_pattern;
   DlpRulesManager::Level level =
       IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst,
                             absl::nullopt, &src_pattern, &dst_pattern);
 
-  if (is_drop) {
-    ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
-                /*is_clipboard_event*/ false);
-  }
+  ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
+              /*is_clipboard_event*/ false);
 
-  if (level == DlpRulesManager::Level::kBlock && is_drop) {
-    SYSLOG(INFO) << "DLP blocked drop of dragged data";
-    NotifyBlockedDrop(data_src, data_dst);
+  switch (level) {
+    case DlpRulesManager::Level::kBlock:
+      SYSLOG(INFO) << "DLP blocked drop of dragged data";
+      NotifyBlockedDrop(data_src, data_dst);
+      break;
+
+    case DlpRulesManager::Level::kWarn:
+      WarnOnDrop(data_src, data_dst, std::move(drop_cb));
+      break;
+
+    case DlpRulesManager::Level::kAllow:
+      FALLTHROUGH;
+    case DlpRulesManager::Level::kReport:
+      std::move(drop_cb).Run();
+      break;
+
+    case DlpRulesManager::Level::kNotSet:
+      NOTREACHED();
   }
 
   const bool is_drop_allowed = (level == DlpRulesManager::Level::kAllow) ||
                                (level == DlpRulesManager::Level::kReport);
   DlpBooleanHistogram(dlp::kDragDropBlockedUMA, !is_drop_allowed);
-  return is_drop_allowed;
 }
 
 DataTransferDlpController::DataTransferDlpController(
@@ -313,6 +325,13 @@ void DataTransferDlpController::NotifyBlockedDrop(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
   drag_drop_notifier_.NotifyBlockedAction(data_src, data_dst);
+}
+
+void DataTransferDlpController::WarnOnDrop(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst,
+    base::OnceClosure drop_cb) {
+  drag_drop_notifier_.WarnOnDrop(data_src, data_dst, std::move(drop_cb));
 }
 
 bool DataTransferDlpController::ShouldSkipReporting(

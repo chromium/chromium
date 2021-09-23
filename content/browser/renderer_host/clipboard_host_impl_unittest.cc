@@ -85,10 +85,10 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
                     content::RenderFrameHost* rfh,
                     base::OnceCallback<void(bool)> callback));
 
-  MOCK_METHOD3(IsDragDropAllowed,
-               bool(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst,
-                    const bool is_drop));
+  MOCK_METHOD3(DropIfAllowed,
+               void(const ui::DataTransferEndpoint* data_src,
+                    const ui::DataTransferEndpoint* data_dst,
+                    base::OnceClosure drop_cb));
 };
 
 }  // namespace

@@ -23,6 +23,7 @@
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -411,8 +412,19 @@ class DropTargetView : public views::WidgetDelegateView {
 
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override {
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    PerformDrop(event, output_drag_op);
+    return output_drag_op;
+  }
+
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    return base::BindOnce(&DropTargetView::PerformDrop, base::Unretained(this));
+  }
+
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op) {
     EXPECT_TRUE(event.data().GetFilename(&copied_file_path_));
-    return ui::mojom::DragOperation::kCopy;
+    output_drag_op = ui::mojom::DragOperation::kCopy;
   }
 
   void InitWidget(aura::Window* context) {

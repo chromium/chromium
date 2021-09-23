@@ -1178,11 +1178,9 @@ class FakeDataTransferPolicyController
                       content::RenderFrameHost* rfh,
                       base::OnceCallback<void(bool)> callback) override {}
 
-  bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
-                         const ui::DataTransferEndpoint* const data_dst,
-                         const bool is_drop) override {
-    return false;
-  }
+  void DropIfAllowed(const ui::DataTransferEndpoint* data_src,
+                     const ui::DataTransferEndpoint* data_dst,
+                     base::OnceClosure drop_cb) override {}
 
  private:
   const url::Origin allowed_origin_;

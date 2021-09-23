@@ -43,9 +43,9 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                       const absl::optional<size_t> size,
                       content::RenderFrameHost* rfh,
                       base::OnceCallback<void(bool)> callback) override;
-  bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
-                         const ui::DataTransferEndpoint* const data_dst,
-                         const bool is_drop) override;
+  void DropIfAllowed(const ui::DataTransferEndpoint* data_src,
+                     const ui::DataTransferEndpoint* data_dst,
+                     base::OnceClosure drop_cb) override;
 
  protected:
   explicit DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);
@@ -73,6 +73,10 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   virtual void NotifyBlockedDrop(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst);
+
+  virtual void WarnOnDrop(const ui::DataTransferEndpoint* const data_src,
+                          const ui::DataTransferEndpoint* const data_dst,
+                          base::OnceClosure drop_cb);
 
   bool ShouldSkipReporting(const ui::DataTransferEndpoint* const data_src,
                            const ui::DataTransferEndpoint* const data_dst,

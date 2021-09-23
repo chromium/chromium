@@ -122,10 +122,10 @@ class MockPolicyController : public DataTransferPolicyController {
                     const absl::optional<size_t> size,
                     content::RenderFrameHost* rfh,
                     base::OnceCallback<void(bool)> callback));
-  MOCK_METHOD3(IsDragDropAllowed,
-               bool(const DataTransferEndpoint* const data_src,
-                    const DataTransferEndpoint* const data_dst,
-                    const bool is_drop));
+  MOCK_METHOD3(DropIfAllowed,
+               void(const ui::DataTransferEndpoint* data_src,
+                    const ui::DataTransferEndpoint* data_dst,
+                    base::OnceClosure drop_cb));
 };
 
 MockPolicyController::MockPolicyController() = default;
