@@ -267,8 +267,10 @@ void HoldingSpaceKeyedService::AddScreenshot(
 }
 
 const std::string& HoldingSpaceKeyedService::AddPhoneHubCameraRollItem(
-    const base::FilePath& item_path) {
-  return AddItemOfType(HoldingSpaceItem::Type::kPhoneHubCameraRoll, item_path);
+    const base::FilePath& item_path,
+    const HoldingSpaceProgress& progress) {
+  return AddItemOfType(HoldingSpaceItem::Type::kPhoneHubCameraRoll, item_path,
+                       progress);
 }
 
 const std::string& HoldingSpaceKeyedService::AddItem(

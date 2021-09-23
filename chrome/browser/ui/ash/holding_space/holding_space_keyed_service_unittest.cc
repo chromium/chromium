@@ -2275,9 +2275,11 @@ class HoldingSpaceKeyedServiceAddItemTest
         holding_space_service->AddScreenshot(file_path);
         break;
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
-        EXPECT_EQ(holding_space_model->ContainsItem(type, file_path),
-                  holding_space_service->AddPhoneHubCameraRollItem(file_path)
-                      .empty());
+        EXPECT_EQ(
+            holding_space_model->ContainsItem(type, file_path),
+            holding_space_service
+                ->AddPhoneHubCameraRollItem(file_path, HoldingSpaceProgress())
+                .empty());
         break;
     }
   }
