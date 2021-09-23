@@ -881,4 +881,46 @@ TEST(MediaQueryEvaluatorTest, RangedValues) {
                           RatioValue(3, 1), MediaQueryOperator::kGt)))));
 }
 
+TEST(MediaQueryEvaluatorTest, ExpNode) {
+  MediaValuesCached::MediaValuesCachedData data;
+  data.viewport_width = 500;
+
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator media_query_evaluator(*media_values);
+
+  MediaQueryFeatureExpNode width_lt_400(MediaQueryExp::Create(
+      "width", MediaQueryExpBounds(MediaQueryExpComparison(
+                   PxValue(400), MediaQueryOperator::kLt))));
+  MediaQueryFeatureExpNode width_lt_600(MediaQueryExp::Create(
+      "width", MediaQueryExpBounds(MediaQueryExpComparison(
+                   PxValue(600), MediaQueryOperator::kLt))));
+  MediaQueryFeatureExpNode width_lt_800(MediaQueryExp::Create(
+      "width", MediaQueryExpBounds(MediaQueryExpComparison(
+                   PxValue(800), MediaQueryOperator::kLt))));
+
+  EXPECT_TRUE(media_query_evaluator.Eval(*width_lt_600.Copy()));
+  EXPECT_FALSE(media_query_evaluator.Eval(*width_lt_400.Copy()));
+
+  EXPECT_TRUE(
+      media_query_evaluator.Eval(MediaQueryNestedExpNode(width_lt_600.Copy())));
+  EXPECT_FALSE(
+      media_query_evaluator.Eval(MediaQueryNestedExpNode(width_lt_400.Copy())));
+
+  EXPECT_FALSE(
+      media_query_evaluator.Eval(MediaQueryNotExpNode(width_lt_600.Copy())));
+  EXPECT_TRUE(
+      media_query_evaluator.Eval(MediaQueryNotExpNode(width_lt_400.Copy())));
+
+  EXPECT_TRUE(media_query_evaluator.Eval(
+      MediaQueryAndExpNode(width_lt_600.Copy(), width_lt_800.Copy())));
+  EXPECT_FALSE(media_query_evaluator.Eval(
+      MediaQueryAndExpNode(width_lt_600.Copy(), width_lt_400.Copy())));
+
+  EXPECT_TRUE(media_query_evaluator.Eval(
+      MediaQueryOrExpNode(width_lt_600.Copy(), width_lt_400.Copy())));
+  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryOrExpNode(
+      width_lt_400.Copy(),
+      std::make_unique<MediaQueryNotExpNode>(width_lt_800.Copy()))));
+}
+
 }  // namespace blink

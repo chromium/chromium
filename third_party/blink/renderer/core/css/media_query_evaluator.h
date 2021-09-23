@@ -37,6 +37,7 @@ namespace blink {
 class LocalFrame;
 class MediaQuery;
 class MediaQueryExp;
+class MediaQueryExpNode;
 class MediaQueryResult;
 class MediaQuerySet;
 class MediaQuerySetResult;
@@ -90,6 +91,8 @@ class CORE_EXPORT MediaQueryEvaluator final
   bool Eval(const MediaQuery&,
             MediaQueryResultList* viewport_dependent = nullptr,
             MediaQueryResultList* device_dependent = nullptr) const;
+
+  bool Eval(const MediaQueryExpNode&) const;
 
   // Evaluates media query subexpression, ie "and (media-feature: value)" part.
   bool Eval(const MediaQueryExp&) const;

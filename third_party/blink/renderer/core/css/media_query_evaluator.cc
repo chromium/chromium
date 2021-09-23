@@ -152,6 +152,18 @@ bool MediaQueryEvaluator::Eval(
   return result;
 }
 
+bool MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
+  if (auto* n = DynamicTo<MediaQueryNestedExpNode>(node))
+    return Eval(n->Child());
+  if (auto* n = DynamicTo<MediaQueryNotExpNode>(node))
+    return !Eval(n->Operand());
+  if (auto* n = DynamicTo<MediaQueryAndExpNode>(node))
+    return Eval(n->Left()) && Eval(n->Right());
+  if (auto* n = DynamicTo<MediaQueryOrExpNode>(node))
+    return Eval(n->Left()) || Eval(n->Right());
+  return Eval(To<MediaQueryFeatureExpNode>(node).Expression());
+}
+
 bool MediaQueryEvaluator::DidResultsChange(
     const MediaQueryResultList& results) const {
   base::AutoReset<bool> skip(&skip_ukm_reporting_, true);
