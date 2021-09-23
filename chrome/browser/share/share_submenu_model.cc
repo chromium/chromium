@@ -14,7 +14,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -28,14 +28,6 @@
 namespace share {
 
 namespace {
-
-bool ShouldUseSendTabToSelfIcons() {
-#if defined(OS_MAC)
-  return false;
-#else
-  return true;
-#endif
-}
 
 // TODO(ellyjones): This is duplicated from RenderViewContextMenu, where it
 // doesn't really belong. There is a note on the RenderViewContextMenu to remove
@@ -84,6 +76,8 @@ ShareSubmenuModel::ShareSubmenuModel(
       context_(context),
       url_(url),
       text_(text) {
+  // These methods will silently not add the specified item if it doesn't apply
+  // to the given context or URL.
   AddGenerateQRCodeItem();
   AddSendTabToSelfItem();
   AddCopyLinkItem();
@@ -97,8 +91,8 @@ void ShareSubmenuModel::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE:
       GenerateQRCode();
       break;
-    case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
-      SendTabToSelfSingleTarget();
+    case IDC_SEND_TAB_TO_SELF:
+      SendTabToSelf();
       break;
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
     case IDC_CONTENT_CONTEXT_COPYIMAGELOCATION:
@@ -121,7 +115,8 @@ void ShareSubmenuModel::AddGenerateQRCodeItem() {
                           IDS_CONTEXT_MENU_GENERATE_QR_CODE_PAGE);
       break;
     case Context::LINK:
-      NOTIMPLEMENTED();
+      // TODO(https://crbug.com/1252129): Support this mode, which will require
+      // a new string.
       break;
     default:
       break;
@@ -129,42 +124,11 @@ void ShareSubmenuModel::AddGenerateQRCodeItem() {
 }
 
 void ShareSubmenuModel::AddSendTabToSelfItem() {
-  // This can happen in unit tests which don't want to supply a browser or
-  // profile.
-  if (!browser_ || !browser_->profile())
-    return;
-
-  size_t devices = send_tab_to_self::GetValidDeviceCount(browser_->profile());
-
-  if (devices == 0)
-    return;
-
-  if (devices == 1) {
-    AddSendTabToSelfSingleTargetItem();
-    return;
-  }
-
-  int label_id, command_id;
-  send_tab_to_self::SendTabToSelfMenuType menu_type;
-  if (context_ == Context::LINK) {
-    label_id = IDS_LINK_MENU_SEND_TAB_TO_SELF;
-    command_id = IDC_CONTENT_LINK_SEND_TAB_TO_SELF;
-    menu_type = send_tab_to_self::SendTabToSelfMenuType::kLink;
-  } else {
-    label_id = IDS_CONTEXT_MENU_SEND_TAB_TO_SELF;
-    command_id = IDC_SEND_TAB_TO_SELF;
-    menu_type = send_tab_to_self::SendTabToSelfMenuType::kContent;
-  }
-
-  stts_submenu_model_ =
-      std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
-          browser_->tab_strip_model()->GetActiveWebContents(), menu_type);
-  if (ShouldUseSendTabToSelfIcons()) {
-    AddSubMenuWithStringIdAndIcon(
-        command_id, label_id, stts_submenu_model_.get(),
-        ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
-  } else {
-    AddSubMenuWithStringId(command_id, label_id, stts_submenu_model_.get());
+  // Only offer STTS when the context is actually the entire page; STTS can't
+  // currently be used on links or images.
+  if (context_ == Context::PAGE) {
+    AddItemWithStringId(IDC_SEND_TAB_TO_SELF,
+                        IDS_CONTEXT_MENU_SEND_TAB_TO_SELF);
   }
 }
 
@@ -207,21 +171,6 @@ void ShareSubmenuModel::AddShareToThirdPartyItems() {
   }
 }
 
-void ShareSubmenuModel::AddSendTabToSelfSingleTargetItem() {
-  std::u16string label = l10n_util::GetStringFUTF16(
-      IDS_LINK_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-      send_tab_to_self::GetSingleTargetDeviceName(browser_->profile()));
-  int command_id = context_ == Context::LINK
-                       ? IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET
-                       : IDC_SEND_TAB_TO_SELF_SINGLE_TARGET;
-  if (ShouldUseSendTabToSelfIcons()) {
-    AddItemWithIcon(command_id, label,
-                    ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
-  } else {
-    AddItem(command_id, label);
-  }
-}
-
 void ShareSubmenuModel::GenerateQRCode() {
   auto* web_contents = browser_->tab_strip_model()->GetActiveWebContents();
   auto* bubble_controller =
@@ -238,18 +187,13 @@ void ShareSubmenuModel::GenerateQRCode() {
   bubble_controller->ShowBubble(url_);
 }
 
-void ShareSubmenuModel::SendTabToSelfSingleTarget() {
-  if (context_ == Context::LINK) {
-    send_tab_to_self::ShareToSingleTarget(
-        browser_->tab_strip_model()->GetActiveWebContents(), url_);
-    send_tab_to_self::RecordDeviceClicked(
-        send_tab_to_self::ShareEntryPoint::kLinkMenu);
-  } else {
-    send_tab_to_self::ShareToSingleTarget(
-        browser_->tab_strip_model()->GetActiveWebContents());
-    send_tab_to_self::RecordDeviceClicked(
-        send_tab_to_self::ShareEntryPoint::kContentMenu);
-  }
+void ShareSubmenuModel::SendTabToSelf() {
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  send_tab_to_self::SendTabToSelfBubbleController* controller =
+      send_tab_to_self::SendTabToSelfBubbleController::
+          CreateOrGetFromWebContents(web_contents);
+  controller->ShowBubble();
 }
 
 void ShareSubmenuModel::CopyLink() {

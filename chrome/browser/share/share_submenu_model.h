@@ -12,10 +12,6 @@
 
 class Browser;
 
-namespace send_tab_to_self {
-class SendTabToSelfSubMenuModel;
-}
-
 namespace sharing_hub {
 class SharingHubModel;
 }
@@ -68,10 +64,8 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
   void AddCopyLinkItem();
   void AddShareToThirdPartyItems();
 
-  void AddSendTabToSelfSingleTargetItem();
-
   void GenerateQRCode();
-  void SendTabToSelfSingleTarget();
+  void SendTabToSelf();
   void CopyLink();
   void ShareToThirdParty(int command_id);
 
@@ -82,9 +76,6 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
   Context context_;
   GURL url_;
   std::u16string text_;
-
-  std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
-      stts_submenu_model_;
 };
 
 }  // namespace share
