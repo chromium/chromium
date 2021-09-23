@@ -56,10 +56,6 @@ class ASH_PUBLIC_EXPORT AppListController {
   // single child left.
   virtual void RemoveUninstalledItem(const std::string& id) = 0;
 
-  // Moves the item with |id| to the folder with |folder_id|.
-  virtual void MoveItemToFolder(const std::string& id,
-                                const std::string& folder_id) = 0;
-
   // Tells Ash what the current status of AppListModel should be,
   // e.g. the model is under synchronization or in normal status.
   virtual void SetStatus(AppListModelStatus status) = 0;

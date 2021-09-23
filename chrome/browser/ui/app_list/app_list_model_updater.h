@@ -55,8 +55,6 @@ class AppListModelUpdater {
                                const std::string& folder_id) {}
   virtual void RemoveItem(const std::string& id) {}
   virtual void RemoveUninstalledItem(const std::string& id) {}
-  virtual void MoveItemToFolder(const std::string& id,
-                                const std::string& folder_id) {}
   virtual void SetStatus(ash::AppListModelStatus status) {}
   // For SearchModel:
   virtual void SetSearchEngineIsGoogle(bool is_google) {}

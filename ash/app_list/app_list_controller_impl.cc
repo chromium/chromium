@@ -382,12 +382,6 @@ void AppListControllerImpl::RemoveUninstalledItem(const std::string& id) {
   model_->DeleteUninstalledItem(id);
 }
 
-void AppListControllerImpl::MoveItemToFolder(const std::string& id,
-                                             const std::string& folder_id) {
-  AppListItem* item = model_->FindItem(id);
-  model_->MoveItemToFolder(item, folder_id);
-}
-
 void AppListControllerImpl::SetStatus(AppListModelStatus status) {
   model_->SetStatus(status);
 }
@@ -419,6 +413,9 @@ void AppListControllerImpl::SetItemMetadata(
   if (!item)
     return;
 
+  // TODO(https://crbug.com/1252433): refactor this function because the current
+  // implementation is bug prone.
+
   // data may not contain valid position or icon. Preserve it in this case.
   if (!data->position.IsValid())
     data->position = item->position();
@@ -441,6 +438,9 @@ void AppListControllerImpl::SetItemMetadata(
   // icon here. Skip it.
   if (data->icon.isNull())
     data->icon = item->GetDefaultIcon();
+
+  if (data->folder_id != item->folder_id())
+    model_->MoveItemToFolder(item, data->folder_id);
 
   item->SetMetadata(std::move(data));
 }

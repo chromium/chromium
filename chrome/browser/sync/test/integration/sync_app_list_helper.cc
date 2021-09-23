@@ -123,7 +123,7 @@ void SyncAppListHelper::MoveAppToFolder(Profile* profile,
                                         const std::string& folder_id) {
   AppListSyncableService* service =
       AppListSyncableServiceFactory::GetForProfile(profile);
-  service->GetModelUpdater()->MoveItemToFolder(id, folder_id);
+  service->GetModelUpdater()->SetItemFolderId(id, folder_id);
 }
 
 void SyncAppListHelper::MoveAppFromFolder(Profile* profile,
@@ -137,7 +137,7 @@ void SyncAppListHelper::MoveAppFromFolder(Profile* profile,
     LOG(ERROR) << "Folder not found: " << folder_id;
     return;
   }
-  service->GetModelUpdater()->MoveItemToFolder(id, "");
+  service->GetModelUpdater()->SetItemFolderId(id, "");
 }
 
 void SyncAppListHelper::PrintAppList(Profile* profile) {

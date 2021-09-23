@@ -38,8 +38,6 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
       bool update_folder) override;
   void RemoveItem(const std::string& id) override;
   void RemoveUninstalledItem(const std::string& id) override;
-  void MoveItemToFolder(const std::string& id,
-                        const std::string& folder_id) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
   void SetItemFolderId(const std::string& id,
                        const std::string& folder_id) override;

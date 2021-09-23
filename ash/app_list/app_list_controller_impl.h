@@ -105,8 +105,6 @@ class ASH_EXPORT AppListControllerImpl
                        const std::string& folder_id) override;
   void RemoveItem(const std::string& id) override;
   void RemoveUninstalledItem(const std::string& id) override;
-  void MoveItemToFolder(const std::string& id,
-                        const std::string& folder_id) override;
   void SetStatus(AppListModelStatus status) override;
   void SetSearchEngineIsGoogle(bool is_google) override;
   void UpdateSearchBox(const std::u16string& text,

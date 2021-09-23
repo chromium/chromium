@@ -36,8 +36,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
                        const std::string& folder_id) override;
   void RemoveItem(const std::string& id) override;
   void RemoveUninstalledItem(const std::string& id) override;
-  void MoveItemToFolder(const std::string& id,
-                        const std::string& folder_id) override;
   void SetStatus(ash::AppListModelStatus status) override;
   void SetSearchEngineIsGoogle(bool is_google) override;
   void UpdateSearchBox(const std::u16string& text,
@@ -73,8 +71,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   // Methods only for visiting Chrome items that never talk to ash.
   ChromeAppListItem* AddChromeItem(std::unique_ptr<ChromeAppListItem> app_item);
   void RemoveChromeItem(const std::string& id);
-  void MoveChromeItemToFolder(const std::string& id,
-                              const std::string& folder_id);
 
   // Methods for item querying.
   ChromeAppListItem* FindItem(const std::string& id) override;

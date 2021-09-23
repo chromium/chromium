@@ -116,14 +116,6 @@ void ChromeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
     app_list_controller_->RemoveUninstalledItem(id_copy);
 }
 
-void ChromeAppListModelUpdater::MoveItemToFolder(const std::string& id,
-                                                 const std::string& folder_id) {
-  if (app_list_controller_)
-    app_list_controller_->MoveItemToFolder(id, folder_id);
-  else
-    MoveChromeItemToFolder(id, folder_id);
-}
-
 void ChromeAppListModelUpdater::SetStatus(ash::AppListModelStatus status) {
   if (!app_list_controller_)
     return;
@@ -189,15 +181,6 @@ ChromeAppListItem* ChromeAppListModelUpdater::AddChromeItem(
 
 void ChromeAppListModelUpdater::RemoveChromeItem(const std::string& id) {
   items_.erase(id);
-}
-
-void ChromeAppListModelUpdater::MoveChromeItemToFolder(
-    const std::string& id,
-    const std::string& folder_id) {
-  ChromeAppListItem* item = FindItem(id);
-  if (!item)
-    return;
-  item->SetChromeFolderId(folder_id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -284,11 +267,15 @@ void ChromeAppListModelUpdater::SetItemIsPersistent(const std::string& id,
 
 void ChromeAppListModelUpdater::SetItemFolderId(const std::string& id,
                                                 const std::string& folder_id) {
-  if (!app_list_controller_)
-    return;
   ChromeAppListItem* item = FindItem(id);
   if (!item)
     return;
+
+  if (!app_list_controller_) {
+    item->SetChromeFolderId(folder_id);
+    return;
+  }
+
   std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
   data->folder_id = folder_id;
   app_list_controller_->SetItemMetadata(id, std::move(data));
@@ -490,7 +477,7 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
   if (update_folder && chrome_item->folder_id() != sync_item->parent_id) {
     VLOG(2) << " Moving Item To Folder: " << sync_item->parent_id;
     // This updates the folder in both chrome and ash:
-    MoveItemToFolder(chrome_item->id(), sync_item->parent_id);
+    SetItemFolderId(chrome_item->id(), sync_item->parent_id);
   }
 }
 

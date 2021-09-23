@@ -197,7 +197,7 @@ RemoteAppsError RemoteAppsManager::DeleteFolder(const std::string& folder_id) {
   // Move all items out of the folder. Empty folders are automatically deleted.
   RemoteAppsModel::FolderInfo& folder_info = model_->GetFolderInfo(folder_id);
   for (const auto& app : folder_info.items)
-    model_updater_->MoveItemToFolder(app, std::string());
+    model_updater_->SetItemFolderId(app, std::string());
   model_->DeleteFolder(folder_id);
   return RemoteAppsError::kNone;
 }
@@ -318,7 +318,7 @@ void RemoteAppsManager::HandleOnAppAdded(const std::string& id) {
   // we don't have to check if it was deleted.
   if (!folder_id.empty()) {
     bool folder_already_exists = model_updater_->FindFolderItem(folder_id);
-    model_updater_->MoveItemToFolder(id, folder_id);
+    model_updater_->SetItemFolderId(id, folder_id);
     RemoteAppsModel::FolderInfo& folder_info = model_->GetFolderInfo(folder_id);
 
     if (!folder_already_exists) {

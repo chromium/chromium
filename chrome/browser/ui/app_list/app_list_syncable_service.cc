@@ -901,9 +901,9 @@ void AppListSyncableService::UpdateItem(const ChromeAppListItem* app_item) {
   // Check to see if the item needs to be moved to/from the OEM folder.
   bool is_oem = AppIsOem(app_item->id());
   if (!is_oem && app_item->folder_id() == ash::kOemFolderId)
-    model_updater_->MoveItemToFolder(app_item->id(), "");
+    model_updater_->SetItemFolderId(app_item->id(), "");
   else if (is_oem && app_item->folder_id() != ash::kOemFolderId)
-    model_updater_->MoveItemToFolder(app_item->id(), ash::kOemFolderId);
+    model_updater_->SetItemFolderId(app_item->id(), ash::kOemFolderId);
 }
 
 void AppListSyncableService::RemoveSyncItem(const std::string& id) {

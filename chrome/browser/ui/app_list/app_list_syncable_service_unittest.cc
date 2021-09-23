@@ -1371,7 +1371,7 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
   // Modify Webstore app with non-default attributes.
   model_updater()->SetItemPosition(extensions::kWebStoreAppId,
                                    syncer::StringOrdinal("position"));
-  model_updater()->MoveItemToFolder(extensions::kWebStoreAppId, "folderid");
+  model_updater()->SetItemFolderId(extensions::kWebStoreAppId, "folderid");
   app_list_syncable_service()->SetPinPosition(extensions::kWebStoreAppId,
                                               syncer::StringOrdinal("pin"));
 
