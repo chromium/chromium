@@ -5,7 +5,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrivacySandboxAppElement} from 'chrome://settings/privacy_sandbox/app.js';
-import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
+import {PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -14,6 +14,26 @@ import {flushTasks, isChildVisible} from '../test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
+class TestPrivacySandboxBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    super(['getFlocId', 'resetFlocId']);
+  }
+
+  getFlocId() {
+    this.methodCalled('getFlocId');
+    return Promise.resolve({
+      trialStatus: 'test-trial-status',
+      cohort: 'test-id',
+      nextUpdate: 'test-time',
+      canReset: true,
+    });
+  }
+
+  resetFlocId() {
+    this.methodCalled('resetFlocId');
+  }
+}
 
 suite('PrivacySandbox', function() {
   /** @type {!PrivacySandboxAppElement} */
@@ -31,15 +51,6 @@ suite('PrivacySandbox', function() {
    */
   let testPrivacySandboxBrowserProxy;
 
-  function setDefaultFlocID() {
-    testPrivacySandboxBrowserProxy.setResultFor('getFlocId', Promise.resolve({
-      trialStatus: 'test-trial-status',
-      cohort: 'test-id',
-      nextUpdate: 'test-time',
-      canReset: true,
-    }));
-  }
-
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
@@ -47,13 +58,10 @@ suite('PrivacySandbox', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    testPrivacySandboxBrowserProxy =
-        TestBrowserProxy.fromClass(PrivacySandboxBrowserProxy);
-    PrivacySandboxBrowserProxyImpl.instance_ = testPrivacySandboxBrowserProxy;
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
 
     CrSettingsPrefs.deferInitialization = true;
-
-    setDefaultFlocID();
 
     document.body.innerHTML = '';
     page = /** @type {!PrivacySandboxAppElement} */
@@ -151,7 +159,7 @@ suite('PrivacySandbox', function() {
 
     // When the FLoC generated preference is changed, the page should re-query
     // for the FLoC id.
-    setDefaultFlocID();
+    testPrivacySandboxBrowserProxy.resetResolver('getFlocId');
     page.set('prefs.generated.floc_enabled.value', false);
     await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
   });

@@ -83,18 +83,19 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
 
-  grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
-  deps = [ "privacy_sandbox:build_grdp" ]
-
   if (optimize_webui) {
-    deps += [ ":build" ]
+    deps = [
+      ":build",
+      "privacy_sandbox:build_grdp",
+    ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
     resource_path_rewrites = [
       "settings.rollup.js|settings.js",
       "lazy_load.rollup.js|lazy_load.js",
     ]
+    grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
   } else {
-    deps += [ ":build_ts" ]
+    deps = [ ":build_ts" ]
     manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 }
@@ -143,6 +144,7 @@ preprocess_if_expr("preprocess") {
     "prefs/pref_util.js",
     "privacy_page/privacy_page_browser_proxy.ts",
     "privacy_page/security_keys_browser_proxy.ts",
+    "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
     "reset_page/reset_browser_proxy.ts",
     "route.js",
     "router.js",
@@ -284,6 +286,7 @@ preprocess_if_expr("preprocess_generated") {
     "privacy_page/security_keys_reset_dialog.ts",
     "privacy_page/security_keys_set_pin_dialog.ts",
     "privacy_page/security_keys_subpage.ts",
+    "privacy_sandbox/app.ts",
     "reset_page/reset_page.ts",
     "reset_page/reset_profile_dialog.ts",
     "reset_page/reset_profile_banner.ts",
@@ -391,7 +394,6 @@ group("closure_compile") {
     "controls:closure_compile",
     "people_page:closure_compile",
     "prefs:closure_compile",
-    "privacy_sandbox:closure_compile",
     "settings_page:closure_compile",
   ]
 
@@ -545,6 +547,7 @@ group("polymer3_elements") {
     "people_page:web_components",
     "privacy_page:polymer3_elements",
     "privacy_page/privacy_review:web_components",
+    "privacy_sandbox:web_components",
     "reset_page:web_components",
     "safety_check_page:web_components",
     "search_engines_page:web_components",
@@ -714,6 +717,8 @@ ts_library("build_ts") {
     "privacy_page/security_keys_set_pin_dialog.ts",
     "privacy_page/security_keys_subpage.ts",
     "privacy_page/security_page.ts",
+    "privacy_sandbox/app.ts",
+    "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
     "reset_page/reset_browser_proxy.ts",
     "reset_page/reset_page.ts",
     "reset_page/reset_profile_banner.ts",

@@ -12,54 +12,13 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, PrefsBehavior, PrefsBehaviorInterface} from '../settings.js';
+import {CrSettingsPrefs, HatsBrowserProxy, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsBehavior, PrefsBehaviorInterface, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 
-/**
- * Copied from metrics_browser_proxy.ts
- * @interface
- */
-class MetricsBrowserProxy {
-  /**
-   * Helper function that calls recordAction with one action from
-   * tools/metrics/actions/actions.xml.
-   * @param {string} action One action to be recorded.
-   */
-  recordAction(action) {}
-}
-
-/**
- * Copied from hats_browser_proxy.ts
- * @enum {number}
- */
-const TrustSafetyInteraction = {
-  RAN_SAFETY_CHECK: 0,
-  USED_PRIVACY_CARD: 1,
-  OPENED_PRIVACY_SANDBOX: 2,
-  OPENED_PASSWORD_MANAGER: 3,
-};
-
-/**
- * Copied from hats_browser_proxy.ts
- * @interface
- */
-class HatsBrowserProxy {
-  /**
-   * Inform HaTS that the user performed a Trust & Safety interaction.
-   * @param {TrustSafetyInteraction} interaction The type of interaction
-   *    performed by the user.
-   */
-  trustSafetyInteractionOccurred(interaction) {}
-}
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PrefsBehaviorInterface}
- */
 const PrivacySandboxAppElementBase =
-    mixinBehaviors([PrefsBehavior], PolymerElement);
+    mixinBehaviors([PrefsBehavior], PolymerElement) as
+    {new (): PolymerElement & PrefsBehaviorInterface};
 
 /** @polymer */
 export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
@@ -73,10 +32,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
   static get properties() {
     return {
-      /** @private {!FlocIdentifier} */
-      flocId_: {
-        type: Object,
-      },
+      flocId_: Object,
     };
   }
 
@@ -84,16 +40,11 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     return ['onFlocChanged_(prefs.generated.floc_enabled.*)'];
   }
 
-  constructor() {
-    super();
-
-    /** @private {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-
-    /** @private {!PrivacySandboxBrowserProxy} */
-    this.privacySandboxBrowserProxy_ =
-        PrivacySandboxBrowserProxyImpl.getInstance();
-  }
+  private flocId_: FlocIdentifier;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+  private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
+      PrivacySandboxBrowserProxyImpl.getInstance();
 
   /** @override */
   ready() {
@@ -103,7 +54,8 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         'WebUI.Settings.PathVisited', '/privacySandbox');
 
     this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
-    addWebUIListener('floc-id-changed', id => this.flocId_ = id);
+    addWebUIListener(
+        'floc-id-changed', (id: FlocIdentifier) => this.flocId_ = id);
 
     // Make the required policy strings available at the window level. This is
     // expected by cr-elements related to policy.
@@ -129,34 +81,25 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         TrustSafetyInteraction.OPENED_PRIVACY_SANDBOX);
   }
 
-  /** @private */
-  onFlocChanged_() {
+  private onFlocChanged_() {
     this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
   }
 
-  /** @private */
-  onResetFlocClick_() {
+  private onResetFlocClick_() {
     this.privacySandboxBrowserProxy_.resetFlocId();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onApiToggleButtonChange_(event) {
-    const privacySandboxApisEnabled = event.target.checked;
+  private onApiToggleButtonChange_(event: Event) {
+    const privacySandboxApisEnabled =
+        (event.target as SettingsToggleButtonElement).checked;
     this.metricsBrowserProxy_.recordAction(
         privacySandboxApisEnabled ? 'Settings.PrivacySandbox.ApisEnabled' :
                                     'Settings.PrivacySandbox.ApisDisabled');
     this.setPrefValue('privacy_sandbox.manually_controlled', true);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onFlocToggleButtonChange_(event) {
-    const flocEnabled = event.target.checked;
+  private onFlocToggleButtonChange_(event: Event) {
+    const flocEnabled = (event.target as SettingsToggleButtonElement).checked;
     this.metricsBrowserProxy_.recordAction(
         flocEnabled ? 'Settings.PrivacySandbox.FlocEnabled' :
                       'Settings.PrivacySandbox.FlocDisabled');
