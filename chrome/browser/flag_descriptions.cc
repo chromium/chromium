@@ -776,18 +776,6 @@ const char kDesktopPWAsAppIconShortcutsMenuUIName[] =
 const char kDesktopPWAsAppIconShortcutsMenuUIDescription[] =
     "Show web app shortcuts in the shelf context menu";
 
-const char kDesktopPWAsAttentionBadgingCrOSName[] =
-    "Desktop PWAs Attention Badging";
-const char kDesktopPWAsAttentionBadgingCrOSDescription[] =
-    "Enable attention badging for PWA icons in the shelf and launcher.";
-const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
-    "for Badging API and notifications";
-const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] =
-    "for Badging API, or notifications for apps not using Badging API";
-const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] = "for Badging API only";
-const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
-    "for notifications only";
-
 const char kDesktopPWAsRemoveStatusBarName[] = "Desktop PWAs remove status bar";
 const char kDesktopPWAsRemoveStatusBarDescription[] =
     "Hides the status bar popup in Desktop PWA app windows.";

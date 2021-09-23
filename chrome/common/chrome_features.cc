@@ -233,15 +233,6 @@ const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{
 };
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// Enables attention badging for PWA icons in the shelf and launcher.
-const base::Feature kDesktopPWAsAttentionBadgingCrOS{
-    "DesktopPWAsAttentionBadgingCrOS", base::FEATURE_ENABLED_BY_DEFAULT};
-constexpr base::FeatureParam<std::string> kDesktopPWAsAttentionBadgingCrOSParam{
-    &kDesktopPWAsAttentionBadgingCrOS, "badge-source",
-    switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications};
-#endif
-
 // API that allows PWAs manually minimizing, maximizing and restoring windows.
 const base::Feature kDesktopPWAsAdditionalWindowingControls{
     "DesktopPWAsAdditionalWindowingControls",

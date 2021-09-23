@@ -765,41 +765,6 @@ const FeatureEntry::Choice kForceTextDirectionChoices[] = {
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const FeatureEntry::FeatureParam
-    kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] = {
-        {"badge-source",
-         switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications}};
-const FeatureEntry::FeatureParam
-    kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] = {
-        {"badge-source",
-         switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications}};
-const FeatureEntry::FeatureParam kDesktopPWAsAttentionBadgingCrOSApiOnly[] = {
-    {"badge-source", switches::kDesktopPWAsAttentionBadgingCrOSApiOnly}};
-const FeatureEntry::FeatureParam
-    kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] = {
-        {"badge-source",
-         switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly}};
-
-const FeatureEntry::FeatureVariation
-    kDesktopPWAsAttentionBadgingCrOSVariations[] = {
-        {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
-         kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
-         base::size(kDesktopPWAsAttentionBadgingCrOSApiAndNotifications),
-         nullptr},
-        {flag_descriptions::
-             kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications,
-         kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications,
-         base::size(kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications),
-         nullptr},
-        {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiOnly,
-         kDesktopPWAsAttentionBadgingCrOSApiOnly,
-         base::size(kDesktopPWAsAttentionBadgingCrOSApiOnly), nullptr},
-        {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly,
-         kDesktopPWAsAttentionBadgingCrOSNotificationsOnly,
-         base::size(kDesktopPWAsAttentionBadgingCrOSNotificationsOnly),
-         nullptr},
-};
-
 const FeatureEntry::Choice kSchedulerConfigurationChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kSchedulerConfigurationConservative,
@@ -3679,14 +3644,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          web_app::kAllowDefaultWebAppMigrationForChromeOsManagedUsers)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-desktop-pwas-attention-badging-cros",
-     flag_descriptions::kDesktopPWAsAttentionBadgingCrOSName,
-     flag_descriptions::kDesktopPWAsAttentionBadgingCrOSDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDesktopPWAsAttentionBadgingCrOS,
-                                    kDesktopPWAsAttentionBadgingCrOSVariations,
-                                    "DesktopPWAsAttentionBadgingCrOS")},
-#endif
     {"enable-desktop-pwas-prefix-app-name-in-window-title",
      flag_descriptions::kDesktopPWAsPrefixAppNameInWindowTitleName,
      flag_descriptions::kDesktopPWAsPrefixAppNameInWindowTitleDescription,

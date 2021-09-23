@@ -268,13 +268,6 @@ class AppNotificationsWebNotificationTest
   AppNotificationsWebNotificationTest() = default;
   ~AppNotificationsWebNotificationTest() override = default;
 
-  void SetUp() override {
-    base::test::ScopedFeatureList scoped_feature_list_;
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kDesktopPWAsAttentionBadgingCrOS);
-    extensions::PlatformAppBrowserTest::SetUp();
-  }
-
   // extensions::PlatformAppBrowserTest:
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
@@ -621,22 +614,13 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id3));
 }
 
-class WebAppBadgingTest : public AppNotificationsWebNotificationTest,
-                          public ::testing::WithParamInterface<std::string> {
+class WebAppBadgingTest : public AppNotificationsWebNotificationTest {
  protected:
   WebAppBadgingTest() = default;
   ~WebAppBadgingTest() override = default;
-
-  void SetUp() override {
-    base::test::ScopedFeatureList scoped_feature_list_;
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDesktopPWAsAttentionBadgingCrOS,
-        {{"badge-source", GetParam()}});
-    extensions::PlatformAppBrowserTest::SetUp();
-  }
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, SetAndClearBadgeWithApi) {
+IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, SetAndClearBadgeWithApi) {
   ukm::TestUkmRecorder test_recorder;
   badging::BadgeManager* badge_manager_ =
       badging::BadgeManagerFactory::GetForProfile(profile());
@@ -645,18 +629,13 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, SetAndClearBadgeWithApi) {
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
   badge_manager_->SetBadgeForTesting(app_id, 1, &test_recorder);
-  if (GetParam() ==
-      switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 
   badge_manager_->ClearBadgeForTesting(app_id, &test_recorder);
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppBadgingTest,
+IN_PROC_BROWSER_TEST_F(WebAppBadgingTest,
                        SetAndClearBadgeWithApiAndNotifications) {
   ukm::TestUkmRecorder test_recorder;
   badging::BadgeManager* badge_manager_ =
@@ -666,12 +645,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest,
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
   badge_manager_->SetBadgeForTesting(app_id, 1, &test_recorder);
-  if (GetParam() ==
-      switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 
   const std::string notification_id = "notification-id";
   auto notification = CreateNotification(notification_id, GetOrigin());
@@ -685,20 +659,14 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest,
   ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 
   badge_manager_->ClearBadgeForTesting(app_id, &test_recorder);
-  if (GetParam() == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly ||
-      GetParam() ==
-          switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
   NotificationDisplayService::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id);
   ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationBeforeClearBadge) {
+IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationBeforeClearBadge) {
   ukm::TestUkmRecorder test_recorder;
 
   badging::BadgeManager* const badge_manager_ =
@@ -725,23 +693,11 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationBeforeClearBadge) {
   // One day under the kBadgingOverrideLifetime threshold.
   clock.Advance(base::TimeDelta::FromDays(13));
 
-  if (GetParam() == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly ||
-      GetParam() ==
-          switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
   clock.Advance(base::TimeDelta::FromDays(2));
 
-  if (GetParam() == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly ||
-      GetParam() ==
-          switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
   {
     auto metadata = std::make_unique<PersistentNotificationMetadata>();
@@ -751,14 +707,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationBeforeClearBadge) {
         std::move(metadata));
   }
 
-  if (GetParam() == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationAfterClearBadge) {
+IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationAfterClearBadge) {
   ukm::TestUkmRecorder test_recorder;
 
   badging::BadgeManager* const badge_manager_ =
@@ -787,13 +739,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationAfterClearBadge) {
         std::move(metadata));
   }
 
-  if (GetParam() == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly ||
-      GetParam() ==
-          switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 
   clock.Advance(base::TimeDelta::FromDays(2));
 
@@ -805,14 +751,10 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationAfterClearBadge) {
         std::move(metadata));
   }
 
-  if (GetParam() == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationAfterShowBadge) {
+IN_PROC_BROWSER_TEST_F(WebAppBadgingTest, NotificationAfterShowBadge) {
   ukm::TestUkmRecorder test_recorder;
 
   badging::BadgeManager* const badge_manager_ =
@@ -831,21 +773,11 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationAfterShowBadge) {
   // One day under the kBadgingOverrideLifetime threshold.
   clock.Advance(base::TimeDelta::FromDays(13));
 
-  if (GetParam() ==
-      switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 
   clock.Advance(base::TimeDelta::FromDays(2));
 
-  if (GetParam() ==
-      switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
 
   {
     auto metadata = std::make_unique<PersistentNotificationMetadata>();
@@ -860,33 +792,8 @@ IN_PROC_BROWSER_TEST_P(WebAppBadgingTest, NotificationAfterShowBadge) {
   NotificationDisplayService::GetForProfile(profile())->Close(
       NotificationHandler::Type::WEB_PERSISTENT, notification_id);
 
-  if (GetParam() ==
-          switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly ||
-      GetParam() ==
-          switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications) {
-    ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
-  } else {
-    ASSERT_EQ(OptionalBool::kTrue, HasBadge(profile(), app_id));
-  }
+  ASSERT_EQ(OptionalBool::kFalse, HasBadge(profile(), app_id));
 }
-
-std::string WebAppBadgingParamToString(
-    const testing::TestParamInfo<WebAppBadgingTest::ParamType> params) {
-  std::string result;
-  base::ReplaceChars(params.param, "-", "_", &result);
-
-  return result;
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppBadgingTest,
-    ::testing::Values(
-        switches::kDesktopPWAsAttentionBadgingCrOSApiOnly,
-        switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
-        switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications,
-        switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly),
-    WebAppBadgingParamToString);
 
 class FakeArcNotificationManagerDelegate
     : public ash::ArcNotificationManagerDelegate {

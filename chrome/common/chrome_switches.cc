@@ -170,15 +170,6 @@ const char kDebugEnableFrameToggle[]        = "debug-enable-frame-toggle";
 // apps.
 const char kDebugPackedApps[]               = "debug-packed-apps";
 
-// Values for the enable-desktop-pwas-attention-badging-cros flag.
-const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
-    "api-and-notifications";
-const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] =
-    "api-overrides-notifications";
-const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] = "api-only";
-const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
-    "notifications-only";
-
 // Passes command line parameters to the DevTools front-end.
 const char kDevToolsFlags[]                 = "devtools-flags";
 

@@ -456,13 +456,6 @@ extern const char kDesktopPWAsAdditionalWindowingControlsDescription[];
 extern const char kDesktopPWAsAppIconShortcutsMenuUIName[];
 extern const char kDesktopPWAsAppIconShortcutsMenuUIDescription[];
 
-extern const char kDesktopPWAsAttentionBadgingCrOSName[];
-extern const char kDesktopPWAsAttentionBadgingCrOSDescription[];
-extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[];
-extern const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[];
-extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[];
-extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[];
-
 extern const char kDesktopPWAsPrefixAppNameInWindowTitleName[];
 extern const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[];
 

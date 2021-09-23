@@ -1165,38 +1165,15 @@ void WebAppPublisherHelper::MaybeAddWebPageNotifications(
 apps::mojom::OptionalBool WebAppPublisherHelper::ShouldShowBadge(
     const std::string& app_id,
     apps::mojom::OptionalBool has_notification) {
-  bool enabled =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsAttentionBadgingCrOS);
-  std::string flag =
-      enabled ? features::kDesktopPWAsAttentionBadgingCrOSParam.Get() : "";
-  if (flag == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly) {
-    // Show a badge based only on the Web Badging API.
-    return badge_manager_ && badge_manager_->GetBadgeValue(app_id).has_value()
-               ? apps::mojom::OptionalBool::kTrue
-               : apps::mojom::OptionalBool::kFalse;
-  } else if (flag ==
-             switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications) {
-    // When the flag is set to "api-and-notifications" we show a badge if either
-    // a notification is showing or the Web Badging API has a badge set.
-    return badge_manager_ && badge_manager_->GetBadgeValue(app_id).has_value()
-               ? apps::mojom::OptionalBool::kTrue
-               : has_notification;
-  } else if (flag ==
-             switches::
-                 kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications) {
-    // When the flag is set to "api-overrides-notifications" we show a badge if
-    // either the Web Badging API recently has a badge set, or the Badging API
-    // has not been recently used by the app and a notification is showing.
-    if (!badge_manager_ || !badge_manager_->HasRecentApiUsage(app_id))
-      return has_notification;
-
-    return badge_manager_->GetBadgeValue(app_id).has_value()
-               ? apps::mojom::OptionalBool::kTrue
-               : apps::mojom::OptionalBool::kFalse;
-  } else {
-    // Show a badge only if a notification is showing.
+  // We show a badge if either the Web Badging API recently has a badge set, or
+  // the Badging API has not been recently used by the app and a notification is
+  // showing.
+  if (!badge_manager_ || !badge_manager_->HasRecentApiUsage(app_id))
     return has_notification;
-  }
+
+  return badge_manager_->GetBadgeValue(app_id).has_value()
+             ? apps::mojom::OptionalBool::kTrue
+             : apps::mojom::OptionalBool::kFalse;
 }
 #endif
 
