@@ -78,7 +78,7 @@ class AppListModelUpdater {
                                const syncer::StringOrdinal& new_position) {}
   virtual void SetItemIsPersistent(const std::string& id, bool is_persistent) {}
   virtual void SetItemFolderId(const std::string& id,
-                               const std::string& folder_id) {}
+                               const std::string& folder_id) = 0;
   virtual void SetNotificationBadgeColor(const std::string& id,
                                          const SkColor color) {}
 

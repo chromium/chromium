@@ -210,9 +210,6 @@ void ChromeAppListItem::SetAppStatus(ash::AppStatus app_status) {
 
 void ChromeAppListItem::SetFolderId(const std::string& folder_id) {
   metadata_->folder_id = folder_id;
-  AppListModelUpdater* updater = model_updater();
-  if (updater)
-    updater->SetItemFolderId(id(), folder_id);
 }
 
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {

@@ -75,6 +75,11 @@ void FakeAppListModelUpdater::SetItemIcon(const std::string& id,
   }
 }
 
+void FakeAppListModelUpdater::SetItemFolderId(const std::string& id,
+                                              const std::string& folder_id) {
+  FindItem(id)->SetFolderId(folder_id);
+}
+
 void FakeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
   search_engine_is_google_ = is_google;
 }

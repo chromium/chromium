@@ -41,6 +41,8 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   void MoveItemToFolder(const std::string& id,
                         const std::string& folder_id) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
+  void SetItemFolderId(const std::string& id,
+                       const std::string& folder_id) override;
   // For SearchModel:
   void SetSearchEngineIsGoogle(bool is_google) override;
   void PublishSearchResults(
