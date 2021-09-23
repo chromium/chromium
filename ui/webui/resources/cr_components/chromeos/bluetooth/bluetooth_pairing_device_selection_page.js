@@ -16,6 +16,7 @@ import '../localized_link/localized_link.js';
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ButtonBarState, ButtonState} from './bluetooth_types.js';
 
 /**
  * @constructor
@@ -46,6 +47,15 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
         type: Array,
         value: [],
       },
+
+      /** @private {!ButtonBarState} */
+      buttonBarState_: {
+        type: Object,
+        value: {
+          cancel: ButtonState.ENABLED,
+          pair: ButtonState.HIDDEN,
+        },
+      }
     };
   }
 

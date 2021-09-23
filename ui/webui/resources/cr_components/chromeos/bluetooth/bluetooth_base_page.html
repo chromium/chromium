@@ -26,16 +26,36 @@
   .cancel-button {
     margin-inline-end: 0;
   }
+
+  .action-button {
+    margin-inline-end: 0;
+    margin-inline-start: 8px;
+  }
 </style>
 <div id="container">
-  <h3 id="title" class="">[[i18n('bluetoothPairNewDevice')]]</h3>
-  <!-- TODO(crbug.com/1010321): Add a subtext div here -->
+  <h3 id="title">[[i18n('bluetoothPairNewDevice')]]</h3>
   <slot name="page-body" id="pageBody"></slot>
   <div id="buttonBar">
-    <!-- TODO(crbug.com/1010321): Add confirm and pair buttons here -->
-    <cr-button class="cancel-button" on-click="onCancelClick_">
-      [[i18n('cancel')]]
-    </cr-button>
+    <template  is="dom-if"
+        if="[[shouldShowButton_(ButtonName.CANCEL, buttonBarState.*)]]" restamp>
+      <cr-button
+          id="cancel"
+          class="cancel-button"
+          on-click="onCancelClick_"
+          disabled$="[[isButtonDisabled_(ButtonName.CANCEL, buttonBarState.*)]]">
+        [[i18n('cancel')]]
+      </cr-button>
+    </template>
+    <template is="dom-if"
+        if="[[shouldShowButton_(ButtonName.PAIR, buttonBarState.*)]]" restamp>
+      <cr-button
+          id="pair"
+          class="action-button"
+          on-click="onPairClick_"
+          disabled$="[[isButtonDisabled_(ButtonName.PAIR, buttonBarState.*)]]">
+        [[i18n('bluetoothPair')]]
+      </cr-button>
+    </template>
   </div>
 </div>
 
