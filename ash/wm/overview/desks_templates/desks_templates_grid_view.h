@@ -28,7 +28,7 @@ class DesksTemplatesGridView : public views::View {
   // depending on the animations.
   static views::UniqueWidgetPtr CreateDesksTemplatesGridWidget(
       aura::Window* root,
-      const gfx::Rect& bounds);
+      const gfx::Rect& grid_bounds);
 };
 
 }  // namespace ash

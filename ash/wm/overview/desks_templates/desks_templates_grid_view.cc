@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
@@ -17,10 +18,15 @@ namespace ash {
 
 namespace {
 
+// The column set id that this view's GridLayout uses.
 constexpr int kColumnSetId = 0;
+
 constexpr int kNumColumns = 3;
 constexpr int kNumRows = 2;
-constexpr int kGridPaddingDp = 10;
+
+// TODO(richui): Replace these temporary values once specs come out.
+constexpr int kGridPaddingDp = 25;
+constexpr gfx::Size kPlaceholderTempPreferredSize(300, 200);
 
 }  // namespace
 
@@ -30,28 +36,39 @@ DesksTemplatesGridView::DesksTemplatesGridView() {
   views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
 
   // Add `kNumColumns` and some padding between each one.
-  const float horizontal_resize_percent = 10.f / kNumColumns;
+  const float fixed_size = views::GridLayout::kFixedSize;
   for (int i = 0; i < kNumColumns; ++i) {
     // Add a padding column in front of each column except the first one.
     if (i != 0)
-      column_set->AddPaddingColumn(1, kGridPaddingDp);
+      column_set->AddPaddingColumn(fixed_size, kGridPaddingDp);
 
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                          horizontal_resize_percent,
-                          views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
+                          fixed_size,
+                          views::GridLayout::ColumnSize::kUsePreferred,
+                          /*fixed_width=*/0, /*min_width=*/0);
   }
 
   // Add a placeholder view in each available slot on the grid.
-  // TODO(sammiequon): Add a new class which shows the preview for each
+  // TODO(richui): Add a new class which shows the preview for each
   // template. These should also be only created as needed.
-  const float vertical_resize_percent = 10.f / kNumRows;
   for (int i = 0; i < kNumRows; ++i) {
-    layout->StartRow(vertical_resize_percent, 0);
+    // Add padding in front of each row except the first one.
+    if (i == 0) {
+      layout->StartRow(fixed_size, kColumnSetId);
+    } else {
+      layout->StartRowWithPadding(fixed_size, kColumnSetId, fixed_size,
+                                  kGridPaddingDp);
+    }
+
     for (int j = 0; j < kNumColumns; ++j) {
       views::View* placeholder_template_view =
           layout->AddView(std::make_unique<views::View>());
+      // TODO(richui): Remove this border. It is only used for visualizing
+      // bounds while it is a placeholder.
       placeholder_template_view->SetBorder(
           views::CreateSolidBorder(/*thickness=*/2, SK_ColorGRAY));
+      placeholder_template_view->SetPreferredSize(
+          kPlaceholderTempPreferredSize);
     }
   }
 }
@@ -61,7 +78,7 @@ DesksTemplatesGridView::~DesksTemplatesGridView() = default;
 // static
 views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
     aura::Window* root,
-    const gfx::Rect& bounds) {
+    const gfx::Rect& grid_bounds) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
 
@@ -75,12 +92,20 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
   // that this can cover the shelf. Investigate if there is a more suitable
   // container for this widget.
   params.parent = root->GetChildById(kShellWindowId_ShelfContainer);
-  params.bounds = bounds;
   params.name = "DesksTemplatesGridWidget";
 
   views::UniqueWidgetPtr widget(
       std::make_unique<views::Widget>(std::move(params)));
-  widget->SetContentsView(std::make_unique<DesksTemplatesGridView>());
+  auto* desks_template_grid_view =
+      widget->SetContentsView(std::make_unique<DesksTemplatesGridView>());
+  gfx::Rect widget_bounds(grid_bounds);
+  widget_bounds.ClampToCenteredSize(
+      desks_template_grid_view->GetPreferredSize());
+  widget->SetBounds(widget_bounds);
+
+  // Not opaque since we want to view the contents of the layer behind.
+  widget->GetLayer()->SetFillsBoundsOpaquely(false);
+
   return widget;
 }
 
