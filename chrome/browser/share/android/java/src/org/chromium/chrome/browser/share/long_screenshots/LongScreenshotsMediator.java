@@ -69,6 +69,10 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     private static final int MINIMUM_VERTICAL_SELECTION_DP = 50;
     // Minimum height for mask views; should scale with ImageView margins.
     private static final int MINIMUM_MASK_HEIGHT_DP = 20;
+    // Distance from top/bottom edge dragging will scroll the view.
+    private static final int EDGE_DRAG_THRESHOLD_DP = 15;
+    // Distance for each auto-scroll-at-edge step.
+    private static final int EDGE_DRAG_STEP_DP = 5;
 
     private static final String TAG = "long_screenshots";
 
@@ -343,7 +347,7 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                 int bottomMaskY = getBottomMaskY();
                 int layoutHeight = ((View) mBottomAreaMaskView.getParent()).getHeight();
                 int minimumVerticalSelectionPx = dpToPx(MINIMUM_VERTICAL_SELECTION_DP);
-                // Ensure masks don't overlap and are separacted by a minimum distance.
+                // Ensure masks don't overlap and are separated by a minimum distance.
                 if (isTop && params.height + minimumVerticalSelectionPx > bottomMaskY) {
                     params.height = bottomMaskY - minimumVerticalSelectionPx;
                 }
@@ -355,6 +359,18 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                 int minimumMaskHeightPx = dpToPx(MINIMUM_MASK_HEIGHT_DP);
                 if (params.height < minimumMaskHeightPx) {
                     params.height = minimumMaskHeightPx;
+                }
+
+                // Auto-scroll at edges.
+                int scrollY = mScrollView.getScrollY();
+                int edgeDragThresholdPx = dpToPx(EDGE_DRAG_THRESHOLD_DP);
+                if (isTop && Math.abs(topMaskY - scrollY) < edgeDragThresholdPx) {
+                    mScrollView.smoothScrollBy(0, dpToPx(-EDGE_DRAG_STEP_DP));
+                }
+                if (!isTop
+                        && Math.abs(scrollY + mScrollView.getHeight() - bottomMaskY)
+                                < edgeDragThresholdPx) {
+                    mScrollView.smoothScrollBy(0, dpToPx(EDGE_DRAG_STEP_DP));
                 }
 
                 maskView.setLayoutParams(params);
