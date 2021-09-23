@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -21,13 +23,15 @@ public class PaintPreviewCompositorUtils {
 
     /**
      * Stops the warm warm compositor process if one exists.
+     * @return true if a warm compositor was present and stopped.
      */
-    static boolean stopWarmCompositor() {
+    public static boolean stopWarmCompositor() {
         return PaintPreviewCompositorUtilsJni.get().stopWarmCompositor();
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void warmupCompositor();
         boolean stopWarmCompositor();
     }

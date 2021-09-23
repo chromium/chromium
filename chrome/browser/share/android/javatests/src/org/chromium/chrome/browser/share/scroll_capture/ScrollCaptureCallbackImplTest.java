@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -39,7 +41,10 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
+import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtilsJni;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager.BitmapGeneratorObserver;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
@@ -69,17 +74,27 @@ public class ScrollCaptureCallbackImplTest {
     @Mock
     private EntryManager mEntryManager;
     @Mock
+    private LongScreenshotsEntry mEntry;
+    @Mock
     private Consumer<Rect> mRectConsumer;
+    @Mock
+    private PaintPreviewCompositorUtils.Natives mCompositorUtils;
 
     // We should use the Object type here to avoid RuntimeError in classloader on the bots running
     // API versions before S.
     private Object mScrollCaptureCallbackObj;
 
     @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
+
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
     @Before
     public void setUp() {
+        mJniMocker.mock(PaintPreviewCompositorUtilsJni.TEST_HOOKS, mCompositorUtils);
+        doReturn(false).when(mCompositorUtils).stopWarmCompositor();
+        doNothing().when(mCompositorUtils).warmupCompositor();
         mScrollCaptureCallbackObj = new ScrollCaptureCallbackImpl(mEntryManagerWrapper);
         ((ScrollCaptureCallbackImpl) mScrollCaptureCallbackObj).setCurrentTab(mTab);
     }
@@ -172,10 +187,10 @@ public class ScrollCaptureCallbackImplTest {
         Surface surface = mock(Surface.class);
         Canvas canvas = mock(Canvas.class);
         CancellationSignal signal = new CancellationSignal();
-        LongScreenshotsEntry entry = mock(LongScreenshotsEntry.class);
         Bitmap testBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
         Runnable onReady = mock(Runnable.class);
-        InOrder inOrder = Mockito.inOrder(surface, canvas, mRectConsumer, mEntryManager, onReady);
+        InOrder inOrder =
+                Mockito.inOrder(surface, canvas, mRectConsumer, mEntryManager, onReady, mEntry);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
@@ -212,25 +227,31 @@ public class ScrollCaptureCallbackImplTest {
                 session, signal, captureArea, mRectConsumer);
         inOrder.verify(mRectConsumer).accept(eq(new Rect()));
 
-        when(mEntryManager.generateEntry(any(), anyBoolean())).thenReturn(entry);
         doAnswer(invocation -> {
             EntryListener listener = invocation.getArgument(0);
             listener.onResult(EntryStatus.BITMAP_GENERATED);
             return null;
         })
-                .when(entry)
+                .when(mEntry)
                 .setListener(any(EntryListener.class));
+        when(mEntryManager.generateEntry(any(), anyBoolean())).thenReturn(mEntry);
         // Test empty bitmap.
         captureArea.set(0, -1500, 500, -500);
         scrollCaptureCallback.onScrollCaptureImageRequest(
                 session, signal, captureArea, mRectConsumer);
+        inOrder.verify(mEntryManager).generateEntry(any(), anyBoolean());
+        inOrder.verify(mEntry).setListener(any());
+        inOrder.verify(mEntry).getBitmap();
         inOrder.verify(mRectConsumer).accept(eq(new Rect()));
 
         // Test successful capture
-        when(entry.getBitmap()).thenReturn(testBitmap);
+        when(mEntry.getBitmap()).thenReturn(testBitmap);
         captureArea.set(0, -1500, 500, -500);
         scrollCaptureCallback.onScrollCaptureImageRequest(
                 session, signal, captureArea, mRectConsumer);
+        inOrder.verify(mEntryManager).generateEntry(any(), anyBoolean());
+        inOrder.verify(mEntry).setListener(any());
+        inOrder.verify(mEntry).getBitmap();
         inOrder.verify(surface).lockCanvas(any());
         inOrder.verify(canvas).drawBitmap(eq(testBitmap), eq(null), any(Rect.class), eq(null));
         inOrder.verify(surface).unlockCanvasAndPost(canvas);

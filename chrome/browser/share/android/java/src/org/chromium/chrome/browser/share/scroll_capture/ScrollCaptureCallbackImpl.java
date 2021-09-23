@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager.BitmapGeneratorObserver;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
@@ -99,6 +100,8 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
                     mEntryManager.removeBitmapGeneratorObserver(this);
                     mEntryManager.destroy();
                     signal.cancel();
+                    // The compositor won't be started so stop the pre-warmed compositor.
+                    PaintPreviewCompositorUtils.stopWarmCompositor();
                 }
             }
 
@@ -118,6 +121,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
                 onReady.run();
             }
         });
+        PaintPreviewCompositorUtils.warmupCompositor();
     }
 
     @Override
@@ -158,6 +162,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
     // TODO(crbug.com/1231201): work out why this is causing a lint error
     @SuppressWarnings("Override")
     public void onScrollCaptureEnd(@NonNull Runnable onReady) {
+        PaintPreviewCompositorUtils.stopWarmCompositor();
         if (mEntryManager != null) {
             mEntryManager.destroy();
             mEntryManager = null;
