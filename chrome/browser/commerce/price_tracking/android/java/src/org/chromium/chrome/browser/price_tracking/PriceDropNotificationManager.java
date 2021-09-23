@@ -217,15 +217,6 @@ public class PriceDropNotificationManager {
     }
 
     /**
-     * @See {@link #onNotificationActionClicked(String, String, String, boolean)}.
-     */
-    @Deprecated
-    public void onNotificationActionClicked(String actionId, String url, @Nullable String offerId) {
-        // TODO(xingliu): Change download stream callsite and remove this.
-        onNotificationActionClicked(actionId, url, offerId, /*recordMetrics=*/true);
-    }
-
-    /**
      * @return The intent that we will use to send users to the tab which triggered the
      *         notification.
      *
@@ -261,15 +252,6 @@ public class PriceDropNotificationManager {
             return intent;
         }
         return null;
-    }
-
-    /**
-     * See {@link #getNotificationActionClickIntent(String, String)}, without an offer id.
-     */
-    @Deprecated
-    public Intent getNotificationActionClickIntent(String actionId, String url) {
-        // TODO(xingliu): Make changes in downstream and delete this function. OfferId is needed.
-        return getNotificationActionClickIntent(actionId, url, /*offerId=*/null);
     }
 
     /**

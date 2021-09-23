@@ -242,12 +242,12 @@ public class PriceDropNotificationManagerTest {
                         SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
 
         mPriceDropNotificationManager.onNotificationActionClicked(
-                ACTION_ID_TURN_OFF_ALERT, TEST_URL, null);
+                ACTION_ID_TURN_OFF_ALERT, TEST_URL, null, false);
         verify(mMockSubscriptionsManager, times(0))
                 .unsubscribe(eq(commerceSubscription), any(Callback.class));
 
         mPriceDropNotificationManager.onNotificationActionClicked(
-                ACTION_ID_TURN_OFF_ALERT, TEST_URL, offerId);
+                ACTION_ID_TURN_OFF_ALERT, TEST_URL, offerId, false);
         verify(mMockSubscriptionsManager, times(1))
                 .unsubscribe(eq(commerceSubscription), any(Callback.class));
     }
