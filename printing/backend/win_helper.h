@@ -6,7 +6,6 @@
 #define PRINTING_BACKEND_WIN_HELPER_H_
 
 #include <objidl.h>
-#include <prntvpt.h>
 
 // Important to include wincrypt_shim.h before xpsprint.h since
 // xpsprint.h includes <wincrypt.h> (xpsprint.h -> msopc.h ->
@@ -69,44 +68,6 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrinterChangeHandleTraits {
 using ScopedPrinterChangeHandle =
     base::win::GenericScopedHandle<PrinterChangeHandleTraits,
                                    base::win::DummyVerifierTraits>;
-
-// Wrapper class to wrap the XPS APIs (PTxxx APIs) that annotates the XPS APIs
-// with `base::ScopedBlockingCall`.
-class COMPONENT_EXPORT(PRINT_BACKEND) XPSModule {
- public:
-  static HRESULT OpenProvider(const std::wstring& printer_name,
-                              DWORD version,
-                              HPTPROVIDER* provider);
-  static HRESULT GetPrintCapabilities(HPTPROVIDER provider,
-                                      IStream* print_ticket,
-                                      IStream* capabilities,
-                                      BSTR* error_message);
-  static HRESULT ConvertDevModeToPrintTicket(HPTPROVIDER provider,
-                                             ULONG devmode_size_in_bytes,
-                                             PDEVMODE devmode,
-                                             EPrintTicketScope scope,
-                                             IStream* print_ticket);
-  static HRESULT ConvertPrintTicketToDevMode(
-      HPTPROVIDER provider,
-      IStream* print_ticket,
-      EDefaultDevmodeType base_devmode_type,
-      EPrintTicketScope scope,
-      ULONG* devmode_byte_count,
-      PDEVMODE* devmode,
-      BSTR* error_message);
-  static HRESULT MergeAndValidatePrintTicket(HPTPROVIDER provider,
-                                             IStream* base_ticket,
-                                             IStream* delta_ticket,
-                                             EPrintTicketScope scope,
-                                             IStream* result_ticket,
-                                             BSTR* error_message);
-  static HRESULT ReleaseMemory(PVOID buffer);
-  static HRESULT CloseProvider(HPTPROVIDER provider);
-
-  XPSModule() = delete;
-  XPSModule(const XPSModule&) = delete;
-  XPSModule& operator=(const XPSModule&) = delete;
-};
 
 // See comments in cc file explaining why we need this.
 class COMPONENT_EXPORT(PRINT_BACKEND) ScopedXPSInitializer {
