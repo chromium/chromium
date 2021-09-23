@@ -31,21 +31,35 @@ TEST(MediaConditionParserTest, Basic) {
       {"(min-width: [100px) and (max-width: 900px)", "not all"},
       {"not (min-width: 900px)", "not all and (min-width: 900px)"},
       {"not (blabla)", "not all"},
+      {"", ""},
+      {" ", ""},
+      {",(min-width: 500px)", "not all"},
+      {"(min-width: 500px),", "not all"},
+      {"(width: 1px) and (width: 2px), (width: 3px)", "not all"},
+      {"(width: 1px) and (width: 2px), screen", "not all"},
+      {"(min-width: 500px), (min-width: 500px)", "not all"},
+      {"not (min-width: 500px), not (min-width: 500px)", "not all"},
+      {"(width: 1px), screen", "not all"},
+
+      // TODO(crbug.com/962417): These look wrong, but are included to
+      // discover changes to the media query parser.
+      {"screen, (width: 1px)", "not all, (width: 1px)"},
+      {"screen, (width: 1px), print", "not all, not all"},
+
       {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
-  // FIXME: We should test comma-seperated media conditions
   for (unsigned i = 0; test_cases[i].input; ++i) {
+    SCOPED_TRACE(test_cases[i].input);
     CSSTokenizer tokenizer(test_cases[i].input);
     const auto tokens = tokenizer.TokenizeToEOF();
     scoped_refptr<MediaQuerySet> media_condition_query_set =
         MediaQueryParser::ParseMediaCondition(CSSParserTokenRange(tokens),
                                               nullptr);
-    ASSERT_EQ(media_condition_query_set->QueryVector().size(), (unsigned)1);
-    String query_text = media_condition_query_set->QueryVector()[0]->CssText();
+    String query_text = media_condition_query_set->MediaText();
     const char* expected_text =
         test_cases[i].output ? test_cases[i].output : test_cases[i].input;
-    ASSERT_EQ(expected_text, query_text);
+    EXPECT_EQ(String(expected_text), query_text);
   }
 }
 
