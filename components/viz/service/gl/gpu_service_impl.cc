@@ -1080,6 +1080,9 @@ void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {
   }
   DVLOG(1) << "GPU: GPU has switched";
 
+  if (watchdog_thread_)
+    watchdog_thread_->ReportProgress();
+
   if (!in_host_process()) {
     ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
         active_gpu_heuristic);
