@@ -4900,9 +4900,6 @@ crbug.com/970142 http/tests/security/mixedContent/insecure-css-resources.html [ 
 # Sheriff 2019-06-05
 crbug.com/971259 media/controls/volumechange-stopimmediatepropagation.html [ Failure Pass ]
 
-# Sheriff 2019-06-20
-crbug.com/976045 fast/scrolling/unscrollable-layer-subpixel-size-with-negative-overflow.html [ Failure Pass ]
-
 crbug.com/974710 [ Win7 ] http/tests/security/isolatedWorld/bypass-main-world-csp-iframes.html [ Failure Pass ]
 
 # Expected new failures until crbug.com/535738 is fixed. The failures also vary
