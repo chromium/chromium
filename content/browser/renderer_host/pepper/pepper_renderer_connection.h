@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "content/common/pepper_plugin.mojom.h"
-#include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -33,9 +32,7 @@ class StoragePartition;
 // sending/receiving pepper ResourceHost related messages. When the browser
 // and renderer communicate about ResourceHosts, they should pass the plugin
 // process ID to identify which plugin they are talking about.
-class PepperRendererConnection
-    : public BrowserMessageFilter,
-      public BrowserAssociatedInterface<mojom::PepperIOHost> {
+class PepperRendererConnection : public BrowserMessageFilter {
  public:
   PepperRendererConnection(int render_process_id,
                            PluginServiceImpl* plugin_service,
@@ -47,12 +44,12 @@ class PepperRendererConnection
                                 content::BrowserThread::ID* thread) override;
   bool OnMessageReceived(const IPC::Message& msg) override;
 
-  // mojom::PepperIOHost overrides;
+  // mojom::PepperHost implementation called by RenderFrameHostImpl;
   void DidCreateInProcessInstance(int32_t instance,
                                   int32_t render_frame_id,
                                   const GURL& document_url,
-                                  const GURL& plugin_url) override;
-  void DidDeleteInProcessInstance(int32_t instance) override;
+                                  const GURL& plugin_url);
+  void DidDeleteInProcessInstance(int32_t instance);
   void DidCreateOutOfProcessPepperInstance(
       int32_t plugin_child_id,
       int32_t pp_instance,
@@ -61,15 +58,15 @@ class PepperRendererConnection
       const GURL& document_url,
       const GURL& plugin_url,
       bool is_priviledged_context,
-      DidCreateOutOfProcessPepperInstanceCallback callback) override;
+      mojom::PepperHost::DidCreateOutOfProcessPepperInstanceCallback callback);
   void DidDeleteOutOfProcessPepperInstance(int32_t plugin_child_id,
                                            int32_t pp_instance,
-                                           bool is_external) override;
+                                           bool is_external);
   void OpenChannelToPepperPlugin(
       const url::Origin& embedder_origin,
       const base::FilePath& path,
       const absl::optional<url::Origin>& origin_lock,
-      OpenChannelToPepperPluginCallback callback) override;
+      mojom::PepperHost::OpenChannelToPepperPluginCallback callback);
 
  private:
   ~PepperRendererConnection() override;
