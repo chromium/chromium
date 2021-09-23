@@ -221,6 +221,60 @@ void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
   dict->Set(kChildrenDictAttr, std::move(children));
 }
 
+void AccessibilityTreeFormatterAuraLinux::AddHypertextProperties(
+    AtkObject* atk_object,
+    base::DictionaryValue* dict) const {
+  if (!ATK_IS_HYPERTEXT(atk_object))
+    return;
+
+  AtkHypertext* hypertext = ATK_HYPERTEXT(atk_object);
+  auto hypertext_values = std::make_unique<base::ListValue>();
+
+  AtkText* atk_text = ATK_TEXT(atk_object);
+  gchar* character_text = atk_text_get_text(atk_text, 0, -1);
+
+  if (!character_text) {
+    return;
+  }
+  std::string text(character_text);
+
+  // Each link in the atk_text is represented by the multibyte unicode character
+  // U+FFFC, which in UTF-8 is 0xEF 0xBF 0xBC. We will replace each instance of
+  // this character with something slightly more useful.
+
+  int link_count = atk_hypertext_get_n_links(hypertext);
+  if (link_count > 0) {
+    for (int link_index = link_count - 1; link_index >= 0; link_index--) {
+      // Replacement text
+      std::string link_str("<obj");
+      if (link_index >= 0) {
+        base::StringAppendF(&link_str, "%d>", link_index);
+      } else {
+        base::StringAppendF(&link_str, ">");
+      }
+
+      AtkHyperlink* link = atk_hypertext_get_link(hypertext, link_index);
+
+      int utf8_offset = atk_hyperlink_get_start_index(link);
+      gchar* link_start = g_utf8_offset_to_pointer(character_text, utf8_offset);
+      int offset = link_start - character_text;
+
+      gchar* character_substring =
+          g_utf8_substring(character_text, utf8_offset, utf8_offset + 1);
+      DCHECK(std::string(character_substring) == "\uFFFC");
+
+      base::ReplaceFirstSubstringAfterOffset(&text, offset, character_substring,
+                                             link_str);
+      g_free(character_substring);
+    }
+  }
+
+  hypertext_values->Append(base::StringPrintf("hypertext='%s'", text.c_str()));
+  dict->Set("hypertext", std::move(hypertext_values));
+
+  g_free(character_text);
+}
+
 void AccessibilityTreeFormatterAuraLinux::AddTextProperties(
     AtkText* atk_text,
     base::DictionaryValue* dict) const {
@@ -489,6 +543,7 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
 
   if (ATK_IS_TEXT(atk_object))
     AddTextProperties(ATK_TEXT(atk_object), dict);
+  AddHypertextProperties(atk_object, dict);
   AddActionProperties(atk_object, dict);
   AddValueProperties(atk_object, dict);
   AddTableProperties(atk_object, dict);
@@ -706,6 +761,15 @@ std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
       const std::string* text_property = entry.GetIfString();
       if (text_property)
         WriteAttribute(false, *text_property, &line);
+    }
+  }
+
+  const base::ListValue* hypertext_info;
+  if (node.GetList("hypertext", &hypertext_info)) {
+    for (const auto& entry : hypertext_info->GetList()) {
+      const std::string* hypertext_property = entry.GetIfString();
+      if (hypertext_property)
+        WriteAttribute(false, *hypertext_property, &line);
     }
   }
 
