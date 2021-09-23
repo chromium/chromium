@@ -31,8 +31,7 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   if (new_entries.empty())
     return;
 
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  if (platform_util::IsWindowActive(browser->window()->GetNativeWindow())) {
+  if (GetActiveDelegate()) {
     ShowToolbarButton(*new_entries.at(0));
     return;
   }
@@ -73,6 +72,8 @@ void SendTabToSelfToolbarIconController::DismissEntries(
 
 void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
     Browser* browser) {
+  if (!GetActiveDelegate())
+    return;
   BrowserList::RemoveObserver(this);
 
   // Reset |entry_| because it's used to determine if the BrowserListObserver is
@@ -81,22 +82,46 @@ void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
 
   if (!profile_ || !entry)
     return;
-  if (browser == chrome::FindBrowserWithProfile(profile_))
+  if (browser == chrome::FindBrowserWithProfile(profile_)) {
     ShowToolbarButton(*entry);
+    entry_ = nullptr;
+  }
 }
 
 void SendTabToSelfToolbarIconController::ShowToolbarButton(
     const SendTabToSelfEntry& entry) {
-  if (!delegate_)
+  auto* active_delegate = GetActiveDelegate();
+  if (!active_delegate) {
     return;
+  }
 
   send_tab_to_self::RecordNotificationShown();
-  delegate_->Show(entry);
+  active_delegate->Show(entry);
 }
 
-void SendTabToSelfToolbarIconController::SetDelegate(
+void SendTabToSelfToolbarIconController::AddDelegate(
     SendTabToSelfToolbarIconControllerDelegate* delegate) {
-  delegate_ = delegate;
+  delegate_list_.push_back(delegate);
+}
+
+void SendTabToSelfToolbarIconController::RemoveDelegate(
+    SendTabToSelfToolbarIconControllerDelegate* delegate) {
+  for (unsigned int i = 0; i < delegate_list_.size(); i++) {
+    if (delegate_list_[i] == delegate) {
+      delegate_list_.erase(delegate_list_.begin() + i);
+      return;
+    }
+  }
+}
+
+SendTabToSelfToolbarIconControllerDelegate*
+SendTabToSelfToolbarIconController::GetActiveDelegate() {
+  for (auto* delegate : delegate_list_) {
+    if (delegate->IsActive()) {
+      return delegate;
+    }
+  }
+  return nullptr;
 }
 
 void SendTabToSelfToolbarIconController::LogNotificationOpened() {

@@ -30,6 +30,7 @@ class SendTabToSelfToolbarIconView
 
   // SendTabToSelfToolbarIconControllerDelegate implementation.
   void Show(const SendTabToSelfEntry& entry) override;
+  bool IsActive() override;
 
   void DismissEntry(std::string& guid);
 
@@ -39,6 +40,8 @@ class SendTabToSelfToolbarIconView
 
  private:
   const Browser* const browser_;
+
+  const BrowserView* browser_view_;
 
   const SendTabToSelfEntry* entry_;
 };

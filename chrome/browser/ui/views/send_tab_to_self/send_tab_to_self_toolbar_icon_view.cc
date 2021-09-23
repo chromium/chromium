@@ -28,7 +28,8 @@ SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
     : ImageView(ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon,
                                                ui::kColorIcon,
                                                gfx::kFaviconSize)),
-      browser_(browser_view->browser()) {
+      browser_(browser_view->browser()),
+      browser_view_(browser_view) {
   SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_A11Y_NAME));
   SetTooltipText(
@@ -39,13 +40,13 @@ SendTabToSelfToolbarIconView::SendTabToSelfToolbarIconView(
 
   send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
       ->GetToolbarButtonControllerForProfile(browser_->profile())
-      ->SetDelegate(this);
+      ->AddDelegate(this);
 }
 
 SendTabToSelfToolbarIconView::~SendTabToSelfToolbarIconView() {
   send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
       ->GetToolbarButtonControllerForProfile(browser_->profile())
-      ->SetDelegate(nullptr);
+      ->RemoveDelegate(this);
 }
 
 void SendTabToSelfToolbarIconView::Show(const SendTabToSelfEntry& entry) {
@@ -61,6 +62,10 @@ void SendTabToSelfToolbarIconView::DismissEntry(std::string& guid) {
       ->GetToolbarButtonControllerForProfile(browser_->profile())
       ->DismissEntries(std::vector<std::string>({guid}));
   SetVisible(false);
+}
+
+bool SendTabToSelfToolbarIconView::IsActive() {
+  return browser_view_->IsActive();
 }
 
 void SendTabToSelfToolbarIconView::LogNotificationOpened() {
