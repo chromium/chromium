@@ -20,20 +20,23 @@ DiacriticsInsensitiveStringComparator::DiacriticsInsensitiveStringComparator() {
   diacritics_stripper_ = base::WrapUnique(icu::Transliterator::createFromRules(
       UNICODE_STRING_SIMPLE("DiacriticStripper"),
       icu::UnicodeString::fromUTF8("::NFC; "
-                                   "[ á à â ä ā å ] > a; "
-                                   "[ Á À Â Ä Ā Å ] > A; "
-                                   "[ é è ê ë ē   ] > e; "
-                                   "[ É È Ê Ë Ē   ] > E; "
-                                   "[ í ì î ï ī   ] > i; "
-                                   "[ Í Ì Î Ï Ī   ] > I; "
-                                   "[ ó ò ô ö ō ø ] > o; "
-                                   "[ Ó Ò Ô Ö Ō Ø ] > O; "
-                                   "[ ú ù û ü ū   ] > u; "
-                                   "[ Ú Ù Û Ü Ū   ] > U; "
-                                   "[ ý ỳ ŷ ÿ ȳ   ] > y; "
-                                   "[ Ý Ỳ Ŷ Ÿ Ȳ   ] > Y; "
-                                   "ç > c; ñ > n; æ > ae; œ > oe; "
-                                   "Ç > C; Ñ > N; Æ > AE; Œ > OE; "),
+                                   "[ á à â ä ā å   ] > a; "
+                                   "[ Á À Â Ä Ā Å   ] > A; "
+                                   "[ é è ê ë ē     ] > e; "
+                                   "[ É È Ê Ë Ē     ] > E; "
+                                   "[ í ì î ï ī     ] > i; "
+                                   "[ Í Ì Î Ï Ī     ] > I; "
+                                   "[ ó ò ô ö ō ø ǿ ] > o; "
+                                   "[ Ó Ò Ô Ö Ō Ø Ǿ ] > O; "
+                                   "[ ú ù û ü ū     ] > u; "
+                                   "[ Ú Ù Û Ü Ū     ] > U; "
+                                   "[ ý ỳ ŷ ÿ ȳ     ] > y; "
+                                   "[ Ý Ỳ Ŷ Ÿ Ȳ     ] > Y; "
+                                   "[ Æ Ǣ Ǽ ᴭ       ] > AE; "
+                                   "[ æ ǣ ǽ         ] > ae; "
+                                   "[ œ ꟹ           ] > oe; "
+                                   "ç > c; ñ > n; "
+                                   "Ç > C; Ñ > N; Œ > OE; "),
       UTRANS_FORWARD, parse_error, status));
 
   DCHECK_EQ(status, U_ZERO_ERROR);
