@@ -812,6 +812,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.BentoBarIsVisible" enum="Boolean"
+    expires_after="2022-05-19">
+  <owner>minch@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emits true when the bento bar is created for the user. Will not emit false
+    if the bento bar has never been created for the user. This will be used to
+    count the number of users who saw the bento bar.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.ConsecutiveDailyVisits" units="days"
     expires_after="2022-02-19">
   <owner>chinsenj@chromium.org</owner>

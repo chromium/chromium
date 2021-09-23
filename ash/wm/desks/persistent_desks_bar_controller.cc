@@ -252,6 +252,8 @@ void PersistentDesksBarController::MaybeInitBarWidget() {
   // created in the primary display.
   WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
       ->SetPersistentDeskBarHeight(kBarHeight);
+
+  UMA_HISTOGRAM_BOOLEAN("Ash.Desks.BentoBarIsVisible", true);
 }
 
 void PersistentDesksBarController::DestroyBarWidget() {
