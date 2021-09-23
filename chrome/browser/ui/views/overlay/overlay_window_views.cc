@@ -627,13 +627,10 @@ void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
       letterbox_region.set_height(window_size.height());
   }
 
-  gfx::Size letterbox_size = letterbox_region.size();
-  gfx::Point origin =
-      gfx::Point((window_size.width() - letterbox_size.width()) / 2,
-                 (window_size.height() - letterbox_size.height()) / 2);
-
-  video_bounds_.set_origin(origin);
-  video_bounds_.set_size(letterbox_region.size());
+  const gfx::Rect video_bounds(
+      gfx::Point((window_size.width() - letterbox_region.size().width()) / 2,
+                 (window_size.height() - letterbox_region.size().height()) / 2),
+      letterbox_region.size());
 
   // Update the layout of the controls.
   UpdateControlsBounds();
@@ -641,9 +638,9 @@ void OverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
   // Update the surface layer bounds to scale with window size changes.
   window_background_view_->SetBoundsRect(
       gfx::Rect(gfx::Point(0, 0), GetBounds().size()));
-  video_view_->SetBoundsRect(video_bounds_);
+  video_view_->SetBoundsRect(video_bounds);
   if (video_view_->layer()->has_external_content())
-    video_view_->layer()->SetSurfaceSize(video_bounds_.size());
+    video_view_->layer()->SetSurfaceSize(video_bounds.size());
 
   // Notify the controller that the bounds have changed.
   controller_->UpdateLayerBounds();
@@ -1100,15 +1097,16 @@ void OverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
 
     case ui::ET_MOUSE_EXITED: {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // On Lacros, the |event| will always occur within |video_bounds_| despite
-      // the mouse exiting the respective surface so always hide the controls.
+      // On Lacros, the |event| will always occur within
+      // |window_background_view_| despite the mouse exiting the respective
+      // surface so always hide the controls.
       const bool should_update_control_visibility = true;
 #else
       // On Windows, ui::ET_MOUSE_EXITED is triggered when hovering over the
       // media controls because of the HitTest. This check ensures the controls
       // are visible if the mouse is still over the window.
       const bool should_update_control_visibility =
-          !video_bounds_.Contains(event->location());
+          !window_background_view_->bounds().Contains(event->location());
 #endif
       if (should_update_control_visibility)
         UpdateControlsVisibility(false);

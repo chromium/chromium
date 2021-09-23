@@ -218,9 +218,6 @@ class OverlayWindowViews : public content::OverlayWindow,
   gfx::Size min_size_;
   gfx::Size max_size_;
 
-  // Bounds of |video_view_|.
-  gfx::Rect video_bounds_;
-
   // The natural size of the video to show. This is used to compute sizing and
   // ensuring factors such as aspect ratio is maintained.
   gfx::Size natural_size_;
