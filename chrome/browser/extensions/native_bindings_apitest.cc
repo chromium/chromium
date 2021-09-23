@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, LazyListeners) {
   ProcessManager::SetEventPageIdleTimeForTesting(1);
   ProcessManager::SetEventPageSuspendingTimeForTesting(1);
 
-  LazyBackgroundObserver background_page_done;
+  LazyBackgroundObserver background_page_done(profile());
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("native_bindings/lazy_listeners"));
   ASSERT_TRUE(extension);

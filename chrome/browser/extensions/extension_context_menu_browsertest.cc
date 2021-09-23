@@ -927,7 +927,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
   if (GetParam() == ContextType::kServiceWorker)
     return;
   GURL about_blank("about:blank");
-  LazyBackgroundObserver page_complete;
+  LazyBackgroundObserver page_complete(profile());
   const extensions::Extension* extension =
       LoadContextMenuExtension("event_page");
   ASSERT_TRUE(extension);
@@ -940,7 +940,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
       about_blank, GURL(), GURL(), std::string("Checkbox 1")));
 
   // Test that checked menu items retain their checkedness.
-  LazyBackgroundObserver checkbox_checked;
+  LazyBackgroundObserver checkbox_checked(profile());
   std::unique_ptr<TestRenderViewContextMenu> menu(
       TestRenderViewContextMenu::Create(GetWebContents(), about_blank, GURL(),
                                         GURL()));

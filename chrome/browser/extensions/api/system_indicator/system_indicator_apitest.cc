@@ -39,7 +39,7 @@ class SystemIndicatorApiTest : public ExtensionApiTest {
   }
 
   const Extension* LoadExtensionAndWait(const std::string& test_name) {
-    LazyBackgroundObserver page_complete;
+    LazyBackgroundObserver page_complete(profile());
     base::FilePath extdir = test_data_dir_.AppendASCII(test_name);
     const Extension* extension = LoadExtension(extdir);
     if (extension)
