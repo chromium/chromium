@@ -14,7 +14,6 @@ source_set("test_support") {
     "fit_adapter.h",
     "frame_test_util.cc",
     "frame_test_util.h",
-    "result_receiver.h",
     "scoped_connection_checker.h",
     "test_devtools_list_fetcher.cc",
     "test_devtools_list_fetcher.h",
