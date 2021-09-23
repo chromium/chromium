@@ -275,6 +275,10 @@ extern const char kMICEWebSignInDescription[];
 extern const char kModernTabStripName[];
 extern const char kModernTabStripDescription[];
 
+// Title and description for the flag to enable the new overflow menu.
+extern const char kNewOverflowMenuName[];
+extern const char kNewOverflowMenuDescription[];
+
 // Title and description for the flag to change the max number of autocomplete
 // matches in the omnibox popup.
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];
