@@ -66,21 +66,6 @@ std::string FormatBool(bool value) {
   return value ? "true" : "false";
 }
 
-void PopulateBluetoothInfo(std::string* log, const TelemetryInfoPtr& info) {
-  if (info->bluetooth_result.is_null() || info->bluetooth_result->is_error()) {
-    DVLOG(1) << "BluetoothResult not found in croshealthd response";
-    return;
-  }
-  std::vector<healthd::BluetoothAdapterInfoPtr>& adapters =
-      info->bluetooth_result->get_bluetooth_adapter_info();
-  base::StrAppend(log, {"bluetoothinfo:"});
-  for (const auto& adapter : adapters) {
-    AddIndentedLogEntry(log, "bluetooth_adapter_name", adapter->name);
-    AddIndentedLogEntry(log, "powered", (adapter->powered ? "on" : "off"));
-  }
-  base::StrAppend(log, {"\n"});
-}
-
 void PopulateCpuInfo(std::string* log, const TelemetryInfoPtr& info) {
   if (info->cpu_result.is_null() || info->cpu_result->is_error()) {
     DVLOG(1) << "CpuResult not found in croshealthd response";
@@ -152,6 +137,7 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
 // where label is one of the following:
 //   ethernet_adapter
 //   wireless_adapter
+//   bluetooth_adapter
 //   gpu
 void PopulateBusDevicesInfo(std::string* log,
                             const base::StringPiece prefix,
@@ -207,6 +193,7 @@ void PopulateBusDevicesInfo(std::string* log, const TelemetryInfoPtr& info) {
 
   std::vector<healthd::BusDevicePtr> ethernet_devices;
   std::vector<healthd::BusDevicePtr> wireless_devices;
+  std::vector<healthd::BusDevicePtr> bluetooth_devices;
   std::vector<healthd::BusDevicePtr> gpu_devices;
   for (auto& device : bus_devices) {
     switch (device->device_class) {
@@ -215,6 +202,9 @@ void PopulateBusDevicesInfo(std::string* log, const TelemetryInfoPtr& info) {
         break;
       case healthd::BusDeviceClass::kWirelessController:
         wireless_devices.push_back(std::move(device));
+        break;
+      case healthd::BusDeviceClass::kBluetoothAdapter:
+        bluetooth_devices.push_back(std::move(device));
         break;
       case healthd::BusDeviceClass::kDisplayController:
         gpu_devices.push_back(std::move(device));
@@ -225,6 +215,7 @@ void PopulateBusDevicesInfo(std::string* log, const TelemetryInfoPtr& info) {
   }
   PopulateBusDevicesInfo(log, "ethernet_adapter", ethernet_devices);
   PopulateBusDevicesInfo(log, "wireless_adapter", wireless_devices);
+  PopulateBusDevicesInfo(log, "bluetooth_adapter", bluetooth_devices);
   PopulateBusDevicesInfo(log, "gpu", gpu_devices);
 }
 
@@ -280,7 +271,6 @@ void RevenLogSource::OnTelemetryInfoProbeResponse(
     DVLOG(1) << "Null response from croshealthd::ProbeTelemetryInfo.";
     base::StrAppend(&log_val, {"<not available>"});
   } else {
-    PopulateBluetoothInfo(&log_val, info_ptr);
     PopulateCpuInfo(&log_val, info_ptr);
     PopulateMemoryInfo(&log_val, info_ptr);
     PopulateSystemInfo(&log_val, info_ptr);
