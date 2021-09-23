@@ -82,11 +82,6 @@ struct TestParams {
   const base::Time binary_build_time;
 };
 
-void NoOpStoreClientInfoBackup(const metrics::ClientInfo&) {}
-std::unique_ptr<metrics::ClientInfo> NoOpLoadClientInfoBackup() {
-  return nullptr;
-}
-
 // Populates |seed| with simple test data. The resulting seed will contain one
 // study called "test", which contains one experiment called "abc" with
 // probability weight 100.
@@ -294,8 +289,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         build_time_(base::Time::Now()) {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state, &enabled_state_provider_, std::wstring(), user_data_dir,
-        base::BindRepeating(&NoOpStoreClientInfoBackup),
-        base::BindRepeating(&NoOpLoadClientInfoBackup), startup_visibility);
+        startup_visibility);
     metrics_state_manager_->InstantiateFieldTrialList();
   }
 

@@ -11,6 +11,8 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/guid.h"
@@ -70,8 +72,7 @@ void LogClonedInstall() {
   UMA_STABILITY_HISTOGRAM_ENUMERATION("UMA.IsClonedInstall", 1, 2);
 }
 
-// No-op functions used to create a MetricsStateManager.
-void NoOpStoreClientInfoBackup(const metrics::ClientInfo&) {}
+// No-op function used to create a MetricsStateManager.
 std::unique_ptr<metrics::ClientInfo> NoOpLoadClientInfoBackup() {
   return nullptr;
 }
@@ -176,9 +177,9 @@ MetricsStateManager::MetricsStateManager(
     EnabledStateProvider* enabled_state_provider,
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
+    StartupVisibility startup_visibility,
     StoreClientInfoCallback store_client_info,
-    LoadClientInfoCallback retrieve_client_info,
-    StartupVisibility startup_visibility)
+    LoadClientInfoCallback retrieve_client_info)
     : local_state_(local_state),
       enabled_state_provider_(enabled_state_provider),
       store_client_info_(std::move(store_client_info)),
@@ -188,6 +189,8 @@ MetricsStateManager::MetricsStateManager(
       entropy_source_returned_(ENTROPY_SOURCE_NONE),
       metrics_ids_were_reset_(false),
       startup_visibility_(startup_visibility) {
+  DCHECK(!store_client_info_.is_null());
+  DCHECK(!load_client_info_.is_null());
   ResetMetricsIDsIfNecessary();
 
   bool is_first_run = false;
@@ -440,21 +443,20 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     EnabledStateProvider* enabled_state_provider,
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
+    StartupVisibility startup_visibility,
     StoreClientInfoCallback store_client_info,
-    LoadClientInfoCallback retrieve_client_info,
-    StartupVisibility startup_visibility) {
+    LoadClientInfoCallback retrieve_client_info) {
   std::unique_ptr<MetricsStateManager> result;
   // Note: |instance_exists_| is updated in the constructor and destructor.
   if (!instance_exists_) {
     result.reset(new MetricsStateManager(
         local_state, enabled_state_provider, backup_registry_key, user_data_dir,
-        store_client_info.is_null()
-            ? base::BindRepeating(&NoOpStoreClientInfoBackup)
-            : std::move(store_client_info),
+        startup_visibility,
+        store_client_info.is_null() ? base::DoNothing()
+                                    : std::move(store_client_info),
         retrieve_client_info.is_null()
             ? base::BindRepeating(&NoOpLoadClientInfoBackup)
-            : std::move(retrieve_client_info),
-        startup_visibility));
+            : std::move(retrieve_client_info)));
   }
   return result;
 }

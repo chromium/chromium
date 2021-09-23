@@ -148,13 +148,6 @@ class ShellControllerImpl : public mojom::ShellController {
   void ShutDown() override { Shell::Shutdown(); }
 };
 
-// Callbacks for MetricsStateManager::Create(). They're no-ops for the
-// ShellVariationsServiceClient.
-void StoreClientInfo(const metrics::ClientInfo& client_info) {}
-std::unique_ptr<metrics::ClientInfo> LoadClientInfo() {
-  return nullptr;
-}
-
 // https://crbug.com/1219642 consider not needing VariationsServiceClient just
 // to use VariationsFieldTrialCreator.
 class ShellVariationsServiceClient
@@ -661,9 +654,7 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
       metrics::MetricsStateManager::Create(
           local_state_.get(), &enabled_state_provider, std::wstring(),
-          path.AppendASCII("Local State"),
-          base::BindRepeating(&StoreClientInfo),
-          base::BindRepeating(&LoadClientInfo));
+          path.AppendASCII("Local State"));
   variations::SafeSeedManager safe_seed_manager(local_state_.get());
 
   // Since this is a test-only code path, some arguments to SetupFieldTrials are

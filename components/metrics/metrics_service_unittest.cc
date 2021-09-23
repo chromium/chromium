@@ -48,13 +48,6 @@ void YieldUntil(base::Time when) {
     base::PlatformThread::YieldCurrentThread();
 }
 
-void StoreNoClientInfoBackup(const ClientInfo& /* client_info */) {
-}
-
-std::unique_ptr<ClientInfo> ReturnNoBackup() {
-  return nullptr;
-}
-
 // Returns true if |id| is present in |proto|'s collection of FieldTrials.
 bool IsFieldTrialPresent(const SystemProfileProto& proto,
                          const std::string& trial_name,
@@ -152,8 +145,7 @@ class MetricsServiceTest : public testing::Test {
     if (!metrics_state_manager_) {
       metrics_state_manager_ = MetricsStateManager::Create(
           GetLocalState(), enabled_state_provider_.get(), std::wstring(),
-          base::FilePath(), base::BindRepeating(&StoreNoClientInfoBackup),
-          base::BindRepeating(&ReturnNoBackup), startup_visibility);
+          base::FilePath(), startup_visibility);
       metrics_state_manager_->InstantiateFieldTrialList();
     }
     return metrics_state_manager_.get();

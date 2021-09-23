@@ -299,9 +299,9 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
 
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
-        user_data_dir, base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
-        startup_visibility);
+        user_data_dir, startup_visibility,
+        base::BindRepeating(&PostStoreMetricsClientInfo),
+        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
   }
   return metrics_state_manager_.get();
 }

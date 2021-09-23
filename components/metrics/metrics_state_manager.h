@@ -174,16 +174,14 @@ class MetricsStateManager final {
   //
   // |startup_visibility| denotes whether this session is expected to come to
   // the foreground.
-  //
-  // TODO(crbug/1249196): Make the callbacks optional.
   static std::unique_ptr<MetricsStateManager> Create(
       PrefService* local_state,
       EnabledStateProvider* enabled_state_provider,
       const std::wstring& backup_registry_key,
       const base::FilePath& user_data_dir,
+      StartupVisibility startup_visibility = StartupVisibility::kUnknown,
       StoreClientInfoCallback store_client_info = StoreClientInfoCallback(),
-      LoadClientInfoCallback load_client_info = LoadClientInfoCallback(),
-      StartupVisibility startup_visibility = StartupVisibility::kUnknown);
+      LoadClientInfoCallback load_client_info = LoadClientInfoCallback());
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -243,9 +241,9 @@ class MetricsStateManager final {
                       EnabledStateProvider* enabled_state_provider,
                       const std::wstring& backup_registry_key,
                       const base::FilePath& user_data_dir,
+                      StartupVisibility startup_visibility,
                       StoreClientInfoCallback store_client_info,
-                      LoadClientInfoCallback load_client_info,
-                      StartupVisibility startup_visibility);
+                      LoadClientInfoCallback load_client_info);
 
   // Backs up the current client info via |store_client_info_|.
   void BackUpCurrentClientInfo();

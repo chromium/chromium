@@ -43,13 +43,6 @@ using metrics::ExtensionInstallProto;
 
 namespace {
 
-void StoreNoClientInfoBackup(const metrics::ClientInfo& /* client_info */) {
-}
-
-std::unique_ptr<metrics::ClientInfo> ReturnNoBackup() {
-  return nullptr;
-}
-
 class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
  public:
   explicit TestExtensionsMetricsProvider(
@@ -133,10 +126,9 @@ TEST(ExtensionsMetricsProvider, SystemProtoEncoding) {
   metrics::TestEnabledStateProvider enabled_state_provider(true, true);
   metrics::MetricsService::RegisterPrefs(local_state.registry());
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager(
-      metrics::MetricsStateManager::Create(
-          &local_state, &enabled_state_provider, std::wstring(),
-          base::FilePath(), base::BindRepeating(&StoreNoClientInfoBackup),
-          base::BindRepeating(&ReturnNoBackup)));
+      metrics::MetricsStateManager::Create(&local_state,
+                                           &enabled_state_provider,
+                                           std::wstring(), base::FilePath()));
   metrics_state_manager->InstantiateFieldTrialList();
   TestExtensionsMetricsProvider extension_metrics(metrics_state_manager.get());
   extension_metrics.ProvideSystemProfileMetrics(&system_profile);
