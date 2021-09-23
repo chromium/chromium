@@ -104,6 +104,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="DevTools.ConsoleShowsCorsErrors"
+    enum="DevToolsConsoleShowsCorsErrors" expires_after="2022-03-20">
+  <owner>dsv@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Records if showing CORS erros in DevTools Console is enabled.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.CssEditorOpened" enum="DevToolsCssEditorOpened"
     expires_after="2021-09-14">
   <owner>yangguo@chromium.org</owner>

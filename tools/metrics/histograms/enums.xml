@@ -19761,6 +19761,11 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="Grouping disabled"/>
 </enum>
 
+<enum name="DevToolsConsoleShowsCorsErrors">
+  <int value="0" label="CORS errors disabled"/>
+  <int value="1" label="CORS errors enabled"/>
+</enum>
+
 <enum name="DevToolsCssEditorOpened">
   <int value="0" label="Color Picker opened"/>
   <int value="1" label="Shadow Editor opened"/>
