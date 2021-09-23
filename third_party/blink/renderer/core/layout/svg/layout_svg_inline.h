@@ -58,6 +58,9 @@ class LayoutSVGInline : public LayoutInline {
                           MapCoordinatesFlags) const final;
   void AbsoluteQuads(Vector<FloatQuad>&,
                      MapCoordinatesFlags mode = 0) const final;
+  void AddOutlineRects(Vector<PhysicalRect>&,
+                       const PhysicalOffset& additional_offset,
+                       NGOutlineType) const final;
 
  private:
   InlineFlowBox* CreateInlineFlowBox() final;

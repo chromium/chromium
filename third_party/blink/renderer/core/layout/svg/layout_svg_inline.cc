@@ -162,6 +162,18 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
   }
 }
 
+void LayoutSVGInline::AddOutlineRects(Vector<PhysicalRect>& rect_list,
+                                      const PhysicalOffset& additional_offset,
+                                      NGOutlineType outline_type) const {
+  if (!IsInLayoutNGInlineFormattingContext()) {
+    LayoutInline::AddOutlineRects(rect_list, additional_offset, outline_type);
+    return;
+  }
+  auto rect = PhysicalRect::EnclosingRect(ObjectBoundingBox());
+  rect.Move(additional_offset);
+  rect_list.push_back(rect);
+}
+
 void LayoutSVGInline::WillBeDestroyed() {
   NOT_DESTROYED();
   SVGResources::ClearClipPathFilterMask(To<SVGElement>(*GetNode()), Style());

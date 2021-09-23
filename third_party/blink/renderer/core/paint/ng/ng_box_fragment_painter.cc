@@ -574,9 +574,16 @@ void NGBoxFragmentPainter::PaintObject(
   }
 
   if (paint_phase == PaintPhase::kForeground) {
+    // NGBoxFragmentPainter::PaintLineBoxChildren() calls
+    // AddURLRectsForInlineChildrenRecursively(). So we don't need to call
+    // AddURLRectIfNeeded() for LayoutInline.
     if (paint_info.ShouldAddUrlMetadata()) {
-      NGFragmentPainter(fragment, GetDisplayItemClient())
-          .AddURLRectIfNeeded(paint_info, paint_offset);
+      const auto* layout_object = fragment.GetLayoutObject();
+      if (!layout_object->IsLayoutInline() ||
+          To<LayoutBoxModelObject>(layout_object)->HasSelfPaintingLayer()) {
+        NGFragmentPainter(fragment, GetDisplayItemClient())
+            .AddURLRectIfNeeded(paint_info, paint_offset);
+      }
     }
     if (is_visible && fragment.HasExtraMathMLPainting())
       NGMathMLPainter(fragment).Paint(paint_info, paint_offset);
