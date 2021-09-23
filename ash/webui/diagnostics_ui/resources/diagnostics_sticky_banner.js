@@ -17,6 +17,16 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
   static get template() {
     return html`{__html_template__}`
   }
+
+  static get properties() {
+    return {
+      /** @type {string} */
+      bannerMessage: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 };
 
 customElements.define(

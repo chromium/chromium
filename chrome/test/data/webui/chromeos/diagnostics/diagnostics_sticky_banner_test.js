@@ -5,7 +5,9 @@
 import {DiagnosticsStickyBannerElement} from 'chrome://diagnostics/diagnostics_sticky_banner.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
+
+import * as dx_utils from './diagnostics_test_utils.js';
 
 export function diagnosticsStickyBannerTestSuite() {
   /** @type {?DiagnosticsStickyBannerElement} */
@@ -20,6 +22,7 @@ export function diagnosticsStickyBannerTestSuite() {
     diagnosticsStickyBannerElement = null;
   });
 
+  /** @return {!Promise} */
   function initializeDiagnosticsStickyBanner() {
     assertFalse(!!diagnosticsStickyBannerElement);
 
@@ -33,9 +36,51 @@ export function diagnosticsStickyBannerTestSuite() {
     return flushTasks();
   }
 
+  /** @return {!Element} */
+  function getBanner() {
+    assertTrue(!!diagnosticsStickyBannerElement);
+
+    return /** @type {!Element} */ (
+        diagnosticsStickyBannerElement.shadowRoot.querySelector('#banner'));
+  }
+
+  /** @return {!Element} */
+  function getBannerMsg() {
+    assertTrue(!!diagnosticsStickyBannerElement);
+
+    return /** @type {!Element} */ (
+        diagnosticsStickyBannerElement.shadowRoot.querySelector('#bannerMsg'));
+  }
+
+  /**
+   * @param {string} message
+   * @return {!Promise}
+   */
+  function setBannerMessage(message) {
+    assertTrue(!!diagnosticsStickyBannerElement);
+    diagnosticsStickyBannerElement.bannerMessage = message;
+
+    return flushTasks();
+  }
+
   test('BannerInitializedCorrectly', () => {
     return initializeDiagnosticsStickyBanner().then(() => {
-      assertTrue(!!diagnosticsStickyBannerElement);
+      assertFalse(isVisible(getBanner()));
     });
+  });
+
+  test('BannerShowsWhenMessageSetToNonEmptyString', () => {
+    const testMessage = 'Infomational banner';
+    return initializeDiagnosticsStickyBanner()
+        .then(() => setBannerMessage(testMessage))
+        .then(() => {
+          assertTrue(isVisible(getBanner()));
+          dx_utils.assertElementContainsText(getBannerMsg(), testMessage);
+        })
+        .then(() => setBannerMessage(''))
+        .then(() => {
+          assertFalse(isVisible(getBanner()));
+          dx_utils.assertElementDoesNotContainText(getBannerMsg(), testMessage);
+        });
   });
 }
