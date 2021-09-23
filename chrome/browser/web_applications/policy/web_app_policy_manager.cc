@@ -266,12 +266,12 @@ void WebAppPolicyManager::RefreshPolicySettings() {
 }
 
 void WebAppPolicyManager::ApplyPolicySettings() {
-  std::map<AppId, GURL> policy_installed_apps_ =
+  std::map<AppId, GURL> policy_installed_apps =
       app_registrar_->GetExternallyInstalledApps(
           ExternalInstallSource::kExternalPolicy);
   for (const AppId& app_id : app_registrar_->GetAppIds()) {
     RunOnOsLoginPolicy policy =
-        GetUrlRunOnOsLoginPolicy(policy_installed_apps_[app_id]);
+        GetUrlRunOnOsLoginPolicy(policy_installed_apps[app_id]);
     if (policy == RunOnOsLoginPolicy::kBlocked) {
       sync_bridge_->SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kNotRun);
       OsHooksOptions os_hooks;
