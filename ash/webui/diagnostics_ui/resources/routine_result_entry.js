@@ -12,6 +12,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
+import {getRoutineFailureMessage} from './diagnostics_utils.js';
 import {RoutineGroup} from './routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
 import {BadgeType} from './text_badge.js';
@@ -334,7 +335,6 @@ Polymer({
       return '';
     }
 
-    return loadTimeData.getStringF(
-        'routineFailedText', getRoutineType(this.item.failedTest));
+    return getRoutineFailureMessage(this.item.failedTest);
   },
 });

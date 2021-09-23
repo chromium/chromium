@@ -1010,9 +1010,6 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_EID_LABEL" desc="The label for a Cellular network's EID.">
         EID
       </message>
-      <message name="IDS_DIAGNOSTICS_FAILED_TEST_TEXT" desc="The text that displays the test that failed.">
-        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test failed
-      </message>
       <message name="IDS_DIAGNOSTICS_LOCAL_NETWORK_GROUP_LABEL" desc="The label for the group of tests related to the device's local network.">
         Local Network
       </message>
@@ -1021,6 +1018,48 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_DIAGNOSTICS_INTERNET_CONNECTIVITY_GROUP_LABEL" desc="The label for the group of tests related to internet connectivity.">
         Internet Connectivity
+      </message>
+      <message name="IDS_DIAGNOSTICS_LAN_CONNECTIVITY_FAILED_TEXT" desc="The text that displays when the `Lan Connectivity` test fails." translateable="false">
+        Unable to contact gateway
+      </message>
+      <message name="IDS_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_FAILED_TEXT" desc="The text that displays when the `Gateway can be pinged` test fails." translateable="false">
+        Unable to contact gateway
+      </message>
+      <message name="IDS_DIAGNOSTICS_DNS_RESOLVER_PRESENT_FAILED_TEXT" desc="The text that displays when the `DNS resolver present` test fails." translateable="false">
+        No DNS servers are configured
+      </message>
+      <message name="IDS_DIAGNOSTICS_DNS_RESOLUTION_FAILED_TEXT" desc="The text that displays when the `DNS resolution` test fails." translateable="false">
+        Unable to resolve DNS
+      </message>
+      <message name="IDS_DIAGNOSTICS_DNS_LATENCY_FAILED_TEXT" desc="The text that displays when the `DNS latency` test fails." translateable="false">
+        DNS resolution has high latency
+      </message>
+      <message name="IDS_DIAGNOSTICS_SIGNAL_STRENGTH_FAILED_TEXT" desc="The text that displays when the `Signal strength` test fails." translateable="false">
+        Low signal strength, try to move closer to the access point
+      </message>
+      <message name="IDS_DIAGNOSTICS_CAPTIVE_PORTAL_FAILED_TEXT" desc="The text that displays when the `Captive portal` test fails." translateable="false">
+        This network may have a captive portal
+      </message>
+      <message name="IDS_DIAGNOSTICS_HAS_SECURE_WIFI_CONNECTION_FAILED_TEXT" desc="The text that displays when the `Has secure Wi-Fi connection` test fails." translateable="false">
+        You are using an open network
+      </message>
+      <message name="IDS_DIAGNOSTICS_HTTPS_FIREWALL_FAILED_TEXT" desc="The text that displays when the `HTTPS firewall` test fails." translateable="false">
+        Unable to connect through firewall to HTTPS (port 443) websites
+      </message>
+      <message name="IDS_DIAGNOSTICS_HTTP_FIREWALL_FAILED_TEXT" desc="The text that displays when the `HTTP firewall` test fails." translateable="false">
+        Unable to connect through firewall to HTTP (port 80) websites
+      </message>
+      <message name="IDS_DIAGNOSTICS_HTTPS_LATENCY_FAILED_TEXT" desc="The text that displays when the `HTTPS latency` test fails." translateable="false">
+        High latency to HTTPS (port 443) websites
+      </message>
+      <message name="IDS_DIAGNOSTICS_ARC_PING_FAILED_TEXT" desc="The text that displays when the `ARC ping` test fails." translateable="false">
+        Unable to contact the gateway from Android
+      </message>
+      <message name="IDS_DIAGNOSTICS_ARC_HTTP_FAILED_TEXT" desc="The text that displays when the `ARC HTTP` test fails." translateable="false">
+        Unable to connect through firewall to HTTP (port 80) websites from Android
+      </message>
+      <message name="IDS_DIAGNOSTICS_ARC_DNS_RESOLUTION_FAILED_TEXT" desc="The text that displays when the `ARC DNS resolution` test fails." translateable="false">
+        Unable to resolve DNS from Android
       </message>
 
       <!-- Input diagnostics -->

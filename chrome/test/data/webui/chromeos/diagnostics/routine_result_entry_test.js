@@ -109,6 +109,17 @@ export function routineResultEntryTestSuite() {
     return routineLinkContainer;
   }
 
+  /**
+   * Returns the span wrapping the failure reason text.
+   * @return {!HTMLSpanElement}
+   */
+  function getFailedTestContainer() {
+    const failedTestContainer = /** @type {!HTMLSpanElement} */ (
+        routineResultEntryElement.$$('#failedTestText'));
+    assertTrue(!!failedTestContainer);
+    return failedTestContainer;
+  }
+
   test('ElementRendered', () => {
     return initializeRoutineResultEntry().then(() => {
       // Verify the element rendered.
@@ -253,6 +264,19 @@ export function routineResultEntryTestSuite() {
     return initializeEntryWithItem(item, true).then(() => {
       // Span should not be hidden
       assertTrue(isVisible(getRoutineLinkContainer()));
+    });
+  });
+
+  test('NetworkRoutineHasCorrectFailureMessage', () => {
+    const item = new RoutineGroup(
+        [RoutineType.kLanConnectivity], 'lanConnectivityRoutineText');
+    item.failedTest = RoutineType.kLanConnectivity;
+    return initializeEntryWithItem(item, true).then(() => {
+      // Span should not be hidden
+      assertTrue(isVisible(getFailedTestContainer()));
+      dx_utils.assertElementContainsText(
+          getFailedTestContainer(),
+          loadTimeData.getString('lanConnectivityFailedText'));
     });
   });
 }

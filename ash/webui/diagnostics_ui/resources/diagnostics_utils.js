@@ -214,3 +214,55 @@ export function isNavEnabled() {
 export function formatMacAddress(macAddress) {
   return `${loadTimeData.getString('macAddressLabel')}: ${macAddress}`;
 }
+
+/**
+ * Resolves a networking routine type to its corresponding localized failure
+ * message.
+ * @param {!RoutineType} routineType
+ * @return {string}
+ */
+export function getRoutineFailureMessage(routineType) {
+  switch (routineType) {
+    case RoutineType.kCaptivePortal:
+      return loadTimeData.getString('captivePortalFailedText');
+    case RoutineType.kDnsLatency:
+      return loadTimeData.getString('dnsLatencyFailedText');
+    case RoutineType.kDnsResolution:
+      return loadTimeData.getString('dnsResolutionFailedText');
+    case RoutineType.kDnsResolverPresent:
+      return loadTimeData.getString('dnsResolverPresentFailedText');
+    case RoutineType.kGatewayCanBePinged:
+      return loadTimeData.getString('gatewayCanBePingedFailedText');
+    case RoutineType.kHasSecureWiFiConnection:
+      return loadTimeData.getString('hasSecureWiFiConnectionFailedText');
+    case RoutineType.kHttpFirewall:
+      return loadTimeData.getString('httpFirewallFailedText');
+    case RoutineType.kHttpsFirewall:
+      return loadTimeData.getString('httpsFirewallFailedText');
+    case RoutineType.kHttpsLatency:
+      return loadTimeData.getString('httpsLatencyFailedText');
+    case RoutineType.kLanConnectivity:
+      return loadTimeData.getString('lanConnectivityFailedText');
+    case RoutineType.kSignalStrength:
+      return loadTimeData.getString('signalStrengthFailedText');
+    case RoutineType.kArcHttp:
+      return loadTimeData.getString('arcHttpFailedText');
+    case RoutineType.kArcPing:
+      return loadTimeData.getString('arcPingFailedText');
+    case RoutineType.kArcDnsResolution:
+      return loadTimeData.getString('arcDnsResolutionFailedText');
+    case RoutineType.kBatteryCharge:
+    case RoutineType.kBatteryDischarge:
+    case RoutineType.kCpuCache:
+    case RoutineType.kCpuStress:
+    case RoutineType.kCpuFloatingPoint:
+    case RoutineType.kCpuPrime:
+    case RoutineType.kMemory:
+      assertNotReached();
+      return '';
+    default:
+      // Values should always be found in the enum.
+      assertNotReached();
+      return '';
+  }
+}
