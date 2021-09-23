@@ -7241,10 +7241,13 @@ domain Page
       optional binary primaryIcon
 
   # Returns the unique (PWA) app id.
+  # Only returns values if the feature flag 'WebAppEnableManifestId' is enabled
   experimental command getAppId
     returns
-      # Only returns a value if the feature flag 'WebAppEnableManifestId' is enabled
+      # App id, either from manifest's id attribute or computed from start_url
       optional string appId
+      # Recommendation for manifest's id attribute to match current id computed from start_url
+      optional string recommendedId
 
   # Returns all browser cookies. Depending on the backend support, will return detailed cookie
   # information in the `cookies` field.

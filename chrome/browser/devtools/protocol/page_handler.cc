@@ -238,7 +238,8 @@ void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
                                    const webapps::InstallableData& data) {
   if (blink::IsEmptyManifest(data.manifest) ||
       !base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
-    callback->sendSuccess(protocol::Maybe<protocol::String>());
+    callback->sendSuccess(protocol::Maybe<protocol::String>(),
+                          protocol::Maybe<protocol::String>());
     return;
   }
   absl::optional<std::string> id;
@@ -246,7 +247,8 @@ void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
     id = base::UTF16ToUTF8(data.manifest.id.value());
   }
   callback->sendSuccess(
-      web_app::GenerateAppIdUnhashed(id, data.manifest.start_url));
+      web_app::GenerateAppIdUnhashed(id, data.manifest.start_url),
+      web_app::GenerateRecommendedId(data.manifest.start_url));
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

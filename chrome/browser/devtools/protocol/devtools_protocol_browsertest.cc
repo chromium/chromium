@@ -142,6 +142,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId,
   SendCommandSync("Page.getAppId");
   EXPECT_EQ(*result_.FindStringPath("appId"),
             embedded_test_server()->GetURL("/web_apps/no_service_worker.html"));
+  EXPECT_EQ(*result_.FindStringPath("recommendedId"),
+            "/web_apps/no_service_worker.html");
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId, ReturnsNoAppIdIfNoManifest) {
@@ -152,6 +154,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId, ReturnsNoAppIdIfNoManifest) {
 
   SendCommandSync("Page.getAppId");
   ASSERT_TRUE(result_.FindPath("appId") == nullptr);
+  ASSERT_TRUE(result_.FindPath("recommendedId") == nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
