@@ -217,8 +217,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             Tab tab = getTabModelSelector().getCurrentTab();
             if (tab == null) return false;
             String publisher = getToolbarManager().getContentPublisher();
-            new ChromePageInfo(getModalDialogManagerSupplier(), publisher, OpenedFromSource.MENU,
-                    mRootUiCoordinator.getStoreInfoActionHandlerSupplier())
+            new ChromePageInfo(getModalDialogManagerSupplier(), publisher, OpenedFromSource.MENU)
                     .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             return true;
         }

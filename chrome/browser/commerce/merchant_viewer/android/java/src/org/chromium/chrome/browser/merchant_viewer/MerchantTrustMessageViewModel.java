@@ -35,7 +35,7 @@ class MerchantTrustMessageViewModel {
                 .with(MessageBannerProperties.MESSAGE_IDENTIFIER, MessageIdentifier.MERCHANT_TRUST)
                 .with(MessageBannerProperties.ICON,
                         ResourcesCompat.getDrawable(context.getResources(),
-                                R.drawable.ic_storefront_blue, context.getTheme()))
+                                R.drawable.ic_logo_googleg_24dp, context.getTheme()))
                 .with(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE)
                 .with(MessageBannerProperties.TITLE,
                         context.getResources().getString(R.string.merchant_viewer_message_title))
@@ -49,7 +49,7 @@ class MerchantTrustMessageViewModel {
                 .build();
     }
 
-    public static Spannable getMessageDescription(
+    private static Spannable getMessageDescription(
             Context context, MerchantTrustSignals trustSignals) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();

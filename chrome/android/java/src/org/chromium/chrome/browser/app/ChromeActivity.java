@@ -508,7 +508,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getTabContentManagerSupplier(), getOverviewModeBehaviorSupplier(),
                 this::getSnackbarManager, getActivityType(), this::isInOverviewMode,
                 this::isWarmOnResume, /* appMenuDelegate= */ this,
-                /* statusBarColorProvider= */ this, getIntentRequestTracker());
+                /* statusBarColorProvider= */ this);
         // clang-format on
     }
 
@@ -2441,8 +2441,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.info_menu_id) {
-            ChromePageInfo pageInfo = new ChromePageInfo(getModalDialogManagerSupplier(), null,
-                    OpenedFromSource.MENU, mRootUiCoordinator.getStoreInfoActionHandlerSupplier());
+            ChromePageInfo pageInfo = new ChromePageInfo(
+                    getModalDialogManagerSupplier(), null, OpenedFromSource.MENU);
             pageInfo.show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             return true;
         }

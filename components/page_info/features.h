@@ -16,8 +16,6 @@ namespace page_info {
 #if defined(OS_ANDROID)
 // Enables the history sub page for Page Info.
 extern const base::Feature kPageInfoHistory;
-// Enables the store info row for Page Info.
-extern const base::Feature kPageInfoStoreInfo;
 #endif
 
 #if !defined(OS_ANDROID)

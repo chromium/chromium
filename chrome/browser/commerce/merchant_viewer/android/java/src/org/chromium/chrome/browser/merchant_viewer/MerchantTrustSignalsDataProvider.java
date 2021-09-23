@@ -3,17 +3,13 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.merchant_viewer;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
-import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,44 +23,30 @@ class MerchantTrustSignalsDataProvider {
             new OptimizationGuideBridgeFactory(
                     Arrays.asList(HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS));
 
-    /**
-     * Fetches {@link MerchantTrustSignals} through {@link OptimizationGuideBridge} based on {@link
-     * NavigationHandle}.
-     */
+    /** Fetches {@link MerchantTrustSignals} through {@link OptimizationGuideBridge}. */
     public void getDataForNavigationHandle(
             NavigationHandle navigationHandle, Callback<MerchantTrustSignals> callback) {
         sOptimizationGuideBridgeFactory.create().canApplyOptimizationAsync(navigationHandle,
                 HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS, (decision, metadata) -> {
-                    onOptimizationGuideDecision(decision, metadata, callback);
-                });
-    }
+                    if (decision != OptimizationGuideDecision.TRUE || metadata == null) {
+                        callback.onResult(null);
+                        return;
+                    }
+                    try {
+                        MerchantTrustSignals trustSignals =
+                                MerchantTrustSignals.parseFrom(metadata.getValue());
 
-    /**
-     * Fetches {@link MerchantTrustSignals} through {@link OptimizationGuideBridge} based on {@link
-     * GURL}.
-     */
-    public void getDataForUrl(GURL url, Callback<MerchantTrustSignals> callback) {
-        sOptimizationGuideBridgeFactory.create().canApplyOptimization(
-                url, HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS, (decision, metadata) -> {
-                    onOptimizationGuideDecision(decision, metadata, callback);
+                        callback.onResult(
+                                isValidMerchantTrustSignals(trustSignals) ? trustSignals : null);
+                    } catch (IOException e) {
+                        // Catching Exception instead of InvalidProtocolBufferException in order to
+                        // avoid increasing the apk size by taking a dependency on protobuf lib.
+                        Log.i(TAG,
+                                "There was a problem parsing MerchantTrustSignals."
+                                        + e.getMessage());
+                        callback.onResult(null);
+                    }
                 });
-    }
-
-    private void onOptimizationGuideDecision(@OptimizationGuideDecision int decision,
-            @Nullable Any metadata, Callback<MerchantTrustSignals> callback) {
-        if (decision != OptimizationGuideDecision.TRUE || metadata == null) {
-            callback.onResult(null);
-            return;
-        }
-        try {
-            MerchantTrustSignals trustSignals = MerchantTrustSignals.parseFrom(metadata.getValue());
-            callback.onResult(isValidMerchantTrustSignals(trustSignals) ? trustSignals : null);
-        } catch (IOException e) {
-            // Catching Exception instead of InvalidProtocolBufferException in order to
-            // avoid increasing the apk size by taking a dependency on protobuf lib.
-            Log.i(TAG, "There was a problem parsing MerchantTrustSignals." + e.getMessage());
-            callback.onResult(null);
-        }
     }
 
     private boolean isValidMerchantTrustSignals(MerchantTrustSignals trustSignals) {

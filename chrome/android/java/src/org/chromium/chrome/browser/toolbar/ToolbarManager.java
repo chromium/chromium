@@ -71,7 +71,6 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -361,7 +360,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param tabCreatorManager Manages the creation of tabs.
      * @param overviewModeBehaviorSupplier Supplies the current {@link OverviewModeBehavior}.
      * @param snackbarManager Manages the display of snackbars.
-     * @param storeInfoActionHandlerSupplier Supplier of {@link StoreInfoActionHandler}.
      */
     public ToolbarManager(AppCompatActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -393,8 +391,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            @NonNull SnackbarManager snackbarManager, JankTracker jankTracker,
-            Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier) {
+            @NonNull SnackbarManager snackbarManager, JankTracker jankTracker) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -564,8 +561,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     -> ReturnToChromeExperimentsUtil.handleLoadUrlWithPostDataFromStartSurface(
                             new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR),
                             postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
-            ChromePageInfo toolbarPageInfo = new ChromePageInfo(modalDialogManagerSupplier, null,
-                    OpenedFromSource.TOOLBAR, storeInfoActionHandlerSupplier);
+            ChromePageInfo toolbarPageInfo =
+                    new ChromePageInfo(modalDialogManagerSupplier, null, OpenedFromSource.TOOLBAR);
             ExploreIconProvider exploreIconProvider = (pixelSize, callback) -> {
                 if (profileSupplier.get() != null) {
                     ExploreSitesBridge.getSummaryImage(profileSupplier.get(), pixelSize, callback);

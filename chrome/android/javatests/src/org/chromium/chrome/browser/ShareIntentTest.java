@@ -160,8 +160,7 @@ public class ShareIntentTest {
                     mockActivity::getSnackbarManager, mockActivity.getActivityType(),
                     mockActivity::isInOverviewMode, mockActivity::isWarmOnResume,
                     /* appMenuDelegate= */ mockActivity,
-                    /* statusBarColorProvider= */ mockActivity,
-                    mockActivity.getIntentRequestTracker());
+                    /* statusBarColorProvider= */ mockActivity);
 
             ShareHelper.setLastShareComponentName(
                     null, new ComponentName("test.package", "test.activity"));

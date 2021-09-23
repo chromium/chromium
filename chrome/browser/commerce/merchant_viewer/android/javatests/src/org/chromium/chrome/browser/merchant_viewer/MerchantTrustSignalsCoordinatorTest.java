@@ -443,14 +443,6 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
-    public void testOnStoreInfoClicked() {
-        mCoordinator.onStoreInfoClicked(mDummyMerchantTrustSignals);
-        verify(mMockDetailsTabCoordinator, times(1))
-                .requestOpenSheet(any(GURL.class), any(String.class));
-    }
-
-    @SmallTest
-    @Test
     public void testOnlyAbleToShowThreeMessagesInGivenTime() {
         mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig.TRUST_SIGNALS_MAX_ALLOWED_NUMBER_IN_GIVEN_WINDOW_PARAM, "3");

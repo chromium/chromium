@@ -61,6 +61,8 @@ import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
@@ -151,9 +153,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private HeightObserver mContinuousSearchObserver;
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
     private FindToolbarObserver mContinuousSearchFindToolbarObserver;
+    private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
     private @Nullable ScrollCaptureManager mScrollCaptureManager;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
+    private final IntentRequestTracker mIntentRequestTracker;
     private final int mControlContainerHeightResource;
     private final Supplier<InsetObserverView> mInsetObserverViewSupplier;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
@@ -285,8 +289,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 compositorViewHolderSupplier, tabContentManagerSupplier,
                 overviewModeBehaviorSupplier, snackbarManagerSupplier, activityType,
                 isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
-                statusBarColorProvider, intentRequestTracker);
+                statusBarColorProvider);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+        mIntentRequestTracker = intentRequestTracker;
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
@@ -367,6 +372,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mUndoGroupSnackbarController != null) {
             mUndoGroupSnackbarController.destroy();
+        }
+
+        if (mMerchantTrustSignalsCoordinator != null) {
+            mMerchantTrustSignalsCoordinator.destroy();
+            mMerchantTrustSignalsCoordinator = null;
         }
 
         if (mCommerceSubscriptionsService != null) {
@@ -508,6 +518,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         initContinuousSearchCoordinator();
         initScrollCapture();
+        initMerchantTrustSignals();
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
     }
@@ -516,6 +527,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mStartSurfaceSupplier.get() != null
                 && mStartSurfaceSupplier.get().getController().getStartSurfaceState()
                 == StartSurfaceState.SHOWN_HOMEPAGE;
+    }
+
+    private void initMerchantTrustSignals() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER)) {
+            return;
+        }
+
+        mMerchantTrustSignalsCoordinator = new MerchantTrustSignalsCoordinator(mActivity,
+                mWindowAndroid, getBottomSheetController(), mActivity.getWindow().getDecorView(),
+                MessageDispatcherProvider.from(mWindowAndroid), mActivityTabProvider,
+                mProfileSupplier, new MerchantTrustMetrics(), mIntentRequestTracker);
     }
 
     private void initScrollCapture() {
@@ -539,11 +561,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected boolean shouldShowMenuUpdateBadge() {
-        return true;
-    }
-
-    @Override
-    protected boolean shouldInitializeMerchantTrustSignals() {
         return true;
     }
 

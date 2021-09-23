@@ -144,16 +144,12 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
     }
 
     private void showPageInfoDialog() {
-        // When creating the {@link ChromePageInfoControllerDelegate} here, we don't need
-        // storeInfoActionHandlerSupplier and don't show "store info" row because this UI is already
-        // in a bottom sheet and clicking "store info" row would trigger another bottom sheet.
         PageInfoController.show(mActivity, mWebContents, null,
                 PageInfoController.OpenedFromSource.TOOLBAR,
                 new ChromePageInfoControllerDelegate(mActivity, mWebContents,
                         mModalDialogManagerSupplier,
                         /*offlinePageLoadUrlDelegate=*/
-                        new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents),
-                        /*storeInfoActionHandlerSupplier=*/null),
+                        new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents)),
                 PageInfoController.NO_HIGHLIGHTED_PERMISSION);
     }
 }
