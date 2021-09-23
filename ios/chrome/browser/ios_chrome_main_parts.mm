@@ -366,11 +366,8 @@ void IOSChromeMainParts::SetupFieldTrials() {
 
   // Initialize FieldTrialList to support FieldTrials that use one-time
   // randomization.
-  // TODO(crbug.com/1249496): Remove |field_trial_list_| data member.
-  DCHECK(!field_trial_list_);
   application_context_->GetMetricsServicesManager()
       ->InstantiateFieldTrialList();
-  field_trial_list_.reset(base::FieldTrialList::GetInstance());
 
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
 

@@ -10,7 +10,6 @@
 #include "base/allocator/buildflags.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/metrics/field_trial.h"
 #include "ios/chrome/browser/ios_chrome_field_trials.h"
 #include "ios/web/public/init/web_main_parts.h"
 
@@ -51,10 +50,6 @@ class IOSChromeMainParts : public web::WebMainParts {
   const base::CommandLine& parsed_command_line_;
 
   std::unique_ptr<ApplicationContextImpl> application_context_;
-
-  // Statistical testing infrastructure for the entire browser. NULL until
-  // SetUpMetricsAndFieldTrials is called.
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
 
   PrefService* local_state_;
 
