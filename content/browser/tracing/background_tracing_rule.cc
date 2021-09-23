@@ -5,6 +5,7 @@
 
 #include <limits>
 #include <string>
+#include <type_traits>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -16,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/values.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -43,6 +45,7 @@ const char kConfigRuleHistogramValueOldKey[] = "histogram_value";
 const char kConfigRuleHistogramValue1Key[] = "histogram_lower_value";
 const char kConfigRuleHistogramValue2Key[] = "histogram_upper_value";
 const char kConfigRuleHistogramRepeatKey[] = "histogram_repeat";
+const char kConfigRuleHistogramUnitsKey[] = "histogram_units";
 
 const char kConfigRuleRandomIntervalTimeoutMin[] = "timeout_min";
 const char kConfigRuleRandomIntervalTimeoutMax[] = "timeout_max";
@@ -208,13 +211,38 @@ class NamedTriggerRule : public BackgroundTracingRule {
 class HistogramRule : public BackgroundTracingRule,
                       public BackgroundTracingManagerImpl::AgentObserver {
  private:
+  // Units that can be displayed specially in OnHistogramChangedCallback.
+  enum class Units : int {
+    kUnspecified = 0,
+    kMilliseconds,
+    kMicroseconds,
+  };
+
+  static Units IntToUnits(int units_value) {
+    static_assert(std::is_same<std::underlying_type_t<Units>,
+                               decltype(units_value)>::value,
+                  "not safe to cast units_value to Units");
+    Units units = static_cast<Units>(units_value);
+    switch (units) {
+      case Units::kUnspecified:
+      case Units::kMilliseconds:
+      case Units::kMicroseconds:
+        // Recognized enum value.
+        return units;
+    }
+    // Unrecognized enum value.
+    return Units::kUnspecified;
+  }
+
   HistogramRule(const std::string& histogram_name,
                 int histogram_lower_value,
                 int histogram_upper_value,
+                Units units,
                 bool repeat)
       : histogram_name_(histogram_name),
         histogram_lower_value_(histogram_lower_value),
         histogram_upper_value_(histogram_upper_value),
+        units_(units),
         repeat_(repeat),
         installed_(false) {}
 
@@ -245,9 +273,13 @@ class HistogramRule : public BackgroundTracingRule,
     if (*histogram_lower_value >= histogram_upper_value)
       return nullptr;
 
+    Units units = Units::kUnspecified;
+    if (auto units_value = dict.FindIntKey(kConfigRuleHistogramUnitsKey)) {
+      units = IntToUnits(*units_value);
+    }
     std::unique_ptr<BackgroundTracingRule> rule(
         new HistogramRule(*histogram_name, *histogram_lower_value,
-                          histogram_upper_value, repeat));
+                          histogram_upper_value, units, repeat));
 
     const base::Value* args_dict = dict.FindDictKey(kConfigRuleArgsKey);
     if (args_dict)
@@ -268,7 +300,7 @@ class HistogramRule : public BackgroundTracingRule,
         histogram_name_,
         base::BindRepeating(&HistogramRule::OnHistogramChangedCallback,
                             base::Unretained(this), histogram_lower_value_,
-                            histogram_upper_value_, repeat_));
+                            histogram_upper_value_, units_, repeat_));
     BackgroundTracingManagerImpl::GetInstance()->AddAgentObserver(this);
     installed_ = true;
   }
@@ -280,6 +312,8 @@ class HistogramRule : public BackgroundTracingRule,
     dict.SetStringKey(kConfigRuleHistogramNameKey, histogram_name_.c_str());
     dict.SetIntKey(kConfigRuleHistogramValue1Key, histogram_lower_value_);
     dict.SetIntKey(kConfigRuleHistogramValue2Key, histogram_upper_value_);
+    if (units_ != Units::kUnspecified)
+      dict.SetIntKey(kConfigRuleHistogramUnitsKey, static_cast<int>(units_));
     dict.SetBoolKey(kConfigRuleHistogramRepeatKey, repeat_);
     return dict;
   }
@@ -328,6 +362,7 @@ class HistogramRule : public BackgroundTracingRule,
 
   void OnHistogramChangedCallback(base::Histogram::Sample reference_lower_value,
                                   base::Histogram::Sample reference_upper_value,
+                                  Units units,
                                   bool repeat,
                                   const char* histogram_name,
                                   uint64_t name_hash,
@@ -344,15 +379,35 @@ class HistogramRule : public BackgroundTracingRule,
                          "BackgroundTracingRule::OnHistogramTrigger",
                          TRACE_EVENT_SCOPE_THREAD, "histogram_name",
                          histogram_name, "value", actual_value);
-
-    TRACE_EVENT(
-        "toplevel",
-        "HistogramSampleTrigger", [&](perfetto::EventContext ctx) {
-          perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
-              ctx.event()->set_chrome_histogram_sample();
-          new_sample->set_name_hash(base::HashMetricName(histogram_name));
-          new_sample->set_sample(actual_value);
-        });
+    const auto trace_details = [&](perfetto::EventContext ctx) {
+      perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
+          ctx.event()->set_chrome_histogram_sample();
+      new_sample->set_name_hash(base::HashMetricName(histogram_name));
+      new_sample->set_sample(actual_value);
+    };
+    const auto track =
+        perfetto::Track::FromPointer(this, perfetto::ProcessTrack::Current());
+    const auto now = base::TimeTicks::Now();
+    if (units == Units::kUnspecified) {
+      TRACE_EVENT_INSTANT("toplevel", "HistogramSampleTrigger", track, now,
+                          trace_details);
+    } else {
+      base::TimeDelta delta;
+      switch (units) {
+        case Units::kUnspecified:
+          NOTREACHED();  // Handled above.
+          break;
+        case Units::kMilliseconds:
+          delta = base::TimeDelta::FromMilliseconds(actual_value);
+          break;
+        case Units::kMicroseconds:
+          delta = base::TimeDelta::FromMicroseconds(actual_value);
+          break;
+      }
+      TRACE_EVENT_BEGIN("toplevel", "HistogramSampleTrigger", track,
+                        now - delta, trace_details);
+      TRACE_EVENT_END("toplevel", track, now);
+    }
 
     OnHistogramTrigger(histogram_name);
   }
@@ -370,6 +425,7 @@ class HistogramRule : public BackgroundTracingRule,
   std::string histogram_name_;
   int histogram_lower_value_;
   int histogram_upper_value_;
+  Units units_;
   bool repeat_;
   bool installed_;
   std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
