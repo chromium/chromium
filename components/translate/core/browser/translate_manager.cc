@@ -1011,8 +1011,6 @@ void TranslateManager::FilterForUserPrefs(
 
     decision->PreventAutoTranslate();
     decision->PreventShowingUI();
-    decision->PreventShowingPredefinedLanguageTranslateUI();
-    decision->PreventPredefinedLanguageAutoTranslate();
 
     // Disable showing the translate UI for hrefTranslate unless hrefTranslate
     // is supposed to override the language blocklist.
@@ -1032,6 +1030,13 @@ void TranslateManager::FilterForUserPrefs(
       decision->PreventAutoHrefTranslate();
     }
 
+    // Disable showing the translate UI for a predefined target language unless
+    // autotranslation to the predefined target language is enabled.
+    if (!language_state_
+             .should_auto_translate_to_predefined_target_language()) {
+      decision->PreventShowingPredefinedLanguageTranslateUI();
+    }
+
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
     decision->ranker_events.push_back(
@@ -1047,8 +1052,6 @@ void TranslateManager::FilterForUserPrefs(
 
     decision->PreventAutoTranslate();
     decision->PreventShowingUI();
-    decision->PreventShowingPredefinedLanguageTranslateUI();
-    decision->PreventPredefinedLanguageAutoTranslate();
 
     // Disable showing the translate UI for hrefTranslate unless hrefTranslate
     // is supposed to override the site blocklist.
@@ -1061,6 +1064,13 @@ void TranslateManager::FilterForUserPrefs(
             kOverrideSitePrefsForHrefTranslate, kForceAutoTranslateKey,
             false)) {
       decision->PreventAutoHrefTranslate();
+    }
+
+    // Disable showing the translate UI for a predefined target language unless
+    // autotranslation to the predefined target language is enabled.
+    if (!language_state_
+             .should_auto_translate_to_predefined_target_language()) {
+      decision->PreventShowingPredefinedLanguageTranslateUI();
     }
 
     decision->initiation_statuses.push_back(
