@@ -26,7 +26,6 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_info_win.h"
-#include "printing/backend/xps_module.h"
 
 namespace {
 
@@ -106,6 +105,74 @@ bool ScopedPrinterHandle::OpenPrinterWithName(const wchar_t* printer) {
     Set(temp_handle);
   }
   return IsValid();
+}
+
+HRESULT XPSModule::OpenProvider(const std::wstring& printer_name,
+                                DWORD version,
+                                HPTPROVIDER* provider) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return PTOpenProvider(printer_name.c_str(), version, provider);
+}
+
+HRESULT XPSModule::GetPrintCapabilities(HPTPROVIDER provider,
+                                        IStream* print_ticket,
+                                        IStream* capabilities,
+                                        BSTR* error_message) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return PTGetPrintCapabilities(provider, print_ticket, capabilities,
+                                error_message);
+}
+
+HRESULT XPSModule::ConvertDevModeToPrintTicket(HPTPROVIDER provider,
+                                               ULONG devmode_size_in_bytes,
+                                               PDEVMODE devmode,
+                                               EPrintTicketScope scope,
+                                               IStream* print_ticket) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return PTConvertDevModeToPrintTicket(provider, devmode_size_in_bytes, devmode,
+                                       scope, print_ticket);
+}
+
+HRESULT XPSModule::ConvertPrintTicketToDevMode(
+    HPTPROVIDER provider,
+    IStream* print_ticket,
+    EDefaultDevmodeType base_devmode_type,
+    EPrintTicketScope scope,
+    ULONG* devmode_byte_count,
+    PDEVMODE* devmode,
+    BSTR* error_message) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return PTConvertPrintTicketToDevMode(
+      provider, print_ticket, base_devmode_type, scope, devmode_byte_count,
+      devmode, error_message);
+}
+
+HRESULT XPSModule::MergeAndValidatePrintTicket(HPTPROVIDER provider,
+                                               IStream* base_ticket,
+                                               IStream* delta_ticket,
+                                               EPrintTicketScope scope,
+                                               IStream* result_ticket,
+                                               BSTR* error_message) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return PTMergeAndValidatePrintTicket(provider, base_ticket, delta_ticket,
+                                       scope, result_ticket, error_message);
+}
+
+HRESULT XPSModule::ReleaseMemory(PVOID buffer) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return PTReleaseMemory(buffer);
+}
+
+HRESULT XPSModule::CloseProvider(HPTPROVIDER provider) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return PTCloseProvider(provider);
 }
 
 ScopedXPSInitializer::ScopedXPSInitializer() {
@@ -268,21 +335,21 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
     return dev_mode;
 
   HPTPROVIDER provider = nullptr;
-  hr = xps_module::OpenProvider(printer_name, 1, &provider);
+  hr = XPSModule::OpenProvider(printer_name, 1, &provider);
   if (SUCCEEDED(hr)) {
     ULONG size = 0;
     DEVMODE* dm = nullptr;
     // Use `kPTJobScope`, because `kPTDocumentScope` breaks duplex.
-    hr = xps_module::ConvertPrintTicketToDevMode(
+    hr = XPSModule::ConvertPrintTicketToDevMode(
         provider, pt_stream.Get(), kUserDefaultDevmode, kPTJobScope, &size, &dm,
         nullptr);
     if (SUCCEEDED(hr)) {
       // Correct DEVMODE using DocumentProperties. See documentation for
       // PTConvertPrintTicketToDevMode().
       dev_mode = CreateDevMode(printer.Get(), dm);
-      xps_module::ReleaseMemory(dm);
+      XPSModule::ReleaseMemory(dm);
     }
-    xps_module::CloseProvider(provider);
+    XPSModule::CloseProvider(provider);
   }
   return dev_mode;
 }

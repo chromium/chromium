@@ -25,7 +25,6 @@
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_info_win.h"
 #include "printing/backend/win_helper.h"
-#include "printing/backend/xps_module.h"
 #include "printing/mojom/print.mojom.h"
 
 namespace printing {
@@ -380,7 +379,7 @@ mojom::ResultCode PrintBackendWin::GetPrinterCapsAndDefaults(
 
   HPTPROVIDER provider = nullptr;
   std::wstring wide_printer_name = base::UTF8ToWide(printer_name);
-  HRESULT hr = xps_module::OpenProvider(wide_printer_name, 1, &provider);
+  HRESULT hr = XPSModule::OpenProvider(wide_printer_name, 1, &provider);
   if (!provider)
     return mojom::ResultCode::kSuccess;
 
@@ -390,7 +389,7 @@ mojom::ResultCode PrintBackendWin::GetPrinterCapsAndDefaults(
     DCHECK(SUCCEEDED(hr));
     if (print_capabilities_stream.Get()) {
       base::win::ScopedBstr error;
-      hr = xps_module::GetPrintCapabilities(
+      hr = XPSModule::GetPrintCapabilities(
           provider, nullptr, print_capabilities_stream.Get(), error.Receive());
       DCHECK(SUCCEEDED(hr));
       if (FAILED(hr)) {
@@ -416,7 +415,7 @@ mojom::ResultCode PrintBackendWin::GetPrinterCapsAndDefaults(
       DCHECK(SUCCEEDED(hr));
       if (printer_defaults_stream.Get()) {
         DWORD dm_size = devmode_out->dmSize + devmode_out->dmDriverExtra;
-        hr = xps_module::ConvertDevModeToPrintTicket(
+        hr = XPSModule::ConvertDevModeToPrintTicket(
             provider, dm_size, devmode_out.get(), kPTJobScope,
             printer_defaults_stream.Get());
         DCHECK(SUCCEEDED(hr));
@@ -428,7 +427,7 @@ mojom::ResultCode PrintBackendWin::GetPrinterCapsAndDefaults(
         }
       }
     }
-    xps_module::CloseProvider(provider);
+    XPSModule::CloseProvider(provider);
   }
   return mojom::ResultCode::kSuccess;
 }
