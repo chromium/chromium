@@ -839,14 +839,21 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   std::vector<Suggestion> autofill_item;
-  autofill_item.push_back(Suggestion());
+  autofill_item.emplace_back();
   autofill_item[0].frontend_id = kAutofillProfileId;
 
   // This should call ShowAutofillPopup.
   external_delegate_->OnSuggestionsReturned(
       kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false,
       true);
+
+  // On Desktop, the GPay icon should be stored in the store indicator icon.
+#if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIconsAre(element_icons));
+#else
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorStoreIndicatorIconsAre(element_icons));
+#endif
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
@@ -863,7 +870,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   std::vector<Suggestion> autofill_item;
-  autofill_item.push_back(Suggestion());
+  autofill_item.emplace_back();
   autofill_item[0].frontend_id = kAutofillProfileId;
 
   // This should call ShowAutofillPopup.
@@ -885,7 +892,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   std::vector<Suggestion> autofill_item;
-  autofill_item.push_back(Suggestion());
+  autofill_item.emplace_back();
   autofill_item[0].frontend_id = kAutofillProfileId;
 
   // This should call ShowAutofillPopup.
@@ -922,7 +929,7 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
       .WillOnce(testing::SaveArg<0>(&open_args));
 
   std::vector<Suggestion> autofill_item;
-  autofill_item.push_back(Suggestion());
+  autofill_item.emplace_back();
   autofill_item[0].frontend_id = kAutofillProfileId;
 
   external_delegate_->OnSuggestionsReturned(

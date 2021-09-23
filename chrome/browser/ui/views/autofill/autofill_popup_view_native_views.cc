@@ -89,6 +89,7 @@ constexpr int kAdjacentLabelsVerticalSpacing = 2;
 // Popup footer items that use a leading icon instead of a trailing one.
 constexpr autofill::PopupItemId kItemTypesUsingLeadingIcons[] = {
     autofill::PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
+    autofill::PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS,
     autofill::PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY,
     autofill::PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY,
     autofill::PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
@@ -158,8 +159,13 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   if (icon_str == "globeIcon")
     return ImageViewFromVectorIcon(kGlobeIcon);
 
-  if (icon_str == "settingsIcon")
-    return ImageViewFromVectorIcon(vector_icons::kSettingsIcon);
+  if (icon_str == "settingsIcon") {
+    return ImageViewFromVectorIcon(
+        base::FeatureList::IsEnabled(
+            autofill::features::kAutofillUseConsistentPopupSettingsIcons)
+            ? kProductIcon
+            : vector_icons::kSettingsIcon);
+  }
 
   if (icon_str == "empty")
     return ImageViewFromVectorIcon(omnibox::kHttpIcon);
@@ -981,14 +987,19 @@ void AutofillPopupFooterView::CreateContent() {
   auto main_text_label = CreateMainTextView();
   main_text_label->SetEnabled(!suggestion.is_loading);
   AddChildView(std::move(main_text_label));
-  AddSpacerWithSize(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL),
-      /*resize=*/true, layout_manager);
+
+  AddSpacerWithSize(0, /*resize=*/true, layout_manager);
 
   if (icon && !use_leading_icon) {
     AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/false, layout_manager);
     AddChildView(std::move(icon));
+  }
+
+  std::unique_ptr<views::ImageView> store_indicator_icon =
+      GetStoreIndicatorIconImageView(suggestion);
+  if (store_indicator_icon) {
+    AddSpacerWithSize(GetHorizontalMargin(), /*resize=*/true, layout_manager);
+    AddChildView(std::move(store_indicator_icon));
   }
 }
 

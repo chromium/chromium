@@ -155,6 +155,8 @@ extern const base::Feature kAutofillUseNewSectioningMethod;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillUseNewFormExtraction;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillUseConsistentPopupSettingsIcons;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature
     kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval;
 COMPONENT_EXPORT(AUTOFILL)

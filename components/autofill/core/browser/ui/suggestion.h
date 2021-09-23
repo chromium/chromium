@@ -73,8 +73,10 @@ struct Suggestion {
   // TODO(crbug.com/1019660): Identify icons with enum instead of strings.
   // If |custom_icon| is empty, the name of the fallback built-in icon.
   std::string icon;
-  // This icon string shows whether the suggestion originates from local or
-  // account store. If it's empty, no store indication should be shown.
+  // For passwords, this icon string shows whether the suggestion originates
+  // from local or account store. It is also used on the settings entry for
+  // the credit card Autofill popup to indicate if all credit cards are server
+  // cards.
   std::string store_indicator_icon;
   MatchMode match = PREFIX_MATCH;
   // Whether |value| should be displayed as secondary text.

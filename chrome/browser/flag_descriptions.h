@@ -236,6 +236,9 @@ extern const char kAutofillSaveAndFillVPADescription[];
 extern const char kAutofillSuggestVirtualCardsOnIncompleteFormName[];
 extern const char kAutofillSuggestVirtualCardsOnIncompleteFormDescription[];
 
+extern const char kAutofillUseConsistentPopupSettingsIconsName[];
+extern const char kAutofillUseConsistentPopupSettingsIconsDescription[];
+
 extern const char kAutofillUseImprovedLabelDisambiguationName[];
 extern const char kAutofillUseImprovedLabelDisambiguationDescription[];
 

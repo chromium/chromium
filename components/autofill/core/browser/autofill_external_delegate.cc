@@ -423,13 +423,19 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // popup layout experiment.
   suggestions->push_back(Suggestion(GetSettingsSuggestionValue()));
   suggestions->back().frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseConsistentPopupSettingsIcons)) {
+    suggestions->back().icon = "settingsIcon";
+  }
+
   // On Android and Desktop, Google Pay branding is shown along with Settings.
   // So Google Pay Icon is just attached to an existing menu item.
   if (is_all_server_suggestions) {
 #if defined(OS_ANDROID) || defined(OS_IOS)
     suggestions->back().icon = "googlePay";
 #else
-    suggestions->back().icon =
+    suggestions->back().store_indicator_icon =
         ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
             ? "googlePayDark"
             : "googlePay";
