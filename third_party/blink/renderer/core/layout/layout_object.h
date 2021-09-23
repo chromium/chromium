@@ -2760,7 +2760,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // destruction and don't waste time doing unnecessary work.
   bool DocumentBeingDestroyed() const;
 
-  void DestroyAndCleanupAnonymousWrappers();
+  void DestroyAndCleanupAnonymousWrappers(bool performing_reattach);
 
   void Destroy();
 

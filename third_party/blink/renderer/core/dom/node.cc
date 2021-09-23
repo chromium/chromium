@@ -1612,7 +1612,7 @@ void Node::DetachLayoutTree(bool performing_reattach) {
     ReattachHookScope::NotifyDetach(*this);
 
   if (GetLayoutObject())
-    GetLayoutObject()->DestroyAndCleanupAnonymousWrappers();
+    GetLayoutObject()->DestroyAndCleanupAnonymousWrappers(performing_reattach);
   SetLayoutObject(nullptr);
   if (!performing_reattach) {
     // We are clearing the ComputedStyle for elements, which means we should not
@@ -3362,10 +3362,15 @@ void Node::AddCandidateDirectionalityForSlot() {
 }
 
 void Node::RemovedFromFlatTree() {
+  StyleEngine& engine = GetDocument().GetStyleEngine();
+  StyleEngine::DetachLayoutTreeScope detach_scope(engine);
   // This node was previously part of the flat tree, but due to slot re-
   // assignment it no longer is. We need to detach the layout tree and notify
   // the StyleEngine in case the StyleRecalcRoot is removed from the flat tree.
-  DetachLayoutTree();
+  {
+    StyleEngine::DOMRemovalScope style_scope(engine);
+    DetachLayoutTree();
+  }
   GetDocument().GetStyleEngine().RemovedFromFlatTree(*this);
 }
 

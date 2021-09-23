@@ -2691,7 +2691,7 @@ TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTree) {
 TEST_F(StyleEngineTest, MoveSlottedOutsideFlatTree) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <div id="parent">
-      <div id="host1"><span></span></div>
+      <div id="host1"><span style="display:contents"></span></div>
       <div id="host2"></div>
     </div>
   )HTML");
@@ -2708,11 +2708,10 @@ TEST_F(StyleEngineTest, MoveSlottedOutsideFlatTree) {
   UpdateAllLifecyclePhases();
 
   host2->appendChild(span);
-  EXPECT_EQ(GetStyleRecalcRoot(), host1);
-  EXPECT_FALSE(span->IsDirtyForStyleRecalc());
+  EXPECT_FALSE(GetStyleRecalcRoot());
 
   span->remove();
-  EXPECT_EQ(GetStyleRecalcRoot(), host1);
+  EXPECT_FALSE(GetStyleRecalcRoot());
 }
 
 TEST_F(StyleEngineTest, StyleRecalcRootInShadowTree) {
@@ -2765,7 +2764,7 @@ TEST_F(StyleEngineTest, StyleRecalcRootOutsideFlatTree) {
 
 TEST_F(StyleEngineTest, RemoveStyleRecalcRootFromFlatTree) {
   GetDocument().body()->setInnerHTML(R"HTML(
-    <div id=host><span></span></div>
+    <div id=host><span style="display:contents"></span></div>
   )HTML");
 
   auto* host = GetDocument().getElementById("host");
@@ -2826,7 +2825,8 @@ TEST_F(StyleEngineTest, SlottedWithEnsuredStyleOutsideFlatTree) {
 
 TEST_F(StyleEngineTest, ForceReattachRecalcRootAttachShadow) {
   GetDocument().body()->setInnerHTML(R"HTML(
-    <div id="reattach"></div><div id="host"><span></span></div>
+    <div id="reattach"></div>
+    <div id="host"><span style="display:contents"></span></div>
   )HTML");
 
   auto* reattach = GetDocument().getElementById("reattach");

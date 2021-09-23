@@ -3984,7 +3984,8 @@ void LayoutObject::RemoveFromLayoutFlowThreadRecursive(
   CHECK(!SpannerPlaceholder());
 }
 
-void LayoutObject::DestroyAndCleanupAnonymousWrappers() {
+void LayoutObject::DestroyAndCleanupAnonymousWrappers(
+    bool performing_reattach) {
   NOT_DESTROYED();
   // If the tree is destroyed, there is no need for a clean-up phase.
   if (DocumentBeingDestroyed()) {
@@ -3993,10 +3994,10 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers() {
   }
 
   LayoutObject* destroy_root = this;
-  for (LayoutObject* destroy_root_parent = destroy_root->Parent();
-       destroy_root_parent && destroy_root_parent->IsAnonymous();
+  LayoutObject* destroy_root_parent = destroy_root->Parent();
+  for (; destroy_root_parent && destroy_root_parent->IsAnonymous();
        destroy_root = destroy_root_parent,
-                     destroy_root_parent = destroy_root_parent->Parent()) {
+       destroy_root_parent = destroy_root_parent->Parent()) {
     // Anonymous block continuations are tracked and destroyed elsewhere (see
     // the bottom of LayoutBlockFlow::RemoveChild)
     auto* destroy_root_parent_block =
@@ -4029,6 +4030,12 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers() {
       DCHECK(destroy_root->IsLayoutInline());
       DCHECK(To<LayoutInline>(destroy_root)->Continuation());
     }
+  }
+
+  if (!performing_reattach && destroy_root_parent) {
+    while (destroy_root_parent->IsAnonymous())
+      destroy_root_parent = destroy_root_parent->Parent();
+    GetDocument().GetStyleEngine().DetachedFromParent(destroy_root_parent);
   }
 
   destroy_root->Destroy();

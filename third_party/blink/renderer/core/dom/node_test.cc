@@ -410,7 +410,9 @@ TEST_F(NodeTest, UpdateChildDirtyAncestorsOnSlotAssignment) {
 }
 
 TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
-  SetBodyContent("<div id=host><span></span></div>");
+  SetBodyContent(R"HTML(
+    <div id="host"><span style="display:contents"></span></div>
+  )HTML");
   Element* host = GetDocument().getElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -433,14 +435,16 @@ TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
   // root and the child-dirty bits on the ancestors.
   span->remove();
 
-  EXPECT_TRUE(slot->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(host->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(GetDocument().body()->ChildNeedsStyleRecalc());
-  EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
+  EXPECT_FALSE(slot->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(host->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(GetDocument().body()->ChildNeedsStyleRecalc());
+  EXPECT_FALSE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
 }
 
 TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {
-  SetBodyContent("<div id=host><span></span></div>");
+  SetBodyContent(R"HTML(
+    <div id="host"><span style="display:contents"></span></div>
+  )HTML");
   Element* host = GetDocument().getElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);

@@ -756,11 +756,13 @@ Node* ContainerNode::RemoveChild(Node* old_child,
   {
     HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
     TreeOrderedMap::RemoveScope tree_remove_scope;
+    StyleEngine& engine = GetDocument().GetStyleEngine();
+    StyleEngine::DetachLayoutTreeScope detach_scope(engine);
     Node* prev = child->previousSibling();
     Node* next = child->nextSibling();
     {
       SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
-      StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
+      StyleEngine::DOMRemovalScope style_scope(engine);
       RemoveBetween(prev, next, *child);
       NotifyNodeRemoved(*child);
     }
@@ -817,11 +819,13 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
 
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   TreeOrderedMap::RemoveScope tree_remove_scope;
+  StyleEngine& engine = GetDocument().GetStyleEngine();
+  StyleEngine::DetachLayoutTreeScope detach_scope(engine);
 
   Node* prev = old_child.previousSibling();
   Node* next = old_child.nextSibling();
   {
-    StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
+    StyleEngine::DOMRemovalScope style_scope(engine);
     RemoveBetween(prev, next, old_child);
     NotifyNodeRemoved(old_child);
   }
@@ -859,9 +863,11 @@ void ContainerNode::RemoveChildren(SubtreeModificationAction action) {
   {
     HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
     TreeOrderedMap::RemoveScope tree_remove_scope;
+    StyleEngine& engine = GetDocument().GetStyleEngine();
+    StyleEngine::DetachLayoutTreeScope detach_scope(engine);
     {
       SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
-      StyleEngine::DOMRemovalScope style_scope(GetDocument().GetStyleEngine());
+      StyleEngine::DOMRemovalScope style_scope(engine);
       EventDispatchForbiddenScope assert_no_event_dispatch;
       ScriptForbiddenScope forbid_script;
 

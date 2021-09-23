@@ -1868,37 +1868,6 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
         *element);
   }
-
-  // Mark closest ancestor with with LayoutObject to have all whitespace
-  // children being considered for re-attachment during the layout tree build.
-
-  LayoutObject* layout_object = node.GetLayoutObject();
-  // The removed node does not have a layout object. No sibling whitespace nodes
-  // will change rendering.
-  if (!layout_object)
-    return;
-  // Floating or out-of-flow elements do not affect whitespace siblings.
-  if (!layout_object->AffectsWhitespaceSiblings())
-    return;
-  layout_object = layout_object->Parent();
-  while (layout_object->IsAnonymous())
-    layout_object = layout_object->Parent();
-  DCHECK(layout_object);
-  DCHECK(layout_object->GetNode());
-  if (auto* layout_object_element =
-          DynamicTo<Element>(layout_object->GetNode())) {
-    // Use the LayoutObject pointed to by the element. There may be multiple
-    // LayoutObjects associated with an element for continuations. The
-    // LayoutObject pointed to by the element is the one that is checked for the
-    // flag during style recalc.
-    if (layout_object->IsInline())
-      layout_object = layout_object->ContinuationRoot();
-    DCHECK_EQ(layout_object, layout_object_element->GetLayoutObject());
-    if (layout_object->WhitespaceChildrenMayChange())
-      return;
-    layout_object->SetWhitespaceChildrenMayChange(true);
-    layout_object_element->MarkAncestorsWithChildNeedsStyleRecalc();
-  }
 }
 
 void StyleEngine::ChildrenRemoved(ContainerNode& parent) {
@@ -2696,7 +2665,33 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(meta_color_scheme_);
   visitor->Trace(text_tracks_);
   visitor->Trace(vtt_originating_element_);
+  visitor->Trace(parent_for_detached_subtree_);
   FontSelectorClient::Trace(visitor);
+}
+
+void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
+  if (!parent_for_detached_subtree_)
+    return;
+  auto* layout_object = parent_for_detached_subtree_.Get();
+  if (auto* layout_object_element =
+          DynamicTo<Element>(layout_object->GetNode())) {
+    // Use the LayoutObject pointed to by the element. There may be multiple
+    // LayoutObjects associated with an element for continuations. The
+    // LayoutObject pointed to by the element is the one that is checked for the
+    // flag during style recalc.
+    if (layout_object->IsInline())
+      layout_object = layout_object->ContinuationRoot();
+    DCHECK_EQ(layout_object, layout_object_element->GetLayoutObject());
+    // Mark the parent of a detached subtree for doing a whitespace update. This
+    // flag will be cause the element to be marked for layout tree rebuild
+    // traversal during style recalc to make sure we revisit whitespace text
+    // nodes.
+    if (!layout_object->WhitespaceChildrenMayChange()) {
+      layout_object->SetWhitespaceChildrenMayChange(true);
+      layout_object_element->MarkAncestorsWithChildNeedsStyleRecalc();
+    }
+  }
+  parent_for_detached_subtree_ = nullptr;
 }
 
 }  // namespace blink
