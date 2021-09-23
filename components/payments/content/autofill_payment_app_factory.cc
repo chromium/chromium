@@ -70,9 +70,7 @@ void AutofillPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
   const std::vector<autofill::CreditCard*>& cards =
       delegate->GetPaymentRequestDelegate()
           ->GetPersonalDataManager()
-          ->GetCreditCardsToSuggest(
-              /*include_server_cards=*/base::FeatureList::IsEnabled(
-                  features::kReturnGooglePayInBasicCard));
+          ->GetCreditCardsToSuggest(/*include_server_cards=*/false);
 
   for (autofill::CreditCard* card : cards) {
     auto app = ConvertCardToPaymentAppIfSupportedNetwork(*card, delegate);

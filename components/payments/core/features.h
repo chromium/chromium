@@ -15,9 +15,6 @@ namespace features {
 // release.
 extern const base::Feature kWebPaymentsExperimentalFeatures;
 
-// Used to control whether Google Pay cards are returned for basic-card.
-extern const base::Feature kReturnGooglePayInBasicCard;
-
 #if defined(OS_IOS)
 // Used to control the support for iOS third party apps as payment methods.
 extern const base::Feature kWebPaymentsNativeApps;

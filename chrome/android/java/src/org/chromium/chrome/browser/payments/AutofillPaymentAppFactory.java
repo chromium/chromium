@@ -18,7 +18,6 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppFactoryParams;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -95,8 +94,7 @@ public class AutofillPaymentAppFactory implements PaymentAppFactoryInterface {
             if (mDelegate.getParams().hasClosed() || !mCanMakePayment) return false;
 
             List<CreditCard> cards = PersonalDataManager.getInstance().getCreditCardsToSuggest(
-                    /*includeServerCards=*/PaymentFeatureList.isEnabled(
-                            PaymentFeatureList.WEB_PAYMENTS_RETURN_GOOGLE_PAY_IN_BASIC_CARD));
+                    /*includeServerCards=*/false);
             int numberOfCards = cards.size();
             for (int i = 0; i < numberOfCards; i++) {
                 // createPaymentAppForCard(card) returns null if the card network or type does not
