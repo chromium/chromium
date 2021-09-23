@@ -153,14 +153,15 @@ export class MapperServer {
       }: Protocol.Runtime.BindingCalledEvent) => {
         // Needed to check when Mapper is launched on the frontend.
         if (name === 'sendBidiResponse') {
-          mapperCdpClient.Runtime.removeListener(
-            'bindingCalled',
-            onBindingCalled
-          );
-
           try {
             const parsed = JSON.parse(payload);
-            if (parsed.launched) resolve();
+            if (parsed.launched) {
+              mapperCdpClient.Runtime.removeListener(
+                'bindingCalled',
+                onBindingCalled
+              );
+              resolve();
+            }
           } catch (e) {
             reject(new Error('Could not parse initial bidi response as JSON'));
           }

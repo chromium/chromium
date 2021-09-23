@@ -1,0 +1,7 @@
+{
+  "extends": "../configs/tsconfig.common.json",
+  "exclude": ["scripts"],
+  "compilerOptions": {
+    "lib": ["DOM", "ESNext"]
+  }
+}

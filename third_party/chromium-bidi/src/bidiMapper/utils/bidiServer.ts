@@ -95,7 +95,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     let messageObj;
     try {
       messageObj = this._parseBidiMessage(messageStr);
-    } catch (e) {
+    } catch (e: any) {
       this._respondWithError(messageStr, 'invalid argument', e.message);
       return;
     }

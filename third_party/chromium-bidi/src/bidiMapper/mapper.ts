@@ -58,10 +58,12 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await _waitSelfTargetIdPromise;
 
+  // The command processor needs to start running before calling _prepareCdp
+  // so that it has a chance to set up event listeners for tracking targets.
+  CommandProcessor.run(cdpConnection, bidiServer, selfTargetId);
+
   // Needed to get events about new targets.
   await _prepareCdp(cdpClient);
-
-  CommandProcessor.run(cdpClient, bidiServer, selfTargetId);
 
   logSystem('launched');
 

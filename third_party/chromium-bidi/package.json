@@ -8,8 +8,10 @@
     "e2e": "npm run server-no-build & npm run e2e-only",
     "e2e-only": "python3 -m pytest --rootdir=tests",
     "server": "npm run build && npm run server-no-build --",
-    "server-no-build": "node ./src/.build/index.js",
-    "build": "npm run prettier && npm run clean && rollup --config src/bidiMapper/rollup.config.js && tsc -b src/tsconfig.json",
+    "server-no-build": "node ./src/.build/bidiServer/index.js",
+    "build": "npm run prettier && npm run clean && npm run build-mapper && npm run build-server",
+    "build-mapper": "rollup --config src/bidiMapper/rollup.config.js",
+    "build-server": "tsc -b src/tsconfig.json",
     "clean": "rimraf ./src/.build",
     "prettier": "npx prettier --write . "
   },
@@ -20,13 +22,13 @@
     "debug": "^4.3.1",
     "puppeteer": "^10.2.0",
     "ts-node": "^9.1.1",
-    "tslib": "^2.2.0",
     "websocket": "^1.0.34",
     "ws": "^7.4.5"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-typescript": "^8.2.1",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@rollup/plugin-typescript": "^8.2.5",
     "@types/argparse": "^2.0.10",
     "@types/chai": "^4.2.21",
     "@types/chai-as-promised": "^7.1.4",
@@ -44,7 +46,8 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.47.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
+    "rollup-plugin-string": "^3.0.0",
     "sinon": "^11.1.1",
-    "typescript": "^4.2.4"
+    "typescript": "^4.3.5"
   }
 }

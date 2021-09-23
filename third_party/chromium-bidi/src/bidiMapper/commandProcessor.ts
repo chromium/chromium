@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-import { CdpClient } from '../cdp';
+import { CdpClient, CdpConnection } from '../cdp';
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
 import { Context } from './domains/context/context';
 import { Protocol } from 'devtools-protocol';
 import { BidiCommandMessage, IBidiServer } from './utils/bidiServer';
 
 export class CommandProcessor {
+  private _browserCdpClient: CdpClient;
   private _contextProcessor: BrowsingContextProcessor;
 
   static run(
-    cdpClient: CdpClient,
+    cdpConnection: CdpConnection,
     bidiServer: IBidiServer,
     selfTargetId: string
   ) {
     const commandProcessor = new CommandProcessor(
-      cdpClient,
+      cdpConnection,
       bidiServer,
       selfTargetId
     );
@@ -39,12 +40,14 @@ export class CommandProcessor {
   }
 
   private constructor(
-    private _cdpClient: CdpClient,
+    private _cdpConnection: CdpConnection,
     private _bidiServer: IBidiServer,
     private _selfTargetId: string
   ) {
+    this._browserCdpClient = this._cdpConnection.browserClient();
+
     this._contextProcessor = new BrowsingContextProcessor(
-      this._cdpClient,
+      this._cdpConnection,
       this._selfTargetId,
       (t: Context) => {
         return this._onContextCreated(t);
@@ -56,13 +59,13 @@ export class CommandProcessor {
   }
 
   private run() {
-    this._cdpClient.Target.on('attachedToTarget', (params) => {
+    this._browserCdpClient.Target.on('attachedToTarget', (params) => {
       this._contextProcessor.handleAttachedToTargetEvent(params);
     });
-    this._cdpClient.Target.on('targetInfoChanged', (params) => {
+    this._browserCdpClient.Target.on('targetInfoChanged', (params) => {
       this._contextProcessor.handleInfoChangedEvent(params);
     });
-    this._cdpClient.Target.on('detachedFromTarget', (params) => {
+    this._browserCdpClient.Target.on('detachedFromTarget', (params) => {
       this._contextProcessor.handleDetachedFromTargetEvent(params);
     });
 
@@ -119,7 +122,7 @@ export class CommandProcessor {
   }
 
   private async _process_browsingContext_getTree(params: object) {
-    const { targetInfos } = await this._cdpClient.Target.getTargets();
+    const { targetInfos } = await this._browserCdpClient.Target.getTargets();
     const contexts = targetInfos
       // Don't expose any information about the tab with Mapper running.
       .filter(this._isValidTarget)
@@ -128,7 +131,9 @@ export class CommandProcessor {
   }
 
   private async _process_DEBUG_Page_close(params: { context: string }) {
-    await this._cdpClient.Target.closeTarget({ targetId: params.context });
+    await this._browserCdpClient.Target.closeTarget({
+      targetId: params.context,
+    });
     return {};
   }
 
@@ -161,6 +166,11 @@ export class CommandProcessor {
           commandData.params
         );
 
+      case 'PROTO.page.evaluate':
+        return await this._contextProcessor.process_PROTO_page_evaluate(
+          commandData.params
+        );
+
       case 'DEBUG.Page.close':
         return await this._process_DEBUG_Page_close(commandData.params as any);
 
@@ -179,7 +189,7 @@ export class CommandProcessor {
       };
 
       this._bidiServer.sendMessage(response);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       this._respondWithError(message, 'unknown error', e.message);
     }

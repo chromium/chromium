@@ -49,8 +49,10 @@ describe('CdpConnection', function () {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
-    let client = cdpConnection.sessionClient(SOME_SESSION_ID);
-    chai.assert.isNull(client);
+    chai.assert.throws(
+      () => cdpConnection.sessionClient(SOME_SESSION_ID),
+      'Unknown CDP session ID'
+    );
 
     const onMessage = mockCdpServer.getOnMessage();
     onMessage(
@@ -60,7 +62,7 @@ describe('CdpConnection', function () {
       })
     );
 
-    client = cdpConnection.sessionClient(SOME_SESSION_ID);
+    const client = cdpConnection.sessionClient(SOME_SESSION_ID);
     chai.assert.isNotNull(client);
   });
 
@@ -76,7 +78,7 @@ describe('CdpConnection', function () {
       })
     );
 
-    let cdpClient = cdpConnection.sessionClient(SOME_SESSION_ID);
+    const cdpClient = cdpConnection.sessionClient(SOME_SESSION_ID);
     chai.assert.isNotNull(cdpClient);
 
     onMessage(
@@ -86,8 +88,10 @@ describe('CdpConnection', function () {
       })
     );
 
-    cdpClient = cdpConnection.sessionClient(SOME_SESSION_ID);
-    chai.assert.isNull(cdpClient);
+    chai.assert.throws(
+      () => cdpConnection.sessionClient(SOME_SESSION_ID),
+      'Unknown CDP session ID'
+    );
   });
 
   it('routes event messages to the correct handler based on sessionId', async function () {

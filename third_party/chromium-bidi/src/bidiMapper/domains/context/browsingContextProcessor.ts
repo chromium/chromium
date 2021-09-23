@@ -16,7 +16,7 @@
  */
 
 import { log } from '../../../utils/log';
-import { CdpClient } from '../../../cdp';
+import { CdpConnection } from '../../../cdp';
 import { Context } from './context';
 import Protocol from 'devtools-protocol';
 const logContext = log('context');
@@ -26,52 +26,57 @@ export class BrowsingContextProcessor {
   private _sessionToTargets: Map<string, Context> = new Map();
 
   // Set from outside.
-  private _cdpClient: CdpClient;
+  private _cdpConnection: CdpConnection;
   private _selfTargetId: string;
 
   private _onContextCreated: (t: Context) => Promise<void>;
   private _onContextDestroyed: (t: Context) => Promise<void>;
 
   constructor(
-    cdpClient: CdpClient,
+    cdpConnection: CdpConnection,
     selfTargetId: string,
     onContextCreated: (t: Context) => Promise<void>,
     onContextDestroyed: (t: Context) => Promise<void>
   ) {
-    this._cdpClient = cdpClient;
+    this._cdpConnection = cdpConnection;
     this._selfTargetId = selfTargetId;
     this._onContextCreated = onContextCreated;
     this._onContextDestroyed = onContextDestroyed;
   }
 
-  private _getOrCreateContext(contextId: string): Context {
-    if (!this._isKnownContext(contextId)) {
-      this._contexts.set(contextId, new Context(contextId));
+  private _getOrCreateContext(
+    contextId: string,
+    cdpSessionId: string
+  ): Context {
+    let context = this._contexts.get(contextId);
+    if (!context) {
+      const sessionCdpClient = this._cdpConnection.sessionClient(cdpSessionId);
+      context = Context.create(contextId, sessionCdpClient);
+      this._contexts.set(contextId, context);
     }
-    return this._getContext(contextId);
+    return context;
   }
 
-  private _getContext(contextId: string): Context {
+  private _tryGetContext(contextId: string): Context | undefined {
+    return this._contexts.get(contextId);
+  }
+
+  private _getKnownContext(contextId: string): Context {
     const context = this._contexts.get(contextId);
     if (!context) throw new Error('context not found');
     return context;
   }
 
-  private _isKnownContext(contextId: string): boolean {
-    return this._contexts.has(contextId);
-  }
-
   handleAttachedToTargetEvent(params: Protocol.Target.AttachedToTargetEvent) {
     logContext('AttachedToTarget event received', params);
 
-    const targetInfo = params.targetInfo;
+    const { sessionId, targetInfo } = params;
     if (!this._isValidTarget(targetInfo)) return;
 
-    const context = this._getOrCreateContext(targetInfo.targetId);
+    const context = this._getOrCreateContext(targetInfo.targetId, sessionId);
     context._updateTargetInfo(targetInfo);
 
-    const sessionId = params.sessionId;
-    if (sessionId) this._sessionToTargets.delete(sessionId);
+    this._sessionToTargets.delete(sessionId);
 
     this._sessionToTargets.set(sessionId, context);
 
@@ -81,42 +86,74 @@ export class BrowsingContextProcessor {
   }
 
   handleInfoChangedEvent(params: Protocol.Target.TargetInfoChangedEvent) {
-    logContext('infoChangedEvent event recevied', params);
+    logContext('infoChangedEvent event received', params);
 
     const targetInfo = params.targetInfo;
     if (!this._isValidTarget(targetInfo)) return;
 
-    const context = this._getOrCreateContext(targetInfo.targetId);
-    context._onInfoChangedEvent(targetInfo);
+    const context = this._tryGetContext(targetInfo.targetId);
+    if (context) {
+      context._onInfoChangedEvent(targetInfo);
+    }
   }
 
   // { "method": "Target.detachedFromTarget", "params": { "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9", "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  async handleDetachedFromTargetEvent(
+  handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
-    logContext('detachedFromTarget event recevied', params);
+    logContext('detachedFromTarget event received', params);
 
+    // TODO: params.targetId is deprecated. Update this class to track using params.sessionId instead.
     const targetId = params.targetId!;
-    if (!this._isKnownContext(targetId)) return;
+    const context = this._tryGetContext(targetId);
+    if (context) {
+      this._onContextDestroyed(context);
 
-    const context = this._getOrCreateContext(targetId);
-    this._onContextDestroyed(context);
+      if (context._sessionId) this._sessionToTargets.delete(context._sessionId);
 
-    if (context._sessionId) this._sessionToTargets.delete(context._sessionId);
-
-    this._contexts.delete(context.id);
+      this._contexts.delete(context.id);
+    }
   }
 
   async process_createContext(params: any): Promise<any> {
-    const { targetId } = await this._cdpClient.Target.createTarget({
-      url: params.url,
+    return new Promise(async (resolve) => {
+      let targetId: string;
+
+      const onAttachedToTarget = async (
+        params: Protocol.Target.AttachedToTargetEvent
+      ) => {
+        if (params.targetInfo.targetId === targetId) {
+          browserCdpClient.Target.removeListener(
+            'attachedToTarget',
+            onAttachedToTarget
+          );
+
+          const context = await this._getOrCreateContext(
+            targetId,
+            params.sessionId
+          );
+          resolve(context.toBidi());
+        }
+      };
+
+      const browserCdpClient = this._cdpConnection.browserClient();
+      browserCdpClient.Target.on('attachedToTarget', onAttachedToTarget);
+
+      const result = await browserCdpClient.Target.createTarget({
+        url: params.url,
+      });
+      targetId = result.targetId;
     });
-    return this._getOrCreateContext(targetId).toBidi();
   }
 
-  _isValidTarget = (target: Protocol.Target.TargetInfo) => {
+  async process_PROTO_page_evaluate(params: any) {
+    const context = this._getKnownContext(params.context);
+    return context.evaluateScript(params.function, params.args || []);
+  }
+
+  _isValidTarget(target: Protocol.Target.TargetInfo) {
     if (target.targetId === this._selfTargetId) return false;
     if (!target.type || target.type !== 'page') return false;
     return true;
-  };
+  }
 }

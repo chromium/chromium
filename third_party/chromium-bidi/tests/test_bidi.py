@@ -762,11 +762,11 @@ async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     assert resp["id"] == 9997
 
     # Compare ignoring `objectId`.
-    recursiveCompare(expectedSerialisedObject, resp["result"], ["objectId"])
+    recursiveCompare(expectedSerialisedObject, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_undefined(websocket):
+async def test_serialisation_undefined(websocket):
     await assertSerialisation(
         "undefined",
         {"type":"undefined"},
@@ -775,7 +775,7 @@ async def _ignore_test_serialisation_undefined(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_null(websocket):
+async def test_serialisation_null(websocket):
     await assertSerialisation(
         "null",
         {"type":"null"},
@@ -784,7 +784,7 @@ async def _ignore_test_serialisation_null(websocket):
 # TODO: test escaping, null bytes string, lone surrogates.
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_string(websocket):
+async def test_serialisation_string(websocket):
     await assertSerialisation(
         "'someStr'",
         {
@@ -794,7 +794,7 @@ async def _ignore_test_serialisation_string(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_number(websocket):
+async def test_serialisation_number(websocket):
     await assertSerialisation(
         "123",
         {
@@ -810,7 +810,7 @@ async def _ignore_test_serialisation_number(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_specialNumber(websocket):
+async def test_serialisation_specialNumber(websocket):
     await assertSerialisation(
         "+Infinity",
         {
@@ -838,7 +838,7 @@ async def _ignore_test_serialisation_specialNumber(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_bool(websocket):
+async def test_serialisation_bool(websocket):
     await assertSerialisation(
         "true",
         {

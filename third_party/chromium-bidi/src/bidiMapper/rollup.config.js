@@ -18,19 +18,23 @@
 import typescript from '@rollup/plugin-typescript';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import json from '@rollup/plugin-json';
+import { string } from 'rollup-plugin-string';
 
 export default {
   input: 'src/bidiMapper/mapper.ts',
   output: {
-    file: 'src/.build/mapper.js',
+    file: 'src/.build/bidiMapper/mapper.js',
     sourcemap: true,
     format: 'iife',
   },
   plugins: [
     json(),
     nodePolyfills(),
+    string({
+      include: 'src/bidiMapper/scripts/*.es',
+    }),
     typescript({
-      tsconfig: 'src/tsconfig.json',
+      tsconfig: 'src/bidiMapper/tsconfig.json',
     }),
   ],
 };
