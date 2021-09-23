@@ -919,6 +919,9 @@
     'devtools': {
       'filepath': 'devtools',
     },
+    'diagnostics_mojo': {
+      'filepath': 'chromeos/services/cros_healthd/public/mojom/',
+    },
     'diagnostics_ui': {
       'filepath': 'ash/webui/diagnostics_ui/',
     },
@@ -2464,6 +2467,10 @@
                        'mattreynolds+watch@chromium.org',
                        'odejesush+watch@chromium.org'],
     'devtools': ['devtools-reviews@chromium.org'],
+    'diagnostics_mojo': ['ashleydp+watch-diagnostics_mojo@google.com',
+                         'gavindodd+watch-diagnostics_mojo@google.com',
+                         'michaelcheco+watch-diagnostics_mojo@google.com',
+                         'zentaro+watch-diagnostics_mojo@chromium.org'],
     'diagnostics_ui': ['gavinwill+diagnostics-watch@chromium.org',
                        'michaelcheco+diagnostics-watch@google.com',
                        'zentaro+diagnostics-watch@chromium.org',
