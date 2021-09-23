@@ -115,6 +115,10 @@ class PPAPI_PROXY_EXPORT SerializedVar {
    public:
     Inner();
     Inner(VarSerializationRules* serialization_rules);
+
+    Inner(const Inner&) = delete;
+    Inner& operator=(const Inner&) = delete;
+
     ~Inner();
 
     VarSerializationRules* serialization_rules() {
@@ -199,8 +203,6 @@ class PPAPI_PROXY_EXPORT SerializedVar {
     // (e.g. PP_VARTYPE_STRING). The data is stored in |raw_var_data_| and the
     // PP_Var is constructed when |GetVar()| is called.
     std::unique_ptr<RawVarDataGraph> raw_var_data_;
-
-    DISALLOW_COPY_AND_ASSIGN(Inner);
   };
 
   SerializedVar(VarSerializationRules* serialization_rules);

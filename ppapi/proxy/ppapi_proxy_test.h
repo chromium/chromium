@@ -127,6 +127,10 @@ class PluginProxyTestHarness : public ProxyTestHarnessBase {
                              public PluginProxyDelegate {
    public:
     PluginDelegateMock() : ipc_task_runner_(NULL), shutdown_event_() {}
+
+    PluginDelegateMock(const PluginDelegateMock&) = delete;
+    PluginDelegateMock& operator=(const PluginDelegateMock&) = delete;
+
     ~PluginDelegateMock() override {}
 
     void Init(base::SingleThreadTaskRunner* ipc_task_runner,
@@ -173,8 +177,6 @@ class PluginProxyTestHarness : public ProxyTestHarnessBase {
     base::WaitableEvent* shutdown_event_;  // Weak
     std::set<PP_Instance> instance_id_set_;
     IPC::Sender* browser_sender_;
-
-    DISALLOW_COPY_AND_ASSIGN(PluginDelegateMock);
   };
 
  private:
@@ -276,6 +278,10 @@ class HostProxyTestHarness : public ProxyTestHarnessBase {
   class DelegateMock : public ProxyChannel::Delegate {
    public:
     DelegateMock() : ipc_task_runner_(NULL), shutdown_event_(NULL) {}
+
+    DelegateMock(const DelegateMock&) = delete;
+    DelegateMock& operator=(const DelegateMock&) = delete;
+
     ~DelegateMock() override {}
 
     void Init(base::SingleThreadTaskRunner* ipc_task_runner,
@@ -301,8 +307,6 @@ class HostProxyTestHarness : public ProxyTestHarnessBase {
    private:
     base::SingleThreadTaskRunner* ipc_task_runner_;  // Weak
     base::WaitableEvent* shutdown_event_;  // Weak
-
-    DISALLOW_COPY_AND_ASSIGN(DelegateMock);
   };
 
  private:

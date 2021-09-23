@@ -59,6 +59,10 @@ class TestGlobals : public PpapiGlobals {
  public:
   TestGlobals();
   explicit TestGlobals(PpapiGlobals::PerThreadForTest);
+
+  TestGlobals(const TestGlobals&) = delete;
+  TestGlobals& operator=(const TestGlobals&) = delete;
+
   ~TestGlobals() override;
 
   // PpapiGlobals implementation.
@@ -87,8 +91,6 @@ class TestGlobals : public PpapiGlobals {
   ResourceTracker resource_tracker_;
   TestVarTracker var_tracker_;
   scoped_refptr<CallbackTracker> callback_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGlobals);
 };
 
 }  // namespace ppapi

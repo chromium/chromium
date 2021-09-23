@@ -40,6 +40,10 @@ class PPAPI_PROXY_EXPORT Graphics3D : public PPB_Graphics3D_Shared {
   Graphics3D(const HostResource& resource,
              const gfx::Size& size,
              const bool single_buffer);
+
+  Graphics3D(const Graphics3D&) = delete;
+  Graphics3D& operator=(const Graphics3D&) = delete;
+
   ~Graphics3D() override;
 
   bool Init(gpu::gles2::GLES2Implementation* share_gles2,
@@ -73,13 +77,15 @@ class PPAPI_PROXY_EXPORT Graphics3D : public PPB_Graphics3D_Shared {
 
   uint64_t swap_id_ = 0;
   bool single_buffer = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Graphics3D);
 };
 
 class PPB_Graphics3D_Proxy : public InterfaceProxy {
  public:
   explicit PPB_Graphics3D_Proxy(Dispatcher* dispatcher);
+
+  PPB_Graphics3D_Proxy(const PPB_Graphics3D_Proxy&) = delete;
+  PPB_Graphics3D_Proxy& operator=(const PPB_Graphics3D_Proxy&) = delete;
+
   ~PPB_Graphics3D_Proxy();
 
   static PP_Resource CreateProxyResource(
@@ -132,8 +138,6 @@ class PPB_Graphics3D_Proxy : public InterfaceProxy {
                                   const HostResource& context);
 
   ProxyCompletionCallbackFactory<PPB_Graphics3D_Proxy> callback_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_Graphics3D_Proxy);
 };
 
 }  // namespace proxy

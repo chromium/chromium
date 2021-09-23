@@ -51,6 +51,9 @@ class PPAPI_SHARED_EXPORT MediaStreamBufferManager {
   // it alive during the MediaStreamBufferManager's lifecycle.
   explicit MediaStreamBufferManager(Delegate* delegate);
 
+  MediaStreamBufferManager(const MediaStreamBufferManager&) = delete;
+  MediaStreamBufferManager& operator=(const MediaStreamBufferManager&) = delete;
+
   ~MediaStreamBufferManager();
 
   int32_t number_of_buffers() const { return number_of_buffers_; }
@@ -100,8 +103,6 @@ class PPAPI_SHARED_EXPORT MediaStreamBufferManager {
   // mapping.
   base::UnsafeSharedMemoryRegion region_;
   base::WritableSharedMemoryMapping mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamBufferManager);
 };
 
 }  // namespace ppapi

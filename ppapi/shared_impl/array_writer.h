@@ -29,6 +29,10 @@ class PPAPI_SHARED_EXPORT ArrayWriter {
  public:
   ArrayWriter();  // Creates an is_null() object
   ArrayWriter(const PP_ArrayOutput& output);
+
+  ArrayWriter(const ArrayWriter&) = delete;
+  ArrayWriter& operator=(const ArrayWriter&) = delete;
+
   ~ArrayWriter();
 
   bool is_valid() const { return !!pp_array_output_.GetDataBuffer; }
@@ -112,8 +116,6 @@ class PPAPI_SHARED_EXPORT ArrayWriter {
 
  private:
   PP_ArrayOutput pp_array_output_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArrayWriter);
 };
 
 }  // namespace ppapi

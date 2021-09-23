@@ -26,6 +26,10 @@ class PPAPI_PROXY_EXPORT CameraDeviceResource
       public thunk::PPB_CameraDevice_API {
  public:
   CameraDeviceResource(Connection connection, PP_Instance instance);
+
+  CameraDeviceResource(const CameraDeviceResource&) = delete;
+  CameraDeviceResource& operator=(const CameraDeviceResource&) = delete;
+
   ~CameraDeviceResource() override;
 
   // Resource overrides:
@@ -59,8 +63,6 @@ class PPAPI_PROXY_EXPORT CameraDeviceResource
 
   scoped_refptr<TrackedCallback> get_capabilities_callback_;
   scoped_refptr<CameraCapabilitiesResource> camera_capabilities_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraDeviceResource);
 };
 
 }  // namespace proxy

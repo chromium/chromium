@@ -19,6 +19,10 @@ class PPAPI_SHARED_EXPORT VpnProviderSharedBuffer {
                           uint32_t packet_size,
                           base::UnsafeSharedMemoryRegion shm,
                           base::WritableSharedMemoryMapping mapping);
+
+  VpnProviderSharedBuffer(const VpnProviderSharedBuffer&) = delete;
+  VpnProviderSharedBuffer& operator=(const VpnProviderSharedBuffer&) = delete;
+
   ~VpnProviderSharedBuffer();
 
   bool GetAvailable(uint32_t* id);
@@ -33,8 +37,6 @@ class PPAPI_SHARED_EXPORT VpnProviderSharedBuffer {
   base::UnsafeSharedMemoryRegion shm_;
   base::WritableSharedMemoryMapping shm_mapping_;
   std::vector<bool> available_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnProviderSharedBuffer);
 };
 
 }  // namespace ppapi

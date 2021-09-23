@@ -223,6 +223,10 @@ void ImageDataInstanceCache::IncrementInsertionPoint() {
 class ImageDataCache {
  public:
   ImageDataCache() {}
+
+  ImageDataCache(const ImageDataCache&) = delete;
+  ImageDataCache& operator=(const ImageDataCache&) = delete;
+
   ~ImageDataCache() {}
 
   static ImageDataCache* GetInstance();
@@ -257,8 +261,6 @@ class ImageDataCache {
   // this will never happen and this factory is unnecessary. However, it's
   // probably better not to make assumptions about the lifetime of this class.
   base::WeakPtrFactory<ImageDataCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataCache);
 };
 
 // static

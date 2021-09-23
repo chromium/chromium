@@ -184,6 +184,10 @@ class EnterResource
       : EnterBase(resource, callback) {
     Init(resource, report_error);
   }
+
+  EnterResource(const EnterResource&) = delete;
+  EnterResource& operator=(const EnterResource&) = delete;
+
   ~EnterResource() {}
 
   ResourceT* object() { return object_; }
@@ -201,8 +205,6 @@ class EnterResource
   }
 
   ResourceT* object_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterResource);
 };
 
 // ----------------------------------------------------------------------------

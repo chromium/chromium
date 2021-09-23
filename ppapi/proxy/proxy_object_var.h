@@ -25,6 +25,9 @@ class PPAPI_PROXY_EXPORT ProxyObjectVar : public Var {
  public:
   ProxyObjectVar(proxy::PluginDispatcher* dispatcher, int32_t host_var_id);
 
+  ProxyObjectVar(const ProxyObjectVar&) = delete;
+  ProxyObjectVar& operator=(const ProxyObjectVar&) = delete;
+
   ~ProxyObjectVar() override;
 
   // Var overrides.
@@ -51,8 +54,6 @@ class PPAPI_PROXY_EXPORT ProxyObjectVar : public Var {
   // plugin, this stores the user data so that we can look it up later. See
   // PluginVarTracker.
   void* user_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyObjectVar);
 };
 
 }  // namespace ppapi

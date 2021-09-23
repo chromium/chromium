@@ -22,6 +22,10 @@ namespace proxy {
 class PPAPI_PROXY_EXPORT InterfaceList {
  public:
   InterfaceList();
+
+  InterfaceList(const InterfaceList&) = delete;
+  InterfaceList& operator=(const InterfaceList&) = delete;
+
   ~InterfaceList();
 
   static InterfaceList* GetInstance();
@@ -102,12 +106,9 @@ class PPAPI_PROXY_EXPORT InterfaceList {
   NameToInterfaceInfoMap name_to_plugin_info_;
 
   InterfaceProxy::Factory id_to_factory_[API_ID_COUNT];
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceList);
 };
 
 }  // namespace proxy
 }  // namespace ppapi
 
 #endif  // PPAPI_PROXY_INTERFACE_LIST_H_
-

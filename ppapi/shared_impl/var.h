@@ -104,6 +104,10 @@ class PPAPI_SHARED_EXPORT StringVar : public Var {
  public:
   explicit StringVar(const std::string& str);
   StringVar(const char* str, uint32_t len);
+
+  StringVar(const StringVar&) = delete;
+  StringVar& operator=(const StringVar&) = delete;
+
   ~StringVar() override;
 
   const std::string& value() const { return value_; }
@@ -140,8 +144,6 @@ class PPAPI_SHARED_EXPORT StringVar : public Var {
   StringVar();  // Makes an empty string.
 
   std::string value_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringVar);
 };
 
 // ArrayBufferVar --------------------------------------------------------------
@@ -161,6 +163,10 @@ class PPAPI_SHARED_EXPORT StringVar : public Var {
 class PPAPI_SHARED_EXPORT ArrayBufferVar : public Var {
  public:
   ArrayBufferVar();
+
+  ArrayBufferVar(const ArrayBufferVar&) = delete;
+  ArrayBufferVar& operator=(const ArrayBufferVar&) = delete;
+
   ~ArrayBufferVar() override;
 
   virtual void* Map() = 0;
@@ -186,9 +192,6 @@ class PPAPI_SHARED_EXPORT ArrayBufferVar : public Var {
   // Helper function that converts a PP_Var to an ArrayBufferVar. This will
   // return NULL if the PP_Var is not of ArrayBuffer type.
   static ArrayBufferVar* FromPPVar(PP_Var var);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArrayBufferVar);
 };
 
 }  // namespace ppapi

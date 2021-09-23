@@ -33,6 +33,10 @@ class PPAPI_PROXY_EXPORT FileIOResource
       public thunk::PPB_FileIO_API {
  public:
   FileIOResource(Connection connection, PP_Instance instance);
+
+  FileIOResource(const FileIOResource&) = delete;
+  FileIOResource& operator=(const FileIOResource&) = delete;
+
   ~FileIOResource() override;
 
   // Resource overrides.
@@ -227,8 +231,6 @@ class PPAPI_PROXY_EXPORT FileIOResource
   int64_t append_mode_write_amount_;
   bool check_quota_;
   bool called_close_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIOResource);
 };
 
 }  // namespace proxy

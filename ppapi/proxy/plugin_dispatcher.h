@@ -115,6 +115,10 @@ class PPAPI_PROXY_EXPORT PluginDispatcher
    public:
     Sender(base::WeakPtr<PluginDispatcher> plugin_dispatcher,
            scoped_refptr<IPC::SyncMessageFilter> sync_filter);
+
+    Sender(const Sender&) = delete;
+    Sender& operator=(const Sender&) = delete;
+
     ~Sender() override;
 
     bool SendMessage(IPC::Message* msg);
@@ -125,8 +129,6 @@ class PPAPI_PROXY_EXPORT PluginDispatcher
    private:
     base::WeakPtr<PluginDispatcher> plugin_dispatcher_;
     scoped_refptr<IPC::SyncMessageFilter> sync_filter_;
-
-    DISALLOW_COPY_AND_ASSIGN(Sender);
   };
 
   // Constructor for the plugin side. The init and shutdown functions will be

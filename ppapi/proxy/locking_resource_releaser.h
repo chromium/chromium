@@ -23,6 +23,10 @@ class LockingResourceReleaser {
   explicit LockingResourceReleaser(PP_Resource resource)
       : resource_(resource) {
   }
+
+  LockingResourceReleaser(const LockingResourceReleaser&) = delete;
+  LockingResourceReleaser& operator=(const LockingResourceReleaser&) = delete;
+
   ~LockingResourceReleaser() {
     ProxyAutoLock lock;
     PpapiGlobals::Get()->GetResourceTracker()->ReleaseResource(resource_);
@@ -32,8 +36,6 @@ class LockingResourceReleaser {
 
  private:
   PP_Resource resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockingResourceReleaser);
 };
 
 }  // namespace proxy

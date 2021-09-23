@@ -46,6 +46,9 @@ class PPAPI_PROXY_EXPORT ImageData : public ppapi::Resource,
                                      public ppapi::thunk::PPB_ImageData_API,
                                      public ppapi::PPB_ImageData_Shared {
  public:
+  ImageData(const ImageData&) = delete;
+  ImageData& operator=(const ImageData&) = delete;
+
   ~ImageData() override;
 
   // Resource overrides.
@@ -76,8 +79,6 @@ class PPAPI_PROXY_EXPORT ImageData : public ppapi::Resource,
 
   // Set to true when this ImageData is a good candidate for reuse.
   bool is_candidate_for_reuse_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageData);
 };
 
 // PlatformImageData is a full featured image data resource which can access
@@ -89,6 +90,10 @@ class PPAPI_PROXY_EXPORT PlatformImageData : public ImageData {
   PlatformImageData(const ppapi::HostResource& resource,
                     const PP_ImageDataDesc& desc,
                     base::UnsafeSharedMemoryRegion image_region);
+
+  PlatformImageData(const PlatformImageData&) = delete;
+  PlatformImageData& operator=(const PlatformImageData&) = delete;
+
   ~PlatformImageData() override;
 
   // PPB_ImageData API.
@@ -101,8 +106,6 @@ class PPAPI_PROXY_EXPORT PlatformImageData : public ImageData {
 
   // Null when the image isn't mapped.
   std::unique_ptr<SkCanvas> mapped_canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformImageData);
 };
 #endif  // !defined(OS_NACL)
 
@@ -114,6 +117,10 @@ class PPAPI_PROXY_EXPORT SimpleImageData : public ImageData {
   SimpleImageData(const ppapi::HostResource& resource,
                   const PP_ImageDataDesc& desc,
                   base::UnsafeSharedMemoryRegion region);
+
+  SimpleImageData(const SimpleImageData&) = delete;
+  SimpleImageData& operator=(const SimpleImageData&) = delete;
+
   ~SimpleImageData() override;
 
   // PPB_ImageData API.
@@ -126,13 +133,15 @@ class PPAPI_PROXY_EXPORT SimpleImageData : public ImageData {
   base::WritableSharedMemoryMapping shm_mapping_;
   uint32_t size_;
   int map_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleImageData);
 };
 
 class PPB_ImageData_Proxy : public InterfaceProxy {
  public:
   PPB_ImageData_Proxy(Dispatcher* dispatcher);
+
+  PPB_ImageData_Proxy(const PPB_ImageData_Proxy&) = delete;
+  PPB_ImageData_Proxy& operator=(const PPB_ImageData_Proxy&) = delete;
+
   ~PPB_ImageData_Proxy() override;
 
   static PP_Resource CreateProxyResource(
@@ -186,8 +195,6 @@ class PPB_ImageData_Proxy : public InterfaceProxy {
 
   // Host->Plugin message handlers.
   void OnPluginMsgNotifyUnusedImageData(const HostResource& old_image_data);
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_ImageData_Proxy);
 };
 
 }  // namespace proxy

@@ -20,6 +20,10 @@ class PpapiHost;
 class PPAPI_HOST_EXPORT InstanceMessageFilter {
  public:
   explicit InstanceMessageFilter(PpapiHost* host);
+
+  InstanceMessageFilter(const InstanceMessageFilter&) = delete;
+  InstanceMessageFilter& operator=(const InstanceMessageFilter&) = delete;
+
   virtual ~InstanceMessageFilter();
 
   // Processes an instance message from the plugin process. Returns true if the
@@ -31,8 +35,6 @@ class PPAPI_HOST_EXPORT InstanceMessageFilter {
 
  private:
   PpapiHost* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceMessageFilter);
 };
 
 }  // namespace host

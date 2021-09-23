@@ -37,6 +37,9 @@ class PluginGlobals::BrowserSender : public IPC::Sender {
       : underlying_sender_(underlying_sender) {
   }
 
+  BrowserSender(const BrowserSender&) = delete;
+  BrowserSender& operator=(const BrowserSender&) = delete;
+
   ~BrowserSender() override {}
 
   // IPC::Sender implementation.
@@ -53,8 +56,6 @@ class PluginGlobals::BrowserSender : public IPC::Sender {
  private:
   // Non-owning pointer.
   IPC::Sender* underlying_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSender);
 };
 
 PluginGlobals* PluginGlobals::plugin_globals_ = NULL;

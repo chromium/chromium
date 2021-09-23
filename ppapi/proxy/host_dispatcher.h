@@ -165,12 +165,14 @@ class PPAPI_PROXY_EXPORT HostDispatcher : public Dispatcher {
 class ScopedModuleReference {
  public:
   explicit ScopedModuleReference(Dispatcher* dispatcher);
+
+  ScopedModuleReference(const ScopedModuleReference&) = delete;
+  ScopedModuleReference& operator=(const ScopedModuleReference&) = delete;
+
   ~ScopedModuleReference();
 
  private:
   HostDispatcher* dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedModuleReference);
 };
 
 }  // namespace proxy

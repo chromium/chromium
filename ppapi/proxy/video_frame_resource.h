@@ -24,6 +24,9 @@ class PPAPI_PROXY_EXPORT VideoFrameResource : public Resource,
                      int32_t index,
                      MediaStreamBuffer* buffer);
 
+  VideoFrameResource(const VideoFrameResource&) = delete;
+  VideoFrameResource& operator=(const VideoFrameResource&) = delete;
+
   ~VideoFrameResource() override;
 
   // PluginResource overrides:
@@ -44,8 +47,6 @@ class PPAPI_PROXY_EXPORT VideoFrameResource : public Resource,
   int32_t index_;
 
   MediaStreamBuffer* buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameResource);
 };
 
 }  // namespace proxy

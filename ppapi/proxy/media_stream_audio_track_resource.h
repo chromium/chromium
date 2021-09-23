@@ -30,6 +30,10 @@ class PPAPI_PROXY_EXPORT MediaStreamAudioTrackResource
                                 int pending_renderer_id,
                                 const std::string& id);
 
+  MediaStreamAudioTrackResource(const MediaStreamAudioTrackResource&) = delete;
+  MediaStreamAudioTrackResource& operator=(
+      const MediaStreamAudioTrackResource&) = delete;
+
   ~MediaStreamAudioTrackResource() override;
 
   // Resource overrides:
@@ -68,8 +72,6 @@ class PPAPI_PROXY_EXPORT MediaStreamAudioTrackResource
   scoped_refptr<TrackedCallback> configure_callback_;
 
   scoped_refptr<TrackedCallback> get_buffer_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamAudioTrackResource);
 };
 
 }  // namespace proxy

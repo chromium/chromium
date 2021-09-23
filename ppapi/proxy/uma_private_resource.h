@@ -22,6 +22,10 @@ class PPAPI_PROXY_EXPORT UMAPrivateResource
       public thunk::PPB_UMA_Singleton_API {
  public:
   UMAPrivateResource(Connection connection, PP_Instance instance);
+
+  UMAPrivateResource(const UMAPrivateResource&) = delete;
+  UMAPrivateResource& operator=(const UMAPrivateResource&) = delete;
+
   ~UMAPrivateResource() override;
 
   // Resource overrides.
@@ -55,8 +59,6 @@ class PPAPI_PROXY_EXPORT UMAPrivateResource
   void OnPluginMsgIsCrashReportingEnabled(
       const ResourceMessageReplyParams& params);
   scoped_refptr<TrackedCallback> pending_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UMAPrivateResource);
 };
 
 }  // namespace proxy

@@ -44,6 +44,10 @@ class PPAPI_HOST_EXPORT PpapiHost : public IPC::Sender, public IPC::Listener {
   // (AddHostFactoryFilter) and instance messages (AddInstanceMessageFilter)
   // after construction.
   PpapiHost(IPC::Sender* sender, const PpapiPermissions& perms);
+
+  PpapiHost(const PpapiHost&) = delete;
+  PpapiHost& operator=(const PpapiHost&) = delete;
+
   ~PpapiHost() override;
 
   const PpapiPermissions& permissions() const { return permissions_; }
@@ -140,8 +144,6 @@ class PPAPI_HOST_EXPORT PpapiHost : public IPC::Sender, public IPC::Listener {
   typedef std::map<int, std::unique_ptr<ResourceHost>> PendingHostResourceMap;
   PendingHostResourceMap pending_resource_hosts_;
   int next_pending_resource_host_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiHost);
 };
 
 }  // namespace host

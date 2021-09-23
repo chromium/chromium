@@ -31,6 +31,10 @@ class PPAPI_PROXY_EXPORT MessageLoopResource : public MessageLoopShared {
   // Construct the one MessageLoopResource for the main thread. This must be
   // invoked on the main thread.
   explicit MessageLoopResource(ForMainThread);
+
+  MessageLoopResource(const MessageLoopResource&) = delete;
+  MessageLoopResource& operator=(const MessageLoopResource&) = delete;
+
   ~MessageLoopResource() override;
 
   // Resource overrides.
@@ -113,19 +117,18 @@ class PPAPI_PROXY_EXPORT MessageLoopResource : public MessageLoopShared {
   // created (when it's associated with a thread), we keep tasks posted here
   // until that happens. Once the loop_ is created, this is unused.
   std::vector<TaskInfo> pending_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopResource);
 };
 
 class PPB_MessageLoop_Proxy : public InterfaceProxy {
  public:
   explicit PPB_MessageLoop_Proxy(Dispatcher* dispatcher);
+
+  PPB_MessageLoop_Proxy(const PPB_MessageLoop_Proxy&) = delete;
+  PPB_MessageLoop_Proxy& operator=(const PPB_MessageLoop_Proxy&) = delete;
+
   ~PPB_MessageLoop_Proxy() override;
 
   static const PPB_MessageLoop_1_0* GetInterface();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PPB_MessageLoop_Proxy);
 };
 
 }  // namespace proxy

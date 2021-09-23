@@ -22,6 +22,11 @@ class PPAPI_PROXY_EXPORT HostResolverPrivateResource
  public:
   HostResolverPrivateResource(Connection connection,
                               PP_Instance instance);
+
+  HostResolverPrivateResource(const HostResolverPrivateResource&) = delete;
+  HostResolverPrivateResource& operator=(const HostResolverPrivateResource&) =
+      delete;
+
   ~HostResolverPrivateResource() override;
 
   // PluginResource overrides.
@@ -36,9 +41,6 @@ class PPAPI_PROXY_EXPORT HostResolverPrivateResource
   PP_Var GetCanonicalName() override;
   uint32_t GetSize() override;
   bool GetNetAddress(uint32_t index, PP_NetAddress_Private* address) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostResolverPrivateResource);
 };
 
 }  // namespace proxy
