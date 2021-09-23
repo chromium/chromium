@@ -195,6 +195,29 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceLoginLogout) {
   EXPECT_TRUE(report_device_login_logout_bool);
 }
 
+TEST_F(DevicePolicyDecoderTest, EnableDeviceGranularReporting) {
+  PolicyBundle bundle;
+  PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
+
+  base::WeakPtr<ExternalDataManager> external_data_manager;
+
+  em::ChromeDeviceSettingsProto device_policy;
+  device_policy.mutable_device_reporting()->set_enable_granular_reporting(true);
+
+  DecodeDevicePolicy(device_policy, external_data_manager, &policies);
+
+  const base::Value* enable_granular_reporting_value =
+      policies.GetValue(key::kEnableDeviceGranularReporting);
+  ASSERT_NE(enable_granular_reporting_value, nullptr);
+  ASSERT_TRUE(enable_granular_reporting_value->is_bool());
+
+  bool enable_granular_reporting_bool = false;
+  enable_granular_reporting_value->GetAsBoolean(
+      &enable_granular_reporting_bool);
+
+  EXPECT_TRUE(enable_granular_reporting_bool);
+}
+
 TEST_F(DevicePolicyDecoderTest, ReportDeviceAudioStatus) {
   PolicyBundle bundle;
   PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));

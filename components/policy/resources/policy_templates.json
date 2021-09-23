@@ -939,6 +939,7 @@
       'caption': '''User and device reporting''',
       'desc': '''Controls what kind of user and device information is reported.''',
       'policies': [
+        'EnableDeviceGranularReporting',
         'ReportDeviceVersionInfo',
         'ReportDeviceBootMode',
         'ReportDeviceUsers',
@@ -10063,6 +10064,36 @@
       If this policy is set to 'RemoveLRUIfDormant', the automatic clean-up will keep removing users who have not logged in for at least 3 months in least-recently-logged-in order until there is enough free space.
 
       If this policy is not set, automatic clean-up uses the default built-in strategy. Currently, it is the 'RemoveLRUIfDormant' strategy.'''
+    },
+    {
+      'name': 'EnableDeviceGranularReporting',
+      'owners': ['cros-reporting-team@google.com', 'tylergarrett@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:96-'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow granular reporting controls',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow granular reporting controls',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 901,
+      'caption': '''Enable granular reporting controls''',
+      'tags': ['admin-sharing'],
+      'desc': '''Setting the policy to enabled or leaving it unset allows for the device to recieve granular reporting controls.
+      Setting the policy to Disabled means enrolled devices won't receive granular reporting controls.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
       'name': 'ReportDeviceVersionInfo',
@@ -28257,6 +28288,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'AttestationForContentProtectionEnabled': 'attestation_settings.content_protection_enabled',
     'SystemTimezone': 'system_timezone.timezone',
     'SystemTimezoneAutomaticDetection': 'system_timezone.timezone_detection_type',
+    'EnableDeviceGranularReporting': 'device_reporting.enable_granular_reporting',
     'ReportDeviceActivityTimes': 'device_reporting.report_activity_times',
     'ReportDeviceAudioStatus': 'device_reporting.report_audio_status',
     'ReportDeviceBootMode': 'device_reporting.report_boot_mode',
@@ -28718,6 +28750,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
       'name': 'UserAndDeviceReporting',
       'caption': '''User and device reporting''',
       'policies': [
+        'EnableDeviceGranularReporting',
         'ReportDeviceVersionInfo',
         'ReportDeviceBootMode',
         'ReportDeviceUsers',
@@ -28850,6 +28883,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 900,
+  'highest_id_currently_used': 901,
   'highest_atomic_group_id_currently_used': 41
 }

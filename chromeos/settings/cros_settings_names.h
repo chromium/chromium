@@ -82,6 +82,8 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceChannelDowngradeBehavior[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kEnableDeviceGranularReporting[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceVersionInfo[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceActivityTimes[];
@@ -381,6 +383,7 @@ using ::chromeos::kDeviceWebBasedAttestationAllowedUrls;
 using ::chromeos::kDeviceWiFiAllowed;
 using ::chromeos::kDeviceWilcoDtcAllowed;
 using ::chromeos::kDisplayRotationDefault;
+using ::chromeos::kEnableDeviceGranularReporting;
 using ::chromeos::kExtensionCacheSize;
 using ::chromeos::kFeatureFlags;
 using ::chromeos::kHeartbeatEnabled;

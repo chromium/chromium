@@ -107,6 +107,7 @@ const char* const kKnownSettings[] = {
     kDeviceWiFiAllowed,
     kDeviceWilcoDtcAllowed,
     kDisplayRotationDefault,
+    kEnableDeviceGranularReporting,
     kExtensionCacheSize,
     kFeatureFlags,
     kHeartbeatEnabled,
@@ -561,6 +562,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
   if (policy.has_device_reporting()) {
     const em::DeviceReportingProto& reporting_policy =
         policy.device_reporting();
+    if (reporting_policy.has_enable_granular_reporting()) {
+      new_values_cache->SetBoolean(
+          kEnableDeviceGranularReporting,
+          reporting_policy.enable_granular_reporting());
+    }
     if (reporting_policy.has_report_version_info()) {
       new_values_cache->SetBoolean(kReportDeviceVersionInfo,
                                    reporting_policy.report_version_info());
