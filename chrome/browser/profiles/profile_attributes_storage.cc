@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
@@ -759,7 +760,7 @@ void ProfileAttributesStorage::NotifyProfileUserManagementAcceptanceChanged(
 
 std::string ProfileAttributesStorage::StorageKeyFromProfilePath(
     const base::FilePath& profile_path) const {
-  DCHECK(user_data_dir_ == profile_path.DirName());
+  DCHECK_EQ(user_data_dir_, profile_path.DirName());
   return profile_path.BaseName().AsUTF8Unsafe();
 }
 
