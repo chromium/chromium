@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -33,6 +36,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -400,20 +404,49 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
 class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     : public WebAppFrameToolbarBrowserTest {
  public:
+  class TestInfoBarDelegate : public infobars::InfoBarDelegate {
+   public:
+    static infobars::InfoBar* Create(
+        infobars::ContentInfoBarManager* infobar_manager) {
+      return static_cast<InfoBarView*>(
+          infobar_manager->AddInfoBar(std::make_unique<InfoBarView>(
+              std::make_unique<TestInfoBarDelegate>())));
+    }
+
+    TestInfoBarDelegate() = default;
+    ~TestInfoBarDelegate() override = default;
+
+    // infobars::InfoBarDelegate:
+    infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier()
+        const override {
+      return InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
+    }
+  };
+
   WebAppFrameToolbarBrowserTest_WindowControlsOverlay() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kWebAppWindowControlsOverlay);
   }
 
+  void SetUp() override {
+    InProcessBrowserTest::SetUp();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
   web_app::AppId InstallAndLaunchWebApp() {
-    const GURL& start_url = GURL("https://test.org");
+    EXPECT_TRUE(https_server()->Start());
+
+    const GURL start_url = https_server()->GetURL("/empty.html");
+
     std::vector<blink::mojom::DisplayMode> display_overrides;
     display_overrides.emplace_back(
         web_app::DisplayMode::kWindowControlsOverlay);
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->title = u"A minimal-ui app";
+    web_app_info->title = u"A window-controls-overlay app";
     web_app_info->display_mode = web_app::DisplayMode::kStandalone;
     web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->display_override = display_overrides;
@@ -422,8 +455,42 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         browser(), std::move(web_app_info), start_url);
   }
 
+  void RunCallbackAndWaitForGeometryChangeEvent(base::OnceClosure callback) {
+    auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+    EXPECT_TRUE(
+        ExecJs(web_contents->GetMainFrame(),
+               "document.title = 'beforegeometrychange';"
+               "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
+               "  document.title = 'ongeometrychange';"
+               "}"));
+
+    std::move(callback).Run();
+    content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
+    ignore_result(title_watcher.WaitAndGetTitle());
+  }
+
+  void ToggleWindowControlsOverlayAndWait() {
+    RunCallbackAndWaitForGeometryChangeEvent(
+        base::BindLambdaForTesting([this]() {
+          helper()->browser_view()->ToggleWindowControlsOverlayEnabled();
+        }));
+  }
+
+  void ShowInfoBarAndWait() {
+    RunCallbackAndWaitForGeometryChangeEvent(
+        base::BindLambdaForTesting([this]() {
+          TestInfoBarDelegate::Create(
+              infobars::ContentInfoBarManager::FromWebContents(
+                  (helper()
+                       ->app_browser()
+                       ->tab_strip_model()
+                       ->GetActiveWebContents())));
+        }));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir temp_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
@@ -468,6 +535,30 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_FALSE(toolbar_button_container->window_controls_overlay_toggle_button()
                    ->GetVisible());
 }
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       HideToggleButtonWhenInfoBarIsVisible) {
+  InstallAndLaunchWebApp();
+
+  BrowserView* browser_view = helper()->browser_view();
+  WebAppToolbarButtonContainer* toolbar_button_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+
+  // Start with app in Window Controls Overlay (WCO) mode and verify that the
+  // toggle button is visible.
+  ToggleWindowControlsOverlayAndWait();
+  EXPECT_TRUE(browser_view->IsWindowControlsOverlayEnabled());
+  EXPECT_TRUE(toolbar_button_container->window_controls_overlay_toggle_button()
+                  ->GetVisible());
+
+  // Show InfoBar and verify the toggle button hides.
+  ShowInfoBarAndWait();
+  EXPECT_FALSE(toolbar_button_container->window_controls_overlay_toggle_button()
+                   ->GetVisible());
+  EXPECT_FALSE(browser_view->IsWindowControlsOverlayEnabled());
+}
+#endif
 
 // Regression test for https://crbug.com/1239443.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,

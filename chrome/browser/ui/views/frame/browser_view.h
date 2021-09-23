@@ -851,6 +851,11 @@ class BrowserView : public BrowserWindow,
   // whenever the touch mode changes.
   void MaybeShowReadingListInSidePanelIPH();
 
+  void UpdateWindowControlsOverlayEnabled();
+
+  // Updates the visibility of the Window Controls Overlay toggle button.
+  void UpdateWindowControlsOverlayToggleVisible();
+
   // The BrowserFrame that hosts this view.
   BrowserFrame* frame_ = nullptr;
 
@@ -1067,6 +1072,9 @@ class BrowserView : public BrowserWindow,
   // tab loading animation.
   absl::optional<ui::ThroughputTracker> loading_animation_tracker_;
 #endif
+
+  bool window_controls_overlay_enabled_ = false;
+  bool should_show_window_controls_overlay_toggle_ = false;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };
