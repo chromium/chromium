@@ -135,9 +135,6 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
       bool return_as_stream,
       bool proto_format);
   void SetupProcessFilter(base::ProcessId gpu_pid, RenderFrameHost*);
-  void StartTracingWithGpuPid(std::unique_ptr<StartCallback>,
-                              perfetto::BackendType tracing_backend,
-                              base::ProcessId gpu_pid);
   void AppendProcessId(RenderFrameHost*,
                        std::unordered_set<base::ProcessId>* process_set);
   void OnProcessReady(RenderProcessHost*);

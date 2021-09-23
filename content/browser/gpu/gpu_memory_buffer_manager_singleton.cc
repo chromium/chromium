@@ -12,7 +12,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/base/ui_base_features.h"
 
@@ -51,9 +50,6 @@ bool ShouldSetBufferFormatsFromGpuExtraInfo() {
 #endif
 
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
-  if (!base::FeatureList::IsEnabled(features::kProcessHostOnUI))
-    return GetIOThreadTaskRunner({});
-
 #if defined(OS_MAC)
   return ui::WindowResizeHelperMac::Get()->task_runner();
 #else

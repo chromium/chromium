@@ -34,8 +34,6 @@ class CATransactionGPUCoordinator
   void AddPostCommitObserverOnUIThread();
   void RemovePostCommitObserverOnUIThread();
 
-  void OnActivateForTransactionOnProcessThread();
-  void OnEnterPostCommitOnProcessThread();
   void OnCommitCompletedOnProcessThread();
   void OnCommitCompletedOnUI();
 

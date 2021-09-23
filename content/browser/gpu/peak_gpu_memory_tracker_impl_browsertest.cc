@@ -15,7 +15,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -144,15 +143,6 @@ class TestGpuService : public viz::mojom::GpuService {
   base::RepeatingClosure quit_closure_;
 };
 
-// Runs |task| on the Browser's IO thread, and blocks the Main thread until that
-// task has ran.
-void PostTaskToIOThreadAndWait(base::OnceClosure task) {
-  base::RunLoop run_loop;
-  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-      FROM_HERE, std::move(task), run_loop.QuitClosure());
-  run_loop.Run();
-}
-
 }  // namespace
 
 class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
@@ -163,26 +153,7 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
   // Waits until all messages to the mojo::Remote<viz::mojom::GpuService> have
   // been processed.
   void FlushRemoteForTesting() {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      gpu_host_impl_test_api_->FlushRemoteForTesting();
-    } else {
-      PostTaskToIOThreadAndWait(
-          base::BindOnce(&viz::GpuHostImplTestApi::FlushRemoteForTesting,
-                         base::Unretained(gpu_host_impl_test_api_.get())));
-    }
-  }
-
-  // Initializes the TestGpuService, and installs it as the active service.
-  void InitOnProcessThread(base::RepeatingClosure quit_closure) {
-    gpu_host_impl_test_api_ = std::make_unique<viz::GpuHostImplTestApi>(
-        GpuProcessHost::Get()->gpu_host());
-    test_gpu_service_ = std::make_unique<TestGpuService>(quit_closure);
-    mojo::Remote<viz::mojom::GpuService> gpu_service_remote;
-    gpu_service_receiver_ =
-        std::make_unique<mojo::Receiver<viz::mojom::GpuService>>(
-            test_gpu_service_.get(),
-            gpu_service_remote.BindNewPipeAndPassReceiver());
-    gpu_host_impl_test_api_->SetGpuService(std::move(gpu_service_remote));
+    gpu_host_impl_test_api_->FlushRemoteForTesting();
   }
 
   void SetTestingCallback(PeakGpuMemoryTracker* tracker,
@@ -200,23 +171,21 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
   void PreRunTestOnMainThread() override {
     run_loop_for_start_ = std::make_unique<base::RunLoop>();
     ContentBrowserTest::PreRunTestOnMainThread();
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      InitOnProcessThread(run_loop_for_start_->QuitClosure());
-    } else {
-      PostTaskToIOThreadAndWait(base::BindOnce(
-          &PeakGpuMemoryTrackerImplTest::InitOnProcessThread,
-          base::Unretained(this), run_loop_for_start_->QuitClosure()));
-    }
+
+    // Initializes the TestGpuService, and installs it as the active service.
+    gpu_host_impl_test_api_ = std::make_unique<viz::GpuHostImplTestApi>(
+        GpuProcessHost::Get()->gpu_host());
+    test_gpu_service_ =
+        std::make_unique<TestGpuService>(run_loop_for_start_->QuitClosure());
+    mojo::Remote<viz::mojom::GpuService> gpu_service_remote;
+    gpu_service_receiver_ =
+        std::make_unique<mojo::Receiver<viz::mojom::GpuService>>(
+            test_gpu_service_.get(),
+            gpu_service_remote.BindNewPipeAndPassReceiver());
+    gpu_host_impl_test_api_->SetGpuService(std::move(gpu_service_remote));
   }
   void PostRunTestOnMainThread() override {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      gpu_service_receiver_.reset();
-    } else {
-      PostTaskToIOThreadAndWait(base::BindOnce(
-          [](std::unique_ptr<mojo::Receiver<viz::mojom::GpuService>>
-                 gpu_service_receiver) {},
-          std::move(gpu_service_receiver_)));
-    }
+    gpu_service_receiver_.reset();
     ContentBrowserTest::PostRunTestOnMainThread();
   }
 

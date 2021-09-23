@@ -1740,12 +1740,9 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   const int id = GetID();
   const uint64_t tracing_id =
       ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(id);
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
   gpu_client_.reset(
       new viz::GpuClient(std::make_unique<BrowserGpuClientDelegate>(), id,
-                         tracing_id, task_runner));
+                         tracing_id, GetUIThreadTaskRunner({})));
 }
 
 // static
@@ -1835,13 +1832,6 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
 
   if (cleanup_network_service_plugin_exceptions_upon_destruction_)
     RemoveNetworkServicePluginExceptions(GetID());
-
-
-  // Manually delete here in order to avoid DeleteOnIOThread trait when
-  // kProcessHostOnUI is enabled.
-  DCHECK(gpu_client_);
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI))
-    delete gpu_client_.release();
 
   // "Cleanup in progress"
   TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
@@ -2531,17 +2521,9 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       base::BindRepeating(&FileSystemManagerImpl::BindReceiver,
                           base::Unretained(file_system_manager_impl_.get())));
 
-  // |gpu_client_| outlives the registry, because its destruction is posted to
-  // IO thread from the destructor of |this|.
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    AddUIThreadInterface(
-        registry.get(),
-        base::BindRepeating(&viz::GpuClient::Add,
-                            base::Unretained(gpu_client_.get())));
-  } else {
-    registry->AddInterface(base::BindRepeating(
-        &viz::GpuClient::Add, base::Unretained(gpu_client_.get())));
-  }
+  AddUIThreadInterface(
+      registry.get(), base::BindRepeating(&viz::GpuClient::Add,
+                                          base::Unretained(gpu_client_.get())));
 
   registry->AddInterface(
       base::BindRepeating(&GpuDataManagerImpl::BindReceiver));

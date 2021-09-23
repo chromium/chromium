@@ -18,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/message_filter.h"
 
@@ -78,8 +77,7 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   const int gpu_client_id_;
   const uint64_t gpu_client_tracing_id_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
-  std::unique_ptr<gpu::GpuMemoryBufferManager, BrowserThread::DeleteOnIOThread>
-      gpu_memory_buffer_manager_;
+  std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   scoped_refptr<EstablishRequest> pending_request_;
   bool is_visible_ = true;
 
