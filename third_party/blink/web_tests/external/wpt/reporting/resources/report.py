@@ -91,7 +91,7 @@ def main(request, response):
       return [(b"Content-Type", b"application/json")], u"{ \"reportCookies\" : " + str(retrieve_from_stash(request, cookie_key, timeout, u"\"None\"")) + u"}"
 
     if op == b"retrieve_count":
-      return [(b"Content-Type", b"application/json")], json.dumps({u'report_count': str(retrieve_from_stash(request, count_key, timeout, 0))})
+      return [(b"Content-Type", b"application/json")], u"{ \"report_count\": %s }" % retrieve_from_stash(request, count_key, timeout, 0)
 
     response.status = 400
     return "op parameter value not recognized."
