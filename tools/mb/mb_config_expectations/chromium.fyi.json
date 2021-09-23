@@ -6,7 +6,8 @@
       "is_debug": true,
       "is_lsan": true,
       "symbol_level": 1,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Afl Upload Linux ASan": {
@@ -40,7 +41,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Chrome OS ASan": {
@@ -89,7 +91,8 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "use_libfuzzer": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload Linux ASan Debug": {
@@ -189,7 +192,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux Builder (deps-cache) (reclient)": {
@@ -199,7 +203,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux Builder (j-500) (g-ip) (reclient)": {
@@ -209,7 +214,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux Builder (j-500) (n2) (reclient)": {
@@ -219,7 +225,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux Builder (j-500) (reclient)": {
@@ -229,7 +236,8 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux TSan Builder (goma cache silo)": {
@@ -249,7 +257,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Linux Viz": {
@@ -270,7 +279,8 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Mac Builder Next": {
@@ -323,7 +333,8 @@
       "is_debug": true,
       "is_tsan": true,
       "symbol_level": 1,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "TSAN Release (core-32) (goma)": {
@@ -343,7 +354,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "TSAN Release (deps-cache) (reclient)": {
@@ -353,7 +365,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "TSAN Release (g-ip) (reclient)": {
@@ -363,7 +376,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "TSAN Release (j-250) (reclient)": {
@@ -373,7 +387,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "TSAN Release (reclient)": {
@@ -383,7 +398,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_tsan": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "UBSan Release (reclient)": {
@@ -392,7 +408,8 @@
       "is_component_build": false,
       "is_debug": false,
       "is_ubsan": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "VR Linux": {
@@ -412,7 +429,8 @@
       "is_component_build": false,
       "is_debug": false,
       "use_ozone": true,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Win 10 Fast Ring": {
@@ -433,7 +451,8 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Win x64 Builder (reclient)(cross)": {
@@ -445,7 +464,8 @@
       "proprietary_codecs": true,
       "rbe_cfg_dir": "../../buildtools/reclient_cfgs/win-cross-experiments",
       "symbol_level": 1,
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "android-backuprefptr-arm-fyi-rel": {
@@ -559,7 +579,8 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_rbe": true,
-      "use_real_dbus_clients": false
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-rel (reclient)": {
@@ -568,7 +589,8 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_rbe": true,
-      "use_real_dbus_clients": false
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-rel-dchecks": {
@@ -825,7 +847,8 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-rel-fyi": {
@@ -1021,7 +1044,8 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "chromeos",
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "linux-lacros-code-coverage": {

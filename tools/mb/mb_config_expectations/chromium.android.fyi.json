@@ -10,7 +10,8 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Android WebView P FYI (rel)": {
@@ -38,7 +39,8 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_rbe": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "android-12-x64-fyi-rel": {
