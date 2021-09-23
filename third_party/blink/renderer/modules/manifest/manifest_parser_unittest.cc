@@ -302,7 +302,7 @@ TEST_F(ManifestParserTest, IdParseRules) {
     auto& manifest =
         ParseManifest(R"({ "start_url": "/start?query=a", "id": "" })");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("", manifest->id);
+    EXPECT_EQ("start?query=a", manifest->id);
   }
   // Full url.
   {

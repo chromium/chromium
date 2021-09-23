@@ -99,10 +99,14 @@ class MODULES_EXPORT ManifestParser {
   // enforce matching of the document's and parsed URL's origins.
   // Returns a KURL. If the parsing failed or origin matching was enforced but
   // not present, the returned KURL will be empty.
+  // |ignore_empty_string| treats empty string as the field missing.
+  // TODO(crbug.com/1223173): remove ignore_empty_string when all url fields are
+  // parsed the same.
   KURL ParseURL(const JSONObject* object,
                 const String& key,
                 const KURL& base_url,
-                ParseURLRestrictions origin_restriction);
+                ParseURLRestrictions origin_restriction,
+                bool ignore_empty_string = false);
 
   // Helper function to parse "enum" fields that accept a single value or a
   // list of values to allow sites to be backwards compatible with browsers that

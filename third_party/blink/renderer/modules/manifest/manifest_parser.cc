@@ -272,9 +272,12 @@ absl::optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
 KURL ManifestParser::ParseURL(const JSONObject* object,
                               const String& key,
                               const KURL& base_url,
-                              ParseURLRestrictions origin_restriction) {
+                              ParseURLRestrictions origin_restriction,
+                              bool ignore_empty_string) {
   absl::optional<String> url_str = ParseString(object, key, NoTrim);
   if (!url_str.has_value())
+    return KURL();
+  if (ignore_empty_string && url_str.value() == "")
     return KURL();
 
   KURL resolved = KURL(base_url, *url_str);
@@ -395,7 +398,8 @@ String ManifestParser::ParseId(const JSONObject* object,
   KURL start_url_origin = KURL(SecurityOrigin::Create(start_url)->ToString());
 
   KURL id = ParseURL(object, "id", start_url_origin,
-                     ParseURLRestrictions::kSameOriginOnly);
+                     ParseURLRestrictions::kSameOriginOnly,
+                     /*ignore_empty_string=*/true);
   if (id.IsValid()) {
     ManifestUmaUtil::ParseIdResult(
         ManifestUmaUtil::ParseIdResultType::kSucceed);
