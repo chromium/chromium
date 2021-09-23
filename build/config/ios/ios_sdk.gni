@@ -62,6 +62,9 @@ declare_args() {
   # You can also pass the value via "--args" parameter for "gn gen" command by
   # using the syntax --args='additional_target_cpus=["arm"] target_cpu="arm64"'.
   additional_target_cpus = []
+
+  # Set to true if all test apps should use the same bundle id.
+  ios_use_shared_bundle_id_for_test_apps = false
 }
 
 declare_args() {

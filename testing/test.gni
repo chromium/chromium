@@ -508,8 +508,13 @@ template("test") {
         info_plist = "//testing/gtest_ios/unittest-Info.plist"
       }
 
-      _gtest_bundle_id_suffix = "${target_name}"
-      xcode_product_bundle_id = "gtest.$_gtest_bundle_id_suffix"
+      if (ios_use_shared_bundle_id_for_test_apps) {
+        _gtest_bundle_id_suffix = "unittests"
+      } else {
+        _gtest_bundle_id_suffix = "${target_name}"
+      }
+      xcode_product_bundle_id =
+          "$ios_app_bundle_id_prefix.gtest.$_gtest_bundle_id_suffix"
 
       if (!defined(extra_substitutions)) {
         extra_substitutions = []

@@ -1755,6 +1755,7 @@ template("ios_xctest_bundle") {
   } else {
     _info_plist_target = _target_name + "_info_plist"
     _info_plist_bundle = _target_name + "_info_plist_bundle"
+    _module_bundle_id = "gtest.$_output_name"
 
     ios_info_plist(_info_plist_target) {
       testonly = true
@@ -1771,7 +1772,7 @@ template("ios_xctest_bundle") {
       }
       extra_substitutions = [
         "XCTEST_BUNDLE_PRINCIPAL_CLASS=${_principal_class}",
-        "MODULE_BUNDLE_ID=gtest.$_output_name",
+        "MODULE_BUNDLE_ID=$_module_bundle_id",
       ]
     }
 
@@ -1818,7 +1819,7 @@ template("ios_xctest_bundle") {
 
       if (ios_set_attributes_for_xcode_project_generation) {
         _xcode_product_bundle_id =
-            "$ios_app_bundle_id_prefix.gtest.$_output_name"
+            "$ios_app_bundle_id_prefix.$_module_bundle_id"
 
         _ios_provisioning_profile_info =
             exec_script("//build/config/ios/codesign.py",

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/apple/tweak_info_plist.gni")
+import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
@@ -26,6 +27,19 @@ template("ios_chrome_xcuitest_app_host") {
   ios_app_bundle(target_name) {
     testonly = true
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+
+    _output_name = target_name
+    if (defined(output_name)) {
+      _output_name = output_name
+    }
+
+    if (ios_use_shared_bundle_id_for_test_apps) {
+      _test_app_bundle_id = "gtest.unittests"
+    } else {
+      _test_app_bundle_id = "gtest.$_output_name"
+    }
+
+    xcode_product_bundle_id = "$ios_app_bundle_id_prefix.$_test_app_bundle_id"
 
     if (!defined(deps)) {
       deps = []
@@ -52,7 +66,7 @@ template("ios_chrome_xcuitest_app_host") {
       "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
       "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
       "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-      "CHROMIUM_BUNDLE_ID=gtest.$target_name",
+      "CHROMIUM_BUNDLE_ID=$_test_app_bundle_id",
       "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
       "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
       "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
