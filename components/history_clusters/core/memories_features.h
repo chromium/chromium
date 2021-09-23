@@ -49,6 +49,10 @@ extern const base::FeatureParam<bool> kPersistClustersInHistoryDb;
 // builds, so it won't work in unofficial builds.
 extern const base::FeatureParam<bool> kUseOnDeviceClusteringBackend;
 
+// If enabled, changes the History Clusters omnibox action text to be:
+// "Resume your research" instead of "Resume your journey".
+extern const base::FeatureParam<bool> kAlternateOmniboxActionText;
+
 // Features
 
 // Enables the Chrome Memories history clustering feature.

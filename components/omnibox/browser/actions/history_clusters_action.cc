@@ -16,6 +16,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "net/base/escape.h"
 
+namespace history_clusters {
+
 namespace {
 
 class HistoryClustersAction : public OmniboxAction {
@@ -23,10 +25,18 @@ class HistoryClustersAction : public OmniboxAction {
   explicit HistoryClustersAction(const std::string& query)
       : OmniboxAction(
             OmniboxAction::LabelStrings(
-                IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
-                IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
-                IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
-                IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
+                kAlternateOmniboxActionText.Get()
+                    ? IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT_ALTERNATE
+                    : IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
+                kAlternateOmniboxActionText.Get()
+                    ? IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS_ALTERNATE
+                    : IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
+                kAlternateOmniboxActionText.Get()
+                    ? IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX_ALTERNATE
+                    : IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
+                kAlternateOmniboxActionText.Get()
+                    ? IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_ALTERNATE
+                    : IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
             GURL(base::StringPrintf(
                 "chrome://history/journeys?q=%s",
                 net::EscapeQueryParamValue(query, /*use_plus=*/false)
@@ -86,3 +96,5 @@ void AttachHistoryClustersActions(
   }
 #endif
 }
+
+}  // namespace history_clusters

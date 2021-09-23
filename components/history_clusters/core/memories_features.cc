@@ -42,6 +42,11 @@ const base::FeatureParam<bool> kPersistClustersInHistoryDb{
 const base::FeatureParam<bool> kUseOnDeviceClusteringBackend{
     &kMemories, "MemoriesOnDeviceClusteringBackend", true};
 
+// Default to true, as this this new alternate action text was recommended by
+// our UX writers.
+const base::FeatureParam<bool> kAlternateOmniboxActionText{
+    &kMemoriesOmniboxAction, "MemoriesAlternateActionText", true};
+
 const base::Feature kMemories{"Memories", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMemoriesOmniboxAction{"MemoriesOmniboxAction",
