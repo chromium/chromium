@@ -337,6 +337,7 @@ struct BASE_EXPORT PartitionRoot {
   // preserves the layering of the includes.
   void Init(PartitionOptions);
 
+  void EnableThreadCacheIfSupported();
   void ConfigureLazyCommit();
 
   ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);

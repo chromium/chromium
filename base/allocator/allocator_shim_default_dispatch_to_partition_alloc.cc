@@ -131,9 +131,11 @@ class MainPartitionConstructor {
     constexpr base::PartitionOptions::ThreadCache thread_cache =
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-        // With USE_BACKUP_REF_PTR, this partition is only temporary until a
-        // BRP-enabled partition is created later. Leave the ability to have
-        // a thread cache to that partition.
+        // With USE_BACKUP_REF_PTR, a BRP-enabled partition may be created
+        // later. Since only one partition can have thread cache enabled, leave
+        // this ability to that partition. If BRP-enabled partition isn't
+        // needed, the thread cache will be then turned on in this one. See
+        // ConfigurePartitionBackupRefPtrSupport().
         base::PartitionOptions::ThreadCache::kDisabled;
 #else
         base::PartitionOptions::ThreadCache::kEnabled;
@@ -452,25 +454,30 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
   // value (unless explicitly overwritten below).
   auto* current_aligned_root = g_aligned_root.Get();
 
+  // When enable_brp is false, simply enable thread
+  // cache in the existing root instead of creating a new one -- the only
+  // difference between the current and new partition is the thread cache
+  // setting.
+  if (!enable_brp) {
+    PA_DCHECK(!current_root->with_thread_cache);
+    current_root->EnableThreadCacheIfSupported();
+    return;
+  }
+
   current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                             PartitionPurgeDiscardUnusedSystemPages);
 
   const bool allow_aligned_alloc_in_main_root =
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
-      // If BRP is to be enabled, this partition can't support
-      // AlignedAlloc. Instead, a new one is created below. Otherwise,
-      // no separate AlignedAlloc partition is created, so this one must
-      // support it.
-      !enable_brp;
+      // This partition can't support AlignedAlloc. Instead, a new one is
+      // created below.
+      false;
 #else
       // No separate AlignedAlloc partition is created, so this one must
       // support it.
       true;
 #endif
-  // TODO(bartekn): When enable_brp is false, simply enable thread
-  // cache in the existing root instead of creating a new one -- the only
-  // difference between the current and new partition is the thread cache
-  // setting.
+
   auto* new_root = new (g_allocator_buffer_for_ref_count_config)
       base::ThreadSafePartitionRoot({
           allow_aligned_alloc_in_main_root
@@ -479,8 +486,7 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
           base::PartitionOptions::ThreadCache::kEnabled,
           base::PartitionOptions::Quarantine::kAllowed,
           base::PartitionOptions::Cookie::kAllowed,
-          enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
-                     : base::PartitionOptions::BackupRefPtr::kDisabled,
+          base::PartitionOptions::BackupRefPtr::kEnabled,
           base::PartitionOptions::UseConfigurablePool::kNo,
       });
   g_root.Replace(new_root);
@@ -493,23 +499,21 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
 
   base::ThreadSafePartitionRoot* new_aligned_root =
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
-      enable_brp
-          // If BRP is getting enabled, we need to create a new AlignedAlloc
-          // partition now.
-          // TODO(bartekn): Use the original root instead of creating a new one.
-          // It'd result in one less partition, but come at a cost of
-          // commingling types.
-          ? new (g_allocator_buffer_for_aligned_alloc_partition)
-                base::ThreadSafePartitionRoot({
-                    base::PartitionOptions::AlignedAlloc::kAllowed,
-                    base::PartitionOptions::ThreadCache::kDisabled,
-                    base::PartitionOptions::Quarantine::kAllowed,
-                    base::PartitionOptions::Cookie::kAllowed,
-                    base::PartitionOptions::BackupRefPtr::kDisabled,
-                    base::PartitionOptions::UseConfigurablePool::kNo,
-                })
-          // Otherwise, the new main root can also support AlignedAlloc.
-          : g_root.Get();
+      // If BRP is getting enabled, we need to create a new AlignedAlloc
+      // partition now.
+      // TODO(bartekn): Use the original root instead of creating a new one.
+      // It'd result in one less partition, but come at a cost of
+      // commingling types.
+      new (g_allocator_buffer_for_aligned_alloc_partition)
+          base::ThreadSafePartitionRoot({
+              base::PartitionOptions::AlignedAlloc::kAllowed,
+              base::PartitionOptions::ThreadCache::kDisabled,
+              base::PartitionOptions::Quarantine::kAllowed,
+              base::PartitionOptions::Cookie::kAllowed,
+              base::PartitionOptions::BackupRefPtr::kDisabled,
+              base::PartitionOptions::UseConfigurablePool::kNo,
+          });
+  PA_DCHECK(!allow_aligned_alloc_in_main_root);
   PA_CHECK(current_aligned_root == g_original_root);
 #else   // USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP
       // The new main root can also support AlignedAlloc.

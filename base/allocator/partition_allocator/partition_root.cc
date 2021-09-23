@@ -618,6 +618,29 @@ PartitionRoot<thread_safe>::~PartitionRoot() {
 }
 
 template <bool thread_safe>
+void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
+#if defined(PA_THREAD_CACHE_SUPPORTED)
+  ScopedGuard guard{lock_};
+  PA_CHECK(!with_thread_cache);
+  // By the time we get there, there may be multiple threads created in the
+  // process. Since `with_thread_cache` is accessed without a lock, it can
+  // become visible to another thread before the effects of
+  // `internal::ThreadCacheInit()` are visible. To prevent that, we fake thread
+  // cache creation being in-progress while this is running.
+  //
+  // This synchronizes with the acquire load in `MaybeInitThreadCacheAndAlloc()`
+  // to ensure that we don't create (and thus use) a ThreadCache before
+  // ThreadCache::Init()'s effects are visible.
+  int before =
+      thread_caches_being_constructed_.fetch_add(1, std::memory_order_acquire);
+  PA_CHECK(before == 0);
+  internal::ThreadCache::Init(this);
+  thread_caches_being_constructed_.fetch_sub(1, std::memory_order_release);
+  with_thread_cache = true;
+#endif  // defined(PA_THREAD_CACHE_SUPPORTED)
+}
+
+template <bool thread_safe>
 void PartitionRoot<thread_safe>::ConfigureLazyCommit() {
 #if defined(OS_WIN)
   bool new_value =
@@ -1056,8 +1079,10 @@ void* PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
     uint16_t bucket_index,
     size_t* slot_size) {
   auto* tcache = internal::ThreadCache::Get();
+  // See comment in `EnableThreadCacheIfSupport()` for why this is an acquire
+  // load.
   if (internal::ThreadCache::IsTombstone(tcache) ||
-      thread_caches_being_constructed_.load(std::memory_order_relaxed)) {
+      thread_caches_being_constructed_.load(std::memory_order_acquire)) {
     // Two cases:
     // 1. Thread is being terminated, don't try to use the thread cache, and
     //    don't try to resurrect it.
