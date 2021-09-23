@@ -6231,7 +6231,6 @@ test("unit_tests") {
       "//chrome/browser/share/core:share_targets_unittest",
       "//components/media_router/common:test_support",
       "//components/services/app_service/public/cpp:publisher",
-      "//components/services/app_service/public/cpp:test_support",
       "//components/soda:constants",
       "//services/network:test_support",
     ]

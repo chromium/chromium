@@ -233,14 +233,18 @@ void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {
 
 void AppManagementPageHandler::SetPreferredApp(const std::string& app_id,
                                                bool is_preferred_app) {
+  auto intent_filters = GetSupportedLinkIntentFilters(profile_, app_id);
   bool is_preferred_app_for_supported_links =
       preferred_apps_list_.IsPreferredAppForSupportedLinks(app_id);
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   if (is_preferred_app && !is_preferred_app_for_supported_links) {
-    proxy->SetSupportedLinksPreference(app_id);
+    for (auto& filter : intent_filters) {
+      this->preferred_apps_list_.AddPreferredApp(app_id, filter);
+    }
   } else if (!is_preferred_app && is_preferred_app_for_supported_links) {
-    proxy->RemoveSupportedLinksPreference(app_id);
+    for (auto& filter : intent_filters) {
+      this->preferred_apps_list_.DeletePreferredApp(app_id, filter);
+    }
   }
 }
 

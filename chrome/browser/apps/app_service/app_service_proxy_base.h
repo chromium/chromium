@@ -216,16 +216,6 @@ class AppServiceProxyBase : public KeyedService,
   void AddPreferredApp(const std::string& app_id,
                        const apps::mojom::IntentPtr& intent);
 
-  // Sets |app_id| as the preferred app for all of its supported links ('view'
-  // intent filters with a scheme and host). Any existing preferred apps for
-  // those links will have all their supported links unset, as if
-  // RemoveSupportedLinksPreference was called for that app.
-  void SetSupportedLinksPreference(const std::string& app_id);
-
-  // Removes all supported link filters from the preferred app list for
-  // |app_id|.
-  void RemoveSupportedLinksPreference(const std::string& app_id);
-
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 
@@ -372,9 +362,8 @@ class AppServiceProxyBase : public KeyedService,
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
 
-  FRIEND_TEST_ALL_PREFIXES(AppServiceProxyPreferredAppsTest,
-                           UpdatedOnUninstall);
-  FRIEND_TEST_ALL_PREFIXES(AppServiceProxyPreferredAppsTest, SetPreferredApp);
+  FRIEND_TEST_ALL_PREFIXES(AppServiceProxyTest,
+                           PreferredAppsUpdatedOnUninstall);
 };
 
 }  // namespace apps

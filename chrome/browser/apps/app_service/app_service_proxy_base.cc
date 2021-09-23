@@ -468,35 +468,6 @@ void AppServiceProxyBase::AddPreferredApp(
   }
 }
 
-void AppServiceProxyBase::SetSupportedLinksPreference(
-    const std::string& app_id) {
-  DCHECK(!app_id.empty());
-  if (!app_service_.is_connected()) {
-    return;
-  }
-
-  std::vector<apps::mojom::IntentFilterPtr> filters;
-  AppRegistryCache().ForOneApp(app_id, [&filters](const AppUpdate& app) {
-    for (auto& filter : app.IntentFilters()) {
-      if (apps_util::IsSupportedLink(filter)) {
-        filters.push_back(std::move(filter));
-      }
-    }
-  });
-
-  app_service_->SetSupportedLinksPreference(
-      app_registry_cache_.GetAppType(app_id), app_id, std::move(filters));
-}
-
-void AppServiceProxyBase::RemoveSupportedLinksPreference(
-    const std::string& app_id) {
-  DCHECK(!app_id.empty());
-  if (app_service_.is_connected()) {
-    app_service_->RemoveSupportedLinksPreference(
-        app_registry_cache_.GetAppType(app_id), app_id);
-  }
-}
-
 void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
                                         apps::mojom::WindowMode window_mode) {
   if (app_service_.is_connected()) {
