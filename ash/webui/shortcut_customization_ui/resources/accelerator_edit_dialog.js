@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ViewState} from './accelerator_view.js';
-import {AcceleratorInfo} from './shortcut_types.js';
+import {AcceleratorInfo, AcceleratorSource} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -45,6 +45,17 @@ export class AcceleratorEditDialogElement extends PolymerElement {
       pendingNewAcceleratorState_: {
         type: Number,
         value: ViewState.VIEW,
+      },
+
+      action: {
+        type: Number,
+        value: 0,
+      },
+
+      /** @type {!AcceleratorSource} */
+      source: {
+        type: Number,
+        value: 0,
       },
     }
   }

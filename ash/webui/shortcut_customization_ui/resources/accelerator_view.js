@@ -131,7 +131,18 @@ export class AcceleratorViewElement extends PolymerElement {
         type: Boolean,
         value: false,
         notify: true,
-      }
+      },
+
+      action: {
+        type: Number,
+        value: 0,
+      },
+
+      /** @type {!AcceleratorSource} */
+      source: {
+        type: Number,
+        value: 0,
+      },
     }
   }
 
@@ -471,36 +482,28 @@ export class AcceleratorViewElement extends PolymerElement {
    * @private
    */
   requestReplaceAccelerator_(newKeys) {
-    const currentUuid = this.lookupManager_.getAcceleratorFromKeys(
-        JSON.stringify(this.acceleratorInfo.accelerator));
-    const uuidParams = currentUuid.split('-');
-    const source = /**@type {AcceleratorSource}*/ (parseInt(uuidParams[0], 10));
-    const action = parseInt(uuidParams[1], 10);
     this.shortcutProvider_
         .replaceAccelerator(
-            source, action, this.acceleratorInfo.accelerator, newKeys)
+            this.source, this.action, this.acceleratorInfo.accelerator, newKeys)
         .then((result) => {
           // TODO(jimmyxgong): Handle other error cases.
           if (result === AcceleratorConfigResult.kSuccess) {
             this.lookupManager_.replaceAccelerator(
-                source, action, this.acceleratorInfo.accelerator, newKeys);
+                this.source, this.action, this.acceleratorInfo.accelerator,
+                newKeys);
             // End capture and update accelerators.
-            this.fireUpdateEvent_(source, action);
+            this.fireUpdateEvent_();
             this.endCapture_();
           }
         });
   }
 
-  /**
-   * @param {number} source
-   * @param {number} action
-   * @private
-   */
-  fireUpdateEvent_(source, action) {
+  /** @private */
+  fireUpdateEvent_() {
     this.dispatchEvent(new CustomEvent('request-update-accelerator', {
       bubbles: true,
       composed: true,
-      detail: {source: source, action: action}
+      detail: {source: this.source, action: this.action}
     }));
   }
 }

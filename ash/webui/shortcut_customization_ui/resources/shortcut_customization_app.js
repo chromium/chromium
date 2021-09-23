@@ -13,7 +13,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorConfig, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfig, AcceleratorSource, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
 import {AcceleratorInfo} from './shortcut_types.js';
 
 /**
@@ -45,6 +45,18 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
       dialogAccelerators_: {
         type: Array,
         value: () => {},
+      },
+
+      /** @private */
+      dialogAction_: {
+        type: Number,
+        value: 0,
+      },
+
+      /** @private {!AcceleratorSource} */
+      dialogSource_: {
+        type: Number,
+        value: 0,
       },
 
       /** @private */
@@ -143,13 +155,16 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!{description: string, accelerators: !Array<!AcceleratorInfo>}} e
+   * @param {!{description: string, accelerators: !Array<!AcceleratorInfo>,
+   *           action: number, source: !AcceleratorSource}} e
    * @private
    */
   showDialog_(e) {
     this.dialogShortcutTitle_ = e.description;
     this.dialogAccelerators_ =
         /** @type {!Array<!AcceleratorInfo>}*/(e.accelerators);
+    this.dialogAction_ = e.action;
+    this.dialogSource_ = e.source;
     this.showEditDialog_ = true;
   }
 

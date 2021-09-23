@@ -47,7 +47,8 @@ export class AcceleratorSubsectionElement extends PolymerElement {
        * TODO(jimmyxgong): Fetch the shortcuts and it accelerators with the
        * mojom::source_id and mojom::subsection_id. This serves as a
        * temporary way to populate a subsection.
-       * @type {Array<!Object<string, number, Array<!AcceleratorInfo>>>}
+       * @type {Array<!Object<string, number, number,
+       *     Array<!AcceleratorInfo>>>}
        */
       acceleratorContainer: {
         type: Array,
@@ -99,9 +100,11 @@ export class AcceleratorSubsectionElement extends PolymerElement {
           this.lookupManager_.getAccelerators(value.source, value.action);
 
       const accel =
-          /**@type {!Object<string, number, Array<!AcceleratorInfo>>}*/ ({
+          /**@type {!Object<string, number, number, Array<!AcceleratorInfo>>}*/
+          ({
             description: this.lookupManager_.getAcceleratorName(
                 value.source, value.action),
+            action: value.action,
             source: value.source,
             acceleratorInfos: acceleratorInfos,
           });

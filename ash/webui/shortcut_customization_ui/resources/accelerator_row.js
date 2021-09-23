@@ -49,6 +49,12 @@ export class AcceleratorRowElement extends PolymerElement {
         value: false,
       },
 
+      /** @type {number} */
+      action: {
+        type: Number,
+        value: 0,
+      },
+
       /** @type {!AcceleratorSource} */
       source: {
         type: Number,
@@ -90,10 +96,18 @@ export class AcceleratorRowElement extends PolymerElement {
   /** @private */
   showDialog_() {
     this.dispatchEvent(new CustomEvent(
-        'show-edit-dialog', {bubbles: true, composed: true,
-            detail: {description: this.description,
-                     accelerators: this.acceleratorInfos}},
-    ));
+        'show-edit-dialog',
+        {
+          bubbles: true,
+          composed: true,
+          detail: {
+            description: this.description,
+            accelerators: this.acceleratorInfos,
+            action: this.action,
+            source: this.source
+          }
+        },
+        ));
   }
 }
 

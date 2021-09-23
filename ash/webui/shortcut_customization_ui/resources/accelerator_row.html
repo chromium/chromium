@@ -22,7 +22,8 @@
   <div id="descriptionText">[[description]]</div>
   <div id="acceleratorViewList">
     <template is="dom-repeat" items=[[acceleratorInfos]]>
-      <accelerator-view class="acceleratorItem" accelerator-info=[[item]]>
+      <accelerator-view class="acceleratorItem" accelerator-info=[[item]]
+          action=[[action]] source=[[source]]>
       </accelerator-view>
     </template>
   </div>

@@ -18,14 +18,18 @@
     <div id="acceleratorViewList">
       <template id="viewList" is="dom-repeat" items="[[acceleratorInfos]]">
         <accelerator-edit-view class="acceleratorItem"
-            accelerator-info=[[item]]>
+            accelerator-info=[[item]]
+            action=[[action]]
+            source=[[source]]>
         </accelerator-edit-view>
       </template>
     </div>
     <template id="newAccelerator" is="dom-if"
         if="[[!showAddButton_(pendingNewAcceleratorState_)]]" restamp>
       <accelerator-edit-view id="pendingAccelerator"
-          view-state="{{pendingNewAcceleratorState_}}">
+          view-state="{{pendingNewAcceleratorState_}}"
+          action=[[action]]
+          source=[[source]]>
       </accelerator-edit-view>
     </template>
     <div id="addAcceleratorContainer"

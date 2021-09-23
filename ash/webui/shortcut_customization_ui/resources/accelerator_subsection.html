@@ -14,6 +14,7 @@
   <div id="rowList">
     <template id="list" is="dom-repeat" items="[[acceleratorContainer]]">
       <accelerator-row class="acceleratorRow" description="[[item.description]]"
+          action="[[item.action]]"
           source="[[item.source]]"
           accelerator-infos="[[item.acceleratorInfos]]">
       </accelerator-row>
