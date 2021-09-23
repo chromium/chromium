@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">ผ่าน</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
-<translation id="240334320630038121">ทัชแพด<ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">สถานะการล็อกซิม</translation>
 <translation id="2418150275289244458">เปิดในการตั้งค่า</translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
-<translation id="3412146654386081914">หน้าจอสัมผัส <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
-<translation id="3440478087746699229">ภายใน</translation>
 <translation id="3456078764689556234">พิมพ์แล้ว <ph name="PRINTED_PAGES" /> จาก <ph name="TOTAL_PAGES" /> หน้า</translation>
 <translation id="345898999683440380">กำลังสแกนหน้า <ph name="PAGE_NUM" /> เสร็จแล้ว <ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="3459509316159669723">การพิมพ์</translation>
@@ -355,7 +352,6 @@
 <translation id="6977381486153291903">การแก้ไขเฟิร์มแวร์</translation>
 <translation id="6982876849933694860">หากต้องการตั้งค่าการเชื่อมต่อใหม่ ให้ไปที่<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
-<translation id="7039041976777695848">แป้นพิมพ์<ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">โอเปอเรเตอร์</translation>
 <translation id="7058278511608979688">สิ้นสุดและบันทึก</translation>
 <translation id="7059230779847288458">กำลังชาร์จ อีก <ph name="TIME_VALUE" />จะเต็ม</translation>
@@ -470,7 +466,6 @@
 <translation id="8818152010000655963">วอลเปเปอร์</translation>
 <translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
 <translation id="8898840733695078011">ความแรงสัญญาณ</translation>

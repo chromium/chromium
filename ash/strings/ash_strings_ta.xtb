@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">கூடுதல் விருப்பங்கள்</translation>
 <translation id="1346748346194534595">வலது</translation>
 <translation id="1351937230027495976">மெனுவைச் சுருக்கு</translation>
+<translation id="1364382257761975320">Chromebookகை அன்லாக் செய்ய, உங்கள் கைரேகையைப் பயன்படுத்தவும்</translation>
 <translation id="1383597849754832576">உடனடி வசனத்தின் ஃபைல்களைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">இயக்கப்பட்டுள்ளது</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">ஸ்டைலஸ் அமைப்புகள்</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ஐச் செயல்படுத்துகிறது</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
+<translation id="2367186422933365202">Chromebookகில் உள்நுழைய முடியவில்லை</translation>
 <translation id="2369165858548251131">சீன மொழியில் "ஹலோ"</translation>
 <translation id="2390318262976603432">மொழி அமைப்புகள்</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">மீடியா கட்டுப்பாடுகள்</translation>
+<translation id="2402411679569069051">Chromebookகை அன்லாக் செய்ய, உங்கள் கைரேகையைப் பயன்படுத்தவும் அல்லது மொபைலை அன்லாக் செய்யவும்</translation>
 <translation id="2405664212338326887">இணைக்கப்படவில்லை</translation>
 <translation id="2408955596600435184">பின்னை உள்ளிடவும்</translation>
 <translation id="2412593942846481727">புதுப்பிப்பு உள்ளது</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">+மேலும் <ph name="COUNT" /></translation>
 <translation id="324366796737464147">இரைச்சலை நீக்குதல்</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> என்ற சாளரமானது டெஸ்க்<ph name="ACTIVE_DESK" />ல் இருந்து டெஸ்க் <ph name="TARGET_DESK" />க்கு நகர்த்தப்பட்டது</translation>
+<translation id="3252248118006571685">Chromebookகை அன்லாக் செய்ய, மொபைலில் புளூடூத்தை இயக்கவும்</translation>
 <translation id="3255483164551725916">உன்னால் என்னவெல்லாம் செய்ய முடியும்?</translation>
 <translation id="3269597722229482060">வலது கிளிக்</translation>
 <translation id="3289674678944039601">அடாப்டர் மூலம் சார்ஜாகிறது</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">கன்ட்ரோல்-ஷிஃப்ட்-ஸ்பேஸ்</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">விளக்கம்</translation>
+<translation id="3509391053705095206">உங்கள் மொபைலைக் கண்டறிய முடியவில்லை. அதில் புளூடூத் இயக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="3510164367642747937">மவுஸ் கர்சரைத் தனிப்படுத்து</translation>
 <translation id="3513798432020909783">கணக்கை நிர்வகிப்பது: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> சாதனங்களுடன் இணைக்கப்பட்டுள்ளது</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">முன்பக்க மைக்ரோஃபோன்</translation>
 <translation id="3713734891607377840">பதிவிறக்கியதும் திற</translation>
 <translation id="3742055079367172538">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
+<translation id="3744282433224562605">Chromebookகை அன்லாக் செய்ய, கடவுச்சொல்லை டைப் செய்யவும்</translation>
 <translation id="3771549900096082774">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" />க்கு, பல உள்நுழைவை நிர்வாகி அனுமதிக்கவில்லை. தொடர, எல்லாப் பயனர்களும் வெளியேற வேண்டும்.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> ஐ இணைக்கிறது</translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">வலது கிளிக் செய்தாலோ நீண்ட நேரம் அழுத்தினாலோ நீங்கள் தேர்ந்தெடுத்ததற்கான விளக்கம், மொழிபெயர்ப்பு, அலகு மாற்றம் போன்ற தகவலை Assistant காட்டும்.</translation>
 <translation id="4505050298327493054">செயலிலுள்ள டெஸ்க்.</translation>
 <translation id="4513946894732546136">கருத்து</translation>
+<translation id="4518404433291145981">Chromebookகை அன்லாக் செய்ய, முதலில் உங்கள் மொபைலை அன்லாக் செய்யவும்</translation>
 <translation id="4527045527269911712">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> ஆகும் 100% சார்ஜாக</translation>
 <translation id="4538824937723742295">முழுத்திரையையும் ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">தவறான PIN</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
+<translation id="5147567197700016471">அன்லாக் செய்யப்பட்டது</translation>
 <translation id="5155897006997040331">வாசிப்பு வேகம்</translation>
 <translation id="5166918508782100047">'விரைவான பதில்கள்' அம்சத்திற்கான அமைப்புகள்</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
 <translation id="5170568018924773124">கோப்புறையில் காண்பி</translation>
 <translation id="5176318573511391780">திரையைப் பகுதியளவு ரெக்கார்டு செய்யும்</translation>
+<translation id="5199367439331364630">Chromebookகில் உள்நுழைய, கடவுச்சொல்லை டைப் செய்யவும்</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{மேலும் ஒரு அறிவிப்பு}other{மேலும் # அறிவிப்புகள்}}</translation>
 <translation id="5207949376430453814">உரைச் சுட்டியைத் தனிப்படுத்து</translation>
 <translation id="5208059991603368177">இயக்கு</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">புதிய சாதனத்துடன் இணை</translation>
 <translation id="5322611492012084517">உங்கள் மொபைலைக் கண்டறிய முடியவில்லை</translation>
 <translation id="5329548388331921293">இணைக்கப்படுகிறது...</translation>
+<translation id="5330201449517439522">உள்நுழைய, தட்டவும் அல்லது கிளிக் செய்யவும்</translation>
 <translation id="5331975486040154427">USB-C சாதனம் (இடது பக்கம் பின்னே இருக்கும் போர்ட்)</translation>
 <translation id="5352250171825660495">டார்க் தீம் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5379115545237091094">அதிகபட்சம் முயன்றுவிட்டீர்கள்</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">இணைக்கப்பட்ட சாதனங்களின் அமைப்புகள்</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புவதை நிறுத்து</translation>
+<translation id="584525477304726060">பெரிதாக்க, தொட்டுப் பிடிக்கவும்</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5867217927013474703">நெட்வொர்க் தகவல்களைச் சேகரிக்கிறது</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">உங்கள் மொபைலின் ஹாட்ஸ்பாட்டுடன் இணைக்கலாம், சாதனத்தின் ஒலியை அடக்கி அது இருக்குமிடத்தைக் கண்டறியலாம், மொபைலில் திறந்த நிலையிலுள்ள சமீபத்திய Chrome தாவல்களைப் பார்க்கலாம்</translation>
 <translation id="6670153871843998651">மேசை 3</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
+<translation id="6671661918848783005">Chromebookகை அன்லாக் செய்ய முடியவில்லை</translation>
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
 <translation id="6696025732084565524">உங்கள் அகற்றத்தக்க கீபோர்டுக்கு முக்கியப் புதுப்பிப்பு வேண்டும்</translation>
 <translation id="6700713906295497288">IME மெனு பொத்தான்</translation>

@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Lulus</translation>
 <translation id="2380886658946992094">Perundangan</translation>
 <translation id="2391082728065870591">Hantar Laporan Maklum balas</translation>
-<translation id="240334320630038121">Pad sentuh <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
 <translation id="2418150275289244458">Buka dalam tetapan</translation>
 <translation id="2446553403094072641">Ketepatan titik terapung</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
-<translation id="3412146654386081914">Skrin sentuh <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
-<translation id="3440478087746699229">Dalaman</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> daripada <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Mengimbas halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
@@ -355,7 +352,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6977381486153291903">Semakan perisian tegar</translation>
 <translation id="6982876849933694860">Untuk menyediakan sambungan baharu, pergi ke <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
-<translation id="7039041976777695848">Papan kekunci <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Pengendali</translation>
 <translation id="7058278511608979688">Tamatkan &amp; simpan</translation>
 <translation id="7059230779847288458">Mengecas, <ph name="TIME_VALUE" /> sehingga penuh</translation>
@@ -470,7 +466,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8818152010000655963">Kertas dinding</translation>
 <translation id="8834539327799336565">Tersambung pada masa ini</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>
 <translation id="8898840733695078011">Kekuatan isyarat</translation>

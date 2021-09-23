@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Kaloi</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
-<translation id="240334320630038121">Blloku me prekje <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Statusi i kyçjes së kartës SIM</translation>
 <translation id="2418150275289244458">Hape te cilësimet</translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
-<translation id="3412146654386081914">Ekrani me prekje <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Siguria</translation>
-<translation id="3440478087746699229">E brendshme</translation>
 <translation id="3456078764689556234">U printua faqja <ph name="PRINTED_PAGES" /> nga <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Po skanon faqen <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% e përfunduar.</translation>
 <translation id="3459509316159669723">Po printon</translation>
@@ -354,7 +351,6 @@
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
 <translation id="6982876849933694860">Për të konfiguruar një lidhje të re, shko te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
-<translation id="7039041976777695848">Tastiera <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operatori</translation>
 <translation id="7058278511608979688">Mbaro dhe ruaj</translation>
 <translation id="7059230779847288458">Po karikohet, <ph name="TIME_VALUE" /> derisa të mbushet</translation>
@@ -469,7 +465,6 @@
 <translation id="8818152010000655963">Imazhi i sfondit</translation>
 <translation id="8834539327799336565">Të lidhur aktualisht</translation>
 <translation id="8845001906332463065">Kërko ndihmë</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>
 <translation id="8898840733695078011">Fuqia e sinjalit</translation>

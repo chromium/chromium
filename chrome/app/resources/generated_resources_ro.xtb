@@ -4497,7 +4497,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5805697420284793859">Managerul de ferestre</translation>
 <translation id="5806773519584576205">0° (prestabilit)</translation>
 <translation id="5810809306422959727">Acest cont nu este eligibil pentru controlul parental</translation>
-<translation id="581120508026692647">Pentru notificări privind site-urile, accesează <ph name="LINK_BEGIN" />Setările Chrome<ph name="LINK_END" />.</translation>
 <translation id="5812674658566766066">Extinde tot</translation>
 <translation id="5815645614496570556">Adresă X.400</translation>
 <translation id="5816434091619127343">Modificările solicitate ar face imprimanta inutilizabilă.</translation>
@@ -4909,7 +4908,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6254892857036829079">Perfectă</translation>
 <translation id="6257602895346497974">Activează sincronizarea...</translation>
 <translation id="625895209797312329">Împiedică site-urile să folosească fonturi instalate pe dispozitiv</translation>
-<translation id="6259104249628300056">Găsește dispozitive în rețeaua locală</translation>
 <translation id="6262371516389954471">Backupurile sunt încărcate pe serverele Google și sunt criptate folosind parola pentru Contul Google.</translation>
 <translation id="6263082573641595914">Versiune CA Microsoft</translation>
 <translation id="6263284346895336537">Non-critic</translation>

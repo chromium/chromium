@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">سائن آؤٹ کریں اور مطابقت پذیری آف کریں؟</translation>
 <translation id="1373696734384179344">منتخب مواد ڈاؤن لوڈ کرنے کیلئے ناکافی میموری۔</translation>
 <translation id="1376578503827013741">شمار کیا جا رہا ہے…</translation>
+<translation id="1382912999714108023">آپ کی موجودہ معلومات نظر نہیں آ رہی ہے؟ براہ کرم اسے اپ ڈیٹ کرنے کے لیے اپنے بینک سے رابطہ کریں۔</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1384704387250346179">‏Google لینز سے تصویر کا ترجمہ کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> دن پہلے فعال تھا</translation>
@@ -351,6 +352,7 @@
 <translation id="3214996641768123781">‏سائن ان ہونے پر آپ کے Google اکاؤنٹ میں <ph name="BEGIN_LINK1" />تلاش کی سرگزشت<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />سرگرمی کی دیگر اقسام<ph name="END_LINK2" /> محفوظ ہو سکتی ہیں۔ آپ انہیں کسی بھی وقت حذف کر سکتے ہیں۔</translation>
 <translation id="321773570071367578">اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />مطابقت پذیری دوبارہ ترتیب دیں<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">اپنے پاس ورڈز کی مطابقت پذیری کے لئے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
+<translation id="3223522355830797639">آپ کا بینک تصدیق کرنا چاہتا ہے کہ یہ آپ ہی ہیں۔</translation>
 <translation id="3227557059438308877">‏سیکیورٹی کلید کے بطور Google Chrome</translation>
 <translation id="3232754137068452469">ویب ایپ</translation>
 <translation id="3234978181857588512">آلہ پر محفوظ کریں</translation>
@@ -792,7 +794,6 @@
 <translation id="5942872142862698679">‏تلاش کیلئے Google کا استعمال کیا جا رہا ہے</translation>
 <translation id="5945035219773565305">موجودہ تجویز: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">لائیو صفحہ دیکھا جا رہا ہے</translation>
-<translation id="5952764234151283551">‏Google کو اس صفحے کا URL بھیجتی ہے جس تک آپ رسائی حاصل کرنے کی کوشش کر رہے ہیں</translation>
 <translation id="5956665950594638604">‏Chrome امدادی مرکز کو ایک نئے ٹیب میں کھولیں</translation>
 <translation id="5957442310066583693">اپنی سر فہرست سائٹس دیکھنے کے لیے، ہوم بٹن پر تھپتھپائیں</translation>
 <translation id="5958275228015807058">اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
@@ -817,6 +818,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">اپنی کہانیوں اور سرگرمی کو یہاں کنٹرول کریں</translation>
 <translation id="6069177176307973611">رازداری اور سیکورٹی کی ترتیبات کا جائزہ لیں</translation>
+<translation id="6070730414166672373">آپ کے بینک سے رابطہ کیا جا رہا ہے</translation>
 <translation id="6085886413119427067">کسی محفوظ کنکشن پر ویب سائٹس سے منسلک ہونے کے طریقے کا تعین کرتا ہے</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> گھنٹے باقی</translation>
 <translation id="6108923351542677676">سیٹ اپ جاری ہے…</translation>
@@ -934,7 +936,6 @@
 <translation id="6671495933530132209">تصویر کاپی کریں</translation>
 <translation id="6674571176963658787">مطابقت پذیری شروع کرنے کے لیے، اپنا پاس فریز درج کریں</translation>
 <translation id="6676840375528380067">‏اس آلہ سے آپ کا Chrome ڈیٹا صاف کریں؟</translation>
-<translation id="6697492270171225480">صفحہ نہ مل پانے کی صورت میں ملتے جلتے صفحات کے لیے تجاویز دکھائیں</translation>
 <translation id="6698801883190606802">مطابقت پذیر ڈیٹا کا نظم کریں</translation>
 <translation id="6699370405921460408">‏Google سرورز آپ کے ملاحظہ کیے جانے والے صفحات کو بہتر بنائیں گے۔</translation>
 <translation id="670498945988402717">گزشتہ کل چیک کیا گیا</translation>

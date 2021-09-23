@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">ଓଭର୍‌ଫ୍ଲୋ</translation>
 <translation id="1346748346194534595">ଡାହାଣ</translation>
 <translation id="1351937230027495976">ମେନୁକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
+<translation id="1364382257761975320">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1383597849754832576">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ଚାଲୁ</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">ଷ୍ଟାଇଲସ୍ ସେଟିଂ</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ସକ୍ରିୟ କରାଯାଉଛି</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="2367186422933365202">ଆପଣଙ୍କ Chromebookରେ ସାଇନ୍ ଇନ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="2369165858548251131">ଚୀନୀୟ ଭାଷାରେ "ନମସ୍କାର"</translation>
 <translation id="2390318262976603432">ଲୋକେଲ୍ ସେଟିଂସ୍</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">ମିଡିଆ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
+<translation id="2402411679569069051">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ଫୋନକୁ ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="2405664212338326887">ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="2408955596600435184">ଆପଣଙ୍କର PIN ଲେଖନ୍ତୁ</translation>
 <translation id="2412593942846481727">ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" />ଟି ଅଧିକ</translation>
 <translation id="324366796737464147">ନଏଜ୍ ହ୍ରାସ</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ୱିଣ୍ଡୋ <ph name="ACTIVE_DESK" /> ଡେସ୍କରୁ <ph name="TARGET_DESK" />ଡେସ୍କକୁ ଘୁଞ୍ଚାଇ ଦିଆଯାଇଛି</translation>
+<translation id="3252248118006571685">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଫୋନର ବ୍ଲୁଟୁଥ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3255483164551725916">ଆପଣ କ’ଣ କରିପାରିବେ?</translation>
 <translation id="3269597722229482060">ଡାହାଣ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="3289674678944039601">ଆଡପ୍ଟର୍ ମାଧ୍ୟମରେ ଚାର୍ଜ ହେଉଛି</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
+<translation id="3509391053705095206">ଆପଣଙ୍କ ଫୋନ୍ ମିଳୁନାହିଁ। ଆପଣଙ୍କ ଫୋନର ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="3510164367642747937">ମାଉସ୍‌ କର୍ସର୍‌ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ଦ୍ୱାରା ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" />ଟି ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">ସାମ୍‌ନାପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3713734891607377840">ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="3742055079367172538">ସ୍କ୍ରି‍ନ୍‍ସଟ୍ ନିଆଯାଇଛି</translation>
+<translation id="3744282433224562605">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="3771549900096082774">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ୍ ମୋଡ୍</translation>
 <translation id="3773700760453577392">ଜଣେ ବ୍ୟବସ୍ଥାପକ <ph name="USER_EMAIL" /> ପାଇଁ ଏକାଧିକ ସାଇନ୍-ଇନ୍‌କୁ ଅନୁମୋଦିତ କରିନାହାନ୍ତି। ଜାରି ରଖିବା ନିମନ୍ତେ ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ସାଇନ୍ ଆଉଟ୍ କରିବାକୁ ହେବ।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> ସହ ସଂଯୋଗ କରାଯାଉଛି</translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">ଡାହାଣ-କ୍ଲିକ୍ କଲେ କିମ୍ବା ଅଧିକ ସମୟ ଦବାଇ ରଖିଲେ, Assistant ଆପଣଙ୍କ ଚୟନ ପାଇଁ ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ କନଭର୍ସନ୍ ପରି ସୂଚନା ଦେଖାଏ।</translation>
 <translation id="4505050298327493054">ସକ୍ରିୟ ଡେସ୍କ.</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518404433291145981">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ପ୍ରଥମେ ଆପଣଙ୍କ ଫୋନକୁ ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍ ପେୟାର୍ କରିବାକୁ ଅନୁମତି ଚାହୁଁଛି।</translation>
 <translation id="453661520163887813">ପୂର୍ଣ୍ଣ ଚାର୍ଜ ହେବାକୁ ଆଉ <ph name="TIME" /> ଅଛି</translation>
 <translation id="4538824937723742295">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନର ସ୍କ୍ରିନସଟ୍ ନିଅନ୍ତୁ</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">ଭୁଲ ପିନ୍</translation>
 <translation id="5083553833479578423">ଆହୁରି ଆସିଷ୍ଟାଣ୍ଟ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
+<translation id="5147567197700016471">ଅନଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5155897006997040331">ପଢ଼ିବା ବେଗ</translation>
 <translation id="5166918508782100047">କ୍ୱିକ୍ ଉତ୍ତରଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5176318573511391780">ଆଂଶିକ ସ୍କ୍ରିନ୍ ରେକର୍ଡ କରନ୍ତୁ</translation>
+<translation id="5199367439331364630">ଆପଣଙ୍କ Chromebookରେ ସାଇନ୍ ଇନ୍ କରିବା ପାଇଁ, ପାସୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1ଟି ଅନ୍ୟ ବିଜ୍ଞପ୍ତି}other{#ଟି ଅନ୍ୟ ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="5207949376430453814">ଟେକ୍ସଟ୍ କ୍ୟାରେଟ୍ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="5208059991603368177">ଚାଲୁ ଅଛି</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">ନୂଆ ଡିଭାଇସକୁ ପେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5322611492012084517">ଆପଣଙ୍କ ଫୋନ୍ ମିଳି ପାରୁନାହିଁ</translation>
 <translation id="5329548388331921293">ସଂଯୋଗ ହେଉଛି...</translation>
+<translation id="5330201449517439522">ଲେଖିବା ପାଇଁ ଟାପ୍ କିମ୍ବା କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5331975486040154427">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ)</translation>
 <translation id="5352250171825660495">ଗାଢ଼ ଥିମ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="5379115545237091094">ଅତ୍ୟଧିକ ପ୍ରଚେଷ୍ଟା</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">ସଂଯୁକ୍ତ ଥିବା ଡିଭାଇସଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ରେ <ph name="ROUTE_TITLE" /> ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="584525477304726060">ବଡ଼ କରିବାକୁ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="5860491529813859533">ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5867217927013474703">ନେଟୱାର୍କ ସୂଚନା ସଂଗ୍ରହ କରାଯାଉଛି</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">ଆପଣଙ୍କ ଫୋନର ହଟସ୍ପଟ୍ ସହିତ ସଂଯୋଗ କରନ୍ତୁ, ଆପଣଙ୍କର ଡିଭାଇସକୁ ନୀରବ କରି ଏହାକୁ ଲୋକେଟ୍ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଫୋନରେ ବର୍ତ୍ତମାନ ଖୋଲାଯାଇଥିବା Chrome ଟାବଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="6670153871843998651">ଡେସ୍କ 3</translation>
 <translation id="6671495933530132209">ଛବି କପି କରନ୍ତୁ</translation>
+<translation id="6671661918848783005">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="6696025732084565524">ଆପଣଙ୍କର ଅଲଗା ହୋ‍ଇପାରୁଥିବା କୀବୋର୍ଡରେ ଏକ ମହତ୍ତ୍ୱପୂର୍ଣ୍ଣ ଅପ୍‌ଡେଟ୍‌ ଆବଶ୍ୟକ</translation>
 <translation id="6700713906295497288">IME ମେନୁ ବଟନ୍</translation>

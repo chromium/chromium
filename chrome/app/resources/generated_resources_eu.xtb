@@ -546,7 +546,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1580772913177567930">Jarri administratzailearekin harremanetan</translation>
 <translation id="1581962803218266616">Erakutsi Finder bidez</translation>
 <translation id="1582955169539260415">ezabatu [<ph name="FINGERPRINT_NAME" />]</translation>
-<translation id="1583127975413389276"><ph name="LANGUAGE" /> gailuan bertan prozesatzen da eta konexiorik gabe funtzionatzen du</translation>
+<translation id="1583127975413389276">Gailuan bertan prozesatzen da <ph name="LANGUAGE" />, eta konexiorik gabe funtzionatzen du</translation>
 <translation id="1584990664401018068">Baliteke darabilzun wifi-sarea (<ph name="NETWORK_ID" />) autentifikatu behar izatea.</translation>
 <translation id="1585717515139318619">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen gai bat gehitu du.
 
@@ -4495,7 +4495,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5805697420284793859">Leiho-kudeatzailea</translation>
 <translation id="5806773519584576205">0° (lehenetsia)</translation>
 <translation id="5810809306422959727">Ezin dituzu ezarri gurasoen murriztapenak kontu honetan</translation>
-<translation id="581120508026692647">Webguneen jakinarazpenak kudeatzeko, joan <ph name="LINK_BEGIN" />Chrome-ren ezarpenetara<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">Zabaldu guztiak</translation>
 <translation id="5815645614496570556">X.400 helbidea</translation>
 <translation id="5816434091619127343">Eskatutako inprimagailuaren aldaketen ondorioz erabilezin gera liteke inprimagailua.</translation>
@@ -4907,7 +4906,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6254892857036829079">Ezin hobea</translation>
 <translation id="6257602895346497974">Aktibatu sinkronizazioa…</translation>
 <translation id="625895209797312329">Ez utzi webguneei gailuan instalatutako letrak erabiltzen</translation>
-<translation id="6259104249628300056">Aurkitu zure sare lokaleko gailuak</translation>
 <translation id="6262371516389954471">Babeskopiak Google-ra kargatzen dira, eta Google-ko kontuko pasahitza erabilita enkriptatzen.</translation>
 <translation id="6263082573641595914">Microsoft CA bertsioa</translation>
 <translation id="6263284346895336537">Ez da kritikoa</translation>

@@ -4510,7 +4510,6 @@
 <translation id="5805697420284793859">Мениджър на прозорците</translation>
 <translation id="5806773519584576205">0° (по подразбиране)</translation>
 <translation id="5810809306422959727">Този профил не отговаря на условията за родителски контроли</translation>
-<translation id="581120508026692647">За известия от уебсайтове отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">Разгъване на всички</translation>
 <translation id="5815645614496570556">Адрес на X.400</translation>
 <translation id="5816434091619127343">Заявените промени в принтера ще го направят неизползваем.</translation>
@@ -4922,7 +4921,6 @@
 <translation id="6254892857036829079">Перфектно</translation>
 <translation id="6257602895346497974">Включване на синхронизирането...</translation>
 <translation id="625895209797312329">Блокиране на сайтовете, така че да не използват шрифтовете, инсталирани на устройството ви</translation>
-<translation id="6259104249628300056">Откриване на устройства в локалната ви мрежа</translation>
 <translation id="6262371516389954471">Резервните ви копия се качват в Google и се шифроват посредством паролата за профила ви в Google.</translation>
 <translation id="6263082573641595914">Версия на сертифициращ орган от Microsoft</translation>
 <translation id="6263284346895336537">Не е критично</translation>

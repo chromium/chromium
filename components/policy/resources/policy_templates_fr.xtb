@@ -1109,6 +1109,13 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2299220924812062390">Indiquer une liste de plug-ins activés</translation>
 <translation id="2301048990069984110">Étendre la compatibilité pour les applis Chrome sur Windows, Mac et Linux.</translation>
 <translation id="2303795211377219696">Activer la saisie automatique pour les cartes de crédit</translation>
+<translation id="2304009805995145854">Depuis <ph name="PRODUCT_NAME" /> 67, l'isolation de sites a été activée par défaut sur toutes les plates-formes de bureau. Chaque site exécute ainsi son propre processus. Un site est un schéma avec eTLD+1 (ex. : https://example.com). L'activation de cette règle ne change pas ce comportement. Cela empêche seulement les utilisateurs de le désactiver (par exemple, via l'option "Désactiver l'isolation de sites" sur la page chrome://flags). Depuis <ph name="PRODUCT_NAME" /> 76, si cette règle est désactivée ou qu'elle n'est pas configurée, l'isolation de sites n'est pas désactivée, mais les utilisateurs peuvent la désactiver.
+
+      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> peut aussi être utile pour isoler des origines spécifiques plus précisément que le site (ex. : https://a.example.com).
+
+      Pour <ph name="PRODUCT_OS_NAME" /> 76 ou version antérieure, attribuez la même valeur à la règle <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> relative aux appareils. Si les valeurs diffèrent, cela peut ralentir l'ouverture de la session utilisateur.
+
+      Remarque : Sous Android, utilisez la règle <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> à la place.</translation>
 <translation id="2307496301287881990">Transmettre des états liés aux affichages et aux graphiques</translation>
 <translation id="2309390639296060546">Paramètre de géolocalisation par défaut</translation>
 <translation id="2331354174913096226">Modèle URI du résolveur DNS-over-HTTPS souhaité. Pour définir plusieurs résolveurs DNS-over-HTTPS, vous devez séparer les modèles URI correspondants à l'aide d'espaces.
@@ -1169,6 +1176,17 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Si vous définissez <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> sur "2", aucune variante ne peut être appliquée au navigateur. Veuillez noter que ce mode n'est pas recommandé, car il est susceptible d'empêcher les développeurs <ph name="PRODUCT_NAME" /> de fournir des correctifs de sécurité critiques en temps voulu.</translation>
 <translation id="2402547085566757554">Ne pas utiliser la page "Nouvel onglet" comme page d'accueil</translation>
+<translation id="240713331529749993">Si cette règle est configurée, chacune des origines définies dans une liste d'éléments séparés par une virgule exécute un processus dédié sous Android. Le processus de chaque origine définie ne pourra contenir que des documents de cette origine et de ses sous-domaines. Par exemple, spécifier https://a1.example.com/ autorise https://a2.a1.example.com/ dans le même processus, mais pas https://example.com ni https://b.example.com. Notez qu'Android isole certains sites sensibles par défaut à partir de <ph name="PRODUCT_NAME" /> 77, et que cette règle étend ce mode pour isoler des origines supplémentaires spécifiques.
+
+      Depuis <ph name="PRODUCT_NAME" /> 77, vous pouvez aussi spécifier une plage d'origines à isoler à l'aide d'un caractère générique. Par exemple, spécifier https://[*.]corp.example.com attribuera à chaque origine sous https://corp.example.com son propre processus dédié, y compris https://corp.example.com, https://a1.corp.example.com et https://a2.a1.corp.example.com.
+
+      Notez que les origines isolées par cette règle ne pourront pas scripter d'autres origines dans le même site, ce qui est sinon possible lorsque deux documents du même site modifient leurs valeurs document.domain pour qu'elles correspondent. Les administrateurs doivent vérifier que ce comportement inhabituel n'est pas utilisé sur une origine avant de l'isoler.
+
+      Si cette règle est désactivée, toute forme d'isolation de sites l'est aussi, y compris l'isolation des sites sensibles et des tests en conditions réelles d'IsolateOriginsAndroid et de SitePerProcessAndroid, et les autres modes d'isolation de sites. Les utilisateurs peuvent quand même activer manuellement IsolateOrigins via l'indicateur de ligne de commande.
+
+      Si cette règle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
+
+      Remarque : L'isolation de trop nombreux sites sur Android peut entraîner des problèmes de performances, surtout sur les appareils disposant de peu de mémoire. Cette règle ne concerne que les appareils Android dans Chrome, qui ont plus de 1 Go de RAM. Pour l'appliquer sur des plates-formes autres qu'Android, utilisez <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="2411629345938804022">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès aux appareils Bluetooth à proximité. Si cette règle est définie sur "2", la demande d'accès à ces appareils est refusée.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -2705,6 +2723,17 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent transférer des fichiers vers Google Drive même s'ils sont connectés à un réseau mobile.</translation>
 <translation id="4248277954659222481">Autoriser la lecture automatique des contenus multimédias pour les formats d'URL sur liste d'autorisation</translation>
 <translation id="4250680216510889253">Non</translation>
+<translation id="4260027436474745627">Si cette règle est configurée, chacune des origines définies dans une liste d'éléments séparés par une virgule exécute un processus dédié. Le processus de chaque origine définie ne pourra contenir que des documents de cette origine et de ses sous-domaines. Par exemple, spécifier https://a1.example.com/ autorise https://a2.a1.example.com/ dans le même processus, mais pas https://example.com ni https://b.example.com.
+
+      Depuis <ph name="PRODUCT_NAME" /> 77, vous pouvez aussi spécifier une plage d'origines à isoler à l'aide d'un caractère générique. Par exemple, spécifier https://[*.]corp.example.com attribuera à chaque origine sous https://corp.example.com son propre processus dédié, y compris https://corp.example.com, https://a1.corp.example.com et https://a2.a1.corp.example.com.
+
+      Notez que tous les sites (c'est-à-dire le schéma avec eTLD+1 tel que https://example.com) sont déjà isolés par défaut sur les plates-formes de bureau, comme indiqué dans la règle <ph name="SITE_PER_PROCESS_POLICY_NAME" />. La règle <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> est utile pour isoler des origines spécifiques plus précisément (ex. : https://a.example.com).
+
+      Notez aussi que les origines isolées par cette règle ne pourront pas scripter d'autres origines dans le même site, ce qui est sinon possible lorsque deux documents du même site modifient leurs valeurs document.domain pour qu'elles correspondent. Les administrateurs doivent vérifier que ce comportement inhabituel n'est pas utilisé sur une origine avant de l'isoler.
+
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
+
+      Remarque : Sous Android, utilisez la règle <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> à la place.</translation>
 <translation id="4261820385751181068">Paramètres régionaux de l'écran de connexion de l'appareil</translation>
 <translation id="4266547484666068234">Configurer cette règle autorise l'accès aux URL répertoriées (prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />). Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, définir <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://www.chromium.org/administrators/url-blocklist-filter-format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
 
@@ -3573,6 +3602,15 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           </translation>
 <translation id="5435888298115339571">Activer le partage du bureau dans l'omnibox et le menu à trois points</translation>
 <translation id="5442026853063570579">Cette règle permet également de contrôler l'accès aux options pour les développeurs Android. Si vous définissez cette règle sur "DeveloperToolsDisallowed" (valeur 2), les utilisateurs ne pourront pas accéder aux options pour les développeurs. Si vous la définissez sur une autre valeur ou si vous ne la modifiez pas, les utilisateurs pourront accéder aux options pour les développeurs en appuyant sept fois sur le numéro de version dans l'application des paramètres Android.</translation>
+<translation id="5443582909255996887">Si cette règle est activée, tous les sites sur Android sont isolés de sorte que chacun d'eux exécute son propre processus, et les utilisateurs ne peuvent pas désactiver ce comportement. Un site est un schéma avec eTLD+1 (ex. : https://example.com). Sachez qu'Android isole certains sites sensibles par défaut depuis <ph name="PRODUCT_NAME" /> 77. Cette règle étend ce mode d'isolation par défaut à tous les sites.
+
+      Si cette règle est désactivée, toute forme d'isolation de sites l'est aussi, y compris l'isolation des sites sensibles et des tests en conditions réelles d'IsolateOriginsAndroid et de SitePerProcessAndroid, et les autres modes d'isolation de sites. Les utilisateurs peuvent quand même activer la règle manuellement.
+
+      Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas modifier ce paramètre.
+
+      <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> peut aussi être utile pour isoler des origines spécifiques plus précisément qu'un site (ex. : https://a.example.com).
+
+      Remarque : Il est possible que l'isolation de tous les sites sur Android entraîne actuellement des problèmes de performances, surtout sur les appareils bas de gamme. Des améliorations vont donc y être apportées. Cette règle ne concerne que les appareils Android dans Chrome, qui ont plus de 1 Go de RAM. Pour isoler des sites spécifiques en limitant l'impact sur les performances pour les utilisateurs, servez-vous de <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> avec une liste des sites à isoler.  Pour l'appliquer sur des plates-formes autres qu'Android, utilisez la règle <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="5445596354079213552">Cette règle n'est appliquée que si la date d'expiration des mises à jour automatiques associée à l'appareil est atteinte et que celui-ci ne répond pas aux exigences de version minimale pour <ph name="PRODUCT_OS_NAME" />, définies dans la règle <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
       Lorsque cette règle est définie sur une chaîne non vide :
@@ -6174,6 +6212,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
 
       Remarque : Le blocage des URL internes chrome://* peut provoquer des erreurs inattendues.</translation>
+<translation id="8626826495474944836">Exiger l'isolement de chaque site</translation>
 <translation id="8631434304112909927">jusqu'à la version <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Liste des applications de prise de notes autorisées sur l'écran de verrouillage de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8637566476051166626">Ports réseau explicitement autorisés</translation>

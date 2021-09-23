@@ -4246,6 +4246,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}one{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}few{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}many{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}other{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Імпортовано із Firefox</translation>
 <translation id="5502915260472117187">Дитина</translation>
+<translation id="5503356662318814623">Надіслати повідомлення</translation>
 <translation id="5503982651688210506">Надалі дозволяти сайту <ph name="HOST" /> використовувати й переміщувати камеру, а також використовувати мікрофон</translation>
 <translation id="5504909642107847870">Конфіденційність і безпека</translation>
 <translation id="5505264765875738116">Сайти не можуть просити дозвіл надсилати сповіщення</translation>
@@ -4502,6 +4503,7 @@
 <translation id="5794414402486823030">Завжди відкривати за допомогою системного переглядача</translation>
 <translation id="5794700615121138172">Спільні папки Linux</translation>
 <translation id="5794786537412027208">Вийти з усіх додатків Chrome</translation>
+<translation id="5796485699458186843">Нова анонімна вкладка</translation>
 <translation id="5797521893972859201">Буде очищено історію, зокрема в полі пошуку</translation>
 <translation id="5798079537501238810">Сайти можуть установлювати обробники платежів</translation>
 <translation id="579915268381781820">Ключ безпеки вилучено.</translation>
@@ -4513,7 +4515,6 @@
 <translation id="5805697420284793859">Диспетчер вікон</translation>
 <translation id="5806773519584576205">0° (за умовчанням)</translation>
 <translation id="5810809306422959727">Для цього облікового запису не можна ввімкнути батьківський контроль</translation>
-<translation id="581120508026692647">Для сповіщень веб-сайтів перейдіть у <ph name="LINK_BEGIN" />налаштування Chrome<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">Розгорнути всі</translation>
 <translation id="5815645614496570556">Адреса каталогу X.400</translation>
 <translation id="5816434091619127343">Після цих змін принтер стане непридатним для використання.</translation>
@@ -4925,7 +4926,6 @@
 <translation id="6254892857036829079">Чудова</translation>
 <translation id="6257602895346497974">Увімкнути синхронізацію…</translation>
 <translation id="625895209797312329">Заборонити сайтам використовувати шрифти, установлені на пристрої</translation>
-<translation id="6259104249628300056">Пошук пристроїв у локальній мережі</translation>
 <translation id="6262371516389954471">Ваші резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google.</translation>
 <translation id="6263082573641595914">Версія ЦС Microsoft</translation>
 <translation id="6263284346895336537">Не вирішальні</translation>
@@ -5097,7 +5097,7 @@
 <translation id="6445450263907939268">Якщо ви не хочете цих змін, можна відновити попередні налаштування.</translation>
 <translation id="6446213738085045933">Створити ярлик на робочому столі</translation>
 <translation id="6447210166804596538">Найважливіші елементи керування конфіденційністю та безпекою на одній сторінці</translation>
-<translation id="6447842834002726250">Cookie-файли</translation>
+<translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6450876761651513209">Змінювати налаштування конфіденційності</translation>
 <translation id="6451344358166983408">Сайт або сторінка</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> і ще одна вкладка}one{<ph name="PAGE_TITLE" /> і ще # вкладка}few{<ph name="PAGE_TITLE" /> і ще # вкладки}many{<ph name="PAGE_TITLE" /> і ще # вкладок}other{<ph name="PAGE_TITLE" /> і ще # вкладки}}</translation>
@@ -6523,10 +6523,12 @@
 <translation id="7952904276017482715">Очікувався ідентифікатор <ph name="EXPECTED_ID" />, але отримано <ph name="NEW_ID" /></translation>
 <translation id="7953669802889559161">Методи введення</translation>
 <translation id="7953955868932471628">Керувати комбінаціями клавіш</translation>
+<translation id="7955105108888461311">Запитати особисто</translation>
 <translation id="7956373551960864128">Збережені принтери</translation>
 <translation id="7957074856830851026">Переглядати інформацію з пристрою, наприклад серійний номер або ідентифікатор об'єкта</translation>
 <translation id="7957615753207896812">Відкрити налаштування клавіатури</translation>
 <translation id="7959074893852789871">Файл містив декілька сертифікатів, деякі з яких не було імпортовано:</translation>
+<translation id="7959665254555683862">Нова анонімна вкладка</translation>
 <translation id="7961015016161918242">Ніколи</translation>
 <translation id="7963001036288347286">Прискорення на сенсорній панелі</translation>
 <translation id="7963608432878156675">Ця назва використовується для підключень через Bluetooth і з'єднань із мережею та видима на інших пристроях</translation>

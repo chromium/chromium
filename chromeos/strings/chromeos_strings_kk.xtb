@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Сынақтан өтті</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> сенсорлық тақтасы</translation>
 <translation id="2407209115954268704">SIM картасын құлыптау күйі</translation>
 <translation id="2418150275289244458">Параметрлер бөлімінен ашу</translation>
 <translation id="2446553403094072641">Жылжымалы үтір дәлдігі</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Тексерілуде</translation>
 <translation id="3368922792935385530">Қосылған</translation>
 <translation id="3369013195428705271">Басып шығару тарихын шынымен толығымен тазалағыңыз келе ме? Қазір орындалып жатқан басып шығару жұмысының деректері сақталады.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> сенсорлық экраны</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
-<translation id="3440478087746699229">Ішкі</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> бет (жалпы саны: <ph name="TOTAL_PAGES" />) басып шығарылды.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-бет сканерленуде. <ph name="PERCENTAGE_VALUE" />% орындалды.</translation>
 <translation id="3459509316159669723">Басып шығару</translation>
@@ -233,7 +230,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM құлыпталған (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Топ атауы</translation>
-<translation id="5051044138948155788">Бұл — жалғыз бет. Осы арқылы сканерлеуді бастау экранына өтесіз.</translation>
+<translation id="5051044138948155788">Бұл — жалғыз бет. Содан кейін сканерлеуді бастау экранына өтесіз.</translation>
 <translation id="5088172560898466307">Сервер хостының атауы</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
@@ -354,7 +351,6 @@
 <translation id="6977381486153291903">Микробағдарлама нұсқасы</translation>
 <translation id="6982876849933694860">Жаңа байланысты орнату үшін <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөліміне өтіңіз.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> пернетақтасы</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7058278511608979688">Аяқтау және сақтау</translation>
 <translation id="7059230779847288458">Зарядталуда, толғанға дейінгі уақыт: <ph name="TIME_VALUE" /></translation>
@@ -469,7 +465,6 @@
 <translation id="8818152010000655963">Тұсқағаз</translation>
 <translation id="8834539327799336565">Қазір жалғанғандар</translation>
 <translation id="8845001906332463065">Анықтама алу</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Тексеріс сәтті аяқталды.</translation>
 <translation id="8898840733695078011">Сигнал күші</translation>

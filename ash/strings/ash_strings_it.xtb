@@ -64,6 +64,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1351937230027495976">Comprimi il menu</translation>
+<translation id="1364382257761975320">Per sbloccare Chromebook, utilizza la tua impronta</translation>
 <translation id="1383597849754832576">Impossibile scaricare i file di contenuti vocali. Riprova più tardi.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1391102559483454063">On</translation>
@@ -186,10 +187,12 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2352467521400612932">Impostazioni di stilo</translation>
 <translation id="2354174487190027830">Attivazione di <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="2367186422933365202">Impossibile accedere a Chromebook</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
 <translation id="2390318262976603432">Impostazioni internazionali</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Controlli multimediali</translation>
+<translation id="2402411679569069051">Per sbloccare Chromebook, utilizza la tua impronta o sblocca il telefono</translation>
 <translation id="2405664212338326887">Non connessa</translation>
 <translation id="2408955596600435184">Inserisci il codice PIN</translation>
 <translation id="2412593942846481727">Aggiornamento disponibile</translation>
@@ -290,6 +293,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3226991577105957773">+ altre <ph name="COUNT" /></translation>
 <translation id="324366796737464147">Eliminazione del rumore</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> è stata spostata dalla scrivania <ph name="ACTIVE_DESK" /> alla scrivania <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Per sbloccare Chromebook, attiva il Bluetooth del telefono</translation>
 <translation id="3255483164551725916">Cosa sai fare?</translation>
 <translation id="3269597722229482060">Clic con il pulsante destro</translation>
 <translation id="3289674678944039601">Carica tramite adattatore</translation>
@@ -323,6 +327,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3477079411857374384">CTRL + MAIUSC + barra spaziatrice</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definizione</translation>
+<translation id="3509391053705095206">Impossibile trovare il telefono. Assicurati che il Bluetooth del telefono sia attivo.</translation>
 <translation id="3510164367642747937">Evidenzia il puntatore del mouse</translation>
 <translation id="3513798432020909783">Account gestito da <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Connessione stabilita con <ph name="NUM_DEVICES" /> dispositivi</translation>
@@ -358,6 +363,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="3713734891607377840">Apri dopo il completamento</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
+<translation id="3744282433224562605">Per sbloccare Chromebook, inserisci la password</translation>
 <translation id="3771549900096082774">Modalità ad alto contrasto</translation>
 <translation id="3773700760453577392">Un amministratore ha vietato l'accesso simultaneo per <ph name="USER_EMAIL" />.
  Per continuare, devono disconnettersi tutti gli utenti.</translation>
@@ -469,6 +475,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4485060137115666462">Se fai clic con il pulsante destro del mouse o se applichi una pressione prolungata, l'assistente ti mostra informazioni quali la definizione, la traduzione o la conversione di unità per gli elementi selezionati.</translation>
 <translation id="4505050298327493054">Scrivania attiva.</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518404433291145981">Per sbloccare Chromebook, sblocca prima il telefono</translation>
 <translation id="4527045527269911712">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> alla ricarica completa</translation>
 <translation id="4538824937723742295">Acquisisci screenshot a schermo intero</translation>
@@ -552,11 +559,13 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
+<translation id="5147567197700016471">Sbloccato</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
 <translation id="5166918508782100047">Impostazioni Risposte rapide</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
+<translation id="5199367439331364630">Per accedere a Chromebook, inserisci la password</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}other{altre # notifiche}}</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="5208059991603368177">On</translation>
@@ -577,6 +586,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5319712128756744240">Accoppia nuovo dispositivo</translation>
 <translation id="5322611492012084517">Impossibile trovare il telefono</translation>
 <translation id="5329548388331921293">Connessione…</translation>
+<translation id="5330201449517439522">Tocca o fai clic per accedere</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta posteriore sinistra)</translation>
 <translation id="5352250171825660495">Tema scuro attivo</translation>
 <translation id="5379115545237091094">Troppi tentativi</translation>
@@ -634,6 +644,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5825969630400862129">Impostazioni dei dispositivi connessi</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Tieni premuto per ingrandire</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5867217927013474703">Raccolta delle informazioni della rete in corso…</translation>
@@ -739,6 +750,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6667908387435388584">Connettiti all'hotspot del tuo telefono, disattiva i suoni del dispositivo, individualo e visualizza le schede recenti di Chrome aperte sul telefono</translation>
 <translation id="6670153871843998651">Scrivania 3</translation>
 <translation id="6671495933530132209">Copia immagine</translation>
+<translation id="6671661918848783005">Impossibile sbloccare Chromebook</translation>
 <translation id="6692996468359469499">Ricevi informazioni correlate alla tua selezione</translation>
 <translation id="6696025732084565524">La tastiera rimovibile richiede un aggiornamento critico</translation>
 <translation id="6700713906295497288">Pulsante di menu IME</translation>

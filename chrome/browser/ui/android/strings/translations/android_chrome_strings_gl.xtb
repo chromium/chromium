@@ -66,6 +66,7 @@
 <translation id="1360432990279830238">Queres pechar sesión?</translation>
 <translation id="1373696734384179344">Memoria insuficiente para descargar o contido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando...</translation>
+<translation id="1382912999714108023">Non ves a túa información actual? Ponte en contacto co banco para actualizala.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Dispositivo activo hai <ph name="LAST_UPDATED" />días</translation>
@@ -351,6 +352,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3214996641768123781">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google o <ph name="BEGIN_LINK1" />historial de busca<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outros datos da túa actividade<ph name="END_LINK2" />. Podes eliminalos en calquera momento.</translation>
 <translation id="321773570071367578">Se esqueciches o teu contrasinal ou queres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece a sincronización<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Para sincronizar os contrasinais, verifica a túa identidade</translation>
+<translation id="3223522355830797639">O teu banco quere confirmar a túa identidade.</translation>
 <translation id="3227557059438308877">Google Chrome como chave de seguranza</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3234978181857588512">Gardar no dispositivo</translation>
@@ -792,7 +794,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5942872142862698679">Uso de Google para a busca</translation>
 <translation id="5945035219773565305">Recomendación actual: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Vendo páxina publicada</translation>
-<translation id="5952764234151283551">Envía a Google o URL dunha páxina á que tentas acceder</translation>
 <translation id="5956665950594638604">Abrir o Centro de Axuda de Chrome nunha nova pestana</translation>
 <translation id="5957442310066583693">Tocar o botón Inicio para ver os teus sitios favoritos</translation>
 <translation id="5958275228015807058">Atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
@@ -817,6 +818,7 @@ As probas de Privacy Sandbox aínda se atopan nunha fase de desenvolvemento acti
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
 <translation id="6069177176307973611">Revisa a configuración de privacidade e seguranza</translation>
+<translation id="6070730414166672373">Contactando co teu banco\u2026</translation>
 <translation id="6085886413119427067">Determina como conectarse a sitios web mediante una conexión segura</translation>
 <translation id="60923314841986378">Quedan <ph name="HOURS" /> horas</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
@@ -934,7 +936,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6674571176963658787">Para comezar a sincronizar datos, escribe a túa frase de acceso</translation>
 <translation id="6676840375528380067">Queres borrar os teus datos de Chrome deste dispositivo?</translation>
-<translation id="6697492270171225480">Mostrar suxestións de páxinas similares cando non se atope unha páxina</translation>
 <translation id="6698801883190606802">Xestionar datos sincronizados</translation>
 <translation id="6699370405921460408">Os servidores de Google optimizarán as páxinas que visites.</translation>
 <translation id="670498945988402717">A comprobación realizouse onte</translation>

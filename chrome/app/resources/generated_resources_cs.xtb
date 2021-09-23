@@ -4496,7 +4496,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5805697420284793859">Správce oken</translation>
 <translation id="5806773519584576205">0° (výchozí)</translation>
 <translation id="5810809306422959727">Tento účet nemůže používat rodičovskou kontrolu</translation>
-<translation id="581120508026692647">Oznámení webů můžete spravovat v <ph name="LINK_BEGIN" />nastavení Chromu<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">Rozbalit vše</translation>
 <translation id="5815645614496570556">Adresa X.400</translation>
 <translation id="5816434091619127343">Po provedení požadovaných změn by tiskárna nebyla použitelná.</translation>
@@ -4908,7 +4907,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6254892857036829079">Perfektní</translation>
 <translation id="6257602895346497974">Zapnout synchronizaci...</translation>
 <translation id="625895209797312329">Bránit webům v používání písem nainstalovaných v zařízení</translation>
-<translation id="6259104249628300056">Rozpoznávat zařízení v místní síti</translation>
 <translation id="6262371516389954471">Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google.</translation>
 <translation id="6263082573641595914">Verze CA Microsoft</translation>
 <translation id="6263284346895336537">Nekritický</translation>

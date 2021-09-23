@@ -100,6 +100,7 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
 <translation id="1108600514891325577">&amp;روکیں</translation>
 <translation id="1110155001042129815">انتظار کریں</translation>
+<translation id="1110965959145884739">منتخب کریں کہ کون سی زبانیں اس آلہ پر انسٹال کی جائیں۔ ڈسک اسپیس محفوظ کرنے کے لیے زبان کی فائلیں صارفین کے درمیان اشتراک کی جاتی ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">پروجیکٹر</translation>
 <translation id="1112420131909513020">پس منظر ٹیب بلوٹوتھ استعمال کر رہا ہے</translation>
 <translation id="1113892970288677790">کیوریٹ کردہ نیٹ ورک اور تصاویر کو منتخب کریں</translation>
@@ -545,6 +546,7 @@
 <translation id="1580772913177567930">اپنے منتظم سے رابطہ کریں</translation>
 <translation id="1581962803218266616">تلاش کنندہ میں دکھائیں</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] حذف کریں</translation>
+<translation id="1583127975413389276"><ph name="LANGUAGE" /> پر مقامی طور پر کارروائی کی جاتی ہے اور آف لائن کام کرتی ہے</translation>
 <translation id="1584990664401018068">‏ممکن ہے کہ آپ کے زیر استعمال Wi-Fi نیٹ ورک (<ph name="NETWORK_ID" />) کو توثیق درکار ہو۔</translation>
 <translation id="1585717515139318619">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک تھیم شامل کی ہے جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔
 
@@ -755,6 +757,7 @@
 <translation id="177989070088644880">(<ph name="ANDROID_PACKAGE_NAME" />) ایپ</translation>
 <translation id="1780152987505130652">گروپ بند کریں</translation>
 <translation id="1780273119488802839">بک مارکس درآمد ہو رہے ہیں…</translation>
+<translation id="178092663238929451">اپنے آس پاس کے لوگوں سے فائلیں وصول کرنے اور انہیں بھیجنے کے لیے قریبی آلات کے ساتھ اشتراک سیٹ اپ کریں</translation>
 <translation id="1781291988450150470">‏موجودہ PIN</translation>
 <translation id="1781398670452016618">‏<ph name="DOMAIN" /> کو درکار ہے کہ آپ ابھی Wi-Fi سے منسلک ہوں اور اپ ڈیٹ ڈاؤن لوڈ کریں۔</translation>
 <translation id="1781502536226964113">نیا ٹیب صفحہ کھولیں</translation>
@@ -1587,6 +1590,7 @@
 <translation id="265390580714150011">فیلڈ قدر</translation>
 <translation id="2654166010170466751">سائٹس کو ادائیگی کے ہینڈلرز انسٹال کرنے کی اجازت دیں</translation>
 <translation id="2654553774144920065">پرنٹ کی درخواست</translation>
+<translation id="2658941648214598230">اصل مواد دکھائیں؟</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />خصوصیات آلہ کے لحاظ سے مختلف ہوتی ہیں</translation>
 <translation id="2659971421398561408">‏Crostini کی ڈسک کی سائز تبدیل کریں</translation>
 <translation id="2660779039299703961">ایونٹ</translation>
@@ -2451,6 +2455,7 @@
 <translation id="3564848315152754834">‏USB سیکیورٹی کلید</translation>
 <translation id="3566325075220776093">اس آلہ سے</translation>
 <translation id="3566721612727112615">کوئی سائٹس شامل نہیں کی گئیں</translation>
+<translation id="3567284462585300767">اپنے آس پاس کے لوگوں سے فائلیں وصول کرنے اور قبول کرنے کے لیے، مرئی بنیں</translation>
 <translation id="3569382839528428029">کیا آپ چاہتے ہیں کہ <ph name="APP_NAME" /> آپ کی اسکرین کا اشتراک کرے؟</translation>
 <translation id="3569407787324516067">اسکرین سیور</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> مندرجہ ذیل فائلز اور فولڈرز کو دیکھ سکتا ہے</translation>
@@ -3541,6 +3546,7 @@
 <translation id="475088594373173692">پہلا صارف</translation>
 <translation id="4756378406049221019">بند کریں/دوبارہ لوڈ کریں</translation>
 <translation id="4756388243121344051">&amp;سرگزشت</translation>
+<translation id="4759126501639448579">میموریز کبھی نہ دکھائیں</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4761104368405085019">اپنا مائیکروفون استعمال کریں</translation>
 <translation id="4762718786438001384">آلہ کے ڈسک کی جگہ انتہائی کم ہے</translation>
@@ -3865,6 +3871,7 @@
 <translation id="51143538739122961">اپنی سیکیورٹی کلید داخل کریں اور اسے ٹچ کریں</translation>
 <translation id="5115309401544567011">براہ کرم پاور کے ماخذ میں اپنا <ph name="DEVICE_TYPE" /> پلگ کریں۔</translation>
 <translation id="5115338116365931134">SSO</translation>
+<translation id="511632863918093828">تمام میموریز مخفی ہیں</translation>
 <translation id="5116628073786783676">آڈیو &amp;محفوظ کریں بطور…</translation>
 <translation id="5117139026559873716">اپنے فون کو اپنے <ph name="DEVICE_TYPE" /> سے غیر منسلک کریں۔ وہ اب خودکار طور پر منسلک نہیں ہو پائیں گے۔</translation>
 <translation id="5117930984404104619">‏ملاحظہ کردہ URLs سمیت دیگر ایکسٹینشنز کے رویے کو مانیٹر کریں</translation>
@@ -4486,7 +4493,6 @@
 <translation id="5805697420284793859">ونڈو مینیجر</translation>
 <translation id="5806773519584576205">0° (ڈیفالٹ)</translation>
 <translation id="5810809306422959727">یہ اکاؤنٹ پیرنٹل کنٹرولز کے لیے محفوظ نہیں ہے</translation>
-<translation id="581120508026692647">‏ویب سائٹ کی اطلاعات کے لیے <ph name="LINK_BEGIN" />Chrome کی ترتیبات<ph name="LINK_END" /> پر جائیں</translation>
 <translation id="5812674658566766066">سبھی کو پھیلائیں</translation>
 <translation id="5815645614496570556">‏X.400 پتہ</translation>
 <translation id="5816434091619127343">پرنٹر میں درخواست کردہ تبدیلیاں کرنے سے پرنٹر ناقابل استعمال ہو جائے گا۔</translation>
@@ -4898,7 +4904,6 @@
 <translation id="6254892857036829079">کامل</translation>
 <translation id="6257602895346497974">مطابقت پذیری آن کریں…</translation>
 <translation id="625895209797312329">اپنے آلے پر انسٹال کردہ فونٹس کے استعمال سے سائٹس کو مسدود کریں</translation>
-<translation id="6259104249628300056">اپنے مقامی نیٹ ورک پر آلات کو دریافت کریں</translation>
 <translation id="6262371516389954471">‏آپ کے بیک اپس کو Google پر اپ لوڈ کیا جاتا ہے اور آپ کے Google اکاؤنٹ کا پاس ورڈ استعمال کر کے انہیں مرموز کیا جاتا ہے۔</translation>
 <translation id="6263082573641595914">‏Microsoft CA ورژن</translation>
 <translation id="6263284346895336537">اہم نہیں</translation>
@@ -5008,6 +5013,7 @@
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
 <translation id="6380143666419481200">قبول کریں اور جاری رکھیں</translation>
+<translation id="6382958439467370461">کوئی غیر فعال شارٹ کٹ نہیں</translation>
 <translation id="638418309848716977">تعاون یافتہ لنکس</translation>
 <translation id="6384275966486438344">اپنی تلاش کی ترتیبات کو اس سے تبدیل کریں: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{بغیر نام کا گروپ - 1 ٹیب}other{بغیر نام کا گروپ - # ٹیبز}}</translation>
@@ -5884,6 +5890,7 @@
 <translation id="7354341762311560488">فنگر پرنٹ سینسر آپ کے کی بورڈ پر سب سے نیچے بائیں ہاتھ کی کلید ہے۔ اسے کسی بھی انگلی سے ہلکے سے ٹچ کریں۔</translation>
 <translation id="7356908624372060336">نیٹ ورک لاگز</translation>
 <translation id="735745346212279324">‏VPN منقطع ہو گیا</translation>
+<translation id="7358324924540718595">آج کیلئے مخفی میموریز</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> کیلئے <ph name="PAGE_NUMBER" /> صفحات</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> چلانے کیلئے دایاں کلک کریں</translation>
 <translation id="7362387053578559123">سائٹس بلوٹوتھ آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
@@ -6284,6 +6291,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> سے ٹیکسٹ کا اشتراک کیا گیا ہے</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">اپنے ڈسپلے کی حدود کو ایڈجسٹ کریں</translation>
+<translation id="7759276754544429366">آج کیلئے میموریز چھپائیں</translation>
 <translation id="7760004034676677601">کیا یہی وہ ابتدائی صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> سے <ph name="DOWNLOAD_RECEIVED" /></translation>
@@ -6951,6 +6959,7 @@
 <translation id="8457451314607652708">بُک مارکس درآمد کریں</translation>
 <translation id="8458341576712814616">شارٹ کٹ</translation>
 <translation id="8458627787104127436">سبھی (<ph name="URL_COUNT" />) کو نئی ونڈو میں کھولیں</translation>
+<translation id="8460490661223303637">‏میموری محفوظ کرنے کیلئے، Chrome نے کچھ مواد کو حذف کر دیا</translation>
 <translation id="8460932807646981183">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
 <translation id="84613761564611563">‏نیٹ ورک کنفیگر UI کی درخواست کی گئی، براہ کرم انتظار کریں…</translation>
 <translation id="8461914792118322307">پراکسی</translation>

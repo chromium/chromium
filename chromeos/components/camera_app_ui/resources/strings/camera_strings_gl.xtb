@@ -9,6 +9,7 @@
 <translation id="1467231725790366244">Desconectouse a cámara <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4 × 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">O escaneado de documentos xa está dispoñible</translation>
 <translation id="5268823927180092501">Activar modo de documento en todas as cámaras</translation>
 <translation id="5444515100983837161">Coloca todos os bordos do documento no marco. O escaneado funciona mellor se o documento e o fondo son de cores diferentes.</translation>
+<translation id="5588258280684580073">Activar gravación de GIF</translation>
 <translation id="5671277269877808209">Cadrado</translation>
 <translation id="5746169159649715125">Gardar como PDF</translation>
 <translation id="5753488212459587150">Activar modo experto</translation>
@@ -98,12 +100,14 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="7243947652761655814">Resolución de vídeo</translation>
 <translation id="7337660886763914220">Producíronse erros relacionados co sistema de ficheiros.</translation>
 <translation id="7450541714075000668">Copiouse o texto</translation>
+<translation id="7488619942230388918">Gravar vídeo GIF</translation>
 <translation id="7557677699350329807">Cambiar á seguinte cámara</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670511624014457267">60 fps</translation>
+<translation id="7726641833034062494">Gravar vídeo normal</translation>
 <translation id="7983668134180549431">Detectouse texto.</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
 <translation id="8120146556401698679">Panorámica, inclinación e zoom</translation>

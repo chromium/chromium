@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">पास झाले</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> टचपॅड</translation>
 <translation id="2407209115954268704">सिम लॉक स्टेटस</translation>
 <translation id="2418150275289244458">सेटिंग्जमध्ये उघडा</translation>
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
@@ -109,6 +108,7 @@
 <translation id="3091839911843451378">अयशस्वी झाले - थांबले आहे</translation>
 <translation id="3102119246920354026">कॅशे  </translation>
 <translation id="3122464029669770682">सीपीयू</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{{PAGE_NUMBER} पेज काढून टाकायचे का?}other{{PAGE_NUMBER} पेज काढून टाकायची का?}}</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे...</translation>
 <translation id="315738237743207937">कॅप्टिव्ह पोर्टल डिटेक्ट केले</translation>
@@ -125,10 +125,8 @@
 <translation id="3328783797891415197">चाचणी रन होत आहे</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> टचस्क्रीन</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
-<translation id="3440478087746699229">अंतर्गत</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> पैकी <ph name="PRINTED_PAGES" /> पेज प्रिंट केली.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> पेज स्कॅन करत आहे. <ph name="PERCENTAGE_VALUE" />% पूर्ण झाले.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
@@ -232,6 +230,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">सिम लॉक केले (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">गट नाव</translation>
+<translation id="5051044138948155788">हे एकमेव पेज आहे. हे तुम्हाला स्कॅनिंग सुरुवात स्क्रीनवर घेऊन जाईल.</translation>
 <translation id="5088172560898466307">सर्व्हर होस्टनाव</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5142961317498132443">ऑथेंटिकेशन</translation>
@@ -269,6 +268,7 @@
 <translation id="5499114900554609492">स्कॅन करणे पूर्ण करता आले नाही</translation>
 <translation id="5502931783115429516">Android रन होत नाही</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">पुन्हा स्कॅन करा</translation>
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">कुटुंब</translation>
@@ -319,6 +319,7 @@
 <translation id="641081527798843608">जुळणारा विषय</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">फाइन</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{{PAGE_NUMBER} पेज पुन्हा स्कॅन करायचे का?}other{{PAGE_NUMBER} पेज पुन्हा स्कॅन करायची का?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
@@ -351,7 +352,6 @@
 <translation id="6977381486153291903">फर्मवेयर पुनरावृत्ती</translation>
 <translation id="6982876849933694860">नवीन कनेक्शन सेट करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="7028979494427204405">हे डिव्हाइस <ph name="MANAGER" /> व्यवस्थापित करतो आणि भेट दिलेली वेबपेज, पासवर्ड आणि ईमेलसह सर्व वापरकर्ता अ‍ॅक्टिव्हिटीचा त्याला अ‍ॅक्सेस आहे.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> कीबोर्ड</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7058278511608979688">संपवा आणि सेव्ह करा</translation>
 <translation id="7059230779847288458">चार्ज होत आहे, <ph name="TIME_VALUE" /> मध्ये पूर्ण होईल</translation>
@@ -466,7 +466,6 @@
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>
 <translation id="8898840733695078011">सिग्नल सामर्थ्य</translation>

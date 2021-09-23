@@ -4513,7 +4513,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5805697420284793859">Window manager</translation>
 <translation id="5806773519584576205">0° (Default)</translation>
 <translation id="5810809306422959727">Hindi kwalipikado ang account na ito para sa parental controls</translation>
-<translation id="581120508026692647">Para sa mga notification ng website, pumunta sa <ph name="LINK_BEGIN" />Mga Setting ng Chrome<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">I-expand lahat</translation>
 <translation id="5815645614496570556">Address na X.400</translation>
 <translation id="5816434091619127343">Magiging hindi magagamit ang printer dahil sa mga hiniling na pagbabago sa printer.</translation>
@@ -4925,7 +4924,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6254892857036829079">Perfect</translation>
 <translation id="6257602895346497974">I-on ang pag-sync...</translation>
 <translation id="625895209797312329">I-block ang mga site sa paggamit ng mga font na naka-install sa iyong device</translation>
-<translation id="6259104249628300056">Tumuklas ng mga device sa iyong lokal na network</translation>
 <translation id="6262371516389954471">Ina-upload ang mga backup mo sa Google at ine-encrypt ang mga ito gamit ang password ng iyong Google Account.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">Hindi Kritikal</translation>

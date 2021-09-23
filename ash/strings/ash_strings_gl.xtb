@@ -64,6 +64,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1341651618736211726">Menú adicional</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
+<translation id="1364382257761975320">Para desbloquear o Chromebook, utiliza a impresión dixital</translation>
 <translation id="1383597849754832576">Non se puideron descargar os ficheiros de voz. Téntao máis tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Activada</translation>
@@ -186,10 +187,12 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2352467521400612932">Configuración do lapis óptico</translation>
 <translation id="2354174487190027830">Activando <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2367186422933365202">Non se puido iniciar sesión no Chromebook</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
 <translation id="2390318262976603432">Opcións de configuración local</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Controis multimedia</translation>
+<translation id="2402411679569069051">Para desbloquear o Chromebook, utiliza a impresión dixital ou desbloquea o teléfono</translation>
 <translation id="2405664212338326887">Función non conectada</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
 <translation id="2412593942846481727">Hai unha actualización dispoñible</translation>
@@ -290,6 +293,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> máis</translation>
 <translation id="324366796737464147">Cancelación de ruído</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Para desbloquear o Chromebook, activa o Bluetooth do teléfono</translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
 <translation id="3269597722229482060">Facer clic co botón dereito</translation>
 <translation id="3289674678944039601">Cargando cun adaptador</translation>
@@ -323,6 +327,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3477079411857374384">Control-Maúsculas-Espazo</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definición</translation>
+<translation id="3509391053705095206">Non puidemos atopar o teu teléfono. Asegúrate de que teña o Bluetooth activado.</translation>
 <translation id="3510164367642747937">Destacar o cursor do rato</translation>
 <translation id="3513798432020909783">A conta está xestionada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Conexión establecida con <ph name="NUM_DEVICES" /> dispositivos</translation>
@@ -358,6 +363,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="371370241367527062">Micrófono frontal</translation>
 <translation id="3713734891607377840">Abrir ao finalizar</translation>
 <translation id="3742055079367172538">Captura de pantalla feita</translation>
+<translation id="3744282433224562605">Para desbloquear o Chromebook, mete o contrasinal</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Un administrador non permitiu o inicio de sesión múltiple de <ph name="USER_EMAIL" />.
 Todos os usuarios deben pechar sesión para poder continuar.</translation>
@@ -469,6 +475,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4485060137115666462">Se fas clic co botón dereito ou realizas unha pulsación longa, o Asistente móstrache información (por exemplo, unha definición, unha tradución ou unha conversión de unidades) relacionada co que seleccionases.</translation>
 <translation id="4505050298327493054">Escritorio activo.</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
+<translation id="4518404433291145981">Para desbloquear o Chromebook, primeiro desbloquea o teléfono</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere obter permiso para sincronizarse.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> para completar a carga</translation>
 <translation id="4538824937723742295">Facer unha captura de pantalla completa</translation>
@@ -552,11 +559,13 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
+<translation id="5147567197700016471">Desbloqueouse</translation>
 <translation id="5155897006997040331">Velocidade de lectura</translation>
 <translation id="5166918508782100047">Configuración de Respostas rápidas</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
+<translation id="5199367439331364630">Para iniciar sesión no Chromebook, mete o contrasinal</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación máis}other{# notificacións máis}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="5208059991603368177">Activado</translation>
@@ -577,6 +586,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5319712128756744240">Vincular dispositivo novo</translation>
 <translation id="5322611492012084517">Non puidemos atopar o teu teléfono</translation>
 <translation id="5329548388331921293">Conectando…</translation>
+<translation id="5330201449517439522">Para acceder, toca ou fai clic</translation>
 <translation id="5331975486040154427">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="5352250171825660495">O tema escuro está activado</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
@@ -634,6 +644,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Para maximizar a ventá, mantena premida</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5867217927013474703">Recompilando información da rede</translation>
@@ -739,6 +750,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6667908387435388584">Conéctate á zona wifi do teléfono, silencia e localiza o teu dispositivo, e accede ás pestanas de Chrome que se abriron recentemente no teu teléfono</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
+<translation id="6671661918848783005">Non se puido desbloquear o Chromebook</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6696025732084565524">É necesario instalar unha actualización esencial do teclado extraíble</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
@@ -771,6 +783,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>
 <translation id="6921188888306725546">Melloráronse os atallos de teclado</translation>
 <translation id="6929655271276551705">Configuración da data</translation>
+<translation id="6931576957638141829">Gardar en</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6961121602502368900">A opción Silenciar teléfono non está dispoñible no perfil de traballo</translation>
 <translation id="6961840794482373852">O atallo Alt + Frecha arriba cambiou. Para usar a tecla Retroceder páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha arriba.</translation>
@@ -907,6 +920,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="79341161159229895">A conta está xestionada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Preme <ph name="SHORTCUT_KEY_NAME" /> + V para ver o portapapeis. Nel gárdanse os últimos 5 elementos que copiaches.</translation>
 <translation id="7955885781510802139">Modo de alto contraste</translation>
+<translation id="7968693143708939792">Seleccionar cartafol…</translation>
 <translation id="7977927628060636163">Buscando redes móbiles...</translation>
 <translation id="7980780401175799550">Proba novas formas de usar Chrome OS</translation>
 <translation id="7982789257301363584">Rede</translation>

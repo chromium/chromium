@@ -450,7 +450,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2417466718237453711">Cerrar todas las ventanas de incógnito del perfil de incógnito actual</translation>
 <translation id="2430968933669123598">Botón Administrar la Cuenta de Google, presiona Intro para administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="2438874542388153331">Perforación cuádruple a la derecha</translation>
-<translation id="245044156129055925">Ingresaste tu contraseña en un sitio engañoso. Chromium recomienda que la cambies ahora.</translation>
 <translation id="2463739503403862330">Llenar</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Elegir método de entrega</translation>
@@ -1026,7 +1025,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4346197816712207223">Tarjetas de crédito aceptadas</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">La conexión a <ph name="SITE" /> no es segura</translation>
-<translation id="4349531505348777662">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda cambiar esta contraseña ahora en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios donde la uses.</translation>
 <translation id="4350629523305688469">Bandeja multifuncional</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> quiere detectar dispositivos Bluetooth cercanos. Se encontraron los siguientes dispositivos:</translation>
 <translation id="4356973930735388585">Es posible que los atacantes que se encuentren en este sitio intenten instalar programas peligrosos en tu computadora con el fin de robarte información o borrarla (p. ej., fotos, contraseñas, mensajes y tarjetas de crédito).</translation>
@@ -1045,7 +1043,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4406896451731180161">resultados de búsqueda</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda cambiar esta contraseña ahora en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios donde la uses.</translation>
 <translation id="4414515549596849729">datos de sitios y cookies</translation>
 <translation id="4415426530740016218">Dirección de retiro</translation>
 <translation id="4424024547088906515">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; Chrome no confía en el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
@@ -1119,7 +1116,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="467662567472608290">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad contiene errores. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> desea responder a los eventos de accesibilidad</translation>
 <translation id="467809019005607715">Presentaciones de Google</translation>
-<translation id="4680804919228900307">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="468314109939257734">Ver tu número de tarjeta virtual</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1307,6 +1303,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">Optimizar el contenido de impresión</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">Capturar de todos modos</translation>
 <translation id="5265446478903775694">Administrar mi privacidad en Google</translation>
 <translation id="5266128565379329178">Encuadernado en la parte superior</translation>
 <translation id="5269225904387178860">Perforación cuádruple en la parte inferior</translation>
@@ -1623,7 +1620,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6401136357288658127">Esta política es obsoleta. En su lugar, debes usar la política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
-<translation id="6409754798200046165">Ingresaste tu contraseña en un sitio engañoso. Chrome recomienda que la cambies ahora.</translation>
 <translation id="6410264514553301377">Ingresar la fecha de vencimiento y el CVC para <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium puede ayudarte a proteger tu Cuenta de Google y cambiar tu contraseña.</translation>
 <translation id="6423385022588644828">A partir de ahora, usa Touch ID para confirmar las tarjetas más rápido</translation>
@@ -1782,7 +1778,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6972629891077993081">Dispositivos HID</translation>
 <translation id="6973656660372572881">Se especifican servidores proxy fijos y URL de secuencias de comandos .pac.</translation>
 <translation id="6973932557599545801">No puedo ayudarte. Continúa por tu cuenta.</translation>
-<translation id="6975012522936652259">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda cambiar esta contraseña ahora en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios donde la uses.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Silenciar (predeterminado)</translation>
 <translation id="6979983982287291980">Se envían los archivos que descargas a Google Cloud o a terceros para su análisis. Por ejemplo, es posible que se analicen para detectar datos sensibles o software malicioso.</translation>
@@ -1831,6 +1826,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor debe actualizarse a TLS 1.2 o versiones posteriores.</translation>
 <translation id="717330890047184534">ID de GAIA:</translation>
+<translation id="7173920250514487165">Captura de contenido confidencial en la pantalla</translation>
 <translation id="7174545416324379297">Combinados</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
 <translation id="7179323680825933600">Guardar y completar formas de pago</translation>
@@ -1851,7 +1847,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7220786058474068424">Procesando</translation>
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
-<translation id="7229659723041939809">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="7231476387708735839">Administrar la búsqueda de sitios</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>
 <translation id="7238585580608191973">Huella digital SHA-256</translation>
@@ -1878,7 +1873,6 @@ Detalles adicionales:
 <translation id="7320336641823683070">Ayuda con la conexión</translation>
 <translation id="7323804146520582233">Ocultar la sección "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Se anuló la cuenta local del dispositivo</translation>
-<translation id="7333654844024768166">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda cambiar esta contraseña ahora en <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> y otros sitios donde la uses.</translation>
 <translation id="7334320624316649418">&amp;Rehacer Reorganizar</translation>
 <translation id="7335157162773372339">Puede solicitar permiso para usar la cámara</translation>
 <translation id="7337248890521463931">Mostrar más líneas</translation>
@@ -1939,7 +1933,6 @@ Detalles adicionales:
 <translation id="7487775554425430039">Jugar al juego del dinosaurio en Chrome</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Comunícate con el propietario del sitio para solucionar el problema.</translation>
 <translation id="7497998058912824456">Botón Crear documento, presiona Intro para crear un nuevo documento de Google</translation>
-<translation id="7503664977220660814">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="7508255263130623398">El ID de dispositivo de la política que se muestra está vacío o no coincide con el ID de dispositivo actual</translation>
 <translation id="7508870219247277067">Verde aguacate</translation>
 <translation id="7511955381719512146">Es posible que la red Wi-Fi que estás usando requiera que accedas a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2055,7 +2048,6 @@ Detalles adicionales:
 <translation id="7862185352068345852">¿Deseas abandonar el sitio?</translation>
 <translation id="7865448901209910068">Mejor velocidad</translation>
 <translation id="7871445724586827387">Cambiar la contraseña de tu Cuenta de Google</translation>
-<translation id="7874263914261512992">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="7877007680666472091">ID de contenido protegidos</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña esté en peligro</translation>
 <translation id="7880146494886811634">Guardar dirección</translation>
@@ -2090,6 +2082,7 @@ Detalles adicionales:
 <translation id="7977538094055660992">Dispositivo de salida</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">Puede solicitar permiso para usar datos y dispositivos de realidad virtual</translation>
+<translation id="7984699858161118573">El administrador no recomienda realizar capturas de pantalla o grabaciones debido a la presencia de contenido confidencial en la pantalla</translation>
 <translation id="7984945080620862648">No puedes visitar <ph name="SITE" /> ahora porque el sitio web envió credenciales confusas que Chrome no puede procesar. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
 <translation id="79859296434321399">Para ver contenido de realidad aumentada, instala ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2136,7 +2129,6 @@ Detalles adicionales:
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="8118489163946903409">Forma de pago</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se instaló correctamente en tu computadora o red. Solicita al administrador de TI que corrija este problema.</translation>
-<translation id="8128526133099929547">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda que la cambies ahora en <ph name="WEBSITE_1" /> y otros sitios donde la uses.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>
 <translation id="8149426793427495338">La computadora se suspendió.</translation>
@@ -2155,7 +2147,6 @@ Detalles adicionales:
 <translation id="8211406090763984747">La conexión es segura</translation>
 <translation id="8218327578424803826">Ubicación asignada:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
-<translation id="8221250263817408492">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda que la cambies ahora en <ph name="WEBSITE_1" /> y otros sitios donde la uses.</translation>
 <translation id="8225771182978767009">La persona que configuró esta computadora decidió bloquear este sitio.</translation>
 <translation id="8228419419708659934">Vista de dos páginas</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2242,7 +2233,6 @@ Detalles adicionales:
 <translation id="8474910779563686872">Mostrar detalles para desarrolladores</translation>
 <translation id="8479754468255770962">Grapa en la esquina inferior izquierda</translation>
 <translation id="8483780878231876732">Para usar tarjetas de tu cuenta de Google, accede a tu cuenta en Chrome</translation>
-<translation id="8485393050551136813">Ingresaste tu contraseña en un sitio engañoso. Chromium te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="8488350697529856933">Se aplica a</translation>
 <translation id="8490137692873530638">Apilador 10</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> tardó demasiado en responder.</translation>
@@ -2317,7 +2307,6 @@ Detalles adicionales:
 <translation id="8761567432415473239">La navegación segura de Google <ph name="BEGIN_LINK" />encontró programas peligrosos<ph name="END_LINK" /> recientemente en <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766943070169463815">Está abierta la hoja de autenticación de credenciales de pago seguro</translation>
-<translation id="8774457497170244317">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda revisar las contraseñas guardadas para <ph name="WEBSITE_1" /> y otros sitios donde uses esta contraseña.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Rehacer Eliminar</translation>
 <translation id="8792621596287649091">Es posible que hayas perdido el acceso a tu cuenta de <ph name="ORG_NAME" /> o sufrido un robo de identidad. Chromium te recomienda que cambies la contraseña ahora.</translation>

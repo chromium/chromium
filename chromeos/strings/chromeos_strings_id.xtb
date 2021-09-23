@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Lulus</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
-<translation id="240334320630038121">Touchpad <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
 <translation id="2418150275289244458">Buka di setelan</translation>
 <translation id="2446553403094072641">Akurasi floating point</translation>
@@ -109,6 +108,7 @@
 <translation id="3091839911843451378">Gagal - Berhenti</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Hapus halaman?}=1{Hapus halaman {PAGE_NUMBER}?}other{Hapus halaman {PAGE_NUMBER}?}}</translation>
 <translation id="315116470104423982">Data seluler</translation>
 <translation id="3156846309055100599">Memindai halaman <ph name="PAGE_NUMBER" /> ...</translation>
 <translation id="315738237743207937">Captive portal terdeteksi</translation>
@@ -125,10 +125,8 @@
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369013195428705271">Yakin ingin menghapus semua histori cetak? Pekerjaan cetak yang sedang berlangsung tidak akan dihapus.</translation>
-<translation id="3412146654386081914">Layar sentuh <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Keamanan</translation>
-<translation id="3440478087746699229">Internal</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> dari <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Memindai halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Pencetakan</translation>
@@ -232,6 +230,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama grup</translation>
+<translation id="5051044138948155788">Ini adalah satu-satunya halaman. Anda akan diarahkan ke layar awal pemindaian.</translation>
 <translation id="5088172560898466307">Hostname server</translation>
 <translation id="5089810972385038852">Negara Bagian</translation>
 <translation id="5142961317498132443">Autentikasi</translation>
@@ -269,6 +268,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5499114900554609492">Tidak dapat menyelesaikan pemindaian</translation>
 <translation id="5502931783115429516">Android tidak berjalan</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Pindai ulang</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
@@ -319,6 +319,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="641081527798843608">Kecocokan subjek</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">Lancar</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pindai ulang halaman?}=1{Pindai ulang halaman {PAGE_NUMBER}?}other{Pindai ulang halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Dihentikan - Kertas macet</translation>
@@ -351,7 +352,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
 <translation id="6982876849933694860">Untuk menyiapkan koneksi baru, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
-<translation id="7039041976777695848">Keyboard <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Akhiri &amp; simpan</translation>
 <translation id="7059230779847288458">Mengisi daya, <ph name="TIME_VALUE" /> sampai penuh</translation>
@@ -466,7 +466,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8834539327799336565">Saat ini terhubung</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
 <translation id="8898840733695078011">Kekuatan sinyal</translation>

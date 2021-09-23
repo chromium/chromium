@@ -4228,6 +4228,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}one{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}few{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}many{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}other{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}}</translation>
 <translation id="5502500733115278303">Импортированные из Firefox</translation>
 <translation id="5502915260472117187">Ребенок</translation>
+<translation id="5503356662318814623">Отправить сообщение</translation>
 <translation id="5503982651688210506">Разрешить сайту <ph name="HOST" /> и дальше использовать и перемещать вашу камеру, а также использовать микрофон</translation>
 <translation id="5504909642107847870">Проверить настройки конфиденциальности и безопасности</translation>
 <translation id="5505264765875738116">Сайты не могут запрашивать разрешения на отправку уведомлений</translation>
@@ -4484,6 +4485,7 @@
 <translation id="5794414402486823030">Всегда открывать в программе просмотра по умолчанию</translation>
 <translation id="5794700615121138172">Общие папки Linux</translation>
 <translation id="5794786537412027208">Закрыть все приложения Chrome</translation>
+<translation id="5796485699458186843">Новая вкладка инкогнито</translation>
 <translation id="5797521893972859201">История будет удалена, в том числе в окне поиска</translation>
 <translation id="5798079537501238810">Разрешить сайтам устанавливать обработчики платежей</translation>
 <translation id="579915268381781820">Электронный ключ не подключен.</translation>
@@ -4495,7 +4497,6 @@
 <translation id="5805697420284793859">Менеджер окон</translation>
 <translation id="5806773519584576205">0° (по умолчанию)</translation>
 <translation id="5810809306422959727">В аккаунте нельзя использовать родительский контроль</translation>
-<translation id="581120508026692647">Изменить параметры уведомлений для сайта можно в <ph name="LINK_BEGIN" />настройках Chrome<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">Развернуть все</translation>
 <translation id="5815645614496570556">Адрес X.400</translation>
 <translation id="5816434091619127343">Если применить запрошенные изменения, принтер станет непригодным для использования.</translation>
@@ -4907,7 +4908,6 @@
 <translation id="6254892857036829079">Отличное</translation>
 <translation id="6257602895346497974">Включить синхронизацию</translation>
 <translation id="625895209797312329">Не разрешать сайтам использовать шрифты, установленные на устройстве</translation>
-<translation id="6259104249628300056">обнаружение устройств в вашей локальной сети</translation>
 <translation id="6262371516389954471">Резервные копии загружаются в Google и шифруются с помощью пароля вашего аккаунта Google.</translation>
 <translation id="6263082573641595914">Версия ЦС Microsoft</translation>
 <translation id="6263284346895336537">Не критично</translation>
@@ -6504,10 +6504,12 @@
 <translation id="7952904276017482715">Ожидаемый идентификатор: <ph name="EXPECTED_ID" />, полученный идентификатор: <ph name="NEW_ID" /></translation>
 <translation id="7953669802889559161">Способы ввода</translation>
 <translation id="7953955868932471628">Управление ярлыками</translation>
+<translation id="7955105108888461311">Запросить доступ лично</translation>
 <translation id="7956373551960864128">Сохраненные принтеры</translation>
 <translation id="7957074856830851026">Получать данные об устройстве, например серийный номер или идентификатор объекта</translation>
 <translation id="7957615753207896812">Открыть настройки клавиатуры</translation>
 <translation id="7959074893852789871">Файл содержал несколько сертификатов, некоторые из которых не были импортированы:</translation>
+<translation id="7959665254555683862">Новая вкладка инкогнито</translation>
 <translation id="7961015016161918242">Нет</translation>
 <translation id="7963001036288347286">Ускорение сенсорной панели</translation>
 <translation id="7963608432878156675">Это название будет показано на других устройствах при сетевых и Bluetooth-подключениях.</translation>

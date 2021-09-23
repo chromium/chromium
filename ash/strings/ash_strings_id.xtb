@@ -64,6 +64,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1341651618736211726">Luapan</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">Ciutkan menu</translation>
+<translation id="1364382257761975320">Untuk membuka kunci Chromebook, gunakan sidik jari</translation>
 <translation id="1383597849754832576">Tidak dapat mendownload file ucapan. Coba lagi nanti.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1391102559483454063">Aktif</translation>
@@ -186,10 +187,12 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2352467521400612932">Setelan stilus</translation>
 <translation id="2354174487190027830">Mengaktifkan <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
+<translation id="2367186422933365202">Tidak dapat login ke Chromebook</translation>
 <translation id="2369165858548251131">"Halo" dalam bahasa China</translation>
 <translation id="2390318262976603432">Setelan Lokal</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Kontrol media</translation>
+<translation id="2402411679569069051">Untuk membuka kunci Chromebook, gunakan sidik jari atau buka kunci ponsel</translation>
 <translation id="2405664212338326887">Tidak terhubung</translation>
 <translation id="2408955596600435184">Masukkan PIN</translation>
 <translation id="2412593942846481727">Update tersedia</translation>
@@ -290,6 +293,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
 <translation id="324366796737464147">Peredam bising</translation>
 <translation id="3249513730522716925">Jendela <ph name="WINDOW_TITLE" /> berpindah dari Desktop <ph name="ACTIVE_DESK" /> ke Desktop <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Untuk membuka kunci Chromebook, aktifkan Bluetooth ponsel</translation>
 <translation id="3255483164551725916">Apa yang bisa kamu lakukan?</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
 <translation id="3289674678944039601">Mengisi daya melalui adaptor</translation>
@@ -323,6 +327,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definisi</translation>
+<translation id="3509391053705095206">Tidak dapat menemukan ponsel Anda. Pastikan Bluetooth ponsel Anda aktif.</translation>
 <translation id="3510164367642747937">Sorot kursor mouse</translation>
 <translation id="3513798432020909783">Akun dikelola oleh <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Terhubung ke <ph name="NUM_DEVICES" /> perangkat</translation>
@@ -358,6 +363,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="3713734891607377840">Buka saat selesai</translation>
 <translation id="3742055079367172538">Screenshot telah diambil</translation>
+<translation id="3744282433224562605">Untuk membuka kunci Chromebook, masukkan sandi</translation>
 <translation id="3771549900096082774">Mode Kontras Tinggi</translation>
 <translation id="3773700760453577392">Administrator telah melarang fitur login multipel untuk <ph name="USER_EMAIL" />. Semua pengguna harus logout untuk melanjutkan.</translation>
 <translation id="3779139509281456663">Menghubungkan <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4485060137115666462">Dengan klik kanan atau tekan lama, Asisten akan menampilkan info seperti definisi, terjemahan, atau konversi unit untuk teks yang Anda pilih.</translation>
 <translation id="4505050298327493054">Desktop aktif.</translation>
 <translation id="4513946894732546136">Masukan</translation>
+<translation id="4518404433291145981">Untuk membuka kunci Chromebook, buka kunci ponsel terlebih dahulu</translation>
 <translation id="4527045527269911712">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> sampai penuh</translation>
 <translation id="4538824937723742295">Ambil screenshot dalam layar penuh</translation>
@@ -551,11 +558,13 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
+<translation id="5147567197700016471">Kunci dibuka</translation>
 <translation id="5155897006997040331">Kecepatan baca</translation>
 <translation id="5166918508782100047">Setelan jawaban instan</translation>
 <translation id="5168181903108465623">Perangkat transmisi tersedia</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5176318573511391780">Rekam sebagian layar</translation>
+<translation id="5199367439331364630">Untuk login ke Chromebook, masukkan sandi</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notifikasi lainnya}other{# notifikasi lainnya}}</translation>
 <translation id="5207949376430453814">Sorot tempat penyisipan teks</translation>
 <translation id="5208059991603368177">Aktif</translation>
@@ -576,6 +585,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5319712128756744240">Sambungkan perangkat baru</translation>
 <translation id="5322611492012084517">Tidak dapat menemukan ponsel Anda</translation>
 <translation id="5329548388331921293">Menghubungkan ...</translation>
+<translation id="5330201449517439522">Ketuk atau klik untuk masuk</translation>
 <translation id="5331975486040154427">Perangkat USB-C (port belakang sebelah kiri)</translation>
 <translation id="5352250171825660495">Tema gelap aktif</translation>
 <translation id="5379115545237091094">Terlalu banyak upaya gagal</translation>
@@ -633,6 +643,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5825969630400862129">Setelan perangkat yang terhubung</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> di <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Tahan untuk memaksimalkan</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
 <translation id="5860491529813859533">Aktifkan</translation>
 <translation id="5867217927013474703">Mengumpulkan informasi jaringan</translation>
@@ -738,6 +749,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6667908387435388584">Hubungkan ke hotspot ponsel, nonaktifkan suara dan temukan perangkat, serta lihat tab Chrome terbaru yang dibuka di ponsel</translation>
 <translation id="6670153871843998651">Halaman kerja 3</translation>
 <translation id="6671495933530132209">Salin gambar</translation>
+<translation id="6671661918848783005">Tidak dapat membuka kunci Chromebook</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
 <translation id="6696025732084565524">Keyboard yang dapat dilepas memerlukan update penting</translation>
 <translation id="6700713906295497288">Tombol menu IME</translation>

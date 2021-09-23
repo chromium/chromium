@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">വിജയിച്ചു</translation>
 <translation id="2380886658946992094">നിയമപരം</translation>
 <translation id="2391082728065870591">ഫീഡ്‌ബാക്ക് റിപ്പോർട്ട് അയയ്‌ക്കുക</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> ടച്ച്പാഡ്</translation>
 <translation id="2407209115954268704">സിം ലോക്ക് നില</translation>
 <translation id="2418150275289244458">ക്രമീകരണത്തിൽ തുറക്കുക</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
@@ -109,6 +108,7 @@
 <translation id="3091839911843451378">പ്രിന്റ് ചെയ്യാനായില്ല - പ്രവർത്തനം നിർത്തി</translation>
 <translation id="3102119246920354026">കാഷെ</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{പേജ് നീക്കം ചെയ്യണോ?}=1{{PAGE_NUMBER}-ാം പേജ് നീക്കം ചെയ്യണോ?}other{{PAGE_NUMBER}-ാം പേജ് നീക്കം ചെയ്യണോ?}}</translation>
 <translation id="315116470104423982">മൊബൈല്‍ ഡാറ്റ</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="315738237743207937">ക്യാപ്റ്റീവ് പോർട്ടൽ തിരിച്ചറിഞ്ഞു</translation>
@@ -125,10 +125,8 @@
 <translation id="3328783797891415197">ടെസ്‌റ്റ് റൺ ചെയ്യുന്നു</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
 <translation id="3369013195428705271">എല്ലാ പ്രിന്റ് ചരിത്രവും മായ്‌ക്കണമെന്ന് തീർച്ചയാണോ? നിങ്ങളുടെ പുരോഗതിയിലുള്ള പ്രിന്റ് ജോലികൾ മായ്ക്കില്ല.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" />ടച്ച്സ്ക്രീൻ</translation>
 <translation id="3434107140712555581">ബാറ്ററി: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
-<translation id="3440478087746699229">ആന്തരികം</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />-ൽ <ph name="PRINTED_PAGES" /> പേജ് പ്രിന്റ് ചെയ്‌തു.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു. <ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി.</translation>
 <translation id="3459509316159669723">പ്രിന്റിംഗ്</translation>
@@ -232,6 +230,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">സിം ലോക്ക് ചെയ്തു (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ഗ്രൂപ്പിന്‍റെ പേര്</translation>
+<translation id="5051044138948155788">ഇത് അവസാനത്തെ പേജാണ്. ഇത് നീക്കം ചെയ്യുന്നത് നിങ്ങളെ സ്‌കാനിംഗിന്റെ ആരംഭ സ്ക്രീനിലേക്ക് കൊണ്ടുപോകും.</translation>
 <translation id="5088172560898466307">സെർവർ ഹോസ്റ്റ്‌നാമം</translation>
 <translation id="5089810972385038852">സ്റ്റേറ്റ്</translation>
 <translation id="5142961317498132443">പരിശോധിച്ചുറപ്പിക്കൽ</translation>
@@ -268,6 +267,7 @@
 <translation id="5499114900554609492">സ്‌കാൻ പൂർത്തിയാക്കാനായില്ല</translation>
 <translation id="5502931783115429516">Android റൺ ചെയ്യുന്നില്ല</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">വീണ്ടും സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">കുടുംബം</translation>
@@ -318,6 +318,7 @@
 <translation id="641081527798843608">പൊരുത്തപ്പെടുന്ന വിഷയം</translation>
 <translation id="6423239382391657905">VPNതുറക്കുക</translation>
 <translation id="6456394469623773452">മിഴിവുള്ളതാക്കുക</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}=1{{PAGE_NUMBER}-ാം പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}other{{PAGE_NUMBER}-ാം പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="649050271426829538">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പർ ജാമായി</translation>
@@ -350,7 +351,6 @@
 <translation id="6977381486153291903">ഫേംവെയർ പുനഃപരിശോധന</translation>
 <translation id="6982876849933694860">ഒരു പുതിയ കണക്ഷൻ സജ്ജീകരിക്കാൻ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> കീബോർഡ്</translation>
 <translation id="7040230719604914234">ഓപ്പറേറ്റർ</translation>
 <translation id="7058278511608979688">അവസാനിപ്പിച്ച് സംരക്ഷിക്കുക</translation>
 <translation id="7059230779847288458">ചാർജ് ചെയ്യുന്നു, പൂർത്തിയാകാൻ <ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
@@ -465,7 +465,6 @@
 <translation id="8818152010000655963">വാൾപേപ്പർ</translation>
 <translation id="8834539327799336565">നിലവിൽ കണക്റ്റ് ചെയ്‌തവ</translation>
 <translation id="8845001906332463065">സഹായം നേടുക</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">ടെസ്റ്റ് പൂർത്തിയായി</translation>
 <translation id="8898840733695078011">സിഗ്‌നൽ ശക്തി</translation>

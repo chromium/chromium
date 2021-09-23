@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Премината</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Изпращане на сигнал с отзиви</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> сензорен панел</translation>
 <translation id="2407209115954268704">Състояние на заключване на SIM картата</translation>
 <translation id="2418150275289244458">Отваряне в настройките</translation>
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
-<translation id="3412146654386081914">Сензорен екран с <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Сигурност</translation>
-<translation id="3440478087746699229">Вътрешен</translation>
 <translation id="3456078764689556234">Отпечатана е страница <ph name="PRINTED_PAGES" /> от <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканира се страница <ph name="PAGE_NUM" />. Завършена: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Отпечатване</translation>
@@ -355,7 +352,6 @@
 <translation id="6977381486153291903">Версия на фърмуера</translation>
 <translation id="6982876849933694860">За да настроите нова връзка, отворете <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
-<translation id="7039041976777695848">Клавиатура с <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7058278511608979688">Край и запазване</translation>
 <translation id="7059230779847288458">Зарежда се: <ph name="TIME_VALUE" /> до пълно зареждане</translation>
@@ -470,7 +466,6 @@
 <translation id="8818152010000655963">Тапет</translation>
 <translation id="8834539327799336565">Свързани сега</translation>
 <translation id="8845001906332463065">Получете помощ</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
 <translation id="8898840733695078011">Сила на сигнала</translation>

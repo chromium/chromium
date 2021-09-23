@@ -450,7 +450,6 @@
 <translation id="2417466718237453711">關閉目前無痕設定檔的所有無痕式視窗</translation>
 <translation id="2430968933669123598">管理 Google 帳戶，㩒一下 Enter 鍵就可以喺 Google 帳戶度管理你嘅資料、私隱權同埋安全設定</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
-<translation id="245044156129055925">您剛才在欺詐網站上輸入了密碼。Chromium 建議您立即變更密碼。</translation>
 <translation id="2463739503403862330">填寫</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">選擇速遞方式</translation>
@@ -1024,7 +1023,6 @@
 <translation id="4346197816712207223">接受的信用卡</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">與 <ph name="SITE" /> 的連線並不安全</translation>
-<translation id="4349531505348777662">您剛才在欺詐網站上輸入了密碼。Chrome 建議前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及其他您使用此密碼的網站，並立即變更密碼。</translation>
 <translation id="4350629523305688469">多功能紙匣</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> 要求掃瞄附近的藍牙裝置，並已找到以下裝置：</translation>
 <translation id="4356973930735388585">攻擊者可能會透過此網站試圖在您的電腦上安裝危險程式，藉此竊取或刪除您的資料 (例如相片、密碼、訊息或信用卡資料)。</translation>
@@ -1043,7 +1041,6 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">您剛才在欺詐網站上輸入了密碼。Chrome 建議前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及其他您使用此密碼的網站，並立即變更密碼。</translation>
 <translation id="4414515549596849729">Cookie 和網站數據</translation>
 <translation id="4415426530740016218">取貨地址</translation>
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
@@ -1117,7 +1114,6 @@
 <translation id="467662567472608290">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；伺服器的安全性憑證含有錯誤。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> 希望回應無障礙功能事件</translation>
 <translation id="467809019005607715">Google 簡報</translation>
-<translation id="4680804919228900307">您剛才在欺詐網站上輸入了密碼。Chromium 建議您立即檢查已儲存在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="468314109939257734">查看虛擬卡號</translation>
 <translation id="4691835149146451662">Architecture-A (信封)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1305,6 +1301,7 @@
 <translation id="5252000469029418751">C7 (信封)</translation>
 <translation id="5254043433801397071">優化列印內容</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">仍要擷取</translation>
 <translation id="5265446478903775694">管理我喺 Google 上面嘅私隱權</translation>
 <translation id="5266128565379329178">釘裝 (頂端)</translation>
 <translation id="5269225904387178860">四孔 (底部)</translation>
@@ -1621,7 +1618,6 @@
 <translation id="6401136357288658127">此政策已被淘汰，請改用 <ph name="NEW_POLICY" /> 政策。</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406765186087300643">C0 (信封)</translation>
-<translation id="6409754798200046165">您剛才在欺詐網站上輸入了密碼。Chrome 建議您立即變更密碼。</translation>
 <translation id="6410264514553301377">請輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼 (CVC)</translation>
 <translation id="6415778972515849510">Chromium 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="6423385022588644828">使用 Touch ID 即可加快確認您的付款卡</translation>
@@ -1780,7 +1776,6 @@
 <translation id="6972629891077993081">HID 裝置</translation>
 <translation id="6973656660372572881">已指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
 <translation id="6973932557599545801">很抱歉，我無法提供協助，請自行繼續。</translation>
-<translation id="6975012522936652259">您剛才在欺詐網站上輸入了密碼。Chromium 建議前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及其他您使用此密碼的網站，並立即變更密碼。</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6979983982287291980">您下載的檔案將會傳送給 Google Cloud 或第三方進行分析。例如，檔案可能會被掃描，以查看當中是否含有敏感資料或惡意軟件。</translation>
@@ -1829,6 +1824,7 @@
 <translation id="7153618581592392745">淡紫色</translation>
 <translation id="7156870133441232244">伺服器應升級至 TLS 1.2 或以上版本。</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
+<translation id="7173920250514487165">擷取螢幕上的機密內容</translation>
 <translation id="7174545416324379297">已合併</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}}</translation>
 <translation id="7179323680825933600">儲存和填入付款方法</translation>
@@ -1849,7 +1845,6 @@
 <translation id="7220786058474068424">正在處理</translation>
 <translation id="7221855153210829124">顯示通知</translation>
 <translation id="722454870747268814">新增無痕式分頁</translation>
-<translation id="7229659723041939809">您剛才在欺詐網站上輸入了密碼。Chromium 建議您立即檢查已儲存在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="7231476387708735839">管理站內搜尋</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>
 <translation id="7238585580608191973">SHA-256 指紋</translation>
@@ -1876,7 +1871,6 @@
 <translation id="7320336641823683070">連線說明</translation>
 <translation id="7323804146520582233">隱藏「<ph name="SECTION" />」部分</translation>
 <translation id="733354035281974745">裝置本機帳戶覆寫</translation>
-<translation id="7333654844024768166">您剛才在欺詐網站上輸入了密碼。Chromium 建議前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" />、<ph name="WEBSITE_3" /> 以及其他您使用此密碼的網站，並立即變更密碼。</translation>
 <translation id="7334320624316649418">重做重新排序(&amp;R)</translation>
 <translation id="7335157162773372339">可要求使用攝錄機</translation>
 <translation id="7337248890521463931">顯示更多行</translation>
@@ -1937,7 +1931,6 @@
 <translation id="7487775554425430039">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="7497998058912824456">建立文件掣，㩒一下 Enter 鍵就可以快速建立新嘅 Google 文件</translation>
-<translation id="7503664977220660814">您剛才在欺詐網站上輸入了密碼。Chromium 建議您立即檢查已儲存在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="7508255263130623398">傳回的政策裝置識別碼為空白或與目前裝置識別碼不符</translation>
 <translation id="7508870219247277067">牛油果色</translation>
 <translation id="7511955381719512146">目前使用的 Wi-Fi 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
@@ -2053,7 +2046,6 @@
 <translation id="7862185352068345852">要離開網站嗎？</translation>
 <translation id="7865448901209910068">最佳速度</translation>
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>
-<translation id="7874263914261512992">您剛才在欺詐網站上輸入了密碼。Chrome 建議您立即檢查已儲存在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="7877007680666472091">受保護的內容 ID</translation>
 <translation id="7878562273885520351">您的密碼可能會被盜用</translation>
 <translation id="7880146494886811634">儲存地址</translation>
@@ -2088,6 +2080,7 @@
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">可要求使用虛擬實境﻿裝置和資料</translation>
+<translation id="7984699858161118573">由於螢幕上有機密內容，因此管理員不建議擷取螢幕截圖或錄影</translation>
 <translation id="7984945080620862648">您目前無法瀏覽 <ph name="SITE" />，因為這個網站傳送的憑證經過編碼，導致 Chrome 無法處理。網絡錯誤和攻擊行為通常是暫時性的，所以這個網頁可能稍後就能正常使用。</translation>
 <translation id="79859296434321399">如要觀看擴張實境內容，請先安裝 ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2134,7 +2127,6 @@
 <translation id="8116925261070264013">已設為靜音的網站</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8127301229239896662">無法在您的電腦或網絡上正確安裝「<ph name="SOFTWARE_NAME" />」。請要求您的 IT 管理員解決此問題。</translation>
-<translation id="8128526133099929547">您剛才在欺詐網站上輸入了密碼。Chrome 建議前往 <ph name="WEBSITE_1" /> 以及其他您使用此密碼的網站，並立即變更密碼。</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入休眠狀態。</translation>
@@ -2153,7 +2145,6 @@
 <translation id="8211406090763984747">己建立安全連線</translation>
 <translation id="8218327578424803826">已指派的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (信封)</translation>
-<translation id="8221250263817408492">您剛才在欺詐網站上輸入了密碼。Chromium 建議前往 <ph name="WEBSITE_1" /> 以及其他您使用此密碼的網站，並立即變更密碼。</translation>
 <translation id="8225771182978767009">設定此電腦的用戶已封鎖此網站。</translation>
 <translation id="8228419419708659934">雙頁檢視</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
@@ -2240,7 +2231,6 @@
 <translation id="8474910779563686872">顯示開發人員詳情</translation>
 <translation id="8479754468255770962">釘裝 (左下方)</translation>
 <translation id="8483780878231876732">如要使用您 Google 帳戶中的信用卡，請登入 Chrome</translation>
-<translation id="8485393050551136813">您剛才在欺詐網站上輸入了密碼。Chromium 建議您立即檢查已儲存在 <ph name="WEBSITE_1" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="8488350697529856933">適用對象</translation>
 <translation id="8490137692873530638">堆疊器 10</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> 的回應時間過長。</translation>
@@ -2314,7 +2304,6 @@
 <translation id="8761567432415473239">Google 安全瀏覽最近在「<ph name="SITE" />」<ph name="BEGIN_LINK" />發現有害程式<ph name="END_LINK" />。</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
 <translation id="8766943070169463815">開咗安全付款憑證驗證工作表</translation>
-<translation id="8774457497170244317">您剛才在欺詐網站上輸入了密碼。Chrome 建議您立即檢查已儲存在 <ph name="WEBSITE_1" /> 以及其他您使用此密碼的網站。</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">重做刪除(&amp;R)</translation>
 <translation id="8792621596287649091">您有可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或會遭身份盜用。Chromium 建議您立即變更密碼。</translation>

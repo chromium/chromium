@@ -4224,6 +4224,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गर्न सकिएन}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गर्न सकिएन}}</translation>
 <translation id="5502500733115278303">Firefox बाट आयात गरिएको</translation>
 <translation id="5502915260472117187">बच्चा</translation>
+<translation id="5503356662318814623">म्यासेज पठाउनुहोस्</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> लाई तपाईंको डिभाइसको क्यामेरा प्रयोग गर्ने तथा क्यामेरा यताउता घुमाउने र माइक्रोफोन प्रयोग गर्ने अनुमति दिइराख्नुहोस्</translation>
 <translation id="5504909642107847870">गोपनीयता तथा सुरक्षासम्बन्धी सेटिङको समीक्षा</translation>
 <translation id="5505264765875738116">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्दैनन्।</translation>
@@ -4480,6 +4481,7 @@
 <translation id="5794414402486823030">प्रणाली दर्शकमार्फत सधैं खोल्नुहोस्</translation>
 <translation id="5794700615121138172">Linux बाट सेयर गरिएका फोल्डरहरू</translation>
 <translation id="5794786537412027208">सबै Chrome एप्स छोड्नुहोस्</translation>
+<translation id="5796485699458186843">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="5797521893972859201">यसले खोज बाकसको इतिहासलगायतका ब्राउजिङ इतिहास मेटाउँछ</translation>
 <translation id="5798079537501238810">साइटहरूले भुक्तानी ह्यान्ड्लरहरू इन्स्टल गर्न सक्छन्</translation>
 <translation id="579915268381781820">तपाईंको सुरक्षा साँचो हटाइयो।</translation>
@@ -4491,7 +4493,6 @@
 <translation id="5805697420284793859">विन्डोको प्रबन्धक</translation>
 <translation id="5806773519584576205">०° (डिफल्ट)</translation>
 <translation id="5810809306422959727">यो खातामा अभिभावकीय नियन्त्रणहरू प्रयोग गर्न मिल्दैन</translation>
-<translation id="581120508026692647">वेबसाइटका सूचनाहरूका लागि <ph name="LINK_BEGIN" />Chrome का सेटिङ<ph name="LINK_END" />मा जानुहोस्</translation>
 <translation id="5812674658566766066">सबै विस्तृत गर्नुहोस्</translation>
 <translation id="5815645614496570556">X.400 ठेगाना</translation>
 <translation id="5816434091619127343">अनुरोध गरिएका प्रिन्टरसम्बन्धी परिवर्तनहरूले यस प्रिन्टरलाई काम नलाग्ने बनाउने छ।</translation>
@@ -4902,7 +4903,6 @@
 <translation id="6254892857036829079">उत्कृष्ट</translation>
 <translation id="6257602895346497974">सिंक गर्ने सुविधा सक्रिय गर्नुहोस्...</translation>
 <translation id="625895209797312329">साइटहरूलाई तपाईंको डिभाइसमा इन्स्टल गरिएका फन्ट प्रयोग गर्न रोक लगाउनुहोस्</translation>
-<translation id="6259104249628300056">तपाईँको स्थानीय नेटवर्कमा यन्त्र पत्ता लगाउनुहोस्</translation>
 <translation id="6262371516389954471">तपाईंका ब्याकअपहरू Google मा अपलोड गरी तपाईंको Google खाताको पासवर्ड प्रयोग गरेर इन्क्रिप्ट गरिन्छन्।</translation>
 <translation id="6263082573641595914">Microsoft CA संस्करण</translation>
 <translation id="6263284346895336537">संवेदनशील छैन</translation>
@@ -6500,10 +6500,12 @@
 <translation id="7952904276017482715">अपेक्षित ID "<ph name="EXPECTED_ID" />" हो, तर भएको ID भने "<ph name="NEW_ID" />" छ</translation>
 <translation id="7953669802889559161">इनपुटहरू</translation>
 <translation id="7953955868932471628">सर्टकटहरू व्यवस्थित गर्नुहोस्</translation>
+<translation id="7955105108888461311">व्यक्तिगत रूपमा अनुरोध गर्नुहोस्</translation>
 <translation id="7956373551960864128">तपाईंले सुरक्षित गर्नुभएका प्रिन्टरहरू</translation>
 <translation id="7957074856830851026">क्रम सङ्ख्या वा एसेट ID जस्ता यन्त्रसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="7957615753207896812">किबोर्ड यन्त्र सम्बन्धी सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7959074893852789871">त्यस फाइलमा धेरै प्रमाणपत्रहरू सम्मिलित थिए:</translation>
+<translation id="7959665254555683862">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
 <translation id="7963001036288347286">टचप्याडको गति बढाउने कार्य</translation>
 <translation id="7963608432878156675">ब्लुटुथ र इन्टरनेटमा कनेक्ट गर्न सकियोस् भन्नाका खातिर अन्य यन्त्रहरूले यो नाम देख्न सक्छन्</translation>

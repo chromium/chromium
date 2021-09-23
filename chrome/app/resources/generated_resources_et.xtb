@@ -4502,7 +4502,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5805697420284793859">Aknahaldur</translation>
 <translation id="5806773519584576205">0° (vaikeseade)</translation>
 <translation id="5810809306422959727">See konto pole vanemliku järelevalve kasutamiseks sobilik</translation>
-<translation id="581120508026692647">Veebisaidi märguannete jaoks avage <ph name="LINK_BEGIN" />Chrome'i seaded<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">Laienda kõik</translation>
 <translation id="5815645614496570556">X.400 aadress</translation>
 <translation id="5816434091619127343">Nõutud printeri muudatuste korral ei saaks printerit kasutada.</translation>
@@ -4914,7 +4913,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6254892857036829079">Täiuslik</translation>
 <translation id="6257602895346497974">Lülitage sünkroonimine sisse …</translation>
 <translation id="625895209797312329">Blokeeri saitidel seadmesse installitud fontide kasutamine</translation>
-<translation id="6259104249628300056">Avastage seadmeid kohalikus võrgus</translation>
 <translation id="6262371516389954471">Teie varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie Google'i konto parooliga.</translation>
 <translation id="6263082573641595914">Microsofti CA versioon</translation>
 <translation id="6263284346895336537">Pole kriitiline</translation>

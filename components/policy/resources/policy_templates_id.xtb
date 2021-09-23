@@ -1107,6 +1107,13 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2299220924812062390">Tentukan daftar plugin yang diaktifkan</translation>
 <translation id="2301048990069984110">Memperluas dukungan untuk Aplikasi Chrome di Windows, Mac, dan Linux.</translation>
 <translation id="2303795211377219696">Mengaktifkan IsiOtomatis untuk kartu kredit</translation>
+<translation id="2304009805995145854">Sejak <ph name="PRODUCT_NAME" /> 67, isolasi situs telah diaktifkan secara default di semua platform Desktop, yang menyebabkan setiap situs berjalan dalam prosesnya sendiri. Situs adalah skema plus eTLD+1 (misalnya, https://example.com). Menyetel kebijakan ke Aktif tidak mengubah perilaku tersebut; hanya mencegah pengguna menonaktifkannya (misalnya, menggunakan Nonaktifkan isolasi situs di chrome://flags). Sejak <ph name="PRODUCT_NAME" /> 76, menyetel kebijakan ke Nonaktif atau tidak menyetel kebijakan tidak akan menonaktifkan isolasi situs, tetapi memungkinkan pengguna untuk menonaktifkannya.
+
+      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> mungkin juga berguna untuk mengisolasi asal tertentu pada tingkat perincian yang lebih baik daripada situs (misalnya, https://a.example.com).
+
+      Di <ph name="PRODUCT_OS_NAME" /> versi 76 dan yang lebih lama, setel kebijakan perangkat <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> ke nilai yang sama. (Jika nilai tidak cocok, penundaan dapat terjadi saat memasuki sesi pengguna.)
+
+      Catatan: Untuk Android, gunakan kebijakan <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="2307496301287881990">Melaporkan status tampilan dan grafis</translation>
 <translation id="2309390639296060546">Setelan geolokasi default</translation>
 <translation id="2331354174913096226">Template URI pada resolver DNS-over-HTTPS yang diinginkan. Untuk menentukan beberapa resolver DNS-over-HTTPS, pisahkan template URI terkait dengan spasi.
@@ -1167,6 +1174,17 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (nilai 2) disetel, semua variasi tidak akan dapat diterapkan ke browser. Perlu diketahui, mode ini tidak direkomendasikan karena berpotensi menyebabkan developer <ph name="PRODUCT_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
 <translation id="2402547085566757554">Jangan gunakan Halaman Tab Baru sebagai halaman beranda</translation>
+<translation id="240713331529749993">Jika kebijakan disetel, setiap asal bernama dalam daftar yang dipisahkan koma akan berjalan dalam proses khusus di Android. Setiap proses asal bernama hanya akan diizinkan untuk memuat dokumen dari asal tersebut dan subdomainnya. Misalnya, menentukan https://a1.example.com/ akan mengizinkan https://a2.a1.example.com/ dalam proses yang sama, tetapi tidak mengizinkan https://example.com atau https://b.example.com. Perlu diketahui bahwa Android akan mengisolasi situs sensitif tertentu secara default mulai <ph name="PRODUCT_NAME" /> versi 77, dan kebijakan ini memperluas mode tersebut untuk mengisolasi asal tambahan tertentu.
+
+      Sejak <ph name="PRODUCT_NAME" /> 77, Anda juga dapat menentukan rentang asal yang akan diisolasi menggunakan karakter pengganti. Misalnya, menentukan https://[*.]corp.example.com akan memberi setiap asal di bawah https://corp.example.com proses khususnya sendiri, termasuk https://corp.example.com itu sendiri, https://a1.corp.example.com, dan https://a2.a1.corp.example.com.
+
+      Perhatikan bahwa asal yang diisolasi oleh kebijakan ini tidak akan dapat membuat skrip asal lain di situs yang sama, yang justru dapat dilakukan jika dua dokumen situs yang sama mengubah nilai document.domain-nya agar cocok. Administrator harus mengonfirmasi bahwa perilaku yang tidak biasa ini tidak digunakan pada asal sebelum mengisolasinya.
+
+      Jika kebijakan disetel ke Nonaktif, semua bentuk isolasi situs akan dinonaktifkan, termasuk isolasi situs sensitif dan uji coba kolom IsolateOriginsAndroid, SitePerProcessAndroid, dan mode isolasi situs lainnya. Pengguna masih dapat mengaktifkan IsolateOrigins secara manual melalui tanda command line.
+
+      Jika kebijakan tidak disetel, pengguna dapat mengubah setelan ini.
+
+      Catatan: Mengisolasi terlalu banyak situs di Android dapat menyebabkan masalah performa, terutama pada perangkat dengan memori rendah. Kebijakan ini hanya berlaku di Chrome pada perangkat Android dengan RAM lebih dari 1 GB. Untuk menerapkan kebijakan ini di platform non-Android, gunakan <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="2411629345938804022">Jika kebijakan disetel ke 3, situs akan meminta akses ke perangkat Bluetooth di sekitar. Jika kebijakan disetel ke 2, akses ke perangkat Bluetooth di sekitar akan ditolak.
 
       Jika kebijakan tidak disetel, situs akan meminta akses, tetapi pengguna dapat mengubah setelan ini.</translation>
@@ -2715,6 +2733,17 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentransfer file ke Drive melalui koneksi seluler.</translation>
 <translation id="4248277954659222481">Izinkan pemutaran otomatis media pada pola URL yang diizinkan</translation>
 <translation id="4250680216510889253">Tidak</translation>
+<translation id="4260027436474745627">Jika kebijakan disetel, setiap asal bernama dalam daftar yang dipisahkan koma akan berjalan dalam proses khusus. Setiap proses asal bernama hanya akan diizinkan untuk memuat dokumen dari asal tersebut dan subdomainnya. Misalnya, menentukan https://a1.example.com/ akan mengizinkan https://a2.a1.example.com/ dalam proses yang sama, tetapi tidak mengizinkan https://example.com atau https://b.example.com.
+
+      Sejak <ph name="PRODUCT_NAME" /> 77, Anda juga dapat menentukan rentang asal yang akan diisolasi menggunakan karakter pengganti. Misalnya, menentukan https://[*.]corp.example.com akan memberi setiap asal di bawah https://corp.example.com proses khususnya sendiri, termasuk https://corp.example.com itu sendiri, https://a1.corp.example.com, dan https://a2.a1.corp.example.com.
+
+      Perhatikan bahwa semua situs (yaitu, skema plus eTLD+1, seperti https://example.com) sudah diisolasi secara default pada platform Desktop, seperti yang tercantum dalam kebijakan <ph name="SITE_PER_PROCESS_POLICY_NAME" />. Kebijakan <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> ini berguna untuk mengisolasi asal tertentu pada tingkat perincian yang lebih baik (misalnya, https://a.example.com).
+
+      Perhatikan juga bahwa asal yang diisolasi oleh kebijakan ini tidak akan dapat membuat skrip asal lain di situs yang sama, yang justru dapat dilakukan jika dua dokumen situs yang sama mengubah nilai document.domain-nya agar cocok. Administrator harus mengonfirmasi bahwa perilaku yang tidak biasa ini tidak digunakan pada asal sebelum mengisolasinya.
+
+      Jika kebijakan disetel ke nonaktif atau tidak disetel, pengguna dapat mengubah setelan ini.
+
+      Catatan: Untuk Android, gunakan kebijakan <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="4261820385751181068">Lokal layar login perangkat</translation>
 <translation id="4266547484666068234">Jika kebijakan disetel, akses ke URL yang tercantum akan diberikan sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
 
@@ -3588,6 +3617,15 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           </translation>
 <translation id="5435888298115339571">Mengaktifkan berbagi desktop di omnibox dan menu 3 titik</translation>
 <translation id="5442026853063570579">Kebijakan ini juga mengontrol akses ke Opsi Developer Android. Jika Anda menetapkan kebijakan ini ke 'DeveloperToolsDisallowed' (nilai 2), pengguna tidak dapat mengakses Opsi Developer. Jika Anda menetapkan kebijakan ini ke nilai lain atau tidak menetapkannya, pengguna dapat mengakses Opsi Developer dengan mengetuk nomor build di aplikasi setelan Android sebanyak 7 kali.</translation>
+<translation id="5443582909255996887">Menyetel kebijakan ke Aktif akan mengisolasi semua situs di Android, sehingga setiap situs berjalan dalam prosesnya sendiri, dan hal ini mencegah pengguna menonaktifkannya. Situs adalah skema plus eTLD+1 (misalnya, https://example.com). Perlu diketahui bahwa Android akan mengisolasi situs sensitif tertentu secara default mulai <ph name="PRODUCT_NAME" /> versi 77, dan hal ini akan membuat mode isolasi situs default tersebut diterapkan ke semua situs.
+
+      Jika kebijakan disetel ke Nonaktif, semua bentuk isolasi situs akan dinonaktifkan, termasuk isolasi situs sensitif dan uji coba kolom IsolateOriginsAndroid, SitePerProcessAndroid, dan mode isolasi situs lainnya. Pengguna masih dapat mengaktifkan kebijakan secara manual.
+
+      Jika kebijakan tidak disetel, pengguna dapat mengubah setelan ini.
+
+      <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> mungkin juga berguna untuk mengisolasi asal tertentu pada tingkat perincian yang lebih baik daripada situs (misalnya, https://a.example.com).
+
+      Catatan: Dukungan untuk isolasi setiap situs di Android akan ditingkatkan, tetapi saat ini mungkin menyebabkan masalah performa, terutama pada perangkat kelas bawah. Kebijakan ini hanya berlaku di Chrome pada perangkat Android dengan RAM lebih dari 1 GB. Untuk mengisolasi situs tertentu sekaligus membatasi dampak performa bagi pengguna, gunakan <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> dengan daftar situs yang ingin Anda isolasi.  Untuk menerapkan kebijakan ini di platform non-Android, gunakan <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="5445596354079213552">Kebijakan ini hanya berlaku jika perangkat telah mencapai batas akhir update otomatis dan tidak memenuhi versi minimum <ph name="PRODUCT_OS_NAME" /> yang diizinkan sebagaimana disetel melalui kebijakan <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
       Jika kebijakan ini disetel ke string yang tidak kosong:
@@ -6187,6 +6225,7 @@ Kebijakan akan dihapus pada M75.</translation>
       Mulai <ph name="PRODUCT_NAME" /> versi 92, kebijakan ini juga didukung dalam mode headless.
 
       Catatan: Memblokir URL chrome://* internal dapat menyebabkan error tak terduga.</translation>
+<translation id="8626826495474944836">Memerlukan Isolasi Situs untuk setiap situs</translation>
 <translation id="8631434304112909927">sampai versi <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Daftar aplikasi pencatat yang diizinkan di layar kunci <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8637566476051166626">Secara eksplisit mengizinkan port jaringan</translation>

@@ -454,7 +454,6 @@
 <translation id="2417466718237453711">Закрийте всі вікна в режимі анонімного перегляду для поточного анонімного профілю</translation>
 <translation id="2430968933669123598">"Керувати обліковим записом Google"; натисніть Enter, щоб керувати своєю інформацією, конфіденційністю й безпекою в обліковому записі Google</translation>
 <translation id="2438874542388153331">Пробити чотири отвори праворуч</translation>
-<translation id="245044156129055925">Щойно ви ввели пароль на оманливому сайті. Chromium радить змінити пароль.</translation>
 <translation id="2463739503403862330">Заповнити</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Вибрати спосіб доставки</translation>
@@ -1034,7 +1033,6 @@
 <translation id="4346197816712207223">Кредитні картки, які приймаються до оплати</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">З’єднання із сайтом <ph name="SITE" /> не захищене</translation>
-<translation id="4349531505348777662">Щойно ви ввели пароль на оманливому сайті. Chrome радить негайно перейти на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> та інші сайти, де використовується цей пароль, і змінити його.</translation>
 <translation id="4350629523305688469">Багатофункціональний лоток</translation>
 <translation id="4351060348582610152">Сайт <ph name="ORIGIN" /> хоче шукати пристрої Bluetooth поруч. Виявлено такі пристрої:</translation>
 <translation id="4356973930735388585">Зловмисники на цьому сайті можуть намагатися встановити на ваш комп’ютер небезпечні програми, що викрадають або видаляють інформацію (наприклад, фотографії, паролі, повідомлення й дані кредитних карток).</translation>
@@ -1053,7 +1051,6 @@
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4406896451731180161">результати пошуку</translation>
 <translation id="4408413947728134509">Файли cookie: <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Щойно ви ввели пароль на оманливому сайті. Chrome радить негайно перейти на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> та інші сайти, де використовується цей пароль, і змінити його.</translation>
 <translation id="4414515549596849729">файли cookie та дані із сайтів</translation>
 <translation id="4415426530740016218">Адреса отримання</translation>
 <translation id="4424024547088906515">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Chrome не вважає його сертифікат безпеки надійним. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
@@ -1127,7 +1124,6 @@
 <translation id="467662567472608290">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Його сертифікат безпеки містить помилки. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="4677585247300749148">Сайт <ph name="URL" /> хоче реагувати на використання спеціальних можливостей</translation>
 <translation id="467809019005607715">Google Презентації</translation>
-<translation id="4680804919228900307">Щойно ви ввели пароль на оманливому сайті. Chromium радить перевірити збережені паролі для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> та інших сайтів, де використовується цей пароль.</translation>
 <translation id="468314109939257734">Переглянути номер віртуальної картки</translation>
 <translation id="4691835149146451662">Architecture-A (конверт)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1315,6 +1311,7 @@
 <translation id="5252000469029418751">C7 (конверт)</translation>
 <translation id="5254043433801397071">Оптимізувати контент для друку</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">Усе одно записати</translation>
 <translation id="5265446478903775694">Керувати моєю конфіденційністю в Google</translation>
 <translation id="5266128565379329178">Зшити вгорі</translation>
 <translation id="5269225904387178860">Пробити чотири отвори внизу</translation>
@@ -1631,7 +1628,6 @@
 <translation id="6401136357288658127">Це правило не підтримується. Натомість потрібно застосувати правило <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
 <translation id="6406765186087300643">C0 (конверт)</translation>
-<translation id="6409754798200046165">Щойно ви ввели пароль на оманливому сайті. Chrome радить змінити пароль.</translation>
 <translation id="6410264514553301377">Введіть дату закінчення терміну дії та код CVC картки <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium допоможе захистити обліковий запис Google і змінити пароль.</translation>
 <translation id="6423385022588644828">Відтепер ви можете підтверджувати картки швидше за допомогою Touch ID</translation>
@@ -1646,7 +1642,7 @@
 <translation id="6443406338865242315">встановлені розширення та плагіни;</translation>
 <translation id="6446163441502663861">Kahu (конверт)</translation>
 <translation id="6446608382365791566">Додати більше інформації</translation>
-<translation id="6447842834002726250">Cookie-файли</translation>
+<translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6451458296329894277">Підтвердити повторне надсилання форми</translation>
 <translation id="6456955391422100996">Оголошення вилучено.</translation>
 <translation id="6457206614190510200">Скріпити по згину</translation>
@@ -1790,7 +1786,6 @@
 <translation id="6972629891077993081">Пристрої HID</translation>
 <translation id="6973656660372572881">Указано фіксовані проксі-сервери та URL-адреса сценарію .pac.</translation>
 <translation id="6973932557599545801">На жаль, я не можу допомогти. Продовжуйте самостійно.</translation>
-<translation id="6975012522936652259">Щойно ви ввели пароль на оманливому сайті. Chromium радить негайно перейти на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> та інші сайти, де використовується цей пароль, і змінити його.</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
 <translation id="6979983982287291980">Файли, які ви завантажуєте, надсилаються на платформу Google Cloud або стороннім сервісам на аналіз. Наприклад, їх можуть сканувати на наявність конфіденційних даних або зловмисного програмного забезпечення.</translation>
@@ -1839,6 +1834,7 @@
 <translation id="7153618581592392745">Лавандовий</translation>
 <translation id="7156870133441232244">На сервері має бути встановлено протокол TLS 1.2 або новішої версії.</translation>
 <translation id="717330890047184534">Ідентифікатор GAIA:</translation>
+<translation id="7173920250514487165">Запис конфіденційного контенту на екрані</translation>
 <translation id="7174545416324379297">Об'єднано</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Зберігати й заповнювати способи оплати</translation>
@@ -1859,7 +1855,6 @@
 <translation id="7220786058474068424">Обробка</translation>
 <translation id="7221855153210829124">показувати сповіщення</translation>
 <translation id="722454870747268814">Нова анонімна вкладка</translation>
-<translation id="7229659723041939809">Щойно ви ввели пароль на оманливому сайті. Chrome радить перевірити збережені паролі для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> та інших сайтів, де використовується цей пароль.</translation>
 <translation id="7231476387708735839">Керувати пошуком на сайті</translation>
 <translation id="7233592378249864828">Друкувати аркуш підтвердження</translation>
 <translation id="7238585580608191973">Відбиток SHA-256</translation>
@@ -1886,7 +1881,6 @@
 <translation id="7320336641823683070">Довідка щодо з’єднання</translation>
 <translation id="7323804146520582233">Сховати розділ "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Заміна локального облікового запису на пристрої</translation>
-<translation id="7333654844024768166">Щойно ви ввели пароль на оманливому сайті. Chromium радить негайно перейти на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> та інші сайти, де використовується цей пароль, і змінити його.</translation>
 <translation id="7334320624316649418">&amp;Повторити перевпорядкування</translation>
 <translation id="7335157162773372339">Може просити доступ до камери</translation>
 <translation id="7337248890521463931">Показати більше рядків</translation>
@@ -1947,7 +1941,6 @@
 <translation id="7487775554425430039">Грайте в гру Chrome Dino</translation>
 <translation id="7495528107193238112">Підключення заблоковано. Щоб вирішити проблему, зв'яжіться з власником сайту.</translation>
 <translation id="7497998058912824456">Кнопка "Створити документ"; натисніть Enter, щоб швидко створити новий документ Google</translation>
-<translation id="7503664977220660814">Щойно ви ввели пароль на оманливому сайті. Chromium радить перевірити збережені паролі для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> та інших сайтів, де використовується цей пароль.</translation>
 <translation id="7508255263130623398">Отриманий ідентифікатор правил пристрою порожній або не збігається з поточним ідентифікатором пристрою</translation>
 <translation id="7508870219247277067">Світло-зелений</translation>
 <translation id="7511955381719512146">Можливо, щоб під’єднатися до цієї мережі Wi-Fi, потрібно відвідати сторінку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2063,7 +2056,6 @@
 <translation id="7862185352068345852">Залишити сайт?</translation>
 <translation id="7865448901209910068">Оптимальна швидкість</translation>
 <translation id="7871445724586827387">Змініть пароль облікового запису Google</translation>
-<translation id="7874263914261512992">Щойно ви ввели пароль на оманливому сайті. Chrome радить перевірити збережені паролі для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> та інших сайтів, де використовується цей пароль.</translation>
 <translation id="7877007680666472091">ідентифікатори захищеного контенту</translation>
 <translation id="7878562273885520351">Ваш пароль можуть зламати</translation>
 <translation id="7880146494886811634">Збережіть адресу</translation>
@@ -2098,6 +2090,7 @@
 <translation id="7977538094055660992">Пристрій виведення</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">Може просити дозвіл використовувати пристрої й дані віртуальної реальності</translation>
+<translation id="7984699858161118573">Адміністратор не рекомендує робити знімки або здійснювати запис екрана, оскільки контент на ньому конфіденційний</translation>
 <translation id="7984945080620862648">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки веб-сайт надіслав зашифровані облікові дані, які Chrome не може обробити. Помилки мережі й атаки зазвичай є тимчасовими, тому ця сторінка може працювати пізніше.</translation>
 <translation id="79859296434321399">Щоб переглядати вміст у режимі доповненої реальності, установіть ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2144,7 +2137,6 @@
 <translation id="8116925261070264013">Звук вимкнено</translation>
 <translation id="8118489163946903409">Спосіб оплати</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> неправильно встановлено на вашому комп’ютері або в мережі. Попросіть IT-адміністратора вирішити цю проблему.</translation>
-<translation id="8128526133099929547">Щойно ви ввели пароль на оманливому сайті. Chrome радить негайно перейти на <ph name="WEBSITE_1" /> та інші сайти, де використовується цей пароль, і змінити його.</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8148608574971654810">Версія PDF:</translation>
 <translation id="8149426793427495338">Ваш комп’ютер перейшов у режим сну.</translation>
@@ -2163,7 +2155,6 @@
 <translation id="8211406090763984747">З’єднання безпечне</translation>
 <translation id="8218327578424803826">Указане місцезнаходження:</translation>
 <translation id="8220146938470311105">C7/C6 (конверт)</translation>
-<translation id="8221250263817408492">Щойно ви ввели пароль на оманливому сайті. Chromium радить негайно перейти на <ph name="WEBSITE_1" /> та інші сайти, де використовується цей пароль, і змінити його.</translation>
 <translation id="8225771182978767009">Користувач, який налаштував комп’ютер, заблокував цей сайт.</translation>
 <translation id="8228419419708659934">Перегляд по дві сторінки</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2250,7 +2241,6 @@
 <translation id="8474910779563686872">Показати інформацію розробника</translation>
 <translation id="8479754468255770962">Скріпити внизу ліворуч</translation>
 <translation id="8483780878231876732">Щоб користуватися картками у своєму обліковому записі Google, увійдіть у Chrome</translation>
-<translation id="8485393050551136813">Щойно ви ввели пароль на оманливому сайті. Chromium радить перевірити збережені паролі для <ph name="WEBSITE_1" /> та інших сайтів, де використовується цей пароль.</translation>
 <translation id="8488350697529856933">Застосовується до:</translation>
 <translation id="8490137692873530638">Накопичувач 10</translation>
 <translation id="8498891568109133222">Хост <ph name="HOST_NAME" /> довго не відповідає.</translation>
@@ -2325,7 +2315,6 @@
 <translation id="8761567432415473239">Функція безпечного перегляду від Google нещодавно <ph name="BEGIN_LINK" />виявила шкідливі програми<ph name="END_LINK" /> на сайті <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Пристрій USB</translation>
 <translation id="8766943070169463815">Екран автентифікації облікових даних для безпечних платежів відкрито</translation>
-<translation id="8774457497170244317">Щойно ви ввели пароль на оманливому сайті. Chrome радить перевірити збережені паролі для <ph name="WEBSITE_1" /> та інших сайтів, де використовується цей пароль.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Повторити видалення</translation>
 <translation id="8792621596287649091">Ви можете втратити доступ до облікового запису, який вам надає <ph name="ORG_NAME" />, або хтось може викрасти вашу особисту інформацію. Chromium радить змінити пароль.</translation>

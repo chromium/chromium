@@ -2453,7 +2453,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3564848315152754834">USB-Sicherheitsschlüssel</translation>
 <translation id="3566325075220776093">Von diesem Gerät</translation>
 <translation id="3566721612727112615">Keine Websites hinzugefügt</translation>
-<translation id="3567284462585300767">Sichtbar werden, um Dateien von Personen in der Nähe auszutauschen</translation>
+<translation id="3567284462585300767">Sichtbar werden, um Dateien mit Personen in der Nähe auszutauschen</translation>
 <translation id="3569382839528428029">Soll <ph name="APP_NAME" /> Ihren Bildschirm freigeben?</translation>
 <translation id="3569407787324516067">Bildschirmschoner</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> darf die folgenden Dateien und Ordner aufrufen</translation>
@@ -4491,7 +4491,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5805697420284793859">Fenstermanager</translation>
 <translation id="5806773519584576205">0° (Standard)</translation>
 <translation id="5810809306422959727">Dieses Konto lässt keine Jugendschutzeinstellungen zu</translation>
-<translation id="581120508026692647">Die Optionen für Websitebenachrichtigungen finden Sie in den <ph name="LINK_BEGIN" />Chrome-Einstellungen<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">Alle einblenden</translation>
 <translation id="5815645614496570556">X.400-Adresse</translation>
 <translation id="5816434091619127343">Die angeforderten Änderungen würden den Drucker unbrauchbar machen.</translation>
@@ -4903,7 +4902,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6254892857036829079">Perfekt</translation>
 <translation id="6257602895346497974">Synchronisierung aktivieren…</translation>
 <translation id="625895209797312329">Websites daran hindern, auf meinem Gerät installierte Schriftarten zu verwenden</translation>
-<translation id="6259104249628300056">Geräte in Ihrem lokalen Netzwerk finden</translation>
 <translation id="6262371516389954471">Ihre Sicherungen werden an Google gesendet und mit dem Passwort Ihres Google-Kontos verschlüsselt.</translation>
 <translation id="6263082573641595914">Microsoft - Version der Zertifizierungsstelle</translation>
 <translation id="6263284346895336537">Nicht kritisch</translation>

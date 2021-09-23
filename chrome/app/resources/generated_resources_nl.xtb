@@ -757,7 +757,7 @@
 <translation id="177989070088644880">App (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Groep sluiten</translation>
 <translation id="1780273119488802839">Bookmarks importeren...</translation>
-<translation id="178092663238929451">Stel Dichtbij delen in om bestanden te ontvangen van en te sturen naar mensen bij jou in de buurt</translation>
+<translation id="178092663238929451">Stel Dichtbij delen in om bestanden te krijgen van en te sturen naar mensen bij jou in de buurt</translation>
 <translation id="1781291988450150470">Huidige pincode</translation>
 <translation id="1781398670452016618"><ph name="DOMAIN" /> vereist dat je nu verbinding maakt met wifi en een update downloadt.</translation>
 <translation id="1781502536226964113">De pagina 'Nieuw tabblad' openen</translation>
@@ -2455,7 +2455,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3564848315152754834">USB-beveiligingssleutel</translation>
 <translation id="3566325075220776093">Van dit apparaat</translation>
 <translation id="3566721612727112615">Geen sites toegevoegd</translation>
-<translation id="3567284462585300767">Als je bestanden wilt ontvangen en accepteren van mensen bij jou in de buurt, moet je zichtbaar worden</translation>
+<translation id="3567284462585300767">Als je bestanden wilt krijgen en accepteren van mensen bij jou in de buurt, moet je zichtbaar zijn</translation>
 <translation id="3569382839528428029">Wil je je scherm delen met <ph name="APP_NAME" />?</translation>
 <translation id="3569407787324516067">Screensaver</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan de volgende bestanden en mappen bekijken</translation>
@@ -4224,6 +4224,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5501809658163361512">{COUNT,plural, =1{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}other{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}}</translation>
 <translation id="5502500733115278303">Geïmporteerd uit Firefox</translation>
 <translation id="5502915260472117187">Een kind</translation>
+<translation id="5503356662318814623">Bericht sturen</translation>
 <translation id="5503982651688210506">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt en de microfoon gebruikt</translation>
 <translation id="5504909642107847870">Privacy- en beveiligingscontrole</translation>
 <translation id="5505264765875738116">Sites kunnen niet vragen of ze je meldingen mogen sturen</translation>
@@ -4480,6 +4481,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5794414402486823030">Altijd openen met systeemviewer</translation>
 <translation id="5794700615121138172">Gedeelde mappen voor Linux</translation>
 <translation id="5794786537412027208">Alle Chrome-apps sluiten</translation>
+<translation id="5796485699458186843">Nieuw incognito&amp;tabblad</translation>
 <translation id="5797521893972859201">Hiermee wis je de geschiedenis, waaronder die in het zoekvak</translation>
 <translation id="5798079537501238810">Sites kunnen betalingshandlers installeren</translation>
 <translation id="579915268381781820">Je beveiligingssleutel is verwijderd.</translation>
@@ -4491,7 +4493,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5805697420284793859">Vensterbeheer</translation>
 <translation id="5806773519584576205">0° (standaard)</translation>
 <translation id="5810809306422959727">Dit account komt niet in aanmerking voor ouderlijk toezicht</translation>
-<translation id="581120508026692647">Ga naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" /> voor websitemeldingen</translation>
 <translation id="5812674658566766066">Alles uitvouwen</translation>
 <translation id="5815645614496570556">X.400-adres</translation>
 <translation id="5816434091619127343">Met de aangevraagde printerwijzigingen wordt de printer wordt onbruikbaar.</translation>
@@ -4903,7 +4904,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="6254892857036829079">Perfect</translation>
 <translation id="6257602895346497974">Synchronisatie aanzetten...</translation>
 <translation id="625895209797312329">Voorkomen dat sites lettertypen gebruiken die op je apparaat zijn geïnstalleerd</translation>
-<translation id="6259104249628300056">Apparaten ontdekken in je lokale netwerk</translation>
 <translation id="6262371516389954471">Je back-ups worden geüpload naar Google en versleuteld met het wachtwoord van je Google-account.</translation>
 <translation id="6263082573641595914">CA-versie van Microsoft</translation>
 <translation id="6263284346895336537">Niet kritiek</translation>
@@ -6499,10 +6499,12 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="7952904276017482715">Verwachte ID '<ph name="EXPECTED_ID" />', maar ID is '<ph name="NEW_ID" />'</translation>
 <translation id="7953669802889559161">Invoermethoden</translation>
 <translation id="7953955868932471628">Sneltoetsen beheren</translation>
+<translation id="7955105108888461311">Persoonlijk vragen</translation>
 <translation id="7956373551960864128">Je opgeslagen printers</translation>
 <translation id="7957074856830851026">Apparaatgegevens bekijken, zoals serienummer of item-ID</translation>
 <translation id="7957615753207896812">Toetsenbordinstellingen van apparaat openen</translation>
 <translation id="7959074893852789871">Het bestand bevat meerdere certificaten. Sommige van deze certificaten zijn niet geïmporteerd:</translation>
+<translation id="7959665254555683862">Nieuw incognito&amp;tabblad</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7963001036288347286">Touchpadversnelling</translation>
 <translation id="7963608432878156675">Deze naam is zichtbaar voor andere apparaten voor bluetooth- en netwerkverbindingen</translation>

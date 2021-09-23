@@ -454,7 +454,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2417466718237453711">Lukk alle inkognitovinduer for den gjeldende Inkognito-profilen</translation>
 <translation id="2430968933669123598">Administrer Google-konto – trykk på Enter for å administrere informasjon, personvern og sikkerhet i Google-kontoen din</translation>
 <translation id="2438874542388153331">Fire hull høyre</translation>
-<translation id="245044156129055925">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler deg å bytte passord nå.</translation>
 <translation id="2463739503403862330">Fyll ut</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Velg leveringsmåte</translation>
@@ -1034,7 +1033,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4346197816712207223">Godkjente kredittkort</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Tilkoblingen til <ph name="SITE" /> er ikke sikker</translation>
-<translation id="4349531505348777662">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du går til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og andre nettsteder der du bruker dette passordet, og endrer det nå.</translation>
 <translation id="4350629523305688469">Flerfunksjonsskuff</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vil søke etter Bluetooth-enheter i nærheten. Fant disse enhetene:</translation>
 <translation id="4356973930735388585">Angripere på dette nettstedet kan prøve å installere farlige programmer på datamaskinen din. Disse kan stjele eller slette informasjonen din (for eksempel bilder, passord, e-post og kredittkortinformasjon).</translation>
@@ -1053,7 +1051,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4406883609789734330">Direkteteksting</translation>
 <translation id="4406896451731180161">søkeresultater</translation>
 <translation id="4408413947728134509">Informasjonskapsler <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du går til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og andre nettsteder der du bruker dette passordet, og endrer det nå.</translation>
 <translation id="4414515549596849729">informasjonskapsler og nettstedsdata</translation>
 <translation id="4415426530740016218">Henteadresse</translation>
 <translation id="4424024547088906515">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av Chrome. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
@@ -1127,7 +1124,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="467662567472608290">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren inneholder feil. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ber om å svare på tilgjengelighetshendelser</translation>
 <translation id="467809019005607715">Google Presentasjoner</translation>
-<translation id="4680804919228900307">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og andre nettsteder der du bruker dette passordet, nå.</translation>
 <translation id="468314109939257734">Se det virtuelle kortnummeret ditt</translation>
 <translation id="4691835149146451662">Architecture-A (konvolutt)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1632,7 +1628,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6401136357288658127">Denne regelen er avviklet. Du bør bruke den nye regelen <ph name="NEW_POLICY" /> i stedet.</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
 <translation id="6406765186087300643">C0 (konvolutt)</translation>
-<translation id="6409754798200046165">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler deg å bytte passord nå.</translation>
 <translation id="6410264514553301377">Skriv inn utløpsdatoen og verifiseringskoden for <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium kan hjelpe deg med å beskytte Google-kontoen din og endre passordet ditt.</translation>
 <translation id="6423385022588644828">Bekreft kortene dine raskere ved å bruke Touch ID fra nå av</translation>
@@ -1791,7 +1786,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6972629891077993081">HID-enheter</translation>
 <translation id="6973656660372572881">Både statiske proxytjenere og en .pac-skriptnettadresse er angitt.</translation>
 <translation id="6973932557599545801">Beklager, jeg kan ikke hjelpe deg. Fortsett på egen hånd.</translation>
-<translation id="6975012522936652259">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du går til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og andre nettsteder der du bruker dette passordet, og endrer det nå.</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979440798594660689">Kutt lyden (standard)</translation>
 <translation id="6979983982287291980">Filer du laster ned, sendes til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare.</translation>
@@ -1861,7 +1855,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vis varsler</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
-<translation id="7229659723041939809">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og andre nettsteder der du bruker dette passordet, nå.</translation>
 <translation id="7231476387708735839">Administrer nettstedsøk</translation>
 <translation id="7233592378249864828">Skriv ut bekreftelsesark</translation>
 <translation id="7238585580608191973">SHA-256-fingeravtrykk</translation>
@@ -1887,7 +1880,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7320336641823683070">Tilkoblingshjelp</translation>
 <translation id="7323804146520582233">Skjul «<ph name="SECTION" />»-delen</translation>
 <translation id="733354035281974745">Overstyrt av lokal konto på enheten</translation>
-<translation id="7333654844024768166">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du går til <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> og andre nettsteder der du bruker dette passordet, og endrer det nå.</translation>
 <translation id="7334320624316649418">&amp;Omorganiser likevel</translation>
 <translation id="7335157162773372339">Kan be om å få bruke kameraet ditt</translation>
 <translation id="7337248890521463931">Vis flere linjer</translation>
@@ -1948,7 +1940,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7487775554425430039">Spill Chrome Dino-spillet</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>
 <translation id="7497998058912824456">Knappen «Opprett dokument» – trykk på Enter for å opprette et nytt Google-dokument raskt</translation>
-<translation id="7503664977220660814">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og andre nettsteder der du bruker dette passordet, nå.</translation>
 <translation id="7508255263130623398">Den returnerte enhets-ID-en for regelen er tom eller samsvarer ikke med den faktiske enhets-ID-en</translation>
 <translation id="7508870219247277067">Avokadogrønn</translation>
 <translation id="7511955381719512146">Det kan hende at Wi-Fi-nettverket du bruker, krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2064,7 +2055,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7862185352068345852">Vil du forlate nettstedet?</translation>
 <translation id="7865448901209910068">Beste hastighet</translation>
 <translation id="7871445724586827387">Endre passordet for Google-kontoen din</translation>
-<translation id="7874263914261512992">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og andre nettsteder der du bruker dette passordet, nå.</translation>
 <translation id="7877007680666472091">ID-er for beskyttet innhold</translation>
 <translation id="7878562273885520351">Passordet ditt kan være kompromittert</translation>
 <translation id="7880146494886811634">Lagre adresse</translation>
@@ -2146,7 +2136,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8116925261070264013">Kuttet lyd</translation>
 <translation id="8118489163946903409">Betalingsmåte</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» er ikke riktig installert på datamaskinen eller på nettverket. Be IT-administratoren din om å løse problemet.</translation>
-<translation id="8128526133099929547">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du går til <ph name="WEBSITE_1" />, samt andre nettsteder der du bruker dette passordet, og bytter det nå.</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8148608574971654810">PDF-versjon:</translation>
 <translation id="8149426793427495338">Datamaskinen din gikk inn i hvilemodus.</translation>
@@ -2165,7 +2154,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
 <translation id="8218327578424803826">Tilordnet posisjon:</translation>
 <translation id="8220146938470311105">C7/C6 (konvolutt)</translation>
-<translation id="8221250263817408492">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du går til <ph name="WEBSITE_1" />, samt andre nettsteder der du bruker dette passordet, og bytter det nå.</translation>
 <translation id="8225771182978767009">Personen som konfigurerte denne datamaskinen, har valgt å blokkere dette nettstedet.</translation>
 <translation id="8228419419708659934">Visning med to sider</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2252,7 +2240,6 @@ Mer informasjon:
 <translation id="8474910779563686872">Vis utviklerdetaljer</translation>
 <translation id="8479754468255770962">Stift nede til venstre</translation>
 <translation id="8483780878231876732">For å bruke kredittkort du har lagret i Google-kontoen din, logg på Chrome</translation>
-<translation id="8485393050551136813">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" /> og andre nettsteder der du bruker dette passordet, nå.</translation>
 <translation id="8488350697529856933">Gjelder for</translation>
 <translation id="8490137692873530638">Hylle 10</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> brukte for lang tid på å svare.</translation>
@@ -2326,7 +2313,6 @@ Mer informasjon:
 <translation id="8761567432415473239">Google Safe Browsing oppdaget nylig <ph name="BEGIN_LINK" />skadelige programmer<ph name="END_LINK" /> på <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8766943070169463815">Ark for sikker autentisering av betalingslegitimasjon er åpnet</translation>
-<translation id="8774457497170244317">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" /> og andre nettsteder der du bruker dette passordet, nå.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Slett likevel</translation>
 <translation id="8792621596287649091">Du kan miste tilgangen til <ph name="ORG_NAME" />-kontoen din eller bli utsatt for identitetstyveri. Chromium anbefaler at du endrer passordet ditt nå.</translation>

@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">موفق</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
-<translation id="240334320630038121">صفحه لمسی <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">وضعیت قفل سیم‌کارت</translation>
 <translation id="2418150275289244458">باز کردن در تنظیمات</translation>
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">درحال اجرای آزمایش</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
-<translation id="3412146654386081914">صفحه لمسی <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="3435738964857648380">امنیت</translation>
-<translation id="3440478087746699229">داخلی</translation>
 <translation id="3456078764689556234">صفحه <ph name="PRINTED_PAGES" /> از مجموع <ph name="TOTAL_PAGES" /> صفحه چاپ شده است.</translation>
 <translation id="345898999683440380">درحال اسکن کردن صفحه <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />٪ انجام شده است.</translation>
 <translation id="3459509316159669723">درحال چاپ</translation>
@@ -355,7 +352,6 @@
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
 <translation id="6982876849933694860">برای راه‌اندازی اتصال جدید، به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> بروید.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
-<translation id="7039041976777695848">صفحه‌کلید <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">اپراتور</translation>
 <translation id="7058278511608979688">پایان و ذخیره</translation>
 <translation id="7059230779847288458">درحال شارژ، <ph name="TIME_VALUE" /> تا شارژ کامل</translation>
@@ -470,7 +466,6 @@
 <translation id="8818152010000655963">کاغذ دیواری</translation>
 <translation id="8834539327799336565">درحال‌حاضر متصل</translation>
 <translation id="8845001906332463065">دریافت راهنمایی</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">شناسه منحصربه‌فرد جهانی</translation>
 <translation id="8881098542468797602">آزمایش موفق بود</translation>
 <translation id="8898840733695078011">قدرت سیگنال</translation>

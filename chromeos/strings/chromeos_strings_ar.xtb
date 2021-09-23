@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">تم الاجتياز.</translation>
 <translation id="2380886658946992094">قانوني</translation>
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
-<translation id="240334320630038121">لوحة لمس <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">‏حالة قفل شريحة SIM</translation>
 <translation id="2418150275289244458">الفتح من خلال "الإعدادات"</translation>
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">الاختبار قيد التشغيل.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
-<translation id="3412146654386081914">شاشة <ph name="CONNECTION_TYPE" /> تعمل باللمس</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
-<translation id="3440478087746699229">داخلية</translation>
 <translation id="3456078764689556234">عدد الصفحات التي تمت طباعتها: <ph name="PRINTED_PAGES" /> من أصل <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUM" />. اكتمل المسح الضوئي بنسبة <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">الطباعة</translation>
@@ -355,7 +352,6 @@
 <translation id="6977381486153291903">مراجعة البرامج الثابتة</translation>
 <translation id="6982876849933694860">لإعداد اتصال جديد، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
-<translation id="7039041976777695848">لوحة مفاتيح <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
 <translation id="7058278511608979688">إنهاء وحفظ</translation>
 <translation id="7059230779847288458">جارٍ الشحن. تتبقَّى <ph name="TIME_VALUE" /> حتى اكتمال الشحن.</translation>
@@ -470,7 +466,6 @@
 <translation id="8818152010000655963">الخلفية</translation>
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">‏المعرّف الفريد العمومي (GUID)</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>
 <translation id="8898840733695078011">قوة الإشارة</translation>

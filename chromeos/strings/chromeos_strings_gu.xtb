@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
 <translation id="2380886658946992094">કાનૂની</translation>
 <translation id="2391082728065870591">પ્રતિસાદ રિપોર્ટ મોકલો</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> ટચપૅડ</translation>
 <translation id="2407209115954268704">સિમ કાર્ડનું લૉક સ્ટેટસ</translation>
 <translation id="2418150275289244458">સેટિંગમાં ખોલો</translation>
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
@@ -125,10 +124,8 @@
 <translation id="3328783797891415197">પરીક્ષણ ચાલુ છે</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> ટચસ્ક્રીન</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
-<translation id="3440478087746699229">આંતરિક</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />માંથી <ph name="PRINTED_PAGES" /> પેજ પ્રિન્ટ કર્યા.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ. <ph name="PERCENTAGE_VALUE" />% પૂર્ણ થયું.</translation>
 <translation id="3459509316159669723">છાપવું</translation>
@@ -350,7 +347,6 @@
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
 <translation id="6982876849933694860">નવા કનેક્શનનું સેટઅપ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" /> પર જાઓ.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> કીબોર્ડ</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
 <translation id="7058278511608979688">બંધ કરો અને સાચવો</translation>
 <translation id="7059230779847288458">ચાર્જ થઈ રહી છે, પૂર્ણ ચાર્જ થવામાં <ph name="TIME_VALUE" /> બાકી</translation>
@@ -465,7 +461,6 @@
 <translation id="8818152010000655963">વૉલપેપર</translation>
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">પરીક્ષણ સફળ થયું</translation>
 <translation id="8898840733695078011">સિગ્નલ પ્રબળતા</translation>

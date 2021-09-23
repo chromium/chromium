@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">အောင်မြင်သည်</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> တာ့ချ်ပက်</translation>
 <translation id="2407209115954268704">ဆင်းမ်လော့ခ် အခြေအနေ</translation>
 <translation id="2418150275289244458">ဆက်တင်များတွင် ဖွင့်ရန်</translation>
 <translation id="2446553403094072641">အလွတ်ရွှေ့နိုင်သောအမှတ်၏ မှန်ကန်မှု</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">စစ်ဆေးနေသည်</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3369013195428705271">ပုံနှိပ်မှတ်တမ်း အားလုံးကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။ ပုံနှိပ်ထုတ်နေသော ဖိုင်များကို ရှင်းထုတ်မည်မဟုတ်ပါ။</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> တို့ထိမျက်နှာပြင်</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
-<translation id="3440478087746699229">အတွင်း</translation>
 <translation id="3456078764689556234">စာမျက်နှာ <ph name="TOTAL_PAGES" /> မျက်နှာအနက် <ph name="PRINTED_PAGES" /> မျက်နှာကို ပုံနှိပ်ထုတ်ထားသည်။</translation>
 <translation id="345898999683440380">စာမျက်နှာ <ph name="PAGE_NUM" /> ကို စကင်ဖတ်နေသည်။ <ph name="PERCENTAGE_VALUE" />% ပြီးသွားပါပြီ။</translation>
 <translation id="3459509316159669723">ပုံနှိပ်နေသည်</translation>
@@ -354,7 +351,6 @@
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
 <translation id="6982876849933694860">ချိတ်ဆက်မှုအသစ် စနစ်ထည့်သွင်းရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> ကီးဘုတ်</translation>
 <translation id="7040230719604914234">မိုဘိုင်းဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="7058278511608979688">သိမ်းပြီး အဆုံးသတ်ရန်</translation>
 <translation id="7059230779847288458">အားသွင်းနေသည် (အားပြည့်ရန် <ph name="TIME_VALUE" /> ကျန်သည်)</translation>
@@ -469,7 +465,6 @@
 <translation id="8818152010000655963">နောက်ခံပုံ</translation>
 <translation id="8834539327799336565">လက်ရှိ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8845001906332463065">အကူအညီရယူပါ</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">စစ်ဆေးမှု အောင်မြင်သည်</translation>
 <translation id="8898840733695078011">လိုင်းဆွဲအား</translation>

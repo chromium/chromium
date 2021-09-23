@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Uspješno</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Slanje izvješća s povratnim informacijama</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> dodirna površina</translation>
 <translation id="2407209115954268704">Status zaključavanja SIM-a</translation>
 <translation id="2418150275289244458">Otvori u postavkama</translation>
 <translation id="2446553403094072641">Točnost pomičnog zareza</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Test se izvodi</translation>
 <translation id="3368922792935385530">Spojeno</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite izbrisati svu povijest ispisa? Zadaci ispisa u tijeku neće se izbrisati.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> dodirni zaslon</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
-<translation id="3440478087746699229">Interna</translation>
 <translation id="3456078764689556234">Ispisane stranice: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skeniranje stranice <ph name="PAGE_NUM" />. Dovršeno je <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Ispis</translation>
@@ -355,7 +352,6 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6977381486153291903">Revizija opreme</translation>
 <translation id="6982876849933694860">Da biste postavili novu vezu, otvorite <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj ima pristup svim aktivnostima korisnika, uključujući posjećene web-stranice, zaporke i e-poštu.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> tipkovnica</translation>
 <translation id="7040230719604914234">Mobilni operater</translation>
 <translation id="7058278511608979688">Završi i spremi</translation>
 <translation id="7059230779847288458">Punjenje, <ph name="TIME_VALUE" /> do potpune napunjenosti</translation>
@@ -470,7 +466,6 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8818152010000655963">Pozadina</translation>
 <translation id="8834539327799336565">Trenutačno povezano</translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test je uspio</translation>
 <translation id="8898840733695078011">Jakost signala</translation>

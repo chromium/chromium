@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Preverjanje je uspelo</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Pošiljanje poročila s povratnimi informacijami</translation>
-<translation id="240334320630038121">Sledilna ploščica <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Stanje zaklepanja kartice SIM</translation>
 <translation id="2418150275289244458">Odpri v nastavitvah</translation>
 <translation id="2446553403094072641">Natančnost plavajoče točke</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Preizkus se izvaja</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
-<translation id="3412146654386081914">Zaslon na dotik <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Varnost</translation>
-<translation id="3440478087746699229">Interno</translation>
 <translation id="3456078764689556234">Natisnjena <ph name="PRINTED_PAGES" />. stran od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Optično branje <ph name="PAGE_NUM" />. strani. Dokončano: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tiskanje</translation>
@@ -214,7 +211,7 @@
 <translation id="4813345808229079766">Povezava</translation>
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
 <translation id="4835901797422965222">Ni aktivnih omrežij</translation>
-<translation id="484790837831576105">Razrešitev DNS-ja (Android)</translation>
+<translation id="484790837831576105">Razreševanje DNS-ja (Android)</translation>
 <translation id="4848429997038228357">IZVAJANJE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskuse}other{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusov}}</translation>
 <translation id="4880328057631981605">Ime dostopne točke</translation>
@@ -355,7 +352,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
 <translation id="6982876849933694860">Če želite nastaviti novo povezavo, odprite <ph name="BEGIN_LINK" />nastavitve<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
-<translation id="7039041976777695848">Tipkovnica <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7058278511608979688">Končaj in shrani</translation>
 <translation id="7059230779847288458">Polnjenje; do napolnjenosti še <ph name="TIME_VALUE" /></translation>
@@ -470,7 +466,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8818152010000655963">Ozadje</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>
 <translation id="8898840733695078011">Moč signala</translation>
@@ -493,7 +488,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
 <translation id="9111102763498581341">Odkleni</translation>
-<translation id="9126720536733509015">Shranjevanje več strani v eno datoteko PDF.</translation>
+<translation id="9126720536733509015">Shrani več strani v eno datoteko PDF.</translation>
 <translation id="9137526406337347448">Googlove storitve</translation>
 <translation id="9149391708638971077">Zaženi preizkus pomnilnika</translation>
 <translation id="9173638680043580060">Še manj kot minuta</translation>

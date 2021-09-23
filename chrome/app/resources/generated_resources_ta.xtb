@@ -4243,6 +4243,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> ஐப் பெற முடியவில்லை}other{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> ஐப் பெற முடியவில்லை}}</translation>
 <translation id="5502500733115278303">Firefox இலிருந்து இறக்குமதி செய்யப்பட்டது</translation>
 <translation id="5502915260472117187">பிள்ளை</translation>
+<translation id="5503356662318814623">மெசேஜ் அனுப்பு</translation>
 <translation id="5503982651688210506">கேமராவைப் பயன்படுத்தவும் நகர்த்தவும் உங்கள் மைக்ரோஃபோனைப் பயன்படுத்தவும் <ph name="HOST" /> ஐத் தொடர்ந்து அனுமதி</translation>
 <translation id="5504909642107847870">தனியுரிமை மற்றும் பாதுகாப்பு</translation>
 <translation id="5505264765875738116">அறிவிப்புகளை அனுப்புவதற்கான அனுமதியைத் தளங்களால் கோர இயலாது</translation>
@@ -4500,6 +4501,7 @@
 <translation id="5794414402486823030">எப்போதும் சிஸ்டம் வியூவரைக் கொண்டு திற</translation>
 <translation id="5794700615121138172">Linux பகிர்ந்த கோப்புறைகள்</translation>
 <translation id="5794786537412027208">எல்லா Chrome பயன்பாடுகளையும் நிறுத்து</translation>
+<translation id="5796485699458186843">புதிய மறைநிலைப் &amp;பக்கம்</translation>
 <translation id="5797521893972859201">இதுவரை தேடியவற்றை அழிக்கும் (தேடல் பெட்டியில் டைப் செய்தவை உட்பட)</translation>
 <translation id="5798079537501238810">பேமெண்ட் ஹேண்ட்லர்களை நிறுவ தளங்கள் அனுமதி கேட்க வேண்டும்</translation>
 <translation id="579915268381781820">உங்கள் பாதுகாப்பு விசை அகற்றப்பட்டது.</translation>
@@ -4511,7 +4513,6 @@
 <translation id="5805697420284793859">சாளர நிர்வாகி</translation>
 <translation id="5806773519584576205">0° (இயல்புநிலை)</translation>
 <translation id="5810809306422959727">பெற்றோர் கட்டுப்பாடுகளைச் சேர்ப்பதற்கு இந்தக் கணக்கு தகுதிபெறவில்லை</translation>
-<translation id="581120508026692647">இணையதள அறிவிப்புகளுக்கு, <ph name="LINK_BEGIN" />Chrome அமைப்புகள்<ph name="LINK_END" /> என்பதற்குச் செல்லவும்</translation>
 <translation id="5812674658566766066">அனைத்தையும் விரிவாக்கு</translation>
 <translation id="5815645614496570556">X.400 முகவரி</translation>
 <translation id="5816434091619127343">கோரிய பிரிண்டர் மாற்றங்கள், அதைப் பயன்படுத்த முடியாததாக மாற்றும்.</translation>
@@ -4923,7 +4924,6 @@
 <translation id="6254892857036829079">அருமை</translation>
 <translation id="6257602895346497974">ஒத்திசைவை இயக்கு...</translation>
 <translation id="625895209797312329">எனது சாதனத்தில் நிறுவப்பட்டுள்ள எழுத்துருக்களைத் தளங்கள் பயன்படுத்துவதைத் தடு</translation>
-<translation id="6259104249628300056">உங்கள் அக நெட்வொர்க்கில் உள்ள சாதனங்களைக் கண்டறியும்</translation>
 <translation id="6262371516389954471">உங்களின் காப்புப்பிரதிகள் Googleளுக்குப் பதிவேற்றப்பட்டு Google கணக்கின் கடவுச்சொல்லைப் பயன்படுத்தி என்க்ரிப்ஷன் செய்யப்படுகின்றன.</translation>
 <translation id="6263082573641595914">Microsoft CA பதிப்பு</translation>
 <translation id="6263284346895336537">சிக்கலானதல்ல</translation>
@@ -6521,10 +6521,12 @@
 <translation id="7952904276017482715">எதிர்பார்க்கப்பட்ட ஐடி "<ph name="EXPECTED_ID" />", ஆனால் இருப்பது "<ph name="NEW_ID" />" ஐடி ஆகும்</translation>
 <translation id="7953669802889559161">உள்ளீட்டு முறைகள்</translation>
 <translation id="7953955868932471628">குறுக்குவழிகளை நிர்வகி</translation>
+<translation id="7955105108888461311">நேரடியாகக் கேட்கவும்</translation>
 <translation id="7956373551960864128">நீங்கள் சேமித்துள்ள பிரிண்டர்கள்</translation>
 <translation id="7957074856830851026">வரிசை எண்/உரிமை ஐடி போன்ற சாதனத் தகவலைப் பார்த்தல்</translation>
 <translation id="7957615753207896812">கீபோர்டு அமைப்புகளைத் திற</translation>
 <translation id="7959074893852789871">இந்த ஃபைலில் பல சான்றிதழ்கள் உள்ளன, அவற்றில் சில இறக்குமதி செய்யப்படவில்லை:</translation>
+<translation id="7959665254555683862">புதிய மறைநிலைப் &amp;பக்கம்</translation>
 <translation id="7961015016161918242">எப்போதும் இல்லை</translation>
 <translation id="7963001036288347286">டச்பேட் ஆக்ஸிலரேஷன்</translation>
 <translation id="7963608432878156675">புளூடூத் &amp; நெட்வொர்க் இணைப்புகளுக்காக, பிற சாதனங்களுக்கு இந்தப் பெயர் காட்டப்படும்</translation>

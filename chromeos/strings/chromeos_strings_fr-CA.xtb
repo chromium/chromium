@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Vérification réussie</translation>
 <translation id="2380886658946992094">Légal</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
-<translation id="240334320630038121">Pavé tactile <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">État de verrouillage de la carte SIM</translation>
 <translation id="2418150275289244458">Ouvrir dans les paramètres</translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
-<translation id="3412146654386081914">Écran tactile <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sécurité</translation>
-<translation id="3440478087746699229">interne</translation>
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" /> en cours… Progression : <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
@@ -355,7 +352,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="6982876849933694860">Pour configurer une nouvelle connexion, accédez aux <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
-<translation id="7039041976777695848">Clavier <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Opérateur</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>
 <translation id="7059230779847288458">En recharge : <ph name="TIME_VALUE" /> avant que la pile soit rechargée</translation>
@@ -470,7 +466,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8818152010000655963">Fond d'écran</translation>
 <translation id="8834539327799336565">Actuellement connecté</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test réussi</translation>
 <translation id="8898840733695078011">Intensité du signal</translation>

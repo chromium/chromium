@@ -450,7 +450,6 @@
 <translation id="2417466718237453711">Fermer toutes les fenêtres de navigation privée du profil de navigation privée actuel</translation>
 <translation id="2430968933669123598">Gérer le compte Google, appuyez sur Entrée pour gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
 <translation id="2438874542388153331">Quadruple perforation à droite</translation>
-<translation id="245044156129055925">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="2463739503403862330">Remplir</translation>
 <translation id="2465402087343596252">Architecture E</translation>
 <translation id="2465655957518002998">Choisir un mode de livraison</translation>
@@ -1025,7 +1024,6 @@
 <translation id="4346197816712207223">Cartes de crédit acceptées</translation>
 <translation id="4346833872170306413">ROC 16K</translation>
 <translation id="4348834659292907206">La connexion au site <ph name="SITE" /> n'est pas sécurisée</translation>
-<translation id="4349531505348777662">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de visiter <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>
 <translation id="4350629523305688469">Plateau multifonction</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> veut rechercher des appareils Bluetooth à proximité. Les appareils suivants ont été détectés :</translation>
 <translation id="4356973930735388585">Les cyberpirates sur le site pourraient tenter d'installer des programmes dangereux sur votre ordinateur afin de voler ou de supprimer vos données (par exemple des photos, des mots de passe, des messages et des données de carte de crédit).</translation>
@@ -1044,7 +1042,6 @@
 <translation id="4406883609789734330">Transcription instantanée</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>
 <translation id="4408413947728134509">Témoins <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de visiter <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>
 <translation id="4414515549596849729">Témoins et données des sites</translation>
 <translation id="4415426530740016218">Adresse de ramassage</translation>
 <translation id="4424024547088906515">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par Chrome. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
@@ -1118,7 +1115,6 @@
 <translation id="467662567472608290">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité contient des erreurs. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="4677585247300749148">L'URL <ph name="URL" /> veut répondre aux événements d'accessibilité</translation>
 <translation id="467809019005607715">Google Présentations</translation>
-<translation id="4680804919228900307">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, pour <ph name="WEBSITE_2" />, pour <ph name="WEBSITE_3" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>
 <translation id="468314109939257734">Afficher votre numéro de carte virtuelle</translation>
 <translation id="4691835149146451662">Enveloppe Architecture A</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1623,7 +1619,6 @@
 <translation id="6401136357288658127">Cette politique est obsolète. Vous devriez utiliser la politique <ph name="NEW_POLICY" /> à la place.</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
 <translation id="6406765186087300643">Enveloppe C0</translation>
-<translation id="6409754798200046165">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="6410264514553301377">Entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
 <translation id="6423385022588644828">Vérifiez vos cartes plus rapidement en vous servant de Touch ID à partir de maintenant</translation>
@@ -1782,7 +1777,6 @@
 <translation id="6972629891077993081">Appareils HID</translation>
 <translation id="6973656660372572881">Des serveurs mandataires fixes et une URL de script .pac sont spécifiés.</translation>
 <translation id="6973932557599545801">Désolée, je ne suis plus en mesure de vous aider, veuillez continuer par vous-même.</translation>
-<translation id="6975012522936652259">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de visiter <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>
 <translation id="6979158407327259162">Google Disque</translation>
 <translation id="6979440798594660689">Désactiver le son (par défaut)</translation>
 <translation id="6979983982287291980">Les fichiers que vous téléchargez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils pourraient être analysés pour déterminer s'ils contiennent des données confidentielles ou des logiciels malveillants.</translation>
@@ -1852,7 +1846,6 @@
 <translation id="7220786058474068424">Traitement en cours</translation>
 <translation id="7221855153210829124">Afficher les notifications</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée</translation>
-<translation id="7229659723041939809">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, pour <ph name="WEBSITE_2" />, pour <ph name="WEBSITE_3" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>
 <translation id="7231476387708735839">Gérer la recherche de sites</translation>
 <translation id="7233592378249864828">Imprimer la feuille de confirmation</translation>
 <translation id="7238585580608191973">Empreintes digitales SHA-256</translation>
@@ -1879,7 +1872,6 @@ Détails supplémentaires :
 <translation id="7320336641823683070">Aide pour la connexion</translation>
 <translation id="7323804146520582233">Masquer la section « <ph name="SECTION" /> »</translation>
 <translation id="733354035281974745">Ignorer le compte local de l'appareil</translation>
-<translation id="7333654844024768166">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de visiter <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>
 <translation id="7334320624316649418">&amp;Rétablir la réorganisation</translation>
 <translation id="7335157162773372339">Les sites peuvent demander à utiliser votre appareil photo</translation>
 <translation id="7337248890521463931">Afficher plus de lignes</translation>
@@ -1940,7 +1932,6 @@ Détails supplémentaires :
 <translation id="7487775554425430039">Jouer au jeu des dinosaures de Chrome</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Communiquez avec le propriétaire du site pour corriger le problème.</translation>
 <translation id="7497998058912824456">Bouton Créer un document, appuyez sur la touche Entrée pour rapidement créer un document Google</translation>
-<translation id="7503664977220660814">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, pour <ph name="WEBSITE_2" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>
 <translation id="7508255263130623398">L'ID d'appareil de la règle renvoyé est vide ou ne correspond pas à l'ID d'appareil actuel</translation>
 <translation id="7508870219247277067">Avocat</translation>
 <translation id="7511955381719512146">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2056,7 +2047,6 @@ Détails supplémentaires :
 <translation id="7862185352068345852">Quitter le site?</translation>
 <translation id="7865448901209910068">Meilleure vitesse</translation>
 <translation id="7871445724586827387">Modifier le mot de passe de votre compte Google</translation>
-<translation id="7874263914261512992">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, pour <ph name="WEBSITE_2" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>
 <translation id="7877007680666472091">identifiants de contenu protégé</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été compromis</translation>
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
@@ -2138,7 +2128,6 @@ Détails supplémentaires :
 <translation id="8116925261070264013">Désactivés</translation>
 <translation id="8118489163946903409">Mode de paiement</translation>
 <translation id="8127301229239896662">« <ph name="SOFTWARE_NAME" /> » n'a pas été correctement installé sur votre ordinateur ou votre réseau. Demandez à votre administrateur informatique de résoudre ce problème.</translation>
-<translation id="8128526133099929547">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de visiter <ph name="WEBSITE_1" />, ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
@@ -2157,7 +2146,6 @@ Détails supplémentaires :
 <translation id="8211406090763984747">Connexion sécurisée</translation>
 <translation id="8218327578424803826">Emplacement attribué :</translation>
 <translation id="8220146938470311105">Enveloppe C7/C6</translation>
-<translation id="8221250263817408492">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de visiter <ph name="WEBSITE_1" />, ainsi que tout autre site sur lequel vous avez utilisé ce mot de passe, puis de le changer maintenant.</translation>
 <translation id="8225771182978767009">La personne qui a configuré cet ordinateur a choisi de bloquer ce site.</translation>
 <translation id="8228419419708659934">Affichage de deux pages</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2244,7 +2232,6 @@ Détails supplémentaires :
 <translation id="8474910779563686872">Afficher les renseignements du développeur</translation>
 <translation id="8479754468255770962">Agrafe en bas à gauche</translation>
 <translation id="8483780878231876732">Pour utiliser des cartes à partir de votre compte Google, connectez-vous à Chrome</translation>
-<translation id="8485393050551136813">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>
 <translation id="8488350697529856933">S'applique à</translation>
 <translation id="8490137692873530638">Empileur 10</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> a pris trop de temps à répondre.</translation>
@@ -2318,7 +2305,6 @@ Détails supplémentaires :
 <translation id="8761567432415473239">La navigation sécurisée de Google a récemment <ph name="BEGIN_LINK" />détecté des programmes malveillants<ph name="END_LINK" /> sur <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Appareil USB</translation>
 <translation id="8766943070169463815">La fiche d'authentification de l'authentifiant de paiement sécurisé est ouverte</translation>
-<translation id="8774457497170244317">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Rétablir la suppression</translation>
 <translation id="8792621596287649091">Vous risquez de perdre l'accès à votre compte <ph name="ORG_NAME" /> ou d'être victime d'un vol d'identité. Chromium recommande de modifier votre mot de passe maintenant.</translation>
@@ -2329,7 +2315,7 @@ Détails supplémentaires :
 <translation id="8807160976559152894">Couper après chaque page</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>
 <translation id="8820817407110198400">Favoris</translation>
-<translation id="882338992931677877">Fente manuelle</translation>
+<translation id="882338992931677877">Insertion manuelle</translation>
 <translation id="883848425547221593">Autres favoris</translation>
 <translation id="884264119367021077">Adresse d'expédition</translation>
 <translation id="884923133447025588">Aucun mécanisme de révocation découvert.</translation>

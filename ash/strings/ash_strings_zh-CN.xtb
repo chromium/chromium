@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">溢出</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
+<translation id="1364382257761975320">若要解锁您的 Chromebook，请使用您的指纹</translation>
 <translation id="1383597849754832576">无法下载实时字幕文件。请稍后再试。</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1391102559483454063">已开启</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
 <translation id="2359808026110333948">继续</translation>
+<translation id="2367186422933365202">无法登录您的 Chromebook</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
 <translation id="2390318262976603432">语言区域设置</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">媒体控件</translation>
+<translation id="2402411679569069051">若要解锁您的 Chromebook，请使用您的指纹或解锁您的手机</translation>
 <translation id="2405664212338326887">未连接</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">+另外 <ph name="COUNT" /> 条</translation>
 <translation id="324366796737464147">降噪</translation>
 <translation id="3249513730522716925">窗口“<ph name="WINDOW_TITLE" />”已由桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">若要解锁您的 Chromebook，请开启您手机的蓝牙</translation>
 <translation id="3255483164551725916">你能做些什么？</translation>
 <translation id="3269597722229482060">右键点击</translation>
 <translation id="3289674678944039601">正在通过适配器充电</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Ctrl+Shift+空格键</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">定义</translation>
+<translation id="3509391053705095206">找不到您的手机。请确保您手机的蓝牙已开启。</translation>
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
 <translation id="3513798432020909783">该帐号由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="353086728817903341">已连接到 <ph name="NUM_DEVICES" /> 部设备</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="3713734891607377840">下载完成后打开</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
+<translation id="3744282433224562605">若要解锁您的 Chromebook，请输入密码</translation>
 <translation id="3771549900096082774">高反差模式</translation>
 <translation id="3773700760453577392">管理员已禁止 <ph name="USER_EMAIL" /> 使用多帐号登录功能。所有用户都必须先退出帐号才能继续。</translation>
 <translation id="3779139509281456663">正在连接“<ph name="NAME" />”</translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">只要您右键点击或长按所选内容，Google 助理即会显示与其相关的信息（例如定义、翻译或单位换算）。</translation>
 <translation id="4505050298327493054">处于活动状态的桌面。</translation>
 <translation id="4513946894732546136">反馈</translation>
+<translation id="4518404433291145981">若要解锁您的 Chromebook，请先解锁您的手机</translation>
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
 <translation id="4538824937723742295">截取整个屏幕</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
+<translation id="5147567197700016471">已解锁</translation>
 <translation id="5155897006997040331">朗读速度</translation>
 <translation id="5166918508782100047">快速解答设置</translation>
 <translation id="5168181903108465623">有可用的投射设备</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5176318573511391780">录制部分屏幕</translation>
+<translation id="5199367439331364630">若要登录您的 Chromebook，请输入密码</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{另外 1 条通知}other{另外 # 条通知}}</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="5208059991603368177">开启</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">为新设备配对</translation>
 <translation id="5322611492012084517">找不到您的手机</translation>
 <translation id="5329548388331921293">正在连接…</translation>
+<translation id="5330201449517439522">点按或点击即可输入</translation>
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
 <translation id="5352250171825660495">深色主题已开启</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">设置已连接的设备</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="584525477304726060">按住即可最大化</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="5867217927013474703">正在收集网络信息</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">连接到您手机的热点，将您的手机静音并确定它的位置，以及查看您手机上最近打开的 Chrome 标签页</translation>
 <translation id="6670153871843998651">桌面 3</translation>
 <translation id="6671495933530132209">复制图片</translation>
+<translation id="6671661918848783005">无法解锁您的 Chromebook</translation>
 <translation id="6692996468359469499">获取与您的所选项相关的信息</translation>
 <translation id="6696025732084565524">您的可拆卸式键盘需要安装一项重要更新</translation>
 <translation id="6700713906295497288">IME 菜单按钮</translation>
@@ -770,6 +782,7 @@
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="6921188888306725546">改进了键盘快捷键</translation>
 <translation id="6929655271276551705">日期设置</translation>
+<translation id="6931576957638141829">保存到</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
@@ -906,6 +919,7 @@
 <translation id="79341161159229895">该帐号由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>
 <translation id="793716872548410480">按<ph name="SHORTCUT_KEY_NAME" /> + V 可查看您的剪贴板。您复制的最后 5 项内容会保存到您的剪贴板中。</translation>
 <translation id="7955885781510802139">高对比度模式</translation>
+<translation id="7968693143708939792">选择文件夹…</translation>
 <translation id="7977927628060636163">正在搜索移动网络…</translation>
 <translation id="7980780401175799550">尝试使用新方式在 Chrome 操作系统中导航</translation>
 <translation id="7982789257301363584">网络</translation>

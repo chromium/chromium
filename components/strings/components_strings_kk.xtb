@@ -454,7 +454,6 @@
 <translation id="2417466718237453711">Осы инкогнито профиліндегі барлық инкогнито терезесін жабу</translation>
 <translation id="2430968933669123598">Google аккаунтын басқару, Google аккаунтыңыздағы ақпаратты, құпиялылықты және қауіпсіздікті басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="2438874542388153331">Оң жағын төрт рет тесу</translation>
-<translation id="245044156129055925">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chromium құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
 <translation id="2463739503403862330">Толтыру</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Жеткізу әдісін таңдау</translation>
@@ -1033,7 +1032,6 @@
 <translation id="4346197816712207223">Қабылданатын несиелік карталар</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> сайтымен байланыс қауіпсіз емес</translation>
-<translation id="4349531505348777662">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="4350629523305688469">Көпфункциялы науа</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> маңайдағы Bluetooth құрылғыларын іздеуде. Мына құрылғылар табылды:</translation>
 <translation id="4356973930735388585">Бұл сайттағы шабуылшылар ақпаратыңызды (мысалы, фотосуреттер, құпия сөздер, хабарлар және несие карталары) ұрлайтын не жоятын қауіпті бағдарламаларды компьютеріңізге орнатуға тырысуы мүмкін.</translation>
@@ -1052,7 +1050,6 @@
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">іздеу нәтижелері</translation>
 <translation id="4408413947728134509">Cookie файлдары: <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="4414515549596849729">cookie файлдары және сайт деректері</translation>
 <translation id="4415426530740016218">Алып кету мекенжайы</translation>
 <translation id="4424024547088906515">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатына Chrome сенім білдірмеген. Бұған қате конфигурация немесе қаскүнемнің байланысты үзуі себеп болуы мүмкін.</translation>
@@ -1126,7 +1123,6 @@
 <translation id="467662567472608290">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатында қателер бар. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> арнайы мүмкіндіктер оқиғаларына жауап бергісі келеді</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4680804919228900307">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="468314109939257734">Виртуалды карта нөмірін көру</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1631,7 +1627,6 @@
 <translation id="6401136357288658127">Бұл саясат ескірді. Орнына <ph name="NEW_POLICY" /> саясатын пайдаланғаныңыз жөн.</translation>
 <translation id="6404511346730675251">Бетбелгіні өзгерту</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
-<translation id="6409754798200046165">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> картасының жарамдылық мерзімін және CVC кодын енгізіңіз</translation>
 <translation id="6415778972515849510">Chromium браузері Google аккаунтыңызды қорғауға және құпия сөзіңізді өзгертуге көмектеседі.</translation>
 <translation id="6423385022588644828">Қазірден бастап Touch ID арқылы карталараңызды жылдам растаңыз</translation>
@@ -1790,7 +1785,6 @@
 <translation id="6972629891077993081">HID құрылғылары</translation>
 <translation id="6973656660372572881">Бекітілген прокси серверлері мен .pac сценарий URL мекенжайы көрсетілген.</translation>
 <translation id="6973932557599545801">Өкінішке орай, енді көмектесе алмаймын, әрі қарай өзіңіз жалғастырыңыз.</translation>
-<translation id="6975012522936652259">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chromium осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Дыбысын өшіру (әдепкі)</translation>
 <translation id="6979983982287291980">Сіз жүктеп алатын файлдар Google Cloud қызметіне немесе басқа қызметтерге жіберіліп, талданады. Мысалы, онда құпия деректердің немесе зиянды бағдарламалардың бар-жоғы тексеріледі.</translation>
@@ -1839,7 +1833,7 @@
 <translation id="7153618581592392745">Ақшыл көк</translation>
 <translation id="7156870133441232244">Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы орнатылуы тиіс.</translation>
 <translation id="717330890047184534">GAIA идентификаторы:</translation>
-<translation id="7173920250514487165">Экрандағы құпия мазмұнды түсіру</translation>
+<translation id="7173920250514487165">Экрандағы құпия мәліметті түсіру</translation>
 <translation id="7174545416324379297">Біріктірілген</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Төлеу әдістерін сақтау және толтыру</translation>
@@ -1860,7 +1854,6 @@
 <translation id="7220786058474068424">Өңделуде</translation>
 <translation id="7221855153210829124">Хабарландыруларды көрсету</translation>
 <translation id="722454870747268814">Жаңа инкогнито қойындысы</translation>
-<translation id="7229659723041939809">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="7231476387708735839">Сайтта іздеу жүйесін басқару</translation>
 <translation id="7233592378249864828">Растау парағын басып шығару</translation>
 <translation id="7238585580608191973">SHA-256 саусақ ізі</translation>
@@ -1887,7 +1880,6 @@
 <translation id="7320336641823683070">Байланыс анықтамасы</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" бөлімін жасыру</translation>
 <translation id="733354035281974745">Құрылғының жергілікті аккаунтын қайта анықтау</translation>
-<translation id="7333654844024768166">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="7334320624316649418">&amp;Қайта ретке келтіруді қайталау</translation>
 <translation id="7335157162773372339">Камераңызды қолдануға рұқсат сұрай алады</translation>
 <translation id="7337248890521463931">Жолдарды көбірек көрсету</translation>
@@ -1948,7 +1940,6 @@
 <translation id="7487775554425430039">Chrome Dino ойынын ойнау</translation>
 <translation id="7495528107193238112">Бұл мазмұн бөгелген. Мәселені шешу үшін сайт иесімен байланыс орнатыңыз.</translation>
 <translation id="7497998058912824456">"Құжат жасау" түймесі, жаңа Google құжатын жылдам жасау үшін Enter пернесін басыңыз.</translation>
-<translation id="7503664977220660814">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="7508255263130623398">Қайтарылған құрылғының сервердегі идентификаторы бос немесе оның ағымдағы идентификаторына сәйкес келмейді</translation>
 <translation id="7508870219247277067">Қою жасыл</translation>
 <translation id="7511955381719512146">Пайдаланып жатқан Wi-Fi сізден <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
@@ -2064,7 +2055,6 @@
 <translation id="7862185352068345852">Сайттан шыққыңыз келе ме?</translation>
 <translation id="7865448901209910068">Ең жақсы жылдамдық</translation>
 <translation id="7871445724586827387">Google аккаунтыңыздың құпия сөзін ауыстыру</translation>
-<translation id="7874263914261512992">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="7877007680666472091">Қорғалған content ID-лер</translation>
 <translation id="7878562273885520351">Құпия сөзіңіз ұрланған болуы мүмкін</translation>
 <translation id="7880146494886811634">Мекенжайды сақтау</translation>
@@ -2099,7 +2089,7 @@
 <translation id="7977538094055660992">Шығару құрылғысы</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">Виртуалды шындық құрылғыларын және деректерді пайдалануға рұқсат сұрай алады.</translation>
-<translation id="7984699858161118573">Экрандағы құпия мазмұнға байланысты әкімші суретке түсіруді немесе бейнеге жазуды ұсынбайды.</translation>
+<translation id="7984699858161118573">Экранда құпия мәлімет көрсетіліп тұрғандықтан, әкімші суретке немесе бейнеге түсірмеген жөн деп санайды.</translation>
 <translation id="7984945080620862648">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб-сайт Chrome өңдей алмайтын шифрланған есептік деректерді жіберді. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="79859296434321399">Толықтырылған шындық мазмұнын көру үшін ARCore платформасын орнатыңыз</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2146,7 +2136,6 @@
 <translation id="8116925261070264013">Дыбысы өшірулі</translation>
 <translation id="8118489163946903409">Төлем әдісі</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" компьютеріңізде не желіңізде дұрыс орнатылмаған. АТ әкімшіңізден мәселені шешуін сұраңыз.</translation>
-<translation id="8128526133099929547">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome осы құпия сөз енгізілген <ph name="WEBSITE_1" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8148608574971654810">PDF нұсқасы:</translation>
 <translation id="8149426793427495338">Компьютеріңіз ұйқы күйіне өтті.</translation>
@@ -2165,7 +2154,6 @@
 <translation id="8211406090763984747">Қауіпсіз байланыс</translation>
 <translation id="8218327578424803826">Тағайындалған орын:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
-<translation id="8221250263817408492">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chromium осы құпия сөз енгізілген <ph name="WEBSITE_1" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="8225771182978767009">Бұл компьютерді орнатқан адам осы сайтты бөгеуді ұйғарды.</translation>
 <translation id="8228419419708659934">Екі бетті көру</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2252,7 +2240,6 @@
 <translation id="8474910779563686872">Әзірлеуші туралы мәліметтерді көрсету</translation>
 <translation id="8479754468255770962">Төменгі сол жағын қапсыру</translation>
 <translation id="8483780878231876732">Google аккаунтында белгіленген карталарды пайдалану үшін Chrome жүйесіне кіріңіз.</translation>
-<translation id="8485393050551136813">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="8488350697529856933">Келесіге қолданылады</translation>
 <translation id="8490137692873530638">10-жинастырушы</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> жауабы тым ұзақ уақыт алды.</translation>
@@ -2326,7 +2313,6 @@
 <translation id="8761567432415473239">Жақында Google Safe Browsing <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" />зиянды бағдарламаларды тапты<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB құрылғысы</translation>
 <translation id="8766943070169463815">Қауіпсіз төлем деректерін аутентификациялау парағы ашылды.</translation>
-<translation id="8774457497170244317">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Жоюды қайталау</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> аккаунтыңызға кіру мүмкіндігін жоғалтып алуыңыз немесе жеке мәліметтеріңізді беріп қоюыңыз мүмкін. Chromium құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>

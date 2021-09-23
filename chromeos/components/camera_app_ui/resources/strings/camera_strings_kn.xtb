@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> ಅನ್‌ಪ್ಲಗ್ ಆಗಿದೆ.</translation>
 <translation id="1473110567575736769">3 ಸೆಕೆಂಡುಗಳ ಟೈಮರ್</translation>
 <translation id="1545749641540134597">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">ಸಾಮಾನ್ಯ</translation>
 <translation id="1620510694547887537">ಕ್ಯಾಮರಾ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನಿಂಗ್ ಈಗ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5268823927180092501">ಎಲ್ಲಾ ಕ್ಯಾಮರಾಗಳಲ್ಲಿ ಡಾಕ್ಯುಮೆಂಟ್ ಮೋಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5444515100983837161">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಎಲ್ಲಾ ಅಂಚುಗಳನ್ನು ಫ್ರೇಮ್‌ನೊಳಗೆ ಇರಿಸಿ. ಡಾಕ್ಯುಮೆಂಟ್ ಮತ್ತು ಹಿನ್ನೆಲೆ ವಿಭಿನ್ನ ಬಣ್ಣಗಳಾಗಿದ್ದರೆ ಸ್ಕ್ಯಾನಿಂಗ್ ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
+<translation id="5588258280684580073">GIF ರೆಕಾರ್ಡಿಂಗ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5671277269877808209">ಚೌಕ</translation>
 <translation id="5746169159649715125">PDF ನಂತೆ ಉಳಿಸಿ</translation>
 <translation id="5753488212459587150">ತಜ್ಞರ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">ವೀಡಿಯೊ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="7337660886763914220">ಫೈಲ್ ಸಿಸ್ಟಂ ದೋಷಗಳು.</translation>
 <translation id="7450541714075000668">ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
+<translation id="7488619942230388918">GIF ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="7557677699350329807">ಮುಂದಿನ ಕ್ಯಾಮರಾಗೆ ಬದಲಿಸಿ</translation>
 <translation id="7607002721634913082">ವಿರಾಮದಲ್ಲಿದೆ</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">ಸಾಮಾನ್ಯ ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="7983668134180549431">ಪಠ್ಯ ಪತ್ತೆಯಾಗಿದೆ.</translation>
 <translation id="8067883171444229417">ವೀಡಿಯೊ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="8120146556401698679">ಪ್ಯಾನ್ ಮಾಡಿ ಟಿಲ್ಟ್ ಮಾಡಿ ಝೂಮ್ ಮಾಡಿ</translation>

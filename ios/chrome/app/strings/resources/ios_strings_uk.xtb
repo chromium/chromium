@@ -562,7 +562,7 @@
 <translation id="6439338047467462846">Дозволити всі</translation>
 <translation id="6445051938772793705">Країна</translation>
 <translation id="6445981559479772097">Повідомлення надіслано.</translation>
-<translation id="6447842834002726250">Cookie-файли</translation>
+<translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6453018583485750254">Паролі ніколи не перевірялися.</translation>
 <translation id="6459307836338400162">Інші налаштування конфіденційності, безпеки й збору даних доступні в розділах <ph name="BEGIN_LINK" />Синхронізація<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>
 <translation id="6464071786529933911">Відкрити в анонімній вкладці</translation>
@@ -773,7 +773,6 @@
 <translation id="8487667956631253959">Увімкнено</translation>
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>
 <translation id="8490978609246021741">Зберегти зміни</translation>
-<translation id="8495097701594799854">Вимкнено адміністратором організації.</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="850600235656508448">Відкрити в режимі анонімного перегляду</translation>
 <translation id="8517375800490286174">Ліцензії ПЗ з відкритим кодом</translation>

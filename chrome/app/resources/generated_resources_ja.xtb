@@ -4495,7 +4495,6 @@
 <translation id="5805697420284793859">ウィンドウ マネージャ</translation>
 <translation id="5806773519584576205">0°（デフォルト）</translation>
 <translation id="5810809306422959727">このアカウントでは保護者による使用制限を設定できません</translation>
-<translation id="581120508026692647">ウェブサイトからの通知については、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />をご覧ください</translation>
 <translation id="5812674658566766066">すべて展開</translation>
 <translation id="5815645614496570556">X.400 アドレス</translation>
 <translation id="5816434091619127343">リクエストされた変更を行うと、プリンタを使用できなくります。</translation>
@@ -4907,7 +4906,6 @@
 <translation id="6254892857036829079">非常に良い</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
 <translation id="625895209797312329">デバイスにインストールされたフォントをサイトが使用しないようブロックする</translation>
-<translation id="6259104249628300056">ローカル ネットワーク上のデバイスの検出</translation>
 <translation id="6262371516389954471">バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="6263082573641595914">Microsoft CA バージョン</translation>
 <translation id="6263284346895336537">非重要</translation>

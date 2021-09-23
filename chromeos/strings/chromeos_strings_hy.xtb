@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Անցել է ստուգում</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Ուղարկել կարծիքների վերաբերյալ հաշվետվություն</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> հպահարթակ</translation>
 <translation id="2407209115954268704">SIM քարտի կողպման կարգավիճակը</translation>
 <translation id="2418150275289244458">Բացել կարգավորումներում</translation>
 <translation id="2446553403094072641">Լողացող կետի ճշգրտությունը</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Փորձարկում</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> հպէկրան</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
-<translation id="3440478087746699229">Ներքին</translation>
 <translation id="3456078764689556234">Տպված էջ՝ <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />։</translation>
 <translation id="345898999683440380">Սկանավորվում է էջ <ph name="PAGE_NUM" />-ը։ Կատարված է <ph name="PERCENTAGE_VALUE" />%-ը։</translation>
 <translation id="3459509316159669723">Տպում</translation>
@@ -355,7 +352,6 @@
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
 <translation id="6982876849933694860">Նոր միացում ստեղծելու համար անցեք <ph name="BEGIN_LINK" />Կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> ստեղնաշար</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
 <translation id="7058278511608979688">Ավարտել և պահել</translation>
 <translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
@@ -470,7 +466,6 @@
 <translation id="8818152010000655963">Պաստառ</translation>
 <translation id="8834539327799336565">Միացված է</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
 <translation id="8898840733695078011">Ազդանշանի հզորությունը</translation>

@@ -66,7 +66,7 @@
 <translation id="1360432990279830238">साइन आउट करें और सिंक बंद करें?</translation>
 <translation id="1373696734384179344">चयनित सामग्री डाउनलोड करने के लिए मेमोरी अपर्याप्‍त है.</translation>
 <translation id="1376578503827013741">गणना की जा रही है…</translation>
-<translation id="1382912999714108023">क्या आप अपनी मौजूदा जानकारी नहीं देख पा रहे हैं? इसे अपडेट करने के लिए कृपया अपने बैंक से संपर्क करें.</translation>
+<translation id="1382912999714108023">क्या यह मौजूदा जानकारी नहीं है? इसे अपडेट करने के लिए कृपया अपने बैंक से संपर्क करें.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />नए<ph name="END_NEW" /> Google Lens से इमेज का अनुवाद करें</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />दिन पहले सिंक किया गया</translation>
@@ -794,7 +794,6 @@
 <translation id="5942872142862698679">खोजने के लिए Google का उपयोग किया जा रहा है</translation>
 <translation id="5945035219773565305">मौजूदा सुझाव: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">लाइव पेज देखा जा रहा है</translation>
-<translation id="5952764234151283551">आप जिस पेज पर जाने की कोशिश कर रहे हैं उसका यूआरएल Google को भेजती है</translation>
 <translation id="5956665950594638604">Chrome सहायता केंद्र को नए टैब में खोलें</translation>
 <translation id="5957442310066583693">अपने हिसाब से खास साइटें देखने के लिए, होम बटन पर टैप करें</translation>
 <translation id="5958275228015807058">डाउनलोड में जाकर अपनी फ़ाइलें और पेज पाएं</translation>
@@ -819,7 +818,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">अपनी खबरों और गतिविधि को यहां नियंत्रित करें</translation>
 <translation id="6069177176307973611">निजता और सुरक्षा सेटिंग की समीक्षा करें</translation>
-<translation id="6070730414166672373">अपने बैंक से संपर्क किया जा रहा है</translation>
+<translation id="6070730414166672373">आपके बैंक से संपर्क किया जा रहा है</translation>
 <translation id="6085886413119427067">वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करें</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> घंटे शेष</translation>
 <translation id="6108923351542677676">सेटअप प्रगति में है…</translation>
@@ -937,7 +936,6 @@
 <translation id="6671495933530132209">चित्र की कॉपी बनाएं</translation>
 <translation id="6674571176963658787">इसे चालू करने के लिए, अपना लंबा पासवर्ड डालें</translation>
 <translation id="6676840375528380067">इस डिवाइस से अपना Chrome डेटा हटाएं?</translation>
-<translation id="6697492270171225480">जब कोई पेज मिल नहीं पा रहा हो तो मिलते-जुलते पेज के सुझाव दिखाएं</translation>
 <translation id="6698801883190606802">सिंक किया गया डेटा प्रबंधित करें</translation>
 <translation id="6699370405921460408">Google के सर्वर उन पेज को ऑप्टिमाइज़ करेंगे जिन पर आप जाते हैं.</translation>
 <translation id="670498945988402717">कल जांच की गई</translation>

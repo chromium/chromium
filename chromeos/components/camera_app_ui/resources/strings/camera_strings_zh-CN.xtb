@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">正常</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@
 <translation id="520537883758714667">文件扫描功能现已推出</translation>
 <translation id="5268823927180092501">为所有摄像头启用文档模式</translation>
 <translation id="5444515100983837161">请将文件的各个边置于框内。当文件的颜色与背景的颜色不同时，扫描效果最佳。</translation>
+<translation id="5588258280684580073">启用 GIF 录制</translation>
 <translation id="5671277269877808209">方形</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5753488212459587150">启用专家模式</translation>
@@ -98,12 +100,14 @@
 <translation id="7243947652761655814">视频分辨率</translation>
 <translation id="7337660886763914220">文件系统出错。</translation>
 <translation id="7450541714075000668">文本已复制</translation>
+<translation id="7488619942230388918">录制 GIF 视频</translation>
 <translation id="7557677699350329807">切换到下一个摄像头</translation>
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">录制一般视频</translation>
 <translation id="7983668134180549431">检测到文字。</translation>
 <translation id="8067883171444229417">播放视频</translation>
 <translation id="8120146556401698679">平移，倾斜，缩放</translation>

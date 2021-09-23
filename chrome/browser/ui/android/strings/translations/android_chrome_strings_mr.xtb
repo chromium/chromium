@@ -794,7 +794,6 @@
 <translation id="5942872142862698679">शोध करण्‍यासाठी Google वापरत आहे</translation>
 <translation id="5945035219773565305">सध्याची शिफारस:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">लाइव्ह पेज पाहत आहे</translation>
-<translation id="5952764234151283551">तुम्ही ज्या पेजवर पोहोचण्याचा प्रयत्न करत आहात त्याची URL Google ला पाठवते</translation>
 <translation id="5956665950594638604">नवीन टॅबमध्ये Chrome मदत केंद्र उघडा</translation>
 <translation id="5957442310066583693">तुमच्या टॉप साइट पाहण्यासाठी, होम बटणावर टॅप करा</translation>
 <translation id="5958275228015807058">तुमच्या फाइल आणि पेज डाउनलोडमध्ये शोधा</translation>
@@ -937,7 +936,6 @@
 <translation id="6671495933530132209">इमेज कॉपी करा</translation>
 <translation id="6674571176963658787">सिंक सुरू करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="6676840375528380067">या डिव्हाइसवरून तुमचा Chrom डेटा साफ करायचा?</translation>
-<translation id="6697492270171225480">जेव्हा एखादे पेज सापडत नाही तेव्हा त्यासारख्या पेजच्या सूचना दाखवा</translation>
 <translation id="6698801883190606802">संकालित केलेला डेटा व्यवस्थापित करा</translation>
 <translation id="6699370405921460408">Google सर्व्हर तुम्ही भेट देत असलेली पेज ऑप्टिमाइझ करतील.</translation>
 <translation id="670498945988402717">काल तपासले</translation>
@@ -1362,7 +1360,7 @@
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">कॉल करू शकत नाही</translation>
 <translation id="9212845824145208577">तळाशी जाऊ शकत नाही. पेजच्या आणखी तळाशी जाऊन सुरुवात करून पहा.</translation>
-<translation id="9219103736887031265">Images</translation>
+<translation id="9219103736887031265">इमेज</translation>
 <translation id="926205370408745186">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाका</translation>
 <translation id="927968626442779827">Google Chrome वर लाइट मोड वापरा</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ला फॉलो करत आहे</translation>

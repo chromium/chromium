@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">ఆమోదించినవి</translation>
 <translation id="2380886658946992094">చట్టపరం</translation>
 <translation id="2391082728065870591">ఫీడ్‌బ్యాక్ రిపోర్ట్‌ను పంపు</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> టచ్‌ప్యాడ్</translation>
 <translation id="2407209115954268704">SIM లాక్ స్టేటస్</translation>
 <translation id="2418150275289244458">సెట్టింగ్‌లలో తెరువు</translation>
 <translation id="2446553403094072641">ఫ్లోటింగ్ పాయింట్ ఖచ్చితత్వం</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">పరీక్ష రన్ అవుతోంది</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ చరిత్ర మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> టచ్‌స్క్రీన్</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">భద్రత</translation>
-<translation id="3440478087746699229">అంతర్గతం</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> పేజీలలో <ph name="PRINTED_PAGES" />వ పేజీ ప్రింట్ చేయబడింది.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />వ పేజీని స్కాన్ చేస్తోంది. <ph name="PERCENTAGE_VALUE" />% పూర్తయింది.</translation>
 <translation id="3459509316159669723">ప్రింటింగ్</translation>
@@ -354,7 +351,6 @@
 <translation id="6977381486153291903">ఫర్మ్‌వేర్ పునర్విమర్శ</translation>
 <translation id="6982876849933694860">కొత్త కనెక్షన్‌ను సెటప్ చేయడానికి, <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, అలాగే సందర్శించిన వెబ్ పేజీలు, పాస్‌వర్డ్‌లు, ఇమెయిల్‌లతో సహా యూజర్ యాక్టివిటీకి యాక్సెస్‌ను కలిగి ఉంటుంది.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> కీబోర్డ్</translation>
 <translation id="7040230719604914234">ఆపరేటర్</translation>
 <translation id="7058278511608979688">ఆపివేసి, సేవ్ చేయండి</translation>
 <translation id="7059230779847288458">ఛార్జ్ అవుతోంది, పూర్తి కావడానికి <ph name="TIME_VALUE" /> సమయం పడుతుంది</translation>
@@ -469,7 +465,6 @@
 <translation id="8818152010000655963">వాల్‌పేపర్</translation>
 <translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
 <translation id="8845001906332463065">సహాయం పొందండి</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">పరీక్ష విజయవంతమైంది</translation>
 <translation id="8898840733695078011">సిగ్నల్ సామర్థ్యం</translation>

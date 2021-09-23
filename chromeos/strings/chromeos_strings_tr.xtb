@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Başarılı oldu</translation>
 <translation id="2380886658946992094">Hukuk</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> dokunmatik alan</translation>
 <translation id="2407209115954268704">SIM Kilitleme Durumu</translation>
 <translation id="2418150275289244458">Ayarlarda aç</translation>
 <translation id="2446553403094072641">Kayan nokta doğruluğu</translation>
@@ -109,6 +108,7 @@
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
 <translation id="3102119246920354026">Önbellek</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Sayfa kaldırılsın mı?}=1{{PAGE_NUMBER}. sayfa kaldırılsın mı?}other{{PAGE_NUMBER}. sayfa kaldırılsın mı?}}</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. sayfa taranıyor...</translation>
 <translation id="315738237743207937">Giriş portalı algılandı</translation>
@@ -125,10 +125,8 @@
 <translation id="3328783797891415197">Test çalışıyor</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> dokunmatik ekran</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3435738964857648380">Güvenlik</translation>
-<translation id="3440478087746699229">Dahili</translation>
 <translation id="3456078764689556234">Yazdırılan sayfa: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. sayfa taranıyor %<ph name="PERCENTAGE_VALUE" /> tamamlandı</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
@@ -232,6 +230,7 @@
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5049856988445523908">SIM Kilitlendi (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grup adı</translation>
+<translation id="5051044138948155788">Bundan başka sayfa yok. Bu işlem sizi tarama başlangıç ekranına götürür.</translation>
 <translation id="5088172560898466307">Sunucu ana makinesinin adı</translation>
 <translation id="5089810972385038852">Eyalet</translation>
 <translation id="5142961317498132443">Kimlik Doğrulama</translation>
@@ -269,6 +268,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5499114900554609492">Tarama işlemi tamamlanamadı</translation>
 <translation id="5502931783115429516">Android çalışmıyor</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Yeniden tara</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Aile</translation>
@@ -319,6 +319,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="641081527798843608">Konu eşleştirmesi</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">İyi</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Sayfa yeniden taransın mı?}=1{{PAGE_NUMBER}. sayfa yeniden taransın mı?}other{{PAGE_NUMBER}. sayfa yeniden taransın mı?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="649050271426829538">Durduruldu - Kağıt sıkışması</translation>
@@ -351,7 +352,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
 <translation id="6982876849933694860">Yeni bir bağlantı kurmak için <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölümüne gidin</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> klavyesi</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7058278511608979688">Bitir ve kaydet</translation>
 <translation id="7059230779847288458">Şarj oluyor. Tamamen dolmasına <ph name="TIME_VALUE" /> var</translation>
@@ -466,7 +466,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8818152010000655963">Duvar kağıdı</translation>
 <translation id="8834539327799336565">Şu anda bağlı</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test başarılı oldu</translation>
 <translation id="8898840733695078011">Sinyal gücü</translation>

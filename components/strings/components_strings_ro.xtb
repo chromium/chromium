@@ -454,7 +454,6 @@
 <translation id="2417466718237453711">Închide toate ferestrele incognito pentru profilul incognito actual</translation>
 <translation id="2430968933669123598">Gestionează Contul Google, apasă pe Enter pentru a gestiona informațiile, confidențialitatea și securitatea Contului Google</translation>
 <translation id="2438874542388153331">Perforare cvadruplă în dreapta</translation>
-<translation id="245044156129055925">Ai introdus parola pe un site înșelător. Chrome recomandă să-ți schimbi acum parola.</translation>
 <translation id="2463739503403862330">Completează</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Alege metoda de livrare</translation>
@@ -1034,7 +1033,6 @@
 <translation id="4346197816712207223">Carduri de credit acceptate</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Conexiunea la <ph name="SITE" /> nu este securizată</translation>
-<translation id="4349531505348777662">Ai introdus parola pe un site înșelător. Chrome recomandă să accesezi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
 <translation id="4350629523305688469">Tava multifuncțională</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vrea să caute dispozitive Bluetooth în apropiere. Următoarele dispozitive au fost găsite:</translation>
 <translation id="4356973930735388585">Atacatorii de pe acest site pot încerca să instaleze programe periculoase pe computerul tău, care să îți fure sau să îți șteargă informațiile (de exemplu, fotografiile, parolele, mesajele sau informațiile despre cardurile de credit).</translation>
@@ -1053,7 +1051,6 @@
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4406896451731180161">rezultate ale căutării</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookie-uri</translation>
-<translation id="4414290883293381923">Ai introdus parola pe un site înșelător. Chrome recomandă să accesezi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
 <translation id="4414515549596849729">Cookie-uri și date privind site-urile</translation>
 <translation id="4415426530740016218">Adresă de preluare</translation>
 <translation id="4424024547088906515">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; Chrome nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
@@ -1127,7 +1124,6 @@
 <translation id="467662567472608290">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; certificatul său de securitate conține erori. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> dorește să răspundă evenimentelor de accesibilitate</translation>
 <translation id="467809019005607715">Prezentări Google</translation>
-<translation id="4680804919228900307">Ai introdus parola pe un site înșelător. Chromium recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> și alte site-uri pe care folosești această parolă.</translation>
 <translation id="468314109939257734">Vezi numărul de card virtual</translation>
 <translation id="4691835149146451662">Architecture-A (Plic)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1632,7 +1628,6 @@
 <translation id="6401136357288658127">Această politică este învechită. Ar trebui să folosești politica <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Modifică marcajul</translation>
 <translation id="6406765186087300643">C0 (Plic)</translation>
-<translation id="6409754798200046165">Ai introdus parola pe un site înșelător. Chrome recomandă să-ți schimbi acum parola.</translation>
 <translation id="6410264514553301377">Introdu data de expirare și codul CVC pentru <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium te poate ajuta să îți protejezi Contul Google și să îți schimbi parola.</translation>
 <translation id="6423385022588644828">Confirmă-ți cardurile mai rapid, folosind Touch ID</translation>
@@ -1791,7 +1786,6 @@
 <translation id="6972629891077993081">Dispozitive HID</translation>
 <translation id="6973656660372572881">Sunt specificate atât servere proxy fixe, cât și o adresă URL pentru scripturi .pac.</translation>
 <translation id="6973932557599545801">Nu te mai pot ajuta. Continuă personal.</translation>
-<translation id="6975012522936652259">Ai introdus parola pe un site înșelător. Chromium recomandă să accesezi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Dezactivează sunetul (prestabilit)</translation>
 <translation id="6979983982287291980">Fișierele pe care le descarci sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware.</translation>
@@ -1861,7 +1855,6 @@
 <translation id="7220786058474068424">Se procesează</translation>
 <translation id="7221855153210829124">Afișeze notificări</translation>
 <translation id="722454870747268814">Filă incognito nouă</translation>
-<translation id="7229659723041939809">Ai introdus parola pe un site înșelător. Chrome recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> și alte site-uri pe care folosești această parolă.</translation>
 <translation id="7231476387708735839">Gestionează căutarea pe site</translation>
 <translation id="7233592378249864828">Printează foaia de confirmare</translation>
 <translation id="7238585580608191973">Amprentă digitală SHA-256</translation>
@@ -1888,7 +1881,6 @@ Detalii suplimentare:
 <translation id="7320336641823683070">Ajutor pentru conectare</translation>
 <translation id="7323804146520582233">Ascunde secțiunea „<ph name="SECTION" />”</translation>
 <translation id="733354035281974745">Modificarea contului local al dispozitivului</translation>
-<translation id="7333654844024768166">Ai introdus parola pe un site înșelător. Chromium recomandă să accesezi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
 <translation id="7334320624316649418">&amp;Repetați reordonarea</translation>
 <translation id="7335157162773372339">Poate solicita permisiunea de a folosi camera</translation>
 <translation id="7337248890521463931">Afișează mai multe rânduri</translation>
@@ -1949,7 +1941,6 @@ Detalii suplimentare:
 <translation id="7487775554425430039">Joacă jocul cu dinozauri din Chrome</translation>
 <translation id="7495528107193238112">Acest conținut este blocat. Contactează proprietarul site-ului pentru a remedia problema.</translation>
 <translation id="7497998058912824456">Butonul Creează un document, apasă pe Enter pentru a crea rapid un document Google</translation>
-<translation id="7503664977220660814">Ai introdus parola pe un site înșelător. Chromium recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și alte site-uri pe care folosești această parolă.</translation>
 <translation id="7508255263130623398">ID-ul de dispozitiv returnat pentru politică este gol sau nu corespunde cu ID-ul de dispozitiv actual</translation>
 <translation id="7508870219247277067">Verde avocado</translation>
 <translation id="7511955381719512146">Rețeaua Wi-Fi pe care o folosești poate solicita accesarea adresei <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2065,7 +2056,6 @@ Detalii suplimentare:
 <translation id="7862185352068345852">Ieși de pe site?</translation>
 <translation id="7865448901209910068">Viteza optimă</translation>
 <translation id="7871445724586827387">Schimbă parola Contului Google</translation>
-<translation id="7874263914261512992">Ai introdus parola pe un site înșelător. Chrome recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și alte site-uri pe care folosești această parolă.</translation>
 <translation id="7877007680666472091">ID-uri de conținut protejat</translation>
 <translation id="7878562273885520351">Este posibil ca parola să fie compromisă</translation>
 <translation id="7880146494886811634">Salvează adresa</translation>
@@ -2147,7 +2137,6 @@ Detalii suplimentare:
 <translation id="8116925261070264013">Cu sunetul dezactivat</translation>
 <translation id="8118489163946903409">Metodă de plată</translation>
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />” nu a fost instalat corect pe computer sau în rețea. Contactează administratorul IT pentru a remedia această problemă.</translation>
-<translation id="8128526133099929547">Ai introdus parola pe un site înșelător. Chrome recomandă să accesezi <ph name="WEBSITE_1" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8148608574971654810">Versiune PDF:</translation>
 <translation id="8149426793427495338">Computerul este inactiv.</translation>
@@ -2166,7 +2155,6 @@ Detalii suplimentare:
 <translation id="8211406090763984747">Conexiunea este securizată</translation>
 <translation id="8218327578424803826">Locație atribuită:</translation>
 <translation id="8220146938470311105">C7/C6 (Plic)</translation>
-<translation id="8221250263817408492">Ai introdus parola pe un site înșelător. Chromium recomandă să accesezi <ph name="WEBSITE_1" /> și alte site-uri pe care folosești această parolă și să o schimbi acum.</translation>
 <translation id="8225771182978767009">Persoana care a configurat computerul a ales să blocheze acest site.</translation>
 <translation id="8228419419708659934">Afișare cu două pagini</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2253,7 +2241,6 @@ Detalii suplimentare:
 <translation id="8474910779563686872">Afișează detaliile dezvoltatorului</translation>
 <translation id="8479754468255770962">Capsare în stânga jos</translation>
 <translation id="8483780878231876732">Pentru a folosi cardurile din Contul Google, conectează-te la Chrome</translation>
-<translation id="8485393050551136813">Ai introdus parola pe un site înșelător. Chromium recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" /> și alte site-uri pe care folosești această parolă.</translation>
 <translation id="8488350697529856933">Se aplică pentru</translation>
 <translation id="8490137692873530638">Receptorul de hârtie 10</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> a răspuns prea târziu.</translation>
@@ -2328,7 +2315,6 @@ Detalii suplimentare:
 <translation id="8761567432415473239">Recent, Navigarea sigură Google a <ph name="BEGIN_LINK" />descoperit programe dăunătoare<ph name="END_LINK" /> pe <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispozitiv USB</translation>
 <translation id="8766943070169463815">Foaia de autentificare cu date de conectare pentru plăți securizate este deschisă</translation>
-<translation id="8774457497170244317">Ai introdus parola pe un site înșelător. Chrome recomandă să verifici acum parolele salvate pentru <ph name="WEBSITE_1" /> și alte site-uri pe care folosești această parolă.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Repetați ștergerea</translation>
 <translation id="8792621596287649091">Este posibil să pierzi accesul la contul <ph name="ORG_NAME" /> sau să fii victima unui furt de identitate. Chromium îți recomandă să îți schimbi acum parola.</translation>

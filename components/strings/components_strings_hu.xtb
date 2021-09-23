@@ -454,7 +454,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2417466718237453711">A jelenlegi inkognitó profil összes inkognitó ablakának bezárása</translation>
 <translation id="2430968933669123598">Google-fiók kezelése, nyomja meg az Enter billentyűt az adatai, az adatvédelem és a biztonság kezeléséhez a Google-fiókjában</translation>
 <translation id="2438874542388153331">Négy lyuk a jobb oldalon</translation>
-<translation id="245044156129055925">Megtévesztő webhelyen adta meg jelszavát. A Chromium a jelszó azonnali módosítását javasolja.</translation>
 <translation id="2463739503403862330">Kitöltés</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Kézbesítési mód kiválasztása</translation>
@@ -1032,7 +1031,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4346197816712207223">Elfogadott hitelkártyák</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">A kapcsolat a következő webhellyel nem biztonságos: <ph name="SITE" /></translation>
-<translation id="4349531505348777662">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" /> és <ph name="WEBSITE_2" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
 <translation id="4350629523305688469">Többfunkciós tálca</translation>
 <translation id="4351060348582610152">A(z) <ph name="ORIGIN" /> szeretné megkeresni a közeli Bluetooth-eszközöket. A következő eszközöket találta:</translation>
 <translation id="4356973930735388585">Előfordulhat, hogy a támadók ezen a webhelyen olyan veszélyes programokat próbálnak telepíteni számítógépére, amelyek ellopják vagy törlik adatait (például fotóit, jelszavait, üzeneteit vagy bankkártyájának adatait).</translation>
@@ -1051,7 +1049,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4406896451731180161">keresési találat</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookie</translation>
-<translation id="4414290883293381923">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> és <ph name="WEBSITE_3" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
 <translation id="4414515549596849729">cookie-k és webhelyadatok</translation>
 <translation id="4415426530740016218">Átvételi cím</translation>
 <translation id="4424024547088906515">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a Chrome szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
@@ -1125,7 +1122,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="467662567472608290">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa hibákat tartalmaz. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="4677585247300749148">A(z) <ph name="URL" /> kisegítő lehetőségekkel kapcsolatos eseményekre szeretne válaszolni</translation>
 <translation id="467809019005607715">Google Diák</translation>
-<translation id="4680804919228900307">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />).</translation>
 <translation id="468314109939257734">Virtuális kártyaszám megtekintése</translation>
 <translation id="4691835149146451662">Architecture-A (boríték)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1630,7 +1626,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6401136357288658127">Ez a házirend megszűnt. Használja helyette a(z) <ph name="NEW_POLICY" /> házirendet.</translation>
 <translation id="6404511346730675251">Könyvjelző szerkesztése</translation>
 <translation id="6406765186087300643">C0 (boríték)</translation>
-<translation id="6409754798200046165">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy azonnal módosítsa jelszavát.</translation>
 <translation id="6410264514553301377">Írja be a(z) <ph name="CREDIT_CARD" /> kártyán szereplő lejárati dátumot és CVC-t</translation>
 <translation id="6415778972515849510">A Chromium segíthet a Google-fiók védelmében és a jelszó módosításában.</translation>
 <translation id="6423385022588644828">Mostantól gyorsabban igazolhatja kártyáit a Touch ID használatával</translation>
@@ -1789,7 +1784,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6972629891077993081">HID-eszközök</translation>
 <translation id="6973656660372572881">Mindkét fix proxyszerver és egy .Pac típusú szkript URL-címe meg van adva.</translation>
 <translation id="6973932557599545801">Sajnos nem tudok többet segíteni. Kérjük, folytassa egyedül.</translation>
-<translation id="6975012522936652259">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" /> és <ph name="WEBSITE_2" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Némítás (alapértelmezett)</translation>
 <translation id="6979983982287291980">A böngésző elemzés céljából a Google Cloudnak vagy harmadik feleknek továbbítja a letöltött fájlokat. A Google Cloud vagy a harmadik fél például bizalmas adatokat vagy rosszindulatú programokat kereshet a fájlokban.</translation>
@@ -1859,7 +1853,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7220786058474068424">Feldolgozás alatt</translation>
 <translation id="7221855153210829124">Értesítéseket megjeleníteni</translation>
 <translation id="722454870747268814">Új inkognitó lap</translation>
-<translation id="7229659723041939809">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />).</translation>
 <translation id="7231476387708735839">Webhelyről indított keresés kezelése</translation>
 <translation id="7233592378249864828">Megerősítő lap nyomtatása</translation>
 <translation id="7238585580608191973">SHA-256 ujjlenyomat</translation>
@@ -1886,7 +1879,6 @@ További részletek:
 <translation id="7320336641823683070">Segítség a kapcsolódáshoz</translation>
 <translation id="7323804146520582233">A(z) „<ph name="SECTION" />” szakasz elrejtése</translation>
 <translation id="733354035281974745">Eszköz helyi fiókja általi felülbírálás</translation>
-<translation id="7333654844024768166">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> és <ph name="WEBSITE_3" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
 <translation id="7334320624316649418">&amp;Átrendezés újra</translation>
 <translation id="7335157162773372339">Hozzáférést kérhet a kamerához</translation>
 <translation id="7337248890521463931">Több sor megjelenítése</translation>
@@ -1947,7 +1939,6 @@ További részletek:
 <translation id="7487775554425430039">A Chrome dinós játékának elindítása</translation>
 <translation id="7495528107193238112">Ez a tartalom le van tiltva. Vegye fel a kapcsolatot a webhely tulajdonosával a probléma elhárításához.</translation>
 <translation id="7497998058912824456">Dokumentum létrehozása gomb, nyomja meg az Enter billentyűt egy új Google-dokumentum gyors létrehozásához</translation>
-<translation id="7503664977220660814">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />).</translation>
 <translation id="7508255263130623398">A visszakapott házirend eszközazonosítója üres, vagy nem felel meg a jelenlegi eszközazonosítónak</translation>
 <translation id="7508870219247277067">Avokádózöld</translation>
 <translation id="7511955381719512146">Az Ön által használt Wi-Fi-hálózat megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
@@ -2063,7 +2054,6 @@ További részletek:
 <translation id="7862185352068345852">Elhagyja a webhelyet?</translation>
 <translation id="7865448901209910068">Legjobb sebesség</translation>
 <translation id="7871445724586827387">Google-fiók jelszavának módosítása</translation>
-<translation id="7874263914261512992">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />).</translation>
 <translation id="7877007680666472091">a védett tartalmak azonosítói</translation>
 <translation id="7878562273885520351">Előfordultat, hogy jelszava már nem biztonságos</translation>
 <translation id="7880146494886811634">Cím mentése</translation>
@@ -2145,7 +2135,6 @@ További részletek:
 <translation id="8116925261070264013">Némítva</translation>
 <translation id="8118489163946903409">Fizetési mód</translation>
 <translation id="8127301229239896662">A(z) „<ph name="SOFTWARE_NAME" />” nem megfelelően lett telepítve a számítógépre vagy a hálózatra. A probléma elhárítása érdekében forduljon rendszergazdájához.</translation>
-<translation id="8128526133099929547">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8148608574971654810">PDF-verzió:</translation>
 <translation id="8149426793427495338">Számítógépe alvó üzemmódba váltott.</translation>
@@ -2164,7 +2153,6 @@ További részletek:
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
 <translation id="8218327578424803826">Hozzárendelt helyszín:</translation>
 <translation id="8220146938470311105">C7/C6 (boríték)</translation>
-<translation id="8221250263817408492">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
 <translation id="8225771182978767009">A számítógépet beállító személy a webhely letiltása mellett döntött.</translation>
 <translation id="8228419419708659934">Kétoldalas nézet</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> és <ph name="TYPE_2" /></translation>
@@ -2251,7 +2239,6 @@ További részletek:
 <translation id="8474910779563686872">Fejlesztői részletek megjelenítése</translation>
 <translation id="8479754468255770962">Kapocs balra lent</translation>
 <translation id="8483780878231876732">Jelentkezzen be a Chrome-ba, hogy használhassa a kártyákat Google-fiókjából.</translation>
-<translation id="8485393050551136813">Megtévesztő webhelyen adta meg jelszavát. A Chromium azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />).</translation>
 <translation id="8488350697529856933">A következőre érvényes</translation>
 <translation id="8490137692873530638">10. kötegelő</translation>
 <translation id="8498891568109133222">A(z) <ph name="HOST_NAME" /> túl hosszú ideje nem válaszol.</translation>
@@ -2326,7 +2313,6 @@ További részletek:
 <translation id="8761567432415473239">A Google Biztonságos Böngészés nemrég <ph name="BEGIN_LINK" />ártalmas programokat talált<ph name="END_LINK" /> a következő webhelyen: <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">USB-eszköz</translation>
 <translation id="8766943070169463815">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja megnyitva.</translation>
-<translation id="8774457497170244317">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy azonnal módosítsa jelszavait azokon a webhelyeken, ahol ezt a jelszót használja (pl. <ph name="WEBSITE_1" />).</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Törlés újra</translation>
 <translation id="8792621596287649091">Elveszítheti a hozzáférést <ph name="ORG_NAME" />-fiókjához, vagy visszaélhetnek személyes adataival. A Chromium azt javasolja, hogy azonnal módosítsa jelszavát.</translation>

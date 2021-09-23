@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Aprovado</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
-<translation id="240334320630038121">Touchpad <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Estado de bloqueio do SIM</translation>
 <translation id="2418150275289244458">Abra nas Definições</translation>
 <translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">A executar teste…</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
-<translation id="3412146654386081914">Ecrã tátil <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Segurança</translation>
-<translation id="3440478087746699229">Interno</translation>
 <translation id="3456078764689556234">Página <ph name="PRINTED_PAGES" /> impressa de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">A digitalizar a página <ph name="PAGE_NUM" />… <ph name="PERCENTAGE_VALUE" />% concluído.</translation>
 <translation id="3459509316159669723">Impressão</translation>
@@ -355,7 +352,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6977381486153291903">Revisão de firmware</translation>
 <translation id="6982876849933694860">Para configurar uma nova ligação, aceda a <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gere este dispositivo e tem acesso a todas as atividades do utilizador, incluindo páginas Web visitadas, palavras-passe e emails.</translation>
-<translation id="7039041976777695848">Teclado <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7058278511608979688">Terminar e guardar</translation>
 <translation id="7059230779847288458">A carregar, <ph name="TIME_VALUE" /> até ficar totalmente carregada</translation>
@@ -470,7 +466,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8818152010000655963">Imagem de fundo</translation>
 <translation id="8834539327799336565">Atualmente ligados</translation>
 <translation id="8845001906332463065">Obter ajuda</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Teste com êxito</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>

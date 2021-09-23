@@ -66,7 +66,7 @@
 <translation id="1360432990279830238">Odjavljujete se i isključujete sinhroniz?</translation>
 <translation id="1373696734384179344">Nema dovoljno memorije za preuzimanje izabranog sadržaja.</translation>
 <translation id="1376578503827013741">Računa se…</translation>
-<translation id="1382912999714108023">Ne vidite aktuelne podatke?Obratite se banci da biste ih ažurirali.</translation>
+<translation id="1382912999714108023">Ne vidite aktuelne podatke? Obratite se banci da biste ih ažurirali.</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1384704387250346179">Prev. sl. uz Google obj. <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Poslednja aktivnost: pre <ph name="LAST_UPDATED" /> dan/a</translation>
@@ -794,7 +794,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5942872142862698679">Koristite Google za pretragu</translation>
 <translation id="5945035219773565305">Aktuelna preporuka: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Prikazuje se aktivna stranica</translation>
-<translation id="5952764234151283551">Šalje Google-u URL stranice kojoj pokušavate da pristupite</translation>
 <translation id="5956665950594638604">Otvaranje Chrome centra za pomoć na novoj kartici</translation>
 <translation id="5957442310066583693">Da biste videli sajtove koje najčešće posećujete, dodirnite dugme Početak</translation>
 <translation id="5958275228015807058">Pronađite datoteke i stranice u Preuzimanjima</translation>
@@ -937,7 +936,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6674571176963658787">Da biste pokrenuli sinhronizaciju, unesite pristupnu frazu</translation>
 <translation id="6676840375528380067">Želite li da obrišete Chrome podatke sa ovog uređaja?</translation>
-<translation id="6697492270171225480">Prikazuj predloge za slične stranice kada neka stranica ne može da se pronađe</translation>
 <translation id="6698801883190606802">Upravljajte sinhronizovanim podacima</translation>
 <translation id="6699370405921460408">Google serveri će optimizovati stranice koje posećujete.</translation>
 <translation id="670498945988402717">Provereno juče</translation>

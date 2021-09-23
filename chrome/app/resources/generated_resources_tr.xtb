@@ -4225,6 +4225,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihazdan alınamadı}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihazdan alınamadı}}</translation>
 <translation id="5502500733115278303">Firefox'tan Aktarıldı</translation>
 <translation id="5502915260472117187">Çocuk</translation>
+<translation id="5503356662318814623">Mesaj gönder</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> sitesine hem kameramı kullanması, hareket ettirmesi hem de mikrofonumu kullanması için izni vermeye devam et</translation>
 <translation id="5504909642107847870">Gizlilik ve güvenlik incelemesi</translation>
 <translation id="5505264765875738116">Siteler bildirim göndermek isteyemez</translation>
@@ -4482,6 +4483,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5794414402486823030">Daima sistem görüntüleyici ile açın</translation>
 <translation id="5794700615121138172">Linux paylaşılan klasörler</translation>
 <translation id="5794786537412027208">Tüm Chrome Uygulamalarından Çık</translation>
+<translation id="5796485699458186843">Yeni Gizli sekme</translation>
 <translation id="5797521893972859201">Arama kutusu da dahil olmak üzere geçmişi temizler</translation>
 <translation id="5798079537501238810">Siteler ödeme işleyici yükleyebilir</translation>
 <translation id="579915268381781820">Güvenlik anahtarınız takılı değil.</translation>
@@ -4493,7 +4495,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5805697420284793859">Pencere yöneticisi</translation>
 <translation id="5806773519584576205">0° (Varsayılan)</translation>
 <translation id="5810809306422959727">Bu hesap, ebeveyn denetimleri için uygun değil</translation>
-<translation id="581120508026692647">Web sitesi bildirimleri için <ph name="LINK_BEGIN" />Chrome Ayarları<ph name="LINK_END" />'na gidin</translation>
 <translation id="5812674658566766066">Tümünü genişlet</translation>
 <translation id="5815645614496570556">X.400 Adresi</translation>
 <translation id="5816434091619127343">Yazıcıda yapılması istenen değişiklikler yazıcıyı kullanılamaz hale getirecekti.</translation>
@@ -4905,7 +4906,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6254892857036829079">Mükemmel</translation>
 <translation id="6257602895346497974">Senkronizasyonu aç...</translation>
 <translation id="625895209797312329">Sitelerin, cihazımda yüklü yazı tiplerini kullanmasını engelle</translation>
-<translation id="6259104249628300056">Yerel ağınızdaki cihazları keşfetme</translation>
 <translation id="6262371516389954471">Yedek verileriniz Google'a yüklenir ve Google Hesabınızın şifresi kullanılarak şifrelenir.</translation>
 <translation id="6263082573641595914">Microsoft CA Sürümü</translation>
 <translation id="6263284346895336537">Çok önemli değil</translation>
@@ -6501,10 +6501,12 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7952904276017482715">Beklenen Kimlik "<ph name="EXPECTED_ID" />" idi, ancak "<ph name="NEW_ID" />" kimliği belirlendi</translation>
 <translation id="7953669802889559161">Girişler</translation>
 <translation id="7953955868932471628">Kısayolları yönet</translation>
+<translation id="7955105108888461311">Şahsen sor</translation>
 <translation id="7956373551960864128">Kayıtlı yazıcılarınız</translation>
 <translation id="7957074856830851026">Seri numarası veya öğe kimliği gibi cihaz bilgilerini görüntüleyin</translation>
 <translation id="7957615753207896812">Klavye cihaz ayarlarını aç</translation>
 <translation id="7959074893852789871">Dosya birden çok sertifika içeriyordu, bunların bazıları içe aktarılmadı:</translation>
+<translation id="7959665254555683862">Yeni Gizli Sekme</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>
 <translation id="7963001036288347286">Dokunmatik alan hızlandırması</translation>
 <translation id="7963608432878156675">Bu ad, Bluetooth ve ağ bağlantıları için diğer cihazlar tarafından görülebilir.</translation>

@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">展開</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">摺埋選單</translation>
+<translation id="1364382257761975320">如要解鎖 Chromebook，請使用指紋</translation>
 <translation id="1383597849754832576">無法下載即時字幕檔案，請稍後再試。</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1391102559483454063">已開啟</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="2367186422933365202">無法登入 Chromebook</translation>
 <translation id="2369165858548251131">「你好」嘅英文</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
 <translation id="2391579633712104609">180 度</translation>
 <translation id="240006516586367791">媒體控制項</translation>
+<translation id="2402411679569069051">如要解鎖 Chromebook，請使用指紋或解鎖手機</translation>
 <translation id="2405664212338326887">未連線</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 項</translation>
 <translation id="324366796737464147">消除雜音</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">如要解鎖 Chromebook，請開啟手機的藍牙功能</translation>
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
 <translation id="3269597722229482060">按滑鼠右鍵</translation>
 <translation id="3289674678944039601">正在透過電源適配器充電</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Control + Shift + 空格鍵</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">定義</translation>
+<translation id="3509391053705095206">找不到手機。請確保手機的藍牙功能已開啟。</translation>
 <translation id="3510164367642747937">突顯滑鼠遊標</translation>
 <translation id="3513798432020909783">帳戶由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="353086728817903341">已連接 <ph name="NUM_DEVICES" /> 部裝置</translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3713734891607377840">下載完成後開啟</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
+<translation id="3744282433224562605">如要解鎖 Chromebook，請輸入密碼</translation>
 <translation id="3771549900096082774">高對比模式</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
 <translation id="3779139509281456663">正在連接「<ph name="NAME" />」</translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">按一下或長按右鍵，「Google 助理」即可顯示選取項目的定義、翻譯或單位轉換等相關資料。</translation>
 <translation id="4505050298327493054">用緊嘅桌面。</translation>
 <translation id="4513946894732546136">意見反映</translation>
+<translation id="4518404433291145981">如要解鎖 Chromebook，請先解鎖手機</translation>
 <translation id="4527045527269911712">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。</translation>
 <translation id="453661520163887813">還有 <ph name="TIME" />便完成充電</translation>
 <translation id="4538824937723742295">擷取全螢幕截圖</translation>
@@ -550,11 +557,13 @@
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
+<translation id="5147567197700016471">已解鎖</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
 <translation id="5166918508782100047">「快速解答」設定</translation>
 <translation id="5168181903108465623">有可用投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄影部分螢幕</translation>
+<translation id="5199367439331364630">如要登入 Chromebook，請輸入密碼</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 則其他通知}other{# 則其他通知}}</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
 <translation id="5208059991603368177">開啟</translation>
@@ -575,6 +584,7 @@
 <translation id="5319712128756744240">配對新裝置</translation>
 <translation id="5322611492012084517">找不到手機</translation>
 <translation id="5329548388331921293">正在連線…</translation>
+<translation id="5330201449517439522">輕按或按一下即可繼續使用</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
@@ -632,6 +642,7 @@
 <translation id="5825969630400862129">已連接裝置設定</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5837036133683224804">停止喺<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
+<translation id="584525477304726060">按住視窗即可放到最大</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5867217927013474703">正在收集網絡資料</translation>
@@ -737,6 +748,7 @@
 <translation id="6667908387435388584">連線至手機的熱點、將裝置設為靜音、尋找裝置所在的位置，並查看最近透過手機開啟的 Chrome 分頁</translation>
 <translation id="6670153871843998651">桌面 3</translation>
 <translation id="6671495933530132209">複製圖片</translation>
+<translation id="6671661918848783005">無法解鎖 Chromebook</translation>
 <translation id="6692996468359469499">取得您選取項目相關資料</translation>
 <translation id="6696025732084565524">您的拆除式鍵盤需執行重要更新</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>

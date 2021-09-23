@@ -64,6 +64,7 @@
 <translation id="1341651618736211726">Додаткове меню</translation>
 <translation id="1346748346194534595">Праворуч</translation>
 <translation id="1351937230027495976">Згорнути меню</translation>
+<translation id="1364382257761975320">Щоб розблокувати Chromebook, скористайтеся відбитком пальця</translation>
 <translation id="1383597849754832576">Не вдалося завантажити файли живих субтитрів. Повторіть спробу пізніше.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1391102559483454063">Увімкнено</translation>
@@ -186,10 +187,12 @@
 <translation id="2352467521400612932">Налаштування стилуса</translation>
 <translation id="2354174487190027830">Активація <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Продовжити</translation>
+<translation id="2367186422933365202">Не вдається ввійти в обліковий запис на Chromebook</translation>
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
 <translation id="2390318262976603432">Налаштування мовного коду</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Елементи керування медіа</translation>
+<translation id="2402411679569069051">Щоб розблокувати Chromebook, скористайтеся відбитком пальця або розблокуйте телефон</translation>
 <translation id="2405664212338326887">Не підключено</translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="2412593942846481727">Доступне оновлення</translation>
@@ -290,6 +293,7 @@
 <translation id="3226991577105957773">Ще <ph name="COUNT" /></translation>
 <translation id="324366796737464147">Заглушення шумів</translation>
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
+<translation id="3252248118006571685">Щоб розблокувати Chromebook, увімкніть Bluetooth на телефоні</translation>
 <translation id="3255483164551725916">Що ти можеш?</translation>
 <translation id="3269597722229482060">Натиснути правою кнопкою миші</translation>
 <translation id="3289674678944039601">Заряджання через адаптер</translation>
@@ -323,6 +327,7 @@
 <translation id="3477079411857374384">Комбінація клавіш "Control-Shift-Space"</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">визначення</translation>
+<translation id="3509391053705095206">Не вдається знайти телефон. Переконайтеся, що на ньому ввімкнено Bluetooth.</translation>
 <translation id="3510164367642747937">Підсвічувати курсор миші</translation>
 <translation id="3513798432020909783">Обліковим записом керує <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Підключено до стількох пристроїв: <ph name="NUM_DEVICES" /></translation>
@@ -358,6 +363,7 @@
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3713734891607377840">Відкриється після завершення</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
+<translation id="3744282433224562605">Щоб розблокувати Chromebook, введіть пароль</translation>
 <translation id="3771549900096082774">Режим високого контрасту</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
 <translation id="3779139509281456663">Підключення пристрою <ph name="NAME" /></translation>
@@ -468,6 +474,7 @@
 <translation id="4485060137115666462">Натисніть вибраний контент правою кнопкою миші або втримуйте його, і Асистент покаже визначення чи переклад терміна, конвертує одиницю тощо.</translation>
 <translation id="4505050298327493054">Активний робочий стіл.</translation>
 <translation id="4513946894732546136">Відгуки</translation>
+<translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон</translation>
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до повного заряду</translation>
 <translation id="4538824937723742295">Зробити знімок усього екрана</translation>
@@ -551,11 +558,13 @@
 <translation id="5078796286268621944">Неправильний PIN-код</translation>
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
+<translation id="5147567197700016471">Розблоковано</translation>
 <translation id="5155897006997040331">Швидкість читання</translation>
 <translation id="5166918508782100047">Налаштування швидких відповідей</translation>
 <translation id="5168181903108465623">Доступні пристрої для трансляції</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5176318573511391780">Записувати частину екрана</translation>
+<translation id="5199367439331364630">Щоб увійти в обліковий запис на Chromebook, введіть пароль</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 інше сповіщення}one{# інше сповіщення}few{# інші сповіщення}many{# інших сповіщень}other{# іншого сповіщення}}</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="5208059991603368177">Увімкнено</translation>
@@ -576,6 +585,7 @@
 <translation id="5319712128756744240">Підключити новий пристрій</translation>
 <translation id="5322611492012084517">Не вдається знайти телефон</translation>
 <translation id="5329548388331921293">З'єднання…</translation>
+<translation id="5330201449517439522">Натисніть, щоб увійти</translation>
 <translation id="5331975486040154427">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="5352250171825660495">Темну тему ввімкнено</translation>
 <translation id="5379115545237091094">Забагато спроб</translation>
@@ -633,6 +643,7 @@
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="584525477304726060">Утримуйте, щоб збільшити</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5867217927013474703">Збір інформації про мережу</translation>
@@ -738,6 +749,7 @@
 <translation id="6667908387435388584">Підключайтеся до точки доступу телефона, вимикайте звук на пристрої, визначайте його місцезнаходження та переглядайте останні вкладки Chrome, відкриті на телефоні</translation>
 <translation id="6670153871843998651">Робочий стіл 3</translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
+<translation id="6671661918848783005">Не вдається розблокувати Chromebook</translation>
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
 <translation id="6696025732084565524">Змінну клавіатуру потрібно оновити</translation>
 <translation id="6700713906295497288">Кнопка меню IME</translation>

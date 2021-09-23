@@ -4228,6 +4228,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}one{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}other{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="5502500733115278303">Importés depuis Firefox</translation>
 <translation id="5502915260472117187">Un enfant</translation>
+<translation id="5503356662318814623">Envoyer un message</translation>
 <translation id="5503982651688210506">Continuer d'autoriser <ph name="HOST" /> à utiliser et bouger la caméra, et à utiliser le micro</translation>
 <translation id="5504909642107847870">Examen de la confidentialité et de la sécurité</translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
@@ -4485,6 +4486,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5794414402486823030">Toujours ouvrir avec le lecteur système</translation>
 <translation id="5794700615121138172">Dossiers partagés par Linux</translation>
 <translation id="5794786537412027208">Quitter toutes les applications Chrome</translation>
+<translation id="5796485699458186843">Nouvel ongle&amp;t de navigation privée</translation>
 <translation id="5797521893972859201">Efface l'historique, y compris dans le champ de recherche</translation>
 <translation id="5798079537501238810">Les sites peuvent installer des gestionnaires de paiement</translation>
 <translation id="579915268381781820">Votre clé de sécurité a été retirée.</translation>
@@ -4496,7 +4498,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5805697420284793859">Gestionnaire de fenêtres</translation>
 <translation id="5806773519584576205">0° (par défaut)</translation>
 <translation id="5810809306422959727">Ce compte n'est pas éligible au contrôle parental</translation>
-<translation id="581120508026692647">Pour les notifications de sites Web, accédez aux <ph name="LINK_BEGIN" />paramètres Chrome<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">Tout développer</translation>
 <translation id="5815645614496570556">Adresse X.400</translation>
 <translation id="5816434091619127343">Les modifications demandées concernant l'imprimante risquent de rendre celle-ci inutilisable.</translation>
@@ -4908,7 +4909,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6254892857036829079">Parfaite</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
 <translation id="625895209797312329">Empêcher les sites d'utiliser les polices installées sur votre appareil</translation>
-<translation id="6259104249628300056">Découvrir les appareils sur votre réseau local</translation>
 <translation id="6262371516389954471">Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.</translation>
 <translation id="6263082573641595914">Version de l'autorité de certification Microsoft</translation>
 <translation id="6263284346895336537">Non essentielle</translation>
@@ -6506,10 +6506,12 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7952904276017482715">ID "<ph name="NEW_ID" />" reçu au lieu de l'ID "<ph name="EXPECTED_ID" />" attendu</translation>
 <translation id="7953669802889559161">Modes de saisie</translation>
 <translation id="7953955868932471628">Gérer les raccourcis</translation>
+<translation id="7955105108888461311">Demander en personne</translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
 <translation id="7957074856830851026">Voir les informations sur l'appareil telles que son numéro de série ou son identifiant</translation>
 <translation id="7957615753207896812">Ouvrir les paramètres du clavier</translation>
 <translation id="7959074893852789871">Le fichier contenait plusieurs certificats, dont certains n'ont pas été importés :</translation>
+<translation id="7959665254555683862">Nouvel ongle&amp;t de navigation privée</translation>
 <translation id="7961015016161918242">Jamais</translation>
 <translation id="7963001036288347286">Accélération du pavé tactile</translation>
 <translation id="7963608432878156675">Ce nom est visible des autres appareils pour les connexions réseau et Bluetooth</translation>

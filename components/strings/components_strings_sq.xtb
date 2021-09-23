@@ -453,7 +453,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2417466718237453711">Mbyll të gjitha dritaret e fshehta për profilin e fshehtë aktual</translation>
 <translation id="2430968933669123598">Menaxho "Llogarinë e Google", shtyp Enter për të menaxhuar informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google"</translation>
 <translation id="2438874542388153331">Katër shpime djathtas</translation>
-<translation id="245044156129055925">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="2463739503403862330">Plotëso</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Zgjidh mënyrën e dorëzimit</translation>
@@ -1031,7 +1030,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4346197816712207223">Kartat e pranuara të kreditit</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Lidhja me <ph name="SITE" /> nuk është e sigurt</translation>
-<translation id="4349531505348777662">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome rekomandon që të shkosh te <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë tani.</translation>
 <translation id="4350629523305688469">Tabakaja shumëfunksionale</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> dëshiron të skanojë për pajisje Bluetooth në afërsi. Janë gjetur pajisjet e mëposhtme:</translation>
 <translation id="4356973930735388585">Sulmuesit në këtë sajt mund të përpiqen të instalojnë programe të rrezikshme në kompjuterin tënd që vjedhin ose fshijnë informacionet e tua (për shembull, fotografi, fjalëkalime, mesazhe dhe karta krediti).</translation>
@@ -1050,7 +1048,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4406883609789734330">Titra në çast</translation>
 <translation id="4406896451731180161">rezultatet e kërkimit</translation>
 <translation id="4408413947728134509">Kukit <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome rekomandon që të shkosh te <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë tani.</translation>
 <translation id="4414515549596849729">kukit dhe të dhënat e faqes</translation>
 <translation id="4415426530740016218">Adresa e marrjes</translation>
 <translation id="4424024547088906515">Ky server nuk mundi të dëshmonte se ky është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga Chrome. Kjo mund të shkaktohet nga keqkonfigurimi ose ndonjë sulmues që po ndërhyn në lidhjen tënde.</translation>
@@ -1124,7 +1121,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="467662567472608290">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë përmban gabime. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> kërkon të reagojë ndaj ngjarjeve të qasshmërisë</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4680804919228900307">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chromium të rekomandon t'i kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
 <translation id="468314109939257734">Shiko numrin e kartës sate virtuale</translation>
 <translation id="4691835149146451662">Architecture-A (Zarf)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1628,7 +1624,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6401136357288658127">Kjo politikë është e vjetruar. Duhet të përdorësh politikën <ph name="NEW_POLICY" /> më mirë.</translation>
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
 <translation id="6406765186087300643">C0 (Zarf)</translation>
-<translation id="6409754798200046165">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="6410264514553301377">Fut datën e skadimit dhe kodin CVC për <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium mund të të ndihmojë ta mbrosh "Llogarinë tënde të Google" dhe të ndryshosh fjalëkalimin tënd.</translation>
 <translation id="6423385022588644828">Konfirmo kartat e tua më shpejt duke përdorur Touch ID nga tani e tutje</translation>
@@ -1787,7 +1782,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6972629891077993081">Pajisjet HID</translation>
 <translation id="6973656660372572881">Janë specifikuar serverë përfaqësues fiksë dhe një URL e skriptit .pac.</translation>
 <translation id="6973932557599545801">Më vjen keq që nuk mund të të ndihmoj. Vazhdo vetë.</translation>
-<translation id="6975012522936652259">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium rekomandon që të shkosh te <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë tani.</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6979440798594660689">Heshtje (e parazgjedhur)</translation>
 <translation id="6979983982287291980">Skedarët që shkarkon i dërgohen Google Cloud ose palëve të treta për analizim. Për shembull, mund të skanohen për të dhëna delikate ose softuerë keqdashës.</translation>
@@ -1857,7 +1851,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7220786058474068424">Po përpunohet</translation>
 <translation id="7221855153210829124">Shfaq njoftimet</translation>
 <translation id="722454870747268814">Skedë e re "e fshehtë"</translation>
-<translation id="7229659723041939809">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chrome të rekomandon të kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
 <translation id="7231476387708735839">Menaxho kërkimin te sajti</translation>
 <translation id="7233592378249864828">Printo fletën e konfirmimit</translation>
 <translation id="7238585580608191973">Gjurma e gishtit SHA-256</translation>
@@ -1884,7 +1877,6 @@ Detaje shtesë:
 <translation id="7320336641823683070">Ndihma e lidhjes</translation>
 <translation id="7323804146520582233">Fshihe seksionin "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Anulimi i llogarisë lokale të pajisjes</translation>
-<translation id="7333654844024768166">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium rekomandon që të shkosh te <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë tani.</translation>
 <translation id="7334320624316649418">&amp;Ribëj renditjen</translation>
 <translation id="7335157162773372339">Mund të kërkojë të përdorë kamerën tënde</translation>
 <translation id="7337248890521463931">Shfaq më shumë radhë</translation>
@@ -1945,7 +1937,6 @@ Detaje shtesë:
 <translation id="7487775554425430039">Luaj lojën Chrome Dino</translation>
 <translation id="7495528107193238112">Kjo përmbajtje është bllokuar. Kontakto me zotëruesin e sajtit për të rregulluar problemin.</translation>
 <translation id="7497998058912824456">Butoni "Krijo dokument", shtyp Enter për të krijuar shpejt një "Dokument të ri të Google"</translation>
-<translation id="7503664977220660814">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chromium të rekomandon t'i kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
 <translation id="7508255263130623398">ID-ja e kthyer e pajisjes së politikës është bosh ose nuk përputhet me ID-në e pajisjes aktuale</translation>
 <translation id="7508870219247277067">Jeshile avokadoje</translation>
 <translation id="7511955381719512146">Wi-Fi që po përdor mund të kërkojë që të vizitosh <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2061,7 +2052,6 @@ Detaje shtesë:
 <translation id="7862185352068345852">Dëshiron të largohesh nga sajti?</translation>
 <translation id="7865448901209910068">Shpejtësia më e mirë</translation>
 <translation id="7871445724586827387">Ndrysho fjalëkalimin e "Llogarisë sate të Google"</translation>
-<translation id="7874263914261512992">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chrome të rekomandon të kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
 <translation id="7877007680666472091">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="7878562273885520351">Fjalëkalimet e tua mund të jenë kompromentuar</translation>
 <translation id="7880146494886811634">Ruaj adresën</translation>
@@ -2143,7 +2133,6 @@ Detaje shtesë:
 <translation id="8116925261070264013">Zëri i çaktivizuar</translation>
 <translation id="8118489163946903409">Mënyra e pagesës</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nuk është instaluar mirë në kompjuter ose në rrjet. Kërkoji administratorit të TI-së që të zgjidhë këtë problem.</translation>
-<translation id="8128526133099929547">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chrome rekomandon që të shkosh te <ph name="WEBSITE_1" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë.</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8148608574971654810">Versioni i PDF-së:</translation>
 <translation id="8149426793427495338">Kompjuteri yt kaloi në gjumë.</translation>
@@ -2162,7 +2151,6 @@ Detaje shtesë:
 <translation id="8211406090763984747">Lidhja është e sigurt</translation>
 <translation id="8218327578424803826">Vendndodhja e caktuar:</translation>
 <translation id="8220146938470311105">C7/C6 (Zarf)</translation>
-<translation id="8221250263817408492">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium rekomandon që të shkosh te <ph name="WEBSITE_1" /> dhe sajte të tjera ku e përdor këtë fjalëkalim dhe ta ndryshosh atë.</translation>
 <translation id="8225771182978767009">Personi që ka konfiguruar këtë kompjuter ka zgjedhur ta bllokojë këtë sajt.</translation>
 <translation id="8228419419708659934">Pamja me dy faqe</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2249,7 +2237,6 @@ Detaje shtesë:
 <translation id="8474910779563686872">Shfaq detajet e zhvilluesit</translation>
 <translation id="8479754468255770962">Kapje me tel poshtë majtas</translation>
 <translation id="8483780878231876732">Për të përdorur kartat nga llogaria jote e Google, identifikohu në Chrome</translation>
-<translation id="8485393050551136813">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chromium të rekomandon t'i kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
 <translation id="8488350697529856933">Zbatohet për</translation>
 <translation id="8490137692873530638">Stivuesi 10</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> kërkoi shumë kohë për t'u përgjigjur.</translation>
@@ -2323,7 +2310,6 @@ Detaje shtesë:
 <translation id="8761567432415473239">Shfletimi i sigurt i Google <ph name="BEGIN_LINK" />zbuloi së fundmi programe të dëmshme<ph name="END_LINK" /> në <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Pajisja USB</translation>
 <translation id="8766943070169463815">Fleta e vërtetimit të sigurt të kredencialeve të pagesës është e hapur</translation>
-<translation id="8774457497170244317">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chrome të rekomandon t'i kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Bëje përsëri fshirjen</translation>
 <translation id="8792621596287649091">Mund të ndodhë që të humbësh qasjen në llogarinë tënde të <ph name="ORG_NAME" /> ose mund të pësosh vjedhje të identitetit. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>

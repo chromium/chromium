@@ -4242,6 +4242,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="5502500733115278303">從 Firefox 匯入的書籤</translation>
 <translation id="5502915260472117187">兒童</translation>
+<translation id="5503356662318814623">傳送訊息</translation>
 <translation id="5503982651688210506">繼續允許 <ph name="HOST" /> 使用和移動相機，以及使用麥克風</translation>
 <translation id="5504909642107847870">查看私隱和安全性</translation>
 <translation id="5505264765875738116">網站將無法要求向您傳送通知</translation>
@@ -4498,6 +4499,7 @@
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
+<translation id="5796485699458186843">新無痕式分頁</translation>
 <translation id="5797521893972859201">清除記錄 (包括搜尋框中的記錄)</translation>
 <translation id="5798079537501238810">網站可安裝付款處理常式</translation>
 <translation id="579915268381781820">您的安全密鑰已被移除。</translation>
@@ -4509,7 +4511,6 @@
 <translation id="5805697420284793859">視窗管理員</translation>
 <translation id="5806773519584576205">0° (預設)</translation>
 <translation id="5810809306422959727">此帳戶不符合家長監控設定的資格</translation>
-<translation id="581120508026692647">如要取得網站通知，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">全部展開</translation>
 <translation id="5815645614496570556">X.400 地址</translation>
 <translation id="5816434091619127343">要求的打印機變更會讓此打印機無法使用。</translation>
@@ -4921,7 +4922,6 @@
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">開啟同步處理功能…</translation>
 <translation id="625895209797312329">禁止網站使用安裝在您裝置上的字型</translation>
-<translation id="6259104249628300056">在本機網絡上探索裝置</translation>
 <translation id="6262371516389954471">您的備份會上載至 Google，並透過您的 Google 帳戶密碼加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非重要</translation>
@@ -6519,10 +6519,12 @@
 <translation id="7952904276017482715">預期 ID 為「<ph name="EXPECTED_ID" />」，但實際為「<ph name="NEW_ID" />」</translation>
 <translation id="7953669802889559161">輸入方法</translation>
 <translation id="7953955868932471628">管理快速鍵</translation>
+<translation id="7955105108888461311">要求存取權</translation>
 <translation id="7956373551960864128">已儲存的打印機</translation>
 <translation id="7957074856830851026">查看裝置資料，例如序號或資產 ID</translation>
 <translation id="7957615753207896812">開啟鍵盤裝置設定</translation>
 <translation id="7959074893852789871">檔案含有多個憑證，但某些無法匯入：</translation>
+<translation id="7959665254555683862">新無痕式分頁</translation>
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7963001036288347286">觸控板加速</translation>
 <translation id="7963608432878156675">此名稱會向其他裝置顯示，以建立藍牙及網絡連線</translation>

@@ -64,6 +64,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1341651618736211726">Taşma</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1351937230027495976">Menüyü daralt</translation>
+<translation id="1364382257761975320">Chromebook'unuzun kilidini açmak için parmak izinizi kullanın</translation>
 <translation id="1383597849754832576">Canlı Altyazı dosyaları indirilemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1391102559483454063">Açık</translation>
@@ -186,10 +187,12 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2352467521400612932">Ekran kalemi ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> etkinleştiriliyor</translation>
 <translation id="2359808026110333948">Devam et</translation>
+<translation id="2367186422933365202">Chromebook'unuzda oturum açılamıyor</translation>
 <translation id="2369165858548251131">Çince "Merhaba"</translation>
 <translation id="2390318262976603432">Yerel Ayarlar</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Medya denetimleri</translation>
+<translation id="2402411679569069051">Chromebook'unuzun kilidini açmak için parmak izinizi kullanın veya telefonunuzun kilidini açın</translation>
 <translation id="2405664212338326887">Bağlı değil</translation>
 <translation id="2408955596600435184">PIN'inizi girin</translation>
 <translation id="2412593942846481727">Güncelleme var</translation>
@@ -290,6 +293,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> öğe daha</translation>
 <translation id="324366796737464147">Gürültü giderme</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> penceresi, Masa <ph name="ACTIVE_DESK" /> üzerinden Masa <ph name="TARGET_DESK" /> üzerine taşındı</translation>
+<translation id="3252248118006571685">Chromebook'unuzun kilidini açmak için telefonunuzun Bluetooth'unu açın</translation>
 <translation id="3255483164551725916">Neler yapabilirsin?</translation>
 <translation id="3269597722229482060">Sağ Tıkla</translation>
 <translation id="3289674678944039601">Adaptör ile şarj oluyor</translation>
@@ -323,6 +327,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3477079411857374384">Control-Üst Karakter-Boşluk</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
 <translation id="3486220673238053218">tanım</translation>
+<translation id="3509391053705095206">Telefonunuz bulunamıyor. Telefonunuzun Bluetooth'unun açık olduğundan emin olun.</translation>
 <translation id="3510164367642747937">Fare imlecini vurgula</translation>
 <translation id="3513798432020909783">Hesap <ph name="MANAGER_EMAIL" /> tarafından yönetiliyor</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> cihaza bağlanıldı</translation>
@@ -358,6 +363,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="3713734891607377840">Tamamlandığında aç</translation>
 <translation id="3742055079367172538">Ekran görüntüsü alındı</translation>
+<translation id="3744282433224562605">Chromebook'unuzun kilidini açmak için şifreyi girin</translation>
 <translation id="3771549900096082774">Yüksek Kontrast Modu</translation>
 <translation id="3773700760453577392">Bir yönetici <ph name="USER_EMAIL" /> için çoklu oturum açmayı engellemiş. Tüm kullanıcılar devam etmek için çıkış yapmalıdır.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> bağlanıyor</translation>
@@ -468,6 +474,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4485060137115666462">Sağ tıkladığınızda veya uzun bastığınızda Asistan, yaptığınız seçimin tanımı, çevirisi veya birimin dönüştürülmesi gibi bilgiler gösterir.</translation>
 <translation id="4505050298327493054">Etkin masa.</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
+<translation id="4518404433291145981">Chromebook'unuzun kilidini açmak için önce telefonunuzun kilidini açın</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor.</translation>
 <translation id="453661520163887813">Dolmasına <ph name="TIME" /> var</translation>
 <translation id="4538824937723742295">Tam ekran görüntüsü al</translation>
@@ -551,11 +558,13 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
+<translation id="5147567197700016471">Kilitli değil</translation>
 <translation id="5155897006997040331">Okuma hızı</translation>
 <translation id="5166918508782100047">Bil bakalım ayarları</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
+<translation id="5199367439331364630">Chromebook'unuzda oturum açmak için şifreyi girin</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 diğer bildirim}other{# diğer bildirim}}</translation>
 <translation id="5207949376430453814">Metin imlecini vurgula</translation>
 <translation id="5208059991603368177">Açık</translation>
@@ -576,6 +585,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5319712128756744240">Yeni cihaz eşle</translation>
 <translation id="5322611492012084517">Telefonunuz bulunamıyor</translation>
 <translation id="5329548388331921293">Bağlanıyor...</translation>
+<translation id="5330201449517439522">Giriş yapmak için dokunun veya tıklayın</translation>
 <translation id="5331975486040154427">USB-C cihaz (sol arka bağlantı noktası)</translation>
 <translation id="5352250171825660495">Koyu tema açık</translation>
 <translation id="5379115545237091094">Çok fazla deneme yapıldı</translation>
@@ -633,6 +643,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>
+<translation id="584525477304726060">Büyütmek için basılı tutun</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
 <translation id="5867217927013474703">Ağ bilgileri toplanıyor</translation>
@@ -739,6 +750,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6667908387435388584">Telefonunuzun hotspot'una bağlanın, cihazınızın sesini kapatın, yerini bulun ve telefonunuzda açık olan son Chrome sekmelerini görüntüleyin.</translation>
 <translation id="6670153871843998651">Çalışma Masası 3</translation>
 <translation id="6671495933530132209">Resmi kopyala</translation>
+<translation id="6671661918848783005">Chromebook'unuzun kilidi açılamıyor</translation>
 <translation id="6692996468359469499">Seçiminizle alakalı bilgi edinin</translation>
 <translation id="6696025732084565524">Çıkarılabilir klavyenizde kritik bir güncelleme yapılması gerekiyor</translation>
 <translation id="6700713906295497288">IME menü düğmesi</translation>

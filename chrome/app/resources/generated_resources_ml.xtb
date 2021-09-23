@@ -4225,6 +4225,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിക്കാനായില്ല}other{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിക്കാനായില്ല}}</translation>
 <translation id="5502500733115278303">Firefoxല്‍ നിന്ന് ഇറക്കുമതി ചെയ്തവ</translation>
 <translation id="5502915260472117187">കുട്ടി</translation>
+<translation id="5503356662318814623">സന്ദേശം അയയ്‌ക്കുക</translation>
 <translation id="5503982651688210506">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാനും ചലിപ്പിക്കാനും, മൈക്രോഫോൺ ഉപയോഗിക്കാനും <ph name="HOST" /> -നെ, തുടർന്നും അനുവദിക്കുക</translation>
 <translation id="5504909642107847870">സ്വകാര്യതാ, സുരക്ഷാ അവലോകനം</translation>
 <translation id="5505264765875738116">അറിയിപ്പുകൾ അയയ്ക്കാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കാനാവില്ല</translation>
@@ -4482,6 +4483,7 @@
 <translation id="5794414402486823030">എപ്പോഴും സിസ്‌റ്റം വ്യൂവറിൽ തുറക്കുക</translation>
 <translation id="5794700615121138172">Linux-ൽ നിന്ന് പങ്കിട്ട ഫോൾഡറുകൾ</translation>
 <translation id="5794786537412027208">എല്ലാ Chrome അപ്ലിക്കേഷനുകളിൽ നിന്നും പുറത്തുകടക്കുക</translation>
+<translation id="5796485699458186843">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="5797521893972859201">സെർച്ച് ബോക്‌സിലേത് ഉൾപ്പെടെയുള്ള ചരിത്രം മായ്ക്കുന്നു</translation>
 <translation id="5798079537501238810">സൈറ്റുകൾക്ക് പേയ്‌മെന്റ് കൈകാര്യം ചെയ്യുന്ന സംവിധാനങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്യാം</translation>
 <translation id="579915268381781820">നിങ്ങളുടെ സുരക്ഷാ കീ നീക്കം ചെയ്‌തു.</translation>
@@ -4493,7 +4495,6 @@
 <translation id="5805697420284793859">വിൻഡോ മാനേജർ</translation>
 <translation id="5806773519584576205">0° (ഡിഫോൾട്ട്)</translation>
 <translation id="5810809306422959727">രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾക്ക് ഈ അക്കൗണ്ട് യോഗ്യമല്ല</translation>
-<translation id="581120508026692647">വെബ്‌സൈറ്റ് അറിയിപ്പുകൾക്ക് <ph name="LINK_BEGIN" />Chrome ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക</translation>
 <translation id="5812674658566766066">എല്ലാം വികസിപ്പിക്കുക</translation>
 <translation id="5815645614496570556">X.400 വിലാസം</translation>
 <translation id="5816434091619127343">അഭ്യർത്ഥിച്ച പ്രിന്റർ മാറ്റങ്ങൾ, പ്രിന്ററിനെ ഉപയോഗിക്കാൻ കഴിയാത്ത നിലയിലാക്കും.</translation>
@@ -4906,7 +4907,6 @@
 <translation id="6254892857036829079">മികച്ചത്</translation>
 <translation id="6257602895346497974">സമന്വയിപ്പിക്കൽ ഓണാക്കുക...</translation>
 <translation id="625895209797312329">നിങ്ങളുടെ ഉപകരണത്തിൽ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്ന ഫോണ്ടുകൾ ഉപയോഗിക്കുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
-<translation id="6259104249628300056">നിങ്ങളുടെ പ്രാദേശിക നെറ്റ്‌വർക്കിൽ ഉപകരണങ്ങൾ കണ്ടെത്തുക</translation>
 <translation id="6262371516389954471">നിങ്ങളുടെ ബാക്കപ്പുകൾ Google-ലേക്ക് അപ്‌ലോഡ് ചെയ്‌ത് Google അക്കൗണ്ട് പാസ്‌വേഡ് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്യും.</translation>
 <translation id="6263082573641595914">Microsoft CA പതിപ്പ്</translation>
 <translation id="6263284346895336537">ഗുരുതരമല്ല</translation>
@@ -6503,10 +6503,12 @@
 <translation id="7952904276017482715">പ്രതീക്ഷിച്ച ID "<ph name="EXPECTED_ID" />" ആണ്, എന്നാൽ ലഭിച്ച ID "<ph name="NEW_ID" />" ആയിരുന്നു</translation>
 <translation id="7953669802889559161">ഇൻപുട്ടുകൾ</translation>
 <translation id="7953955868932471628">കുറുക്കുവഴികൾ നിയന്ത്രിക്കുക</translation>
+<translation id="7955105108888461311">നേരിട്ട് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="7956373551960864128">നിങ്ങളുടെ സംരക്ഷിച്ച പ്രിന്ററുകൾ</translation>
 <translation id="7957074856830851026">സീരിയൽ നമ്പറോ അസറ്റ് ഐഡിയോ പോലുള്ള ഉപകരണ വിവരങ്ങൾ കാണുക</translation>
 <translation id="7957615753207896812">കീബോർഡ് ഉപകരണ ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7959074893852789871">ഫയലില്‍ ഒന്നിലധികം സാക്‍ഷ്യപ്ത്രങ്ങള്‍ അടങ്ങിയിരിക്കുന്നു, അവയില്‍ ചിലത് ഇറക്കുമതി ചെയ്തിട്ടില്ല:</translation>
+<translation id="7959665254555683862">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
 <translation id="7963001036288347286">ടച്ച്പാഡ് ആക്സിലറേഷൻ</translation>
 <translation id="7963608432878156675">Bluetooth-നും മറ്റ് നെറ്റ്‌വർക്ക് കണക്ഷനുകൾക്കുമായി ഈ പേര് മറ്റ് ഉപകരണങ്ങൾക്ക് ദൃശ്യമാകും</translation>

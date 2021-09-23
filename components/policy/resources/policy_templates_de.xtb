@@ -3991,7 +3991,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Wenn die Richtlinie deaktiviert ist, ist die Nutzung des QUIC-Protokolls nicht möglich.</translation>
 <translation id="5921713479449475707">Downloads automatischer Updates über HTTP zulassen</translation>
-<translation id="5928633129285224981">Legt fest, ob die Option „Als Bild drucken“ beim Drucken von PDFs in <ph name="PRODUCT_NAME" /> standardmäßig eingestellt sein soll.
+<translation id="5928633129285224981">Legt fest, ob die Option „Als Bild drucken“ beim Drucken von PDFs in <ph name="PRODUCT_NAME" /> die Standardeinstellung sein soll.
 
       Wenn diese Richtlinie aktiviert ist, macht <ph name="PRODUCT_NAME" /> beim Drucken von PDFs die Option „Als Bild drucken“ in der Druckvorschau verfügbar.
 
@@ -5798,7 +5798,7 @@ Wird diese Richtlinie nicht konfiguriert, ist der Datenschutzbildschirm anfangs 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden keine Pakete gesendet.</translation>
 <translation id="816783746144552109">Konfigurieren Sie die für das Gerät erforderliche Mindestversion von Chrome OS.</translation>
 <translation id="8171924760436219650">Mit dieser Richtlinie kann die rechte Maustaste auf dem Anmeldebildschirm als primäre Maustaste festgelegt werden</translation>
-<translation id="8173864651667424191">Die Option „Als Bild drucken“ ist standardmäßig für die Druckvorschau von PDF-Dokumenten eingestellt, wenn sie verfügbar ist.</translation>
+<translation id="8173864651667424191">Die Option „Als Bild drucken“ ist die Standardeinstellung für die Druckvorschau von PDF-Dokumenten, wenn sie verfügbar ist.</translation>
 <translation id="8176035528522326671">Unternehmensnutzer nur als primären Nutzer mehrerer Profile zulassen (Standardverhalten für von Unternehmen verwaltete Nutzer)</translation>
 <translation id="8179161412673077784">Verhindern, dass Websites mit irreführenden Inhalten neue Fenster oder Tabs öffnen</translation>
 <translation id="8183108371184777472">Öffnen des Browserfensters verhindern</translation>

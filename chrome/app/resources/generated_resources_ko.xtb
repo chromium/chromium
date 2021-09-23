@@ -4509,7 +4509,6 @@
 <translation id="5805697420284793859">창 관리자</translation>
 <translation id="5806773519584576205">0°(기본값)</translation>
 <translation id="5810809306422959727">자녀 보호 기능을 사용할 수 없는 계정</translation>
-<translation id="581120508026692647">웹사이트 알림을 확인하려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="5812674658566766066">모두 펼치기</translation>
 <translation id="5815645614496570556">X.400 주소</translation>
 <translation id="5816434091619127343">프린터 변경을 요청하면 프린터를 사용할 수 없게 됩니다.</translation>
@@ -4921,7 +4920,6 @@
 <translation id="6254892857036829079">완벽함</translation>
 <translation id="6257602895346497974">동기화 사용...</translation>
 <translation id="625895209797312329">사이트에서 기기에 설치된 글꼴을 사용하지 못하도록 차단</translation>
-<translation id="6259104249628300056">로컬 네트워크의 기기 검색</translation>
 <translation id="6262371516389954471">백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">중요하지 않음</translation>

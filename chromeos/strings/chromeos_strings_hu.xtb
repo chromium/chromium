@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Sikeres ellenőrzés</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Visszajelzési jelentés küldése</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> érintőpad</translation>
 <translation id="2407209115954268704">SIM-zárolás állapota</translation>
 <translation id="2418150275289244458">Megnyitás a Beállításokban</translation>
 <translation id="2446553403094072641">Lebegőpontos pontosság</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">A teszt fut</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> érintőképernyő</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Biztonság</translation>
-<translation id="3440478087746699229">Belső</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> oldal kinyomtatva (összesen ennyiből: <ph name="TOTAL_PAGES" />).</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. oldal beolvasása… <ph name="PERCENTAGE_VALUE" />% kész.</translation>
 <translation id="3459509316159669723">Nyomtatás</translation>
@@ -355,7 +352,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
 <translation id="6982876849933694860">Új kapcsolat beállításához lépjen a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> menübe.</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> billentyűzet</translation>
 <translation id="7040230719604914234">Szolgáltató</translation>
 <translation id="7058278511608979688">Befejezés és mentés</translation>
 <translation id="7059230779847288458">Töltés. (<ph name="TIME_VALUE" /> a teljes feltöltésig.)</translation>
@@ -470,7 +466,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8818152010000655963">Háttérkép</translation>
 <translation id="8834539327799336565">Csatlakoztatva</translation>
 <translation id="8845001906332463065">Súgó</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Sikeres tesztelés</translation>
 <translation id="8898840733695078011">Jelerősség</translation>

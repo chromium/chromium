@@ -454,7 +454,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2417466718237453711">Fechar todas as janelas de navegação anónima para o perfil de Navegação anónima atual</translation>
 <translation id="2430968933669123598">Faça a gestão da Conta Google, prima Enter para gerir as suas informações, privacidade e segurança na Conta Google</translation>
 <translation id="2438874542388153331">Perfuração quádrupla à direita</translation>
-<translation id="245044156129055925">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda a alteração da palavra-passe agora.</translation>
 <translation id="2463739503403862330">Preencher</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Escolher método de fornecimento</translation>
@@ -1034,7 +1033,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4346197816712207223">Cartões de crédito aceites</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">A ligação para <ph name="SITE" /> não é segura</translation>
-<translation id="4349531505348777662">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda que aceda a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que utilize esta palavra-passe e a altere agora.</translation>
 <translation id="4350629523305688469">Tabuleiro multifunções</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> pretende procurar dispositivos Bluetooth próximos. Foram encontrados os seguintes dispositivos:</translation>
 <translation id="4356973930735388585">Os utilizadores mal intencionados neste site podem tentar instalar programas perigosos no seu computador que roubam ou eliminam as suas informações (por exemplo, fotos, palavras-passe, mensagens e cartões de crédito).</translation>
@@ -1053,7 +1051,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda que aceda a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que utilize esta palavra-passe e a altere agora.</translation>
 <translation id="4414515549596849729">cookies e dados de sites</translation>
 <translation id="4415426530740016218">Endereço de recolha</translation>
 <translation id="4424024547088906515">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o Chrome não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
@@ -1127,7 +1124,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="467662567472608290">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança contém erros. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> pretende responder a eventos de acessibilidade.</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4680804919228900307">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que utilize esta palavra-passe.</translation>
 <translation id="468314109939257734">Veja o número do cartão virtual</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1632,7 +1628,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6401136357288658127">Esta política foi descontinuada. Deverá optar por utilizar a política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
-<translation id="6409754798200046165">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda a alteração da palavra-passe agora.</translation>
 <translation id="6410264514553301377">Introduza a data de validade e o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">O Chromium pode ajudá-lo a proteger a sua Conta Google e alterar a palavra-passe.</translation>
 <translation id="6423385022588644828">Confirme os seus cartões mais rapidamente ao utilizar o Touch ID a partir de agora.</translation>
@@ -1791,7 +1786,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6972629891077993081">Dispositivos HID</translation>
 <translation id="6973656660372572881">Foram especificados servidores proxy fixos e um URL de script .pac.</translation>
 <translation id="6973932557599545801">Lamento, mas não posso ajudar. Continue por sua conta.</translation>
-<translation id="6975012522936652259">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que aceda a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que utilize esta palavra-passe e a altere agora.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Desativar som (predefinição)</translation>
 <translation id="6979983982287291980">Os ficheiros que transfere são enviados para o Google Cloud ou para terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso.</translation>
@@ -1861,7 +1855,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7220786058474068424">A processar</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
 <translation id="722454870747268814">Novo separador de navegação anónima</translation>
-<translation id="7229659723041939809">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que utilize esta palavra-passe.</translation>
 <translation id="7231476387708735839">Gerir pesquisa de sites</translation>
 <translation id="7233592378249864828">Imprimir folha de confirmação</translation>
 <translation id="7238585580608191973">Impressão digital SHA-256</translation>
@@ -1888,7 +1881,6 @@ Detalhes adicionais:
 <translation id="7320336641823683070">Ajuda para estabelecer ligação</translation>
 <translation id="7323804146520582233">Ocultar a secção "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Substituição da conta local do dispositivo</translation>
-<translation id="7333654844024768166">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que aceda a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> e outros sites em que utilize esta palavra-passe e a altere agora.</translation>
 <translation id="7334320624316649418">&amp;Refazer reordenação</translation>
 <translation id="7335157162773372339">Pode solicitar a utilização da câmara</translation>
 <translation id="7337248890521463931">Mostrar mais linhas</translation>
@@ -1948,7 +1940,6 @@ Detalhes adicionais:
 <translation id="7487775554425430039">Jogue Chrome Dino</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>
 <translation id="7497998058912824456">Botão Criar documento prima Enter para criar rapidamente um novo Documento do Google Docs</translation>
-<translation id="7503664977220660814">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que utilize esta palavra-passe.</translation>
 <translation id="7508255263130623398">O ID do dispositivo da política devolvido está vazio ou não corresponde ao ID do dispositivo atual</translation>
 <translation id="7508870219247277067">Verde abacate</translation>
 <translation id="7511955381719512146">A rede Wi-Fi que está a utilizar pode exigir que visite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2064,7 +2055,6 @@ Detalhes adicionais:
 <translation id="7862185352068345852">Pretende sair do site?</translation>
 <translation id="7865448901209910068">A melhor velocidade</translation>
 <translation id="7871445724586827387">Altere a palavra-passe da sua Conta Google</translation>
-<translation id="7874263914261512992">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sites em que utilize esta palavra-passe.</translation>
 <translation id="7877007680666472091">IDs de conteúdo protegido</translation>
 <translation id="7878562273885520351">A palavra-passe pode estar comprometida</translation>
 <translation id="7880146494886811634">Guarde o endereço</translation>
@@ -2146,7 +2136,6 @@ Detalhes adicionais:
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="8118489163946903409">Método de pagamento</translation>
 <translation id="8127301229239896662">O "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao gestor de TI que resolva este problema.</translation>
-<translation id="8128526133099929547">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda que aceda a <ph name="WEBSITE_1" /> e outros sites em que utilize esta palavra-passe e que a altere agora.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8148608574971654810">Versão do PDF:</translation>
 <translation id="8149426793427495338">O computador entrou em suspensão.</translation>
@@ -2165,7 +2154,6 @@ Detalhes adicionais:
 <translation id="8211406090763984747">A ligação é segura</translation>
 <translation id="8218327578424803826">Localização atribuída:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
-<translation id="8221250263817408492">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que aceda a <ph name="WEBSITE_1" /> e outros sites em que utilize esta palavra-passe e que a altere agora.</translation>
 <translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear este site.</translation>
 <translation id="8228419419708659934">Vista de duas páginas</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2252,7 +2240,6 @@ Detalhes adicionais:
 <translation id="8474910779563686872">Mostrar detalhes do programador</translation>
 <translation id="8479754468255770962">Agrafo na parte inferior esquerda</translation>
 <translation id="8483780878231876732">Para utilizar cartões da sua Conta Google, inicie sessão no Chrome.</translation>
-<translation id="8485393050551136813">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" /> e outros sites em que utilize esta palavra-passe.</translation>
 <translation id="8488350697529856933">Aplica-se a</translation>
 <translation id="8490137692873530638">Empilhador 10</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> demorou demasiado tempo a responder.</translation>
@@ -2327,7 +2314,6 @@ Detalhes adicionais:
 <translation id="8761567432415473239">A Navegação Segura do Google <ph name="BEGIN_LINK" />encontrou programas prejudiciais<ph name="END_LINK" /> recentemente em <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766943070169463815">A página de autenticação das credenciais de pagamento seguro está aberta</translation>
-<translation id="8774457497170244317">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chrome recomenda que verifique agora as palavras-passe guardadas para <ph name="WEBSITE_1" /> e outros sites em que utilize esta palavra-passe.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Refazer eliminação</translation>
 <translation id="8792621596287649091">Pode perder o acesso à sua conta do serviço <ph name="ORG_NAME" /> ou ser vítima de roubo de identidade. O Chromium recomenda a alteração da palavra-passe agora.</translation>

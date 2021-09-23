@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">Geslaag</translation>
 <translation id="2380886658946992094">Wetlik</translation>
 <translation id="2391082728065870591">Stuur terugvoerverslag</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" />-raakpaneel</translation>
 <translation id="2407209115954268704">SIM-slotstatus</translation>
 <translation id="2418150275289244458">Maak in Instellings oop</translation>
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">Toets loop tans</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" />-raakskerm</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
-<translation id="3440478087746699229">Intern</translation>
 <translation id="3456078764689556234">Het bladsy <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> gedruk.</translation>
 <translation id="345898999683440380">Skandeer tans bladsy <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% voltooi.</translation>
 <translation id="3459509316159669723">Druk tans</translation>
@@ -355,7 +352,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
 <translation id="6982876849933694860">Gaan na <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om 'n nuwe verbinding op te stel.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" />-sleutelbord</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
 <translation id="7058278511608979688">Beëindig en stoor</translation>
 <translation id="7059230779847288458">Laai tans; <ph name="TIME_VALUE" /> tot vol</translation>
@@ -470,7 +466,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8818152010000655963">Muurpapier</translation>
 <translation id="8834539327799336565">Tans gekoppel</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>
 <translation id="8898840733695078011">Seinsterkte</translation>

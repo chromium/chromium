@@ -450,7 +450,6 @@
 <translation id="2417466718237453711">Закрыть все окна в режиме инкогнито</translation>
 <translation id="2430968933669123598">Параметры аккаунта Google. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Ввод.</translation>
 <translation id="2438874542388153331">Четыре отверстия справа</translation>
-<translation id="245044156129055925">Вы только что ввели пароль на поддельном сайте. Браузер Chromium рекомендует сменить пароль прямо сейчас.</translation>
 <translation id="2463739503403862330">Заполнить</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Выбрать способ доставки</translation>
@@ -1024,7 +1023,6 @@
 <translation id="4346197816712207223">Кредитные карты, которые принимаются к оплате</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Подключение к сайту <ph name="SITE" /> не защищено.</translation>
-<translation id="4349531505348777662">Вы только что ввели пароль на поддельном сайте. Рекомендуем немедленно сменить пароль для следующих ресурсов: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и других сайтов, на которых вы используете введенный пароль.</translation>
 <translation id="4350629523305688469">Многофункциональный лоток</translation>
 <translation id="4351060348582610152">Сайт <ph name="ORIGIN" /> ищет устройства Bluetooth поблизости. Обнаружены следующие устройства:</translation>
 <translation id="4356973930735388585">Злоумышленники могут использовать этот сайт, чтобы установить на ваш компьютер вредоносное ПО, которое крадет или удаляет личную информацию (например, фотографии, пароли, сообщения и реквизиты банковских карт).</translation>
@@ -1043,7 +1041,6 @@
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4406896451731180161">Результаты поиска</translation>
 <translation id="4408413947728134509">Настройки файлов cookie <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Вы только что ввели пароль на поддельном сайте. Рекомендуем немедленно сменить пароль для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> и других сайтов, на которых вы используете этот пароль.</translation>
 <translation id="4414515549596849729">Файлы cookie и данные сайтов</translation>
 <translation id="4415426530740016218">Адрес получения</translation>
 <translation id="4424024547088906515">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Chrome не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
@@ -1117,7 +1114,6 @@
 <translation id="467662567472608290">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности содержит ошибки. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="4677585247300749148">Сайт <ph name="URL" /> запрашивает доступ к специальным возможностям.</translation>
 <translation id="467809019005607715">Google Презентации</translation>
-<translation id="4680804919228900307">Вы только что ввели пароль на поддельном сайте. Рекомендуем проверить сохраненные пароли для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> и других сайтов, на которых вы используете этот пароль.</translation>
 <translation id="468314109939257734">Посмотреть номер своей виртуальной карты</translation>
 <translation id="4691835149146451662">Architecture-A (конверт)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1305,6 +1301,7 @@
 <translation id="5252000469029418751">C7 (конверт)</translation>
 <translation id="5254043433801397071">Оптимизировать контент для печати</translation>
 <translation id="5254958791078852567">E1</translation>
+<translation id="5255690596502591079">Все равно записать</translation>
 <translation id="5265446478903775694">Управлять конфиденциальностью данных в Google</translation>
 <translation id="5266128565379329178">Скрепление сверху</translation>
 <translation id="5269225904387178860">Четыре отверстия снизу</translation>
@@ -1621,7 +1618,6 @@
 <translation id="6401136357288658127">Правило устарело. Используйте <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Изменить закладку</translation>
 <translation id="6406765186087300643">C0 (конверт)</translation>
-<translation id="6409754798200046165">Вы только что ввели пароль на поддельном сайте. Браузер Chrome рекомендует сменить пароль прямо сейчас.</translation>
 <translation id="6410264514553301377">Введите срок действия и CVC-код карты <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Защитите свой аккаунт Google и смените пароль с помощью Chromium.</translation>
 <translation id="6423385022588644828">Подтверждайте карты быстрее с помощью Touch ID</translation>
@@ -1780,7 +1776,6 @@
 <translation id="6972629891077993081">Устройства HID</translation>
 <translation id="6973656660372572881">Указаны как фиксированные прокси-серверы, так и URL PAC-скриптов.</translation>
 <translation id="6973932557599545801">Извините, я ничем не могу помочь. Продолжите самостоятельно.</translation>
-<translation id="6975012522936652259">Вы только что ввели пароль на поддельном сайте. Рекомендуем немедленно сменить пароль для следующих ресурсов: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и других сайтов, на которых вы используете введенный пароль.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979440798594660689">Без звука (по умолчанию)</translation>
 <translation id="6979983982287291980">Скачанные вами файлы передаются на проверку в Google Cloud или сторонние сервисы. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО.</translation>
@@ -1829,6 +1824,7 @@
 <translation id="7153618581592392745">Бледно-лиловый</translation>
 <translation id="7156870133441232244">На сервере нужно обновить протокол TLS до версии 1.2 или более поздней.</translation>
 <translation id="717330890047184534">Идентификатор GAIA:</translation>
+<translation id="7173920250514487165">Запись конфиденциального контента на экране</translation>
 <translation id="7174545416324379297">Объединенное правило</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> вариант доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> вариант доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> варианта доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> вариантов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> варианта доставки}}</translation>
 <translation id="7179323680825933600">Сохранять и автоматически подставлять платежные данные</translation>
@@ -1849,7 +1845,6 @@
 <translation id="7220786058474068424">Подождите…</translation>
 <translation id="7221855153210829124">Показ уведомлений</translation>
 <translation id="722454870747268814">Новая вкладка инкогнито</translation>
-<translation id="7229659723041939809">Вы только что ввели пароль на поддельном сайте. Рекомендуем проверить сохраненные пароли для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> и других сайтов, на которых вы используете этот пароль.</translation>
 <translation id="7231476387708735839">Настроить поиск по сайту</translation>
 <translation id="7233592378249864828">Распечатать лист для подтверждения</translation>
 <translation id="7238585580608191973">Отпечаток SHA-256</translation>
@@ -1876,7 +1871,6 @@
 <translation id="7320336641823683070">Устранение ошибок при подключении к Интернету</translation>
 <translation id="7323804146520582233">Скрыть раздел "<ph name="SECTION" />"</translation>
 <translation id="733354035281974745">Приоритет локального аккаунта на устройстве</translation>
-<translation id="7333654844024768166">Вы только что ввели пароль на поддельном сайте. Рекомендуем немедленно сменить пароль для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> и других сайтов, на которых вы используете этот пароль.</translation>
 <translation id="7334320624316649418">&amp;Повторить изменение порядка</translation>
 <translation id="7335157162773372339">Разрешено отправлять запрос на использование камеры</translation>
 <translation id="7337248890521463931">Показать больше строк</translation>
@@ -1937,7 +1931,6 @@
 <translation id="7487775554425430039">Запустить игру Chrome Dino</translation>
 <translation id="7495528107193238112">Этот контент заблокирован. Чтобы устранить неполадку, свяжитесь с владельцем сайта.</translation>
 <translation id="7497998058912824456">Кнопка "Создать документ". Чтобы быстро создать документ Google, нажмите Ввод.</translation>
-<translation id="7503664977220660814">Вы только что ввели пароль на поддельном сайте. Рекомендуем проверить сохраненные пароли для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и других сайтов, на которых вы используете этот пароль.</translation>
 <translation id="7508255263130623398">Возвращенный идентификатор устройства пуст или не соответствует имеющемуся</translation>
 <translation id="7508870219247277067">Зеленый (авокадо)</translation>
 <translation id="7511955381719512146">Возможно, вам нужно перейти на страницу <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сети Wi-Fi.</translation>
@@ -2053,7 +2046,6 @@
 <translation id="7862185352068345852">Закрыть сайт?</translation>
 <translation id="7865448901209910068">Лучшая скорость</translation>
 <translation id="7871445724586827387">Изменить пароль аккаунта Google</translation>
-<translation id="7874263914261512992">Вы только что ввели пароль на поддельном сайте. Рекомендуем проверить сохраненные пароли для <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и других сайтов, на которых вы используете этот пароль.</translation>
 <translation id="7877007680666472091">идентификаторы защищенного контента</translation>
 <translation id="7878562273885520351">Злоумышленники могли узнать ваш пароль</translation>
 <translation id="7880146494886811634">Сохранить адрес</translation>
@@ -2088,6 +2080,7 @@
 <translation id="7977538094055660992">Устройство вывода</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="798134797138789862">Разрешено отправлять запрос на использование устройств и данных виртуальной реальности</translation>
+<translation id="7984699858161118573">Администратор не рекомендует делать скриншоты или видеозаписи, так как на экране сейчас видна конфиденциальная информация.</translation>
 <translation id="7984945080620862648">Перейти на сайт <ph name="SITE" /> невозможно, так как его идентификационные данные зашифрованы, и Chrome не может их обработать. Это могло произойти из-за ошибки сети или атаки на сайт. Скорее всего, он заработает через некоторое время.</translation>
 <translation id="79859296434321399">Чтобы просматривать контент в режиме дополненной реальности, установите приложение ARCore.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2134,7 +2127,6 @@
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="8118489163946903409">Способ оплаты</translation>
 <translation id="8127301229239896662">Программа "<ph name="SOFTWARE_NAME" />" была установлена неправильно. Обратитесь за помощью к системному администратору.</translation>
-<translation id="8128526133099929547">Вы только что ввели пароль на поддельном сайте. Рекомендуем немедленно сменить пароль для ресурса <ph name="WEBSITE_1" /> и других сайтов, на которых вы используете введенный пароль.</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
 <translation id="8149426793427495338">Ваш компьютер перешел в спящий режим.</translation>
@@ -2153,7 +2145,6 @@
 <translation id="8211406090763984747">Безопасное подключение</translation>
 <translation id="8218327578424803826">Назначенное местоположение:</translation>
 <translation id="8220146938470311105">C7/C6 (конверт)</translation>
-<translation id="8221250263817408492">Вы только что ввели пароль на поддельном сайте. Рекомендуем немедленно сменить пароль для ресурса <ph name="WEBSITE_1" /> и других сайтов, на которых вы используете введенный пароль.</translation>
 <translation id="8225771182978767009">Тот, кто настраивал компьютер, заблокировал этот сайт.</translation>
 <translation id="8228419419708659934">Двухстраничный режим</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
@@ -2239,7 +2230,6 @@
 <translation id="8474910779563686872">Показать сведения о разработчике</translation>
 <translation id="8479754468255770962">Скоба в левом нижнем углу</translation>
 <translation id="8483780878231876732">Чтобы использовать карты, привязанные к аккаунту Google Account, войдите в Chrome</translation>
-<translation id="8485393050551136813">Вы только что ввели пароль на поддельном сайте. Рекомендуем проверить сохраненные пароли для <ph name="WEBSITE_1" /> и других сайтов, на которых вы используете этот пароль.</translation>
 <translation id="8488350697529856933">Объект применения</translation>
 <translation id="8490137692873530638">Укладчик 10</translation>
 <translation id="8498891568109133222">Превышено время ожидания ответа от сайта <ph name="HOST_NAME" />.</translation>
@@ -2313,7 +2303,6 @@
 <translation id="8761567432415473239">Система Google по проверке безопасности сайтов недавно обнаружила на <ph name="SITE" /> <ph name="BEGIN_LINK" />вредоносное ПО<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB-устройство</translation>
 <translation id="8766943070169463815">Открыт экран проверки учетных данных для защищенных платежей</translation>
-<translation id="8774457497170244317">Вы только что ввели пароль на поддельном сайте. Рекомендуем проверить сохраненные пароли для <ph name="WEBSITE_1" /> и других сайтов, на которых вы используете этот пароль.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Повторить удаление</translation>
 <translation id="8792621596287649091">Кто-то посторонний мог получить доступ к вашим личным данным или аккаунту в домене <ph name="ORG_NAME" />. Рекомендуем немедленно сменить пароль.</translation>

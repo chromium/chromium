@@ -454,7 +454,6 @@
 <translation id="2417466718237453711">Cari anonim profil üçün bütün anonim pəncərələri bağlayın</translation>
 <translation id="2430968933669123598">"Google Hesabını idarə edin" düyməsi, Enter düyməsinə basaraq Google Hesabınızda məlumat, məxfilik və təhlükəsizliyinizi idarə edin</translation>
 <translation id="2438874542388153331">Sağdan dördlü deşik açın</translation>
-<translation id="245044156129055925">İndicə parolunuzu aldadıcı sayt içində yazdınız. Chromium parolunuzu indi dəyişməyi məsləhət görür.</translation>
 <translation id="2463739503403862330">Doldurun</translation>
 <translation id="2465402087343596252">Arxitektura-E</translation>
 <translation id="2465655957518002998">Çatdırılma Üsulu seçin</translation>
@@ -1029,7 +1028,6 @@
 <translation id="4346197816712207223">Qəbul edilən Kredit Kartları</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> saytına bağlantı güvənli deyil</translation>
-<translation id="4349531505348777662">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome indi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> və bu parolu istifadə etdiyiniz digər saytlara keçərək parolunuzu dəyişmənizi tövsiyə edir.</translation>
 <translation id="4350629523305688469">Çoxfunksiyalı Qab</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> yaxınlıqdakı Bluetooth cihazlarını axtarmaq istəyir. Aşağıdakı cihazlar tapıldı:</translation>
 <translation id="4356973930735388585">Saytdakı hücumçular kompüterinizə təhlükəli proqramlar yükləyərək məlumatlarınızı (məsələn, foto, parol, mesaj və kredit kart) oğurlamağa və ya silməyə cəhd edə bilər.</translation>
@@ -1048,7 +1046,6 @@
 <translation id="4406883609789734330">Avtomatik subtitrlər</translation>
 <translation id="4406896451731180161">axtarış nəticələri</translation>
 <translation id="4408413947728134509">Kukilər <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome indi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> və bu parolu istifadə etdiyiniz digər saytlara keçərək parolunuzu dəyişmənizi tövsiyə edir.</translation>
 <translation id="4414515549596849729">kukilər və sayt datası</translation>
 <translation id="4415426530740016218">Götürmə Ünvanı</translation>
 <translation id="4424024547088906515">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmədi; onun təhlükəsizlik sertifikatı Chrome tərəfindən doğrulanmayıb. Buna səbəb yanlış konfiqurasiya və ya hücumçü tərəfindən bağlantınızın ələ keçirilməsi ola bilər.</translation>
@@ -1122,7 +1119,6 @@
 <translation id="467662567472608290">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatında xətalar var. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> əlçatımlılıq tədbirlərinə cavab vermək istəyir</translation>
 <translation id="467809019005607715">Google Slayd</translation>
-<translation id="4680804919228900307">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> saytlarında və bu paroldan istifadə etdiyiniz digər saytlarda saxlanılmış parollarınızı indi yoxlamağı tövsiyə edir.</translation>
 <translation id="468314109939257734">Virtual kart nömrənizə baxın</translation>
 <translation id="4691835149146451662">Arxitektura-A (Zərf)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1627,7 +1623,6 @@
 <translation id="6401136357288658127">Bu siyasət ləğv edilib. Əvəzinə <ph name="NEW_POLICY" /> siyasətindən istifadə edin.</translation>
 <translation id="6404511346730675251">Əlfəcinə düzəliş edin</translation>
 <translation id="6406765186087300643">C0 (Zərf)</translation>
-<translation id="6409754798200046165">İndicə parolunuzu aldadıcı sayt içində yazdınız. Chrome parolunuzu indi dəyişməyi məsləhət görür.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> üçün bitmə tarixi və CVC nömrəsini daxil edin</translation>
 <translation id="6415778972515849510">Chromium Google Hesabını qorumağa və parolu dəyişməyə kömək edir.</translation>
 <translation id="6423385022588644828">Bundan sonra Toxunuş İD'si istifadə edərək kartlarınızı daha sürətli təsdiqləyin</translation>
@@ -1786,7 +1781,6 @@
 <translation id="6972629891077993081">HID cihazları</translation>
 <translation id="6973656660372572881">Fiskə edilmiş proksi serverlər və .pac skript URL-lər göstərilib.</translation>
 <translation id="6973932557599545801">Artıq kömək edə bilmirəm, özünüz davam edin.</translation>
-<translation id="6975012522936652259">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium indi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> və bu parolu istifadə etdiyiniz digər saytlara keçərək parolunuzu dəyişmənizi tövsiyə edir.</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979440798594660689">Səssiz edin (defolt)</translation>
 <translation id="6979983982287291980">Endirdiyiniz fayllar təhlil üçün Google Cloud'a və ya üçüncü tərəflərə göndərilir. Məsələn, onlar həssas data və ya zərərli proqrama görə skanlana bilər.</translation>
@@ -1856,7 +1850,6 @@
 <translation id="7220786058474068424">Prosesdən keçirilir...</translation>
 <translation id="7221855153210829124">Bildirişləri göstərin</translation>
 <translation id="722454870747268814">Yeni Gizli Panel</translation>
-<translation id="7229659723041939809">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> saytlarında və bu paroldan istifadə etdiyiniz digər saytlarda saxlanılmış parollarınızı indi yoxlamağı tövsiyə edir.</translation>
 <translation id="7231476387708735839">Sayt axtarışını idarə edin</translation>
 <translation id="7233592378249864828">Təsdiq vərəqini çap edin</translation>
 <translation id="7238585580608191973">SHA-256 Barmaqizi</translation>
@@ -1883,7 +1876,6 @@
 <translation id="7320336641823683070">Bağlantı Yardımı</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" bölməsini gizlədin</translation>
 <translation id="733354035281974745">Cihazın lokal hesabı əvəz edilib</translation>
-<translation id="7333654844024768166">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium indi <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> və bu parolu istifadə etdiyiniz digər saytlara keçərək parolunuzu dəyişmənizi tövsiyə edir.</translation>
 <translation id="7334320624316649418">&amp;Yenidən yerbəyer edin</translation>
 <translation id="7335157162773372339">Saytlar kameranızdan istifadə üçün icazə tələb edə bilər</translation>
 <translation id="7337248890521463931">Daha çox sətir göstərin</translation>
@@ -1944,7 +1936,6 @@
 <translation id="7487775554425430039">Chrome Dinozavr oyununu oynayın</translation>
 <translation id="7495528107193238112">Bu məzmun bloklanıb. Problemi düzəltmək üçün sayt sahibi ilə əlaqə saxlayın.</translation>
 <translation id="7497998058912824456">"Sənəd yaradın" düyməsi, Enter düyməsinə basaraq cəld yeni Google Sənəd yaradın</translation>
-<translation id="7503664977220660814">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> saytlarında və bu paroldan istifadə etdiyiniz digər saytlarda saxlanılmış parollarınızı indi yoxlamağı tövsiyə edir.</translation>
 <translation id="7508255263130623398">Qaytarılmış qaydalar cihaz İD'si boşdur və ya cari cihaz İD'si ilə üst-üstə düşmür</translation>
 <translation id="7508870219247277067">Avokado Yaşılı</translation>
 <translation id="7511955381719512146">İşlətdiyiniz Wi-Fi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> linkinə daxil olmağı tələb edə bilər.</translation>
@@ -2060,7 +2051,6 @@
 <translation id="7862185352068345852">Saytdan çıxılsın?</translation>
 <translation id="7865448901209910068">Ən yüksək sürət</translation>
 <translation id="7871445724586827387">Google Hesabı parolunuzu dəyişin</translation>
-<translation id="7874263914261512992">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> saytlarında və bu paroldan istifadə etdiyiniz digər saytlarda saxlanılmış parollarınızı indi yoxlamağı tövsiyə edir.</translation>
 <translation id="7877007680666472091">qorunan məzmun ID-ləri</translation>
 <translation id="7878562273885520351">Parolunuz təhlükədə ola bilər</translation>
 <translation id="7880146494886811634">Ünvanın Yadda Saxlanması</translation>
@@ -2142,7 +2132,6 @@
 <translation id="8116925261070264013">Səssiz</translation>
 <translation id="8118489163946903409">Ödəniş üsulu</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" kompüter və ya şəbəkənizdə düzgün quraşdırılmayıb. IT administratorunuzdan bu problemi həll etməyi tələb edin.</translation>
-<translation id="8128526133099929547">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome indi <ph name="WEBSITE_1" /> və bu parolu istifadə etdiyiniz digər saytlara keçərək parolunuzu dəyişmənizi tövsiyə edir.</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8148608574971654810">PDF versiyası:</translation>
 <translation id="8149426793427495338">Kompüteriniz yatmağa getdi.</translation>
@@ -2161,7 +2150,6 @@
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
 <translation id="8218327578424803826">Ayrılmış yer:</translation>
 <translation id="8220146938470311105">C7/C6 (Zərf)</translation>
-<translation id="8221250263817408492">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium indi <ph name="WEBSITE_1" /> və bu parolu istifadə etdiyiniz digər saytlara keçərək parolunuzu dəyişmənizi tövsiyə edir.</translation>
 <translation id="8225771182978767009">Kompüteri quraşdıran şəxs bu saytı blok etməyi seçib.</translation>
 <translation id="8228419419708659934">İki səhifə görünüşü</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2248,7 +2236,6 @@
 <translation id="8474910779563686872">Tərtibatçı detallarını göstərin</translation>
 <translation id="8479754468255770962">Aşağı soldan ştapel vurun</translation>
 <translation id="8483780878231876732">Google Hesabınızdan kartları istifadə etmək üçün, Chrome'a daxil olun</translation>
-<translation id="8485393050551136813">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chromium <ph name="WEBSITE_1" /> saytında və bu paroldan istifadə etdiyiniz digər saytlarda saxlanılmış parollarınızı yoxlamağı tövsiyə edir.</translation>
 <translation id="8488350697529856933">Tətbiq olunur</translation>
 <translation id="8490137692873530638">Yığıcı 10</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> hostuna cavab çox uzun çəkdi.</translation>
@@ -2322,7 +2309,6 @@
 <translation id="8761567432415473239">Google Təhlükəsiz Brauzinq yenicə <ph name="SITE" /> saytında <ph name="BEGIN_LINK" />zərərli proqram tapdı<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB cihazı</translation>
 <translation id="8766943070169463815">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi açılıb</translation>
-<translation id="8774457497170244317">İndicə parolunuzu aldadıcı saytda daxil etdiniz. Chrome <ph name="WEBSITE_1" /> saytında və bu paroldan istifadə etdiyiniz digər saytlarda saxlanılmış parollarınızı indi yoxlamağı tövsiyə edir.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">Silinməni yenidən edin</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chrome parollarınızı indi dəyişməyi məsləhət görür.</translation>

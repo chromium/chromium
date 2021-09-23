@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">পাস করেছে</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ফিডব্যাক রিপোর্ট পাঠান</translation>
-<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> টাচপ্যাড</translation>
 <translation id="2407209115954268704">সিম লক স্ট্যাটাস</translation>
 <translation id="2418150275289244458">সেটিংসে খুলুন</translation>
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
@@ -125,10 +124,8 @@
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3369013195428705271">আপনি কি সব প্রিন্ট ইতিহাস মুছে ফেলতে চান? এখন যে প্রিন্ট করার কাজগুলি চলছে সেগুলি মোছা হবে না।</translation>
-<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> টাচস্ক্রিন</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
-<translation id="3440478087746699229">ইন্টার্নাল</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />টি পৃষ্ঠার মধ্যে <ph name="PRINTED_PAGES" /> নম্বর পৃষ্ঠা প্রিন্ট করা হয়েছে।</translation>
 <translation id="345898999683440380">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUM" />। <ph name="PERCENTAGE_VALUE" />% হয়ে গেছে।</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
@@ -350,7 +347,6 @@
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
 <translation id="6982876849933694860">নতুন কানেকশন সেট আপ করতে <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
-<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> কীবোর্ড</translation>
 <translation id="7040230719604914234">অপারেটর</translation>
 <translation id="7058278511608979688">সম্পূর্ণ করে সেভ করুন</translation>
 <translation id="7059230779847288458">চার্জ করা হচ্ছে, সম্পূর্ণ চার্জ হতে <ph name="TIME_VALUE" /> সময় লাগবে</translation>
@@ -465,7 +461,6 @@
 <translation id="8818152010000655963">ওয়ালপেপার</translation>
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">গ্লোবালি ইউনিক আইডেন্টিফায়ার (GUID)</translation>
 <translation id="8881098542468797602">টেস্ট সফল হয়েছে</translation>
 <translation id="8898840733695078011">সংকেতের ক্ষমতা</translation>

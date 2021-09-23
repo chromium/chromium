@@ -79,7 +79,6 @@
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
-<translation id="240334320630038121">לוח מגע בחיבור <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">‏סטטוס נעילת ה-SIM</translation>
 <translation id="2418150275289244458">פתיחה בהגדרות</translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
@@ -126,10 +125,8 @@
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
-<translation id="3412146654386081914">מסך מגע בחיבור <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
 <translation id="3435738964857648380">אבטחה</translation>
-<translation id="3440478087746699229">פנימי</translation>
 <translation id="3456078764689556234">הודפס עמוד <ph name="PRINTED_PAGES" /> מתוך <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">מתבצעת סריקה של עמוד <ph name="PAGE_NUM" />. החלק שהושלם: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">הדפסה</translation>
@@ -355,7 +352,6 @@
 <translation id="6977381486153291903">שכתוב קושחה</translation>
 <translation id="6982876849933694860">כדי להגדיר חיבור חדש, עוברים אל <ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
-<translation id="7039041976777695848">מקלדת בחיבור <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7058278511608979688">סיום ושמירה</translation>
 <translation id="7059230779847288458">בטעינה, <ph name="TIME_VALUE" /> עד לטעינה מלאה</translation>
@@ -470,7 +466,6 @@
 <translation id="8818152010000655963">טפט</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
-<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
 <translation id="8898840733695078011">עוצמת אות</translation>

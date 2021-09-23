@@ -450,7 +450,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2417466718237453711">Zamknij wszystkie okna incognito w bieżącym profilu incognito</translation>
 <translation id="2430968933669123598">Zarządzaj kontem Google; naciśnij Enter, aby zarządzać swoimi danymi, prywatnością i bezpieczeństwem na koncie Google</translation>
 <translation id="2438874542388153331">Cztery otwory po prawej</translation>
-<translation id="245044156129055925">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium zaleca natychmiastową zmianę hasła.</translation>
 <translation id="2463739503403862330">Wpisz</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Wybierz metodę dostawy</translation>
@@ -1025,7 +1024,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4346197816712207223">Akceptowane karty kredytowe</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Połączenie z <ph name="SITE" /> nie jest bezpieczne</translation>
-<translation id="4349531505348777662">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca, by natychmiast zmienić je na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i innych stronach, na których go używasz.</translation>
 <translation id="4350629523305688469">Taca wielofunkcyjna</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> chce wyszukać urządzenia Bluetooth w pobliżu. Znaleziono te urządzenia:</translation>
 <translation id="4356973930735388585">Osoby atakujące tę stronę mogą próbować zainstalować na Twoim komputerze niebezpieczne programy przeznaczone do kradzieży lub usuwania Twoich danych (na przykład zdjęć, haseł, wiadomości czy numerów kart kredytowych).</translation>
@@ -1044,7 +1042,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4406883609789734330">Napisy na żywo</translation>
 <translation id="4406896451731180161">wyniki wyszukiwania</translation>
 <translation id="4408413947728134509">Pliki cookie (<ph name="NUM_COOKIES" />)</translation>
-<translation id="4414290883293381923">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca, by natychmiast zmienić je na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i innych stronach, na których go używasz.</translation>
 <translation id="4414515549596849729">pliki cookie i dane witryn</translation>
 <translation id="4415426530740016218">Adres odbioru</translation>
 <translation id="4424024547088906515">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w Chrome. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
@@ -1118,7 +1115,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="467662567472608290">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa ma błędy. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> chce odpowiadać na zdarzenia dotyczące ułatwień dostępu</translation>
 <translation id="467809019005607715">Prezentacje Google</translation>
-<translation id="4680804919228900307">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium zaleca, by sprawdzić zapisane hasła do witryn <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /> oraz do innych stron, na których używasz tego hasła.</translation>
 <translation id="468314109939257734">Wyświetl numer karty wirtualnej</translation>
 <translation id="4691835149146451662">Architecture-A (koperta)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1623,7 +1619,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6401136357288658127">Ta zasada została wycofana. Zalecamy używanie zasady <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Edytuj zakładkę</translation>
 <translation id="6406765186087300643">C0 (koperta)</translation>
-<translation id="6409754798200046165">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca natychmiastową zmianę hasła.</translation>
 <translation id="6410264514553301377">Wpisz datę ważności i kod CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium może Ci pomóc w zabezpieczeniu Twojego konta Google i zmianie hasła.</translation>
 <translation id="6423385022588644828">Potwierdzaj karty szybciej przy użyciu Touch ID</translation>
@@ -1782,7 +1777,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6972629891077993081">Urządzenia HID</translation>
 <translation id="6973656660372572881">Określono zarówno stałe serwery proxy, jak i URL skryptu PAC.</translation>
 <translation id="6973932557599545801">Nie jestem w stanie Ci pomóc. Kontynuuj samodzielnie.</translation>
-<translation id="6975012522936652259">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium zaleca, by natychmiast zmienić je na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i innych stronach, na których go używasz.</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6979440798594660689">Wycisz (domyślnie)</translation>
 <translation id="6979983982287291980">Pobierane pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane w poszukiwaniu danych wrażliwych lub złośliwego oprogramowania.</translation>
@@ -1852,7 +1846,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="7220786058474068424">Przetwarzanie</translation>
 <translation id="7221855153210829124">Pokazywanie powiadomień</translation>
 <translation id="722454870747268814">Nowa karta incognito</translation>
-<translation id="7229659723041939809">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca, by sprawdzić zapisane hasła do witryn <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /> oraz do innych stron, na których używasz tego hasła.</translation>
 <translation id="7231476387708735839">Zarządzaj wyszukiwarką w witrynie</translation>
 <translation id="7233592378249864828">Drukuj arkusz potwierdzenia</translation>
 <translation id="7238585580608191973">Odcisk cyfrowy SHA-256</translation>
@@ -1879,7 +1872,6 @@ Dodatkowe informacje:
 <translation id="7320336641823683070">Pomoc dotycząca połączeń</translation>
 <translation id="7323804146520582233">Ukryj sekcję „<ph name="SECTION" />”</translation>
 <translation id="733354035281974745">Zastąpienie przez konto lokalne na urządzeniu</translation>
-<translation id="7333654844024768166">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium zaleca, by natychmiast zmienić je na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i innych stronach, na których go używasz.</translation>
 <translation id="7334320624316649418">&amp;Ponów zmianę kolejności</translation>
 <translation id="7335157162773372339">Może prosić o dostęp do kamery</translation>
 <translation id="7337248890521463931">Pokaż więcej wierszy</translation>
@@ -1940,7 +1932,6 @@ Dodatkowe informacje:
 <translation id="7487775554425430039">Zagraj w grę z dinozaurem w Chrome</translation>
 <translation id="7495528107193238112">Ta zawartość jest zablokowana. Aby rozwiązać problem, skontaktuj się z właścicielem witryny.</translation>
 <translation id="7497998058912824456">Przycisk Utwórz dokument; naciśnij Enter, aby szybko utworzyć nowy dokument Google</translation>
-<translation id="7503664977220660814">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium zaleca, by sprawdzić zapisane hasła do witryn <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /> oraz do innych stron, na których używasz tego hasła.</translation>
 <translation id="7508255263130623398">Zwrócony identyfikator urządzenia dla zasad jest pusty lub nie pasuje do bieżącego identyfikatora urządzenia</translation>
 <translation id="7508870219247277067">Zielony awokado</translation>
 <translation id="7511955381719512146">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2056,7 +2047,6 @@ Dodatkowe informacje:
 <translation id="7862185352068345852">Opuścić stronę?</translation>
 <translation id="7865448901209910068">Optymalna szybkość</translation>
 <translation id="7871445724586827387">Zmień hasło do konta Google</translation>
-<translation id="7874263914261512992">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca, by sprawdzić zapisane hasła do witryn <ph name="WEBSITE_1" /> i <ph name="WEBSITE_2" /> oraz do innych stron, na których używasz tego hasła.</translation>
 <translation id="7877007680666472091">identyfikatory treści chronionych</translation>
 <translation id="7878562273885520351">Ktoś mógł poznać Twoje hasło</translation>
 <translation id="7880146494886811634">Zapisz adres</translation>
@@ -2138,7 +2128,6 @@ Dodatkowe informacje:
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="8118489163946903409">Forma płatności</translation>
 <translation id="8127301229239896662">Oprogramowanie „<ph name="SOFTWARE_NAME" />” nie zostało prawidłowo zainstalowane na komputerze lub w sieci. Poproś administratora o rozwiązanie tego problemu.</translation>
-<translation id="8128526133099929547">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca, by natychmiast zmienić je na <ph name="WEBSITE_1" /> oraz na innych stronach, na których go używasz.</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>
 <translation id="8149426793427495338">Twój komputer przeszedł w tryb uśpienia.</translation>
@@ -2157,7 +2146,6 @@ Dodatkowe informacje:
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
 <translation id="8218327578424803826">Przypisana lokalizacja:</translation>
 <translation id="8220146938470311105">C7/C6 (koperta)</translation>
-<translation id="8221250263817408492">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium zaleca, by natychmiast zmienić je na <ph name="WEBSITE_1" /> oraz na innych stronach, na których go używasz.</translation>
 <translation id="8225771182978767009">Administrator tego komputera zablokował tę witrynę.</translation>
 <translation id="8228419419708659934">Widok dwóch stron</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2244,7 +2232,6 @@ Dodatkowe informacje:
 <translation id="8474910779563686872">Pokaż informacje dla deweloperów</translation>
 <translation id="8479754468255770962">Zszywka w lewym dolnym rogu</translation>
 <translation id="8483780878231876732">Aby użyć kart z konta Google, zaloguj się w Chrome</translation>
-<translation id="8485393050551136813">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium zaleca, by sprawdzić zapisane hasła do witryny <ph name="WEBSITE_1" /> i innych stron, na których używasz tego hasła.</translation>
 <translation id="8488350697529856933">Dotyczy</translation>
 <translation id="8490137692873530638">Układarka 10</translation>
 <translation id="8498891568109133222">Serwer <ph name="HOST_NAME" /> potrzebował zbyt wiele czasu na odpowiedź.</translation>
@@ -2318,7 +2305,6 @@ Dodatkowe informacje:
 <translation id="8761567432415473239">Funkcja Bezpieczne przeglądanie Google ostatnio <ph name="BEGIN_LINK" />znalazła szkodliwe<ph name="END_LINK" /> programy na <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
 <translation id="8766943070169463815">Arkusz uwierzytelniania danych logowania na potrzeby bezpiecznych płatności jest otwarty</translation>
-<translation id="8774457497170244317">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chrome zaleca, by sprawdzić zapisane hasła do witryny <ph name="WEBSITE_1" /> i innych stron, na których używasz tego hasła.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Ponów usunięcie</translation>
 <translation id="8792621596287649091">Możesz stracić dostęp do swojego konta <ph name="ORG_NAME" /> lub paść ofiarą kradzieży tożsamości. Chromium zaleca natychmiastową zmianę hasła.</translation>

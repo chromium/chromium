@@ -454,7 +454,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2417466718237453711">Zatvorite sve prozore bez arhiviranja za aktuelni profil bez arhiviranja</translation>
 <translation id="2430968933669123598">Upravljajte Google nalogom, pritisnite Enter da biste upravljali informacijama, privatnošću i bezbednošću na Google nalogu</translation>
 <translation id="2438874542388153331">Četvorostruko bušenje na desnoj strani</translation>
-<translation id="245044156129055925">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium preporučuje da odmah promenite lozinku.</translation>
 <translation id="2463739503403862330">Popuni</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Odaberite način dostave</translation>
@@ -1034,7 +1033,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4346197816712207223">Kreditne kartice koje se prihvataju</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Veza sa sajtom <ph name="SITE" /> nije bezbedna</translation>
-<translation id="4349531505348777662">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome vam preporučuje da odete na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i na druge sajtove gde koristite ovu lozinku i da je odmah promenite.</translation>
 <translation id="4350629523305688469">Višenamenska fioka</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> želi da traži Bluetooth uređaje u blizini. Pronađeni su sledeći uređaji:</translation>
 <translation id="4356973930735388585">Napadači na ovom sajtu će možda pokušati da instaliraju opasne programe na računaru koji kradu ili brišu informacije (na primer, slike, lozinke, poruke i brojeve kreditnih kartica).</translation>
@@ -1053,7 +1051,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4406883609789734330">Titl uživo</translation>
 <translation id="4406896451731180161">rezultati pretrage</translation>
 <translation id="4408413947728134509">Kolačići (<ph name="NUM_COOKIES" />)</translation>
-<translation id="4414290883293381923">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome vam preporučuje da odete na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i na druge sajtove gde koristite ovu lozinku i da je odmah promenite.</translation>
 <translation id="4414515549596849729">kolačići i podaci o sajtovima</translation>
 <translation id="4415426530740016218">Adresa preuzimanja</translation>
 <translation id="4424024547088906515">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; Chrome nema poverenja u njegov bezbednosni sertifikat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
@@ -1127,7 +1124,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="467662567472608290">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat sadrži greške. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> želi da odgovara na događaje pristupačnosti</translation>
 <translation id="467809019005607715">Google prezentacije</translation>
-<translation id="4680804919228900307">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>
 <translation id="468314109939257734">Pregledajte broj svoje virtuelne kartice</translation>
 <translation id="4691835149146451662">Architecture-A (koverat)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1631,7 +1627,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6401136357288658127">Ove smernice su zastarele. Umesto njih treba da koristite nove smernice <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Izmena obeleživača</translation>
 <translation id="6406765186087300643">C0 (koverat)</translation>
-<translation id="6409754798200046165">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome preporučuje da odmah promenite lozinku.</translation>
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
 <translation id="6415778972515849510">Chromium može da vam pomogne da zaštitite Google nalog i promenite lozinku.</translation>
 <translation id="6423385022588644828">Od sada brže potvrđujte kartice uz Touch ID</translation>
@@ -1790,7 +1785,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6972629891077993081">Uređaji sa interfejsom</translation>
 <translation id="6973656660372572881">Navedeni su i fiksni proksi serveri i URL adresa .pac skripte.</translation>
 <translation id="6973932557599545801">Žao mi je, ne mogu da vam pomognem. Nastavite sami.</translation>
-<translation id="6975012522936652259">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium vam preporučuje da odete na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i na druge sajtove gde koristite ovu lozinku i da je odmah promenite.</translation>
 <translation id="6979158407327259162">Google disk</translation>
 <translation id="6979440798594660689">Isključen (podrazumevano)</translation>
 <translation id="6979983982287291980">Datoteke koje preuzmete se šalju u Google Cloud ili trećim stranama na analizu. Na primer, možda će biti skenirane u potrazi za osetljivim podacima ili malverom.</translation>
@@ -1860,7 +1854,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7220786058474068424">Obrada</translation>
 <translation id="7221855153210829124">prikazuje obaveštenja</translation>
 <translation id="722454870747268814">Nova kartica bez arhiviranja</translation>
-<translation id="7229659723041939809">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>
 <translation id="7231476387708735839">Upravljajte pretragom sajtova</translation>
 <translation id="7233592378249864828">List potvrde štampanja</translation>
 <translation id="7238585580608191973">SHA-256 Fingerprint</translation>
@@ -1887,7 +1880,6 @@ Dodatni detalji:
 <translation id="7320336641823683070">Pomoć pri povezivanju</translation>
 <translation id="7323804146520582233">Sakrijte odeljak <ph name="SECTION" /></translation>
 <translation id="733354035281974745">Zamena lokalnog naloga na uređaju</translation>
-<translation id="7333654844024768166">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium vam preporučuje da odete na <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> i na druge sajtove gde koristite ovu lozinku i da je odmah promenite.</translation>
 <translation id="7334320624316649418">&amp;Ponovi promenu redosleda</translation>
 <translation id="7335157162773372339">Može da traži da koristi kameru</translation>
 <translation id="7337248890521463931">Prikaži više redova</translation>
@@ -1948,7 +1940,6 @@ Dodatni detalji:
 <translation id="7487775554425430039">Igrajte igru Chrome dinosaurus</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Obratite se vlasniku sajta da biste rešili problem.</translation>
 <translation id="7497998058912824456">Dugme Napravite dokument, pritisnite Enter da biste brzo napravili nov Google dokument</translation>
-<translation id="7503664977220660814">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>
 <translation id="7508255263130623398">Vraćeni ID uređaja za smernice je prazan ili se ne podudara sa aktuelnim ID-om uređaja</translation>
 <translation id="7508870219247277067">Zelenožuta</translation>
 <translation id="7511955381719512146">WiFi mreža koju koristite će možda zahtevati da posetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -2064,7 +2055,6 @@ Dodatni detalji:
 <translation id="7862185352068345852">Želite li da napustite sajt?</translation>
 <translation id="7865448901209910068">Najbolja brzina</translation>
 <translation id="7871445724586827387">Promenite lozinku za Google nalog</translation>
-<translation id="7874263914261512992">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>
 <translation id="7877007680666472091">ID-ovi zaštićenog sadržaja</translation>
 <translation id="7878562273885520351">Lozinka je možda kompromitovana</translation>
 <translation id="7880146494886811634">Sačuvajte adresu</translation>
@@ -2146,7 +2136,6 @@ Dodatni detalji:
 <translation id="8116925261070264013">Zvuk je isključen</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
 <translation id="8127301229239896662">Softver „<ph name="SOFTWARE_NAME" />“ nije pravilno instaliran na računaru ili mreži. Zatražite od IT administratora da reši ovaj problem.</translation>
-<translation id="8128526133099929547">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome vam preporučuje da odete na <ph name="WEBSITE_1" />, kao i na druge sajtove gde koristite ovu lozinku, i da je odmah promenite.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8148608574971654810">PDF verzija:</translation>
 <translation id="8149426793427495338">Računar je prešao u režim spavanja.</translation>
@@ -2165,7 +2154,6 @@ Dodatni detalji:
 <translation id="8211406090763984747">Veza je bezbedna</translation>
 <translation id="8218327578424803826">Dodeljena lokacija:</translation>
 <translation id="8220146938470311105">C7/C6 (koverat)</translation>
-<translation id="8221250263817408492">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium vam preporučuje da odete na <ph name="WEBSITE_1" />, kao i na druge sajtove gde koristite ovu lozinku, i da je odmah promenite.</translation>
 <translation id="8225771182978767009">Osoba koja je podesila ovaj računar je odlučila da blokira ovaj sajt.</translation>
 <translation id="8228419419708659934">Prikaz na dve stranice</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2252,7 +2240,6 @@ Dodatni detalji:
 <translation id="8474910779563686872">Prikaži detalje o programeru</translation>
 <translation id="8479754468255770962">Spajanje u donjem levom uglu</translation>
 <translation id="8483780878231876732">Da biste koristili kartice sa Google naloga, prijavite se u Chrome</translation>
-<translation id="8485393050551136813">Upravo ste uneli lozinku na obmanjujućem sajtu. Chromium vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>
 <translation id="8488350697529856933">Odnose se na</translation>
 <translation id="8490137692873530638">10. pregrada za slaganje</translation>
 <translation id="8498891568109133222">Odgovor hosta <ph name="HOST_NAME" /> je trajao predugo.</translation>
@@ -2327,7 +2314,6 @@ Dodatni detalji:
 <translation id="8761567432415473239">Google bezbedno pregledanje je nedavno <ph name="BEGIN_LINK" />otkrilo štetne programe<ph name="END_LINK" /> na <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8766943070169463815">Tabela za potvrdu akreditiva za bezbedno plaćanje je otvorena</translation>
-<translation id="8774457497170244317">Upravo ste uneli lozinku na obmanjujućem sajtu. Chrome vam preporučuje da proverite sačuvane lozinke za <ph name="WEBSITE_1" /> i druge sajtove na kojima trenutno koristite ovu lozinku.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Ponovi brisanje</translation>
 <translation id="8792621596287649091">Možete da izgubite pristup nalogu za <ph name="ORG_NAME" /> ili bi moglo da dođe do krađe identiteta. Chromium vam preporučuje da odmah promenite lozinku.</translation>

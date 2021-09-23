@@ -450,7 +450,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2417466718237453711">Itxi ezkutuko moduko profileko leiho guztiak</translation>
 <translation id="2430968933669123598">Google-ko kontua kudeatzeko botoia: sakatu "Sartu" Google-ko kontuko informazioa, pribatutasuna eta segurtasuna kudeatzeko</translation>
 <translation id="2438874542388153331">Lau zulo eskuinean</translation>
-<translation id="245044156129055925">Webgune engainagarri batean idatzi duzu pasahitza. Pasahitza berehala aldatzea gomendatzen du Chromium-ek.</translation>
 <translation id="2463739503403862330">Bete</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Aukeratu entrega-metodoa</translation>
@@ -486,7 +485,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
 <translation id="254947805923345898">Gidalerroaren balioak ez du balio.</translation>
 <translation id="255002559098805027">Ez du balio <ph name="HOST_NAME" /> webguneak bidali duen erantzunak.</translation>
-<translation id="2552246211866555379">Hagaki</translation>
+<translation id="2552246211866555379">Hagaki formatua</translation>
 <translation id="2552295903035773204">Oraindik aurrera, erabili pantailaren blokeoa txartelak berresteko</translation>
 <translation id="2553853292994445426">Egiaztatu DNS ezarpen seguruak. Baliteke konfiguratu duzun DNS zerbitzari segururako konexioek huts egitea.</translation>
 <translation id="2556876185419854533">&amp;Desegin editatzea</translation>
@@ -1021,7 +1020,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4346197816712207223">Onartzen diren kreditu-txartelak</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> webgunerako konexioa ez da segurua</translation>
-<translation id="4349531505348777662">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> eta <ph name="WEBSITE_2" /> webguneetara eta pasahitza erabili duzun beste webgune batzuetara joatea eta pasahitza aldatzea gomendatzen dizu Chrome-k.</translation>
 <translation id="4350629523305688469">Funtzio anitzeko erretilua</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> webguneak inguruko Bluetooth bidezko gailuak bilatu nahi ditu. Gailu hauek aurkitu dira:</translation>
 <translation id="4356973930735388585">Baliteke webgune honetako erasotzaileak ordenagailuan programa arriskutsuak instalatzen saiatzea bertako informazioa (besteak beste, argazkiak, pasahitzak, mezuak eta kreditu-txartelak) lapurtzeko edo ezabatzeko.</translation>
@@ -1040,7 +1038,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4406883609789734330">Istanteko azpitituluak</translation>
 <translation id="4406896451731180161">bilaketa-emaitza</translation>
 <translation id="4408413947728134509">Cookieak: <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> eta <ph name="WEBSITE_3" /> webguneetara eta pasahitz hori erabili duzun beste webgune batzuetara joatea gomendatzen dizu Chrome-k.</translation>
 <translation id="4414515549596849729">cookieak eta webgune-datuak</translation>
 <translation id="4415426530740016218">Jasotzeko helbidea</translation>
 <translation id="4424024547088906515">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Chrome ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
@@ -1114,7 +1111,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="467662567472608290">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Bere segurtasun-ziurtagiriak erroreak ditu. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> webguneak erabilerraztasun-gertaerei erantzun nahi die</translation>
 <translation id="467809019005607715">Google Aurkezpenak</translation>
-<translation id="4680804919228900307">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> eta <ph name="WEBSITE_3" /> webguneetarako eta pasahitz hori erabili duzun beste webgune batzuetarako gordetako pasahitzak egiaztatzea gomendatzen dizu Chromium-ek.</translation>
 <translation id="468314109939257734">Ikusi txartel birtualaren zenbakia</translation>
 <translation id="4691835149146451662">Architecture-A (gutun-azala)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1618,7 +1614,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6401136357288658127">Gidalerro hau zaharkituta dago. Horren ordez <ph name="NEW_POLICY" /> gidalerroa erabili beharko zenuke.</translation>
 <translation id="6404511346730675251">Editatu laster-marka</translation>
 <translation id="6406765186087300643">C0 (gutun-azala)</translation>
-<translation id="6409754798200046165">Webgune engainagarri batean idatzi duzu pasahitza. Pasahitza berehala aldatzea gomendatzen du Chrome-k.</translation>
 <translation id="6410264514553301377">Idatzi <ph name="CREDIT_CARD" /> txartelaren iraungitze-data eta CVC kodea</translation>
 <translation id="6415778972515849510">Google-ko kontua babesten eta pasahitza aldatzen lagun diezazuke Chromium-ek.</translation>
 <translation id="6423385022588644828">Aurrerantzean, berretsi txartelak bizkorrago Touch ID erabilita</translation>
@@ -1777,7 +1772,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6972629891077993081">HID gailuak</translation>
 <translation id="6973656660372572881">Proxy-zerbitzari finkoak nahiz .pac URL scripta zehaztu dira.</translation>
 <translation id="6973932557599545801">Barkatu, ezin dizut lagundu. Egin aurrera zeuk bakarrik.</translation>
-<translation id="6975012522936652259">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> eta <ph name="WEBSITE_2" /> webguneetara eta pasahitza erabili duzun beste webgune batzuetara joatea eta pasahitza aldatzea gomendatzen dizu Chromium-ek.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Desaktibatu audioa (lehenetsia)</translation>
 <translation id="6979983982287291980">Deskargatu dituzun fitxategiak Google Cloud-i edo hirugarrenei bidaltzen zaizkie, azter ditzaten. Adibidez, baliteke fitxategiak eskaneatzea kontuzko datuak edo malwarea duten ikusteko.</translation>
@@ -1847,7 +1841,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7220786058474068424">Prozesatzen</translation>
 <translation id="7221855153210829124">Erakutsi jakinarazpenak</translation>
 <translation id="722454870747268814">Ezkutuko moduko fitxa berria</translation>
-<translation id="7229659723041939809">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> eta <ph name="WEBSITE_3" /> webguneetarako eta pasahitz hori erabili duzun beste webgune batzuetarako gordetako pasahitzak egiaztatzea gomendatzen dizu Chrome-k.</translation>
 <translation id="7231476387708735839">Kudeatu webguneen bilaketa</translation>
 <translation id="7233592378249864828">Inprimatu berrespen-orria</translation>
 <translation id="7238585580608191973">SHA-256 erreferentzia-gako digitala</translation>
@@ -1874,7 +1867,6 @@ Xehetasun gehiago:
 <translation id="7320336641823683070">Konexioari buruzko laguntza</translation>
 <translation id="7323804146520582233">Ezkutatu "<ph name="SECTION" />" atala</translation>
 <translation id="733354035281974745">Gailuko kontua ordeztea</translation>
-<translation id="7333654844024768166">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> eta <ph name="WEBSITE_3" /> webguneetara eta pasahitz hori erabili duzun beste webgune batzuetara joatea eta pasahitza aldatzea gomendatzen dizu Chromium-ek.</translation>
 <translation id="7334320624316649418">&amp;Berregin berrantolatzea</translation>
 <translation id="7335157162773372339">Kamera erabiltzea eska dezake</translation>
 <translation id="7337248890521463931">Erakutsi lerro gehiago</translation>
@@ -1935,7 +1927,6 @@ Xehetasun gehiago:
 <translation id="7487775554425430039">Aritu Chrome-ko Dino jokoan</translation>
 <translation id="7495528107193238112">Eduki hori blokeatuta dago. Jarri harremanetan webgunearen arduradunarekin arazoa konpontzeko.</translation>
 <translation id="7497998058912824456">Dokumentu bat sortzeko botoia: sakatu "Sartu" Google-ko dokumentu bat bizkor sortzeko</translation>
-<translation id="7503664977220660814">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> eta <ph name="WEBSITE_2" /> webguneetarako eta pasahitz hori erabili duzun beste webgune batzuetarako gordetako pasahitzak egiaztatzea gomendatzen dizu Chromium-ek.</translation>
 <translation id="7508255263130623398">Itzuli den gidalerroaren gailu IDa hutsik dago edo ez dator bat gailuaren IDarekin</translation>
 <translation id="7508870219247277067">Ahuakatea</translation>
 <translation id="7511955381719512146">Baliteke darabilzun Wi-Fi konexioaren <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> orrira joan behar izatea.</translation>
@@ -2051,7 +2042,6 @@ Xehetasun gehiago:
 <translation id="7862185352068345852">Webgunetik irten nahi duzu?</translation>
 <translation id="7865448901209910068">Abiadurarik onena</translation>
 <translation id="7871445724586827387">Aldatu Google-ko kontuko pasahitza</translation>
-<translation id="7874263914261512992">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> eta <ph name="WEBSITE_2" /> webguneetarako eta pasahitz hori erabili duzun beste webgune batzuetarako gordetako pasahitzak egiaztatzea gomendatzen dizu Chrome-k.</translation>
 <translation id="7877007680666472091">eduki babestuaren IDak</translation>
 <translation id="7878562273885520351">Baliteke pasahitza arriskuan egotea</translation>
 <translation id="7880146494886811634">Gorde helbidea</translation>
@@ -2133,7 +2123,6 @@ Xehetasun gehiago:
 <translation id="8116925261070264013">Audioa desaktibatuta</translation>
 <translation id="8118489163946903409">Ordainketa-metodoa</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ez dago behar bezala instalatuta ordenagailuan edo sarean. Eskatu arazoa konpontzeko IKT saileko administratzaileari.</translation>
-<translation id="8128526133099929547">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> webgunera eta pasahitza erabili duzun beste webgune batzuetara joatea eta pasahitza aldatzea gomendatzen dizu Chrome-k.</translation>
 <translation id="8131740175452115882">Berretsi</translation>
 <translation id="8148608574971654810">PDF bertsioa:</translation>
 <translation id="8149426793427495338">Inaktibo geratu da ordenagailua.</translation>
@@ -2152,7 +2141,6 @@ Xehetasun gehiago:
 <translation id="8211406090763984747">Konexioa segurua da</translation>
 <translation id="8218327578424803826">Esleitutako kokapena</translation>
 <translation id="8220146938470311105">C7/C6 (gutun-azala)</translation>
-<translation id="8221250263817408492">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> webgunera eta pasahitza erabili duzun beste webgune batzuetara joatea eta pasahitza aldatzea gomendatzen dizu Chromium-ek.</translation>
 <translation id="8225771182978767009">Ordenagailua konfiguratu duen pertsonak webgune hau blokeatzea aukeratu du.</translation>
 <translation id="8228419419708659934">Bi orriko ikuspegia</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -2239,7 +2227,6 @@ Xehetasun gehiago:
 <translation id="8474910779563686872">Erakutsi garatzailearen xehetasunak</translation>
 <translation id="8479754468255770962">Grapa bat behean, ezkerretara</translation>
 <translation id="8483780878231876732">Google-ko kontuko txartelak erabiltzeko, hasi saioa Chrome-n</translation>
-<translation id="8485393050551136813">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> webgunerako eta pasahitz hori erabili duzun beste webgune batzuetarako gordetako pasahitzak egiaztatzea gomendatzen dizu Chromium-ek.</translation>
 <translation id="8488350697529856933">Honi aplikatzen zaio:</translation>
 <translation id="8490137692873530638">10. pilatzailea</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> webguneak ez du garaiz erantzun.</translation>
@@ -2313,7 +2300,6 @@ Xehetasun gehiago:
 <translation id="8761567432415473239">Google-ren Arakatze seguruak <ph name="BEGIN_LINK" />programa kaltegarriak aurkitu ditu<ph name="END_LINK" /> <ph name="SITE" /> webgunean.</translation>
 <translation id="8763927697961133303">USB bidezko gailua</translation>
 <translation id="8766943070169463815">Ordainketa seguruetarako kredentzialak autentifikatzeko orria irekita dago</translation>
-<translation id="8774457497170244317">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" /> webgunerako eta pasahitz hori erabili duzun beste webgune batzuetarako gordetako pasahitzak egiaztatzea gomendatzen dizu Chrome-k.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Berregin ezabatzea</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> konturako sarbidea gal zenezake, edo kontua lapur liezazukete. Pasahitza aldatzea gomendatzen dizu Chromium-ek.</translation>

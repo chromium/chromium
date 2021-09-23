@@ -794,7 +794,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5942872142862698679">Korzystam z wyszukiwarki Google</translation>
 <translation id="5945035219773565305">Obecne zalecenie: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Wyświetlam faktyczną stronę</translation>
-<translation id="5952764234151283551">Adres URL strony, którą próbujesz otworzyć, zostanie wysłany do Google</translation>
 <translation id="5956665950594638604">Otwórz Centrum pomocy Chrome w nowej karcie</translation>
 <translation id="5957442310066583693">Aby zobaczyć swoje najczęściej odwiedzane strony, kliknij przycisk strony głównej</translation>
 <translation id="5958275228015807058">Znajdź pliki i strony w Pobranych plikach</translation>
@@ -937,7 +936,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6671495933530132209">Kopiuj grafikę</translation>
 <translation id="6674571176963658787">Aby rozpocząć synchronizację, wpisz hasło</translation>
 <translation id="6676840375528380067">Usunąć dane Chrome z tego urządzenia?</translation>
-<translation id="6697492270171225480">Gdy nie można odnaleźć strony, pokazuj sugestie podobnych stron</translation>
 <translation id="6698801883190606802">Zarządzaj synchronizowanymi danymi</translation>
 <translation id="6699370405921460408">Serwery Google będą optymalizować otwierane strony.</translation>
 <translation id="670498945988402717">Sprawdzano wczoraj</translation>

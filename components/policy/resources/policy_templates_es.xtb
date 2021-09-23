@@ -1107,6 +1107,13 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2299220924812062390">Especificar una lista de complementos habilitados</translation>
 <translation id="2301048990069984110">Amplía la compatibilidad de aplicaciones de Chrome en Windows, Mac y Linux.</translation>
 <translation id="2303795211377219696">Habilitar la función Autocompletar para tarjetas de crédito</translation>
+<translation id="2304009805995145854">Desde <ph name="PRODUCT_NAME" /> 67, el aislamiento de sitios web ha estado habilitado de forma predeterminada en todas las versiones para ordenador, lo que hace que todos los sitios se ejecuten en su propio proceso. Un sitio consiste en un esquema más el eTLD+1 (por ejemplo, https://example.com). Si se habilita esta política, no cambia ese comportamiento. Solo evita que los usuarios cambien esta opción (por ejemplo, inhabilitando el aislamiento de sitio web de chrome://flags). Desde <ph name="PRODUCT_NAME" /> 76, si se inhabilita la política o no se establece, no se desactiva el aislamiento de sitios web, pero los usuarios pueden inhabilitar esta opción.
+
+      Es posible que <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> también ayude a aislar orígenes específicos con una mayor granularidad que un sitio (por ejemplo, https://a.example.com).
+
+      Define la política de dispositivos <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> con el mismo valor en la versión 76 de <ph name="PRODUCT_OS_NAME" /> y versiones anteriores. Si los valores de las dos políticas no coinciden, es posible que se produzca un retraso al acceder a una sesión de usuario.
+
+      Nota: Usa la política <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> en Android.</translation>
 <translation id="2307496301287881990">Informar del estado de la pantalla y la tarjeta gráfica</translation>
 <translation id="2309390639296060546">Configuración de ubicación geográfica predeterminada</translation>
 <translation id="2331354174913096226">La plantilla URI de la resolución de DNS-over-HTTPS deseada. Para especificar varias resoluciones de DNS-over-HTTPS, separa las plantillas URI correspondientes con espacios.
@@ -1167,6 +1174,17 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Si se establece la opción <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no se permitirá aplicar ninguna variación al navegador. Ten en cuenta que este modo puede evitar que los desarrolladores de <ph name="PRODUCT_NAME" /> proporcionen correcciones críticas de seguridad a su debido tiempo y, por lo tanto, no se recomienda su uso.</translation>
 <translation id="2402547085566757554">No usar la página Nueva pestaña como página principal</translation>
+<translation id="240713331529749993">Si se define esta política, cada uno de los orígenes especificados en una lista separada por comas se ejecutará en un proceso dedicado en Android. El proceso de cada origen especificado solo podrá contener documentos de ese origen y de sus subdominios. Por ejemplo, si se especifica https://a1.example.com/, se permite https://a2.a1.example.com/ en el mismo proceso, pero no https://example.com o https://b.example.com. Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" />. Además, esta política amplía ese modo para aislar otros orígenes específicos.
+
+      Desde <ph name="PRODUCT_NAME" /> 77, también puedes especificar un rango de orígenes para aislar usando un comodín. Por ejemplo, al especificar https://[*.]corp.example.com, se otorgará a cada origen del tipo https://corp.example.com su propio proceso dedicado, incluidos https://corp.example.com, https://a1.corp.example.com y https://a2.a1.corp.example.com.
+
+      Ten en cuenta que los orígenes aislados por esta política no podrán usar secuencias de comandos de otros orígenes en el mismo sitio. Esto es posible si dos documentos del mismo sitio modifican sus valores de "document.domain" para que coincidan. Los administradores deben confirmar que no se usa este comportamiento inusual en un origen antes de aislarlo.
+
+      Si se inhabilita esta política, se desactivará cualquier tipo de aislamiento de sitio web, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento de sitio web. Si lo desean, los usuarios podrán activar IsolateOrigins de forma manual a través de la instrucción de línea de comandos.
+
+      Si no se le asigna ningún valor, los usuarios podrán cambiar esta opción.
+
+      Nota: Aislar demasiados sitios en Android puede causar problemas de rendimiento, sobre todo en dispositivos con poca memoria. Esta política solo se aplica a Chrome si se utiliza en dispositivos Android con más de 1 GB de RAM. Para aplicar esta política en plataformas distintas de Android, usa <ph name="ISOLATE_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="2411629345938804022">Si se asigna el valor 3 a esta política, los sitios web podrán pedir acceso a los dispositivos Bluetooth cercanos. Si se le asigna el valor 2, se denegará el acceso a los dispositivos Bluetooth cercanos.
 
       Si no se le asigna ningún valor, los sitios web podrán pedir acceso, pero los usuarios podrán cambiar esta opción.</translation>
@@ -2716,6 +2734,17 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se le asigna el valor "Inhabilitada" o no se le asigna ningún valor, los usuarios podrán transferir archivos a Drive con conexiones de datos móviles.</translation>
 <translation id="4248277954659222481">Permitir la reproducción automática de contenido multimedia en una lista de patrones de URL permitidos</translation>
 <translation id="4250680216510889253">No</translation>
+<translation id="4260027436474745627">Si se define esta política, cada uno de los orígenes especificados en una lista separada por comas se ejecutará en un proceso dedicado. El proceso de cada origen especificado solo podrá contener documentos de ese origen y de sus subdominios. Por ejemplo, si se especifica https://a1.example.com/, se permite https://a2.a1.example.com/ en el mismo proceso, pero no https://example.com o https://b.example.com.
+
+      Desde <ph name="PRODUCT_NAME" /> 77, también puedes especificar un rango de orígenes para aislar usando un comodín. Por ejemplo, al especificar https://[*.]corp.example.com, se otorgará a cada origen inferior a https://corp.example.com su propio proceso dedicado, incluidos https://corp.example.com, https://a1.corp.example.com y https://a2.a1.corp.example.com.
+
+      Ten en cuenta que todos los sitios (es decir, el esquema más el eTLD+1, como https://example.com) ya están aislados de forma predeterminada en las versiones para ordenador, tal y como se indica en la política <ph name="SITE_PER_PROCESS_POLICY_NAME" />. Esta política <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> ayuda a aislar orígenes específicos con una mayor granularidad (por ejemplo, https://a.example.com).
+
+      Ten en cuenta también que los orígenes aislados por esta política no podrán usar secuencias de comandos de otros orígenes en el mismo sitio. Esto es posible si dos documentos del mismo sitio modifican sus valores de "document.domain" para que coincidan. Los administradores deben confirmar que no se usa este comportamiento inusual en un origen antes de aislarlo.
+
+      Si se desactiva esta política o no se establece, los usuarios pueden cambiar este ajuste.
+
+      Nota: Usa la política <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> en Android.</translation>
 <translation id="4261820385751181068">Configuración regional para la pantalla de inicio de sesión del dispositivo</translation>
 <translation id="4266547484666068234">Si se define esta política, se permite acceder a las URLs incluidas en la lista, las cuales se consideran excepciones de <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de la política para conocer el formato de las entradas de esta lista. Por ejemplo, si se le asigna el valor asterisco (*) a <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes, y esta política se podrá usar para permitir el acceso a una lista limitada de URLs. También se puede utilizar para abrir excepciones de determinados esquemas, subdominios de otros dominios, puertos o rutas específicas usando el formato especificado en (https://www.chromium.org/administrators/url-blocklist-filter-format). El filtro más específico determinará si una URL está bloqueada o permitida. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> prevalece frente a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política está limitada a 1000 entradas.
 
@@ -3587,6 +3616,15 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           </translation>
 <translation id="5435888298115339571">Habilitar la opción de compartir escritorio en el omnibox y el menú de 3 puntos</translation>
 <translation id="5442026853063570579">Esta política también controla el acceso a las opciones para desarrolladores de Android. Si se asigna a esta política el valor DeveloperToolsDisallowed (el valor 2), los usuarios no podrán acceder a las opciones para desarrolladores. Si se le asigna otro valor o no se le asigna ninguno, los usuarios podrán acceder a las opciones para desarrolladores tocando siete veces el número de compilación en la aplicación Ajustes de Android.</translation>
+<translation id="5443582909255996887">Si se habilita esta política, se aíslan todos los sitios en Android (de manera que cada sitio se ejecuta en su propio proceso) y se evita que los usuarios inhabiliten esta opción. Un sitio consiste en un esquema más el eTLD+1 (por ejemplo, https://example.com). Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" />. Además, esta política amplía el modo de aislamiento de sitio web predeterminado para que se aplique a todos los sitios.
+
+      Si se inhabilita esta política, se desactivará cualquier tipo de aislamiento de sitio web, incluido el aislamiento de sitios sensibles y pruebas de campo de IsolateOriginsAndroid, SitePerProcessAndroid y otros modos de aislamiento de sitio web. Los usuarios podrán activar la política de forma manual.
+
+      Si no se le asigna ningún valor a esta política, los usuarios podrán cambiar esta opción.
+
+      Es posible que <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> también ayude a aislar orígenes específicos con una mayor granularidad que un sitio (por ejemplo, https://a.example.com).
+
+      Nota: La opción de aislar todos los sitios en Android mejorará, pero, por ahora, puede causar problemas de rendimiento (sobre todo en dispositivos de gama baja). Esta política solo se aplica a Chrome si se utiliza en dispositivos Android con más de 1 GB de RAM. Para aislar sitios concretos y limitar el efecto en el rendimiento que se ofrece a los usuarios, usa <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> con la lista de los sitios que quieras aislar.  Para aplicar esta política en plataformas distintas de Android, usa <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="5445596354079213552">Esta política solo será efectiva cuando el dispositivo haya alcanzado la fecha de vencimiento de las actualizaciones automáticas y no tenga la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> establecida en la política <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" />.
 
       Si a esta política se le asigna una cadena que no está vacía:
@@ -6197,6 +6235,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       A partir la versión 92 de <ph name="PRODUCT_NAME" />, esta política también está admitida en el modo sin interfaz gráfica.
 
       Nota: Bloquear las URLs internas chrome://* podría provocar errores inesperados.</translation>
+<translation id="8626826495474944836">Requerir aislamiento de sitio web para todos los sitios</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">La lista de aplicaciones para tomar notas que están permitidas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8637566476051166626">Puertos de red con permiso explícito</translation>
