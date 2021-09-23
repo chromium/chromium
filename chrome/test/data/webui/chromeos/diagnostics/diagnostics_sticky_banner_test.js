@@ -4,7 +4,7 @@
 
 import {DiagnosticsStickyBannerElement} from 'chrome://diagnostics/diagnostics_sticky_banner.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -63,6 +63,35 @@ export function diagnosticsStickyBannerTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * Triggers 'dismiss-caution-banner' custom event.
+   * @return {!Promise}
+   */
+  function triggerDismissBannerEvent() {
+    window.dispatchEvent(new CustomEvent('dismiss-caution-banner', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    return flushTasks();
+  }
+
+  /**
+   * Triggers 'show-caution-banner' custom event with correctly configured event
+   * detail object based on provided message.
+   * @param {string} message
+   * @return {!Promise}
+   */
+  function triggerShowBannerEvent(message) {
+    window.dispatchEvent(new CustomEvent('show-caution-banner', {
+      bubbles: true,
+      composed: true,
+      detail: {message},
+    }));
+
+    return flushTasks();
+  }
+
   test('BannerInitializedCorrectly', () => {
     return initializeDiagnosticsStickyBanner().then(() => {
       assertFalse(isVisible(getBanner()));
@@ -79,6 +108,41 @@ export function diagnosticsStickyBannerTestSuite() {
         })
         .then(() => setBannerMessage(''))
         .then(() => {
+          assertFalse(isVisible(getBanner()));
+          dx_utils.assertElementDoesNotContainText(getBannerMsg(), testMessage);
+        });
+  });
+
+  test('BannerHandlesShowCautionBannerEvent', () => {
+    const bannerText1 = 'Infomational banner 1';
+    const bannerText2 = 'Infomational banner 2';
+    return initializeDiagnosticsStickyBanner()
+        .then(() => triggerShowBannerEvent(bannerText1))
+        .then(() => {
+          assertEquals(
+              bannerText1, diagnosticsStickyBannerElement.bannerMessage);
+          assertTrue(isVisible(getBanner()));
+          dx_utils.assertElementContainsText(getBannerMsg(), bannerText1);
+        })
+        .then(() => triggerShowBannerEvent(bannerText2))
+        .then(() => {
+          assertEquals(
+              bannerText2, diagnosticsStickyBannerElement.bannerMessage);
+          assertTrue(isVisible(getBanner()));
+          dx_utils.assertElementContainsText(getBannerMsg(), bannerText2);
+        });
+  });
+
+  test('BannerHandlesDismissCautionBannerEvent', () => {
+    const testMessage = 'Infomational banner';
+    return initializeDiagnosticsStickyBanner()
+        .then(() => triggerShowBannerEvent(testMessage))
+        .then(() => {
+          dx_utils.assertElementContainsText(getBannerMsg(), testMessage);
+        })
+        .then(() => triggerDismissBannerEvent())
+        .then(() => {
+          assertEquals('', diagnosticsStickyBannerElement.bannerMessage);
           assertFalse(isVisible(getBanner()));
           dx_utils.assertElementDoesNotContainText(getBannerMsg(), testMessage);
         });
