@@ -5,11 +5,8 @@
 #include "apps/app_lifetime_monitor.h"
 
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 
 namespace apps {
@@ -21,10 +18,6 @@ using extensions::ExtensionHost;
 
 AppLifetimeMonitor::AppLifetimeMonitor(content::BrowserContext* context)
     : context_(context) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                 content::NotificationService::AllSources());
-
   extension_host_registry_observation_.Observe(
       extensions::ExtensionHostRegistry::Get(context_));
 
@@ -45,11 +38,9 @@ void AppLifetimeMonitor::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AppLifetimeMonitor::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD, type);
-  ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
+void AppLifetimeMonitor::OnExtensionHostCompletedFirstLoad(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
   const Extension* extension = host->extension();
   if (!extension || !extension->is_platform_app())
     return;

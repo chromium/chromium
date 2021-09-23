@@ -11,8 +11,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host_registry.h"
 
@@ -25,7 +23,6 @@ namespace apps {
 // Observes startup of apps and their windows and notifies observers of these
 // events.
 class AppLifetimeMonitor : public KeyedService,
-                           public content::NotificationObserver,
                            public extensions::AppWindowRegistry::Observer,
                            public extensions::ExtensionHostRegistry::Observer {
  public:
@@ -59,11 +56,6 @@ class AppLifetimeMonitor : public KeyedService,
   void RemoveObserver(Observer* observer);
 
  private:
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // extensions::AppWindowRegistry::Observer overrides:
   void OnAppWindowRemoved(extensions::AppWindow* app_window) override;
   void OnAppWindowHidden(extensions::AppWindow* app_window) override;
@@ -71,6 +63,9 @@ class AppLifetimeMonitor : public KeyedService,
                         bool was_hidden) override;
 
   // extensions::ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      extensions::ExtensionHost* host) override;
   void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
                                 extensions::ExtensionHost* host) override;
 
@@ -84,7 +79,6 @@ class AppLifetimeMonitor : public KeyedService,
   void NotifyAppDeactivated(const std::string& app_id);
   void NotifyAppStop(const std::string& app_id);
 
-  content::NotificationRegistrar registrar_;
   content::BrowserContext* context_;
   base::ObserverList<Observer>::Unchecked observers_;
   base::ScopedObservation<extensions::ExtensionHostRegistry,
