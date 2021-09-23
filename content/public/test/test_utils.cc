@@ -453,7 +453,7 @@ void InProcessUtilityThreadHelper::BrowserChildProcessHostDisconnected(
 
 RenderFrameDeletedObserver::RenderFrameDeletedObserver(RenderFrameHost* rfh)
     : WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-      routing_id_(rfh->GetGlobalId()) {
+      rfh_id_(rfh->GetGlobalId()) {
   DCHECK(rfh);
 }
 
@@ -461,12 +461,8 @@ RenderFrameDeletedObserver::~RenderFrameDeletedObserver() = default;
 
 void RenderFrameDeletedObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  if (render_frame_host->GetGlobalId() == routing_id_) {
-    routing_id_ = GlobalRenderFrameHostId();
-
-    // Save back/forward cache eligibility for debugging purposes.
-    back_forward_cache_eligibility_for_debug_ =
-        render_frame_host->GetBackForwardCanStoreNowDebugStringForTesting();
+  if (render_frame_host->GetGlobalId() == rfh_id_) {
+    rfh_id_ = GlobalRenderFrameHostId();
 
     if (runner_.get())
       runner_->Quit();
@@ -474,11 +470,7 @@ void RenderFrameDeletedObserver::RenderFrameDeleted(
 }
 
 bool RenderFrameDeletedObserver::deleted() const {
-  return routing_id_ == GlobalRenderFrameHostId();
-}
-
-std::string RenderFrameDeletedObserver::BackForwardCacheEligibilityForDebug() {
-  return back_forward_cache_eligibility_for_debug_;
+  return rfh_id_ == GlobalRenderFrameHostId();
 }
 
 void RenderFrameDeletedObserver::WaitUntilDeleted() {
@@ -491,14 +483,15 @@ void RenderFrameDeletedObserver::WaitUntilDeleted() {
 }
 
 RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHost* rfh)
-    : deleted_observer_(std::make_unique<RenderFrameDeletedObserver>(rfh)) {}
+    : rfh_id_(rfh->GetGlobalId()),
+      deleted_observer_(std::make_unique<RenderFrameDeletedObserver>(rfh)) {}
 
-RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHostWrapper&& rfhw) =
+RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHostWrapper&& rfhft) =
     default;
 RenderFrameHostWrapper::~RenderFrameHostWrapper() = default;
 
 RenderFrameHost* RenderFrameHostWrapper::get() const {
-  return RenderFrameHost::FromID(deleted_observer_->routing_id());
+  return RenderFrameHost::FromID(rfh_id_);
 }
 
 bool RenderFrameHostWrapper::IsDestroyed() const {
@@ -510,20 +503,17 @@ bool RenderFrameHostWrapper::IsDestroyed() const {
 void RenderFrameHostWrapper::WaitUntilRenderFrameDeleted() {
   deleted_observer_->WaitUntilDeleted();
 }
-
 bool RenderFrameHostWrapper::IsRenderFrameDeleted() const {
   return deleted_observer_->deleted();
 }
 
 RenderFrameHost& RenderFrameHostWrapper::operator*() const {
-  DCHECK(get()) << "info for debugging: bfcache eligibility="
-                << deleted_observer_->BackForwardCacheEligibilityForDebug();
+  DCHECK(get());
   return *get();
 }
 
 RenderFrameHost* RenderFrameHostWrapper::operator->() const {
-  DCHECK(get()) << "info for debugging: bfcache eligibility="
-                << deleted_observer_->BackForwardCacheEligibilityForDebug();
+  DCHECK(get());
   return get();
 }
 
