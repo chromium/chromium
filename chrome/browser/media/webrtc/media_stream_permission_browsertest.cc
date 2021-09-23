@@ -126,36 +126,38 @@ class MediaStreamPermissionTest : public WebRtcTestBase {
 
 // Actual tests ---------------------------------------------------------------
 
-IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest, TestAllowingUserMedia) {
+// Entire test suite is flaky: https://crbug.com/1252385
+IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
+                       DISABLED_TestAllowingUserMedia) {
   content::WebContents* tab_contents = LoadTestPageInTab();
   EXPECT_TRUE(GetUserMediaAndAccept(tab_contents));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest, TestDenyingUserMedia) {
+// Entire test suite is flaky: https://crbug.com/1252385
+IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
+                       DISABLED_TestDenyingUserMedia) {
   content::WebContents* tab_contents = LoadTestPageInTab();
   GetUserMediaAndDeny(tab_contents);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest, TestDismissingRequest) {
+// Entire test suite is flaky: https://crbug.com/1252385
+IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
+                       DISABLED_TestDismissingRequest) {
   content::WebContents* tab_contents = LoadTestPageInTab();
   GetUserMediaAndDismiss(tab_contents);
 }
 
 // TODO(crbug.com/1251470): Fix the issue on Lacros and enable the test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_TestDenyingUserMediaIncognito \
-  DISABLED_TestDenyingUserMediaIncognito
-#else
-#define MAYBE_TestDenyingUserMediaIncognito TestDenyingUserMediaIncognito
-#endif
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       MAYBE_TestDenyingUserMediaIncognito) {
+                       DISABLED_TestDenyingUserMediaIncognito) {
   content::WebContents* tab_contents = LoadTestPageInIncognitoTab();
   GetUserMediaAndDeny(tab_contents);
 }
 
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       TestSecureOriginDenyIsSticky) {
+                       DISABLED_TestSecureOriginDenyIsSticky) {
   content::WebContents* tab_contents = LoadTestPageInTab();
   EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(
       tab_contents->GetLastCommittedURL()));
@@ -164,8 +166,9 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
   GetUserMediaAndExpectAutoDenyWithoutPrompt(tab_contents);
 }
 
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       TestSecureOriginAcceptIsSticky) {
+                       DISABLED_TestSecureOriginAcceptIsSticky) {
   content::WebContents* tab_contents = LoadTestPageInTab();
   EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(
       tab_contents->GetLastCommittedURL()));
@@ -174,15 +177,18 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
   GetUserMediaAndExpectAutoAcceptWithoutPrompt(tab_contents);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest, TestDismissIsNotSticky) {
+// Entire test suite is flaky: https://crbug.com/1252385
+IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
+                       DISABLED_TestDismissIsNotSticky) {
   content::WebContents* tab_contents = LoadTestPageInTab();
 
   GetUserMediaAndDismiss(tab_contents);
   GetUserMediaAndDismiss(tab_contents);
 }
 
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       TestDenyingThenClearingStickyException) {
+                       DISABLED_TestDenyingThenClearingStickyException) {
   content::WebContents* tab_contents = LoadTestPageInTab();
 
   GetUserMediaAndDeny(tab_contents);
@@ -198,8 +204,9 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
   GetUserMediaAndDeny(tab_contents);
 }
 
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       DenyingMicDoesNotCauseStickyDenyForCameras) {
+                       DISABLED_DenyingMicDoesNotCauseStickyDenyForCameras) {
   content::WebContents* tab_contents = LoadTestPageInTab();
 
   GetUserMediaWithSpecificConstraintsAndDeny(tab_contents,
@@ -208,8 +215,9 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
       tab_contents, kVideoOnlyCallConstraints));
 }
 
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       DenyingCameraDoesNotCauseStickyDenyForMics) {
+                       DISABLED_DenyingCameraDoesNotCauseStickyDenyForMics) {
   content::WebContents* tab_contents = LoadTestPageInTab();
 
   GetUserMediaWithSpecificConstraintsAndDeny(tab_contents,
@@ -221,29 +229,33 @@ IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
 // TODO(crbug.com/1204412) Disabled because the original test was only passing
 // due to a bug in the code. Now that the bug is fixed, the test is not passing
 // anymore.
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       DenyingCameraPermissionStopsAVStream) {
+                       DISABLED_DenyingCameraPermissionStopsAVStream) {
   TestPermissionDenialEffectOnStream(kAudioVideoCallConstraints,
                                      ContentSettingsType::MEDIASTREAM_CAMERA,
                                      true /* should_video_stop */);
 }
 
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       DenyingMicPermissionStopsAVStream) {
+                       DISABLED_DenyingMicPermissionStopsAVStream) {
   TestPermissionDenialEffectOnStream(kAudioVideoCallConstraints,
                                      ContentSettingsType::MEDIASTREAM_MIC,
                                      true /* should_video_stop */);
 }
 
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       DenyingCameraPermissionStopsVideoOnlyStream) {
+                       DISABLED_DenyingCameraPermissionStopsVideoOnlyStream) {
   TestPermissionDenialEffectOnStream(kVideoOnlyCallConstraints,
                                      ContentSettingsType::MEDIASTREAM_CAMERA,
                                      true /* should_video_stop */);
 }
 
+// Entire test suite is flaky: https://crbug.com/1252385
 IN_PROC_BROWSER_TEST_F(MediaStreamPermissionTest,
-                       DenyingMicPermissionDoesntStopVideoOnlyStream) {
+                       DISABLED_DenyingMicPermissionDoesntStopVideoOnlyStream) {
   TestPermissionDenialEffectOnStream(kVideoOnlyCallConstraints,
                                      ContentSettingsType::MEDIASTREAM_MIC,
                                      false /* should_video_stop */);
