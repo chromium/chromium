@@ -95,12 +95,12 @@ AggregationServiceStorageSql::~AggregationServiceStorageSql() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-PublicKeysForOrigin AggregationServiceStorageSql::GetPublicKeys(
+std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
 
-  PublicKeysForOrigin result(origin, /*keys=*/{});
+  std::vector<PublicKey> result;
 
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
     return result;
@@ -112,7 +112,7 @@ PublicKeysForOrigin AggregationServiceStorageSql::GetPublicKeys(
   get_origin_id_statement.BindString(0, origin.Serialize());
   get_origin_id_statement.BindTime(1, clock_.Now());
   if (!get_origin_id_statement.Step())
-    return PublicKeysForOrigin(origin, {});
+    return result;
 
   int64_t origin_id = get_origin_id_statement.ColumnInt64(0);
 
@@ -125,14 +125,13 @@ PublicKeysForOrigin AggregationServiceStorageSql::GetPublicKeys(
 
   bool has_more_data = get_keys_statement.Step();
 
-  while (result.keys.size() < PublicKeysForOrigin::kMaxNumberKeys &&
-         has_more_data) {
+  while (result.size() < PublicKeyset::kMaxNumberKeys && has_more_data) {
     std::string id = get_keys_statement.ColumnString(0);
 
     std::vector<uint8_t> key;
     get_keys_statement.ColumnBlobAsVector(1, &key);
 
-    result.keys.emplace_back(std::move(id), std::move(key));
+    result.emplace_back(std::move(id), std::move(key));
 
     has_more_data = get_keys_statement.Step();
   }
@@ -140,18 +139,16 @@ PublicKeysForOrigin AggregationServiceStorageSql::GetPublicKeys(
   // Don't return partial results if one of the statements fails or more keys
   // than expected are returned.
   if (!get_keys_statement.Succeeded() || has_more_data)
-    result.keys.clear();
+    result.clear();
 
   return result;
 }
 
-void AggregationServiceStorageSql::SetPublicKeys(
-    const PublicKeysForOrigin& keys,
-    const base::Time& fetch_time,
-    const base::Time& expiry_time) {
+void AggregationServiceStorageSql::SetPublicKeys(const url::Origin& origin,
+                                                 const PublicKeyset& keyset) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(network::IsOriginPotentiallyTrustworthy(keys.origin));
-  DCHECK_LE(keys.keys.size(), PublicKeysForOrigin::kMaxNumberKeys);
+  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
+  DCHECK_LE(keyset.keys.size(), PublicKeyset::kMaxNumberKeys);
 
   // TODO(crbug.com/1231703): Add an allowlist for helper server origins and
   // validate the origin.
@@ -167,10 +164,10 @@ void AggregationServiceStorageSql::SetPublicKeys(
 
   // Replace the public keys for the origin. Deleting the existing rows and
   // inserting new ones to reduce the complexity.
-  if (!ClearPublicKeysImpl(keys.origin))
+  if (!ClearPublicKeysImpl(origin))
     return;
 
-  if (!InsertPublicKeysImpl(keys, fetch_time, expiry_time))
+  if (!InsertPublicKeysImpl(origin, keyset))
     return;
 
   transaction.Commit();
@@ -291,11 +288,10 @@ void AggregationServiceStorageSql::ClearPublicKeysExpiredBy(
 }
 
 bool AggregationServiceStorageSql::InsertPublicKeysImpl(
-    const PublicKeysForOrigin& keys,
-    const base::Time& fetch_time,
-    const base::Time& expiry_time) {
-  DCHECK(!fetch_time.is_null());
-  DCHECK(!expiry_time.is_null());
+    const url::Origin& origin,
+    const PublicKeyset& keyset) {
+  DCHECK(!keyset.fetch_time.is_null());
+  DCHECK(!keyset.expiry_time.is_null());
   DCHECK(db_.HasActiveTransactions());
 
   static constexpr char kInsertOriginSql[] =
@@ -303,9 +299,9 @@ bool AggregationServiceStorageSql::InsertPublicKeysImpl(
 
   sql::Statement insert_origin_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertOriginSql));
-  insert_origin_statement.BindString(0, keys.origin.Serialize());
-  insert_origin_statement.BindTime(1, fetch_time);
-  insert_origin_statement.BindTime(2, expiry_time);
+  insert_origin_statement.BindString(0, origin.Serialize());
+  insert_origin_statement.BindTime(1, keyset.fetch_time);
+  insert_origin_statement.BindTime(2, keyset.expiry_time);
 
   if (!insert_origin_statement.Run())
     return false;
@@ -317,7 +313,7 @@ bool AggregationServiceStorageSql::InsertPublicKeysImpl(
   sql::Statement insert_key_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertKeySql));
 
-  for (const PublicKey& key : keys.keys) {
+  for (const PublicKey& key : keyset.keys) {
     DCHECK_LE(key.id.size(), PublicKey::kMaxIdSize);
 
     // TODO(crbug.com/1238458): Check that the key size is as expected.

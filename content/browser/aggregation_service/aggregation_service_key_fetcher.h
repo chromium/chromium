@@ -5,7 +5,12 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_FETCHER_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_FETCHER_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/callback_forward.h"
+#include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
@@ -23,6 +28,21 @@ class AggregatableReportManager;
 // assembler.
 class CONTENT_EXPORT AggregationServiceKeyFetcher {
  public:
+  // This class is responsible for fetching public keys from helper servers over
+  // the network.
+  class NetworkFetcher {
+   public:
+    virtual ~NetworkFetcher() = default;
+
+    using NetworkFetchCallback =
+        base::OnceCallback<void(absl::optional<PublicKeyset>)>;
+
+    // Fetch public keys for `origin` from the helper servers. Returns
+    // absl::nullopt in case of network or parsing error.
+    virtual void FetchPublicKeys(const url::Origin& origin,
+                                 NetworkFetchCallback callback) = 0;
+  };
+
   enum class PublicKeyFetchStatus {
     // TODO(crbug.com/1217823): Propagate up more granular errors.
     kOk = 0,
@@ -34,7 +54,8 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
   using FetchCallback =
       base::OnceCallback<void(absl::optional<PublicKey>, PublicKeyFetchStatus)>;
 
-  explicit AggregationServiceKeyFetcher(AggregatableReportManager* manager);
+  AggregationServiceKeyFetcher(AggregatableReportManager* manager,
+                               std::unique_ptr<NetworkFetcher> network_fetcher);
   AggregationServiceKeyFetcher(const AggregationServiceKeyFetcher& other) =
       delete;
   AggregationServiceKeyFetcher& operator=(
@@ -59,12 +80,36 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
 
  private:
   // Called when public keys are received from the storage.
-  void OnPublicKeysReceivedFromStorage(FetchCallback callback,
-                                       PublicKeysForOrigin keys_for_origin);
+  void OnPublicKeysReceivedFromStorage(const url::Origin& origin,
+                                       std::vector<PublicKey> keys);
+
+  // Keys are fetched from the network if they are not found in storage.
+  void FetchPublicKeysFromNetwork(const url::Origin& origin);
+
+  // Called when public keys are received from the network fetcher.
+  void OnPublicKeysReceivedFromNetwork(const url::Origin& origin,
+                                       absl::optional<PublicKeyset> keyset);
+
+  // Runs callbacks for pending requests for `origin` with the public keys
+  // received from the network or storage. Any keys specified must be currently
+  // valid.
+  void RunCallbacksForOrigin(const url::Origin& origin,
+                             const std::vector<PublicKey>& keys);
 
   // Using a raw pointer is safe because `manager_` is guaranteed to outlive
   // `this`.
   AggregatableReportManager* manager_;
+
+  // Map of all origins that are currently waiting for the public keys, and
+  // their associated fetch callbacks. Used to cache ongoing requests to the
+  // storage or network to prevent looking up the same key multiple times at
+  // once.
+  base::flat_map<url::Origin, base::circular_deque<FetchCallback>>
+      origin_callbacks_;
+
+  // Responsible for issuing requests to network for fetching public keys.
+  std::unique_ptr<NetworkFetcher> network_fetcher_;
+
   base::WeakPtrFactory<AggregationServiceKeyFetcher> weak_factory_{this};
 };
 

@@ -16,21 +16,25 @@ PublicKey::PublicKey(std::string id, std::vector<uint8_t> key)
 PublicKey::PublicKey(const PublicKey& other) = default;
 PublicKey& PublicKey::operator=(const PublicKey& other) = default;
 
+PublicKey::PublicKey(PublicKey&& other) = default;
+PublicKey& PublicKey::operator=(PublicKey&& other) = default;
+
 PublicKey::~PublicKey() = default;
 
-PublicKeysForOrigin::PublicKeysForOrigin() = default;
+PublicKeyset::PublicKeyset(std::vector<PublicKey> keys,
+                           base::Time fetch_time,
+                           base::Time expiry_time)
+    : keys(std::move(keys)),
+      fetch_time(std::move(fetch_time)),
+      expiry_time(std::move(expiry_time)) {}
 
-PublicKeysForOrigin::PublicKeysForOrigin(url::Origin origin,
-                                         std::vector<PublicKey> keys)
-    : origin(std::move(origin)), keys(std::move(keys)) {}
+PublicKeyset::PublicKeyset(const PublicKeyset& other) = default;
+PublicKeyset& PublicKeyset::operator=(const PublicKeyset& other) = default;
 
-PublicKeysForOrigin::PublicKeysForOrigin(const PublicKeysForOrigin& other) =
-    default;
+PublicKeyset::PublicKeyset(PublicKeyset&& other) = default;
+PublicKeyset& PublicKeyset::operator=(PublicKeyset&& other) = default;
 
-PublicKeysForOrigin& PublicKeysForOrigin::operator=(
-    const PublicKeysForOrigin& other) = default;
-
-PublicKeysForOrigin::~PublicKeysForOrigin() = default;
+PublicKeyset::~PublicKeyset() = default;
 
 std::ostream& operator<<(std::ostream& out, const PublicKey& public_key) {
   out << "id: " << public_key.id << ", key: 0x"

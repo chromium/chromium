@@ -7,6 +7,8 @@
 
 #include "stdint.h"
 
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
@@ -19,7 +21,6 @@
 
 namespace base {
 class Clock;
-class Time;
 }  // namespace base
 
 namespace sql {
@@ -32,7 +33,8 @@ class Origin;
 
 namespace content {
 
-struct PublicKeysForOrigin;
+struct PublicKey;
+struct PublicKeyset;
 
 // AggregationServiceKeyStorage implementation backed by a SQLite database.
 // Instances may be constructed on any sequence but must be accessed and
@@ -54,10 +56,9 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   ~AggregationServiceStorageSql() override;
 
   // AggregationServiceKeyStorage:
-  PublicKeysForOrigin GetPublicKeys(const url::Origin& origin) override;
-  void SetPublicKeys(const PublicKeysForOrigin& keys,
-                     const base::Time& fetch_time,
-                     const base::Time& expiry_time) override;
+  std::vector<PublicKey> GetPublicKeys(const url::Origin& origin) override;
+  void SetPublicKeys(const url::Origin& origin,
+                     const PublicKeyset& keyset) override;
   void ClearPublicKeys(const url::Origin& origin) override;
   void ClearPublicKeysFetchedBetween(base::Time delete_begin,
                                      base::Time delete_end) override;
@@ -100,9 +101,8 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   };
 
   // Inserts public keys to database.
-  bool InsertPublicKeysImpl(const PublicKeysForOrigin& keys,
-                            const base::Time& fetch_time,
-                            const base::Time& expiry_time)
+  bool InsertPublicKeysImpl(const url::Origin& origin,
+                            const PublicKeyset& keyset)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deletes all stored public keys for `origin` from database.

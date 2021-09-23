@@ -6,6 +6,7 @@
 #define CONTENT_TEST_TEST_AGGREGATION_SERVICE_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/threading/sequence_bound.h"
@@ -25,7 +26,7 @@ namespace content {
 
 class AggregatableReportSender;
 
-struct PublicKeysForOrigin;
+struct PublicKey;
 
 // Implementation class of a test aggregation service.
 class TestAggregationServiceImpl : public AggregatableReportManager,
@@ -55,7 +56,7 @@ class TestAggregationServiceImpl : public AggregatableReportManager,
 
   void GetPublicKeys(
       const url::Origin& origin,
-      base::OnceCallback<void(PublicKeysForOrigin)> callback) const;
+      base::OnceCallback<void(std::vector<PublicKey>)> callback) const;
 
  private:
   const base::Clock& clock_;

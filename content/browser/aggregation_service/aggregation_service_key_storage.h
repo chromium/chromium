@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_STORAGE_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_KEY_STORAGE_H_
 
+#include <vector>
+
 #include "content/common/content_export.h"
 
 namespace base {
@@ -17,7 +19,8 @@ class Origin;
 
 namespace content {
 
-struct PublicKeysForOrigin;
+struct PublicKey;
+struct PublicKeyset;
 
 // This class provides an interface for persisting helper server public keys
 // and performing queries on it.
@@ -27,12 +30,11 @@ class CONTENT_EXPORT AggregationServiceKeyStorage {
 
   // Returns the public keys for `origin` that are currently valid. The returned
   // value should not be stored for future operations as it may expire soon.
-  virtual PublicKeysForOrigin GetPublicKeys(const url::Origin& origin) = 0;
+  virtual std::vector<PublicKey> GetPublicKeys(const url::Origin& origin) = 0;
 
   // Sets the public keys for `origin`.
-  virtual void SetPublicKeys(const PublicKeysForOrigin& keys,
-                             const base::Time& fetch_time,
-                             const base::Time& expiry_time) = 0;
+  virtual void SetPublicKeys(const url::Origin& origin,
+                             const PublicKeyset& keyset) = 0;
 
   // Clears the stored public keys for `origin`.
   virtual void ClearPublicKeys(const url::Origin& origin) = 0;

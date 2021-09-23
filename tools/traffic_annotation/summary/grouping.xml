@@ -233,6 +233,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="floc_event_logger"/>
     </sender>
     <sender name="Aggregation Service">
+      <traffic_annotation unique_id="aggregation_service_helper_keys"/>
       <traffic_annotation unique_id="aggregation_service_report"/>
     </sender>
   </group>

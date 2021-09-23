@@ -12,17 +12,18 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "url/origin.h"
 
 namespace content {
 
 // Contains all the data of a public key.
 struct CONTENT_EXPORT PublicKey {
- public:
   PublicKey(std::string id, std::vector<uint8_t> key);
   PublicKey(const PublicKey& other);
   PublicKey& operator=(const PublicKey& other);
+  PublicKey(PublicKey&& other);
+  PublicKey& operator=(PublicKey&& other);
   ~PublicKey();
 
   // String identifying the key, controlled by the helper server.
@@ -34,15 +35,20 @@ struct CONTENT_EXPORT PublicKey {
   static constexpr size_t kMaxIdSize = 128;
 };
 
-struct CONTENT_EXPORT PublicKeysForOrigin {
-  PublicKeysForOrigin();
-  PublicKeysForOrigin(url::Origin origin, std::vector<PublicKey> keys);
-  PublicKeysForOrigin(const PublicKeysForOrigin& other);
-  PublicKeysForOrigin& operator=(const PublicKeysForOrigin& other);
-  ~PublicKeysForOrigin();
+struct CONTENT_EXPORT PublicKeyset {
+  PublicKeyset(std::vector<PublicKey> keys,
+               base::Time fetch_time,
+               base::Time expiry_time);
+  PublicKeyset(const PublicKeyset& other);
+  PublicKeyset& operator=(const PublicKeyset& other);
+  PublicKeyset(PublicKeyset&& other);
+  PublicKeyset& operator=(PublicKeyset&& other);
+  ~PublicKeyset();
 
-  url::Origin origin;
   std::vector<PublicKey> keys;
+  base::Time fetch_time;
+  // A null `expiry_time` indicates a response that should not be cached.
+  base::Time expiry_time;
 
   static constexpr size_t kMaxNumberKeys = 10;
 };

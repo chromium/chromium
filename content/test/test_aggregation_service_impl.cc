@@ -60,11 +60,11 @@ void TestAggregationServiceImpl::SetPublicKeys(
     return;
   }
 
-  PublicKeysForOrigin keys(origin,
-                           aggregation_service::GetPublicKeys(*value_ptr));
+  PublicKeyset keyset(aggregation_service::GetPublicKeys(*value_ptr),
+                      /*fetch_time=*/clock_.Now(),
+                      /*expiry_time=*/base::Time::Max());
   storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
-      .WithArgs(std::move(keys), /*fetch_time=*/clock_.Now(),
-                /*expiry_time=*/base::Time::Max())
+      .WithArgs(origin, std::move(keyset))
       .Then(base::BindOnce(std::move(callback), true));
 }
 
@@ -90,7 +90,7 @@ void TestAggregationServiceImpl::SendReport(
 
 void TestAggregationServiceImpl::GetPublicKeys(
     const url::Origin& origin,
-    base::OnceCallback<void(PublicKeysForOrigin)> callback) const {
+    base::OnceCallback<void(std::vector<PublicKey>)> callback) const {
   storage_.AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
       .WithArgs(origin)
       .Then(std::move(callback));
