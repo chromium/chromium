@@ -20,7 +20,6 @@
 #include "extensions/browser/api/storage/session_storage_manager.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/features/feature.h"
@@ -34,8 +33,6 @@ namespace extensions {
 
 namespace {
 
-constexpr char kSessionStorageManagerKeyName[] =
-    "StorageAPI SessionStorageManager";
 constexpr PrefMap kPrefSessionStorageAccessLevel = {
     "storage_session_access_level", PrefType::kInteger,
     PrefScope::kExtensionSpecific};
@@ -90,27 +87,6 @@ void GetModificationQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) {
       long_limit_config,
       std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),
       "MAX_WRITE_OPERATIONS_PER_HOUR"));
-}
-
-// Creates the SessionStorageManager if it doesn't exist and returns it.
-SessionStorageManager* GetOrCreateSessionStorage(
-    content::BrowserContext* context) {
-  // Share storage between incognito and on-the-record profiles by using the
-  // original context of an incognito window.
-  content::BrowserContext* original_context =
-      ExtensionsBrowserClient::Get()->GetOriginalContext(context);
-
-  SessionStorageManager* storage = static_cast<SessionStorageManager*>(
-      original_context->GetUserData(kSessionStorageManagerKeyName));
-  if (storage)
-    return storage;
-
-  auto session_manager_ptr = std::make_unique<SessionStorageManager>(
-      api::storage::session::QUOTA_BYTES);
-  auto* session_manager = session_manager_ptr.get();
-  original_context->SetUserData(kSessionStorageManagerKeyName,
-                                std::move(session_manager_ptr));
-  return session_manager;
 }
 
 // Returns a nested dictionary Value converted from a ValueChange.
@@ -306,7 +282,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunInSession() {
 
   base::Value value_dict(base::Value::Type::DICTIONARY);
   SessionStorageManager* session_manager =
-      GetOrCreateSessionStorage(browser_context());
+      SessionStorageManager::GetForBrowserContext(browser_context());
 
   switch (input.type()) {
     case base::Value::Type::NONE:
@@ -383,7 +359,7 @@ StorageStorageAreaGetBytesInUseFunction::RunInSession() {
 
   size_t bytes_in_use = 0;
   SessionStorageManager* session_manager =
-      GetOrCreateSessionStorage(browser_context());
+      SessionStorageManager::GetForBrowserContext(browser_context());
 
   switch (input.type()) {
     case base::Value::Type::NONE:
@@ -434,7 +410,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunInSession() {
   }
 
   std::vector<SessionStorageManager::ValueChange> changes;
-  bool result = GetOrCreateSessionStorage(browser_context())
+  bool result = SessionStorageManager::GetForBrowserContext(browser_context())
                     ->Set(extension_id(), std::move(values), changes);
 
   if (!result) {
@@ -479,7 +455,7 @@ StorageStorageAreaRemoveFunction::RunInSession() {
   const base::Value& input = args()[0];
 
   SessionStorageManager* session_manager =
-      GetOrCreateSessionStorage(browser_context());
+      SessionStorageManager::GetForBrowserContext(browser_context());
   std::vector<SessionStorageManager::ValueChange> changes;
 
   switch (input.type()) {
@@ -514,7 +490,8 @@ StorageStorageAreaClearFunction::RunWithStorage(ValueStore* storage) {
 ExtensionFunction::ResponseValue
 StorageStorageAreaClearFunction::RunInSession() {
   std::vector<SessionStorageManager::ValueChange> changes;
-  GetOrCreateSessionStorage(browser_context())->Clear(extension_id(), changes);
+  SessionStorageManager::GetForBrowserContext(browser_context())
+      ->Clear(extension_id(), changes);
 
   OnSessionSettingsChanged(std::move(changes));
   return NoArguments();

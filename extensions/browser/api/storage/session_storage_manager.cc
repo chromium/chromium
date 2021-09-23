@@ -5,11 +5,64 @@
 #include "extensions/browser/api/storage/session_storage_manager.h"
 
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/storage.h"
 
 using base::trace_event::EstimateMemoryUsage;
 
 namespace extensions {
+
+namespace {
+
+class SessionStorageManagerFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  SessionStorageManagerFactory();
+  SessionStorageManagerFactory(const SessionStorageManagerFactory&) = delete;
+  SessionStorageManagerFactory& operator=(const SessionStorageManagerFactory&) =
+      delete;
+  ~SessionStorageManagerFactory() override = default;
+
+  SessionStorageManager* GetForBrowserContext(
+      content::BrowserContext* browser_context);
+
+ private:
+  // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* browser_context) const override;
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* browser_context) const override;
+};
+
+SessionStorageManagerFactory::SessionStorageManagerFactory()
+    : BrowserContextKeyedServiceFactory(
+          "SessionStorageManager",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(ExtensionRegistryFactory::GetInstance());
+}
+
+SessionStorageManager* SessionStorageManagerFactory::GetForBrowserContext(
+    content::BrowserContext* browser_context) {
+  return static_cast<SessionStorageManager*>(
+      GetServiceForBrowserContext(browser_context, /*create=*/true));
+}
+
+content::BrowserContext* SessionStorageManagerFactory::GetBrowserContextToUse(
+    content::BrowserContext* browser_context) const {
+  // Share storage between incognito and on-the-record profiles by using the
+  // original context of an incognito window.
+  return ExtensionsBrowserClient::Get()->GetOriginalContext(browser_context);
+}
+
+KeyedService* SessionStorageManagerFactory::BuildServiceInstanceFor(
+    content::BrowserContext* browser_context) const {
+  return new SessionStorageManager(api::storage::session::QUOTA_BYTES,
+                                   browser_context);
+}
+
+}  // namespace
 
 // Implementation of SessionValue.
 SessionStorageManager::SessionValue::SessionValue(base::Value value,
@@ -145,7 +198,10 @@ void SessionStorageManager::ExtensionStorage::Clear(
         absl::optional<base::Value>(std::move(value.second->value)), nullptr);
     changes.push_back(std::move(change));
   }
+  Clear();
+}
 
+void SessionStorageManager::ExtensionStorage::Clear() {
   used_total_ = 0;
   values_.clear();
 }
@@ -166,10 +222,28 @@ size_t SessionStorageManager::ExtensionStorage::GetTotalBytesInUse() const {
 }
 
 // Implementation of SessionStorageManager.
-SessionStorageManager::SessionStorageManager(size_t quota_bytes_per_extension)
-    : quota_bytes_per_extension_(quota_bytes_per_extension) {}
+SessionStorageManager::SessionStorageManager(
+    size_t quota_bytes_per_extension,
+    content::BrowserContext* browser_context)
+    : quota_bytes_per_extension_(quota_bytes_per_extension) {
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
+}
 
 SessionStorageManager::~SessionStorageManager() = default;
+
+// static
+SessionStorageManager* SessionStorageManager::GetForBrowserContext(
+    content::BrowserContext* browser_context) {
+  return static_cast<SessionStorageManagerFactory*>(GetFactory())
+      ->GetForBrowserContext(browser_context);
+}
+
+// static
+BrowserContextKeyedServiceFactory* SessionStorageManager::GetFactory() {
+  static base::NoDestructor<SessionStorageManagerFactory> g_factory;
+  return g_factory.get();
+}
 
 const base::Value* SessionStorageManager::Get(const ExtensionId& extension_id,
                                               const std::string& key) const {
@@ -237,6 +311,12 @@ void SessionStorageManager::Clear(const ExtensionId& extension_id,
     storage_it->second->Clear(changes);
 }
 
+void SessionStorageManager::Clear(const ExtensionId& extension_id) {
+  auto storage_it = extensions_storage_.find(extension_id);
+  if (storage_it != extensions_storage_.end())
+    storage_it->second->Clear();
+}
+
 size_t SessionStorageManager::GetBytesInUse(const ExtensionId& extension_id,
                                             const std::string& key) const {
   return GetBytesInUse(extension_id, std::vector<std::string>(1, key));
@@ -257,6 +337,13 @@ size_t SessionStorageManager::GetTotalBytesInUse(
   if (storage_it != extensions_storage_.end())
     return storage_it->second->GetTotalBytesInUse();
   return 0;
+}
+
+void SessionStorageManager::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UnloadedExtensionReason reason) {
+  Clear(extension->id());
 }
 
 }  // namespace extensions
