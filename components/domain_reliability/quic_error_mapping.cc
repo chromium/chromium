@@ -452,6 +452,8 @@ const struct QuicErrorMapping {
      "quic::quic_connection_id_limit_error"},
     {quic::QUIC_TOO_MANY_CONNECTION_ID_WAITING_TO_RETIRE,
      "quic::quic_too_many_connection_id_waiting_to_retire"},
+    {quic::QUIC_INVALID_CHARACTER_IN_FIELD_VALUE,
+     "quic::quic_invalid_character_in_field_value"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
