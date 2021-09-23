@@ -12,24 +12,17 @@ import android.view.View;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.v2.FeedProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.ScrollListener.ScrollState;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 /**
  * Provides activity, darkmode and logging context for a single surface.
  */
-@JNINamespace("feed::android")
 class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvider, ScrollListener {
     private static final String TAG = "Feed";
     private final Activity mActivity;
@@ -151,64 +144,5 @@ class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvid
         name += (isMutedAutoplay ? "AutoplayMutedVideo." : "NormalUnmutedVideo.");
         name += partName;
         return name;
-    }
-
-    // TODO(iwells): Remove the methods below once internal sources no longer use them.
-    @Override
-    public String getAccountName() {
-        // Don't return account name if there's a signed-out session ID.
-        if (!getSignedOutSessionId().isEmpty()) {
-            return "";
-        }
-        assert ThreadUtils.runningOnUiThread();
-        CoreAccountInfo primaryAccount =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        return (primaryAccount == null) ? "" : primaryAccount.getEmail();
-    }
-
-    @Override
-    public String getClientInstanceId() {
-        // Don't return client instance id if there's a signed-out session ID.
-        if (!getSignedOutSessionId().isEmpty()) {
-            return "";
-        }
-        assert ThreadUtils.runningOnUiThread();
-        return FeedServiceBridge.getClientInstanceId();
-    }
-
-    @Override
-    public int[] getExperimentIds() {
-        assert ThreadUtils.runningOnUiThread();
-        return FeedSurfaceScopeDependencyProviderJni.get().getExperimentIds();
-    }
-
-    @Override
-    public String getSignedOutSessionId() {
-        ThreadUtils.runningOnUiThread();
-        return FeedSurfaceScopeDependencyProviderJni.get().getSessionId();
-    }
-
-    /**
-     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
-     * message.
-     */
-    @Override
-    public void processViewAction(byte[] data) {
-        FeedSurfaceScopeDependencyProviderJni.get().processViewAction(data);
-    }
-
-    @Override
-    public void reportOnUploadVisibilityLog(boolean success) {
-        RecordHistogram.recordBooleanHistogram(
-                "ContentSuggestions.Feed.UploadVisibilityLog", success);
-    }
-
-    @NativeMethods
-    interface Natives {
-        int[] getExperimentIds();
-        String getSessionId();
-        void processViewAction(byte[] data);
     }
 }
