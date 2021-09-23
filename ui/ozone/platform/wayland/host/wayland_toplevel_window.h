@@ -264,6 +264,12 @@ class WaylandToplevelWindow : public WaylandWindow,
   //
   // See https://crbug.com/1223005
   bool state_change_in_transit_ = false;
+  // Some use cases such as changing the theme need to update the window
+  // geometry without changing its configuration.  They should set this flag.
+  // It will result in sending the updated geometry in the next frame update.
+  //
+  // See https://crbug.com/1223005
+  bool set_geometry_on_next_frame_ = false;
 
   // The desk index for the window.
   // If |workspace_| is -1, window is visible on all workspaces.

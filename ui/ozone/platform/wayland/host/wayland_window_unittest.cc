@@ -324,6 +324,11 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
 // some sides of insets divides by 2 with remainder.
 TEST_P(WaylandWindowTest, SetDecorationInsets) {
   const auto kNormalBounds = gfx::Rect{0, 0, 956, 556};
+  const auto kHiDpiScale = 2;
+  const auto kHiDpiBounds = gfx::ScaleToRoundedRect(kNormalBounds, kHiDpiScale);
+
+  window_->SetBounds(kNormalBounds);
+
   uint32_t serial = 0;
   auto state = InitializeWlArrayWithActivatedState();
 
@@ -338,10 +343,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
 
   Sync();
 
-  // window_->set_update_visual_size_immediately(false);
-  window_->SetBounds(kNormalBounds);
-  // auto* mock_surface = server_.GetObject<wl::MockSurface>(
-  //     window_->root_surface()->GetSurfaceId());
+  // Set insets for normal DPI.
   const gfx::Insets kDecorationInsets = {24, 28, 32, 28};
   auto bounds_with_insets = kNormalBounds;
   bounds_with_insets.Inset(kDecorationInsets);
@@ -351,6 +353,10 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
                                 bounds_with_insets.width(),
                                 bounds_with_insets.height()));
   window_->SetDecorationInsets(kDecorationInsets);
+  // Setting the decoration insets does not trigger the immediate update of the
+  // window geometry.  Emulate updating the visual size (sending the frame
+  // update) for that.
+  window_->UpdateVisualSize(kNormalBounds.size());
 
   Sync();
 
@@ -364,10 +370,9 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
 
   Sync();
 
-  // Change scale. WaylandToplevelWindow should still configure pending bounds
-  // correctly.
-  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(1);
-  output->SetScale(2);
+  // Change scale.  This is the only time when we expect the bounds to change.
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kHiDpiBounds))).Times(1);
+  output->SetScale(kHiDpiScale);
   output->Flush();
 
   Sync();
@@ -379,6 +384,10 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
                                 bounds_with_insets.width(),
                                 bounds_with_insets.height()));
   window_->SetDecorationInsets(kDecorationInsets_2x);
+  // Setting the decoration insets does not trigger the immediate update of the
+  // window geometry.  Emulate updating the visual size (sending the frame
+  // update) for that.
+  window_->UpdateVisualSize(kHiDpiBounds.size());
 
   Sync();
 

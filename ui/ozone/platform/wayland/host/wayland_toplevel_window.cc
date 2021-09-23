@@ -439,6 +439,9 @@ void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
     shell_toplevel()->AckConfigure(result->serial);
     connection()->ScheduleFlush();
     pending_configures_.erase(pending_configures_.begin(), ++result);
+  } else if (set_geometry_on_next_frame_) {
+    SetWindowGeometry(gfx::Rect(size_dip));
+    set_geometry_on_next_frame_ = false;
   }
 
   // UpdateVisualSize() indicates a frame update, which means we can forward new
@@ -494,9 +497,8 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Rect bounds_dip) {
 }
 
 void WaylandToplevelWindow::UpdateDecorations() {
-  if (!state_change_in_transit_) {
-    SetWindowGeometry(GetBoundsInDIP());
-  }
+  if (!state_change_in_transit_)
+    set_geometry_on_next_frame_ = true;
 }
 
 void WaylandToplevelWindow::OcclusionChanged(void* data,
