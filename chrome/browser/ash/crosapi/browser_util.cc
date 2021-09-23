@@ -239,13 +239,19 @@ absl::optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
 // Returns the device specific data needed for Lacros.
 mojom::DevicePropertiesPtr GetDeviceProperties() {
   mojom::DevicePropertiesPtr result = mojom::DeviceProperties::New();
-  if (ash::DeviceSettingsService::IsInitialized() &&
-      ash::DeviceSettingsService::Get()->policy_data() &&
-      ash::DeviceSettingsService::Get()->policy_data()->has_request_token()) {
-    result->device_dm_token =
-        ash::DeviceSettingsService::Get()->policy_data()->request_token();
-  } else {
-    result->device_dm_token = "";
+  result->device_dm_token = "";
+
+  if (ash::DeviceSettingsService::IsInitialized()) {
+    const enterprise_management::PolicyData* policy_data =
+        ash::DeviceSettingsService::Get()->policy_data();
+
+    if (policy_data && policy_data->has_request_token())
+      result->device_dm_token = policy_data->request_token();
+
+    if (policy_data && !policy_data->device_affiliation_ids().empty()) {
+      const auto& ids = policy_data->device_affiliation_ids();
+      result->device_affiliation_ids = {ids.begin(), ids.end()};
+    }
   }
 
   return result;

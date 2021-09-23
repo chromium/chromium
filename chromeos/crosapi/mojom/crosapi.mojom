@@ -425,12 +425,20 @@ struct DefaultPaths {
 };
 
 // The device specific data needed in Lacros.
+// Next version: 2
+// Next id: 2
 // TODO(igorcov): Include DeviceAttributes here.
 [Stable, Extensible]
 struct DeviceProperties {
   // The value of device DM token. It is the raw data from the policy, not
   // encrypted.
   string device_dm_token@0;
+
+  // The value of the device affiliation IDs, which represent which customer is
+  // managing the device so that the user's affiliation to the device can be
+  // determined. It is non-encrypted data corresponding to
+  // PolicyData::device_affiliation_ids.
+  [MinVersion=1] array<string>? device_affiliation_ids@1;
 };
 
 // Copy of UsbDetachableAllowlistProto from chrome_device_policy.proto.
