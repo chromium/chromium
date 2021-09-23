@@ -25,15 +25,12 @@ using testing::DoDefault;
 
 class MockDesktopMediaListObserver : public DesktopMediaListObserver {
  public:
-  MOCK_METHOD2(OnSourceAdded, void(DesktopMediaList* list, int index));
-  MOCK_METHOD2(OnSourceRemoved, void(DesktopMediaList* list, int index));
-  MOCK_METHOD3(OnSourceMoved,
-               void(DesktopMediaList* list, int old_index, int new_index));
-  MOCK_METHOD2(OnSourceNameChanged, void(DesktopMediaList* list, int index));
-  MOCK_METHOD2(OnSourceThumbnailChanged,
-               void(DesktopMediaList* list, int index));
-  MOCK_METHOD2(OnSourcePreviewChanged,
-               void(DesktopMediaList* list, size_t index));
+  MOCK_METHOD1(OnSourceAdded, void(int index));
+  MOCK_METHOD1(OnSourceRemoved, void(int index));
+  MOCK_METHOD2(OnSourceMoved, void(int old_index, int new_index));
+  MOCK_METHOD1(OnSourceNameChanged, void(int index));
+  MOCK_METHOD1(OnSourceThumbnailChanged, void(int index));
+  MOCK_METHOD1(OnSourcePreviewChanged, void(size_t index));
 };
 
 class DesktopMediaListAshTest : public ChromeAshTestBase {
@@ -74,8 +71,8 @@ TEST_F(DesktopMediaListAshTest, ScreenOnly) {
 
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
 
-  EXPECT_CALL(observer_, OnSourceAdded(list_.get(), 0));
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceAdded(0));
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
       .WillOnce(QuitMessageLoop())
       .WillRepeatedly(DoDefault());
 
@@ -88,12 +85,11 @@ TEST_F(DesktopMediaListAshTest, WindowOnly) {
 
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
 
-  EXPECT_CALL(observer_, OnSourceAdded(list_.get(), 0));
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceAdded(0));
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
       .WillOnce(QuitMessageLoop())
       .WillRepeatedly(DoDefault());
-  EXPECT_CALL(observer_, OnSourceRemoved(list_.get(), 0))
-      .WillOnce(QuitMessageLoop());
+  EXPECT_CALL(observer_, OnSourceRemoved(0)).WillOnce(QuitMessageLoop());
 
   list_->StartUpdating(&observer_);
   base::RunLoop().Run();

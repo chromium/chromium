@@ -53,7 +53,7 @@ void DesktopMediaListBase::StartUpdating(DesktopMediaListObserver* observer) {
   // Process sources previously discovered by a call to Update().
   if (observer_) {
     for (size_t i = 0; i < sources_.size(); i++) {
-      observer_->OnSourceAdded(this, i);
+      observer_->OnSourceAdded(i);
     }
   }
 
@@ -108,7 +108,7 @@ void DesktopMediaListBase::UpdateSourcesList(
     if (new_source_set.find(sources_[i].id) == new_source_set.end()) {
       sources_.erase(sources_.begin() + i);
       if (observer_)
-        observer_->OnSourceRemoved(this, i);
+        observer_->OnSourceRemoved(i);
       --i;
     }
   }
@@ -125,7 +125,7 @@ void DesktopMediaListBase::UpdateSourcesList(
         sources_[i].id = new_sources[i].id;
         sources_[i].name = new_sources[i].name;
         if (observer_)
-          observer_->OnSourceAdded(this, i);
+          observer_->OnSourceAdded(i);
       }
     }
   }
@@ -150,13 +150,13 @@ void DesktopMediaListBase::UpdateSourcesList(
       sources_.insert(sources_.begin() + pos, temp);
 
       if (observer_)
-        observer_->OnSourceMoved(this, old_pos, pos);
+        observer_->OnSourceMoved(old_pos, pos);
     }
 
     if (sources_[pos].name != new_sources[pos].name) {
       sources_[pos].name = new_sources[pos].name;
       if (observer_)
-        observer_->OnSourceNameChanged(this, pos);
+        observer_->OnSourceNameChanged(pos);
     }
     ++pos;
   }
@@ -176,7 +176,7 @@ void DesktopMediaListBase::UpdateSourceThumbnail(const DesktopMediaID& id,
     if (sources_[i].id == id) {
       sources_[i].thumbnail = image;
       if (observer_)
-        observer_->OnSourceThumbnailChanged(this, i);
+        observer_->OnSourceThumbnailChanged(i);
       break;
     }
   }
@@ -196,7 +196,7 @@ void DesktopMediaListBase::UpdateSourcePreview(const DesktopMediaID& id,
     if (sources_[i].id == id) {
       sources_[i].preview = image;
       if (observer_)
-        observer_->OnSourcePreviewChanged(this, i);
+        observer_->OnSourcePreviewChanged(i);
       break;
     }
   }

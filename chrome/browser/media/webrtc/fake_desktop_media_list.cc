@@ -29,34 +29,34 @@ void FakeDesktopMediaList::AddSourceByFullMediaID(
   source.name = base::NumberToString16(media_id.id);
 
   sources_.push_back(source);
-  observer_->OnSourceAdded(this, sources_.size() - 1);
+  observer_->OnSourceAdded(sources_.size() - 1);
 }
 
 void FakeDesktopMediaList::RemoveSource(int index) {
   sources_.erase(sources_.begin() + index);
-  observer_->OnSourceRemoved(this, index);
+  observer_->OnSourceRemoved(index);
 }
 
 void FakeDesktopMediaList::MoveSource(int old_index, int new_index) {
   Source source = sources_[old_index];
   sources_.erase(sources_.begin() + old_index);
   sources_.insert(sources_.begin() + new_index, source);
-  observer_->OnSourceMoved(this, old_index, new_index);
+  observer_->OnSourceMoved(old_index, new_index);
 }
 
 void FakeDesktopMediaList::SetSourceThumbnail(int index) {
   sources_[index].thumbnail = thumbnail_;
-  observer_->OnSourceThumbnailChanged(this, index);
+  observer_->OnSourceThumbnailChanged(index);
 }
 
 void FakeDesktopMediaList::SetSourceName(int index, std::u16string name) {
   sources_[index].name = name;
-  observer_->OnSourceNameChanged(this, index);
+  observer_->OnSourceNameChanged(index);
 }
 
 void FakeDesktopMediaList::SetSourcePreview(int index, gfx::ImageSkia preview) {
   sources_[index].preview = preview;
-  observer_->OnSourcePreviewChanged(this, index);
+  observer_->OnSourcePreviewChanged(index);
 }
 
 void FakeDesktopMediaList::SetUpdatePeriod(base::TimeDelta period) {}

@@ -85,16 +85,12 @@ gfx::Image CreateGrayscaleImage(gfx::Size size, uint8_t greyscale_value) {
 
 class MockObserver : public DesktopMediaListObserver {
  public:
-  MOCK_METHOD2(OnSourceAdded, void(DesktopMediaList* list, int index));
-  MOCK_METHOD2(OnSourceRemoved, void(DesktopMediaList* list, int index));
-  MOCK_METHOD3(OnSourceMoved,
-               void(DesktopMediaList* list, int old_index, int new_index));
-  MOCK_METHOD2(OnSourceNameChanged, void(DesktopMediaList* list, int index));
-  MOCK_METHOD2(OnSourceThumbnailChanged,
-               void(DesktopMediaList* list, int index));
-  MOCK_METHOD1(OnAllSourcesFound, void(DesktopMediaList* list));
-  MOCK_METHOD2(OnSourcePreviewChanged,
-               void(DesktopMediaList* list, size_t index));
+  MOCK_METHOD1(OnSourceAdded, void(int index));
+  MOCK_METHOD1(OnSourceRemoved, void(int index));
+  MOCK_METHOD2(OnSourceMoved, void(int old_index, int new_index));
+  MOCK_METHOD1(OnSourceNameChanged, void(int index));
+  MOCK_METHOD1(OnSourceThumbnailChanged, void(int index));
+  MOCK_METHOD1(OnSourcePreviewChanged, void(size_t index));
 
   void VerifyAndClearExpectations() {
     testing::Mock::VerifyAndClearExpectations(this);
@@ -288,15 +284,15 @@ class TabDesktopMediaListTest : public testing::Test {
       testing::InSequence dummy;
 
       for (int i = 0; i < kDefaultSourceCount; i++) {
-        EXPECT_CALL(observer_, OnSourceAdded(list_.get(), i))
+        EXPECT_CALL(observer_, OnSourceAdded(i))
             .WillOnce(CheckListSize(list_.get(), i + 1));
       }
 
       for (int i = 0; i < kDefaultSourceCount - 1; i++) {
-        EXPECT_CALL(observer_, OnSourceThumbnailChanged(
-                                   list_.get(), kDefaultSourceCount - 1 - i));
+        EXPECT_CALL(observer_,
+                    OnSourceThumbnailChanged(kDefaultSourceCount - 1 - i));
       }
-      EXPECT_CALL(observer_, OnSourceThumbnailChanged(list_.get(), 0))
+      EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
           .WillOnce(QuitMessageLoop());
     }
 
@@ -342,9 +338,9 @@ TEST_F(TabDesktopMediaListTest, AddTab) {
 
   AddWebcontents(10);
 
-  EXPECT_CALL(observer_, OnSourceAdded(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceAdded(0))
       .WillOnce(CheckListSize(list_.get(), kDefaultSourceCount + 1));
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
       .WillOnce(QuitMessageLoop());
 
   base::RunLoop().Run();
@@ -359,7 +355,7 @@ TEST_F(TabDesktopMediaListTest, AddAppWindow) {
   // Note that unlike adding a tab, our AppWindow that we add is only
   // initialized enough to show up in the list; it doesn't have a favicon driver
   // which would be needed to extract the favicon from it.
-  EXPECT_CALL(observer_, OnSourceAdded(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceAdded(0))
       .WillOnce(
           testing::DoAll(CheckListSize(list_.get(), kDefaultSourceCount + 1),
                          base::test::RunClosure(loop.QuitClosure())));
@@ -376,7 +372,7 @@ TEST_F(TabDesktopMediaListTest, RemoveTab) {
       tab_strip_model->DetachWebContentsAtForInsertion(kDefaultSourceCount - 1);
   base::Erase(manually_added_web_contents_, released_web_contents.get());
 
-  EXPECT_CALL(observer_, OnSourceRemoved(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceRemoved(0))
       .WillOnce(
           testing::DoAll(CheckListSize(list_.get(), kDefaultSourceCount - 1),
                          QuitMessageLoop()));
@@ -401,7 +397,7 @@ TEST_F(TabDesktopMediaListTest, MoveTab) {
   WebContentsTester::For(contents0)->SetLastActiveTime(t1);
   WebContentsTester::For(contents1)->SetLastActiveTime(t0);
 
-  EXPECT_CALL(observer_, OnSourceMoved(list_.get(), 1, 0))
+  EXPECT_CALL(observer_, OnSourceMoved(1, 0))
       .WillOnce(testing::DoAll(CheckListSize(list_.get(), kDefaultSourceCount),
                                QuitMessageLoop()));
 
@@ -421,8 +417,7 @@ TEST_F(TabDesktopMediaListTest, UpdateTitle) {
   contents->UpdateTitleForEntry(controller.GetLastCommittedEntry(),
                                 u"New test tab");
 
-  EXPECT_CALL(observer_, OnSourceNameChanged(list_.get(), 0))
-      .WillOnce(QuitMessageLoop());
+  EXPECT_CALL(observer_, OnSourceNameChanged(0)).WillOnce(QuitMessageLoop());
 
   base::RunLoop().Run();
 
@@ -444,7 +439,7 @@ TEST_F(TabDesktopMediaListTest, UpdateThumbnail) {
   contents->GetController().GetLastCommittedEntry()->GetFavicon() =
       favicon_info;
 
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
       .WillOnce(QuitMessageLoop());
 
   base::RunLoop().Run();
@@ -465,8 +460,7 @@ TEST_F(TabDesktopMediaListTest, SetPreviewMarksTabAsVisiblyCaptured) {
 
   EXPECT_TRUE(contents->IsBeingVisiblyCaptured());
 
-  EXPECT_CALL(observer_, OnSourcePreviewChanged(list_.get(), 0))
-      .WillOnce(QuitMessageLoop());
+  EXPECT_CALL(observer_, OnSourcePreviewChanged(0)).WillOnce(QuitMessageLoop());
 
   base::RunLoop().Run();
 }
