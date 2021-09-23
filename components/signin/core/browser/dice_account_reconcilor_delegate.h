@@ -9,21 +9,18 @@
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 
-class SigninClient;
-
 namespace signin {
 
 // AccountReconcilorDelegate specialized for Dice.
 class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
  public:
-  DiceAccountReconcilorDelegate(SigninClient* signin_client,
-                                bool migration_completed);
+  DiceAccountReconcilorDelegate();
 
   DiceAccountReconcilorDelegate(const DiceAccountReconcilorDelegate&) = delete;
   DiceAccountReconcilorDelegate& operator=(
       const DiceAccountReconcilorDelegate&) = delete;
 
-  ~DiceAccountReconcilorDelegate() override {}
+  ~DiceAccountReconcilorDelegate() override;
 
   // AccountReconcilorDelegate:
   bool IsReconcileEnabled() const override;
@@ -36,10 +33,6 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       bool will_logout) const override;
   RevokeTokenOption ShouldRevokeSecondaryTokensBeforeReconcile(
       const std::vector<gaia::ListedAccount>& gaia_accounts) override;
-  // Returns true if in force migration to dice state.
-  bool ShouldRevokeTokensNotInCookies() const override;
-  // Disables force dice migration and sets dice migration as completed.
-  void OnRevokeTokensNotInCookiesCompleted() override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;
   bool ShouldRevokeTokensOnCookieDeleted() override;
   bool ShouldRevokeTokensBeforeMultilogin(
@@ -115,9 +108,6 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       const std::vector<gaia::ListedAccount>& gaia_accounts,
       bool first_execution,
       bool primary_has_error) const;
-
-  SigninClient* signin_client_;
-  bool migration_completed_;
 
   // Last known "first account". Used when cookies are lost as a best guess.
   CoreAccountId last_known_first_account_;

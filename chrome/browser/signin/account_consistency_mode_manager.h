@@ -43,10 +43,6 @@ class AccountConsistencyModeManager : public KeyedService {
   static signin::AccountConsistencyMethod GetMethodForProfile(Profile* profile);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Sets migration to Dice as completed.
-  void SetDiceMigrationCompleted();
-  // Returns true if migration to Dice is completed.
-  static bool IsDiceMigrationCompleted(Profile* profile);
   // This is a pre-requisite of IsDiceEnabledForProfile(), independent of
   // particular profile type or profile prefs.
   static bool IsDiceSignInAllowed();
@@ -82,7 +78,7 @@ class AccountConsistencyModeManager : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(AccountConsistencyModeManagerTest,
                            AllowBrowserSigninSwitch);
   FRIEND_TEST_ALL_PREFIXES(AccountConsistencyModeManagerTest,
-                           ForceDiceMigration);
+                           DiceEnabledForNewProfiles);
 
   // Returns the account consistency method for the current profile.
   signin::AccountConsistencyMethod GetAccountConsistencyMethod();

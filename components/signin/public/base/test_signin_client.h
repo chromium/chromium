@@ -79,8 +79,6 @@ class TestSigninClient : public SigninClient {
 
   void set_is_signout_allowed(bool value) { is_signout_allowed_ = value; }
 
-  bool is_dice_migration_completed() { return is_dice_migration_completed_; }
-
   // When |value| is true, network calls posted through DelayNetworkCall() are
   // delayed indefinitely.
   // When |value| is false, all pending calls are unblocked, and new calls are
@@ -98,7 +96,6 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
-  void SetDiceMigrationCompleted() override;
   bool IsNonEnterpriseUser(const std::string& email) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
@@ -119,7 +116,6 @@ class TestSigninClient : public SigninClient {
   bool are_signin_cookies_allowed_;
   bool network_calls_delayed_;
   bool is_signout_allowed_;
-  bool is_dice_migration_completed_;
 
   std::vector<base::OnceClosure> delayed_network_calls_;
 

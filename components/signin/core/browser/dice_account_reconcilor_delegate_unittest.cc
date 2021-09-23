@@ -17,35 +17,13 @@
 namespace signin {
 
 TEST(DiceAccountReconcilorDelegateTest, RevokeTokens) {
-  sync_preferences::TestingPrefServiceSyncable pref_service;
-  TestSigninClient client(&pref_service);
   gaia::ListedAccount gaia_account;
   gaia_account.id = CoreAccountId("other");
-  DiceAccountReconcilorDelegate delegate(&client, /*migration_completed=*/true);
+  DiceAccountReconcilorDelegate delegate;
   EXPECT_EQ(
       signin::AccountReconcilorDelegate::RevokeTokenOption::kRevokeIfInError,
       delegate.ShouldRevokeSecondaryTokensBeforeReconcile(
           std::vector<gaia::ListedAccount>()));
-}
-
-TEST(DiceAccountReconcilorDelegateTest, ShouldRevokeTokensBasedOnCookies) {
-  sync_preferences::TestingPrefServiceSyncable pref_service;
-  TestSigninClient client(&pref_service);
-  {
-    // Dice is enabled, revoke tokens when Gaia cookie is deleted.
-    DiceAccountReconcilorDelegate delegate(&client,
-                                           /*migration_completed=*/true);
-    EXPECT_EQ(true, delegate.ShouldRevokeTokensOnCookieDeleted());
-    EXPECT_EQ(false, delegate.ShouldRevokeTokensNotInCookies());
-  }
-  {
-    // Dice is enabled, migration not completed, revoke tokens when
-    // Gaia cookie is deleted.
-    DiceAccountReconcilorDelegate delegate(&client,
-                                           /*migration_completed=*/false);
-    EXPECT_EQ(true, delegate.ShouldRevokeTokensOnCookieDeleted());
-    EXPECT_EQ(true, delegate.ShouldRevokeTokensNotInCookies());
-  }
 }
 
 }  // namespace signin

@@ -622,6 +622,7 @@ const char kGuestProfilesNumCreated[] = "profile.guest_profiles_created";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 constexpr char kProfileSwitchInterceptionDeclinedPref[] =
     "signin.ProfileSwitchInterceptionDeclinedPref";
+const char kDiceMigrationCompletePref[] = "signin.DiceMigrationComplete";
 #endif
 
 const char kSuggestionsBlocklist[] = "suggestions.blacklist";
@@ -848,6 +849,7 @@ void RegisterProfilePrefsForMigration(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   registry->RegisterDictionaryPref(kProfileSwitchInterceptionDeclinedPref);
+  registry->RegisterDictionaryPref(kDiceMigrationCompletePref);
 #endif
 
   registry->RegisterStringPref(kSuggestionsBlocklist, std::string());
@@ -1708,6 +1710,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 09/2021.
   profile_prefs->ClearPref(kAutofillAcceptSaveCreditCardPromptState);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Added 09/2021.
+  profile_prefs->ClearPref(kDiceMigrationCompletePref);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -140,40 +140,14 @@ TEST(AccountConsistencyModeManagerTest, AllowBrowserSigninSwitch) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// Checks that Dice migration happens when the manager is created.
-TEST(AccountConsistencyModeManagerTest, MigrateAtCreation) {
+// Checks that Dice is enabled for new profiles.
+TEST(AccountConsistencyModeManagerTest, DiceEnabledForNewProfiles) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<TestingProfile> profile =
       BuildTestingProfile(/*is_new_profile=*/false);
   AccountConsistencyModeManager manager(profile.get());
   EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
             manager.GetAccountConsistencyMethod());
-}
-
-TEST(AccountConsistencyModeManagerTest, ForceDiceMigration) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> profile =
-      BuildTestingProfile(/*is_new_profile=*/false);
-  profile->GetPrefs()->SetBoolean(prefs::kTokenServiceDiceCompatible, true);
-  AccountConsistencyModeManager manager(profile.get());
-  EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
-            manager.GetAccountConsistencyMethod());
-  // Migration is not completed yet, |kDiceMigrationCompletePref| should not
-  // be written.
-  EXPECT_FALSE(manager.IsDiceMigrationCompleted(profile.get()));
-  manager.SetDiceMigrationCompleted();
-  EXPECT_TRUE(manager.IsDiceMigrationCompleted(profile.get()));
-}
-
-// Checks that new profiles are migrated at creation.
-TEST(AccountConsistencyModeManagerTest, NewProfile) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> profile =
-      BuildTestingProfile(/*is_new_profile=*/true);
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsDiceMigrationCompleted(profile.get()));
 }
 
 TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {

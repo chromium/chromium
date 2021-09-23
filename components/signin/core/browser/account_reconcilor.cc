@@ -41,33 +41,6 @@ using signin_metrics::AccountReconcilorState;
 
 namespace {
 
-class AccountEqualToFunc {
- public:
-  explicit AccountEqualToFunc(const gaia::ListedAccount& account)
-      : account_(account) {}
-  bool operator()(const gaia::ListedAccount& other) const;
-
- private:
-  gaia::ListedAccount account_;
-};
-
-bool AccountEqualToFunc::operator()(const gaia::ListedAccount& other) const {
-  return account_.valid == other.valid && account_.id == other.id;
-}
-
-gaia::ListedAccount AccountForId(const CoreAccountId& account_id) {
-  gaia::ListedAccount account;
-  account.id = account_id;
-  return account;
-}
-
-bool ContainsGaiaAccount(const std::vector<gaia::ListedAccount>& gaia_accounts,
-                         const CoreAccountId& account_id) {
-  return gaia_accounts.end() !=
-         std::find_if(gaia_accounts.begin(), gaia_accounts.end(),
-                      AccountEqualToFunc(AccountForId(account_id)));
-}
-
 // Returns a copy of |accounts| without the unverified accounts.
 std::vector<gaia::ListedAccount> FilterUnverifiedAccounts(
     const std::vector<gaia::ListedAccount>& accounts) {
@@ -121,31 +94,6 @@ bool RevokeAllSecondaryTokens(
     }
   }
   return token_revoked;
-}
-
-// TODO(https://crbug.com/1122551): Move this code and
-// |RevokeAllSecondaryTokens| to |DiceAccountReconcilorDelegate|.
-void RevokeTokensNotInCookies(
-    signin::IdentityManager* identity_manager,
-    const CoreAccountId& primary_account,
-    const std::vector<gaia::ListedAccount>& gaia_accounts) {
-  signin_metrics::SourceForRefreshTokenOperation source =
-      signin_metrics::SourceForRefreshTokenOperation::
-          kAccountReconcilor_RevokeTokensNotInCookies;
-
-  for (const CoreAccountInfo& account_info :
-       identity_manager->GetAccountsWithRefreshTokens()) {
-    CoreAccountId account = account_info.account_id;
-    if (ContainsGaiaAccount(gaia_accounts, account))
-      continue;
-
-    auto* accounts_mutator = identity_manager->GetAccountsMutator();
-    if (account == primary_account) {
-      accounts_mutator->InvalidateRefreshTokenForPrimaryAccount(source);
-    } else {
-      accounts_mutator->RemoveAccount(account, source);
-    }
-  }
 }
 
 // Pick the account will become first after this reconcile is finished.
@@ -625,15 +573,6 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
   ConsentLevel consent_level = delegate_->GetConsentLevelForPrimaryAccount();
   CoreAccountId primary_account =
       identity_manager_->GetPrimaryAccountId(consent_level);
-  if (delegate_->ShouldRevokeTokensNotInCookies()) {
-    // This code is only used with DiceAccountReconcilorDelegate and should
-    // thus use sync account.
-    // TODO(https://crbug.com/1122551): Move to |DiceAccountReconcilorDelegate|.
-    DCHECK_EQ(consent_level, ConsentLevel::kSync);
-    RevokeTokensNotInCookies(identity_manager_, primary_account,
-                             verified_gaia_accounts);
-    delegate_->OnRevokeTokensNotInCookiesCompleted();
-  }
 
   // Revoking tokens for secondary accounts causes the AccountTracker to
   // completely remove them from Chrome.

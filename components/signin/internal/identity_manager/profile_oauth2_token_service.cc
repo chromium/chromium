@@ -32,8 +32,6 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
       return "Unknown";
     case SourceForRefreshTokenOperation::kTokenService_LoadCredentials:
       return "TokenService::LoadCredentials";
-    case SourceForRefreshTokenOperation::kDeprecatedSupervisedUser_InitSync:
-      return "DeprecatedSupervisedUser::InitSync";
     case SourceForRefreshTokenOperation::kInlineLoginHandler_Signin:
       return "InlineLoginHandler::Signin";
     case SourceForRefreshTokenOperation::kPrimaryAccountManager_ClearAccount:
@@ -66,9 +64,6 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
       return "MachineLogon::CredentialProvider";
     case SourceForRefreshTokenOperation::kTokenService_ExtractCredentials:
       return "TokenService::ExtractCredentials";
-    case SourceForRefreshTokenOperation::
-        kAccountReconcilor_RevokeTokensNotInCookies:
-      return "AccountReconcilor::RevokeTokensNotInCookies";
     case SourceForRefreshTokenOperation::kLogoutTabHelper_DidFinishNavigation:
       return "LogoutTabHelper::DidFinishNavigation";
   }

@@ -86,13 +86,6 @@ class AccountReconcilorDelegate {
   virtual RevokeTokenOption ShouldRevokeSecondaryTokensBeforeReconcile(
       const std::vector<gaia::ListedAccount>& gaia_accounts);
 
-  // Invalidates primary account token or revokes token for any secondary
-  // account that does not have an equivalent gaia cookie.
-  virtual bool ShouldRevokeTokensNotInCookies() const;
-
-  // Called when |RevokeTokensNotInCookies| is finished.
-  virtual void OnRevokeTokensNotInCookiesCompleted() {}
-
   // Returns whether tokens should be revoked when the Gaia cookie has been
   // explicitly deleted by the user.
   // If this returns false, tokens will not be revoked. If this returns true,

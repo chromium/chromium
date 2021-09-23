@@ -284,15 +284,6 @@ void ChromeSigninClient::VerifySyncToken() {
 #endif
 }
 
-void ChromeSigninClient::SetDiceMigrationCompleted() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  AccountConsistencyModeManager::GetForProfile(profile_)
-      ->SetDiceMigrationCompleted();
-#else
-  NOTREACHED();
-#endif
-}
-
 bool ChromeSigninClient::IsNonEnterpriseUser(const std::string& username) {
   return policy::BrowserPolicyConnector::IsNonEnterpriseUser(username);
 }

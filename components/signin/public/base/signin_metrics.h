@@ -376,28 +376,28 @@ enum class AccountRelation : int {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SourceForRefreshTokenOperation {
-  kUnknown,
-  kTokenService_LoadCredentials,
-  // NOTE: This is no longer used but is kept per the comment above about not
-  // renumbering.
-  kDeprecatedSupervisedUser_InitSync,
-  kInlineLoginHandler_Signin,
-  kPrimaryAccountManager_ClearAccount,
-  kPrimaryAccountManager_LegacyPreDiceSigninFlow,
-  kUserMenu_RemoveAccount,
-  kUserMenu_SignOutAllAccounts,
-  kSettings_Signout,
-  kSettings_PauseSync,
-  kAccountReconcilor_GaiaCookiesDeletedByUser,
-  kAccountReconcilor_GaiaCookiesUpdated,
-  kAccountReconcilor_Reconcile,
-  kDiceResponseHandler_Signin,
-  kDiceResponseHandler_Signout,
-  kDiceTurnOnSyncHelper_Abort,
-  kMachineLogon_CredentialProvider,
-  kTokenService_ExtractCredentials,
-  kAccountReconcilor_RevokeTokensNotInCookies,
-  kLogoutTabHelper_DidFinishNavigation,
+  kUnknown = 0,
+  kTokenService_LoadCredentials = 1,
+  // DEPRECATED
+  // kSupervisedUser_InitSync = 2,
+  kInlineLoginHandler_Signin = 3,
+  kPrimaryAccountManager_ClearAccount = 4,
+  kPrimaryAccountManager_LegacyPreDiceSigninFlow = 5,
+  kUserMenu_RemoveAccount = 6,
+  kUserMenu_SignOutAllAccounts = 7,
+  kSettings_Signout = 8,
+  kSettings_PauseSync = 9,
+  kAccountReconcilor_GaiaCookiesDeletedByUser = 10,
+  kAccountReconcilor_GaiaCookiesUpdated = 11,
+  kAccountReconcilor_Reconcile = 12,
+  kDiceResponseHandler_Signin = 13,
+  kDiceResponseHandler_Signout = 14,
+  kDiceTurnOnSyncHelper_Abort = 15,
+  kMachineLogon_CredentialProvider = 16,
+  kTokenService_ExtractCredentials = 17,
+  // DEPRECATED on 09/2021 (used for force migration to DICE)
+  // kAccountReconcilor_RevokeTokensNotInCookies = 18,
+  kLogoutTabHelper_DidFinishNavigation = 19,
 
   kMaxValue = kLogoutTabHelper_DidFinishNavigation,
 };

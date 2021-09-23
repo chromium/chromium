@@ -39,9 +39,6 @@ namespace {
 bool g_ignore_missing_oauth_client_for_testing = false;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Preference indicating that the Dice migraton has happened.
-const char kDiceMigrationCompletePref[] = "signin.DiceMigrationComplete";
-
 const char kAllowBrowserSigninArgument[] = "allow-browser-signin";
 
 bool IsBrowserSigninAllowedByCommandLine() {
@@ -107,14 +104,6 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
 #endif
 
   account_consistency_ = ComputeAccountConsistencyMethod(profile_);
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // New profiles don't need Dice migration. Old profiles may need it if they
-  // were created before Dice.
-  if (profile_->IsNewProfile())
-    SetDiceMigrationCompleted();
-#endif
-
   DCHECK_EQ(account_consistency_, ComputeAccountConsistencyMethod(profile_));
   account_consistency_initialized_ = true;
 }
@@ -124,9 +113,6 @@ AccountConsistencyModeManager::~AccountConsistencyModeManager() {}
 // static
 void AccountConsistencyModeManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  registry->RegisterBooleanPref(kDiceMigrationCompletePref, false);
-#endif
   registry->RegisterBooleanPref(prefs::kSigninAllowedOnNextStartup, true);
 }
 
@@ -146,16 +132,6 @@ bool AccountConsistencyModeManager::IsDiceEnabledForProfile(Profile* profile) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void AccountConsistencyModeManager::SetDiceMigrationCompleted() {
-  VLOG(1) << "Dice migration completed.";
-  profile_->GetPrefs()->SetBoolean(kDiceMigrationCompletePref, true);
-}
-
-// static
-bool AccountConsistencyModeManager::IsDiceMigrationCompleted(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(kDiceMigrationCompletePref);
-}
-
 // static
 bool AccountConsistencyModeManager::IsDiceSignInAllowed() {
   return CanEnableDiceForBuild() && IsBrowserSigninAllowedByCommandLine();

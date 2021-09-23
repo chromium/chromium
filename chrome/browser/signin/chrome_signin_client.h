@@ -73,8 +73,6 @@ class ChromeSigninClient
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 #endif
 
-  void SetDiceMigrationCompleted() override;
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
 #endif
