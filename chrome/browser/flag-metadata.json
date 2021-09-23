@@ -360,7 +360,7 @@
   {
       "name": "autofill-address-verification-in-save-prompt",
       "owners": [ "mamir", "koerber" ],
-      "expiry_milestone": 97
+      "expiry_milestone": 102
   },
   {
     "name": "autofill-always-return-cloud-tokenized-card",
