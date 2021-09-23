@@ -5038,6 +5038,14 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
                       base::NumberToString(display_id)})));
   }
 
+  // ThroughputTracker::Stop does not invoke the report callback when
+  // gpu-process crashes and has no valid data to report. Start a timer to
+  // handle this case.
+  timeout_timer_.Start(
+      FROM_HERE, base::TimeDelta::FromSeconds(5),
+      base::BindOnce(&AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut,
+                     this, display_id));
+
   it->second.callback = base::BindOnce(
       &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this);
   it->second.stopping = true;
@@ -5048,6 +5056,11 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
 
 void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
+  if (did_respond())
+    return;
+
+  timeout_timer_.AbandonAndStop();
+
   api::autotest_private::ThroughputTrackerAnimationData result_data;
   result_data.frames_expected = data.frames_expected;
   result_data.frames_produced = data.frames_produced;
@@ -5056,6 +5069,21 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
   Respond(ArgumentList(
       api::autotest_private::StopSmoothnessTracking::Results::Create(
           result_data)));
+}
+
+void AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut(
+    int64_t display_id) {
+  if (did_respond())
+    return;
+
+  // Clean up the non-functional tracker.
+  auto* infos = GetDisplaySmoothnessTrackerInfos();
+  auto it = infos->find(display_id);
+  if (it == infos->end())
+    return;
+  infos->erase(it);
+
+  Respond(Error("Smoothness is not available"));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

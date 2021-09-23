@@ -1347,6 +1347,9 @@ class AutotestPrivateStopSmoothnessTrackingFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnReportData(const cc::FrameSequenceMetrics::CustomReportData& data);
+  void OnTimeOut(int64_t display_id);
+
+  base::OneShotTimer timeout_timer_;
 };
 
 class AutotestPrivateWaitForAmbientPhotoAnimationFunction
