@@ -35,7 +35,6 @@ component("backend") {
   public_configs = []
   configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
-  libs = []
   defines = [ "IS_PRINT_BACKEND_IMPL" ]
 
   public_deps = [ "//printing/buildflags" ]
@@ -67,8 +66,6 @@ component("backend") {
       "win_helper.cc",
       "win_helper.h",
     ]
-
-    libs += [ "prntvpt.lib" ]
   }
 
   if (use_cups) {

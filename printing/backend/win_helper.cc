@@ -29,6 +29,43 @@
 
 namespace {
 
+typedef HRESULT(WINAPI* PTOpenProviderProc)(PCWSTR printer_name,
+                                            DWORD version,
+                                            HPTPROVIDER* provider);
+
+typedef HRESULT(WINAPI* PTGetPrintCapabilitiesProc)(HPTPROVIDER provider,
+                                                    IStream* print_ticket,
+                                                    IStream* capabilities,
+                                                    BSTR* error_message);
+
+typedef HRESULT(WINAPI* PTConvertDevModeToPrintTicketProc)(
+    HPTPROVIDER provider,
+    ULONG devmode_size_in_bytes,
+    PDEVMODE devmode,
+    EPrintTicketScope scope,
+    IStream* print_ticket);
+
+typedef HRESULT(WINAPI* PTConvertPrintTicketToDevModeProc)(
+    HPTPROVIDER provider,
+    IStream* print_ticket,
+    EDefaultDevmodeType base_devmode_type,
+    EPrintTicketScope scope,
+    ULONG* devmode_byte_count,
+    PDEVMODE* devmode,
+    BSTR* error_message);
+
+typedef HRESULT(WINAPI* PTMergeAndValidatePrintTicketProc)(
+    HPTPROVIDER provider,
+    IStream* base_ticket,
+    IStream* delta_ticket,
+    EPrintTicketScope scope,
+    IStream* result_ticket,
+    BSTR* error_message);
+
+typedef HRESULT(WINAPI* PTReleaseMemoryProc)(PVOID buffer);
+
+typedef HRESULT(WINAPI* PTCloseProviderProc)(HPTPROVIDER provider);
+
 typedef HRESULT(WINAPI* StartXpsPrintJobProc)(
     const LPCWSTR printer_name,
     const LPCWSTR job_name,
@@ -41,6 +78,16 @@ typedef HRESULT(WINAPI* StartXpsPrintJobProc)(
     IXpsPrintJobStream** document_stream,
     IXpsPrintJobStream** print_ticket_stream);
 
+PTOpenProviderProc g_open_provider_proc = nullptr;
+PTGetPrintCapabilitiesProc g_get_print_capabilities_proc = nullptr;
+PTConvertDevModeToPrintTicketProc g_convert_devmode_to_print_ticket_proc =
+    nullptr;
+PTConvertPrintTicketToDevModeProc g_convert_print_ticket_to_devmode_proc =
+    nullptr;
+PTMergeAndValidatePrintTicketProc g_merge_and_validate_print_ticket_proc =
+    nullptr;
+PTReleaseMemoryProc g_release_memory_proc = nullptr;
+PTCloseProviderProc g_close_provider_proc = nullptr;
 StartXpsPrintJobProc g_start_xps_print_job_proc = nullptr;
 
 typedef std::string (*GetDisplayNameFunc)(const std::string& printer_name);
@@ -107,12 +154,69 @@ bool ScopedPrinterHandle::OpenPrinterWithName(const wchar_t* printer) {
   return IsValid();
 }
 
+bool XPSModule::Init() {
+  static bool initialized = InitImpl();
+  return initialized;
+}
+
+bool XPSModule::InitImpl() {
+  HMODULE prntvpt_module = LoadLibrary(L"prntvpt.dll");
+  if (!prntvpt_module)
+    return false;
+  g_open_provider_proc = reinterpret_cast<PTOpenProviderProc>(
+      GetProcAddress(prntvpt_module, "PTOpenProvider"));
+  if (!g_open_provider_proc) {
+    NOTREACHED();
+    return false;
+  }
+  g_get_print_capabilities_proc = reinterpret_cast<PTGetPrintCapabilitiesProc>(
+      GetProcAddress(prntvpt_module, "PTGetPrintCapabilities"));
+  if (!g_get_print_capabilities_proc) {
+    NOTREACHED();
+    return false;
+  }
+  g_convert_devmode_to_print_ticket_proc =
+      reinterpret_cast<PTConvertDevModeToPrintTicketProc>(
+          GetProcAddress(prntvpt_module, "PTConvertDevModeToPrintTicket"));
+  if (!g_convert_devmode_to_print_ticket_proc) {
+    NOTREACHED();
+    return false;
+  }
+  g_convert_print_ticket_to_devmode_proc =
+      reinterpret_cast<PTConvertPrintTicketToDevModeProc>(
+          GetProcAddress(prntvpt_module, "PTConvertPrintTicketToDevMode"));
+  if (!g_convert_print_ticket_to_devmode_proc) {
+    NOTREACHED();
+    return false;
+  }
+  g_merge_and_validate_print_ticket_proc =
+      reinterpret_cast<PTMergeAndValidatePrintTicketProc>(
+          GetProcAddress(prntvpt_module, "PTMergeAndValidatePrintTicket"));
+  if (!g_merge_and_validate_print_ticket_proc) {
+    NOTREACHED();
+    return false;
+  }
+  g_release_memory_proc = reinterpret_cast<PTReleaseMemoryProc>(
+      GetProcAddress(prntvpt_module, "PTReleaseMemory"));
+  if (!g_release_memory_proc) {
+    NOTREACHED();
+    return false;
+  }
+  g_close_provider_proc = reinterpret_cast<PTCloseProviderProc>(
+      GetProcAddress(prntvpt_module, "PTCloseProvider"));
+  if (!g_close_provider_proc) {
+    NOTREACHED();
+    return false;
+  }
+  return true;
+}
+
 HRESULT XPSModule::OpenProvider(const std::wstring& printer_name,
                                 DWORD version,
                                 HPTPROVIDER* provider) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return PTOpenProvider(printer_name.c_str(), version, provider);
+  return g_open_provider_proc(printer_name.c_str(), version, provider);
 }
 
 HRESULT XPSModule::GetPrintCapabilities(HPTPROVIDER provider,
@@ -121,8 +225,8 @@ HRESULT XPSModule::GetPrintCapabilities(HPTPROVIDER provider,
                                         BSTR* error_message) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return PTGetPrintCapabilities(provider, print_ticket, capabilities,
-                                error_message);
+  return g_get_print_capabilities_proc(provider, print_ticket, capabilities,
+                                       error_message);
 }
 
 HRESULT XPSModule::ConvertDevModeToPrintTicket(HPTPROVIDER provider,
@@ -132,8 +236,8 @@ HRESULT XPSModule::ConvertDevModeToPrintTicket(HPTPROVIDER provider,
                                                IStream* print_ticket) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return PTConvertDevModeToPrintTicket(provider, devmode_size_in_bytes, devmode,
-                                       scope, print_ticket);
+  return g_convert_devmode_to_print_ticket_proc(provider, devmode_size_in_bytes,
+                                                devmode, scope, print_ticket);
 }
 
 HRESULT XPSModule::ConvertPrintTicketToDevMode(
@@ -146,7 +250,7 @@ HRESULT XPSModule::ConvertPrintTicketToDevMode(
     BSTR* error_message) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return PTConvertPrintTicketToDevMode(
+  return g_convert_print_ticket_to_devmode_proc(
       provider, print_ticket, base_devmode_type, scope, devmode_byte_count,
       devmode, error_message);
 }
@@ -159,23 +263,25 @@ HRESULT XPSModule::MergeAndValidatePrintTicket(HPTPROVIDER provider,
                                                BSTR* error_message) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return PTMergeAndValidatePrintTicket(provider, base_ticket, delta_ticket,
-                                       scope, result_ticket, error_message);
+  return g_merge_and_validate_print_ticket_proc(
+      provider, base_ticket, delta_ticket, scope, result_ticket, error_message);
 }
 
 HRESULT XPSModule::ReleaseMemory(PVOID buffer) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return PTReleaseMemory(buffer);
+  return g_release_memory_proc(buffer);
 }
 
 HRESULT XPSModule::CloseProvider(HPTPROVIDER provider) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return PTCloseProvider(provider);
+  return g_close_provider_proc(provider);
 }
 
-ScopedXPSInitializer::ScopedXPSInitializer() {
+ScopedXPSInitializer::ScopedXPSInitializer() : initialized_(false) {
+  if (!XPSModule::Init())
+    return;
   // Calls to XPS APIs typically require the XPS provider to be opened with
   // PTOpenProvider. PTOpenProvider calls CoInitializeEx with
   // COINIT_MULTITHREADED. We have seen certain buggy HP printer driver DLLs
@@ -323,7 +429,10 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
     const std::string& print_ticket) {
   std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode;
   ScopedXPSInitializer xps_initializer;
-  CHECK(xps_initializer.initialized());
+  if (!xps_initializer.initialized()) {
+    // TODO(sanjeevr): Handle legacy proxy case (with no prntvpt.dll)
+    return dev_mode;
+  }
 
   ScopedPrinterHandle printer;
   if (!printer.OpenPrinterWithName(printer_name.c_str()))
@@ -339,13 +448,13 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
   if (SUCCEEDED(hr)) {
     ULONG size = 0;
     DEVMODE* dm = nullptr;
-    // Use `kPTJobScope`, because `kPTDocumentScope` breaks duplex.
+    // Use kPTJobScope, because kPTDocumentScope breaks duplex.
     hr = XPSModule::ConvertPrintTicketToDevMode(
         provider, pt_stream.Get(), kUserDefaultDevmode, kPTJobScope, &size, &dm,
         nullptr);
     if (SUCCEEDED(hr)) {
       // Correct DEVMODE using DocumentProperties. See documentation for
-      // PTConvertPrintTicketToDevMode().
+      // PTConvertPrintTicketToDevMode.
       dev_mode = CreateDevMode(printer.Get(), dm);
       XPSModule::ReleaseMemory(dm);
     }

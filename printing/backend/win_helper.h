@@ -70,10 +70,16 @@ using ScopedPrinterChangeHandle =
     base::win::GenericScopedHandle<PrinterChangeHandleTraits,
                                    base::win::DummyVerifierTraits>;
 
-// Wrapper class to wrap the XPS APIs (PTxxx APIs) that annotates the XPS APIs
-// with `base::ScopedBlockingCall`.
+// Wrapper class to wrap the XPS APIs (PTxxx APIs). This is needed because these
+// APIs are not available by default on XP. We could delayload prntvpt.dll but
+// this would mean having to add that to every binary that links with
+// printing.lib (which is a LOT of binaries). So choosing the GetProcAddress
+// route instead).
 class COMPONENT_EXPORT(PRINT_BACKEND) XPSModule {
  public:
+  // All the other methods can ONLY be called after a successful call to Init.
+  // Init can be called many times and by multiple threads.
+  static bool Init();
   static HRESULT OpenProvider(const std::wstring& printer_name,
                               DWORD version,
                               HPTPROVIDER* provider);
@@ -103,9 +109,9 @@ class COMPONENT_EXPORT(PRINT_BACKEND) XPSModule {
   static HRESULT ReleaseMemory(PVOID buffer);
   static HRESULT CloseProvider(HPTPROVIDER provider);
 
-  XPSModule() = delete;
-  XPSModule(const XPSModule&) = delete;
-  XPSModule& operator=(const XPSModule&) = delete;
+ private:
+  XPSModule() {}
+  static bool InitImpl();
 };
 
 // See comments in cc file explaining why we need this.
@@ -119,7 +125,7 @@ class COMPONENT_EXPORT(PRINT_BACKEND) ScopedXPSInitializer {
   bool initialized() const { return initialized_; }
 
  private:
-  bool initialized_ = false;
+  bool initialized_;
 };
 
 // Wrapper class to wrap the XPS Print APIs (these are different from the PTxxx
