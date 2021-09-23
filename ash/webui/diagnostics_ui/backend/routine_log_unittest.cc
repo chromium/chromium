@@ -62,7 +62,7 @@ TEST_F(RoutineLogTest, Basic) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContentsForCategory("all");
+  const std::string contents = log.GetContentsForCategory("system");
   const std::string first_line = GetLogLines(contents)[0];
   const std::vector<std::string> first_line_contents =
       GetLogLineContents(first_line);
@@ -84,7 +84,7 @@ TEST_F(RoutineLogTest, TwoLine) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContentsForCategory("all");
+  const std::string contents = log.GetContentsForCategory("system");
   const std::vector<std::string> log_lines = GetLogLines(contents);
   const std::string first_line = log_lines[0];
   const std::vector<std::string> first_line_contents =
@@ -114,7 +114,7 @@ TEST_F(RoutineLogTest, Cancelled) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContentsForCategory("all");
+  const std::string contents = log.GetContentsForCategory("system");
   LOG(ERROR) << contents;
   const std::vector<std::string> log_lines = GetLogLines(contents);
 

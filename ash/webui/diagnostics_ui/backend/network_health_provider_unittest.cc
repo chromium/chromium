@@ -1378,7 +1378,7 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   EXPECT_TRUE(list_observer.active_guid().empty());
 
   // The non-active network still appears in the log.
-  EXPECT_FALSE(log.GetContents().empty());
+  EXPECT_FALSE(log.GetNetworkInfo().empty());
 
   // Put wifi into online state.
   SetWifiOnline();
@@ -1386,7 +1386,7 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   // Log is populated with network info now that WiFi is online.
   // Log contents tested in networking_log_unittest.cc -
   // NetworkingLogTest.DetailedLogContentsWiFi.
-  EXPECT_FALSE(log.GetContents().empty());
+  EXPECT_FALSE(log.GetNetworkInfo().empty());
 }
 
 TEST_F(NetworkHealthProviderTest, ResetReceiverOnDisconnect) {

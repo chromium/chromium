@@ -53,9 +53,29 @@ std::string getRoutineTypeString(mojom::RoutineType type) {
 // Get the category for the routine `type`.
 std::string GetRoutineCategory(mojom::RoutineType type) {
   switch (type) {
-    // TODO(zentaro): Implement categorization.
-    default:
-      return "all";
+    case mojom::RoutineType::kBatteryCharge:
+    case mojom::RoutineType::kBatteryDischarge:
+    case mojom::RoutineType::kCpuCache:
+    case mojom::RoutineType::kCpuStress:
+    case mojom::RoutineType::kCpuFloatingPoint:
+    case mojom::RoutineType::kCpuPrime:
+    case mojom::RoutineType::kMemory:
+      return "system";
+    case mojom::RoutineType::kLanConnectivity:
+    case mojom::RoutineType::kSignalStrength:
+    case mojom::RoutineType::kGatewayCanBePinged:
+    case mojom::RoutineType::kHasSecureWiFiConnection:
+    case mojom::RoutineType::kDnsResolverPresent:
+    case mojom::RoutineType::kDnsLatency:
+    case mojom::RoutineType::kDnsResolution:
+    case mojom::RoutineType::kCaptivePortal:
+    case mojom::RoutineType::kHttpFirewall:
+    case mojom::RoutineType::kHttpsFirewall:
+    case mojom::RoutineType::kHttpsLatency:
+    case mojom::RoutineType::kArcHttp:
+    case mojom::RoutineType::kArcPing:
+    case mojom::RoutineType::kArcDnsResolution:
+      return "network";
   };
 }
 
@@ -92,9 +112,6 @@ void RoutineLog::LogRoutineCancelled(mojom::RoutineType type) {
 
 std::string RoutineLog::GetContentsForCategory(
     const std::string& category) const {
-  // TODO(zentaro): Remove DCHECK once categories are implemented.
-  DCHECK_EQ("all", category);
-
   const auto iter = logs_.find(category);
   if (iter == logs_.end()) {
     return "";
@@ -105,9 +122,6 @@ std::string RoutineLog::GetContentsForCategory(
 
 void RoutineLog::Append(mojom::RoutineType type, const std::string& text) {
   std::string category = GetRoutineCategory(type);
-
-  // TODO(zentaro): Remove DCHECK once categories are implemented.
-  DCHECK_EQ("all", category);
 
   // Insert a new log if it doesn't exist then append to it.
   base::FilePath log_path = GetCategoryLogFilePath(category);

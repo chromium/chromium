@@ -23,7 +23,7 @@ class NetworkingLog {
   ~NetworkingLog();
 
   // Returns the networking log as a string.
-  std::string GetContents() const;
+  std::string GetNetworkInfo() const;
 
   // Updates the list of valid networks and which is active.
   void UpdateNetworkList(const std::vector<std::string>& observer_guids,

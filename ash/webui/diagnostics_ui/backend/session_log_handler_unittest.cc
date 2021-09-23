@@ -227,12 +227,12 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
   run_loop.Run();
-  const std::string expected_telemetry_log_header = "=== Telemetry Log ===";
+  const std::string expected_system_log_header = "=== System ===";
   const std::string expected_system_info_section_name = "--- System Info ---";
   const std::string expected_snapshot_time_prefix = "Snapshot Time: ";
   const std::vector<std::string> log_lines = GetCombinedLogContents(log_path);
   ASSERT_EQ(13u, log_lines.size());
-  EXPECT_EQ(expected_telemetry_log_header, log_lines[0]);
+  EXPECT_EQ(expected_system_log_header, log_lines[0]);
   EXPECT_EQ(expected_system_info_section_name, log_lines[1]);
   EXPECT_GT(log_lines[2].size(), expected_snapshot_time_prefix.size());
   EXPECT_TRUE(base::StartsWith(log_lines[2], expected_snapshot_time_prefix));
@@ -251,7 +251,7 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   EXPECT_EQ("Version: " + expected_full_version, log_lines[9]);
   EXPECT_EQ("Has Battery: true", log_lines[10]);
 
-  const std::string expected_routine_log_header = "=== Routine Log ===";
+  const std::string expected_routine_log_header = "--- Test Routines ---";
   EXPECT_EQ(expected_routine_log_header, log_lines[11]);
 
   const std::vector<std::string> first_routine_log_line_contents =

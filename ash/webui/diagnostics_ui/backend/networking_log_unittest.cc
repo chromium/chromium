@@ -98,12 +98,12 @@ TEST_F(NetworkingLogTest, DetailedLogContentsWiFi) {
   log.UpdateNetworkList({expected_guid}, expected_guid);
   log.UpdateNetworkState(test_info.Clone());
 
-  const std::string log_as_string = log.GetContents();
+  const std::string log_as_string = log.GetNetworkInfo();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
   // Expect one title line and 14 content lines.
   EXPECT_EQ(15u, log_lines.size());
-  EXPECT_EQ("--- Networking Info ---", log_lines[0]);
+  EXPECT_EQ("--- Network Info ---", log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: WiFi", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
@@ -139,12 +139,12 @@ TEST_F(NetworkingLogTest, DetailedLogContentsEthernet) {
   log.UpdateNetworkList({expected_guid}, expected_guid);
   log.UpdateNetworkState(test_info.Clone());
 
-  const std::string log_as_string = log.GetContents();
+  const std::string log_as_string = log.GetNetworkInfo();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
   // Expect one title line and 10 content lines.
   EXPECT_EQ(11u, log_lines.size());
-  EXPECT_EQ("--- Networking Info ---", log_lines[0]);
+  EXPECT_EQ("--- Network Info ---", log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: Ethernet", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
@@ -166,12 +166,12 @@ TEST_F(NetworkingLogTest, DetailedLogContentsCellular) {
   log.UpdateNetworkList({expected_guid}, expected_guid);
   log.UpdateNetworkState(test_info.Clone());
 
-  const std::string log_as_string = log.GetContents();
+  const std::string log_as_string = log.GetNetworkInfo();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
   // Expect one title line and 9 content lines.
   EXPECT_EQ(10u, log_lines.size());
-  EXPECT_EQ("--- Networking Info ---", log_lines[0]);
+  EXPECT_EQ("--- Network Info ---", log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: Cellular", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);

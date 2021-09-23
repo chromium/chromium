@@ -736,7 +736,7 @@ TEST_F(SystemRoutineControllerTest, RoutineLog) {
 
   // Verify that the Running status appears in the log.
   std::vector<std::string> log_lines =
-      GetLogLines(log.GetContentsForCategory("all"));
+      GetLogLines(log.GetContentsForCategory("system"));
   EXPECT_EQ(1u, log_lines.size());
 
   std::vector<std::string> log_line_contents = GetLogLineContents(log_lines[0]);
@@ -756,7 +756,7 @@ TEST_F(SystemRoutineControllerTest, RoutineLog) {
                       mojom::StandardRoutineResult::kTestPassed);
 
   // Verify that the Passed status appears in the log.
-  log_lines = GetLogLines(log.GetContentsForCategory("all"));
+  log_lines = GetLogLines(log.GetContentsForCategory("system"));
   EXPECT_EQ(2u, log_lines.size());
 
   log_line_contents = GetLogLineContents(log_lines[1]);
@@ -780,7 +780,7 @@ TEST_F(SystemRoutineControllerTest, RoutineLog) {
   routine_runner_2.reset();
   task_environment_.RunUntilIdle();
 
-  log_lines = GetLogLines(log.GetContentsForCategory("all"));
+  log_lines = GetLogLines(log.GetContentsForCategory("system"));
   EXPECT_EQ(4u, log_lines.size());
 
   log_line_contents = GetLogLineContents(log_lines[3]);

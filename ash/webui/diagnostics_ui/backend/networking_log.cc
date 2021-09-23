@@ -23,7 +23,7 @@ namespace {
 const char kNewline[] = "\n";
 
 // NetworkingInfo constants:
-const char kNetworkingInfoSectionName[] = "--- Networking Info ---";
+const char kNetworkingInfoSectionName[] = "--- Network Info ---";
 const char kNetworkNameTitle[] = "Name: ";
 const char kNetworkTypeTitle[] = "Type: ";
 const char kNetworkStateTitle[] = "State: ";
@@ -177,7 +177,7 @@ std::string GetNetworkType(mojom::NetworkType type) {
 NetworkingLog::NetworkingLog() = default;
 NetworkingLog::~NetworkingLog() = default;
 
-std::string NetworkingLog::GetContents() const {
+std::string NetworkingLog::GetNetworkInfo() const {
   std::stringstream output;
 
   output << kNetworkingInfoSectionName << kNewline;
