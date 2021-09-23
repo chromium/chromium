@@ -29,6 +29,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "content/public/browser/web_contents.h"

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/omnibox/webui_omnibox_popup_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_popup_handler.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

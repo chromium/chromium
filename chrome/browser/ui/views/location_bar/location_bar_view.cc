@@ -79,6 +79,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"

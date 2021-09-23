@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -28,7 +29,6 @@
 class AutocompleteResult;
 class OmniboxClient;
 class OmniboxEditController;
-class OmniboxPopupModel;
 class OmniboxPopupView;
 
 namespace gfx {
@@ -428,6 +428,62 @@ class OmniboxEditModel {
                           SkColor vector_icon_color);
 #endif
 
+  // Returns true if the popup exists and is open. Virtual for testing.
+  virtual bool PopupIsOpen() const;
+
+  // Applies the next popup selection as provided by GetNextSelection.
+  // Stepping the popup model selection gives special consideration for
+  // keyword mode state maintained in the edit model.
+  OmniboxPopupSelection PopupStepSelection(
+      OmniboxPopupSelection::Direction direction,
+      OmniboxPopupSelection::Step step);
+
+  // Gets popup's current selection.
+  OmniboxPopupSelection GetPopupSelection() const;
+
+  // Sets the current popup selection to |new_selection|. Caller is responsible
+  // for making sure |new_selection| is valid. This assumes the popup is open.
+  // This will update all state and repaint the necessary parts of the window,
+  // as well as updating the textfield with the new temporary text.
+  // |reset_to_default| restores the original inline autocompletion.
+  // |force_update_ui| updates the UI even if the selection has not changed.
+  void SetPopupSelection(OmniboxPopupSelection new_selection,
+                         bool reset_to_default = false,
+                         bool force_update_ui = false);
+
+  // Changes the popup selection to the next available selection.
+  // Stepping the popup model selection gives special consideration for
+  // keyword mode state maintained in the edit model.
+  OmniboxPopupSelection StepPopupSelection(
+      OmniboxPopupSelection::Direction direction,
+      OmniboxPopupSelection::Step step);
+
+  // On popup, triggers the action on |selection| (usually an auxiliary button).
+  // If the popup model supports the action and performs it, this returns true.
+  // This can't handle all actions currently, and returns false in those cases.
+  // The timestamp parameter is currently only used by FOCUSED_BUTTON_TAB_SWITCH
+  // and FOCUSED_BUTTON_ACTION, so is set by default for other use cases.
+  // The `disposition` can be used to respect keyboard state for opening
+  // actions in background tabs, new windows, etc.
+  bool TriggerPopupSelectionAction(
+      OmniboxPopupSelection selection,
+      base::TimeTicks timestamp = base::TimeTicks(),
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+
+  // From popup, tries to erase the suggestion at |line|. This should determine
+  // if the item at |line| can be removed from history, and if so, remove it
+  // and update the popup.
+  void TryDeletingPopupLine(size_t line);
+
+  // Returns the popup's accessibility label for current selection. This is an
+  // extended version of AutocompleteMatchType::ToAccessibilityLabel() which
+  // also returns narration about the any focused secondary button.
+  // Never call this when the current selection is kNoMatch.
+  std::u16string GetPopupAccessibilityLabelForCurrentSelection(
+      const std::u16string& match_text,
+      bool include_positional_info,
+      int* label_prefix_length = nullptr);
+
  protected:
   // Utility method to get current PrefService; protected instead of private
   // because it may be overridden by derived test classes.
@@ -466,11 +522,6 @@ class OmniboxEditModel {
   // AutocompleteController but resides here for now.  This method is used by
   // AutomationProvider::AutocompleteEditIsQueryInProgress.
   bool query_in_progress() const { return !autocomplete_controller()->done(); }
-
-  // Returns true if the popup exists and is open.  (This is a convenience
-  // wrapper for the benefit of test code, which may not have a popup model.)
-  // Virtual for testing.
-  virtual bool PopupIsOpen() const;
 
   // An internal method to set the user text. Notably, this differs from
   // SetUserText because it does not change the user-input-in-progress state.

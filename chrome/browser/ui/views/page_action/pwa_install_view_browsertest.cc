@@ -33,6 +33,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/site_engagement/content/site_engagement_service.h"

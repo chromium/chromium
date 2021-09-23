@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -76,6 +77,10 @@ OmniboxPopupModel::~OmniboxPopupModel() = default;
 
 bool OmniboxPopupModel::IsOpen() const {
   return view_->IsOpen();
+}
+
+AutocompleteController* OmniboxPopupModel::autocomplete_controller() const {
+  return edit_model_->autocomplete_controller();
 }
 
 void OmniboxPopupModel::SetSelection(OmniboxPopupSelection new_selection,

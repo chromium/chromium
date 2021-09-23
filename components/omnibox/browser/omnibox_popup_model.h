@@ -13,11 +13,11 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image.h"
 
+class OmniboxEditModel;
 class OmniboxPopupView;
 class GURL;
 class PrefService;
@@ -126,9 +126,7 @@ class OmniboxPopupModel {
   OmniboxEditModel* edit_model() const { return edit_model_; }
 
   // Returns the AutocompleteController used by this popup.
-  AutocompleteController* autocomplete_controller() const {
-    return edit_model_->autocomplete_controller();
-  }
+  AutocompleteController* autocomplete_controller() const;
 
   const AutocompleteResult& result() const {
     return autocomplete_controller()->result();

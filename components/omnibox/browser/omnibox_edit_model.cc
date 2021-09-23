@@ -1601,10 +1601,6 @@ void OmniboxEditModel::SetAccessibilityLabel(const AutocompleteMatch& match) {
   view_->SetAccessibilityLabel(view_->GetText(), match, true);
 }
 
-bool OmniboxEditModel::PopupIsOpen() const {
-  return popup_model() && popup_model()->IsOpen();
-}
-
 void OmniboxEditModel::InternalSetUserText(const std::u16string& text) {
   user_text_ = text;
   original_user_text_with_keyword_.clear();
@@ -1744,6 +1740,59 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
   return client()->GetSizedIcon(vector_icon_type, vector_icon_color);
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+
+bool OmniboxEditModel::PopupIsOpen() const {
+  return popup_model() && popup_model()->IsOpen();
+}
+
+OmniboxPopupSelection OmniboxEditModel::PopupStepSelection(
+    OmniboxPopupSelection::Direction direction,
+    OmniboxPopupSelection::Step step) {
+  DCHECK(popup_model());
+  return popup_model()->StepSelection(direction, step);
+}
+
+OmniboxPopupSelection OmniboxEditModel::GetPopupSelection() const {
+  DCHECK(popup_model());
+  return popup_model()->selection();
+}
+
+void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
+                                         bool reset_to_default,
+                                         bool force_update_ui) {
+  DCHECK(popup_model());
+  popup_model()->SetSelection(new_selection, reset_to_default, force_update_ui);
+}
+
+OmniboxPopupSelection OmniboxEditModel::StepPopupSelection(
+    OmniboxPopupSelection::Direction direction,
+    OmniboxPopupSelection::Step step) {
+  DCHECK(popup_model());
+  return popup_model()->StepSelection(direction, step);
+}
+
+bool OmniboxEditModel::TriggerPopupSelectionAction(
+    OmniboxPopupSelection selection,
+    base::TimeTicks timestamp,
+    WindowOpenDisposition disposition) {
+  DCHECK(popup_model());
+  return popup_model()->TriggerSelectionAction(selection, timestamp,
+                                               disposition);
+}
+
+void OmniboxEditModel::TryDeletingPopupLine(size_t line) {
+  DCHECK(popup_model());
+  return popup_model()->TryDeletingLine(line);
+}
+
+std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
+    const std::u16string& match_text,
+    bool include_positional_info,
+    int* label_prefix_length) {
+  DCHECK(popup_model());
+  return popup_model()->GetAccessibilityLabelForCurrentSelection(
+      match_text, include_positional_info, label_prefix_length);
+}
 
 PrefService* OmniboxEditModel::GetPrefService() const {
   return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
