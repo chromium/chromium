@@ -19,6 +19,8 @@ static_library("phonehub") {
     "camera_roll_item.h",
     "camera_roll_manager.cc",
     "camera_roll_manager.h",
+    "camera_roll_manager_impl.cc",
+    "camera_roll_manager_impl.h",
     "camera_roll_thumbnail_decoder.h",
     "camera_roll_thumbnail_decoder_impl.cc",
     "camera_roll_thumbnail_decoder_impl.h",
@@ -138,6 +140,8 @@ static_library("debug") {
   sources = [
     "fake_browser_tabs_model_provider.cc",
     "fake_browser_tabs_model_provider.h",
+    "fake_camera_roll_manager.cc",
+    "fake_camera_roll_manager.h",
     "fake_connection_scheduler.cc",
     "fake_connection_scheduler.h",
     "fake_do_not_disturb_controller.cc",
@@ -206,7 +210,7 @@ source_set("unit_tests") {
   sources = [
     "browser_tabs_model_controller_unittest.cc",
     "browser_tabs_model_unittest.cc",
-    "camera_roll_manager_unittest.cc",
+    "camera_roll_manager_impl_unittest.cc",
     "camera_roll_thumbnail_decoder_impl_unittest.cc",
     "connection_scheduler_impl_unittest.cc",
     "cros_state_sender_unittest.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/phonehub/camera_roll_manager.h"
+#include "chromeos/components/phonehub/camera_roll_manager_impl.h"
 
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,18 +104,19 @@ class FakeThumbnailDecoder : public CameraRollThumbnailDecoder {
   BatchDecodeCallback pending_callback_;
 };
 
-class CameraRollManagerTest : public testing::Test {
+class CameraRollManagerImplTest : public testing::Test {
  protected:
-  CameraRollManagerTest() = default;
-  CameraRollManagerTest(const CameraRollManagerTest&) = delete;
-  CameraRollManagerTest& operator=(const CameraRollManagerTest&) = delete;
-  ~CameraRollManagerTest() override = default;
+  CameraRollManagerImplTest() = default;
+  CameraRollManagerImplTest(const CameraRollManagerImplTest&) = delete;
+  CameraRollManagerImplTest& operator=(const CameraRollManagerImplTest&) =
+      delete;
+  ~CameraRollManagerImplTest() override = default;
 
   void SetUp() override {
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     SetCameraRollFeatureSettings(true);
-    camera_roll_manager_ = std::make_unique<CameraRollManager>(
+    camera_roll_manager_ = std::make_unique<CameraRollManagerImpl>(
         &fake_message_receiver_, &fake_message_sender_,
         fake_multidevice_setup_client_.get());
     camera_roll_manager_->thumbnail_decoder_ =
@@ -183,11 +184,11 @@ class CameraRollManagerTest : public testing::Test {
 
  private:
   FakeMessageSender fake_message_sender_;
-  std::unique_ptr<CameraRollManager> camera_roll_manager_;
+  std::unique_ptr<CameraRollManagerImpl> camera_roll_manager_;
   FakeObserver fake_observer_;
 };
 
-TEST_F(CameraRollManagerTest, OnCameraRollItemsReceived) {
+TEST_F(CameraRollManagerImplTest, OnCameraRollItemsReceived) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key3");
   PopulateItemProto(response.add_items(), "key2");
@@ -200,7 +201,7 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceived) {
   VerifyCurrentItemsMatchResponse(response);
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnCameraRollItemsReceivedWithThumbnailDecodingError) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key3");
@@ -214,7 +215,7 @@ TEST_F(CameraRollManagerTest,
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnCameraRollItemsReceivedWithPendingThumbnailDecodedRequest) {
   proto::FetchCameraRollItemsResponse first_response;
   PopulateItemProto(first_response.add_items(), "key2");
@@ -235,7 +236,7 @@ TEST_F(CameraRollManagerTest,
   VerifyCurrentItemsMatchResponse(second_response);
 }
 
-TEST_F(CameraRollManagerTest, OnCameraRollItemsReceivedWithExistingItems) {
+TEST_F(CameraRollManagerImplTest, OnCameraRollItemsReceivedWithExistingItems) {
   proto::FetchCameraRollItemsResponse first_response;
   PopulateItemProto(first_response.add_items(), "key3");
   PopulateItemProto(first_response.add_items(), "key2");
@@ -262,7 +263,7 @@ TEST_F(CameraRollManagerTest, OnCameraRollItemsReceivedWithExistingItems) {
   VerifyCurrentItemsMatchResponse(second_response);
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusUpdateReceivedWithoutCameraRollUpdates) {
   proto::PhoneStatusUpdate update;
   update.set_has_camera_roll_updates(false);
@@ -276,7 +277,7 @@ TEST_F(CameraRollManagerTest,
   EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusUpdateReceivedWithCameraRollUpdates) {
   proto::PhoneStatusUpdate update;
   update.set_has_camera_roll_updates(true);
@@ -292,7 +293,8 @@ TEST_F(CameraRollManagerTest,
   EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
 }
 
-TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithExistingItems) {
+TEST_F(CameraRollManagerImplTest,
+       OnPhoneStatusUpdateReceivedWithExistingItems) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key3");
   PopulateItemProto(response.add_items(), "key2");
@@ -323,7 +325,8 @@ TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithExistingItems) {
       GetSentFetchCameraRollItemsRequest().current_item_metadata(2));
 }
 
-TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithFeatureDisabled) {
+TEST_F(CameraRollManagerImplTest,
+       OnPhoneStatusUpdateReceivedWithFeatureDisabled) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
@@ -342,7 +345,7 @@ TEST_F(CameraRollManagerTest, OnPhoneStatusUpdateReceivedWithFeatureDisabled) {
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusUpdateReceivedWithCameraRollSettingsDisabled) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
@@ -364,7 +367,7 @@ TEST_F(CameraRollManagerTest,
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusUpdateReceivedWithoutStoragePermission) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
@@ -384,7 +387,7 @@ TEST_F(CameraRollManagerTest,
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-TEST_F(CameraRollManagerTest, OnPhoneStatusSnapshotReceived) {
+TEST_F(CameraRollManagerImplTest, OnPhoneStatusSnapshotReceived) {
   proto::PhoneStatusSnapshot snapshot;
   proto::CameraRollAccessState* access_state =
       snapshot.mutable_properties()->mutable_camera_roll_access_state();
@@ -396,7 +399,7 @@ TEST_F(CameraRollManagerTest, OnPhoneStatusSnapshotReceived) {
   EXPECT_EQ(0, GetOnCameraRollItemChangedCallCount());
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusSnapshotReceivedWithFeatureDisabled) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
@@ -416,7 +419,7 @@ TEST_F(CameraRollManagerTest,
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusSnapshotReceivedWithCameraRollSettingDisabled) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
@@ -437,7 +440,7 @@ TEST_F(CameraRollManagerTest,
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-TEST_F(CameraRollManagerTest,
+TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusSnapshotReceivedWithoutStoragePermission) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
@@ -457,7 +460,7 @@ TEST_F(CameraRollManagerTest,
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
-TEST_F(CameraRollManagerTest, OnFeatureOnFeatureStatesChangedToDisabled) {
+TEST_F(CameraRollManagerImplTest, OnFeatureOnFeatureStatesChangedToDisabled) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");

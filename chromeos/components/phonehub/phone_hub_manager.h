@@ -10,6 +10,8 @@
 namespace chromeos {
 namespace phonehub {
 
+class BrowserTabsModelProvider;
+class CameraRollManager;
 class ConnectionScheduler;
 class DoNotDisturbController;
 class FeatureStatusProvider;
@@ -23,7 +25,6 @@ class RecentAppsInteractionHandler;
 class ScreenLockManager;
 class TetherController;
 class UserActionRecorder;
-class BrowserTabsModelProvider;
 
 // Responsible for the core logic of the Phone Hub feature and exposes
 // interfaces via its public API. This class is intended to be a singleton.
@@ -36,6 +37,7 @@ class PhoneHubManager {
 
   // Getters for sub-elements.
   virtual BrowserTabsModelProvider* GetBrowserTabsModelProvider() = 0;
+  virtual CameraRollManager* GetCameraRollManager() = 0;
   virtual ConnectionScheduler* GetConnectionScheduler() = 0;
   virtual DoNotDisturbController* GetDoNotDisturbController() = 0;
   virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;

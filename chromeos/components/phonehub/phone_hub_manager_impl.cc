@@ -8,7 +8,7 @@
 #include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/components/phonehub/browser_tabs_model_controller.h"
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"
-#include "chromeos/components/phonehub/camera_roll_manager.h"
+#include "chromeos/components/phonehub/camera_roll_manager_impl.h"
 #include "chromeos/components/phonehub/connection_scheduler_impl.h"
 #include "chromeos/components/phonehub/cros_state_sender.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller_impl.h"
@@ -144,17 +144,21 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<InvalidConnectionDisconnector>(
               connection_manager_.get(),
               phone_model_.get())),
-      camera_roll_manager_(
-          features::IsPhoneHubCameraRollEnabled()
-              ? std::make_unique<CameraRollManager>(message_receiver_.get(),
-                                                    message_sender_.get(),
-                                                    multidevice_setup_client)
-              : nullptr) {}
+      camera_roll_manager_(features::IsPhoneHubCameraRollEnabled()
+                               ? std::make_unique<CameraRollManagerImpl>(
+                                     message_receiver_.get(),
+                                     message_sender_.get(),
+                                     multidevice_setup_client)
+                               : nullptr) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
 BrowserTabsModelProvider* PhoneHubManagerImpl::GetBrowserTabsModelProvider() {
   return browser_tabs_model_provider_.get();
+}
+
+CameraRollManager* PhoneHubManagerImpl::GetCameraRollManager() {
+  return camera_roll_manager_.get();
 }
 
 ConnectionScheduler* PhoneHubManagerImpl::GetConnectionScheduler() {

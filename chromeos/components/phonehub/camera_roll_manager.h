@@ -5,42 +5,29 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chromeos/components/phonehub/camera_roll_thumbnail_decoder.h"
-#include "chromeos/components/phonehub/message_receiver.h"
-#include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace chromeos {
 namespace phonehub {
 
 class CameraRollItem;
-class MessageSender;
 
 // Manages camera roll items sent from the connected Android device.
-class CameraRollManager
-    : public MessageReceiver::Observer,
-      public multidevice_setup::MultiDeviceSetupClient::Observer {
+class CameraRollManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
 
     // Notifies observers that the set of current camera roll items has changed.
-    // The item set can be retrieved from CameraRollManager::GetCurrentItems().
+    // The item set can be retrieved from CameraRollManager::current_items().
     virtual void OnCameraRollItemsChanged() = 0;
   };
 
-  CameraRollManager(
-      MessageReceiver* message_receiver,
-      MessageSender* message_sender,
-      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
   CameraRollManager(const CameraRollManager&) = delete;
   CameraRollManager& operator=(const CameraRollManager&) = delete;
-  ~CameraRollManager() override;
+  virtual ~CameraRollManager();
 
   // Returns the set of current camera roll items in the order in which they
   // should be displayed
@@ -51,42 +38,17 @@ class CameraRollManager
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
- private:
-  friend class CameraRollManagerTest;
+ protected:
+  CameraRollManager();
 
-  // MessageReceiver::Observer
-  void OnPhoneStatusSnapshotReceived(
-      proto::PhoneStatusSnapshot phone_status_snapshot) override;
-  void OnPhoneStatusUpdateReceived(
-      proto::PhoneStatusUpdate phone_status_update) override;
-  void OnFetchCameraRollItemsResponseReceived(
-      const proto::FetchCameraRollItemsResponse& response) override;
-
-  // MultiDeviceSetupClient::Observer:
-  void OnFeatureStatesChanged(
-      const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
-          feature_states_map) override;
-
-  void SendFetchCameraRollItemsRequest();
+  void SetCurrentItems(const std::vector<CameraRollItem>& items);
   void ClearCurrentItems();
-  void OnItemThumbnailsDecoded(
-      CameraRollThumbnailDecoder::BatchDecodeResult result,
-      const std::vector<CameraRollItem>& items);
-  void CancelPendingThumbnailRequests();
-  bool IsCameraRollSettingEnabled();
 
-  MessageReceiver* message_receiver_;
-  MessageSender* message_sender_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  void NotifyCameraRollItemsChanged();
 
-  int32_t max_item_count_;
+ private:
   std::vector<CameraRollItem> current_items_;
-
   base::ObserverList<Observer> observer_list_;
-
-  std::unique_ptr<CameraRollThumbnailDecoder> thumbnail_decoder_;
-  // Contains pending callbacks passed to the |CameraRollThumbnailDecoder|.
-  base::WeakPtrFactory<CameraRollManager> weak_ptr_factory_{this};
 };
 
 }  // namespace phonehub

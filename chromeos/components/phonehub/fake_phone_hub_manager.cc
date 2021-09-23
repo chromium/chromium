@@ -17,6 +17,11 @@ BrowserTabsModelProvider* FakePhoneHubManager::GetBrowserTabsModelProvider() {
   return &fake_browser_tabs_model_provider_;
 }
 
+CameraRollManager* FakePhoneHubManager::GetCameraRollManager() {
+  return features::IsPhoneHubCameraRollEnabled() ? &fake_camera_roll_manager_
+                                                 : nullptr;
+}
+
 DoNotDisturbController* FakePhoneHubManager::GetDoNotDisturbController() {
   return &fake_do_not_disturb_controller_;
 }

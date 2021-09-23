@@ -245,7 +245,8 @@ message ShowNotificationAccessSetupRequest {}
 
 message ShowNotificationAccessSetupResponse {}
 
-// Next ID: 6
+// When adding new fields to this message, update CameraRollItem#operator==
+// Located in /chromeos/components/phonehub/camera_roll_item.cc
 message CameraRollItemMetadata {
   // A unique and stable identifier for camera roll items on the Android device.
   string key = 1;
@@ -253,6 +254,7 @@ message CameraRollItemMetadata {
   string mime_type = 2;
   int64 last_modified_millis = 3;
   int64 file_size_bytes = 4;
+  // Next ID: 6
 }
 
 // Contains data needed to display the thumbnail of a camera roll item.

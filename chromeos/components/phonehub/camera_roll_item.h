@@ -21,6 +21,10 @@ class CameraRollItem {
   CameraRollItem& operator=(const CameraRollItem&);
   virtual ~CameraRollItem();
 
+  // True iff both both items have the same metadata values.
+  bool operator==(const CameraRollItem& other) const;
+  bool operator!=(const CameraRollItem& other) const;
+
   // Returns the metadata of this item.
   const proto::CameraRollItemMetadata& metadata() const { return metadata_; }
   // Returns the decoded thumbnail of this item.

@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 
 #include "chromeos/components/phonehub/fake_browser_tabs_model_provider.h"
+#include "chromeos/components/phonehub/fake_camera_roll_manager.h"
 #include "chromeos/components/phonehub/fake_connection_scheduler.h"
 #include "chromeos/components/phonehub/fake_do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"
@@ -84,9 +85,14 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_browser_tabs_model_provider_;
   }
 
+  FakeCameraRollManager* fake_camera_roll_manager() {
+    return &fake_camera_roll_manager_;
+  }
+
  private:
   // PhoneHubManager:
   BrowserTabsModelProvider* GetBrowserTabsModelProvider() override;
+  CameraRollManager* GetCameraRollManager() override;
   DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   FindMyDeviceController* GetFindMyDeviceController() override;
@@ -115,6 +121,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeConnectionScheduler fake_connection_scheduler_;
   FakeUserActionRecorder fake_user_action_recorder_;
   FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
+  FakeCameraRollManager fake_camera_roll_manager_;
 };
 
 }  // namespace phonehub
