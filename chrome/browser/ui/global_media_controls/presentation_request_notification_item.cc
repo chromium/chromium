@@ -47,6 +47,9 @@ void PresentationRequestNotificationItem::SetView(
   DCHECK(web_contents);
   favicon::FaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(web_contents);
+  if (favicon_driver) {
+    view_->UpdateWithFavicon(favicon_driver->GetFavicon().AsImageSkia());
+  }
 
   media_session::MediaMetadata data;
   data.source_title = url_formatter::FormatUrl(
@@ -59,7 +62,6 @@ void PresentationRequestNotificationItem::SetView(
   data.artist = web_contents->GetTitle();
 
   view_->UpdateWithMediaMetadata(data);
-  view_->UpdateWithFavicon(favicon_driver->GetFavicon().AsImageSkia());
 }
 
 void PresentationRequestNotificationItem::OnMediaSessionActionButtonPressed(
