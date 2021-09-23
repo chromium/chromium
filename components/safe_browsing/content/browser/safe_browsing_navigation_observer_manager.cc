@@ -93,11 +93,6 @@ static const double kNavigationFootprintTTLInSecond = 120.0;
 // metric "SafeBrowsing.NavigationObserver.NavigationEventCleanUpCount".
 // Lowering it could make room for abuse.
 static const int kNavigationRecordMaxSize = 100;
-// The maximum number ReferrerChainEntrys to add before truncating to
-// |kReferrerChainMaxLength|. It is used to limit memory usage when adding
-// entries to the ReferrerChain. This number is picked based on
-// |kNavigationRecordMaxSize|.
-static const int kReferrerChainRecordMaxSize = 100;
 // The maximum number of ReferrerChainEntry. It is used to limit the size of
 // reports (e.g. ClientDownloadRequest) we send to SB server.
 static const int kReferrerChainMaxLength = 10;
@@ -846,8 +841,7 @@ void SafeBrowsingNavigationObserverManager::
       safe_browsing::kOmitNonUserGesturesFromReferrerChain);
 
   GURL last_main_frame_url_traced(last_nav_event_traced->source_main_frame_url);
-  while (current_user_gesture_count < user_gesture_count_limit &&
-         (out_referrer_chain->size() < kReferrerChainRecordMaxSize)) {
+  while (current_user_gesture_count < user_gesture_count_limit) {
     // Back trace to the next nav_event that was initiated by the user.
     while (!last_nav_event_traced->IsUserInitiated()) {
       last_nav_event_traced_index = navigation_event_list_.FindNavigationEvent(
