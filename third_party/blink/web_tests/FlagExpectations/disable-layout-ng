@@ -1299,6 +1299,7 @@ crbug.com/591099 virtual/shared_array_buffer_on_desktop/http/tests/devtools/weba
 crbug.com/591099 external/wpt/css/css-overflow/scrollable-overflow-input-001.html [ Failure ]
 crbug.com/591099 external/wpt/editing/run/delete.html?7001-last [ Failure ]
 crbug.com/591099 external/wpt/mimesniff/media/media-sniff.window.html [ Failure ]
+crbug.com/591099 external/wpt/editing/other/insert-paragraph-in-void-element.tentative.html [ Failure ]
 
 # inline-end overflow
 crbug.com/1245722 overflow/overflow-basic-002.html [ Failure ]

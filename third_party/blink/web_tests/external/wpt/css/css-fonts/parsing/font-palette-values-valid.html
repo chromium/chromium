@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Fonts Module Level 4: parsing @font-palette-values</title>
+<link rel="help" href="https://drafts.csswg.org/css-fonts/#font-palette-values">
+<meta name="assert" content="@font-palette-values is parsed correctly.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style id="style">
+/* 0 */
+@font-palette-values A {
+}
+
+/* 1 */
+@font-palette-values B {
+    font-weight: 400;
+}
+
+/* 2 */
+@font-palette-values C {
+    font-family: foo;
+    font-family: bar;
+    base-palette: 1;
+    base-palette: "baz";
+    base-palette: 2;
+    override-color: "a" #123;
+    override-color: 3 #123;
+    override-color: "b" #123;
+}
+
+/* 3 */
+@font-palette-values D {
+    base-palette: "foo";
+    base-palette: 1;
+    base-palette: "bar";
+    override-color: 3 #123;
+    override-color: "baz" #123;
+    override-color: 4 #123;
+}
+
+/* 4 */
+@font-palette-values E {
+    override-color: 3 rgb(17, 34, 51);
+    override-color: 3 rgb(68, 85, 102);
+}
+
+/* 5 */
+@font-palette-values F {
+    font-family: "foo";
+}
+
+/* 6 */
+@font-palette-values G {
+    override-color: 3 rgb(17, 34, 51), 4 rgb(68, 85, 102);
+}
+
+/* 7 */
+@font-palette-values H {
+    override-color: 3 rgb(17, 34, 51), 3 rgb(68, 85, 102);
+}
+
+/* 8 */
+@font-palette-values I {
+    base-palette: -3;
+}
+
+/* 9 */
+@font-palette-values J {
+    override-color: -3 rgb(17, 34, 51);
+}
+</style>
+</head>
+<body>
+<script>
+let rules = document.getElementById("style").sheet.cssRules;
+test(function() {
+    let text = rules[0].cssText;
+    assert_not_equals(text.indexOf("@font-palette-values "), -1);
+    assert_not_equals(text.indexOf(" A "), -1);
+    assert_not_equals(text.indexOf("{"), -1);
+    assert_not_equals(text.indexOf("}"), -1);
+    assert_equals(text.indexOf("font-family"), -1);
+    assert_equals(text.indexOf("base-palette"), -1);
+    assert_equals(text.indexOf("override-color"), -1);
+});
+
+test(function() {
+    let rule = rules[0];
+    assert_equals(rule.type, CSSRule.FONT_PALETTE_VALUES_RULE);
+    assert_equals(rule.constructor.name, "CSSFontPaletteValuesRule");
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "");
+    assert_equals(rule.size, 0);
+});
+
+test(function() {
+    let text = rules[1].cssText;
+    assert_equals(text.indexOf("font-weight"), -1);
+});
+
+test(function() {
+    let rule = rules[1];
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "");
+    assert_equals(rule.size, 0);
+});
+
+test(function() {
+    let text = rules[2].cssText;
+    assert_equals(text.indexOf("font-family: foo;"), -1);
+    assert_not_equals(text.indexOf("font-family: bar;"), -1);
+    assert_equals(text.indexOf("base-palette: 1;"), -1);
+    assert_equals(text.indexOf("base-palette: \"baz\""), -1);
+    assert_not_equals(text.indexOf("base-palette: 2;"), -1);
+    assert_equals(text.indexOf("override-color: \"a\""), -1);
+    assert_equals(text.indexOf("override-color: 3"), -1);
+    assert_not_equals(text.indexOf("override-color: \"b\""), -1);
+});
+
+test(function() {
+    let rule = rules[2];
+    assert_equals(rule.fontFamily, "bar");
+    assert_equals(rule.basePalette, "2");
+    assert_equals(rule.size, 0);
+});
+
+test(function() {
+    let text = rules[3].cssText;
+    assert_equals(text.indexOf("base-palette: \"foo\";"), -1);
+    assert_equals(text.indexOf("base-palette: 1"), -1);
+    assert_not_equals(text.indexOf("base-palette: \"bar\";"), -1);
+    assert_equals(text.indexOf("override-color: 3"), -1);
+    assert_equals(text.indexOf("override-color: \"baz\""), -1);
+    assert_not_equals(text.indexOf("override-color: 4"), -1);
+});
+
+test(function() {
+    let rule = rules[3];
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "bar");
+    assert_equals(rule.size, 1);
+    assert_equals(rule.get(7), undefined);
+    assert_not_equals(rule.get(4).indexOf("rgb"), -1);
+});
+
+test(function() {
+    let text = rules[4].cssText;
+    assert_equals(text.indexOf("51"), -1);
+    assert_not_equals(text.indexOf("102"), -1);
+});
+
+test(function() {
+    let rule = rules[4];
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "");
+    assert_equals(rule.size, 1);
+    assert_equals(rule.get(7), undefined);
+    assert_not_equals(rule.get(3).indexOf("102"), -1);
+});
+
+test(function() {
+    let text = rules[5].cssText;
+    assert_not_equals(text.indexOf("foo"), -1);
+});
+
+test(function() {
+    let rule = rules[5];
+    assert_equals(rule.fontFamily, "foo");
+    assert_equals(rule.basePalette, "");
+    assert_equals(rule.size, 0);
+});
+
+test(function() {
+    let text = rules[6].cssText;
+    assert_not_equals(text.indexOf("51"), -1);
+    assert_not_equals(text.indexOf("102"), -1);
+});
+
+test(function() {
+    let rule = rules[6];
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "");
+    assert_equals(rule.size, 2);
+    assert_equals(rule.get(7), undefined);
+    assert_not_equals(rule.get(3).indexOf("51"), -1);
+    assert_not_equals(rule.get(4).indexOf("102"), -1);
+});
+
+test(function() {
+    let text = rules[7].cssText;
+    assert_not_equals(text.indexOf("51"), -1);
+    assert_not_equals(text.indexOf("102"), -1);
+});
+
+test(function() {
+    let rule = rules[7];
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "");
+    assert_equals(rule.size, 1);
+    assert_equals(rule.get(7), undefined);
+    assert_not_equals(rule.get(3).indexOf("102"), -1);
+    assert_equals(rule.get(4), undefined);
+});
+
+test(function() {
+    let text = rules[8].cssText;
+    assert_not_equals(text.indexOf("base-palette"), -1);
+});
+
+test(function() {
+    let rule = rules[8];
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "-3");
+    assert_equals(rule.size, 0);
+});
+
+test(function() {
+    let text = rules[9].cssText;
+    assert_not_equals(text.indexOf("override-color"), -1);
+});
+
+test(function() {
+    let rule = rules[9];
+    assert_equals(rule.fontFamily, "");
+    assert_equals(rule.basePalette, "");
+    assert_equals(rule.size, 1);
+    assert_equals(rule.get(7), undefined);
+    assert_equals(rule.get(-3), undefined);
+});
+</script>
+</body>
+</html>

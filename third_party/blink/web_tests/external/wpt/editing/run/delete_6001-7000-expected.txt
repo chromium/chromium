@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 962 PASS, 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 969 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("delete") before
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("delete") before
 PASS [["defaultparagraphseparator","div"],["delete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("delete") after
@@ -681,7 +681,7 @@ PASS [["defaultparagraphseparator","p"],["delete",""]] "<ul><li>foo</ul><p>{}<br
 PASS [["defaultparagraphseparator","p"],["delete",""]] "<ul><li>foo</ul><p>{}<br></p><ol><li>bar</ol>" queryCommandValue("delete") after
 PASS [["delete",""]] "<p><b>[foo]</b>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<p><b>[foo]</b>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<p><b>[foo]</b>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b><br></b></p>" but got "<p><br></p>"
+PASS [["delete",""]] "<p><b>[foo]</b>" compare innerHTML
 PASS [["delete",""]] "<p><b>[foo]</b>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<p><b>[foo]</b>" queryCommandState("delete") before
 PASS [["delete",""]] "<p><b>[foo]</b>" queryCommandValue("delete") before
@@ -690,7 +690,7 @@ PASS [["delete",""]] "<p><b>[foo]</b>" queryCommandState("delete") after
 PASS [["delete",""]] "<p><b>[foo]</b>" queryCommandValue("delete") after
 PASS [["delete",""]] "<p><quasit>[foo]</quasit>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<p><quasit>[foo]</quasit>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<p><quasit>[foo]</quasit>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><quasit><br></quasit></p>" but got "<p><br></p>"
+PASS [["delete",""]] "<p><quasit>[foo]</quasit>" compare innerHTML
 PASS [["delete",""]] "<p><quasit>[foo]</quasit>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<p><quasit>[foo]</quasit>" queryCommandState("delete") before
 PASS [["delete",""]] "<p><quasit>[foo]</quasit>" queryCommandValue("delete") before
@@ -699,7 +699,7 @@ PASS [["delete",""]] "<p><quasit>[foo]</quasit>" queryCommandState("delete") aft
 PASS [["delete",""]] "<p><quasit>[foo]</quasit>" queryCommandValue("delete") after
 PASS [["delete",""]] "<p><b><i>[foo]</i></b>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<p><b><i>[foo]</i></b>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<p><b><i>[foo]</i></b>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b><i><br></i></b></p>" but got "<p><br></p>"
+PASS [["delete",""]] "<p><b><i>[foo]</i></b>" compare innerHTML
 PASS [["delete",""]] "<p><b><i>[foo]</i></b>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<p><b><i>[foo]</i></b>" queryCommandState("delete") before
 PASS [["delete",""]] "<p><b><i>[foo]</i></b>" queryCommandValue("delete") before
@@ -708,7 +708,7 @@ PASS [["delete",""]] "<p><b><i>[foo]</i></b>" queryCommandState("delete") after
 PASS [["delete",""]] "<p><b><i>[foo]</i></b>" queryCommandValue("delete") after
 PASS [["delete",""]] "<p><b>{foo}</b>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<p><b>{foo}</b>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<p><b>{foo}</b>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b><br></b></p>" but got "<p><br></p>"
+PASS [["delete",""]] "<p><b>{foo}</b>" compare innerHTML
 PASS [["delete",""]] "<p><b>{foo}</b>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<p><b>{foo}</b>" queryCommandState("delete") before
 PASS [["delete",""]] "<p><b>{foo}</b>" queryCommandValue("delete") before
@@ -717,7 +717,7 @@ PASS [["delete",""]] "<p><b>{foo}</b>" queryCommandState("delete") after
 PASS [["delete",""]] "<p><b>{foo}</b>" queryCommandValue("delete") after
 PASS [["delete",""]] "<p>{<b>foo</b>}": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<p>{<b>foo</b>}" checks for modifications to non-editable content
-FAIL [["delete",""]] "<p>{<b>foo</b>}" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b><br></b></p>" but got "<p><br></p>"
+PASS [["delete",""]] "<p>{<b>foo</b>}" compare innerHTML
 PASS [["delete",""]] "<p>{<b>foo</b>}" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<p>{<b>foo</b>}" queryCommandState("delete") before
 PASS [["delete",""]] "<p>{<b>foo</b>}" queryCommandValue("delete") before
@@ -726,7 +726,7 @@ PASS [["delete",""]] "<p>{<b>foo</b>}" queryCommandState("delete") after
 PASS [["delete",""]] "<p>{<b>foo</b>}" queryCommandValue("delete") after
 PASS [["delete",""]] "<p><b>f[]</b>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<p><b>f[]</b>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<p><b>f[]</b>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><b><br></b></p>" but got "<p><br></p>"
+PASS [["delete",""]] "<p><b>f[]</b>" compare innerHTML
 PASS [["delete",""]] "<p><b>f[]</b>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<p><b>f[]</b>" queryCommandState("delete") before
 PASS [["delete",""]] "<p><b>f[]</b>" queryCommandValue("delete") before
@@ -735,7 +735,7 @@ PASS [["delete",""]] "<p><b>f[]</b>" queryCommandState("delete") after
 PASS [["delete",""]] "<p><b>f[]</b>" queryCommandValue("delete") after
 PASS [["delete",""]] "<b>[foo]</b>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<b>[foo]</b>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<b>[foo]</b>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b><br></b>" but got "<br>"
+PASS [["delete",""]] "<b>[foo]</b>" compare innerHTML
 PASS [["delete",""]] "<b>[foo]</b>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<b>[foo]</b>" queryCommandState("delete") before
 PASS [["delete",""]] "<b>[foo]</b>" queryCommandValue("delete") before
@@ -744,7 +744,7 @@ PASS [["delete",""]] "<b>[foo]</b>" queryCommandState("delete") after
 PASS [["delete",""]] "<b>[foo]</b>" queryCommandValue("delete") after
 PASS [["delete",""]] "<div><b>[foo]</b></div>": execCommand("delete", false, "") return value
 PASS [["delete",""]] "<div><b>[foo]</b></div>" checks for modifications to non-editable content
-FAIL [["delete",""]] "<div><b>[foo]</b></div>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b><br></b></div>" but got "<br>"
+FAIL [["delete",""]] "<div><b>[foo]</b></div>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><br></div>" but got "<br>"
 PASS [["delete",""]] "<div><b>[foo]</b></div>" queryCommandIndeterm("delete") before
 PASS [["delete",""]] "<div><b>[foo]</b></div>" queryCommandState("delete") before
 PASS [["delete",""]] "<div><b>[foo]</b></div>" queryCommandValue("delete") before
