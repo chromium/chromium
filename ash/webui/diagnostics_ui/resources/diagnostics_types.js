@@ -404,6 +404,14 @@ export const ChannelBand = {
 export let ChannelProperties;
 
 /**
+ * @typedef {{
+ *   routine: !RoutineType,
+ *   blocking: boolean,
+ * }}
+ */
+export let RoutineProperties;
+
+/**
  * Type alias for ConnectionType.
  * @typedef {ash.diagnostics.mojom.ConnectionType}
  */

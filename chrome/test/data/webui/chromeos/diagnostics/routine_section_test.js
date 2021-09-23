@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://diagnostics/routine_result_entry.js';
 import 'chrome://diagnostics/routine_section.js';
 
 import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {createRoutine} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakePowerRoutineResults, fakeRoutineResults} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
+import {getRoutineType} from 'chrome://diagnostics/routine_result_entry.js';
 import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -955,13 +956,18 @@ export function routineSectionTestSuite() {
         });
   });
 
-  test('StopAfterFirstFailureInRoutineGroup', () => {
+
+  test('StopAfterFirstBlockingFailureInRoutineGroup', () => {
     let localNetworkGroup = new RoutineGroup(
-        [RoutineType.kGatewayCanBePinged, RoutineType.kLanConnectivity],
+        [
+          createRoutine(RoutineType.kGatewayCanBePinged, true),
+          createRoutine(RoutineType.kLanConnectivity, true)
+        ],
         'localNetworkGroupLabel');
 
     let nameResolutionGroup = new RoutineGroup(
-        [RoutineType.kDnsResolverPresent], 'nameResolutionGroupLabel');
+        [createRoutine(RoutineType.kDnsResolverPresent, true)],
+        'nameResolutionGroupLabel');
     let groups = [localNetworkGroup, nameResolutionGroup];
     routineController.setFakeStandardRoutineResult(
         RoutineType.kGatewayCanBePinged, StandardRoutineResult.kTestPassed);
@@ -1000,7 +1006,7 @@ export function routineSectionTestSuite() {
           const entries = getEntries();
           // We've encountered a test failure which means we should no longer
           // update the status of our remaining routine result entries.
-          assertTrue(routineSectionElement.ignoreRoutineStatusUpdates);
+          assertTrue(getResultList().ignoreRoutineStatusUpdates);
 
           // Second routine in the first group should have completed.
 
@@ -1030,7 +1036,201 @@ export function routineSectionTestSuite() {
           assertEquals(
               routineSectionElement.testSuiteStatus,
               TestSuiteStatus.kCompleted);
-          assertFalse(routineSectionElement.ignoreRoutineStatusUpdates);
+          assertFalse(getResultList().ignoreRoutineStatusUpdates);
+        });
+  });
+
+  test('NonBlockingRoutineFailureHandledCorrectly', () => {
+    let localNetworkGroup = new RoutineGroup(
+        [
+          createRoutine(RoutineType.kSignalStrength, false),
+          createRoutine(RoutineType.kCaptivePortal, false),
+        ],
+        'wifiGroupLabel');
+
+    let nameResolutionGroup = new RoutineGroup(
+        [createRoutine(RoutineType.kDnsResolverPresent, true)],
+        'nameResolutionGroupLabel');
+    let groups = [localNetworkGroup, nameResolutionGroup];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kSignalStrength, StandardRoutineResult.kTestFailed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kCaptivePortal, StandardRoutineResult.kTestPassed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kDnsResolverPresent, StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(groups)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          const entries = getEntries();
+
+          // First routine should be running.
+          assertEquals(
+              RoutineType.kSignalStrength, entries[0].item.routines[0]);
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+          assertFalse(getResultList().ignoreRoutineStatusUpdates);
+
+          // Second routine in the first group should still be running
+          // despite the |kSignalStrength| routine failure.
+          assertEquals(RoutineType.kCaptivePortal, entries[0].item.routines[1]);
+          assertEquals(
+              getCurrentTestName(),
+              getRoutineType(entries[0].item.routines[1]));
+
+          // Text badge should display 'WARNING' for the first group.
+          const textBadge = entries[0].shadowRoot.querySelector('#status');
+          dx_utils.assertElementContainsText(
+              textBadge.$$('#textBadge'), 'WARNING');
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+
+          // Text badge should still display 'WARNING' for the first group.
+          const textBadge = entries[0].shadowRoot.querySelector('#status');
+          dx_utils.assertElementContainsText(
+              textBadge.$$('#textBadge'), 'WARNING');
+
+          // First routine in the second group should be running.
+          assertEquals(
+              RoutineType.kDnsResolverPresent, entries[1].item.routines[0]);
+          assertEquals(ExecutionProgress.kRunning, entries[1].item.progress);
+
+
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+
+          // Text badge should display 'PASSED' for the second group.
+          const textBadge = entries[1].shadowRoot.querySelector('#status');
+          dx_utils.assertElementContainsText(
+              textBadge.$$('#textBadge'), 'PASSED');
+          assertEquals(ExecutionProgress.kCompleted, entries[1].item.progress);
+          assertEquals(
+              routineSectionElement.testSuiteStatus,
+              TestSuiteStatus.kCompleted);
+        });
+  });
+
+  test('MultipleNonBlockingTestsFail', () => {
+    let groups = [new RoutineGroup(
+        [
+          createRoutine(RoutineType.kSignalStrength, false),
+          createRoutine(RoutineType.kCaptivePortal, false),
+        ],
+        'wifiGroupLabel')];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kSignalStrength, StandardRoutineResult.kTestFailed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kCaptivePortal, StandardRoutineResult.kTestFailed);
+
+    return initializeRoutineSection(groups)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          const entries = getEntries();
+          // First routine should be running.
+          assertEquals(
+              RoutineType.kSignalStrength, entries[0].item.routines[0]);
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+          assertFalse(getResultList().ignoreRoutineStatusUpdates);
+          // Second routine in the first group should still be running
+          // despite the |kSignalStrength| routine failure.
+          assertEquals(RoutineType.kCaptivePortal, entries[0].item.routines[1]);
+          assertEquals(
+              getCurrentTestName(),
+              getRoutineType(entries[0].item.routines[1]));
+          // Text badge should display 'WARNING' for the first group.
+          const textBadge = entries[0].shadowRoot.querySelector('#status');
+          dx_utils.assertElementContainsText(
+              textBadge.$$('#textBadge'), 'WARNING');
+          // Failed test text should be set properly.
+          assertEquals(entries[0].item.failedTest, RoutineType.kSignalStrength);
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+          // Text badge should still display 'WARNING' for the first group.
+          const textBadge = entries[0].shadowRoot.querySelector('#status');
+          dx_utils.assertElementContainsText(
+              textBadge.$$('#textBadge'), 'WARNING');
+          // Failed test does not get overwritten.
+          assertEquals(entries[0].item.failedTest, RoutineType.kSignalStrength);
+        });
+  });
+
+  test('LastNonBlockingRoutineInGroupFails', () => {
+    let groups = [new RoutineGroup(
+        [
+          createRoutine(RoutineType.kSignalStrength, false),
+          createRoutine(RoutineType.kCaptivePortal, false),
+        ],
+        'wifiGroupLabel')];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kSignalStrength, StandardRoutineResult.kTestPassed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kCaptivePortal, StandardRoutineResult.kTestFailed);
+
+    return initializeRoutineSection(groups)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          const entries = getEntries();
+          // First routine should be running.
+          assertEquals(
+              RoutineType.kSignalStrength, entries[0].item.routines[0]);
+          assertEquals(ExecutionProgress.kRunning, entries[0].item.progress);
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+          assertEquals(RoutineType.kCaptivePortal, entries[0].item.routines[1]);
+          assertEquals(
+              getCurrentTestName(),
+              getRoutineType(entries[0].item.routines[1]));
+          // Text badge should display 'RUNNING' for the first group since
+          // the signal strength test passed but we still have unfinished
+          // routines in this group.
+          const textBadge = entries[0].shadowRoot.querySelector('#status');
+          dx_utils.assertElementContainsText(
+              textBadge.$$('#textBadge'), 'RUNNING');
+          // Failed test text should be unset.
+          assertFalse(!!entries[0].item.failedTest);
+          // Resolve the running test.
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          const entries = getEntries();
+          // Text badge should display 'WARNING' despite being in a completed
+          // state.
+          const textBadge = entries[0].shadowRoot.querySelector('#status');
+          dx_utils.assertElementContainsText(
+              textBadge.$$('#textBadge'), 'WARNING');
+          assertEquals(entries[0].item.progress, ExecutionProgress.kCompleted);
+          // Failed test text should be set properly.
+          assertEquals(entries[0].item.failedTest, RoutineType.kCaptivePortal);
         });
   });
 }

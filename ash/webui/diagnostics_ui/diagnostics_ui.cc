@@ -241,6 +241,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"testRunningBadgeText", IDS_DIAGNOSTICS_TEST_RUNNING_BADGE_TEXT},
       {"testSkippedBadgeText", IDS_DIAGNOSTICS_TEST_SKIPPED_BADGE_TEXT},
       {"testStoppedBadgeText", IDS_DIAGNOSTICS_TEST_STOPPED_BADGE_TEXT},
+      {"testWarningBadgeText", IDS_DIAGNOSTICS_TEST_WARNING_BADGE_TEXT},
       {"testSuccess", IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT},
       {"testSucceededBadgeText", IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT},
       {"troubleConnecting", IDS_DIAGNOSTICS_TROUBLE_CONNECTING},

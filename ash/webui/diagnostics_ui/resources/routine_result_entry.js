@@ -236,6 +236,15 @@ Polymer({
         break;
       case ExecutionProgress.kCompleted:
         this.testCompleted_ = true;
+        // Prevent warning state from being overridden.
+        if (this.item.inWarningState) {
+          this.setBadgeTypeAndText_(
+              BadgeType.WARNING,
+              loadTimeData.getString('testWarningBadgeText'));
+          this.announceRoutineStatus_();
+          return;
+        }
+
         const testPassed = this.usingRoutineGroups ?
             !this.item.failedTest :
             (this.item.result &&
@@ -250,6 +259,11 @@ Polymer({
       case ExecutionProgress.kSkipped:
         this.setBadgeTypeAndText_(
             BadgeType.SKIPPED, loadTimeData.getString('testSkippedBadgeText'));
+        this.announceRoutineStatus_();
+        break;
+      case ExecutionProgress.kWarning:
+        this.setBadgeTypeAndText_(
+            BadgeType.WARNING, loadTimeData.getString('testWarningBadgeText'));
         this.announceRoutineStatus_();
         break;
       default:
@@ -293,6 +307,9 @@ Polymer({
       case BadgeType.ERROR:
         lineColor = 'red';
         break;
+      case BadgeType.WARNING:
+        lineColor = 'yellow';
+        break;
       case BadgeType.STOPPED:
       case BadgeType.QUEUED:
         return '';
@@ -317,6 +334,7 @@ Polymer({
       return '';
     }
 
-    return loadTimeData.getStringF('routineFailedText', this.item.failedTest);
+    return loadTimeData.getStringF(
+        'routineFailedText', getRoutineType(this.item.failedTest));
   },
 });

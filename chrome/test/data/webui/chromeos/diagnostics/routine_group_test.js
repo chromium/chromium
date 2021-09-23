@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {createRoutine} from 'chrome://diagnostics/diagnostics_utils.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
-import {getRoutineType} from 'chrome://diagnostics/routine_result_entry.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 /**
  * @param {!RoutineType} routineType
@@ -39,13 +39,24 @@ function getRoutinedFailedStatusItem(routineType) {
   return item;
 }
 
+/**
+ * Get nonBlockingRoutines_ private member for testing.
+ * @suppress {visibility} // access private member
+ * @param {!RoutineGroup} routineGroup
+ * @return {!Set<!RoutineType>}
+ */
+function getNonBlockingRoutines(routineGroup) {
+  return routineGroup.nonBlockingRoutines_;
+}
+
 export function routineGroupTestSuite() {
-  const {kSignalStrength, kHasSecureWiFiConnection} = RoutineType;
+  const {kSignalStrength, kHasSecureWiFiConnection, kCaptivePortal} =
+      RoutineType;
   test('GroupStatusSetCorrectly', () => {
     let routineGroup = new RoutineGroup(
         [
-          kSignalStrength,
-          kHasSecureWiFiConnection,
+          createRoutine(kSignalStrength, false),
+          createRoutine(kHasSecureWiFiConnection, false),
         ],
         'wifiGroupText');
 
@@ -83,23 +94,37 @@ export function routineGroupTestSuite() {
   test('TestFailureHandledCorrectly', () => {
     let routineGroup = new RoutineGroup(
         [
-          kSignalStrength,
-          kHasSecureWiFiConnection,
+          createRoutine(kSignalStrength, false),
+          createRoutine(kHasSecureWiFiConnection, false),
         ],
         'wifiGroupText');
 
     let signalStrengthFailed = getRoutinedFailedStatusItem(kSignalStrength);
 
     routineGroup.setStatus(signalStrengthFailed);
-    assertEquals(routineGroup.failedTest, getRoutineType(kSignalStrength));
+    assertEquals(routineGroup.failedTest, kSignalStrength);
+    assertTrue(routineGroup.inWarningState);
 
     let hasSecureWiFiConnectionFailed =
         getRoutinedFailedStatusItem(kHasSecureWiFiConnection);
     routineGroup.setStatus(hasSecureWiFiConnectionFailed);
 
     // Failed test does not get overwritten.
-    // TODO(michaelcheco): Update when change is made to cancel remaining tests
-    // after a failure is encountered.
-    assertEquals(routineGroup.failedTest, getRoutineType(kSignalStrength));
+    assertEquals(routineGroup.failedTest, kSignalStrength);
+    assertTrue(routineGroup.inWarningState);
+  });
+
+  test('NonBlockingRoutinesSetInitializedCorrectly', () => {
+    let routineGroup = new RoutineGroup(
+        [
+          createRoutine(kSignalStrength, false),
+          createRoutine(kHasSecureWiFiConnection, false),
+          createRoutine(kCaptivePortal, true),
+        ],
+        'wifiGroupText');
+    let nonBlockingRoutines = getNonBlockingRoutines(routineGroup);
+    assertTrue(nonBlockingRoutines.has(kSignalStrength));
+    assertTrue(nonBlockingRoutines.has(kHasSecureWiFiConnection));
+    assertFalse(nonBlockingRoutines.has(kCaptivePortal));
   });
 }

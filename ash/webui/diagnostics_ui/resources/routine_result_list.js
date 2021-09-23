@@ -45,6 +45,15 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Only used with routine groups.
+     * @type {boolean}
+     */
+    ignoreRoutineStatusUpdates: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -96,11 +105,23 @@ Polymer({
    * @param {!ResultStatusItem} status
    */
   onStatusUpdate(status) {
+    if (this.ignoreRoutineStatusUpdates) {
+      return;
+    }
+
     assert(this.results_.length > 0);
     this.results_.forEach((result, idx) => {
       if (this.usingRoutineGroups && result.routines.includes(status.routine)) {
         result.setStatus(status);
+        const shouldUpdateRoutineUI = result.hasBlockingFailure();
+        this.hideVerticalLines = shouldUpdateRoutineUI;
         this.updateRoutineStatus_(idx, result.clone());
+        // Whether we should skip the remaining routines (true when a blocking
+        // routine fails) or not.
+        if (shouldUpdateRoutineUI) {
+          this.ignoreRoutineStatusUpdates = true;
+          this.updateRoutineUIAfterFailure();
+        }
         return;
       }
 
@@ -133,6 +154,13 @@ Polymer({
         this.updateRoutineStatus_(i, routineGroup.clone());
       }
     })
+  },
+
+  /**
+   * Called from 'routine-section' after all routines have finished running.
+   */
+  resetIgnoreStatusUpdatesFlag() {
+    this.ignoreRoutineStatusUpdates = false;
   },
 
   /** @override */

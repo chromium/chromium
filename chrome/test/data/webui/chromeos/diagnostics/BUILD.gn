@@ -317,9 +317,9 @@ js_library("routine_group_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
+    "//ash/webui/diagnostics_ui/resources:diagnostics_utils",
     "//ash/webui/diagnostics_ui/resources:routine_group",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
-    "//ash/webui/diagnostics_ui/resources:routine_result_entry",
   ]
 }
 
@@ -365,6 +365,7 @@ js_library("routine_section_test") {
     "../..:chai_assert",
     "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
+    "//ash/webui/diagnostics_ui/resources:diagnostics_utils",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
     "//ash/webui/diagnostics_ui/resources:mojo_interface_provider",
     "//ash/webui/diagnostics_ui/resources:routine_group",
