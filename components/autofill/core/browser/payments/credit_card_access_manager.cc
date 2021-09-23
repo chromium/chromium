@@ -24,9 +24,11 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -279,16 +281,13 @@ void CreditCardAccessManager::FetchCreditCard(
     return;
   }
 
-  // Latency metrics should only be logged if the user is verifiable.
-#if !defined(OS_IOS)
-  bool should_log_latency_metrics = is_user_verifiable_.value_or(false);
-#endif
   // Return immediately if local card and log that unmask details were ignored.
   if (card->record_type() != CreditCard::MASKED_SERVER_CARD &&
       card->record_type() != CreditCard::VIRTUAL_CARD) {
     accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card);
 #if !defined(OS_IOS)
-    if (should_log_latency_metrics) {
+    // Latency metrics should only be logged if the user is verifiable.
+    if (is_user_verifiable_.value_or(false)) {
       AutofillMetrics::LogUserPerceivedLatencyOnCardSelection(
           AutofillMetrics::PreflightCallEvent::kDidNotChooseMaskedCard,
           GetOrCreateFIDOAuthenticator()->IsUserOptedIn());
@@ -299,48 +298,14 @@ void CreditCardAccessManager::FetchCreditCard(
 
   card_ = std::make_unique<CreditCard>(*card);
   accessor_ = accessor;
-  is_authentication_in_progress_ = true;
 
-  bool get_unmask_details_returned =
-      ready_to_start_authentication_.IsSignaled();
-  bool user_is_opted_in = IsFidoAuthenticationEnabled();
-  bool should_wait_to_authenticate =
-      user_is_opted_in && !get_unmask_details_returned;
-
-  // Logging metrics.
-#if !defined(OS_IOS)
-  if (should_log_latency_metrics) {
-    AutofillMetrics::LogUserPerceivedLatencyOnCardSelection(
-        get_unmask_details_returned
-            ? AutofillMetrics::PreflightCallEvent::
-                  kPreflightCallReturnedBeforeCardChosen
-            : AutofillMetrics::PreflightCallEvent::
-                  kCardChosenBeforePreflightCallReturned,
-        GetOrCreateFIDOAuthenticator()->IsUserOptedIn());
-  }
-#endif
-
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
-  // On desktop, show the verify pending dialog for opted-in user, unless it is
-  // already known that selected card requires CVC.
-  if (user_is_opted_in &&
-      (!get_unmask_details_returned || IsSelectedCardFidoAuthorized())) {
-    ShowVerifyPendingDialog();
-  }
-#endif
-
-  if (should_wait_to_authenticate) {
-    card_selected_without_unmask_details_timestamp_ =
-        AutofillTickClock::NowTicks();
-
-    // Wait for |ready_to_start_authentication_| to be signaled by
-    // OnDidGetUnmaskDetails() or until timeout before calling Authenticate().
-    ready_to_start_authentication_.OnEventOrTimeOut(
-        base::BindOnce(&CreditCardAccessManager::Authenticate,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kUnmaskDetailsResponseTimeoutMs));
+  // Direct to different flows based on the card record type.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableVirtualCardsRiskBasedAuthentication) &&
+      card_->record_type() == CreditCard::VIRTUAL_CARD) {
+    FetchVirtualCard();
   } else {
-    Authenticate(get_unmask_details_returned);
+    FetchMaskedServerCard();
   }
 }
 
@@ -765,6 +730,124 @@ std::string CreditCardAccessManager::GetKeyForUnmaskedCardsCache(
   if (card.record_type() == CreditCard::VIRTUAL_CARD)
     key += kVirtualCardIdentifier;
   return key;
+}
+
+void CreditCardAccessManager::FetchMaskedServerCard() {
+  is_authentication_in_progress_ = true;
+
+  bool get_unmask_details_returned =
+      ready_to_start_authentication_.IsSignaled();
+  bool user_is_opted_in = IsFidoAuthenticationEnabled();
+  bool should_wait_to_authenticate =
+      user_is_opted_in && !get_unmask_details_returned;
+
+  // Latency metrics should only be logged if the user is verifiable.
+#if !defined(OS_IOS)
+  if (is_user_verifiable_.value_or(false)) {
+    AutofillMetrics::LogUserPerceivedLatencyOnCardSelection(
+        get_unmask_details_returned
+            ? AutofillMetrics::PreflightCallEvent::
+                  kPreflightCallReturnedBeforeCardChosen
+            : AutofillMetrics::PreflightCallEvent::
+                  kCardChosenBeforePreflightCallReturned,
+        GetOrCreateFIDOAuthenticator()->IsUserOptedIn());
+  }
+#endif
+
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  // On desktop, show the verify pending dialog for opted-in user, unless it is
+  // already known that selected card requires CVC.
+  if (user_is_opted_in &&
+      (!get_unmask_details_returned || IsSelectedCardFidoAuthorized())) {
+    ShowVerifyPendingDialog();
+  }
+#endif
+
+  if (should_wait_to_authenticate) {
+    card_selected_without_unmask_details_timestamp_ =
+        AutofillTickClock::NowTicks();
+
+    // Wait for |ready_to_start_authentication_| to be signaled by
+    // OnDidGetUnmaskDetails() or until timeout before calling Authenticate().
+    ready_to_start_authentication_.OnEventOrTimeOut(
+        base::BindOnce(&CreditCardAccessManager::Authenticate,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::TimeDelta::FromMilliseconds(kUnmaskDetailsResponseTimeoutMs));
+  } else {
+    Authenticate(get_unmask_details_returned);
+  }
+}
+
+void CreditCardAccessManager::FetchVirtualCard() {
+  // TODO(crbug.com/1243475): Show pending dialog when the request is ongoing.
+
+  // Send a risk-based unmasking request to server to attempt to fetch the card.
+  absl::optional<GURL> last_committed_url_origin =
+      client_->GetLastCommittedURL().GetOrigin();
+  if (!last_committed_url_origin.has_value()) {
+    can_fetch_unmask_details_ = true;
+    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+  }
+
+  unmask_request_details_.last_committed_url_origin = last_committed_url_origin;
+  unmask_request_details_.card = *card_;
+  unmask_request_details_.reason = AutofillClient::UnmaskCardReason::kAutofill;
+  unmask_request_details_.billing_customer_number =
+      payments::GetBillingCustomerId(personal_data_manager_);
+
+  payments_client_->Prepare();
+  client_->LoadRiskData(
+      base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskRiskData,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CreditCardAccessManager::OnDidGetUnmaskRiskData(
+    const std::string& risk_data) {
+  unmask_request_details_.risk_data = risk_data;
+  payments_client_->UnmaskCard(
+      unmask_request_details_,
+      base::BindOnce(
+          &CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
+    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+  // TODO(crbug.com/1243475): Dismiss the pending dialog.
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+    if (!response_details.real_pan.empty()) {
+      // If the real pan is not empty, then complete card information has been
+      // fetched from the server (this is ensured in Payments Client). Pass the
+      // unmasked card to |accessor_| and end the session.
+      CreditCard card = *card_;
+      DCHECK_EQ(response_details.card_type,
+                AutofillClient::PaymentsRpcCardType::kVirtualCard);
+      card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
+      card.SetExpirationMonthFromString(
+          base::UTF8ToUTF16(response_details.expiration_month),
+          /*app_locale=*/std::string());
+      card.SetExpirationYearFromString(
+          base::UTF8ToUTF16(response_details.expiration_year));
+      can_fetch_unmask_details_ = true;
+      accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card,
+                                     base::UTF8ToUTF16(response_details.dcvv));
+      return;
+    }
+
+    // Otherwise further authentication is required to unmask the card.
+    DCHECK(!response_details.context_token.empty());
+    // TODO(crbug.com/1243475): Prefer FIDO auth if |fido_request_option| is
+    // populated. Otherwise show authentication selection dialog.
+    return;
+  }
+
+  // If RPC response contains any error, end the session and show the error
+  // dialog.
+  can_fetch_unmask_details_ = true;
+  accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+  // TODO(crbug.com/1243475): Add error handling: Show VCN error dialog given
+  // the error type.
 }
 
 }  // namespace autofill

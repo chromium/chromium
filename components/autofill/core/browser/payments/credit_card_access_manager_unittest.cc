@@ -119,11 +119,15 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
       DCHECK(card);
       number_ = card->number();
       cvc_ = cvc;
+      expiry_month_ = card->Expiration2DigitMonthAsString();
+      expiry_year_ = card->Expiration4DigitYearAsString();
     }
   }
 
   std::u16string number() { return number_; }
   std::u16string cvc() { return cvc_; }
+  std::u16string expiry_month() { return expiry_month_; }
+  std::u16string expiry_year() { return expiry_year_; }
   CreditCardFetchResult result() { return result_; }
 
  private:
@@ -133,6 +137,10 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
   std::u16string number_;
   // The returned CVC, if any.
   std::u16string cvc_;
+  // The two-digit expiration month in string.
+  std::u16string expiry_month_;
+  // The four-digit expiration year in string.
+  std::u16string expiry_year_;
   base::WeakPtrFactory<TestAccessor> weak_ptr_factory_{this};
 };
 
@@ -2093,6 +2101,42 @@ TEST_F(CreditCardAccessManagerTest, IsVirtualCardPresentInUnmaskedCache) {
   // Verify that the virtual card is present in the cache.
   EXPECT_TRUE(credit_card_access_manager_->IsCardPresentInUnmaskedCache(
       *unmasked_card));
+}
+
+TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableVirtualCardsRiskBasedAuthentication);
+  CreateServerCard(kTestGUID, kTestNumber, /*masked=*/false, kTestServerId);
+  CreditCard* virtual_card =
+      credit_card_access_manager_->GetCreditCard(kTestGUID);
+  virtual_card->set_record_type(CreditCard::VIRTUAL_CARD);
+
+  credit_card_access_manager_->FetchCreditCard(virtual_card,
+                                               accessor_->GetWeakPtr());
+
+  // Ensures the UnmaskRequestDetails is populated with correct contents.
+  EXPECT_TRUE(payments_client_->unmask_request()->context_token.empty());
+  EXPECT_FALSE(payments_client_->unmask_request()->risk_data.empty());
+  EXPECT_TRUE(payments_client_->unmask_request()
+                  ->last_committed_url_origin.has_value());
+
+  // Mock server response with valid card information.
+  payments::PaymentsClient::UnmaskResponseDetails response;
+  response.real_pan = "4111111111111111";
+  response.dcvv = "321";
+  response.expiration_month = test::NextMonth();
+  response.expiration_year = test::NextYear();
+  response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
+  credit_card_access_manager_->OnVirtualCardUnmaskResponseReceived(
+      AutofillClient::PaymentsRpcResult::kSuccess, response);
+
+  // Expect the accessor receives the correct response.
+  EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+  EXPECT_EQ(accessor_->number(), u"4111111111111111");
+  EXPECT_EQ(accessor_->cvc(), u"321");
+  EXPECT_EQ(accessor_->expiry_month(), base::UTF8ToUTF16(test::NextMonth()));
+  EXPECT_EQ(accessor_->expiry_year(), base::UTF8ToUTF16(test::NextYear()));
 }
 
 }  // namespace autofill

@@ -166,6 +166,8 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
                            PreflightCallRateLimited);
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
                            UnmaskAuthFlowEvent_AlsoLogsVirtualCardSubhistogram);
+  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
+                           RiskBasedVirtualCardUnmasking_Success);
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
@@ -276,6 +278,21 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // `unmasked_card_cache_`.
   std::string GetKeyForUnmaskedCardsCache(const CreditCard& card) const;
 
+  // Helper function to fetch masked server cards.
+  void FetchMaskedServerCard();
+
+  // Helper function to fetch virtual cards.
+  void FetchVirtualCard();
+
+  // Callback function invoked when risk data is fetched.
+  void OnDidGetUnmaskRiskData(const std::string& risk_data);
+
+  // Callback function invoked when an unmask response for a virtual card has
+  // been received.
+  void OnVirtualCardUnmaskResponseReceived(
+      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsClient::UnmaskResponseDetails& response_details);
+
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
 
@@ -321,9 +338,14 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   UserOptInIntention opt_in_intention_ = UserOptInIntention::kUnspecified;
 #endif
 
-  // Suggested authentication method and other information to facilitate card
-  // unmasking.
+  // Struct to store necessary information to start an authentication. It is
+  // populated before an authentication is offered. It includes suggested
+  // authentication methods and other information to facilitate card unmasking.
   payments::PaymentsClient::UnmaskDetails unmask_details_;
+
+  // Struct to store information used during the server authentication regarding
+  // the card that user selected.
+  payments::PaymentsClient::UnmaskRequestDetails unmask_request_details_;
 
   // Resets when PrepareToFetchCreditCard() is called, if not already reset.
   // Signaled when OnDidGetUnmaskDetails() is called or after timeout.
