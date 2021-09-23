@@ -31,26 +31,44 @@ namespace {
 // process.
 bool IsWebContentsHung(content::WebContents* web_contents,
                        content::RenderProcessHost* hung_process) {
-  for (auto* frame : web_contents->GetAllFrames()) {
-    if (frame->GetProcess() == hung_process)
-      return true;
-  }
-  return false;
+  bool result = false;
+  // We only consider frames visible to the user for hung frames. This is
+  // fine because only frames receiving input are considered hung.
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](const content::RenderProcessHost* hung_process, bool* result,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->GetProcess() == hung_process) {
+          *result = true;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      hung_process, &result));
+  return result;
 }
 
 // Returns the URL of the first hung frame encountered in the WebContents.
 GURL GetURLOfAnyHungFrame(content::WebContents* web_contents,
                           content::RenderProcessHost* hung_process) {
-  for (auto* frame : web_contents->GetAllFrames()) {
-    if (frame->GetProcess() == hung_process)
-      return frame->GetLastCommittedURL();
-  }
+  GURL result;
+  // We only consider frames visible to the user for hung frames. This is
+  // fine because only frames receiving input are considered hung.
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](const content::RenderProcessHost* hung_process, GURL* result,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->GetProcess() == hung_process) {
+          *result = render_frame_host->GetLastCommittedURL();
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      hung_process, &result));
 
   // If a frame is attempting to commit a navigation into a hung renderer
   // process, then its |frame->GetProcess()| will still return the process
   // hosting the previously committed navigation.  In such case, the loop above
   // might not find any matching frame.
-  return GURL();
+  return result;
 }
 
 }  // namespace
