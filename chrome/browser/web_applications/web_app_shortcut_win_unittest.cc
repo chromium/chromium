@@ -4,6 +4,9 @@
 
 #include "chrome/browser/web_applications/web_app_shortcut_win.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -15,6 +18,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/util_constants.h"
+#include "components/services/app_service/public/cpp/icon_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
@@ -24,11 +28,13 @@ namespace web_app {
 namespace internals {
 namespace {
 
+constexpr char kWebAppId[] = "123";
+
 bool CreateTestAppShortcut(const base::FilePath& shortcut_path,
                            const base::FilePath::StringType& profile_name) {
   base::CommandLine args_cl(base::CommandLine::NO_PROGRAM);
   args_cl.AppendSwitchNative(switches::kProfileDirectory, profile_name);
-  args_cl.AppendSwitchASCII(switches::kAppId, "123");
+  args_cl.AppendSwitchASCII(switches::kAppId, kWebAppId);
 
   base::win::ShortcutProperties shortcut_properties;
   shortcut_properties.set_arguments(args_cl.GetArgumentsString());
@@ -192,6 +198,56 @@ TEST_F(WebAppShortcutWinTest,
             std::find(result.begin(), result.end(), shortcut_path_old_syntax));
   EXPECT_NE(result.end(),
             std::find(result.begin(), result.end(), shortcut_path_new_syntax));
+}
+
+TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath shortcut_dir = temp_dir.GetPath();
+
+  const base::FilePath::StringType shortcut_name =
+      FILE_PATH_LITERAL("test shortcut");
+  const base::FilePath shortcut_path =
+      GetShortcutPath(shortcut_dir, shortcut_name);
+
+  const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/web_app"));
+  const base::FilePath::StringType profile_name =
+      profile_path.BaseName().value();
+
+  ASSERT_TRUE(CreateTestAppShortcut(shortcut_path, profile_name));
+
+  // Create an icon file for the web app.
+  const base::FilePath icon_file =
+      GetIconFilePath(shortcut_dir, u"test shortcut");
+  gfx::ImageFamily image_family;
+  image_family.Add(gfx::Image(CreateDefaultApplicationIcon(5)));
+  EXPECT_TRUE(CheckAndSaveIcon(icon_file, image_family,
+                               /*refresh_shell_icon_cache=*/false));
+
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  EXPECT_EQ(1u, result.size());
+
+  // Update the web app with a new title.
+  ShortcutInfo new_shortcut_info;
+  new_shortcut_info.title = u"new title";
+  new_shortcut_info.profile_path = profile_path;
+  new_shortcut_info.profile_name = base::WideToUTF8(profile_name);
+  new_shortcut_info.extension_id = kWebAppId;
+
+  // Set the favicon to be the same as the original icon.
+  new_shortcut_info.favicon = std::move(image_family);
+
+  UpdatePlatformShortcuts(shortcut_dir, base::WideToUTF16(shortcut_name),
+                          new_shortcut_info);
+  // The shortcut with the old title should be deleted.
+  result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path,
+                                             base::WideToUTF16(shortcut_name));
+  EXPECT_EQ(0u, result.size());
+  // The shortcut with the new title should be found.
+  result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path,
+                                             new_shortcut_info.title);
+  EXPECT_EQ(1u, result.size());
 }
 
 TEST_F(WebAppShortcutWinTest, GetIconFilePath) {
