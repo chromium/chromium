@@ -2228,7 +2228,6 @@ crbug.com/399507 virtual/threaded/http/tests/devtools/tracing/timeline-paint/lay
 crbug.com/705125 fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
 
 # Working on getting the CSP tests going:
-crbug.com/694525 external/wpt/content-security-policy/connect-src/worker-from-guid.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/connect-src/worker-connect-src-blocked.sub.html [ Skip ]
 crbug.com/694525 external/wpt/content-security-policy/navigation/to-javascript-parent-initiated-child-csp.html [ Skip ]
 
