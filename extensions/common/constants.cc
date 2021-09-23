@@ -103,6 +103,8 @@ const uint8_t kWebstoreSignaturesPublicKey[] = {
 const size_t kWebstoreSignaturesPublicKeySize =
     base::size(kWebstoreSignaturesPublicKey);
 
+const char kUpdateURLData[] = "update_url_data";
+
 const int kMainThreadId = 0;
 
 const char kMimeTypeJpeg[] = "image/jpeg";

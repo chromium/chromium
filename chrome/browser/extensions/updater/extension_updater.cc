@@ -21,7 +21,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/extensions/api/module/module.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -98,6 +97,13 @@ int CalculateActivePingDays(const base::Time& last_active_ping_day,
   if (last_active_ping_day.is_null())
     return extensions::ManifestFetchData::kNeverPinged;
   return SanitizeDays((base::Time::Now() - last_active_ping_day).InDays());
+}
+
+std::string GetUpdateURLData(const extensions::ExtensionPrefs* prefs,
+                             const std::string& extension_id) {
+  std::string data;
+  prefs->ReadPrefAsString(extension_id, extensions::kUpdateURLData, &data);
+  return data;
 }
 
 }  // namespace
@@ -333,8 +339,7 @@ bool ExtensionUpdater::AddExtensionToDownloader(
   // communicate to the gallery update servers.
   std::string update_url_data;
   if (!ManifestURL::UpdatesFromGallery(&extension))
-    update_url_data =
-        extension::GetUpdateURLData(extension_prefs_, extension.id());
+    update_url_data = GetUpdateURLData(extension_prefs_, extension.id());
 
   return downloader_->AddPendingExtensionWithVersion(
       extension.id(), update_url, extension.location(),

@@ -124,6 +124,9 @@ extern const char kWebStoreAppId[];
 extern const uint8_t kWebstoreSignaturesPublicKey[];
 extern const size_t kWebstoreSignaturesPublicKeySize;
 
+// A preference for storing the extension's update URL data.
+extern const char kUpdateURLData[];
+
 // Thread identifier for the main renderer thread (as opposed to a service
 // worker thread).
 // This is the default thread id used for extension event listeners registered
