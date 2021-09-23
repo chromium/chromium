@@ -10,19 +10,18 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.StrictMode;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnScrollChangedListener;
-import android.widget.ImageView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.XmlRes;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.util.ToolbarUtils;
 
 /**
  * A helper class for Settings.
@@ -88,42 +87,14 @@ public class SettingsUtils {
      * A helper that is used to set the visibility of the overflow menu view in a given activity.
      *
      * @param activity The Activity containing the action bar with the menu.
-     * @param visibility The new visibility of the overflow menu view.
+     * @param visibility The Activity containing the action bar with the menu.
      * @return True if the visibility could be set, false otherwise (e.g. because no menu exists).
      */
     public static boolean setOverflowMenuVisibility(@Nullable Activity activity, int visibility) {
         if (activity == null) return false;
-        ViewGroup actionBar = activity.findViewById(R.id.action_bar);
-        int i = actionBar.getChildCount();
-        ActionMenuView menuView = null;
-        while (i-- > 0) {
-            if (actionBar.getChildAt(i) instanceof ActionMenuView) {
-                menuView = (ActionMenuView) actionBar.getChildAt(i);
-                break;
-            }
-        }
-        if (menuView == null) return false;
-        View overflowButton = menuView.getChildAt(menuView.getChildCount() - 1);
-        if (!isOverflowMenuButton(overflowButton, menuView)) return false;
-        overflowButton.setVisibility(visibility);
+        Toolbar toolbar = activity.findViewById(R.id.action_bar);
+        if (toolbar == null) return false;
+        ToolbarUtils.setOverflowMenuVisibility(toolbar, visibility);
         return true;
-    }
-
-    /**
-     * There is no regular way to access the overflow button of an {@link ActionMenuView}.
-     * Checking whether a given view is an {@link ImageView} with the correct icon is an
-     * approximation to this issue as the exact icon that the parent menu will set is always known.
-     *
-     * @param button A view in the |parentMenu| that might be the overflow menu.
-     * @param parentMenu The menu that created the overflow button.
-     * @return True, if the given button can belong to the overflow menu. False otherwise.
-     */
-    private static boolean isOverflowMenuButton(View button, ActionMenuView parentMenu) {
-        if (button == null) return false;
-        if (!(button instanceof ImageView)) {
-            return false; // Normal items are usually TextView or LinearLayouts.
-        }
-        ImageView imageButton = (ImageView) button;
-        return imageButton.getDrawable() == parentMenu.getOverflowIcon();
     }
 }
