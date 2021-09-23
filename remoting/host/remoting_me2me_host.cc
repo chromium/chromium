@@ -541,6 +541,10 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
 #if defined(REMOTING_MULTI_PROCESS)
   auto endpoint =
       mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(*cmd_line);
+  if (!endpoint.is_valid()) {
+    LOG(ERROR) << "IPC channel endpoint provided via command line param was missing or invalid";
+    return false;
+  }
   auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
 
   // Connect to the daemon process.
