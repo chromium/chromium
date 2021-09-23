@@ -264,7 +264,37 @@ bool SideSearchBrowserController::GetSidePanelToggledOpen() const {
 
 void SideSearchBrowserController::SidePanelButtonPressed() {
   // Toggle the side panel visibility.
-  SetSidePanelToggledOpen(!GetSidePanelToggledOpen());
+  const bool new_toggled_state = !GetSidePanelToggledOpen();
+  SetSidePanelToggledOpen(new_toggled_state);
+  if (!new_toggled_state &&
+      base::FeatureList::IsEnabled(features::kSideSearchClearCacheWhenClosed)) {
+    // If per tab state is enabled only clear the side contents for the
+    // currently active tab.
+    base::FeatureList::IsEnabled(features::kSideSearchStatePerTab)
+        ? ClearSideContentsCacheForActiveTab()
+        : ClearSideContentsCacheForBrowser();
+  }
+}
+
+void SideSearchBrowserController::ClearSideContentsCacheForBrowser() {
+  web_view_->SetWebContents(nullptr);
+
+  // Notify the tab helpers that their side panel contentes can be cleared away.
+  TabStripModel* tab_strip_model = browser_view_->browser()->tab_strip_model();
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    SideSearchTabContentsHelper::FromWebContents(
+        tab_strip_model->GetWebContentsAt(i))
+        ->ClearSidePanelContents();
+  }
+}
+
+void SideSearchBrowserController::ClearSideContentsCacheForActiveTab() {
+  web_view_->SetWebContents(nullptr);
+
+  if (auto* active_contents = browser_view_->GetActiveWebContents()) {
+    SideSearchTabContentsHelper::FromWebContents(active_contents)
+        ->ClearSidePanelContents();
+  }
 }
 
 void SideSearchBrowserController::SetSidePanelToggledOpen(bool toggled_open) {

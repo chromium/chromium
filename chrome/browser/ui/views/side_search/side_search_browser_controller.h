@@ -64,6 +64,15 @@ class SideSearchBrowserController
   // Toggles panel visibility on button press.
   void SidePanelButtonPressed();
 
+  // Called when the side panel is toggled into the closed state. Clears the
+  // side panel contents for all tabs belonging to the side panel's browser
+  // window.
+  void ClearSideContentsCacheForBrowser();
+
+  // Clears the side contents for the currently active tab in this browser
+  // window.
+  void ClearSideContentsCacheForActiveTab();
+
   // Updates the `side_panel_`'s visibility and updates it to host the side
   // contents associated with the currently active tab for this browser window.
   void UpdateSidePanel();
