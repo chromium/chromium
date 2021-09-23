@@ -287,11 +287,18 @@ HeadlessWebContentsImpl::CreateForChildContents(
   child->begin_frame_control_enabled_ = parent->begin_frame_control_enabled_;
   child->InitializeWindow(child->web_contents_->GetContainerBounds());
 
-  // There may already be frames, so make sure they also have our services.
-  for (content::RenderFrameHost* frame_host :
-       child->web_contents_->GetAllFrames()) {
-    child->RenderFrameCreated(frame_host);
-  }
+  // There may already be frames and we may have missed the RenderFrameCreated
+  // callback so make sure they also have our services.
+  // We want to iterate all frame trees because RenderFrameCreated gets called
+  // for any RenderFrame created. base::Unretained is safe here because
+  // ForEachRenderFrameHost is synchronous.
+  child->web_contents_->ForEachRenderFrameHost(base::BindRepeating(
+      [](HeadlessWebContentsImpl* child,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive())
+          child->RenderFrameCreated(render_frame_host);
+      },
+      child.get()));
 
   return child;
 }
