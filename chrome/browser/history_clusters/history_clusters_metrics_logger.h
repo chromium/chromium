@@ -14,15 +14,18 @@ namespace history_clusters {
 // The initial state that describes how an interaction with the HistoryClusters
 // UI was started.
 //
-// Keep in sync with HistoryClustersInitialState in enums.xml.
+// Keep in sync with HistoryClustersInitialState in
+// tools/metrics/histograms/enums.xml.
 enum class HistoryClustersInitialState {
   kUnknown = 0,
   // The HistoryClusters UI was opened via direct URL, i.e., not opened via any
   // other surface/path such as an omnibox action or other UI surface.
   kDirectNavigation = 1,
-
+  // The HistoryClusters UI was opened indirectly; e.g., using the link the
+  // chrome://history sidebar.
+  kIndirectNavigation = 2,
   // Add new values above this line.
-  kMax = kDirectNavigation,
+  kMax = kIndirectNavigation,
 };
 
 // The final state, or outcome, of an interaction on the HistoryClusters UI.

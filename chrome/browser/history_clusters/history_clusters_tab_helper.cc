@@ -310,17 +310,13 @@ void HistoryClustersTabHelper::DidStartNavigation(
 
 void HistoryClustersTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Will detect when the history clusters page was navigated to directly (e.g.,
-  // through the omnibox, by page refresh, or by page back/forward), as opposed
-  // to indirectly (e.g. through the side bar on the history page).
-  // And will update this page's associated `HistoryClustersMetricsLogger`.
-  // TODO(manukh): Indirect navigations currently don't log UKM and UMA metrics
-  //  but they should.
+  // Will detect when the history clusters page was navigated to, either
+  // directly (e.g., through the omnibox, by page refresh, or by page
+  // back/forward), or indirectly (e.g. through the side bar on the history
+  // page). And will update this page's associated
+  // `HistoryClustersMetricsLogger`.
 
   if (!navigation_handle->IsInPrimaryMainFrame()) {
-    return;
-  }
-  if (navigation_handle->IsSameDocument()) {
     return;
   }
 
@@ -328,21 +324,24 @@ void HistoryClustersTabHelper::DidFinishNavigation(
                      GURL(chrome::kChromeUIHistoryClustersURL))) {
     return;
   }
+
+  auto* logger =
+      history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+          navigation_handle->GetWebContents()->GetPrimaryPage());
+  logger->set_navigation_id(navigation_handle->GetNavigationId());
+
   // If the transition type is typed (meaning directly entered into the
   // address bar), PAGE_TRANSITION_TYPED, or is partially typed and selected
   // from the omnibox history, which results in PAGE_TRANSITION_RELOADS, this
   // usage of the history clusters UI is considered a "direct" navigation.
-  if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
-                               ui::PAGE_TRANSITION_TYPED) ||
+  auto initial_state =
       PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
-                               ui::PAGE_TRANSITION_RELOAD)) {
-    auto* logger =
-        history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
-            navigation_handle->GetWebContents()->GetPrimaryPage());
-    logger->set_navigation_id(navigation_handle->GetNavigationId());
-    logger->set_initial_state(
-        history_clusters::HistoryClustersInitialState::kDirectNavigation);
-  }
+                               ui::PAGE_TRANSITION_TYPED) ||
+              PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                       ui::PAGE_TRANSITION_RELOAD)
+          ? history_clusters::HistoryClustersInitialState::kDirectNavigation
+          : history_clusters::HistoryClustersInitialState::kIndirectNavigation;
+  logger->set_initial_state(initial_state);
 }
 
 void HistoryClustersTabHelper::DidOpenRequestedURL(

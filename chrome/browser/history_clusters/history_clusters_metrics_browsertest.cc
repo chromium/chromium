@@ -153,4 +153,25 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
       HistoryClustersFinalState::kCloseTab, 0, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest, IndirectNavigation) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIHistoryURL)));
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "document.querySelector('#history-app').shadowRoot.querySelector('#"
+      "content-side-bar').shadowRoot.querySelector('#historyClusters').click()",
+      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* ukm_entry = entries[0];
+  ValidateHistoryClustersUKMEntry(
+      ukm_entry, HistoryClustersInitialState::kIndirectNavigation,
+      HistoryClustersFinalState::kCloseTab, 0, 0);
+}
+
 }  // namespace history_clusters

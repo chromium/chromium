@@ -40988,12 +40988,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <enum name="HistoryClustersInitialState">
   <summary>
-    The intial state that describes how an interaction with the HistoryClusters,
-    or Journeys, UI was started.
+    The initial state that describes how an interaction with the
+    HistoryClusters, or Journeys, UI was started.
   </summary>
   <int value="0" label="Unknown"/>
   <int value="1" label="kDirectNavigation">
     The UI was reached via direct navigation, not through any dedicated surface.
+  </int>
+  <int value="2" label="kIndirectNavigation">
+    The UI was reached via indirect navigation, e.g. a link.
   </int>
 </enum>
 
