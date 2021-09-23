@@ -22,6 +22,9 @@ class WaylandExchangeDataProvider final
       delete;
   ~WaylandExchangeDataProvider() override;
 
+  // OSExchangeDataProvider:
+  std::unique_ptr<OSExchangeDataProvider> Clone() const override;
+
   // Builds up the mime types list corresponding to the data formats available
   // for this instance.
   std::vector<std::string> BuildMimeTypesList() const;
