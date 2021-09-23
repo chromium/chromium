@@ -791,7 +791,7 @@
   {
     "name": "composite-after-paint",
     "owners": [ "pdr", "wangxianzhu" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "compositor-threaded-scrollbar-scrolling",
