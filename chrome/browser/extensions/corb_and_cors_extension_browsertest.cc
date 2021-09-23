@@ -1361,6 +1361,38 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 }
 
 // Test that requests from an extension background page use relaxed CORB
+// processing in `no-cors` mode.  See also https://crbug.com/1252173.
+IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+                       FromBackgroundPage_NoSniffXml_NoCors) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(InstallExtension());
+
+  // This test covers the default incognito mode (spanning mode) where there is
+  // only a single background page (i.e. no separate incognito background page).
+  EXPECT_FALSE(IncognitoInfo::IsSplitMode(extension()));
+
+  // Performs a cross-origin fetch from the background page in "no-cors" mode.
+  GURL cross_site_resource(
+      embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
+  base::Value request_init(base::Value::Type::DICTIONARY);
+  request_init.SetStringPath("mode", "no-cors");
+  std::string script =
+      CreateFetchScript(cross_site_resource, std::move(request_init));
+  content::WebContents* background_web_contents =
+      ProcessManager::Get(browser()->profile())
+          ->GetBackgroundHostForExtension(extension()->id())
+          ->host_contents();
+  content::DOMMessageQueue message_queue;
+  content::ExecuteScriptAsync(background_web_contents, script);
+  std::string fetch_result = PopString(&message_queue);
+
+  // Verify that no blocking occurred (this is a bit unusual, as "no-cors"
+  // responses are normally "opaque" - their body is normally not exposed to
+  // Javascript).  See also https://crbug.com/1252173.
+  EXPECT_EQ("nosniff.xml - body\n", fetch_result);
+}
+
+// Test that requests from an extension background page use relaxed CORB
 // processing.  This test covers split-mode extensions - see:
 // https://developer.chrome.com/docs/extensions/mv2/manifest/incognito/#split)
 IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
