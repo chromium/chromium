@@ -346,10 +346,8 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest,
   for (int i = 0; i < kNumberOfPages; ++i) {
     ASSERT_TRUE(GetPage(i));
     // The output is PS encapsulated in EMF.
-    // TODO(thestig): Update test expectations once PDFium generates PostScript
-    // with Type 42 fonts.
     ASSERT_TRUE(GetPageExpectedEmfData(
-        GetFileNameForPageNumber("pdf_converter_basic_ps_page_", i)));
+        GetFileNameForPageNumber("pdf_converter_basic_ps_type42_page_", i)));
     ComparePageEmfHeader();
     ComparePageEmfPayload();
   }
