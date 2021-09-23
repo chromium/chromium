@@ -52,7 +52,7 @@ SessionLogHandler::SessionLogHandler(
           select_file_policy_creator,
           std::make_unique<TelemetryLog>(),
           std::make_unique<RoutineLog>(base::FilePath(kRoutineLogBasePath)),
-          std::make_unique<NetworkingLog>(),
+          std::make_unique<NetworkingLog>(base::FilePath(kRoutineLogBasePath)),
           holding_space_client) {}
 
 SessionLogHandler::SessionLogHandler(
@@ -160,6 +160,9 @@ bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
 
     // Add the routine section for the network category.
     pieces.push_back(GetRoutineResultsString(network_routines));
+
+    // Add the network events section.
+    pieces.push_back(networking_log_->GetNetworkEvents());
   }
 
   return base::WriteFile(file_path, base::JoinString(pieces, "\n"));

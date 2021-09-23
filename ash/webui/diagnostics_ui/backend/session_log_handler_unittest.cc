@@ -155,7 +155,7 @@ class SessionLogHandlerTest : public testing::Test {
         temp_dir_.GetPath().AppendASCII(kRoutineLogFileName);
     auto telemetry_log = std::make_unique<TelemetryLog>();
     auto routine_log = std::make_unique<RoutineLog>(routine_log_path);
-    auto networking_log = std::make_unique<NetworkingLog>();
+    auto networking_log = std::make_unique<NetworkingLog>(temp_dir_.GetPath());
     telemetry_log_ = telemetry_log.get();
     routine_log_ = routine_log.get();
     networking_log_ = networking_log.get();

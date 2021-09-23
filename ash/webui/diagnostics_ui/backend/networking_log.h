@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/webui/diagnostics_ui/backend/async_log.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 
 namespace ash {
@@ -15,15 +16,18 @@ namespace diagnostics {
 
 class NetworkingLog {
  public:
-  NetworkingLog();
+  explicit NetworkingLog(const base::FilePath& log_base_path);
 
   NetworkingLog(const NetworkingLog&) = delete;
   NetworkingLog& operator=(const NetworkingLog&) = delete;
 
   ~NetworkingLog();
 
-  // Returns the networking log as a string.
+  // Returns the networking info section as a string.
   std::string GetNetworkInfo() const;
+
+  // Returns the networking events section as a string.
+  std::string GetNetworkEvents() const;
 
   // Updates the list of valid networks and which is active.
   void UpdateNetworkList(const std::vector<std::string>& observer_guids,
@@ -34,6 +38,10 @@ class NetworkingLog {
   void UpdateNetworkState(mojom::NetworkPtr network);
 
  private:
+  void LogEvent(const std::string& event_string);
+  void LogNetworkAdded(const mojom::NetworkPtr& network);
+  void LogNetworkRemoved(const mojom::NetworkPtr& network);
+  AsyncLog event_log_;
   std::string active_guid_;
   base::flat_map<std::string, mojom::NetworkPtr> latest_network_states_;
 };

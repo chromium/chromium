@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 
@@ -24,6 +25,7 @@ const char kNewline[] = "\n";
 
 // NetworkingInfo constants:
 const char kNetworkingInfoSectionName[] = "--- Network Info ---";
+const char kNetworkEventsSectionName[] = "--- Network Events ---";
 const char kNetworkNameTitle[] = "Name: ";
 const char kNetworkTypeTitle[] = "Type: ";
 const char kNetworkStateTitle[] = "State: ";
@@ -45,6 +47,12 @@ const char kNameServersTitle[] = "Name Servers: ";
 const char kGatewayTitle[] = "Gateway: ";
 const char kIPAddressTitle[] = "IP Address: ";
 const char kSubnetMaskTitle[] = "Subnet Mask: ";
+
+// Event log entries
+const char kEventLogFilename[] = "network_events.log";
+const char kNetworkAddedEventTemplate[] =
+    "%s network [%s] started in state %s\n";
+const char kNetworkRemovedEventTemplate[] = "%s network [%s] removed\n";
 
 std::string GetSubnetMask(int prefix) {
   uint32_t mask = (0xFFFFFFFF << (32 - prefix)) & 0xFFFFFFFF;
@@ -174,7 +182,9 @@ std::string GetNetworkType(mojom::NetworkType type) {
 
 }  // namespace
 
-NetworkingLog::NetworkingLog() = default;
+NetworkingLog::NetworkingLog(const base::FilePath& log_base_path)
+    : event_log_(log_base_path.Append(kEventLogFilename)) {}
+
 NetworkingLog::~NetworkingLog() = default;
 
 std::string NetworkingLog::GetNetworkInfo() const {
@@ -204,6 +214,11 @@ std::string NetworkingLog::GetNetworkInfo() const {
   return output.str();
 }
 
+std::string NetworkingLog::GetNetworkEvents() const {
+  return std::string(kNetworkEventsSectionName) + kNewline + kNewline +
+         event_log_.GetContents();
+}
+
 void NetworkingLog::UpdateNetworkList(
     const std::vector<std::string>& observer_guids,
     std::string active_guid) {
@@ -211,6 +226,7 @@ void NetworkingLog::UpdateNetworkList(
   for (auto iter = latest_network_states_.begin();
        iter != latest_network_states_.end();) {
     if (!base::Contains(observer_guids, iter->first)) {
+      LogNetworkRemoved(iter->second);
       iter = latest_network_states_.erase(iter);
       continue;
     }
@@ -222,7 +238,32 @@ void NetworkingLog::UpdateNetworkList(
 }
 
 void NetworkingLog::UpdateNetworkState(mojom::NetworkPtr network) {
+  if (!base::Contains(latest_network_states_, network->observer_guid)) {
+    LogNetworkAdded(network);
+  }
+
   latest_network_states_[network->observer_guid] = std::move(network);
+}
+
+void NetworkingLog::LogEvent(const std::string& event_string) {
+  const std::string datetime =
+      base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(base::Time::Now()));
+  event_log_.Append(datetime + " - " + event_string);
+}
+
+void NetworkingLog::LogNetworkAdded(const mojom::NetworkPtr& network) {
+  const std::string line = base::StringPrintf(
+      kNetworkAddedEventTemplate, GetNetworkType(network->type).c_str(),
+      network->mac_address.value_or("").c_str(),
+      GetNetworkStateString(network->state).c_str());
+  LogEvent(line);
+}
+
+void NetworkingLog::LogNetworkRemoved(const mojom::NetworkPtr& network) {
+  const std::string line = base::StringPrintf(
+      kNetworkRemovedEventTemplate, GetNetworkType(network->type).c_str(),
+      network->mac_address.value_or("").c_str());
+  LogEvent(line);
 }
 
 }  // namespace diagnostics
