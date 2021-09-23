@@ -43,6 +43,9 @@ constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
     "ts-trusted-surface";
 constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
 constexpr char kHatsSurveyTriggerAccuracyTips[] = "accuracy-tips";
+constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
+constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
+constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
@@ -168,6 +171,14 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       kHatsSurveyTriggerAccuracyTips,
       /*presupplied_trigger_id=*/absl::nullopt, std::vector<std::string>{},
       std::vector<std::string>{"Tip shown for URL", "UI interaction"});
+
+  // Autofill surveys.
+  survey_configs.emplace_back(&features::kAutofillAddressSurvey,
+                              kHatsSurveyTriggerAutofillAddress);
+  survey_configs.emplace_back(&features::kAutofillCardSurvey,
+                              kHatsSurveyTriggerAutofillCard);
+  survey_configs.emplace_back(&features::kAutofillPasswordSurvey,
+                              kHatsSurveyTriggerAutofillPassword);
 
   return survey_configs;
 }

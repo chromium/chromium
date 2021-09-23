@@ -72,6 +72,16 @@ extern const base::Feature kAppShimNewCloseBehavior;
 
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kAsyncDns;
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAutofillAddressSurvey;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAutofillCardSurvey;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAutofillPasswordSurvey;
+#endif
+
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kBackgroundModeAllowRestart;

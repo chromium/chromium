@@ -87,6 +87,22 @@ const base::Feature kAsyncDns {
 #endif
 };
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+// Enables or disables the Autofill survey triggered by opening a prompt to
+// save address info.
+const base::Feature kAutofillAddressSurvey{"AutofillAddressSurvey",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Autofill survey triggered by opening a prompt to
+// save credit card info.
+const base::Feature kAutofillCardSurvey{"AutofillCardSurvey",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Autofill survey triggered by opening a prompt to
+// save password info.
+const base::Feature kAutofillPasswordSurvey{"AutofillPasswordSurvey",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Enables the Restart background mode optimization. When all Chrome UI is
 // closed and it goes in the background, allows to restart the browser to

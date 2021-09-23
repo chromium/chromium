@@ -9,7 +9,10 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
@@ -19,6 +22,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/color/color_id.h"
@@ -307,6 +311,14 @@ SaveAddressProfileView::SaveAddressProfileView(
                       CreateAddressSectionIcon(vector_icons::kExtensionIcon),
                       CreateNicknameEditableCombobox());
   }
+
+  Profile* browser_profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      browser_profile, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerAutofillAddress, web_contents, 10000);
 }
 
 SaveAddressProfileView::~SaveAddressProfileView() = default;
