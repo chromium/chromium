@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -205,6 +206,8 @@ void HistoryClustersHandler::SetPage(
 }
 
 void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
+  base::TimeTicks query_start_time = base::TimeTicks::Now();
+
   const std::string& query = query_params->query;
   const size_t max_count = query_params->max_count;
   base::Time end_time;
@@ -232,7 +235,8 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
       base::BindOnce(&QueryClustersResultToMojom, profile_, query,
                      query_params->end_time.has_value())
           .Then(base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
-                               weak_ptr_factory_.GetWeakPtr())),
+                               weak_ptr_factory_.GetWeakPtr(),
+                               query_start_time)),
       &query_task_tracker_);
 }
 
@@ -275,8 +279,13 @@ void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
 }
 
 void HistoryClustersHandler::OnClustersQueryResult(
+    base::TimeTicks query_start_time,
     mojom::QueryResultPtr query_result) {
   page_->OnClustersQueryResult(std::move(query_result));
+
+  // Log metrics after delivering the results to the page.
+  base::TimeDelta service_latency = base::TimeTicks::Now() - query_start_time;
+  base::UmaHistogramTimes("History.Clusters.ServiceLatency", service_latency);
 }
 
 void HistoryClustersHandler::OnVisitsRemoved(

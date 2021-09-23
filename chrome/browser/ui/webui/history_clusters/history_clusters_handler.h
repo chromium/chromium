@@ -51,8 +51,10 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
  private:
   // Called with the result of querying clusters. Subsequently, `query_result`
-  // is sent to the JS to update the UI.
-  void OnClustersQueryResult(mojom::QueryResultPtr query_result);
+  // is sent to the JS to update the UI. `query_start_time` is also passed to
+  // allow for performance logging.
+  void OnClustersQueryResult(base::TimeTicks query_start_time,
+                             mojom::QueryResultPtr query_result);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
   void OnVisitsRemoved(std::vector<mojom::URLVisitPtr> visits);
