@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -40,15 +41,54 @@
 
 namespace {
 
+constexpr gfx::Insets kNotificationViewPadding(6, 16, 22, 6);
+constexpr gfx::Insets kMainRightViewPadding(0, 0, 0, 10);
+constexpr int kMainRightViewVerticalSpacing = 16;
+constexpr gfx::Insets kContentRowPadding(0, 14, 0, 0);
+constexpr int kContentRowHorizontalSpacing = 16;
+constexpr int kLeftContentVerticalSpacing = 4;
 constexpr int kTitleRowSpacing = 6;
 
 // Bullet character. The divider symbol between the title and the timestamp.
 constexpr char16_t kTitleRowDivider[] = u"\u2022";
 
+constexpr char kGoogleSansFont[] = "Google Sans";
+
+constexpr int kAppIconViewSize = 24;
 constexpr int kExpandButtonSize = 24;
 constexpr int kTitleCharacterLimit =
     message_center::kNotificationWidth * message_center::kMaxTitleLines /
     message_center::kMinPixelsPerTitleCharacter;
+constexpr int kExpandedTitleLabelSize = 16;
+constexpr int kCollapsedTitleLabelSize = 14;
+constexpr int kTimestampInCollapsedViewSize = 12;
+constexpr int kMessageLabelSize = 13;
+// The size for `icon_view_`, which is the icon within right content (between
+// title/message view and expand button).
+constexpr int kIconViewSize = 48;
+
+constexpr int kContentRowWidth =
+    message_center::kNotificationWidth - kNotificationViewPadding.width() -
+    kAppIconViewSize - kMainRightViewPadding.width() -
+    kContentRowPadding.width();
+
+constexpr int kLeftContentWidth = kContentRowWidth - kExpandButtonSize -
+                                  kAppIconViewSize -
+                                  kContentRowHorizontalSpacing * 2;
+
+// Configure the style for labels in notification view. `is_color_primary`
+// indicates if the color of the text is primary or secondary text color.
+void ConfigureLabelStyle(views::Label* label, int size, bool is_color_primary) {
+  label->SetAutoColorReadabilityEnabled(false);
+  label->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, size,
+                                   gfx::Font::Weight::MEDIUM));
+  auto layer_type =
+      is_color_primary
+          ? ash::AshColorProvider::ContentLayerType::kTextColorPrimary
+          : ash::AshColorProvider::ContentLayerType::kTextColorSecondary;
+  label->SetEnabledColor(
+      ash::AshColorProvider::Get()->GetContentLayerColor(layer_type));
+}
 
 }  // namespace
 
@@ -71,10 +111,29 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
           AddChildView(std::make_unique<views::Label>())) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       Orientation::kHorizontal, gfx::Insets(), kTitleRowSpacing));
+  ConfigureLabelStyle(title_row_divider_, kTimestampInCollapsedViewSize,
+                      /*is_color_primary=*/false);
+  ConfigureLabelStyle(timestamp_in_collapsed_view_,
+                      kTimestampInCollapsedViewSize,
+                      /*is_color_primary=*/false);
+  ConfigureLabelStyle(title_view_, kExpandedTitleLabelSize,
+                      /*is_color_primary=*/true);
 }
 
 AshNotificationView::NotificationTitleRow::~NotificationTitleRow() {
   timestamp_update_timer_.Stop();
+}
+
+void AshNotificationView::NotificationTitleRow::SetExpanded(bool expanded) {
+  ConfigureLabelStyle(
+      title_view_,
+      expanded ? kExpandedTitleLabelSize : kCollapsedTitleLabelSize,
+      /*is_color_primary=*/true);
+
+  // In expanded state, we need to resize the title view since it becomes
+  // bigger. We also need to reset the fixed width in this label to zero in
+  // collapsed state for the timestamp alongside it can be shown.
+  title_view_->SizeToFit(expanded ? kContentRowWidth : 0);
 }
 
 void AshNotificationView::NotificationTitleRow::UpdateTitle(
@@ -163,7 +222,7 @@ AshNotificationView::AshNotificationView(
   // TODO(crbug/1232197): fix views and layout to match spec.
   // Instantiate view instances and define layout and view hierarchy.
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      Orientation::kVertical, gfx::Insets(), 0));
+      Orientation::kVertical, kNotificationViewPadding, 0));
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
 
@@ -173,14 +232,24 @@ AshNotificationView::AshNotificationView(
   auto header_left_content = std::make_unique<views::View>();
   header_left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       Orientation::kVertical, gfx::Insets(), 0));
+
   header_left_content->AddChildView(CreateHeaderRow());
-  left_content_ = header_left_content->AddChildView(CreateLeftContentView());
+
+  auto left_content = CreateLeftContentView();
+  auto* left_content_layout =
+      static_cast<views::BoxLayout*>(left_content->GetLayoutManager());
+  left_content_layout->set_between_child_spacing(kLeftContentVerticalSpacing);
+  left_content_ = header_left_content->AddChildView(std::move(left_content));
 
   auto content_row = CreateContentRow();
+  auto* content_row_layout =
+      static_cast<views::BoxLayout*>(content_row->GetLayoutManager());
+  content_row_layout->set_inside_border_insets(kContentRowPadding);
+  content_row_layout->set_between_child_spacing(kContentRowHorizontalSpacing);
+
   auto* header_left_content_ptr =
       content_row->AddChildView(std::move(header_left_content));
-  static_cast<views::BoxLayout*>(content_row->GetLayoutManager())
-      ->SetFlexForView(header_left_content_ptr, 1);
+  content_row_layout->SetFlexForView(header_left_content_ptr, 1);
   content_row->AddChildView(CreateRightContentView());
 
   expand_button_ = content_row->AddChildView(
@@ -193,7 +262,8 @@ AshNotificationView::AshNotificationView(
   // Main right view contains all the views besides control buttons and icon.
   auto main_right_view = std::make_unique<views::View>();
   main_right_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      Orientation::kVertical, gfx::Insets(), 0));
+      Orientation::kVertical, kMainRightViewPadding,
+      kMainRightViewVerticalSpacing));
   main_right_view->AddChildView(std::move(content_row));
   main_right_view->AddChildView(CreateInlineSettingsView());
   main_right_view->AddChildView(CreateImageContainerView());
@@ -383,9 +453,23 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
 
   // TODO(crbug/1243889): call SizeToFit() `title_view_` to fit the space after
   // the padding and spacing are done.
-  if (title_row_)
+  if (title_row_) {
     title_row_->UpdateVisibility(is_grouped_child_view_ ||
                                  (IsExpandable() && !expanded));
+    title_row_->SetExpanded(expanded);
+  }
+
+  if (message_view()) {
+    ConfigureLabelStyle(message_view(), kMessageLabelSize, false);
+
+    // TODO(crbug/682266): This is a workaround to that bug by explicitly
+    // setting the width. Ideally, we should fix the original bug, but it seems
+    // there's no obvious solution for the bug according to
+    // https://crbug.com/678337#c7. We will consider making changes to this code
+    // when the bug is fixed.
+    message_view()->SizeToFit(IsIconViewShown() ? kLeftContentWidth
+                                                : kContentRowWidth);
+  }
 
   expand_button_->SetVisible(IsExpandable());
   expand_button_->SetExpanded(expanded);
@@ -437,6 +521,10 @@ void AshNotificationView::OnThemeChanged() {
 std::unique_ptr<message_center::NotificationInputContainer>
 AshNotificationView::GenerateNotificationInputContainer() {
   return std::make_unique<AshNotificationInputContainer>(this);
+}
+
+gfx::Size AshNotificationView::GetIconViewSize() const {
+  return gfx::Size(kIconViewSize, kIconViewSize);
 }
 
 void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {

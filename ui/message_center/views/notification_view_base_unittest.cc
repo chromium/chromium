@@ -94,6 +94,7 @@ class TestNotificationView : public NotificationViewBase {
   ~TestNotificationView() override = default;
 
   void CreateOrUpdateTitleView(const Notification& notification) override {}
+  gfx::Size GetIconViewSize() const override { return gfx::Size(); }
 };
 
 class NotificationTestDelegate : public NotificationDelegate {

@@ -27,6 +27,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   // NotificationViewBase:
   void CreateOrUpdateTitleView(const Notification& notification) override;
   void UpdateViewForExpandedState(bool expanded) override;
+  gfx::Size GetIconViewSize() const override;
 
   // Notification title, which is dynamically created inside view hierarchy.
   views::Label* title_view_ = nullptr;

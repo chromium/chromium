@@ -49,8 +49,12 @@ NotificationView::NotificationView(
   header_row->AddChildView(CreateControlButtonsView());
 
   auto content_row = CreateContentRow();
+  auto* content_row_layout =
+      static_cast<views::BoxLayout*>(content_row->GetLayoutManager());
+  content_row_layout->set_inside_border_insets(kContentRowPadding);
 
   auto left_content = CreateLeftContentView();
+  left_content->SetBorder(views::CreateEmptyBorder(kLeftContentPadding));
   auto* left_content_ptr_ = content_row->AddChildView(std::move(left_content));
   static_cast<views::BoxLayout*>(content_row->GetLayoutManager())
       ->SetFlexForView(left_content_ptr_, 1);
@@ -91,6 +95,9 @@ void NotificationView::CreateOrUpdateTitleView(
 }
 
 void NotificationView::UpdateViewForExpandedState(bool expanded) {
+  left_content()->SetBorder(views::CreateEmptyBorder(
+      IsIconViewShown() ? kLeftContentPaddingWithIcon : kLeftContentPadding));
+
   // TODO(tetsui): Workaround https://crbug.com/682266 by explicitly setting
   // the width.
   // Ideally, we should fix the original bug, but it seems there's no obvious
@@ -101,7 +108,13 @@ void NotificationView::UpdateViewForExpandedState(bool expanded) {
       GetInsets().width();
   if (title_view_)
     title_view_->SizeToFit(message_view_width);
+  if (message_view())
+    message_view()->SizeToFit(message_view_width);
   NotificationViewBase::UpdateViewForExpandedState(expanded);
+}
+
+gfx::Size NotificationView::GetIconViewSize() const {
+  return kIconViewSize;
 }
 
 }  // namespace message_center

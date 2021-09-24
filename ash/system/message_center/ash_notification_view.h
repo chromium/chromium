@@ -67,6 +67,7 @@ class ASH_EXPORT AshNotificationView
   void OnThemeChanged() override;
   std::unique_ptr<message_center::NotificationInputContainer>
   GenerateNotificationInputContainer() override;
+  gfx::Size GetIconViewSize() const override;
 
  private:
   friend class AshNotificationViewTest;
@@ -81,7 +82,7 @@ class ASH_EXPORT AshNotificationView
     NotificationTitleRow& operator=(const NotificationTitleRow&) = delete;
     ~NotificationTitleRow() override;
 
-    // Changed the expand state. Hide divider and timestamp in collapse mode.
+    // Changed the expand state. Title view size will change based on the state.
     void SetExpanded(bool expanded);
 
     // Update title view's text.

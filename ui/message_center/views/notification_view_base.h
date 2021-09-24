@@ -238,6 +238,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   virtual void SetExpandButtonEnabled(bool enabled);
 
+  // Returns the size of `icon_view_`.
+  virtual gfx::Size GetIconViewSize() const = 0;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameExtension);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameSystemNotification);
