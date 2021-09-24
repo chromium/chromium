@@ -485,7 +485,7 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
-    'condition': '(host_os == "linux" or host_os == "win") and checkout_reclient',
+    'condition': 'checkout_reclient',
   },
   'src/third_party/android_rust_toolchain/toolchain': {
     'packages': [
