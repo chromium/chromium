@@ -39,6 +39,8 @@ JA_TEST_MAP = new Map([
   ['。', 'マル'],
   ['@', 'アットマーク'],
   ['＠', 'アットマーク'],
+  ['Α', 'ギリシャ アルファ'],
+  ['α', 'ギリシャ アルファ'],
   ['亜', 'アジア ノ ア'],
   ['今', 'コンゲツノコン'],
   ['日', 'ニチヨウビノニチ'],
@@ -64,6 +66,8 @@ TEST_F('ChromeVoxPhoneticDataTest', 'forCharacterJa', function() {
   assertEquals('ゼンカク ａ', PhoneticData.forCharacter('ａ', 'ja'));
   assertEquals('ゼンカク １', PhoneticData.forCharacter('１', 'ja'));
   assertEquals('ゼンカク ＠', PhoneticData.forCharacter('＠', 'ja'));
+  assertEquals('オオモジ Α', PhoneticData.forCharacter('Α', 'ja'));
+  assertEquals('コモジ α', PhoneticData.forCharacter('α', 'ja'));
   assertEquals('アジア ノ ア', PhoneticData.forCharacter('亜', 'ja'));
 });
 
@@ -82,6 +86,8 @@ TEST_F('ChromeVoxPhoneticDataTest', 'forTextJaSingleCharacter', function() {
   assertEquals('ゼンカク ａ', PhoneticData.forText('ａ', 'ja'));
   assertEquals('ゼンカク １', PhoneticData.forText('１', 'ja'));
   assertEquals('ゼンカク アットマーク', PhoneticData.forText('＠', 'ja'));
+  assertEquals('オオモジ ギリシャ アルファ', PhoneticData.forText('Α', 'ja'));
+  assertEquals('ギリシャ アルファ', PhoneticData.forText('α', 'ja'));
   assertEquals('アジア ノ ア', PhoneticData.forText('亜', 'ja'));
 });
 
@@ -216,6 +222,28 @@ TEST_F(
           PhoneticData.forText('Ａ＠', 'ja'));
       assertEquals(
           'あ ゼンカク アットマーク', PhoneticData.forText('あ＠', 'ja'));
+    });
+
+TEST_F(
+    'ChromeVoxPhoneticDataTest',
+    'forTextJaPairCharacters_EndWithFullWidthGreekUpper', function() {
+      assertEquals(
+          'オオモジ ギリシャ アルファ ギリシャ アルファ',
+          PhoneticData.forText('ΑΑ', 'ja'));
+      assertEquals(
+          'あ オオモジ ギリシャ アルファ', PhoneticData.forText('あΑ', 'ja'));
+    });
+
+TEST_F(
+    'ChromeVoxPhoneticDataTest',
+    'forTextJaPairCharacters_EndWithFullWidthGreekLower', function() {
+      assertEquals(
+          'ギリシャ アルファ ギリシャ アルファ',
+          PhoneticData.forText('αα', 'ja'));
+      assertEquals(
+          'オオモジ ギリシャ アルファ コモジ ギリシャ アルファ',
+          PhoneticData.forText('Αα', 'ja'));
+      assertEquals('あ ギリシャ アルファ', PhoneticData.forText('あα', 'ja'));
     });
 
 TEST_F(

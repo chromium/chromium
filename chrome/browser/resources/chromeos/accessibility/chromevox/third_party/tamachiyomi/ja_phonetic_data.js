@@ -133,6 +133,16 @@ JaPhoneticData = class {
           return lastCharacterSet;
       }
     }
+    // See https://www.unicode.org/charts/PDF/U0400.pdf and
+    // https://www.unicode.org/charts/PDF/U0370.pdf
+    if ((character >= 'А' && character <= 'Я') ||
+        (character >= 'Α' && character <= 'Ω')) {
+      return JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER;
+    }
+    if ((character >= 'а' && character <= 'я') ||
+        (character >= 'α' && character <= 'ω')) {
+      return JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER;
+    }
     // Returns OTHER for all other characters, including Kanji.
     return JaPhoneticData.CharacterSet.OTHER;
   }
@@ -281,6 +291,15 @@ JaPhoneticData = class {
             return {delimiter: true, prefix: null};
         }
         break;
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER:
+            return {
+              delimiter: true,
+              prefix: JaPhoneticData.getDefaultPrefix(currentCharacterSet)
+            };
+        }
+        return {delimiter: true, prefix: null};
       case JaPhoneticData.CharacterSet.OTHER:
         return {delimiter: true, prefix: null};
     }
@@ -299,6 +318,8 @@ JaPhoneticData = class {
     switch (characterSet) {
       case JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL:
       case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER:
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER:
       case JaPhoneticData.CharacterSet.OTHER:
         return true;
     }
@@ -309,21 +330,23 @@ JaPhoneticData = class {
 /** @enum {number} */
 JaPhoneticData.CharacterSet = {
   NONE: 0,
-  HIRAGANA: 1,                          // 'あ'
-  KATAKANA: 2,                          // 'ア'
-  HIRAGANA_SMALL_LETTER: 3,             // 'ぁ'
-  KATAKANA_SMALL_LETTER: 4,             // 'ァ'
-  HALF_WIDTH_KATAKANA: 5,               // 'ｱ'
-  HALF_WIDTH_KATAKANA_SMALL_LETTER: 6,  // 'ｧ'
-  HALF_WIDTH_ALPHABET_UPPER: 7,         // 'A'
-  HALF_WIDTH_ALPHABET_LOWER: 8,         // 'a'
-  HALF_WIDTH_NUMERIC: 9,                // '1'
-  HALF_WIDTH_SYMBOL: 10,                // '@'
-  FULL_WIDTH_ALPHABET_UPPER: 11,        // 'Ａ'
-  FULL_WIDTH_ALPHABET_LOWER: 12,        // 'ａ'
-  FULL_WIDTH_NUMERIC: 13,               // '１'
-  FULL_WIDTH_SYMBOL: 14,                // '＠'
-  OTHER: 15                             // Kanji and unsupported symbols
+  HIRAGANA: 1,                             // 'あ'
+  KATAKANA: 2,                             // 'ア'
+  HIRAGANA_SMALL_LETTER: 3,                // 'ぁ'
+  KATAKANA_SMALL_LETTER: 4,                // 'ァ'
+  HALF_WIDTH_KATAKANA: 5,                  // 'ｱ'
+  HALF_WIDTH_KATAKANA_SMALL_LETTER: 6,     // 'ｧ'
+  HALF_WIDTH_ALPHABET_UPPER: 7,            // 'A'
+  HALF_WIDTH_ALPHABET_LOWER: 8,            // 'a'
+  HALF_WIDTH_NUMERIC: 9,                   // '1'
+  HALF_WIDTH_SYMBOL: 10,                   // '@'
+  FULL_WIDTH_ALPHABET_UPPER: 11,           // 'Ａ'
+  FULL_WIDTH_ALPHABET_LOWER: 12,           // 'ａ'
+  FULL_WIDTH_NUMERIC: 13,                  // '１'
+  FULL_WIDTH_SYMBOL: 14,                   // '＠'
+  FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER: 15,  // 'Α'
+  FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER: 16,  // 'α'
+  OTHER: 17                                // Kanji and unsupported symbols
 };
 
 /**
@@ -362,6 +385,10 @@ JaPhoneticData.DEFAULT_PREFIX = new Map([
   [JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC, 'ゼンカク'],
   // '＠'
   [JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL, 'ゼンカク'],
+  // 'Α'
+  [JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_UPPER, 'オオモジ'],
+  // 'α'
+  [JaPhoneticData.CharacterSet.FULL_WIDTH_CYRILLIC_OR_GREEK_LOWER, 'コモジ'],
 ]);
 
 /**
