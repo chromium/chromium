@@ -11,58 +11,44 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-  /** @interface */
-export class LanguagesBrowserProxy {
+export interface LanguagesBrowserProxy {
   // <if expr="is_win">
   /**
    * Sets the prospective UI language to the chosen language. This won't
    * affect the actual UI language until a restart.
-   * @param {string} languageCode
    */
-  setProspectiveUILanguage(languageCode) {}
+  setProspectiveUILanguage(languageCode: string): void;
 
-  /** @return {!Promise<string>} */
-  getProspectiveUILanguage() {}
+  getProspectiveUILanguage(): Promise<string>;
 
   // </if>
 
-  /** @return {!LanguageSettingsPrivate} */
-  getLanguageSettingsPrivate() {}
+  getLanguageSettingsPrivate(): typeof chrome.languageSettingsPrivate;
 }
 
-/**
- * @implements {LanguagesBrowserProxy}
- */
-export class LanguagesBrowserProxyImpl {
+export class LanguagesBrowserProxyImpl implements LanguagesBrowserProxy {
   // <if expr="is_win">
-  /** @override */
-  setProspectiveUILanguage(languageCode) {
+  setProspectiveUILanguage(languageCode: string) {
     chrome.send('setProspectiveUILanguage', [languageCode]);
   }
 
-  /** @override */
   getProspectiveUILanguage() {
     return sendWithPromise('getProspectiveUILanguage');
   }
 
   // </if>
 
-  /** @override */
   getLanguageSettingsPrivate() {
-    return /** @type {!LanguageSettingsPrivate} */ (
-        chrome.languageSettingsPrivate);
+    return chrome.languageSettingsPrivate;
   }
 
-  /** @return {!LanguagesBrowserProxy} */
-  static getInstance() {
+  static getInstance(): LanguagesBrowserProxy {
     return instance || (instance = new LanguagesBrowserProxyImpl());
   }
 
-  /** @param {!LanguagesBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: LanguagesBrowserProxy) {
     instance = obj;
   }
 }
 
-/** @type {?LanguagesBrowserProxy} */
-let instance = null;
+let instance: LanguagesBrowserProxy|null = null;

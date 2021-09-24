@@ -80,12 +80,12 @@ declare global {
       export function removeInputMethod(inputMethodId: string): void;
       export function retryDownloadDictionary(languageCode: string): void;
 
-      export const onSpellcheckDictionariesChanged: ChromeEvent<
-          Array<SpellcheckDictionaryStatus>>;
+      export const onSpellcheckDictionariesChanged:
+          ChromeEvent<(statuses: Array<SpellcheckDictionaryStatus>) => void>;
       export const onCustomDictionaryChanged:
           ChromeEvent<(added: Array<string>, removed: Array<string>) => void>;
-      export const onInputMethodAdded: ChromeEvent<string>;
-      export const onInputMethodRemoved: ChromeEvent<string>;
+      export const onInputMethodAdded: ChromeEvent<(id: string) => void>;
+      export const onInputMethodRemoved: ChromeEvent<(id: string) => void>;
     }
   }
 }

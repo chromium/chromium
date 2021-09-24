@@ -146,22 +146,6 @@ js_type_check("closure_compile") {
 
     #":zoom_levels_tests",
   ]
-
-  if (!is_chromeos_ash) {
-    deps += [
-      ":fake_language_settings_private",
-      ":test_languages_browser_proxy",
-    ]
-  }
-}
-
-js_library("fake_language_settings_private") {
-  deps = [
-    "..:chai_assert",
-    "..:fake_chrome_event.m",
-    "..:test_browser_proxy",
-    "//ui/webui/resources/js:cr.m",
-  ]
 }
 
 js_library("fake_input_method_private") {
@@ -202,16 +186,6 @@ js_library("settings_ui_tests") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_languages_browser_proxy") {
-  deps = [
-    ":fake_input_method_private",
-    ":fake_language_settings_private",
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//ui/webui/resources/js:cr.m",
-  ]
 }
 
 js_library("test_lifetime_browser_proxy") {
