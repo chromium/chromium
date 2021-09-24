@@ -80,6 +80,35 @@ export function appTestSuite() {
   }
 
   /**
+   * @return {!HTMLElement}
+   */
+  function getSessionLogButton() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (page.$$('.session-log-button'));
+  }
+
+  /**
+   * @return {!HTMLElement}
+   */
+  function getBottomNavContentDrawer() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (
+        page.$$('[slot=bottom-nav-content-drawer]'));
+  }
+
+  /**
+   * @return {!HTMLElement}
+   */
+  function getBottomNavContentPanel() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (
+        page.$$('[slot=bottom-nav-content-panel]'));
+  }
+
+  /**
    * Triggers 'dismiss-caution-banner' custom event.
    * @return {!Promise}
    */
@@ -154,6 +183,9 @@ export function appTestSuite() {
             assertTrue(!!systemPage);
             assertTrue(isVisible(systemPage));
             assertFalse(isVisible(getCautionBanner()));
+            assertFalse(isVisible(getBottomNavContentDrawer()));
+            assertTrue(isVisible(getBottomNavContentPanel()));
+            assertTrue(isVisible(getSessionLogButton()));
           });
     });
 
