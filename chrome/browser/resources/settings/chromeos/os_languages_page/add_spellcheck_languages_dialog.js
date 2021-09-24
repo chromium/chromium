@@ -19,9 +19,10 @@ import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavi
 import {FindShortcutBehavior} from '//resources/cr_elements/find_shortcut_behavior.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LanguageHelper, LanguagesModel, SpellCheckLanguageState} from '../../languages_page/languages_types.js';
 import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+
+import {LanguageHelper, LanguagesModel, SpellCheckLanguageState} from './languages_types.js';
 
 Polymer({
   is: 'os-settings-add-spellcheck-languages-dialog',

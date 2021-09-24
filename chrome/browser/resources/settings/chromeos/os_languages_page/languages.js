@@ -10,18 +10,18 @@
  * this class via languageHelper.
  */
 
-import '../prefs/prefs.js';
+import '../../prefs/prefs.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
-import {CrSettingsPrefs} from '../prefs/prefs_types.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../../prefs/prefs_behavior.js';
+import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
 
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
-import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
+import {InputMethodsModel, LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
@@ -47,6 +47,11 @@ const kTranslateLanguageSynonyms = {
 // The fake language name used for ARC IMEs. The value must be in sync with the
 // one in ui/base/ime/ash/extension_ime_util.h.
 const kArcImeLanguage = '_arc_ime_language_';
+
+// The IME ID for the Accessibility Common extension used by Dictation.
+/** @type {string} */
+const ACCESSIBILITY_COMMON_IME_ID =
+    '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
 /**
  * @typedef {{
@@ -140,10 +145,43 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         },
       },
 
-      // <if expr="is_win">
+      /**
+       * Hash map of supported input methods by ID for fast lookup.
+       * @private {!Map<string, chrome.languageSettingsPrivate.InputMethod>}
+       */
+      supportedInputMethodMap_: {
+        type: Object,
+        value() {
+          return new Map();
+        },
+      },
+
+      /**
+       * Hash map of input methods supported for each language.
+       * @type {!Map<string,
+       *             !Array<!chrome.languageSettingsPrivate.InputMethod>>}
+       * @private
+       */
+      languageInputMethods_: {
+        type: Object,
+        value() {
+          return new Map();
+        },
+      },
+
+      /**
+       * Hash set of enabled input methods id for mebership testings
+       * @private {!Set<string>}
+       */
+      enabledInputMethodSet_: {
+        type: Object,
+        value() {
+          return new Set();
+        }
+      },
+
       /** @private Prospective UI language when the page was loaded. */
       originalProspectiveUILanguage_: String,
-      // </if>
     };
   }
 
@@ -155,9 +193,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
           'prefs.translate_whitelists.value.*, languages)',
       'neverTranslateLanguagesPrefChanged_(' +
           'prefs.translate_blocked_languages.value.*, languages)',
-      // <if expr="is_win">
       'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
-      // </if>
       'preferredLanguagesPrefChanged_(' +
           'prefs.intl.accept_languages.value, languages)',
       'preferredLanguagesPrefChanged_(' +
@@ -174,16 +210,19 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
           'prefs.intl.app_locale.value, languages.enabled)',
       'updateRemovableLanguages_(' +
           'prefs.translate_blocked_languages.value.*)',
+      // Observe Chrome OS prefs (ignored for non-Chrome OS).
+      'updateRemovableLanguages_(' +
+          'prefs.settings.language.preload_engines.value, ' +
+          'prefs.settings.language.enabled_extension_imes.value, ' +
+          'languages)',
     ];
   }
 
   constructor() {
     super();
 
-    // <if expr="not is_macosx">
     /** @private {?Function} */
     this.boundOnSpellcheckDictionariesChanged_ = null;
-    // </if>
 
     /** @private {!LanguagesBrowserProxy} */
     this.browserProxy_ = LanguagesBrowserProxyImpl.getInstance();
@@ -191,6 +230,18 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     /** @private {!LanguageSettingsPrivate} */
     this.languageSettingsPrivate_ =
         this.browserProxy_.getLanguageSettingsPrivate();
+
+    /** @private {!InputMethodPrivate} */
+    this.inputMethodPrivate_ = this.browserProxy_.getInputMethodPrivate();
+
+    /** @private {?Function} */
+    this.boundOnInputMethodAdded_ = null;
+
+    /** @private {?Function} */
+    this.boundOnInputMethodRemoved_ = null;
+
+    /** @private {?Function} */
+    this.boundOnInputMethodChanged_ = null;
   }
 
   /** @override */
@@ -233,6 +284,18 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
                         resolve);
                   }).then(result => args.translateTarget = result));
 
+    promises.push(
+        new Promise(resolve => {
+          this.languageSettingsPrivate_.getInputMethodLists(function(lists) {
+            resolve(lists.componentExtensionImes.concat(
+                lists.thirdPartyExtensionImes));
+          });
+        }).then(result => args.supportedInputMethods = result));
+
+    promises.push(new Promise(resolve => {
+                    this.inputMethodPrivate_.getCurrentInputMethod(resolve);
+                  }).then(result => args.currentInputMethodId = result));
+
     // Get the list of language-codes to always translate.
     promises.push(new Promise(resolve => {
                     this.languageSettingsPrivate_.getAlwaysTranslateLanguages(
@@ -245,7 +308,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
                         resolve);
                   }).then(result => args.neverTranslateCodes = result));
 
-    // <if expr="is_win">
     // Fetch the starting UI language, which affects which actions should be
     // enabled.
     promises.push(this.browserProxy_.getProspectiveUILanguage().then(
@@ -253,7 +315,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
           this.originalProspectiveUILanguage_ =
               prospectiveUILanguage || window.navigator.language;
         }));
-    // </if>
 
     Promise.all(promises).then(results => {
       if (!this.isConnected) {
@@ -264,33 +325,48 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
       this.createModel_(args);
 
-      // <if expr="not is_macosx">
       this.boundOnSpellcheckDictionariesChanged_ =
           this.onSpellcheckDictionariesChanged_.bind(this);
       this.languageSettingsPrivate_.onSpellcheckDictionariesChanged.addListener(
           this.boundOnSpellcheckDictionariesChanged_);
       this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses(
           this.boundOnSpellcheckDictionariesChanged_);
-      // </if>
 
       this.resolver_.resolve();
     });
+
+    this.boundOnInputMethodChanged_ = this.onInputMethodChanged_.bind(this);
+    this.inputMethodPrivate_.onChanged.addListener(
+        assert(this.boundOnInputMethodChanged_));
+    this.boundOnInputMethodAdded_ = this.onInputMethodAdded_.bind(this);
+    this.languageSettingsPrivate_.onInputMethodAdded.addListener(
+        this.boundOnInputMethodAdded_);
+    this.boundOnInputMethodRemoved_ = this.onInputMethodRemoved_.bind(this);
+    this.languageSettingsPrivate_.onInputMethodRemoved.addListener(
+        this.boundOnInputMethodRemoved_);
   }
 
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    // <if expr="not is_macosx">
+    this.inputMethodPrivate_.onChanged.removeListener(
+        assert(this.boundOnInputMethodChanged_));
+    this.boundOnInputMethodChanged_ = null;
+    this.languageSettingsPrivate_.onInputMethodAdded.removeListener(
+        assert(this.boundOnInputMethodAdded_));
+    this.boundOnInputMethodAdded_ = null;
+    this.languageSettingsPrivate_.onInputMethodRemoved.removeListener(
+        assert(this.boundOnInputMethodRemoved_));
+    this.boundOnInputMethodRemoved_ = null;
+
     if (this.boundOnSpellcheckDictionariesChanged_) {
       this.languageSettingsPrivate_.onSpellcheckDictionariesChanged
           .removeListener(this.boundOnSpellcheckDictionariesChanged_);
       this.boundOnSpellcheckDictionariesChanged_ = null;
     }
-    // </if>
   }
 
-  // <if expr="is_win">
   /**
    * Updates the prospective UI language based on the new pref value.
    * @param {string} prospectiveUILanguage
@@ -301,7 +377,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         'languages.prospectiveUILanguage',
         prospectiveUILanguage || this.originalProspectiveUILanguage_);
   }
-  // </if>
 
   /**
    * Updates the list of enabled languages from the preferred languages pref.
@@ -323,12 +398,10 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
 
     this.set('languages.enabled', enabledLanguageStates);
 
-    // <if expr="not is_macosx">
     if (this.boundOnSpellcheckDictionariesChanged_) {
       this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses(
           this.boundOnSpellcheckDictionariesChanged_);
     }
-    // </if>
 
     // Update translate target language.
     new Promise(resolve => {
@@ -539,12 +612,10 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     }
 
     let prospectiveUILanguage;
-    // <if expr="is_win">
     // eslint-disable-next-line prefer-const
     prospectiveUILanguage =
         /** @type {string} */ (this.getPref('intl.app_locale').value) ||
         this.originalProspectiveUILanguage_;
-    // </if>
 
     // Create a list of enabled languages from the supported languages.
     const enabledLanguageStates = this.getEnabledLanguageStates_(
@@ -573,9 +644,16 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       spellCheckOffLanguages,
     });
 
-    // <if expr="is_win">
     model.prospectiveUILanguage = prospectiveUILanguage;
-    // </if>
+
+    if (args.supportedInputMethods) {
+      this.createInputMethodModel_(args.supportedInputMethods);
+    }
+    model.inputMethods = /** @type {!InputMethodsModel} */ ({
+      supported: args.supportedInputMethods,
+      enabled: this.getEnabledInputMethods_(),
+      currentId: args.currentInputMethodId,
+    });
 
     // Initialize the Polymer languages model.
     this._setLanguages(model);
@@ -664,7 +742,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
         (!prospectiveUILanguage || code !== prospectiveUILanguage);
   }
 
-  // <if expr="not is_macosx">
   /**
    * Updates the dictionary download status for spell check languages in order
    * to track the number of times a spell check dictionary download has failed.
@@ -703,7 +780,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       });
     });
   }
-  // </if>
 
   /**
    * Updates the |removable| property of the enabled language states based
@@ -714,6 +790,11 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     if (this.prefs === undefined || this.languages === undefined) {
       return;
     }
+
+    // TODO(michaelpg): Enabled input methods can affect which languages are
+    // removable, so run updateEnabledInputMethods_ first (if it has been
+    // scheduled).
+    this.updateEnabledInputMethods_();
 
     for (let i = 0; i < this.languages.enabled.length; i++) {
       const languageState = this.languages.enabled[i];
@@ -743,7 +824,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     return this.resolver_.promise;
   }
 
-  // <if expr="chromeos or is_win">
   /**
    * Sets the prospective UI language to the chosen language. This won't affect
    * the actual UI language until a restart.
@@ -761,7 +841,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     return this.originalProspectiveUILanguage_ !==
         this.languages.prospectiveUILanguage;
   }
-  // </if>
 
   /**
    * @return {string} The language code for ARC IMEs.
@@ -824,11 +903,23 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       return;
     }
 
-    // Remove the language from spell check.
-    this.deletePrefListItem('spellcheck.dictionaries', languageCode);
+    // For CrOS language settings V2 update 2, languages and spell check are
+    // decoupled so there's no need to remove the language from spell check.
+    if (!this.isChromeOSLanguageSettingsV2Update2_()) {
+      this.deletePrefListItem('spellcheck.dictionaries', languageCode);
+    }
 
     // Remove the language from preferred languages.
     this.languageSettingsPrivate_.disableLanguage(languageCode);
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isChromeOSLanguageSettingsV2Update2_() {
+    return loadTimeData.valueExists('enableLanguageSettingsV2Update2') &&
+        loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
   }
 
   /**
@@ -846,11 +937,6 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
    * @return {boolean}
    */
   canDisableLanguage(languageState) {
-    // Cannot disable the prospective UI language.
-    if (languageState.language.code === this.languages.prospectiveUILanguage) {
-      return false;
-    }
-
     // Cannot disable the only enabled language.
     if (this.languages.enabled.length === 1) {
       return false;
@@ -1036,8 +1122,197 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
     this.languageSettingsPrivate_.retryDownloadDictionary(languageCode);
   }
 
-  // TODO(crbug/1126259): Once migration is over, use separate languages.js for
-  // browser and chromeos
+  /**
+   * Constructs the input method part of the languages model.
+   * @param {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   *     supportedInputMethods Input methods.
+   * @private
+   */
+  createInputMethodModel_(supportedInputMethods) {
+    // Populate the hash map of supported input methods.
+    this.supportedInputMethodMap_.clear();
+    this.languageInputMethods_.clear();
+    for (let j = 0; j < supportedInputMethods.length; j++) {
+      const inputMethod = supportedInputMethods[j];
+      inputMethod.enabled = !!inputMethod.enabled;
+      inputMethod.isProhibitedByPolicy = !!inputMethod.isProhibitedByPolicy;
+      // Add the input method to the map of IDs.
+      this.supportedInputMethodMap_.set(inputMethod.id, inputMethod);
+      // Add the input method to the list of input methods for each language
+      // it supports.
+      for (let k = 0; k < inputMethod.languageCodes.length; k++) {
+        const languageCode = inputMethod.languageCodes[k];
+        if (!this.supportedLanguageMap_.has(languageCode)) {
+          continue;
+        }
+        if (!this.languageInputMethods_.has(languageCode)) {
+          this.languageInputMethods_.set(languageCode, [inputMethod]);
+        } else {
+          this.languageInputMethods_.get(languageCode).push(inputMethod);
+        }
+      }
+    }
+  }
+
+  /**
+   * Returns a list of enabled input methods.
+   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   * @private
+   */
+  getEnabledInputMethods_() {
+    assert(CrSettingsPrefs.isInitialized);
+
+    let enabledInputMethodIds =
+        this.getPref('settings.language.preload_engines').value.split(',');
+    enabledInputMethodIds = enabledInputMethodIds.concat(
+        this.getPref('settings.language.enabled_extension_imes')
+            .value.split(','));
+    this.enabledInputMethodSet_ = new Set(enabledInputMethodIds);
+
+    // Return only supported input methods. Don't include the Dictation
+    // (Accessibility Common) input method.
+    return enabledInputMethodIds
+        .map(id => this.supportedInputMethodMap_.get(id))
+        .filter(function(inputMethod) {
+          return !!inputMethod &&
+              inputMethod.id !== ACCESSIBILITY_COMMON_IME_ID;
+        });
+  }
+
+  /** @private */
+  updateSupportedInputMethods_() {
+    const promise = new Promise(resolve => {
+      this.languageSettingsPrivate_.getInputMethodLists(function(lists) {
+        resolve(
+            lists.componentExtensionImes.concat(lists.thirdPartyExtensionImes));
+      });
+    });
+    promise.then(result => {
+      const supportedInputMethods = result;
+      this.createInputMethodModel_(supportedInputMethods);
+      this.set('languages.inputMethods.supported', supportedInputMethods);
+      this.updateEnabledInputMethods_();
+    });
+  }
+
+  /** @private */
+  updateEnabledInputMethods_() {
+    const enabledInputMethods = this.getEnabledInputMethods_();
+    const enabledInputMethodSet = this.makeSetFromArray_(enabledInputMethods);
+
+    for (let i = 0; i < this.languages.inputMethods.supported.length; i++) {
+      this.set(
+          'languages.inputMethods.supported.' + i + '.enabled',
+          enabledInputMethodSet.has(this.languages.inputMethods.supported[i]));
+    }
+    this.set('languages.inputMethods.enabled', enabledInputMethods);
+  }
+
+  /** @param {string} id */
+  addInputMethod(id) {
+    if (!this.supportedInputMethodMap_.has(id)) {
+      return;
+    }
+    this.languageSettingsPrivate_.addInputMethod(id);
+  }
+
+  /** @param {string} id */
+  removeInputMethod(id) {
+    if (!this.supportedInputMethodMap_.has(id)) {
+      return;
+    }
+    this.languageSettingsPrivate_.removeInputMethod(id);
+  }
+
+  /** @param {string} id */
+  setCurrentInputMethod(id) {
+    this.inputMethodPrivate_.setCurrentInputMethod(id);
+  }
+
+  /**
+   * @param {string} languageCode
+   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   */
+  getInputMethodsForLanguage(languageCode) {
+    return this.languageInputMethods_.get(languageCode) || [];
+  }
+
+  /**
+   * Returns the input methods that support any of the given languages.
+   * @param {!Array<string>} languageCodes
+   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   */
+  getInputMethodsForLanguages(languageCodes) {
+    // Input methods that have already been listed for this language.
+    const /** !Set<string> */ usedInputMethods = new Set();
+    /** @type {!Array<chrome.languageSettingsPrivate.InputMethod>} */
+    const combinedInputMethods = [];
+    for (const languageCode of languageCodes) {
+      const inputMethods = this.getInputMethodsForLanguage(languageCode);
+      // Get the language's unused input methods and mark them as used.
+      const newInputMethods = inputMethods.filter(
+          inputMethod => !usedInputMethods.has(inputMethod.id));
+      newInputMethods.forEach(
+          inputMethod => usedInputMethods.add(inputMethod.id));
+      combinedInputMethods.push(...newInputMethods);
+    }
+    return combinedInputMethods;
+  }
+
+  /**
+   * @return {!Set<string>} list of enabled language code.
+   */
+  getEnabledLanguageCodes() {
+    return this.enabledLanguageSet_;
+  }
+
+  /**
+   * @param {string} id the input method id
+   * @return {boolean} True if the input method is enabled
+   */
+  isInputMethodEnabled(id) {
+    return this.enabledInputMethodSet_.has(id);
+  }
+
+  /**
+   * @param {!chrome.languageSettingsPrivate.InputMethod} inputMethod
+   * @return {boolean}
+   */
+  isComponentIme(inputMethod) {
+    return inputMethod.id.startsWith('_comp_');
+  }
+
+  /** @param {string} id Input method ID. */
+  openInputMethodOptions(id) {
+    this.inputMethodPrivate_.openOptionsPage(id);
+  }
+
+  /** @param {string} id New current input method ID. */
+  onInputMethodChanged_(id) {
+    this.set('languages.inputMethods.currentId', id);
+  }
+
+  /** @param {string} id Added input method ID. */
+  onInputMethodAdded_(id) {
+    this.updateSupportedInputMethods_();
+  }
+
+  /** @param {string} id Removed input method ID. */
+  onInputMethodRemoved_(id) {
+    this.updateSupportedInputMethods_();
+  }
+
+  /**
+   * @param {string} id Input method ID.
+   * @return {string}
+   */
+  getInputMethodDisplayName(id) {
+    const inputMethod = this.supportedInputMethodMap_.get(id);
+    if (inputMethod === undefined) {
+      return '';
+    }
+    return inputMethod.displayName;
+  }
 }
 
 customElements.define(SettingsLanguagesElement.is, SettingsLanguagesElement);

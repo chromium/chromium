@@ -20,9 +20,9 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../../languages_page/languages_browser_proxy.js';
 import {Route, RouteObserverBehavior, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_route.m.js';
 
 import {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './tts_subpage_browser_proxy.js';

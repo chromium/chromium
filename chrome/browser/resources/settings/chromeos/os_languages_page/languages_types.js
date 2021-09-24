@@ -37,6 +37,19 @@ export let LanguageState;
 export let SpellCheckLanguageState;
 
 /**
+ * Input method data to expose to consumers (Chrome OS only).
+ * supported: an array of supported input methods set once at initialization.
+ * enabled: an array of the currently enabled input methods.
+ * currentId: ID of the currently active input method.
+ * @typedef {{
+ *   supported: !Array<!chrome.languageSettingsPrivate.InputMethod>,
+ *   enabled: !Array<!chrome.languageSettingsPrivate.InputMethod>,
+ *   currentId: string,
+ * }}
+ */
+export let InputMethodsModel;
+
+/**
  * Languages data to expose to consumers.
  * supported: an array of languages, ordered alphabetically, set once
  *     at initialization.
@@ -47,6 +60,7 @@ export let SpellCheckLanguageState;
  *     the user has chosen a different language without restarting. May differ
  *     from the actually used language (navigator.language). Chrome OS and
  *     Windows only.
+ * inputMethods: the InputMethodsModel (Chrome OS only).
  * spellCheckOnLanguages: an array of spell check languages that are currently
  *     in use, including the languages force-enabled by policy.
  * spellCheckOffLanguages: an array of spell check languages that are currently
@@ -56,6 +70,7 @@ export let SpellCheckLanguageState;
  *   enabled: !Array<!LanguageState>,
  *   translateTarget: string,
  *   prospectiveUILanguage: (string|undefined),
+ *   inputMethods: (!InputMethodsModel|undefined),
  *   alwaysTranslate: !Array<!chrome.languageSettingsPrivate.Language>,
  *   neverTranslate: !Array<!chrome.languageSettingsPrivate.Language>,
  *   spellCheckOnLanguages: !Array<!SpellCheckLanguageState>,
@@ -72,7 +87,6 @@ export class LanguageHelper {
   /** @return {!Promise} */
   whenReady() {}
 
-  // <if expr="is_win">
   /**
    * Sets the prospective UI language to the chosen language. This won't affect
    * the actual UI language until a restart.
@@ -85,8 +99,6 @@ export class LanguageHelper {
    * @return {boolean}
    */
   requiresRestart() {}
-
-  // </if>
 
   /**
    * @return {string} The language code for ARC IMEs.
@@ -210,4 +222,52 @@ export class LanguageHelper {
 
   /** @param {string} languageCode */
   retryDownloadDictionary(languageCode) {}
+
+  /** @param {string} id */
+  addInputMethod(id) {}
+
+  /** @param {string} id */
+  removeInputMethod(id) {}
+
+  /** @param {string} id */
+  setCurrentInputMethod(id) {}
+
+  /**
+   * @param {string} languageCode
+   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   */
+  getInputMethodsForLanguage(languageCode) {}
+
+  /**
+   * Returns the input methods that support any of the given languages.
+   * @param {!Array<string>} languageCodes
+   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   */
+  getInputMethodsForLanguages(languageCodes) {}
+
+  /**
+   * @return {!Set<string>} list of enabled language code.
+   */
+  getEnabledLanguageCodes() {}
+
+  /**
+   * @param {string} id the input method id
+   * @return {boolean} True if the input method is enabled
+   */
+  isInputMethodEnabled(id) {}
+
+  /**
+   * @param {!chrome.languageSettingsPrivate.InputMethod} inputMethod
+   * @return {boolean}
+   */
+  isComponentIme(inputMethod) {}
+
+  /** @param {string} id Input method ID. */
+  openInputMethodOptions(id) {}
+
+  /**
+   * @param {string} id Input method ID.
+   * @return {string}
+   */
+  getInputMethodDisplayName(id) {}
 }

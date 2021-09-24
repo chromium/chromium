@@ -11,9 +11,8 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-  /** @interface */
+/** @interface */
 export class LanguagesBrowserProxy {
-  // <if expr="is_win">
   /**
    * Sets the prospective UI language to the chosen language. This won't
    * affect the actual UI language until a restart.
@@ -24,17 +23,17 @@ export class LanguagesBrowserProxy {
   /** @return {!Promise<string>} */
   getProspectiveUILanguage() {}
 
-  // </if>
-
   /** @return {!LanguageSettingsPrivate} */
   getLanguageSettingsPrivate() {}
+
+  /** @return {!InputMethodPrivate} */
+  getInputMethodPrivate() {}
 }
 
 /**
  * @implements {LanguagesBrowserProxy}
  */
 export class LanguagesBrowserProxyImpl {
-  // <if expr="is_win">
   /** @override */
   setProspectiveUILanguage(languageCode) {
     chrome.send('setProspectiveUILanguage', [languageCode]);
@@ -45,12 +44,15 @@ export class LanguagesBrowserProxyImpl {
     return sendWithPromise('getProspectiveUILanguage');
   }
 
-  // </if>
-
   /** @override */
   getLanguageSettingsPrivate() {
     return /** @type {!LanguageSettingsPrivate} */ (
         chrome.languageSettingsPrivate);
+  }
+
+  /** @override */
+  getInputMethodPrivate() {
+    return /** @type {!InputMethodPrivate} */ (chrome.inputMethodPrivate);
   }
 
   /** @return {!LanguagesBrowserProxy} */
