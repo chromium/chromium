@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -70,11 +72,19 @@ void WebAppPolicyManager::SetSubsystems(
 }
 
 void WebAppPolicyManager::Start() {
+  // When Lacros is enabled, don't run PWA-specific logic in Ash.
+  // TODO(crbug.com/1251491): Consider factoring out logic that should only run
+  // in Ash into a separate class. This way, when running in Ash, we won't need
+  // to construct a WebAppPolicyManager.
+  bool enable_pwa_support = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  enable_pwa_support = !base::FeatureList::IsEnabled(features::kWebAppsCrosapi);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), enable_pwa_support));
 }
 
 void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
@@ -116,19 +126,22 @@ void WebAppPolicyManager::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kWebAppSettings);
 }
 
-void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy() {
+void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
+    bool enable_pwa_support) {
   pref_change_registrar_.Init(pref_service_);
-  pref_change_registrar_.Add(
-      prefs::kWebAppInstallForceList,
-      base::BindRepeating(&WebAppPolicyManager::RefreshPolicyInstalledApps,
-                          weak_ptr_factory_.GetWeakPtr()));
-  pref_change_registrar_.Add(
-      prefs::kWebAppSettings,
-      base::BindRepeating(&WebAppPolicyManager::RefreshPolicySettings,
-                          weak_ptr_factory_.GetWeakPtr()));
+  if (enable_pwa_support) {
+    pref_change_registrar_.Add(
+        prefs::kWebAppInstallForceList,
+        base::BindRepeating(&WebAppPolicyManager::RefreshPolicyInstalledApps,
+                            weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_.Add(
+        prefs::kWebAppSettings,
+        base::BindRepeating(&WebAppPolicyManager::RefreshPolicySettings,
+                            weak_ptr_factory_.GetWeakPtr()));
 
-  RefreshPolicySettings();
-  RefreshPolicyInstalledApps();
+    RefreshPolicySettings();
+    RefreshPolicyInstalledApps();
+  }
   ObserveDisabledSystemFeaturesPolicy();
 }
 
