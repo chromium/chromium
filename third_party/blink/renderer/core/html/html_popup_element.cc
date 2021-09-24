@@ -13,8 +13,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
-#include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
-#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -23,31 +21,11 @@
 
 namespace blink {
 
-class HTMLPopupElement::PopupResizeDelegate final
-    : public ResizeObserver::Delegate {
- public:
-  PopupResizeDelegate() : ResizeObserver::Delegate() {}
-  void OnResize(
-      const HeapVector<Member<ResizeObserverEntry>>& entries) override {
-    DCHECK_EQ(entries.size(), 1u);
-    auto* popup = DynamicTo<HTMLPopupElement>(entries[0]->target());
-    DCHECK(popup);
-    if (popup->being_shown_)
-      popup->being_shown_ = false;
-    else
-      popup->hide();
-  }
-};
-
 HTMLPopupElement::HTMLPopupElement(Document& document)
     : HTMLElement(html_names::kPopupTag, document),
       open_(false),
-      being_shown_(false),
       had_initiallyopen_when_parsed_(false),
       invoker_(nullptr),
-      resize_observer_(
-          ResizeObserver::Create(GetDocument().domWindow(),
-                                 MakeGarbageCollected<PopupResizeDelegate>())),
       needs_repositioning_for_select_menu_(false),
       owner_select_menu_element_(nullptr) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
@@ -68,7 +46,6 @@ bool HTMLPopupElement::open() const {
 void HTMLPopupElement::hide() {
   if (!open_)
     return;
-  resize_observer_->disconnect();
   open_ = false;
   invoker_ = nullptr;
   if (!isConnected())
@@ -102,15 +79,6 @@ void HTMLPopupElement::show() {
   PushNewPopupElement(this);
   MarkStyleDirty();
   SetFocus();
-  being_shown_ = true;
-  resize_observer_->observe(this);
-  // We need to update lifecycle phases to ensure the initial resize
-  // observation gets fired before the popup.show() call returns. Otherwise
-  // code like this will fail to work properly:
-  //   popup.show();
-  //   popup.style.width = change; // Should light-dismiss popup, but won't
-  GetDocument().GetFrame()->View()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kPagePopup);
 }
 
 bool HTMLPopupElement::IsKeyboardFocusable() const {
@@ -415,7 +383,6 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
 
 void HTMLPopupElement::Trace(Visitor* visitor) const {
   visitor->Trace(invoker_);
-  visitor->Trace(resize_observer_);
   visitor->Trace(owner_select_menu_element_);
   HTMLElement::Trace(visitor);
 }
