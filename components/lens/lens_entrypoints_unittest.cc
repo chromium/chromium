@@ -40,6 +40,14 @@ TEST(LensEntryPointsTest, GetImageSearchSidePanelQueryParameterTest) {
   EXPECT_EQ(query_param, "ep=ccm&s=csp");
 }
 
+TEST(LensEntryPointsTest, GetOpenNewTabSidePanelParameterTest) {
+  lens::EntryPoint lens_open_new_tab_side_panel_ep =
+      lens::EntryPoint::CHROME_OPEN_NEW_TAB_SIDE_PANEL;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_open_new_tab_side_panel_ep, /*is_side_panel_request=*/false);
+  EXPECT_EQ(query_param, "ep=cnts");
+}
+
 TEST(LensEntryPointsTest, GetUnknownEntryPointTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens::EntryPoint::UNKNOWN, /*is_side_panel_request=*/false);
