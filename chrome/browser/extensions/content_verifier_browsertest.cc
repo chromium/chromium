@@ -598,10 +598,9 @@ IN_PROC_BROWSER_TEST_F(
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::ScopedTempDir temp_dir;
-  base::FilePath test_dir =
-      test_data_dir_.AppendASCII("content_verifier/missing_verified_contents");
-  base::FilePath extension_dir = test_dir.AppendASCII("source");
-  base::FilePath resource_path = base::FilePath().AppendASCII("script.js");
+  base::FilePath extension_dir =
+      test_data_dir_.AppendASCII("content_verifier/storage_permission");
+  base::FilePath resource_path = base::FilePath().AppendASCII("background.js");
 
   extensions::content_verifier_test_utils::TestExtensionBuilder
       verified_contents_builder;
@@ -644,15 +643,13 @@ IN_PROC_BROWSER_TEST_F(
     InstallationFailureForCrxWithMalformedVerifiedContentsInjectedInHeader) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
-  base::FilePath test_dir =
-      test_data_dir_.AppendASCII("content_verifier/missing_verified_contents");
+  base::FilePath test_dir = test_data_dir_.AppendASCII("content_verifier/v1");
   std::string extension_id;
   std::string verified_contents =
       "Not a valid verified contents, not even a valid JSON.";
   base::FilePath crx_path;
   ASSERT_TRUE(CreateCrxWithVerifiedContentsInHeader(
-      &temp_dir, test_dir.AppendASCII("source"), verified_contents,
-      &extension_id, &crx_path));
+      &temp_dir, test_dir, verified_contents, &extension_id, &crx_path));
 
   const Extension* extension = InstallExtensionFromWebstore(crx_path, 0);
   EXPECT_FALSE(extension);
@@ -663,15 +660,15 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        VerificationFailureForMissingVerifiedContents) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath unpacked_path = test_data_dir_.AppendASCII(
-      "content_verifier/missing_verified_contents/source");
+  base::FilePath unpacked_path =
+      test_data_dir_.AppendASCII("content_verifier/storage_permission");
   base::FilePath crx_path = PackExtension(unpacked_path);
   ASSERT_TRUE(base::PathExists(crx_path.DirName().AppendASCII("temp.pem")));
   const std::string extension_id = GetExtensionIdFromPrivateKeyFile(
       crx_path.DirName().AppendASCII("temp.pem"));
 
   TestContentVerifySingleJobObserver observer(
-      extension_id, base::FilePath().AppendASCII("script.js"));
+      extension_id, base::FilePath().AppendASCII("background.js"));
 
   const Extension* extension = InstallExtensionFromWebstore(crx_path, 1);
   ASSERT_TRUE(extension);
