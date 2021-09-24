@@ -19,6 +19,12 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+const CGFloat kAvatarSize = 24;
+
+}  // namespace
+
 #pragma mark - SendTabtoSelfManageDevicesCell
 
 // Cell class for SendTabToSelfManageDevicesItem.
@@ -46,7 +52,7 @@
   _avatarBadge = [[UIImageView alloc] init];
   _avatarBadge.translatesAutoresizingMaskIntoConstraints = NO;
   _avatarBadge.contentMode = UIViewContentModeScaleAspectFit;
-  _avatarBadge.layer.cornerRadius = kTableViewIconImageSize / 2;
+  _avatarBadge.layer.cornerRadius = kAvatarSize / 2;
   _avatarBadge.clipsToBounds = YES;
   [self.contentView addSubview:_avatarBadge];
 
@@ -57,30 +63,37 @@
   _linkAndEmailTextView.font =
       [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
   _linkAndEmailTextView.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  _linkAndEmailTextView.backgroundColor = [UIColor clearColor];
+  // Remove built-in padding.
+  _linkAndEmailTextView.textContainer.lineFragmentPadding = 0;
+  [_linkAndEmailTextView setTextContainerInset:UIEdgeInsetsZero];
   _linkAndEmailTextView.delegate = self;
   [self.contentView addSubview:_linkAndEmailTextView];
 
   [NSLayoutConstraint activateConstraints:@[
     [_avatarBadge.centerYAnchor
         constraintEqualToAnchor:self.contentView.centerYAnchor],
-    [_avatarBadge.heightAnchor
-        constraintEqualToConstant:kTableViewIconImageSize],
-    [_avatarBadge.widthAnchor
-        constraintEqualToConstant:kTableViewIconImageSize],
+    [_avatarBadge.heightAnchor constraintEqualToConstant:kAvatarSize],
+    [_avatarBadge.widthAnchor constraintEqualToConstant:kAvatarSize],
     [_avatarBadge.leftAnchor
         constraintEqualToAnchor:self.contentView.leftAnchor
                        constant:kTableViewHorizontalSpacing],
+    [_avatarBadge.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
+                                    constant:
+                                        kTableViewTwoLabelsCellVerticalSpacing],
     [_linkAndEmailTextView.centerYAnchor
         constraintEqualToAnchor:_avatarBadge.centerYAnchor],
     [_linkAndEmailTextView.leftAnchor
         constraintEqualToAnchor:_avatarBadge.rightAnchor
-                       constant:kTableViewSubViewHorizontalSpacing],
+                       constant:kTableViewImagePadding],
     [_linkAndEmailTextView.rightAnchor
         constraintEqualToAnchor:self.contentView.rightAnchor
                        constant:-kTableViewHorizontalSpacing],
     [_linkAndEmailTextView.topAnchor
-        constraintEqualToAnchor:self.contentView.topAnchor
-                       constant:kTableViewVerticalSpacing]
+        constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
+                                    constant:
+                                        kTableViewTwoLabelsCellVerticalSpacing]
   ]];
 
   return self;
