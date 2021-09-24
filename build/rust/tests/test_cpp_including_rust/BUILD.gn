@@ -13,7 +13,8 @@ executable("test_cpp_including_rust") {
 test("test_cpp_including_rust_unittests") {
   sources = [ "unittests.cc" ]
   deps = [
-    "//base/allocator",
+    "//base",
+    "//base/allocator:buildflags",
     "//base/test:run_all_unittests",
     "//build/rust/tests/test_rust_source_set:test_rust_source_set_lib",
     "//testing/gmock",
