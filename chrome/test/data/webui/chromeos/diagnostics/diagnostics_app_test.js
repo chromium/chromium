@@ -6,7 +6,7 @@ import 'chrome://diagnostics/diagnostics_app.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeSystemInfoWithoutBattery, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
@@ -66,6 +66,48 @@ export function appTestSuite() {
     networkHealthProvider.reset();
   });
 
+  /** @return {!HTMLElement} */
+  function getCautionBanner() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (page.$$('diagnostics-sticky-banner'));
+  }
+
+  /** @return {!HTMLElement} */
+  function getCautionBannerMessage() {
+    return /** @type {!HTMLElement} */ (
+        getCautionBanner().shadowRoot.querySelector('#bannerMsg'));
+  }
+
+  /**
+   * Triggers 'dismiss-caution-banner' custom event.
+   * @return {!Promise}
+   */
+  function triggerDismissBannerEvent() {
+    window.dispatchEvent(new CustomEvent('dismiss-caution-banner', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    return flushTasks();
+  }
+
+  /**
+   * Triggers 'show-caution-banner' custom event with correctly configured event
+   * detail object based on provided message.
+   * @param {string} message
+   * @return {!Promise}
+   */
+  function triggerShowBannerEvent(message) {
+    window.dispatchEvent(new CustomEvent('show-caution-banner', {
+      bubbles: true,
+      composed: true,
+      detail: {message},
+    }));
+
+    return flushTasks();
+  }
+
   /**
    * @param {!SystemInfo} systemInfo
    * @param {!Array<!BatteryChargeStatus>} batteryChargeStatus
@@ -111,7 +153,28 @@ export function appTestSuite() {
                 dx_utils.getNavigationViewPanelElement(page, 'system');
             assertTrue(!!systemPage);
             assertTrue(isVisible(systemPage));
+            assertFalse(isVisible(getCautionBanner()));
           });
+    });
+
+    test('BannerVisibliblityTogglesWithEvents', () => {
+      const bannerMessage = 'Diagnostics Banner Message';
+      return initializeDiagnosticsApp(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            assertFalse(isVisible(getCautionBanner()));
+
+            return triggerShowBannerEvent(bannerMessage);
+          })
+          .then(() => {
+            assertTrue(isVisible(getCautionBanner()));
+            dx_utils.assertElementContainsText(
+                getCautionBannerMessage(), bannerMessage);
+
+            return triggerDismissBannerEvent();
+          })
+          .then(() => assertFalse(isVisible(getCautionBanner())));
     });
   }
 }

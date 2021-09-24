@@ -5,6 +5,7 @@
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import './diagnostics_sticky_banner.js';
 import './input_list.js';
 import './network_list.js';
 import './strings.m.js';
@@ -34,6 +35,17 @@ Polymer({
   browserProxy_: null,
 
   properties: {
+    /**
+     * Used in navigation-view-panel to set show-banner when banner is expected
+     * to be shown.
+     * @protected
+     * @type {string}
+     */
+    bannerMessage_: {
+      type: Boolean,
+      value: '',
+    },
+
     /** @private {boolean} */
     showNavPanel_: {
       type: Boolean,

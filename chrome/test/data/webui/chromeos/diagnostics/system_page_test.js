@@ -285,67 +285,69 @@ export function systemPageTestSuite() {
         .then(() => assertTrue(isVisible(getSessionLogButton())));
   });
 
-  test('RunningCpuTestsShowsBanner', () => {
-    /** @type {?RoutineSectionElement} */
-    let routineSection;
-    /** @type {!Array<!RoutineType>} */
-    const routines = [
-      ash.diagnostics.mojom.RoutineType.kCpuCache,
-    ];
-    routineController.setFakeStandardRoutineResult(
+  // System page is only responsible for banner display when in stand-alone
+  // view.
+  if (!window.isNetworkEnabled) {
+    test('RunningCpuTestsShowsBanner', () => {
+      /** @type {?RoutineSectionElement} */
+      let routineSection;
+      /** @type {!Array<!RoutineType>} */
+      const routines = [
         ash.diagnostics.mojom.RoutineType.kCpuCache,
-        ash.diagnostics.mojom.StandardRoutineResult.kTestPassed);
-    return initializeSystemPage(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          routineSection = dx_utils.getRoutineSection(page.$$('cpu-card'));
-          routineSection.routines = routines;
-          assertFalse(isVisible(getCautionBanner()));
-          return flushTasks();
-        })
-        .then(() => {
-          dx_utils.getRunTestsButtonFromSection(routineSection).click();
-          return flushTasks();
-        })
-        .then(() => {
-          assertTrue(isVisible(getCautionBanner()));
-          return routineController.resolveRoutineForTesting();
-        })
-        .then(() => flushTasks())
-        .then(() => assertFalse(isVisible(getCautionBanner())));
-  });
+      ];
+      routineController.setFakeStandardRoutineResult(
+          ash.diagnostics.mojom.RoutineType.kCpuCache,
+          ash.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+      return initializeSystemPage(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            routineSection = dx_utils.getRoutineSection(page.$$('cpu-card'));
+            routineSection.routines = routines;
+            assertFalse(isVisible(getCautionBanner()));
+            return flushTasks();
+          })
+          .then(() => {
+            dx_utils.getRunTestsButtonFromSection(routineSection).click();
+            return flushTasks();
+          })
+          .then(() => {
+            assertTrue(isVisible(getCautionBanner()));
+            return routineController.resolveRoutineForTesting();
+          })
+          .then(() => flushTasks())
+          .then(() => assertFalse(isVisible(getCautionBanner())));
+    });
 
-  test('RunningMemoryTestsShowsBanner', () => {
-    /** @type {?RoutineSectionElement} */
-    let routineSection;
-    /** @type {!Array<!RoutineType>} */
-    const routines = [
-      RoutineType.kMemory,
-    ];
-    routineController.setFakeStandardRoutineResult(
-        RoutineType.kMemory, StandardRoutineResult.kTestPassed);
-    return initializeSystemPage(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          routineSection = dx_utils.getRoutineSection(page.$$('memory-card'));
-          routineSection.routines = routines;
-          assertFalse(isVisible(getCautionBanner()));
-          return flushTasks();
-        })
-        .then(() => {
-          dx_utils.getRunTestsButtonFromSection(routineSection).click();
-          return flushTasks();
-        })
-        .then(() => {
-          dx_utils.assertElementContainsText(
-              page.$$('#banner > #bannerMsg'),
-              loadTimeData.getString('memoryBannerMessage'));
-          assertTrue(isVisible(getCautionBanner()));
-          return routineController.resolveRoutineForTesting();
-        })
-        .then(() => flushTasks())
-        .then(() => assertFalse(isVisible(getCautionBanner())));
-  });
+    test('RunningMemoryTestsShowsBanner', () => {
+      /** @type {?RoutineSectionElement} */
+      let routineSection;
+      /** @type {!Array<!RoutineType>} */
+      const routines = [RoutineType.kMemory];
+      routineController.setFakeStandardRoutineResult(
+          RoutineType.kMemory, StandardRoutineResult.kTestPassed);
+      return initializeSystemPage(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            routineSection = dx_utils.getRoutineSection(page.$$('memory-card'));
+            routineSection.routines = routines;
+            assertFalse(isVisible(getCautionBanner()));
+            return flushTasks();
+          })
+          .then(() => {
+            dx_utils.getRunTestsButtonFromSection(routineSection).click();
+            return flushTasks();
+          })
+          .then(() => {
+            dx_utils.assertElementContainsText(
+                page.$$('#banner > #bannerMsg'),
+                loadTimeData.getString('memoryBannerMessage'));
+            assertTrue(isVisible(getCautionBanner()));
+            return routineController.resolveRoutineForTesting();
+          })
+          .then(() => flushTasks())
+          .then(() => assertFalse(isVisible(getCautionBanner())));
+    });
+  }
 }

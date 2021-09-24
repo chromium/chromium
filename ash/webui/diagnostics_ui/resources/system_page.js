@@ -114,7 +114,11 @@ Polymer({
     this.fetchSystemInfo_();
     this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
-    this.addCautionBannerEventListeners_();
+
+    // Only use inner banner behavior if system page is in stand-alone mode.
+    if (!this.isNetworkingEnabled) {
+      this.addCautionBannerEventListeners_();
+    }
   },
 
   /** @private */
