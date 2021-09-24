@@ -176,6 +176,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"memoryBannerMessage", IDS_DIAGNOSTICS_MEMORY_BANNER_MESSAGE},
       {"memoryRoutineText", IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
+      {"missingNameServersText",
+       IDS_NETWORK_DIAGNOSTICS_MISSING_NAME_SERVERS_TEXT},
       {"nameResolutionGroupLabel", IDS_DIAGNOSTICS_NAME_RESOLUTION_GROUP_LABEL},
       {"networkAuthenticationLabel", IDS_NETWORK_DIAGNOSTICS_AUTHENTICATION},
       {"networkBssidLabel", IDS_ONC_WIFI_BSSID},

@@ -175,14 +175,9 @@ export function networkListTestSuite() {
           // guid as it's the currently active guid.
           const wifiInfoElement = dx_utils.getWifiInfoElement(
               networkCardElements[0].$$('network-info'));
-          const cellularInfoElement = dx_utils.getCellularInfoElement(
-              networkCardElements[1].$$('network-info'));
           dx_utils.assertTextContains(
               wifiInfoElement.$$('#ssid').value,
               fakeWifiNetwork.typeProperties.wifi.ssid);
-          dx_utils.assertTextContains(
-              cellularInfoElement.$$('#iccid').value,
-              fakeCellularNetwork.typeProperties.cellular.iccid);
 
           assertEquals(
               getConnectivityCard().activeGuid,

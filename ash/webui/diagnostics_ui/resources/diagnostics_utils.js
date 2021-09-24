@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {LockType, NetworkState, NetworkType, RoutineProperties, RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
+import {LockType, Network, NetworkState, NetworkType, RoutineProperties, RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
 import {RoutineGroup} from './routine_group.js';
 
 /**
@@ -280,4 +280,13 @@ export function isConnectedOrOnline(state) {
     default:
       return false;
   }
+}
+
+/**
+ * @param {!Network} network
+ * @return {boolean}
+ */
+export function isNetworkMissingNameServers(network) {
+  return !network.ipConfig || !network.ipConfig.nameServers ||
+      network.ipConfig.nameServers.length === 0;
 }

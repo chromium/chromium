@@ -13,7 +13,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkState, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, TroubleshootingInfo} from './diagnostics_types.js';
-import {formatMacAddress, getNetworkState, getNetworkType, isConnectedOrOnline} from './diagnostics_utils.js';
+import {formatMacAddress, getNetworkState, getNetworkType, isConnectedOrOnline, isNetworkMissingNameServers} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 const BASE_SUPPORT_URL = 'https://support.google.com/chromebook?p=diagnostics_';
@@ -27,6 +27,7 @@ export let TroubleshootingState = {
   kDisabled: 0,
   kNotConnected: 1,
   kMissingIpAddress: 2,
+  kMissingNameServers: 3,
 };
 
 /**
@@ -79,7 +80,7 @@ Polymer({
     showNetworkDataPoints_: {
       type: Boolean,
       computed: 'computeShouldShowNetworkDataPoints_(network.state,' +
-          ' unableToObtainIpAddress_)',
+          ' unableToObtainIpAddress_, isMissingNameServers_)',
     },
 
     /** @protected {boolean} */
@@ -104,13 +105,19 @@ Polymer({
     troubleshootingInfo_: {
       type: Object,
       computed: 'computeTroubleshootingInfo_(network.*,' +
-          ' unableToObtainIpAddress_)',
+          ' unableToObtainIpAddress_, isMissingNameServers_)',
     },
 
     /** @private */
     timerId_: {
       type: Number,
       value: -1,
+    },
+
+    /** @protected {boolean} */
+    isMissingNameServers_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -155,8 +162,10 @@ Polymer({
     let isIpAddressMissing = !network.ipConfig || !network.ipConfig.ipAddress;
     let isTimerInProgress = this.timerId_ !== -1;
 
-    if (!isIpAddressMissing && this.unableToObtainIpAddress_) {
+    if (!isIpAddressMissing) {
+      // Reset this flag now that this network has a valid IP Address.
       this.unableToObtainIpAddress_ = false;
+      this.isMissingNameServers_ = isNetworkMissingNameServers(network);
     }
 
     if (isIpAddressMissing && !isTimerInProgress) {
@@ -198,7 +207,7 @@ Polymer({
       return false;
     }
 
-    if (this.unableToObtainIpAddress_) {
+    if (this.unableToObtainIpAddress_ || this.isMissingNameServers_) {
       return false;
     }
 
@@ -283,11 +292,15 @@ Polymer({
     let troubleshootingState = null;
     if (!this.network || isConnectedOrOnline(this.network.state)) {
       // Hide the troubleshooting banner if we're in an active state
-      // unlesss the network's IP Address has been missing for >=30
-      // seconds in which case we'd like to display the bannner to
-      // the user.
+      // unlesss the network's IP Address has been missing for >= 30
+      // seconds or we're missing name servers in which case we'd like
+      // to display the bannner to the user.
       if (this.unableToObtainIpAddress_) {
         troubleshootingState = TroubleshootingState.kMissingIpAddress;
+      }
+
+      if (this.isMissingNameServers_) {
+        troubleshootingState = TroubleshootingState.kMissingNameServers;
       }
 
       if (troubleshootingState == null) {
@@ -333,6 +346,18 @@ Polymer({
 
   /**
    * @private
+   * @return {!TroubleshootingInfo}
+   */
+  getMissingNameServersInfo_() {
+    return {
+      header: this.i18n('missingNameServersText'),
+      linkText: this.i18n('visitSettingsToConfigureLinkText'),
+      url: SETTINGS_URL,
+    }
+  },
+
+  /**
+   * @private
    * @param {!TroubleshootingState} state
    * @return {!TroubleshootingInfo}
    */
@@ -344,6 +369,8 @@ Polymer({
         return this.getNotConnectedTroubleshootingInfo_();
       case TroubleshootingState.kMissingIpAddress:
         return this.getMissingIpAddressInfo_();
+      case TroubleshootingState.kMissingNameServers:
+        return this.getMissingNameServersInfo_();
       default:
         return {
           header: '', linkText: '', url: '',
