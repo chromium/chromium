@@ -99,11 +99,11 @@ const std::vector<base::FilePath> GetTestFiles() {
 // Serializes the |profiles| into a string.
 std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
   std::string result;
-  for (size_t i = 0; i < profiles.size(); ++i) {
+  for (auto* profile : profiles) {
     result += kProfileSeparator;
     result += "\n";
     for (const ServerFieldType& type : kProfileFieldTypes) {
-      std::u16string value = profiles[i]->GetRawInfo(type);
+      std::u16string value = profile->GetRawInfo(type);
       result += AutofillType::ServerFieldTypeToString(type);
       result += kFieldSeparator;
       if (!value.empty()) {
@@ -141,7 +141,7 @@ class PersonalDataManagerMock : public PersonalDataManager {
 PersonalDataManagerMock::PersonalDataManagerMock()
     : PersonalDataManager("en-US", "US") {}
 
-PersonalDataManagerMock::~PersonalDataManagerMock() {}
+PersonalDataManagerMock::~PersonalDataManagerMock() = default;
 
 void PersonalDataManagerMock::Reset() {
   profiles_.clear();
@@ -292,12 +292,17 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       // Import the profile.
       std::unique_ptr<CreditCard> imported_credit_card;
       absl::optional<std::string> unused_imported_upi_id;
+      std::vector<FormDataImporter::AddressProfileImportCandidate>
+          address_profile_import_candidates;
       form_data_importer_->ImportFormData(form_structure,
                                           true,  // address autofill enabled,
                                           true,  // credit card autofill enabled
                                           false,  // should return local card
                                           &imported_credit_card,
+                                          address_profile_import_candidates,
                                           &unused_imported_upi_id);
+      form_data_importer_->ProcessAddressProfileImportCandidates(
+          address_profile_import_candidates, true);
       EXPECT_FALSE(imported_credit_card);
       EXPECT_FALSE(unused_imported_upi_id.has_value());
 

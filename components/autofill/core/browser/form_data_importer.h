@@ -44,6 +44,7 @@ class FormDataImporter {
     // The imported card is not currently stored with the browser.
     NEW_CARD,
   };
+
   // The parameters should outlive the FormDataImporter.
   FormDataImporter(AutofillClient* client,
                    payments::PaymentsClient* payments_client,
@@ -99,6 +100,20 @@ class FormDataImporter {
 #endif  // #if !defined(OS_ANDROID) && !defined(OS_IOS)
 
  private:
+  // Defines a candidate for address profile import.
+  struct AddressProfileImportCandidate {
+    // The profile that was extracted from the form.
+    AutofillProfile profile;
+    // The URL the profile was extracted from.
+    GURL url;
+    // Indicates if all import requirements have been fulfilled.
+    bool all_requirements_fulfilled;
+    AddressProfileImportCandidate(AddressProfileImportCandidate&& other) =
+        default;
+    AddressProfileImportCandidate& operator=(
+        AddressProfileImportCandidate&& other) = default;
+  };
+
   // Scans the given |form| for importable Autofill data. If the form includes
   // sufficient address data for a new profile, it is immediately imported. If
   // the form includes sufficient credit card data for a new credit card and
@@ -116,25 +131,27 @@ class FormDataImporter {
                       bool credit_card_autofill_enabled,
                       bool should_return_local_card,
                       std::unique_ptr<CreditCard>* imported_credit_card,
+                      std::vector<AddressProfileImportCandidate>&
+                          address_profile_import_candidates,
                       absl::optional<std::string>* imported_upi_id);
 
   // Go through the |form| fields and attempt to extract and import valid
   // address profiles. Returns true on extraction success of at least one
   // profile. There are many reasons that extraction may fail (see
-  // implementation). |allow_save_prompts| indicates if a dialog to import a new
-  // address can be shown.  The function returns true if at least one complete
+  // implementation).  The function returns true if at least one complete
   // address profile was found.
-  bool ImportAddressProfiles(const FormStructure& form,
-                             bool allow_save_prompts);
+  bool ImportAddressProfiles(
+      const FormStructure& form,
+      std::vector<AddressProfileImportCandidate>& import_candidates);
 
   // Helper method for ImportAddressProfiles which only considers the fields for
   // a specified |section|. If |section| is the empty string, the import is
-  // performed on the union of all sections. |allow_save_prompts| indicates if
-  // a dialog to import a new address can be shown.
-  bool ImportAddressProfileForSection(const FormStructure& form,
-                                      const std::string& section,
-                                      bool allow_save_prompts,
-                                      LogBuffer* import_log_buffer);
+  // performed on the union of all sections.
+  bool ImportAddressProfileForSection(
+      const FormStructure& form,
+      const std::string& section,
+      std::vector<AddressProfileImportCandidate>& import_candidates,
+      LogBuffer* import_log_buffer);
 
   // Go through the |form| fields and attempt to extract a new credit card in
   // |imported_credit_card|, or update an existing card.
@@ -157,6 +174,14 @@ class FormDataImporter {
       absl::optional<std::string> detected_upi_id,
       bool credit_card_autofill_enabled,
       bool is_credit_card_upstream_enabled);
+
+  // Processes the address profile import candidates.
+  // |import_candidates| contains the addresses extracted from the form.
+  // |allow_prompt| denotes if a prompt can be shown.
+  // Returns true if the import of a complete profile is initiated.
+  bool ProcessAddressProfileImportCandidates(
+      const std::vector<AddressProfileImportCandidate>& import_candidates,
+      bool allow_prompt = true);
 
   // Extracts credit card from the form structure. |hasDuplicateFieldType| will
   // be set as true if there are duplicated field types in the form.
