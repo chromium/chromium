@@ -4939,14 +4939,6 @@ ci.gpu_fyi_linux_builder(
 )
 
 ci.gpu_fyi_mac_builder(
-    name = "Mac FYI arm64 Release (Apple DTK)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac",
-        short_name = "dtk",
-    ),
-)
-
-ci.gpu_fyi_mac_builder(
     name = "Mac FYI GPU ASAN Release",
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
