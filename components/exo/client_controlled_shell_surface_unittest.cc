@@ -2727,7 +2727,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
 
   // Tablet mode -> clamshell mode. Top caption height should be reserved.
   EnableTabletMode(false);
-  EXPECT_EQ(gfx::Rect(0, 32, 396, 568), delegate->requested_bounds().back());
+  EXPECT_EQ(gfx::Rect(0, 32, 400, 568), delegate->requested_bounds().back());
 
   // Clean up state.
   shell_surface->SetSnappedToLeft();

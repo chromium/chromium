@@ -1740,8 +1740,7 @@ TEST_F(TabletModeWindowManagerTest,
             1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
   // Exit tablet mode and verify the window stays in the same position.
   DestroyTabletModeWindowManager();
-  EXPECT_EQ(window->bounds().width(),
-            1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
+  EXPECT_EQ(window->bounds().width(), 1200 * 0.33);
 
   // Now test the 2 windows case.
   std::unique_ptr<aura::Window> window2(
@@ -1764,8 +1763,7 @@ TEST_F(TabletModeWindowManagerTest,
             1200 - window->bounds().width() - kSplitviewDividerShortSideLength);
   // Exit tablet mode and verify the windows stay in the same position.
   DestroyTabletModeWindowManager();
-  EXPECT_EQ(window->bounds().width(),
-            1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
+  EXPECT_EQ(window->bounds().width(), 1200 * 0.33);
   EXPECT_EQ(window2->bounds().width(), 1200 - window->bounds().width());
 }
 

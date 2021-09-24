@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
@@ -559,21 +560,32 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
 
   const bool horizontal = SplitViewController::IsLayoutHorizontal(display);
   const bool primary = SplitViewController::IsLayoutPrimary(display);
+
+  // We need to expand (or shrink) the width of the snapped windows by the half
+  // of the divider width when to-clamshell (or to-tablet) transition happens
+  // accordingly, because in tablet mode the "center" of the split view should
+  // be the center of the divider.
+  const int divider_padding =
+      (clamshell_to_tablet ? -1 : 1) * kSplitviewDividerShortSideLength / 2;
   if (horizontal) {
     if (primary) {
-      return left_window ? left_window_bounds.width()
-                         : work_area.width() - right_window_bounds.width();
+      return left_window ? left_window_bounds.width() + divider_padding
+                         : work_area.width() - right_window_bounds.width() -
+                               divider_padding;
     } else {
-      return left_window ? work_area.width() - left_window_bounds.width()
-                         : right_window_bounds.width();
+      return left_window ? work_area.width() - left_window_bounds.width() -
+                               divider_padding
+                         : right_window_bounds.width() + divider_padding;
     }
   } else {
     if (primary) {
-      return left_window ? left_window_bounds.height()
-                         : work_area.height() - right_window_bounds.height();
+      return left_window ? left_window_bounds.height() + divider_padding
+                         : work_area.height() - right_window_bounds.height() -
+                               divider_padding;
     } else {
-      return left_window ? work_area.height() - left_window_bounds.height()
-                         : right_window_bounds.height();
+      return left_window ? work_area.height() - left_window_bounds.height() -
+                               divider_padding
+                         : right_window_bounds.height() + divider_padding;
     }
   }
 }
