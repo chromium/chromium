@@ -210,7 +210,7 @@ const base::Feature kEnableDrDc{"EnableDrDc",
 const base::Feature kWebGPUService{"WebGPUService",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 // Enable raw draw for tiles.
-const base::Feature kRawDraw{"RawDraw", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kRawDraw{"RawDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
 
