@@ -293,7 +293,7 @@
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> தளத்தைப் பின்தொடர்வதை நிறுத்திவிட்டீர்கள்</translation>
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> மறைநிலைப் பக்கம் மூடப்படும்}other{<ph name="TAB_COUNT_MANY" /> மறைநிலைப் பக்கங்கள் மூடப்படும்}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{சரிபார்த்தது: 1 நாளுக்கு முன்பு}other{சரிபார்த்தது: # நாட்களுக்கு முன்பு}}</translation>
-<translation id="2842985007712546952">மூலக் கோப்புறை</translation>
+<translation id="2842985007712546952">மூல ஃபோல்டர்</translation>
 <translation id="2856503607207334158">உள்நுழைய முடியவில்லை</translation>
 <translation id="2860954141821109167">இந்தச் சாதனத்தில் ஃபோன் ஆப்ஸ் இயக்கப்பட்டுள்ளதை உறுதிசெய்து கொள்ளவும்</translation>
 <translation id="2870560284913253234">தளம்</translation>
@@ -414,7 +414,7 @@
 <translation id="3522247891732774234">புதுப்பிப்பு உள்ளது. மேலும் விருப்பங்கள்</translation>
 <translation id="3524138585025253783">டெவெலப்பர் UI</translation>
 <translation id="3524334353996115845">இது நீங்கள்தான் என்பதை உறுதிசெய்ய <ph name="ORIGIN" /> தளத்தை அனுமதியுங்கள்</translation>
-<translation id="3527085408025491307">கோப்புறை</translation>
+<translation id="3527085408025491307">ஃபோல்டர்</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> கி.பை. உள்ளது</translation>
 <translation id="3549657413697417275">உங்கள் வரலாற்றைத் தேடுக</translation>
 <translation id="3557336313807607643">தொடர்புகளில் சேர்</translation>
@@ -1168,7 +1168,7 @@
 <translation id="8026334261755873520">உலாவிய தரவை அழி</translation>
 <translation id="8027863900915310177">எங்கே பதிவிறக்குவது என்பதைத் தேர்வுசெய்யவும்</translation>
 <translation id="8032569120109842252">பின்தொடர்கிறீர்கள்</translation>
-<translation id="8035133914807600019">புதிய கோப்புறை…</translation>
+<translation id="8035133914807600019">புதிய ஃபோல்டர்…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> நாட்கள் மீதமுள்ளன</translation>
 <translation id="8037801708772278989">சரிபார்த்தது: சற்று முன்பு</translation>
 <translation id="8040831032425909005">விரைவான தேடல் விட்ஜெட் ஐகான்</translation>
@@ -1329,7 +1329,7 @@
 <translation id="8965591936373831584">நிலுவையிலுள்ளது</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> மறைநிலைப் பக்கமும் மேலும் <ph name="TAB_COUNT_ONE" /> பக்கமும் மூடப்படும்}other{<ph name="INCOGNITO_TAB_COUNT" /> மறைநிலைப் பக்கமும் மேலும் <ph name="TAB_COUNT_MANY" /> பக்கங்களும் மூடப்படும்}}</translation>
 <translation id="8970887620466824814">ஏதோ தவறாகிவிட்டது.</translation>
-<translation id="8972098258593396643">இயல்புக் கோப்புறைக்குப் பதிவிறக்கவா?</translation>
+<translation id="8972098258593396643">இயல்புக் ஃபோல்டருக்குப் பதிவிறக்கவா?</translation>
 <translation id="8987641763863173640">வீடியோ மாதிரிக்காட்சிக்கான அமைப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="8988028529677883095">பாதுகாப்பு விசையாக மொபைலைப் பயன்படுத்து</translation>
 <translation id="8993760627012879038">புதிய தாவலை மறைநிலையில் திறக்கும்</translation>

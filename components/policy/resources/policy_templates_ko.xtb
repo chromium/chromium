@@ -1482,6 +1482,7 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
 <translation id="2725855586003209701">정책을 사용 설정하거나 설정하지 않으면 등록된 기기에서 최근에 로그인한 기기 사용자 목록을 보고합니다.
 
       정책을 사용 중지하면 등록된 기기에서 사용자 목록을 보고하지 않습니다.</translation>
+<translation id="2730419309754848345">PDF를 이미지로 인쇄 기본값</translation>
 <translation id="2731627323327011390">ARC 앱에서 <ph name="PRODUCT_OS_NAME" /> 인증서를 사용하지 않도록 설정</translation>
 <translation id="2742843273354638707">새 탭 페이지 및 <ph name="PRODUCT_OS_NAME" /> 앱 런처에서 Chrome 웹 스토어 앱과 바닥글 링크가 표시되지 않도록 숨깁니다.
 
@@ -3241,6 +3242,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 <translation id="4988291787868618635">유휴 지연 시간에 도달하면 수행할 작업</translation>
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" /> 로그인 사용자 인증 정보가 네트워크 인증에 사용되지 않습니다.</translation>
 <translation id="4996086761250834365"><ph name="PLUGIN_VM_NAME" /> 제품 분석 허용</translation>
+<translation id="4997074784107449343">이미지로 인쇄 옵션이 사용 가능한 경우 PDF 문서의 인쇄 미리보기로 기본적으로 설정되지 않습니다.</translation>
 <translation id="500149597848135831">모든 변형 허용</translation>
 <translation id="5017369989680827157">정책을 True로 설정하거나 설정하지 않으면 사용자가 UI의 주소 자동 완성을 제어할 수 있습니다.
 
@@ -3999,6 +4001,13 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 
       사용 중지하면 QUIC 프로토콜을 사용할 수 없습니다.</translation>
 <translation id="5921713479449475707">HTTP를 통한 자동 업데이트 다운로드 허용</translation>
+<translation id="5928633129285224981"><ph name="PRODUCT_NAME" />에서 PDF 인쇄 시 이미지로 인쇄 옵션을 기본적으로 설정할지를 제어합니다.
+
+      이 정책이 사용 설정된 경우 <ph name="PRODUCT_NAME" />에서 PDF를 인쇄할 때 인쇄 미리보기의 이미지로 인쇄 옵션이 기본적으로 설정됩니다.
+
+      이 정책이 사용 중지로 설정되었거나 설정되지 않은 경우 <ph name="PRODUCT_NAME" />에서 사용자가 이미지로 인쇄 옵션을 선택할 때 이 옵션이 처음에 설정되지 않습니다.  사용자는 개별 PDF 인쇄 작업별로 옵션을 선택할 수 있습니다(옵션이 사용 가능한 경우).
+
+      <ph name="MS_WIN_NAME" /> 또는 <ph name="MAC_OS_NAME" />에서는 <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" />도 사용 설정되어 있을 경우에만 이 정책이 효과가 있습니다.</translation>
 <translation id="5929855945144989709">기기가 Chrome OS에서 가상 머신을 실행하도록 허용</translation>
 <translation id="5932767795525445337">이 정책은 Android 앱을 고정하는 데에도 사용할 수 있습니다.</translation>
 <translation id="5934763632608026594">정책을 설정하면 <ph name="PRODUCT_NAME" />의 웹 앱 관리 설정을 제어할 수 있습니다.
@@ -5841,6 +5850,7 @@ False로 설정하면 로그인 화면이 표시될 때 개인정보 보호 화�
       정책을 사용 중지하거나 설정하지 않으면 패킷을 전송하지 않습니다.</translation>
 <translation id="816783746144552109">기기에 허용되는 최소 Chrome OS 버전을 설정합니다.</translation>
 <translation id="8171924760436219650">로그인 화면의 기본 마우스 버튼을 오른쪽 버튼으로 변경</translation>
+<translation id="8173864651667424191">이미지로 인쇄 옵션이 사용 가능한 경우 PDF 문서의 인쇄 미리보기로 기본적으로 설정됩니다.</translation>
 <translation id="8176035528522326671">기업 사용자에게 기본 멀티 프로필 사용자만 허용(기업에서 관리하는 사용자에 대한 기본 동작임)</translation>
 <translation id="8179161412673077784">악의적 사용자 환경이 포함된 사이트에서 새 창 또는 탭 열기 차단</translation>
 <translation id="8183108371184777472">브라우저 창 실행 억제</translation>

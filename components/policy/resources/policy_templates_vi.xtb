@@ -1486,6 +1486,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2725855586003209701">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ báo cáo danh sách người dùng thiết bị đã đăng nhập gần đây.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo danh sách người dùng.</translation>
+<translation id="2730419309754848345">Lựa chọn In tệp PDF dưới dạng hình ảnh mặc định</translation>
 <translation id="2731627323327011390">Tắt sử dụng chứng chỉ <ph name="PRODUCT_OS_NAME" /> đối với ứng dụng ARC</translation>
 <translation id="2742843273354638707">Ẩn ứng dụng Cửa hàng Chrome trực tuyến và liên kết chân trang khỏi Trang thẻ mới và trình chạy ứng dụng <ph name="PRODUCT_OS_NAME" />.
 
@@ -3244,6 +3245,7 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="4988291787868618635">Hành động cần thực hiện khi đạt tới độ trễ khi không sử dụng</translation>
 <translation id="4996068111491152684">Thông tin đăng nhập <ph name="PRODUCT_OS_NAME" /> sẽ không được dùng để xác thực mạng.</translation>
 <translation id="4996086761250834365">Cho phép Dữ liệu phân tích sản phẩm <ph name="PLUGIN_VM_NAME" /></translation>
+<translation id="4997074784107449343">Khi lựa chọn in dưới dạng hình ảnh có sẵn thì hệ thống sẽ không đặt lựa chọn này thành chế độ mặc định cho phần xem trước bản in của tài liệu PDF.</translation>
 <translation id="500149597848135831">Cho phép tất cả các biến</translation>
 <translation id="5017369989680827157">Nếu bạn đặt chính sách này thành True hoặc không đặt chính sách này, thì người dùng sẽ có quyền kiểm soát tính năng Tự động điền cho địa chỉ trong giao diện người dùng.
 
@@ -4004,6 +4006,13 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không sử dụng được giao thức QUIC (giao thức kết nối Internet nhanh UDP).</translation>
 <translation id="5921713479449475707">Cho phép tài nguyên đã tải xuống tự động cập nhật qua HTTP</translation>
+<translation id="5928633129285224981">Kiểm soát liệu <ph name="PRODUCT_NAME" /> có đặt lựa chọn In dưới dạng hình ảnh thành chế độ mặc định khi in tệp PDF hay không.
+
+      Khi bạn bật chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ đặt lựa chọn In dưới dạng hình ảnh thành chế độ mặc định cho phần Xem trước bản in khi in tệp PDF.
+
+      Khi bạn tắt hoặc không đặt chính sách này trong <ph name="PRODUCT_NAME" />, thì hệ thống sẽ không đặt lựa chọn In dưới dạng hình ảnh cho người dùng ngay từ đầu.  Người dùng sẽ được phép chọn chế độ cho từng lệnh in tệp PDF riêng lẻ nếu lựa chọn này có sẵn.
+
+      Đối với <ph name="MS_WIN_NAME" /> hoặc <ph name="MAC_OS_NAME" />, chính sách này chỉ có hiệu lực nếu <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> cũng được bật.</translation>
 <translation id="5929855945144989709">Cho phép các thiết bị chạy máy ảo trên Chrome OS</translation>
 <translation id="5932767795525445337">Chính sách này cũng có thể được dùng để ghim ứng dụng Android.</translation>
 <translation id="5934763632608026594">Việc đặt chính sách này sẽ kiểm soát các chế độ cài đặt quản lý ứng dụng web đối với <ph name="PRODUCT_NAME" />.
@@ -5844,6 +5853,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì thiết bị sẽ không gửi thông tin theo dõi gói mạng.</translation>
 <translation id="816783746144552109">Định cấu hình phiên bản Chrome OS tối thiểu được phép cho thiết bị.</translation>
 <translation id="8171924760436219650">Chuyển nút chuột chính thành nút phải trên màn hình đăng nhập</translation>
+<translation id="8173864651667424191">Khi lựa chọn in dưới dạng hình ảnh có sẵn thì hệ thống sẽ đặt lựa chọn này thành chế độ mặc định cho phần xem trước bản in của tài liệu PDF.</translation>
 <translation id="8176035528522326671">Cho phép người dùng doanh nghiệp trở thành người dùng chính duy nhất có nhiều hồ sơ (Hành vi mặc định cho người dùng do doanh nghiệp quản lý)</translation>
 <translation id="8179161412673077784">Ngăn các trang web có trải nghiệm lừa gạt mở cửa sổ mới hoặc thẻ mới</translation>
 <translation id="8183108371184777472">Ngăn cửa sổ trình duyệt chạy</translation>
