@@ -260,7 +260,23 @@ std::vector<Mailbox> SharedImageInterfaceProxy::CreateSharedImageVideoPlanes(
   }
   return mailboxes;
 }
-#endif
+
+void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox) {
+  std::vector<SyncToken> dependencies =
+      GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
+  {
+    base::AutoLock lock(lock_);
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::NewCopyToGpuMemoryBuffer(
+                mojom::CopyToGpuMemoryBufferParams::New(mailbox,
+                                                        ++next_release_id_))),
+        std::move(dependencies));
+  }
+}
+#endif  // OS_WIN
 
 #if defined(OS_ANDROID)
 Mailbox SharedImageInterfaceProxy::CreateSharedImageWithAHB(

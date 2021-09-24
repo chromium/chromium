@@ -112,6 +112,13 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   virtual void Update(std::unique_ptr<gfx::GpuFence> in_fence) = 0;
 
+  // Copy from the backing's GPU texture to its GpuMemoryBuffer if present. This
+  // is needed on Windows where the renderer process can only create shared
+  // memory GMBs and an explicit copy is needed. Returns true on success.
+  virtual bool CopyToGpuMemoryBuffer();
+
+  // Present the swap chain corresponding to this backing. Presents only if the
+  // backing is the back buffer of the swap chain. Returns true on success.
   virtual bool PresentSwapChain();
 
   virtual void MarkForDestruction() {}

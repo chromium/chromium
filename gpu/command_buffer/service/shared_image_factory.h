@@ -131,6 +131,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                                     gfx::BufferFormat format,
                                     const gfx::Size& size,
                                     uint32_t usage);
+  bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
 #endif
 
 #if defined(OS_ANDROID)

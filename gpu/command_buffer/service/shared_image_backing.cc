@@ -47,6 +47,10 @@ void SharedImageBacking::OnContextLost() {
   have_context_ = false;
 }
 
+bool SharedImageBacking::CopyToGpuMemoryBuffer() {
+  return false;
+}
+
 bool SharedImageBacking::PresentSwapChain() {
   return false;
 }

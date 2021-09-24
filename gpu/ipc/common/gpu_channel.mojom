@@ -478,6 +478,10 @@ union DeferredSharedImageRequest {
   // See UpdateSharedImageParams.
   UpdateSharedImageParams update_shared_image;
 
+  // See CopyToGpuMemoryBufferParams.
+  [EnableIf=is_win]
+  CopyToGpuMemoryBufferParams copy_to_gpu_memory_buffer;
+
   // Destroys the shared image identified by this Mailbox.
   Mailbox destroy_shared_image;
 
@@ -668,6 +672,17 @@ struct UpdateSharedImageParams {
   // An optional GpuFenceHandle for the server to wait on before updating the
   // image from whatever backs it.
   gfx.mojom.GpuFenceHandle? in_fence_handle;
+};
+
+// Updates the contents of the GpuMemoryBuffer associated with the shared image.
+// Necessary on platforms like Windows where renderer cannot create native GMBs.
+[EnableIf=is_win]
+struct CopyToGpuMemoryBufferParams {
+  // The mailbox identifying the shared image which should update its GMB.
+  Mailbox mailbox;
+
+  // The fence to release once the GMB has been updated.
+  uint32 release_id;
 };
 
 [EnableIf=is_win]

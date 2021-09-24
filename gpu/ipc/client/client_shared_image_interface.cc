@@ -129,6 +129,12 @@ std::vector<Mailbox> ClientSharedImageInterface::CreateSharedImageVideoPlanes(
   }
   return mailboxes;
 }
+
+void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox) {
+  proxy_->CopyToGpuMemoryBuffer(sync_token, mailbox);
+}
 #endif
 
 #if defined(OS_ANDROID)

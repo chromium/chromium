@@ -76,14 +76,17 @@ class SharedImageRepresentationOverlayD3D
  public:
   SharedImageRepresentationOverlayD3D(SharedImageManager* manager,
                                       SharedImageBacking* backing,
-                                      MemoryTypeTracker* tracker);
-  ~SharedImageRepresentationOverlayD3D() override = default;
+                                      MemoryTypeTracker* tracker,
+                                      scoped_refptr<gl::GLImage> gl_image);
+  ~SharedImageRepresentationOverlayD3D() override;
 
  private:
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
 
   gl::GLImage* GetGLImage() override;
+
+  scoped_refptr<gl::GLImage> gl_image_;
 };
 
 }  // namespace gpu

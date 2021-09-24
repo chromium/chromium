@@ -16,6 +16,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
 #include "gpu/gpu_gles2_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Size;
@@ -114,14 +115,18 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
 
   // Returns true if the specified GpuMemoryBufferType can be imported using
   // this factory.
-  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
+  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type,
+                                viz::ResourceFormat format);
 
   Microsoft::WRL::ComPtr<ID3D11Device> GetDeviceForTesting() const {
     return d3d11_device_;
   }
 
  private:
+  bool UseMapOnDefaultTextures();
+
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  absl::optional<bool> map_on_default_textures_;
 };
 
 }  // namespace gpu

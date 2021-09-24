@@ -153,6 +153,7 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     backing()->Update(std::move(in_fence));
     backing()->OnWriteSucceeded();
   }
+  bool CopyToGpuMemoryBuffer() { return backing()->CopyToGpuMemoryBuffer(); }
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
     return backing()->ProduceLegacyMailbox(mailbox_manager);
   }

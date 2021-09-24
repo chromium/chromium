@@ -492,6 +492,15 @@ bool SharedImageFactory::CreateSharedImageVideoPlanes(
   }
   return true;
 }
+
+bool SharedImageFactory::CopyToGpuMemoryBuffer(const Mailbox& mailbox) {
+  auto it = shared_images_.find(mailbox);
+  if (it == shared_images_.end()) {
+    DLOG(ERROR) << "UpdateSharedImage: Could not find shared image mailbox";
+    return false;
+  }
+  return (*it)->CopyToGpuMemoryBuffer();
+}
 #endif
 
 #if defined(OS_ANDROID)
