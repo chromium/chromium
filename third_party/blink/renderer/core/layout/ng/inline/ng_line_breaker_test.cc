@@ -923,6 +923,30 @@ TEST_F(NGLineBreakerTest, SplitTextIntoSegements) {
       });
 }
 
+// crbug.com/1251960
+TEST_F(NGLineBreakerTest, SplitTextIntoSegementsCrash) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedSVGTextNG svg_text_ng(true);
+  NGInlineNode node = CreateInlineNode(R"HTML(<!DOCTYPE html>
+      <svg viewBox="0 0 800 600">
+      <text id="container" x="50 100 150">&#x0343;&#x2585;&#x0343;&#x2585;<!--
+      -->&#x0343;&#x2585;</text>
+      </svg>)HTML");
+  BreakLines(
+      node, LayoutUnit::Max(),
+      [](const NGLineBreaker& line_breaker, const NGLineInfo& line_info) {
+        Vector<const NGInlineItemResult*> text_results;
+        for (const auto& result : line_info.Results()) {
+          if (result.item->Type() == NGInlineItem::kText)
+            text_results.push_back(&result);
+        }
+        EXPECT_EQ(4u, text_results.size());
+        EXPECT_EQ(1u, text_results[0]->Length());  // U+0343
+        EXPECT_EQ(1u, text_results[1]->Length());  // U+2585
+        EXPECT_EQ(2u, text_results[2]->Length());  // U+0343 U+2585
+        EXPECT_EQ(2u, text_results[3]->Length());  // U+0343 U+2585
+      });
+}
+
 // crbug.com/1214232
 TEST_F(NGLineBreakerTest, GetOverhangCrash) {
   NGInlineNode node = CreateInlineNode(

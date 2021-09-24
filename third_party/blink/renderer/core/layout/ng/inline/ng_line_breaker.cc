@@ -1025,7 +1025,14 @@ void NGLineBreaker::SplitTextIntoSegments(const NGInlineItem& item,
   wtf_size_t size = index_list.size();
   unsigned glyph_start = offset_;
   for (wtf_size_t i = 0; i < size; ++i) {
-    DCHECK_EQ(glyph_start, index_list[i]);
+#if DCHECK_IS_ON()
+    // The first glyph index can be greater than StartIndex() if the leading
+    // part of the string was not mapped to any glyphs.
+    if (i == 0)
+      DCHECK_LE(glyph_start, index_list[0]);
+    else
+      DCHECK_EQ(glyph_start, index_list[i]);
+#endif
     unsigned glyph_end = i + 1 < size ? index_list[i + 1] : shape.EndIndex();
     StringView text_view(Text());
     bool should_split = i == size - 1;
