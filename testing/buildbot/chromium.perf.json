@@ -224,6 +224,9 @@
         "override_compile_targets": [
           "resource_sizes_chrome_modern_minimal_apks"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -250,6 +253,9 @@
         "override_compile_targets": [
           "resource_sizes_chrome_modern_public_minimal_apks"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -276,6 +282,9 @@
         "override_compile_targets": [
           "resource_sizes_monochrome_minimal_apks"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -302,6 +311,9 @@
         "override_compile_targets": [
           "resource_sizes_monochrome_public_minimal_apks"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -328,6 +340,9 @@
         "override_compile_targets": [
           "resource_sizes_system_webview_bundle"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -354,6 +369,9 @@
         "override_compile_targets": [
           "resource_sizes_system_webview_google_bundle"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -380,6 +398,9 @@
         "override_compile_targets": [
           "resource_sizes_trichrome_google"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -903,6 +924,9 @@
         "override_compile_targets": [
           "resource_sizes_chrome_modern_minimal_apks"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -929,6 +953,9 @@
         "override_compile_targets": [
           "resource_sizes_chrome_modern_public_minimal_apks"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -955,6 +982,9 @@
         "override_compile_targets": [
           "resource_sizes_monochrome_minimal_apks"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -981,6 +1011,9 @@
         "override_compile_targets": [
           "resource_sizes_monochrome_public_minimal_apks"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1007,6 +1040,9 @@
         "override_compile_targets": [
           "resource_sizes_system_webview_bundle"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1033,6 +1069,9 @@
         "override_compile_targets": [
           "resource_sizes_system_webview_google_bundle"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1059,6 +1098,9 @@
         "override_compile_targets": [
           "resource_sizes_trichrome"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1085,6 +1127,9 @@
         "override_compile_targets": [
           "resource_sizes_trichrome_google"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1118,6 +1163,9 @@
         "override_compile_targets": [
           "resource_sizes_chromecast"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1151,6 +1199,9 @@
         "override_compile_targets": [
           "resource_sizes_lacros_chrome"
         ],
+        "resultdb": {
+          "has_native_resultdb_integration": true
+        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [

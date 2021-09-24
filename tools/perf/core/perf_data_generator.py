@@ -358,36 +358,57 @@ BUILDERS = {
                 'name': 'resource_sizes_monochrome_minimal_apks',
                 'isolate': 'resource_sizes_monochrome_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_monochrome_public_minimal_apks',
                 'isolate': 'resource_sizes_monochrome_public_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_chrome_modern_minimal_apks',
                 'isolate': 'resource_sizes_chrome_modern_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_chrome_modern_public_minimal_apks',
                 'isolate': 'resource_sizes_chrome_modern_public_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_trichrome_google',
                 'isolate': 'resource_sizes_trichrome_google',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_system_webview_bundle',
                 'isolate': 'resource_sizes_system_webview_bundle',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_system_webview_google_bundle',
                 'isolate': 'resource_sizes_system_webview_google_bundle',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
         ],
         'dimension': {
@@ -418,41 +439,65 @@ BUILDERS = {
                 'name': 'resource_sizes_monochrome_minimal_apks',
                 'isolate': 'resource_sizes_monochrome_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_monochrome_public_minimal_apks',
                 'isolate': 'resource_sizes_monochrome_public_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_chrome_modern_minimal_apks',
                 'isolate': 'resource_sizes_chrome_modern_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_chrome_modern_public_minimal_apks',
                 'isolate': 'resource_sizes_chrome_modern_public_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_trichrome',
                 'isolate': 'resource_sizes_trichrome',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_trichrome_google',
                 'isolate': 'resource_sizes_trichrome_google',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_system_webview_bundle',
                 'isolate': 'resource_sizes_system_webview_bundle',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_system_webview_google_bundle',
                 'isolate': 'resource_sizes_system_webview_google_bundle',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
         ],
         'dimension': {
@@ -969,6 +1014,9 @@ BUILDERS = {
                 'name': 'resource_sizes_chromecast',
                 'isolate': 'resource_sizes_chromecast',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
         ],
         'dimension': {
@@ -986,6 +1034,9 @@ BUILDERS = {
                 'name': 'resource_sizes_lacros_chrome',
                 'isolate': 'resource_sizes_lacros_chrome',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
         ],
         'dimension': {
