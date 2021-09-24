@@ -3,13 +3,13 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- TODO(crbug.com/1252182): Add android:contentDescription="@string/foo" attribute-->
+<!-- TODO(crbug.com/1252182): Add android:contentDescription="@string/foo" attributes -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/modern_blue_600"
     android:orientation="vertical"
+    android:background="@color/default_scrim_color"
     android:importantForAccessibility="yes">
     <ImageView
         android:id="@+id/lightweight_reactions_background"

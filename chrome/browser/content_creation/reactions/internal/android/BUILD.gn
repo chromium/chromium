@@ -33,5 +33,6 @@ android_resources("java_resources") {
     "java/res/layout/reactions_dialog.xml",
     "java/res/layout/scene.xml",
     "java/res/layout/toolbar.xml",
+    "java/res/values/dimens.xml",
   ]
 }
