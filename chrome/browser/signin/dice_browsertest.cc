@@ -124,11 +124,12 @@ class BlockedHttpResponse : public net::test_server::BasicHttpResponse {
       base::OnceCallback<void(base::OnceClosure)> callback)
       : callback_(std::move(callback)) {}
 
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
     // Called on the IO thread to unblock the response.
     base::OnceClosure unblock_io_thread =
-        base::BindOnce(send, ToResponseString(), std::move(done));
+        base::BindOnce(&BlockedHttpResponse::SendResponseInternal,
+                       weak_factory_.GetWeakPtr(), delegate);
     // Unblock the response from any thread by posting a task to the IO thread.
     base::OnceClosure unblock_any_thread =
         base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
@@ -141,7 +142,14 @@ class BlockedHttpResponse : public net::test_server::BasicHttpResponse {
   }
 
  private:
+  void SendResponseInternal(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+    if (delegate)
+      BasicHttpResponse::SendResponse(delegate);
+  }
   base::OnceCallback<void(base::OnceClosure)> callback_;
+
+  base::WeakPtrFactory<BlockedHttpResponse> weak_factory_{this};
 };
 
 }  // namespace

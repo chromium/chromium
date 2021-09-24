@@ -5,6 +5,7 @@
 #include "content/public/test/slow_download_http_response.h"
 
 #include "base/bind.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -55,15 +56,18 @@ SlowDownloadHttpResponse::SlowDownloadHttpResponse(
 
 SlowDownloadHttpResponse::~SlowDownloadHttpResponse() = default;
 
-void SlowDownloadHttpResponse::AddResponseHeaders(std::string* response) {
-  response->append("Content-type: application/octet-stream\r\n");
-  response->append("Cache-Control: max-age=0\r\n");
+base::StringPairs SlowDownloadHttpResponse::ResponseHeaders() {
+  base::StringPairs response;
+  response.emplace_back("Content-type", "application/octet-stream");
+  response.emplace_back("Cache-Control", "max-age=0");
 
   if (base::LowerCaseEqualsASCII(kKnownSizeUrl, url_)) {
-    response->append(
-        base::StringPrintf("Content-Length: %d\r\n",
-                           kFirstResponsePartSize + kSecondResponsePartSize));
+    response.emplace_back(
+        "Content-Length",
+        base::NumberToString(kFirstResponsePartSize + kSecondResponsePartSize));
   }
+
+  return response;
 }
 
 }  // namespace content

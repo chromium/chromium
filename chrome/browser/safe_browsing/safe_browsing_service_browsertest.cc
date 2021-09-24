@@ -162,17 +162,17 @@ class QuasiWebSocketHttpResponse : public net::test_server::HttpResponse {
   }
   ~QuasiWebSocketHttpResponse() override {}
 
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
-    const auto response_headers = base::StringPrintf(
-        "HTTP/1.1 101 WebSocket Protocol Handshake\r\n"
-        "Upgrade: WebSocket\r\n"
-        "Connection: Upgrade\r\n"
-        "Sec-WebSocket-Accept: %s\r\n"
-        "\r\n",
-        accept_hash_.c_str());
-    send.Run(response_headers, base::DoNothing());
-    // Never call done(). The connection should stay open.
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    base::StringPairs response_headers = {
+        {"Upgrade", "WebSocket"},
+        {"Connection", "Upgrade"},
+        {"Sec-WebSocket-Accept", accept_hash_}};
+
+    delegate->SendResponseHeaders(net::HTTP_SWITCHING_PROTOCOLS,
+                                  "WebSocket Protocol Handshake",
+                                  response_headers);
+    // Never call FinishResponse(). The connection should stay open.
   }
 
  private:

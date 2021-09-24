@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright (c) 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/socket/stream_socket.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 namespace net {
@@ -30,20 +32,6 @@ Http1Connection::Http1Connection(
 
 Http1Connection::~Http1Connection() {
   weak_factory_.InvalidateWeakPtrs();
-}
-
-void Http1Connection::SendResponseBytes(const std::string& response_string,
-                                        SendCompleteCallback callback) {
-  if (response_string.length() > 0) {
-    scoped_refptr<DrainableIOBuffer> write_buf =
-        base::MakeRefCounted<DrainableIOBuffer>(
-            base::MakeRefCounted<StringIOBuffer>(response_string),
-            response_string.length());
-
-    SendInternal(std::move(callback), write_buf);
-  } else {
-    std::move(callback).Run();
-  }
 }
 
 void Http1Connection::OnSocketReady() {
@@ -103,8 +91,67 @@ bool Http1Connection::HandleReadResult(int rv) {
       request->headers["Early-Data"] = "1";
   }
 
-  server_delegate_->HandleRequest(this, std::move(request));
+  server_delegate_->HandleRequest(weak_factory_.GetWeakPtr(),
+                                  std::move(request));
   return true;
+}
+
+void Http1Connection::AddResponse(std::unique_ptr<HttpResponse> response) {
+  responses_.push_back(std::move(response));
+}
+
+void Http1Connection::SendResponseHeaders(HttpStatusCode status,
+                                          const std::string& status_reason,
+                                          const base::StringPairs& headers) {
+  std::string response_builder;
+
+  base::StringAppendF(&response_builder, "HTTP/1.1 %d %s\r\n", status,
+                      status_reason.c_str());
+  for (const auto& header_pair : headers) {
+    const std::string& header_name = header_pair.first;
+    const std::string& header_value = header_pair.second;
+    base::StringAppendF(&response_builder, "%s: %s\r\n", header_name.c_str(),
+                        header_value.c_str());
+  }
+
+  base::StringAppendF(&response_builder, "\r\n");
+  SendRawResponseHeaders(response_builder);
+}
+
+void Http1Connection::SendRawResponseHeaders(const std::string& headers) {
+  SendContents(headers, base::DoNothing());
+}
+
+void Http1Connection::SendContents(const std::string& contents,
+                                   base::OnceClosure callback) {
+  if (contents.empty()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  scoped_refptr<DrainableIOBuffer> buf =
+      base::MakeRefCounted<DrainableIOBuffer>(
+          base::MakeRefCounted<StringIOBuffer>(contents), contents.length());
+
+  SendInternal(std::move(callback), buf);
+}
+
+void Http1Connection::FinishResponse() {
+  server_delegate_->RemoveConnection(this, connection_listener_);
+}
+
+void Http1Connection::SendContentsAndFinish(const std::string& contents) {
+  SendContents(contents, base::BindOnce(&HttpResponseDelegate::FinishResponse,
+                                        weak_factory_.GetWeakPtr()));
+}
+
+void Http1Connection::SendHeadersContentAndFinish(
+    HttpStatusCode status,
+    const std::string& status_reason,
+    const base::StringPairs& headers,
+    const std::string& contents) {
+  SendResponseHeaders(status, status_reason, headers);
+  SendContentsAndFinish(contents);
 }
 
 void Http1Connection::SendInternal(base::OnceClosure callback,

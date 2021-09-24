@@ -28,10 +28,6 @@ class HttpConnection {
   HttpConnection(HttpConnection&) = delete;
   virtual HttpConnection& operator=(HttpConnection&) = delete;
 
-  // Sends the |response_string| to the client and calls |callback| once done.
-  virtual void SendResponseBytes(const std::string& response_string,
-                                 SendCompleteCallback callback) = 0;
-
   // Notify that the socket is ready to receive data (which may not be
   // immediately, due to SSL handshake). May call the delegate's HandleRequest()
   // or CloseConnection() methods, and may call them asynchronously.

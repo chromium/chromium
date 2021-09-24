@@ -67,6 +67,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -1787,7 +1788,7 @@ namespace {
 
 class CustomResponse : public net::test_server::HttpResponse {
  public:
-  CustomResponse(net::test_server::SendCompleteCallback* callback,
+  CustomResponse(base::OnceClosure* callback,
                  base::TaskRunner** task_runner,
                  bool first_request)
       : callback_(callback),
@@ -1799,26 +1800,29 @@ class CustomResponse : public net::test_server::HttpResponse {
 
   ~CustomResponse() override {}
 
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
-    std::string response(
-        "HTTP/1.1 200 OK\r\n"
-        "Content-type: application/octet-stream\r\n"
-        "Cache-Control: max-age=0\r\n"
-        "\r\n");
-    response += std::string(kDownloadSize, '*');
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    base::StringPairs headers = {
+        //"HTTP/1.1 200 OK\r\n"
+        {"Content-type", "application/octet-stream"},
+        {"Cache-Control", "max-age=0"},
+    };
+    std::string contents = std::string(kDownloadSize, '*');
 
     if (first_request_) {
-      *callback_ = std::move(done);
+      *callback_ = base::BindOnce(
+          &net::test_server::HttpResponseDelegate::FinishResponse, delegate);
       *task_runner_ = base::ThreadTaskRunnerHandle::Get().get();
-      send.Run(response, base::DoNothing());
+      delegate->SendResponseHeaders(net::HTTP_OK, "OK", headers);
+      delegate->SendContents(contents);
     } else {
-      send.Run(response, std::move(done));
+      delegate->SendHeadersContentAndFinish(net::HTTP_OK, "OK", headers,
+                                            contents);
     }
   }
 
  private:
-  net::test_server::SendCompleteCallback* callback_;
+  base::OnceClosure* callback_;
   base::TaskRunner** task_runner_;
   bool first_request_;
 };
@@ -1831,7 +1835,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
   DownloadItem* item = nullptr;
 
-  net::test_server::SendCompleteCallback complete_callback;
+  base::OnceClosure complete_callback;
   base::TaskRunner* embedded_test_server_io_runner = nullptr;
   const char kThirdDownloadUrl[] = "/download3";
   bool first_request = true;

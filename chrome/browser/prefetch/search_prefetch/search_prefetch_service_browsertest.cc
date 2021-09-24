@@ -5,6 +5,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -85,18 +86,6 @@ constexpr char kThrottleHeader[] = "porgs-header";
 constexpr char kThrottleHeaderValue[] = "porgs-header-value";
 constexpr char kServiceWorkerUrl[] = "/navigation_preload.js";
 }  // namespace
-
-// A response that hangs after serving the start of the response.
-class HangRequestAfterStart : public net::test_server::BasicHttpResponse {
- public:
-  HangRequestAfterStart() = default;
-
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
-    send.Run("HTTP/1.1 200 OK\r\nContent-Length:100\r\n\r\n",
-             base::DoNothing());
-  }
-};
 
 // A delegate to cancel prefetch requests by setting |defer| to true.
 class DeferringThrottle : public blink::URLLoaderThrottle {
@@ -456,7 +445,9 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
       return nullptr;
 
     if (hang_requests_after_start_) {
-      return std::make_unique<HangRequestAfterStart>();
+      base::StringPairs headers = {{"Content-Length", "100"}};
+      return std::make_unique<net::test_server::HungAfterHeadersHttpResponse>(
+          headers);
     }
 
     if (should_hang_requests_)

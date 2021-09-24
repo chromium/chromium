@@ -451,22 +451,20 @@ class CancelRequestDelegate : public TestDelegate {
 
 class InfiniteResponse : public BasicHttpResponse {
  public:
-  InfiniteResponse() {}
+  InfiniteResponse() = default;
 
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override {
-    send.Run(ToResponseString(),
-             base::BindOnce(&InfiniteResponse::SendInfinite,
-                            weak_ptr_factory_.GetWeakPtr(), send));
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override {
+    delegate->SendResponseHeaders(code(), GetHttpReasonPhrase(code()),
+                                  BuildHeaders());
+    SendInfinite(delegate);
   }
 
  private:
-  void SendInfinite(const SendBytesCallback& send) {
+  void SendInfinite(base::WeakPtr<HttpResponseDelegate> delegate) {
+    delegate->SendContents("echo", base::DoNothing());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(send, "echo",
-                       base::BindOnce(&InfiniteResponse::SendInfinite,
-                                      weak_ptr_factory_.GetWeakPtr(), send)));
+        FROM_HERE, base::BindOnce(&InfiniteResponse::SendInfinite,
+                                  weak_ptr_factory_.GetWeakPtr(), delegate));
   }
 
   base::WeakPtrFactory<InfiniteResponse> weak_ptr_factory_{this};

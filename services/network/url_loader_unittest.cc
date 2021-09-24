@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
+#include "stdint.h"
 
 #include <limits>
 #include <list>
@@ -1744,14 +1744,13 @@ class NeverFinishedBodyHttpResponse : public net::test_server::HttpResponse {
 
  private:
   // net::test_server::HttpResponse implementation.
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
-    send.Run(
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/plain\r\n\r\n"
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    delegate->SendResponseHeaders(net::HTTP_OK, "OK",
+                                  {{"Content-Type", "text/plain"}});
+    delegate->SendContents(
         "long long ago..." +
-            std::string(1024 * 1024, 'a'),
-        base::DoNothing());
+        std::string(static_cast<uint64_t>(1024 * 1024), 'a'));
 
     // Never call |done|, so the other side will never see the completion of the
     // response body.

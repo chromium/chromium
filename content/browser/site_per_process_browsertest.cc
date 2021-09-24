@@ -123,6 +123,7 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/mock_http_cache.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -8469,12 +8470,11 @@ class RequestDelayingSitePerProcessBrowserTest
 
  private:
   // Called on the test server's thread.
-  void AddDelayedResponse(const net::test_server::SendBytesCallback& send,
-                          net::test_server::SendCompleteCallback done) {
-    // Just create a closure that closes the socket without sending a response.
-    // This will propagate an error to the underlying request.
-    send_response_closures_.push_back(
-        base::BindOnce(send, "", std::move(done)));
+  void AddDelayedResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+    response_closures_.push_back(base::BindOnce(
+        &net::test_server::HttpResponseDelegate::SendHeadersContentAndFinish,
+        delegate, net::HTTP_OK, "OK", base::StringPairs(), ""));
   }
 
   // Custom embedded test server handler. Looks for requests matching
@@ -8508,21 +8508,20 @@ class RequestDelayingSitePerProcessBrowserTest
       if (it.second > 0)
         return;
     }
-    for (auto& it : send_response_closures_) {
+    for (auto& it : response_closures_)
       std::move(it).Run();
-    }
   }
 
-  // This class passes the callbacks needed to respond to a request to the
+  // This class passes the delegates needed to respond to a request to the
   // underlying test fixture.
   class DelayedResponse : public net::test_server::BasicHttpResponse {
    public:
     explicit DelayedResponse(
         RequestDelayingSitePerProcessBrowserTest* test_harness)
         : test_harness_(test_harness) {}
-    void SendResponse(const net::test_server::SendBytesCallback& send,
-                      net::test_server::SendCompleteCallback done) override {
-      test_harness_->AddDelayedResponse(send, std::move(done));
+    void SendResponse(base::WeakPtr<net::test_server::HttpResponseDelegate>
+                          delegate) override {
+      test_harness_->AddDelayedResponse(delegate);
     }
 
    private:
@@ -8531,9 +8530,9 @@ class RequestDelayingSitePerProcessBrowserTest
     DISALLOW_COPY_AND_ASSIGN(DelayedResponse);
   };
 
-  // Set of closures to call which will complete delayed requests. May only be
+  // Set of delegates to call which will complete delayed requests. May only be
   // modified on the test_server_'s thread.
-  std::vector<base::OnceClosure> send_response_closures_;
+  std::vector<base::OnceClosure> response_closures_;
 
   // Map from URL paths to the number of requests to delay for that particular
   // path. Initialized on the UI thread but modified and read on the test

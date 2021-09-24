@@ -643,8 +643,9 @@ void EmbeddedTestServer::ShutdownOnIOThread() {
   connections_.clear();
 }
 
-void EmbeddedTestServer::HandleRequest(HttpConnection* connection,
-                                       std::unique_ptr<HttpRequest> request) {
+void EmbeddedTestServer::HandleRequest(
+    base::WeakPtr<HttpResponseDelegate> delegate,
+    std::unique_ptr<HttpRequest> request) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   request->base_url = base_url_;
 
@@ -676,12 +677,8 @@ void EmbeddedTestServer::HandleRequest(HttpConnection* connection,
   }
 
   HttpResponse* const response_ptr = response.get();
-  response_ptr->SendResponse(
-      base::BindRepeating(&HttpConnection::SendResponseBytes,
-                          connection->GetWeakPtr()),
-      base::BindOnce(&EmbeddedTestServer::OnResponseCompleted,
-                     weak_factory_.GetWeakPtr(), connection,
-                     std::move(response)));
+  delegate->AddResponse(std::move(response));
+  response_ptr->SendResponse(delegate);
 }
 
 GURL EmbeddedTestServer::GetURL(const std::string& relative_url) const {
@@ -948,23 +945,6 @@ HttpConnection* EmbeddedTestServer::AddConnection(
   connections_[socket] = std::move(connection_ptr);
 
   return connection;
-}
-
-void EmbeddedTestServer::OnResponseCompleted(
-    HttpConnection* connection,
-    std::unique_ptr<HttpResponse> response) {
-  // TODO(crbug.com/1232482): This is here to ensure the response lives until
-  // after the connection sends it. Factor this out with re-factor of response
-  // API.
-  DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
-  DCHECK(connection);
-  DCHECK_EQ(1u, connections_.count(&connection->Socket()));
-
-  std::unique_ptr<StreamSocket> socket = connection->TakeSocket();
-  connections_.erase(socket.get());
-
-  if (connection_listener_ && socket->IsConnected())
-    connection_listener_->OnResponseCompletedSuccessfully(std::move(socket));
 }
 
 void EmbeddedTestServer::RemoveConnection(

@@ -71,8 +71,7 @@ class ControllableHttpResponse {
 
   void OnRequest(scoped_refptr<base::SingleThreadTaskRunner>
                      embedded_test_server_task_runner,
-                 const SendBytesCallback& send,
-                 SendCompleteCallback done,
+                 base::WeakPtr<HttpResponseDelegate> delegate,
                  std::unique_ptr<HttpRequest> http_request);
 
   static std::unique_ptr<HttpResponse> RequestHandler(
@@ -86,8 +85,7 @@ class ControllableHttpResponse {
   State state_ = State::WAITING_FOR_REQUEST;
   base::RunLoop loop_;
   scoped_refptr<base::SingleThreadTaskRunner> embedded_test_server_task_runner_;
-  SendBytesCallback send_;
-  SendCompleteCallback done_;
+  base::WeakPtr<HttpResponseDelegate> delegate_;
   std::unique_ptr<HttpRequest> http_request_;
 
   SEQUENCE_CHECKER(sequence_checker_);

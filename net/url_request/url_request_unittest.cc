@@ -12291,8 +12291,8 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
 
   ~ZeroRTTResponse() override {}
 
-  void SendResponse(const test_server::SendBytesCallback& send,
-                    test_server::SendCompleteCallback done) override {
+  void SendResponse(
+      base::WeakPtr<test_server::HttpResponseDelegate> delegate) override {
     AddCustomHeader("Vary", "Early-Data");
     set_content_type("text/plain");
     AddCustomHeader("Cache-Control", "no-cache");
@@ -12307,7 +12307,9 @@ class ZeroRTTResponse : public test_server::BasicHttpResponse {
     // Since the EmbeddedTestServer doesn't keep the socket open by default,
     // it is explicitly kept alive to allow the remaining leg of the 0RTT
     // handshake to be received after the early data.
-    send.Run(ToResponseString(), base::DoNothing());
+    delegate->SendResponseHeaders(code(), GetHttpReasonPhrase(code()),
+                                  BuildHeaders());
+    delegate->SendContents(content(), base::DoNothing());
   }
 
  private:

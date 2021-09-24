@@ -9,6 +9,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_split.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
@@ -16,6 +18,8 @@ namespace content {
 
 // An HTTP response that may not complete ever.
 class SlowHttpResponse : public net::test_server::HttpResponse {
+  using HttpResponseDelegate = net::test_server::HttpResponseDelegate;
+
  public:
   // Test URLs.
   static const char kSlowResponseUrl[];
@@ -51,17 +55,16 @@ class SlowHttpResponse : public net::test_server::HttpResponse {
   // Subclasses can override this method to add custom HTTP response headers.
   // These headers are only applied to the slow response itself, not the
   // response to |kFinishSlowResponseUrl|.
-  virtual void AddResponseHeaders(std::string* response);
+  virtual base::StringPairs ResponseHeaders();
 
   // Subclasses can override this method to write a custom status line; the
   // default implementation sets a 200 OK response. This status code is applied
   // only to the slow response itself, not the response to
   // |kFinishSlowResponseUrl|.
-  virtual void SetStatusLine(std::string* response);
+  virtual std::pair<net::HttpStatusCode, std::string> StatusLine();
 
   // net::test_server::HttpResponse implementations.
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override;
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 
  private:
   scoped_refptr<base::SequencedTaskRunner> main_thread_;

@@ -22,6 +22,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -73,8 +74,10 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/test_content_browser_client.h"
 #include "media/media_buildflags.h"
+#include "net/base/test_completion_callback.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -1159,8 +1162,8 @@ class UserAgentServiceWorkerBrowserTest
     return client->GetUserAgent();
   }
 
-  private:
-   base::test::ScopedFeatureList scoped_feature_list_;
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
@@ -1388,10 +1391,13 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
   }
 
   void RegisterCustomResponse(const std::string& relative_url,
-                              const std::string& response) {
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &ServiceWorkerNavigationPreloadTest::CustomRequestHandler,
-        base::Unretained(this), relative_url, response));
+                              const net::HttpStatusCode code,
+                              const absl::optional<std::string>& reason,
+                              const base::StringPairs& headers,
+                              const std::string& content) {
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&self::CustomRequestHandler, base::Unretained(this),
+                            relative_url, code, reason, headers, content));
   }
 
   void RegisterKeepSearchRedirect(const std::string& relative_url,
@@ -1424,21 +1430,29 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
  private:
   class CustomResponse : public net::test_server::HttpResponse {
    public:
-    explicit CustomResponse(const std::string& response)
-        : response_(response) {}
+    explicit CustomResponse(const net::HttpStatusCode code,
+                            const absl::optional<std::string>& reason,
+                            const base::StringPairs& headers,
+                            const std::string& content)
+        : code_(code), reason_(reason), headers_(headers), content_(content) {}
 
     CustomResponse(const CustomResponse&) = delete;
     CustomResponse& operator=(const CustomResponse&) = delete;
 
     ~CustomResponse() override {}
 
-    void SendResponse(const net::test_server::SendBytesCallback& send,
-                      net::test_server::SendCompleteCallback done) override {
-      send.Run(response_, std::move(done));
+    void SendResponse(base::WeakPtr<net::test_server::HttpResponseDelegate>
+                          delegate) override {
+      delegate->SendHeadersContentAndFinish(
+          code_, reason_.value_or(net::GetHttpReasonPhrase(code_)), headers_,
+          content_);
     }
 
    private:
-    const std::string response_;
+    net::HttpStatusCode code_;
+    absl::optional<std::string> reason_;
+    base::StringPairs headers_;
+    std::string content_;
   };
 
   std::unique_ptr<net::test_server::HttpResponse> StaticRequestHandler(
@@ -1459,12 +1473,15 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> CustomRequestHandler(
       const std::string& relative_url,
-      const std::string& response,
+      const net::HttpStatusCode code,
+      const absl::optional<std::string>& reason,
+      const base::StringPairs& headers,
+      const std::string& content,
       const net::test_server::HttpRequest& request) const {
     const size_t query_position = request.relative_url.find('?');
     if (request.relative_url.substr(0, query_position) != relative_url)
       return nullptr;
-    return std::make_unique<CustomResponse>(response);
+    return std::make_unique<CustomResponse>(code, reason, headers, content);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> KeepSearchRedirectHandler(
@@ -1932,20 +1949,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
                        PreloadHeadersCustom) {
   const char kPageUrl[] = "/service_worker/navigation_preload.html";
   const char kWorkerUrl[] = "/service_worker/navigation_preload.js";
-  const char kPageResponse[] =
-      "HTTP/1.1 201 HELLOWORLD\r\n"
-      "Connection: close\r\n"
-      "Content-Length: 32\r\n"
-      "Content-Type: text/html\r\n"
-      "Custom-Header: pen pineapple\r\n"
-      "Custom-Header: apple pen\r\n"
-      "Set-Cookie: COOKIE1\r\n"
-      "Set-Cookie2: COOKIE2\r\n"
-      "\r\n"
-      "<title>ERROR</title>Hello world.";
+  const base::StringPairs kPageResponseHeaders = {
+      {"Connection", "close"},        {"Content-Length", "32"},
+      {"Content-Type", "text/html"},  {"Custom-Header", "pen pineapple"},
+      {"Custom-Header", "apple pen"}, {"Set-Cookie", "COOKIE1"},
+      {"Set-Cookie2", "COOKIE2"},
+  };
+  const char kPageResonseContent[] = "<title>ERROR</title>Hello world.";
   const GURL page_url = embedded_test_server()->GetURL(kPageUrl);
   const GURL worker_url = embedded_test_server()->GetURL(kWorkerUrl);
-  RegisterCustomResponse(kPageUrl, kPageResponse);
+  RegisterCustomResponse(kPageUrl, net::HTTP_CREATED, "HELLOWORLD",
+                         kPageResponseHeaders, kPageResonseContent);
   RegisterStaticFile(
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
@@ -1979,16 +1993,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       "/service_worker/navigation_preload_redirected1.html";
   const char kRedirectedPageUrl2[] =
       "/service_worker/navigation_preload_redirected2.html";
-  const char kPageResponse[] =
-      "HTTP/1.1 302 Found\r\n"
-      "Connection: close\r\n"
-      "Location: /service_worker/navigation_preload_redirected1.html\r\n"
-      "Location: /service_worker/navigation_preload_redirected2.html\r\n"
-      "\r\n";
+  const base::StringPairs kPageResponseHeaders = {
+      // "HTTP/1.1 302 Found\r\n"
+      {"Connection", "close"},
+      {"Location", "/service_worker/navigation_preload_redirected1.html"},
+      {"Location", "/service_worker/navigation_preload_redirected2.html"},
+  };
   const char kRedirectedPage[] = "<title>ERROR</title>Redirected page.";
   const GURL page_url = embedded_test_server()->GetURL(kPageUrl);
   const GURL worker_url = embedded_test_server()->GetURL(kWorkerUrl);
-  RegisterCustomResponse(kPageUrl, kPageResponse);
+  RegisterCustomResponse(kPageUrl, net::HTTP_FOUND, "FOUND",
+                         kPageResponseHeaders, "");
   RegisterStaticFile(
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
@@ -2012,14 +2027,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
                        InvalidRedirect_InvalidLocation) {
   const char kPageUrl[] = "/service_worker/navigation_preload.html";
   const char kWorkerUrl[] = "/service_worker/navigation_preload.js";
-  const char kPageResponse[] =
-      "HTTP/1.1 302 Found\r\n"
-      "Connection: close\r\n"
-      "Location: http://\r\n"
-      "\r\n";
+  const base::StringPairs kPageResponseHeaders = {
+      // "HTTP/1.1 302 Found\r\n"
+      {"Connection", "close"},
+      {"Location", "http://"},
+  };
   const GURL page_url = embedded_test_server()->GetURL(kPageUrl);
   const GURL worker_url = embedded_test_server()->GetURL(kWorkerUrl);
-  RegisterCustomResponse(kPageUrl, kPageResponse);
+  RegisterCustomResponse(kPageUrl, net::HTTP_FOUND, "FOUND",
+                         kPageResponseHeaders, "");
   RegisterStaticFile(
       kWorkerUrl, kEnableNavigationPreloadScript + kPreloadResponseTestScript,
       "text/javascript");
@@ -3041,10 +3057,10 @@ class ServiceWorkerThrottlingTest : public ServiceWorkerBrowserTest {
           : owner_(std::move(owner)) {}
 
       ~Inner() override = default;
-      void SendResponse(const net::test_server::SendBytesCallback& send,
-                        base::OnceClosure done) override {
+      void SendResponse(base::WeakPtr<net::test_server::HttpResponseDelegate>
+                            delegate) override {
         if (owner_)
-          owner_->SendResponse(std::move(send), std::move(done));
+          owner_->SendResponse(delegate);
       }
 
      private:
@@ -3062,11 +3078,10 @@ class ServiceWorkerThrottlingTest : public ServiceWorkerBrowserTest {
 
     // Called by the EmbeddedTestServer via our inner class.  The callbacks
     // are stored and invoked later when we've been told to unblock.
-    void SendResponse(const net::test_server::SendBytesCallback& send,
-                      base::OnceClosure done) {
+    void SendResponse(
+        base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
       DCHECK(task_runner_->RunsTasksInCurrentSequence());
-      send_ = send;
-      done_ = std::move(done);
+      delegate_ = delegate;
       if (should_block_) {
         blocking_ = true;
         return;
@@ -3097,22 +3112,24 @@ class ServiceWorkerThrottlingTest : public ServiceWorkerBrowserTest {
 
     void CompleteResponseOnTaskRunner() {
       DCHECK(task_runner_->RunsTasksInCurrentSequence());
-      const char kPageResponse[] =
-          "HTTP/1.1 200 HELLOWORLD\r\n"
-          "Connection: close\r\n"
-          "Content-Length: 32\r\n"
-          "Content-Type: text/html\r\n"
-          "Cache-Control: no-store\r\n"
-          "\r\n"
-          "<title>ERROR</title>Hello world.";
-      std::move(send_).Run(kPageResponse, std::move(done_));
+      const base::StringPairs kPageHeaders = {
+          // "HTTP/1.1 200 HELLOWORLD\r\n"
+          {"Connection", "close"},
+          {"Content-Length", "32"},
+          {"Content-Type", "text/html"},
+          {"Cache-Control", "no-store"},
+      };
+      const char kPageContents[] = "<title>ERROR</title>Hello world.";
+      if (delegate_) {
+        delegate_->SendHeadersContentAndFinish(net::HTTP_OK, "HELLOWORLD",
+                                               kPageHeaders, kPageContents);
+      }
     }
 
     // Accessed on any thread.
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     // All other members only accessed on |task_runner_| sequence.
-    net::test_server::SendBytesCallback send_;
-    base::OnceClosure done_;
+    base::WeakPtr<net::test_server::HttpResponseDelegate> delegate_ = nullptr;
     bool should_block_ = true;
     bool blocking_ = false;
     base::WeakPtrFactory<BlockingResponse> weak_factory_{this};

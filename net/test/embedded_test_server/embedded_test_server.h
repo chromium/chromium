@@ -44,6 +44,7 @@ namespace test_server {
 class EmbeddedTestServerConnectionListener;
 class HttpConnection;
 class HttpResponse;
+class HttpResponseDelegate;
 struct HttpRequest;
 
 class EmbeddedTestServer;
@@ -327,7 +328,7 @@ class EmbeddedTestServer {
 
   //  Send a request to the server to be handled. If a response is created,
   //  SendResponseBytes() should be called on the provided HttpConnection.
-  void HandleRequest(HttpConnection* connection,
+  void HandleRequest(base::WeakPtr<HttpResponseDelegate> connection,
                      std::unique_ptr<HttpRequest> request);
 
   // Notify the server that a connection is no longer usable and is safe to
@@ -522,12 +523,6 @@ class EmbeddedTestServer {
 
   // Handles async callback when new data has been read from the |connection|.
   void OnReadCompleted(HttpConnection* connection, int rv);
-
-  // Called when |connection| is finished writing the response and the socket
-  // can be closed, allowing for |connnection_listener_| to take it if the
-  // socket is still open.
-  void OnResponseCompleted(HttpConnection* connection,
-                           std::unique_ptr<HttpResponse> response);
 
   // Returns true if the current |cert_| configuration uses a static
   // pre-generated cert loaded from the filesystem.

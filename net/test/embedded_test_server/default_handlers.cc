@@ -14,6 +14,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -686,37 +687,11 @@ std::unique_ptr<HttpResponse> HandleSlowServer(const HttpRequest& request) {
   return http_response;
 }
 
-// Never returns a response.
-class HungHttpResponse : public HttpResponse {
- public:
-  HungHttpResponse() = default;
-
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HungHttpResponse);
-};
-
 // /hung
 // Never returns a response.
 std::unique_ptr<HttpResponse> HandleHungResponse(const HttpRequest& request) {
-  return std::make_unique<HungHttpResponse>();
+  return std::make_unique<HungResponse>();
 }
-
-// Return headers, then hangs.
-class HungAfterHeadersHttpResponse : public HttpResponse {
- public:
-  HungAfterHeadersHttpResponse() = default;
-
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override {
-    send.Run("HTTP/1.1 OK\r\n\r\n", base::DoNothing());
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HungAfterHeadersHttpResponse);
-};
 
 // /hung-after-headers
 // Never returns a response.
@@ -731,24 +706,31 @@ class ExabyteResponse : public BasicHttpResponse {
  public:
   ExabyteResponse() {}
 
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override {
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override {
     // Use 10^18 bytes (exabyte) as the content length so that the client will
     // be expecting data.
-    send.Run("HTTP/1.1 200 OK\r\nContent-Length:1000000000000000000\r\n\r\n",
-             base::BindOnce(&ExabyteResponse::SendExabyte, send));
+    delegate->SendResponseHeaders(HTTP_OK, "OK",
+                                  {{"Content-Length", "1000000000000000000"}});
+    SendExabyte(delegate);
   }
 
  private:
   // Keeps sending the word "echo" over and over again. It can go further to
   // limit the response to exactly an exabyte, but it shouldn't be necessary
   // for the purpose of testing.
-  static void SendExabyte(const SendBytesCallback& send) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(send, "echo",
-                       base::BindOnce(&ExabyteResponse::SendExabyte, send)));
+  void SendExabyte(base::WeakPtr<HttpResponseDelegate> delegate) {
+    delegate->SendContents(
+        "echo", base::BindOnce(&ExabyteResponse::PostSendExabyteTask,
+                               weak_factory_.GetWeakPtr(), delegate));
   }
+
+  void PostSendExabyteTask(base::WeakPtr<HttpResponseDelegate> delegate) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ExabyteResponse::SendExabyte,
+                                  weak_factory_.GetWeakPtr(), delegate));
+  }
+
+  base::WeakPtrFactory<ExabyteResponse> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExabyteResponse);
 };
@@ -817,10 +799,8 @@ class DelayedChunkedHttpResponse : public HttpResponse {
   DelayedChunkedHttpResponse& operator=(const DelayedChunkedHttpResponse&) =
       delete;
 
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override {
-    send_bytes_callback_ = send;
-    send_complete_callback_ = std::move(done);
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override {
+    delegate_ = delegate;
 
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -831,19 +811,16 @@ class DelayedChunkedHttpResponse : public HttpResponse {
 
  private:
   void SendHeaders() {
-    send_bytes_callback_.Run(
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/plain\r\n"
-        "Connection: close\r\n"
-        "Transfer-Encoding: chunked\r\n\r\n",
-        base::BindOnce(&DelayedChunkedHttpResponse::PrepateToSendNextChunk,
-                       weak_ptr_factory_.GetWeakPtr()));
+    base::StringPairs headers = {{"Content-Type", "text/plain"},
+                                 {"Connection", "close"},
+                                 {"Transfer-Encoding", "chunked"}};
+    delegate_->SendResponseHeaders(HTTP_OK, "OK", headers);
+    PrepareToSendNextChunk();
   }
 
-  void PrepateToSendNextChunk() {
+  void PrepareToSendNextChunk() {
     if (remaining_chunks_ == 0) {
-      send_bytes_callback_.Run(CreateChunk(0 /* chunk_size */),
-                               std::move(send_complete_callback_));
+      delegate_->SendContentsAndFinish(CreateChunk(0 /* chunk_size */));
       return;
     }
 
@@ -857,9 +834,10 @@ class DelayedChunkedHttpResponse : public HttpResponse {
   void SendNextChunk() {
     DCHECK_GT(remaining_chunks_, 0);
     remaining_chunks_--;
-    send_bytes_callback_.Run(
+
+    delegate_->SendContents(
         CreateChunk(chunk_size_),
-        base::BindOnce(&DelayedChunkedHttpResponse::PrepateToSendNextChunk,
+        base::BindOnce(&DelayedChunkedHttpResponse::PrepareToSendNextChunk,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -876,8 +854,7 @@ class DelayedChunkedHttpResponse : public HttpResponse {
   int chunk_size_;
   int remaining_chunks_;
 
-  SendBytesCallback send_bytes_callback_;
-  SendCompleteCallback send_complete_callback_;
+  base::WeakPtr<HttpResponseDelegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<DelayedChunkedHttpResponse> weak_ptr_factory_{this};
 };

@@ -11,10 +11,12 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/fuchsia/process_context.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -37,6 +39,7 @@
 #include "fuchsia/engine/browser/frame_impl_browser_test_base.h"
 #include "fuchsia/engine/switches.h"
 #include "fuchsia/engine/test/frame_for_test.h"
+#include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -398,14 +401,12 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GoBackAndForward) {
 // with indeterminate-length pauses in between.
 class ChunkedHttpTransaction {
  public:
-  ChunkedHttpTransaction(const net::test_server::SendBytesCallback& send,
-                         net::test_server::SendCompleteCallback done)
+  explicit ChunkedHttpTransaction(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate)
       : io_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-        send_callback_(send),
-        done_callback_(std::move(done)) {
+        send_state_(SendState::IDLE),
+        delegate_(delegate) {
     DCHECK(!current_instance_);
-    DCHECK(send_callback_);
-    DCHECK(done_callback_);
 
     current_instance_ = this;
   }
@@ -417,35 +418,35 @@ class ChunkedHttpTransaction {
 
   void Close() {
     EnsureSendCompleted();
-    io_task_runner_->PostTask(FROM_HERE, std::move(done_callback_));
+    io_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&net::test_server::HttpResponseDelegate::FinishResponse,
+                       delegate_));
     delete this;
   }
 
   void EnsureSendCompleted() {
-    if (send_callback_)
+    if (send_state_ == SendState::IDLE)
       return;
 
     base::RunLoop run_loop;
     send_chunk_complete_callback_ = run_loop.QuitClosure();
     run_loop.Run();
-    DCHECK(send_callback_);
+    DCHECK_EQ(send_state_, SendState::IDLE);
   }
 
-  void SendChunk(std::string chunk) {
+  void SendChunk(const std::string& chunk) {
     EnsureSendCompleted();
 
-    // Temporarily nullify |send_callback_| while the operation is inflight, to
-    // guard against concurrent sends. The callback will be restored by
-    // SendChunkComplete().
-    net::test_server::SendBytesCallback inflight_send_callback = send_callback_;
-    send_callback_ = {};
+    send_state_ = SendState::BLOCKED;
 
     io_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(inflight_send_callback, chunk,
-                       base::BindRepeating(
-                           &ChunkedHttpTransaction::SendChunkCompleteOnIoThread,
-                           base::Unretained(this), inflight_send_callback,
+        base::BindOnce(
+            &net::test_server::HttpResponseDelegate::SendContents, delegate_,
+            chunk,
+            base::BindOnce(&ChunkedHttpTransaction::SendChunkCompleteOnIoThread,
+                           base::Unretained(this),
                            base::ThreadTaskRunnerHandle::Get())));
   }
 
@@ -455,17 +456,15 @@ class ChunkedHttpTransaction {
   ~ChunkedHttpTransaction() { current_instance_ = nullptr; }
 
   void SendChunkCompleteOnIoThread(
-      net::test_server::SendBytesCallback send_callback,
       scoped_refptr<base::TaskRunner> ui_thread_task_runner) {
     ui_thread_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&ChunkedHttpTransaction::SendChunkCompleteOnUiThread,
-                       base::Unretained(this), send_callback));
+                       base::Unretained(this)));
   }
 
-  void SendChunkCompleteOnUiThread(
-      net::test_server::SendBytesCallback send_callback) {
-    send_callback_ = send_callback;
+  void SendChunkCompleteOnUiThread() {
+    send_state_ = SendState::IDLE;
     if (send_chunk_complete_callback_)
       std::move(send_chunk_complete_callback_).Run();
   }
@@ -475,9 +474,10 @@ class ChunkedHttpTransaction {
   // Set by callers to SendChunk() waiting for the previous chunk to complete.
   base::OnceClosure send_chunk_complete_callback_;
 
-  // Callbacks are affine with |io_task_runner_|.
-  net::test_server::SendBytesCallback send_callback_;
-  net::test_server::SendCompleteCallback done_callback_;
+  enum SendState { IDLE, BLOCKED };
+
+  SendState send_state_;
+  base::WeakPtr<net::test_server::HttpResponseDelegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ChunkedHttpTransaction);
 };
@@ -494,10 +494,10 @@ class ChunkedHttpTransactionFactory : public net::test_server::HttpResponse {
   }
 
   // net::test_server::HttpResponse implementation.
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
     // The ChunkedHttpTransaction manages its own lifetime.
-    new ChunkedHttpTransaction(send, std::move(done));
+    new ChunkedHttpTransaction(delegate);
 
     if (on_response_created_)
       std::move(on_response_created_).Run();

@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_split.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/hang_watcher.h"
@@ -46,6 +49,7 @@
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -65,12 +69,6 @@ namespace {
 class DelayedHttpResponseWithResolver final
     : public net::test_server::BasicHttpResponse {
  public:
-  struct ResponseWithCallbacks final {
-    net::test_server::SendBytesCallback send_callback;
-    net::test_server::SendCompleteCallback done_callback;
-    std::string response_string;
-  };
-
   class Resolver final : public base::RefCountedThreadSafe<Resolver> {
    public:
     void Resolve() {
@@ -82,17 +80,17 @@ class DelayedHttpResponseWithResolver final
         return;
       }
 
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&Resolver::ResolveInServerTaskRunner, this));
+      for (auto& response : response_closures_)
+        task_runner_->PostTask(FROM_HERE, std::move(response));
+
+      response_closures_.clear();
     }
 
-    void Add(ResponseWithCallbacks response) {
+    void Add(base::OnceClosure response) {
       base::AutoLock auto_lock(lock_);
 
       if (resolved_) {
-        response.send_callback.Run(response.response_string,
-                                   std::move(response.done_callback));
+        std::move(response).Run();
         return;
       }
 
@@ -104,25 +102,16 @@ class DelayedHttpResponseWithResolver final
         task_runner_ = std::move(task_runner);
       }
 
-      responses_with_callbacks_.push_back(std::move(response));
+      response_closures_.push_back(std::move(response));
     }
 
    private:
-    void ResolveInServerTaskRunner() {
-      auto responses_with_callbacks = std::move(responses_with_callbacks_);
-      for (auto& response_with_callbacks : responses_with_callbacks) {
-        response_with_callbacks.send_callback.Run(
-            response_with_callbacks.response_string,
-            std::move(response_with_callbacks.done_callback));
-      }
-    }
-
     friend class base::RefCountedThreadSafe<Resolver>;
     ~Resolver() = default;
 
     base::Lock lock_;
 
-    std::vector<ResponseWithCallbacks> responses_with_callbacks_;
+    std::vector<base::OnceClosure> response_closures_;
     bool resolved_ GUARDED_BY(lock_) = false;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_ GUARDED_BY(lock_);
   };
@@ -135,9 +124,12 @@ class DelayedHttpResponseWithResolver final
   DelayedHttpResponseWithResolver& operator=(
       const DelayedHttpResponseWithResolver&) = delete;
 
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
-    resolver_->Add({send, std::move(done), ToResponseString()});
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    resolver_->Add(base::BindOnce(
+        &net::test_server::HttpResponseDelegate::SendHeadersContentAndFinish,
+        delegate, code(), GetHttpReasonPhrase(code()), BuildHeaders(),
+        content()));
   }
 
  private:

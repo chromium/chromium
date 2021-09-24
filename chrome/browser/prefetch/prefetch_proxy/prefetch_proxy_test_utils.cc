@@ -164,7 +164,7 @@ void TestProxyTunnelConnection::SetOnDoneCallback(
 void TestProxyTunnelConnection::OnDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_socket_.reset();
-  incoming_socket_.reset();
+  incoming_socket_ = nullptr;
 
   if (on_done_callback_) {
     std::move(on_done_callback_).Run();

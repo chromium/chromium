@@ -74,22 +74,24 @@ class SlowAuthResponse : public content::SlowHttpResponse {
   SlowAuthResponse operator=(const SlowAuthResponse& other) = delete;
 
   // content::SlowHttpResponse:
-  void AddResponseHeaders(std::string* response) override {
-    response->append("WWW-Authenticate: Basic realm=\"test\"\r\n");
-    response->append("Cache-Control: max-age=0\r\n");
+  base::StringPairs ResponseHeaders() override {
+    base::StringPairs response;
+    response.emplace_back("WWW-Authenticate", "Basic realm=\"test\"");
+    response.emplace_back("Cache-Control", "max-age=0");
     // Content-length and Content-type are both necessary to trigger the bug
     // that this class is used to test. Specifically, there must be a delay
     // between the OnAuthRequired notification from the net stack and when the
     // response body is ready, and the OnAuthRequired notification requires
     // headers to be complete (which requires a known content type and length).
-    response->append("Content-type: text/html");
-    response->append(
-        base::StringPrintf("Content-Length: %d\r\n",
-                           kFirstResponsePartSize + kSecondResponsePartSize));
+    response.emplace_back("Content-type", "text/html");
+    response.emplace_back(
+        "Content-Length",
+        base::NumberToString(kFirstResponsePartSize + kSecondResponsePartSize));
+    return response;
   }
 
-  void SetStatusLine(std::string* response) override {
-    response->append("HTTP/1.1 401 Unauthorized\r\n");
+  std::pair<net::HttpStatusCode, std::string> StatusLine() override {
+    return {net::HTTP_UNAUTHORIZED, "Unauthorized"};
   }
 };
 

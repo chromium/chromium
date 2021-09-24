@@ -21,6 +21,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -696,33 +697,34 @@ class ManySmallRecordsHttpResponse : public test_server::HttpResponse {
   ManySmallRecordsHttpResponse(size_t chunk_size, size_t chunk_count)
       : chunk_size_(chunk_size), chunk_count_(chunk_count) {}
 
-  void SendResponse(const test_server::SendBytesCallback& send,
-                    test_server::SendCompleteCallback done) override {
-    std::string headers = base::StringPrintf(
-        "HTTP/1.1 200 OK\r\n"
-        "Connection: close\r\n"
-        "Content-Length: %zu\r\n"
-        "Content-Type: text/plain\r\n\r\n",
-        chunk_size_ * chunk_count_);
-    send.Run(headers, base::BindOnce(&SendChunks, chunk_size_, chunk_count_,
-                                     send, std::move(done)));
+  void SendResponse(
+      base::WeakPtr<test_server::HttpResponseDelegate> delegate) override {
+    base::StringPairs headers = {
+        {"Connection", "close"},
+        {"Content-Length", base::NumberToString(chunk_size_ * chunk_count_)},
+        {"Content-Type", "text/plain"}};
+    delegate->SendResponseHeaders(HTTP_OK, "OK", headers);
+    SendChunks(chunk_size_, chunk_count_, delegate);
   }
 
  private:
-  static void SendChunks(size_t chunk_size,
-                         size_t chunk_count,
-                         const test_server::SendBytesCallback& send,
-                         test_server::SendCompleteCallback done) {
+  static void SendChunks(
+      size_t chunk_size,
+      size_t chunk_count,
+      base::WeakPtr<test_server::HttpResponseDelegate> delegate) {
+    if (!delegate)
+      return;
+
     if (chunk_count == 0) {
-      std::move(done).Run();
+      delegate->FinishResponse();
       return;
     }
 
     std::string chunk(chunk_size, '*');
     // This assumes that splitting output into separate |send| calls will
     // produce separate TLS records.
-    send.Run(chunk, base::BindOnce(&SendChunks, chunk_size, chunk_count - 1,
-                                   send, std::move(done)));
+    delegate->SendContents(chunk, base::BindOnce(&SendChunks, chunk_size,
+                                                 chunk_count - 1, delegate));
   }
 
   size_t chunk_size_;
@@ -1339,8 +1341,8 @@ class ZeroRTTResponse : public test_server::HttpResponse {
 
   ~ZeroRTTResponse() override {}
 
-  void SendResponse(const test_server::SendBytesCallback& send,
-                    test_server::SendCompleteCallback done) override {
+  void SendResponse(
+      base::WeakPtr<test_server::HttpResponseDelegate> delegate) override {
     std::string response;
     if (zero_rtt_) {
       response = "1";
@@ -1351,7 +1353,7 @@ class ZeroRTTResponse : public test_server::HttpResponse {
     // Since the EmbeddedTestServer doesn't keep the socket open by default, it
     // is explicitly kept alive to allow the remaining leg of the 0RTT handshake
     // to be received after the early data.
-    send.Run(response, base::BindOnce([]() {}));
+    delegate->SendContents(response);
   }
 
  private:
