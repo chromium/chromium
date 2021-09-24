@@ -91,6 +91,7 @@
     "crossoriginmessage",
     "currentscreenchange",
     "cuechange",
+    "currentchange",
     "cut",
     "datachannel",
     "dblclick",

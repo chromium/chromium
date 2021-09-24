@@ -80,6 +80,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigate, kNavigate)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigatesuccess, kNavigatesuccess)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigateerror, kNavigateerror)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(currentchange, kCurrentchange)
 
   enum class DispatchResult { kContinue, kAbort, kTransitionWhile };
   DispatchResult DispatchNavigateEvent(const KURL& url,

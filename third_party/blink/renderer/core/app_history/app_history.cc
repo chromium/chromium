@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_app_history_current_change_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_reload_options.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_update_current_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/app_history/app_history_api_navigation.h"
+#include "third_party/blink/renderer/core/app_history/app_history_current_change_event.h"
 #include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
@@ -152,6 +154,22 @@ AppHistoryResult* EarlySuccessResult(ScriptState* script_state,
   return result;
 }
 
+String DetermineNavigationType(WebFrameLoadType type) {
+  switch (type) {
+    case WebFrameLoadType::kStandard:
+      return "push";
+    case WebFrameLoadType::kBackForward:
+      return "traverse";
+    case WebFrameLoadType::kReload:
+    case WebFrameLoadType::kReloadBypassingCache:
+      return "reload";
+    case WebFrameLoadType::kReplaceCurrentItem:
+      return "replace";
+  }
+  NOTREACHED();
+  return String();
+}
+
 const char AppHistory::kSupplementName[] = "AppHistory";
 
 AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
@@ -229,6 +247,8 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
   if (entries_.IsEmpty())
     return;
 
+  AppHistoryEntry* old_current = current();
+
   HeapVector<Member<AppHistoryEntry>> disposed_entries;
   if (type == WebFrameLoadType::kBackForward) {
     // If this is a same-document back/forward navigation, the new current
@@ -258,6 +278,12 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
         MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &item);
     keys_to_indices_.insert(entries_[current_index_]->key(), current_index_);
   }
+
+  auto* init = AppHistoryCurrentChangeEventInit::Create();
+  init->setNavigationType(DetermineNavigationType(type));
+  init->setFrom(old_current);
+  DispatchEvent(*AppHistoryCurrentChangeEvent::Create(
+      event_type_names::kCurrentchange, init));
 
   // It's important to do this before firing dispose events, since dispose
   // events could start another navigation or otherwise mess with
@@ -305,6 +331,11 @@ void AppHistory::updateCurrent(AppHistoryUpdateCurrentOptions* options,
     return;
 
   current_entry->GetItem()->SetAppHistoryState(std::move(serialized_state));
+
+  auto* init = AppHistoryCurrentChangeEventInit::Create();
+  init->setFrom(current_entry);
+  DispatchEvent(*AppHistoryCurrentChangeEvent::Create(
+      event_type_names::kCurrentchange, init));
 }
 
 AppHistoryResult* AppHistory::navigate(ScriptState* script_state,
@@ -511,22 +542,6 @@ scoped_refptr<SerializedScriptValue> AppHistory::SerializeState(
       SerializedScriptValue::SerializeOptions(
           SerializedScriptValue::kForStorage),
       exception_state);
-}
-
-String DetermineNavigationType(WebFrameLoadType type) {
-  switch (type) {
-    case WebFrameLoadType::kStandard:
-      return "push";
-    case WebFrameLoadType::kBackForward:
-      return "traverse";
-    case WebFrameLoadType::kReload:
-    case WebFrameLoadType::kReloadBypassingCache:
-      return "reload";
-    case WebFrameLoadType::kReplaceCurrentItem:
-      return "replace";
-  }
-  NOTREACHED();
-  return String();
 }
 
 void AppHistory::PromoteUpcomingNavigationToOngoing(const String& key) {

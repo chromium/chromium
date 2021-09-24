@@ -462,6 +462,7 @@ source_set("testing") {
 
 generate_event_interfaces("core_event_interfaces") {
   sources = [
+    "app_history/app_history_current_change_event.idl",
     "app_history/app_history_navigate_event.idl",
     "css/font_face_set_load_event.idl",
     "css/media_query_list_event.idl",

@@ -6,6 +6,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS childWindow.appHistory.canGoBack is false
 PASS childWindow.appHistory.canGoForward is false
 PASS childWindow.appHistory.current is null
+PASS childWindow.appHistory.oncurrentchange is null
 PASS childWindow.appHistory.onnavigate is null
 PASS childWindow.appHistory.onnavigateerror is null
 PASS childWindow.appHistory.onnavigatesuccess is null

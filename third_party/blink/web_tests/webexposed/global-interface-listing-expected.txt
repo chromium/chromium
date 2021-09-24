@@ -235,6 +235,7 @@ interface AppHistory : EventTarget
     getter canGoBack
     getter canGoForward
     getter current
+    getter oncurrentchange
     getter onnavigate
     getter onnavigateerror
     getter onnavigatesuccess
@@ -247,9 +248,15 @@ interface AppHistory : EventTarget
     method navigate
     method reload
     method updateCurrent
+    setter oncurrentchange
     setter onnavigate
     setter onnavigateerror
     setter onnavigatesuccess
+interface AppHistoryCurrentChangeEvent : Event
+    attribute @@toStringTag
+    getter from
+    getter navigationType
+    method constructor
 interface AppHistoryDestination
     attribute @@toStringTag
     getter id

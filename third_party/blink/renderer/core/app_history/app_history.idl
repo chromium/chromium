@@ -25,4 +25,5 @@
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
+  attribute EventHandler oncurrentchange;
 };

@@ -1,0 +1,11 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="i" src="/common/blank.html"></iframe>
+<script>
+promise_test(async t => {
+  i.contentWindow.appHistory.oncurrentchange = t.unreached_func("currentchange should not fire");
+  i.contentWindow.appHistory.navigate("/common/blank.html#1");
+  await new Promise(resolve => i.onload = resolve);
+}, "AppHistoryCurrentChangeEvent does not fire when navigating away from the initial about:blank");
+</script>
