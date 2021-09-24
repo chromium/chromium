@@ -11,6 +11,5 @@
 ] interface AuthenticatorAssertionResponse : AuthenticatorResponse {
     [SameObject] readonly attribute ArrayBuffer authenticatorData;
     [SameObject] readonly attribute ArrayBuffer signature;
-    [RuntimeEnabled=WebAuthAssertionTransport, SameObject] readonly attribute DOMString? transport;
     [SameObject] readonly attribute ArrayBuffer? userHandle;
 };

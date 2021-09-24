@@ -126,6 +126,12 @@ class CONTENT_EXPORT AuthenticatorCommon {
     kDontCheck,
   };
 
+  enum class AttestationErasureOption {
+    kIncludeAttestation,
+    kEraseAttestationButIncludeAaguid,
+    kEraseAttestationAndAaguid,
+  };
+
   // Replaces the current |request_| with a |MakeCredentialRequestHandler|,
   // effectively restarting the request.
   void StartMakeCredentialRequest(bool allow_skipping_pin_touch);
@@ -135,10 +141,6 @@ class CONTENT_EXPORT AuthenticatorCommon {
   void StartGetAssertionRequest(bool allow_skipping_pin_touch);
 
   bool IsFocused() const;
-
-  // Creates an assertion response.
-  blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
-      device::AuthenticatorGetAssertionResponse response_data);
 
   // Callback to handle the large blob being compressed before attempting to
   // start a request.
@@ -190,11 +192,21 @@ class CONTENT_EXPORT AuthenticatorCommon {
       AuthenticatorRequestClientDelegate::InterestingFailureReason reason,
       blink::mojom::AuthenticatorStatus status);
 
+  // Creates a make credential response
+  blink::mojom::MakeCredentialAuthenticatorResponsePtr
+  CreateMakeCredentialResponse(
+      device::AuthenticatorMakeCredentialResponse response_data,
+      AttestationErasureOption attestation_erasure);
+
   // Runs |make_credential_response_callback_| and then Cleanup().
   void CompleteMakeCredentialRequest(
       blink::mojom::AuthenticatorStatus status,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr response = nullptr,
       Focus focus_check = Focus::kDontCheck);
+
+  // Creates a get assertion response.
+  blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
+      device::AuthenticatorGetAssertionResponse response_data);
 
   // Runs |get_assertion_callback_| and then Cleanup().
   void CompleteGetAssertionRequest(

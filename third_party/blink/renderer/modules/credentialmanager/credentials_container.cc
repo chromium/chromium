@@ -590,9 +590,9 @@ void OnMakePublicKeyCredentialComplete(
     extension_outputs->setLargeBlob(large_blob_outputs);
   }
   resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
-      credential->info->id, raw_id, authenticator_response, extension_outputs));
+      credential->info->id, raw_id, authenticator_response,
+      credential->has_transport, credential->transport, extension_outputs));
 }
-
 bool IsForPayment(const CredentialCreationOptions* options,
                   ExecutionContext* context) {
   return RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context) &&
@@ -664,10 +664,6 @@ void OnGetAssertionComplete(
             std::move(credential->info->client_data_json),
             std::move(credential->info->authenticator_data),
             std::move(credential->signature),
-            credential->has_transport
-                ? absl::make_optional(
-                      mojo::ConvertTo<String>(credential->transport))
-                : absl::nullopt,
             credential->user_handle);
 
     AuthenticationExtensionsClientOutputs* extension_outputs =
@@ -708,7 +704,8 @@ void OnGetAssertionComplete(
     resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
         credential->info->id,
         VectorToDOMArrayBuffer(std::move(credential->info->raw_id)),
-        authenticator_response, extension_outputs));
+        authenticator_response, credential->has_transport,
+        credential->transport, extension_outputs));
     return;
   }
   DCHECK(!credential);

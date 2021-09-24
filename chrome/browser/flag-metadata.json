@@ -2755,7 +2755,7 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-web-authentication-assertion-transport",
+    "name": "enable-web-authentication-authenticator-attachment",
     "owners": [ "ridouh@google.com", "//device/fido/OWNERS"] ,
     "expiry_milestone" : 100
   },

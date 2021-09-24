@@ -87,6 +87,12 @@ struct UvmEntry {
 struct MakeCredentialAuthenticatorResponse {
   CommonCredentialInfo info;
 
+  // True if transport exists. False if transport does not exist, e.g. on old
+  // Windows.
+  bool has_transport;
+  // The transport method used to authenticate.
+  AuthenticatorTransport transport;
+
   // A blob of data returned by the authenticator after creating a credential.
   array<uint8> attestation_object;
 
@@ -152,7 +158,7 @@ struct GetAssertionAuthenticatorResponse {
   // True if transport exists. False if transport does not exist, e.g. on old
   // Windows.
   bool has_transport;
-  // The transport method used to authenticate, cannot be optional, because it is an enum.
+  // The transport method used to authenticate.
   AuthenticatorTransport transport;
 
   // Cryptographic signature proving possession of the credential private key.

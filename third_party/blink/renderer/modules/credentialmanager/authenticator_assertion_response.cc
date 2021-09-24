@@ -20,13 +20,11 @@ AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
     const Vector<uint8_t> client_data_json,
     const Vector<uint8_t> authenticator_data,
     const Vector<uint8_t> signature,
-    const absl::optional<String> transport,
     const absl::optional<Vector<uint8_t>> optional_user_handle)
     : AuthenticatorAssertionResponse(
           VectorToDOMArrayBuffer(client_data_json),
           VectorToDOMArrayBuffer(authenticator_data),
           VectorToDOMArrayBuffer(signature),
-          std::move(transport),
           optional_user_handle && optional_user_handle->size() > 0
               ? VectorToDOMArrayBuffer(std::move(*optional_user_handle))
               : nullptr) {}
@@ -35,12 +33,10 @@ AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
     DOMArrayBuffer* client_data_json,
     DOMArrayBuffer* authenticator_data,
     DOMArrayBuffer* signature,
-    absl::optional<String> transport,
     DOMArrayBuffer* user_handle)
     : AuthenticatorResponse(client_data_json),
       authenticator_data_(authenticator_data),
       signature_(signature),
-      transport_(std::move(transport)),
       user_handle_(user_handle) {}
 
 AuthenticatorAssertionResponse::~AuthenticatorAssertionResponse() = default;

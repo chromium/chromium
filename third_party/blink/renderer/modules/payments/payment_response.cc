@@ -36,17 +36,14 @@ v8::Local<v8::Value> BuildDetails(
             std::move(info->client_data_json),
             std::move(info->authenticator_data),
             std::move(secure_payment_confirmation->signature),
-            secure_payment_confirmation->has_transport
-                ? absl::make_optional(mojo::ConvertTo<String>(
-                      secure_payment_confirmation->transport))
-                : absl::nullopt,
             secure_payment_confirmation->user_handle);
 
     auto* result = MakeGarbageCollected<PublicKeyCredential>(
         secure_payment_confirmation->credential_info->id,
         DOMArrayBuffer::Create(static_cast<const void*>(info->raw_id.data()),
                                info->raw_id.size()),
-        authenticator_response,
+        authenticator_response, secure_payment_confirmation->has_transport,
+        secure_payment_confirmation->transport,
         AuthenticationExtensionsClientOutputs::Create());
     return result->Wrap(script_state).ToLocalChecked();
   }
