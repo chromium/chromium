@@ -86,6 +86,8 @@ class MODULES_EXPORT WebTransport final
   void OnDatagramReceived(base::span<const uint8_t> data) override;
   void OnIncomingStreamClosed(uint32_t stream_id, bool fin_received) override;
 
+  void OnClosed(const absl::optional<WebTransportCloseInfo>&);
+
   // Implementation of ExecutionContextLifecycleObserver
   void ContextDestroyed() final;
 
@@ -119,8 +121,11 @@ class MODULES_EXPORT WebTransport final
   void ResetAll();
 
   void Dispose();
+  void Cleanup(v8::Local<v8::Value> reason,
+               v8::Local<v8::Value> error,
+               bool abruptly);
   void OnConnectionError();
-  void RejectPendingStreamResolvers();
+  void RejectPendingStreamResolvers(v8::Local<v8::Value> error);
   void OnCreateSendStreamResponse(ScriptPromiseResolver*,
                                   mojo::ScopedDataPipeProducerHandle,
                                   bool succeeded,
@@ -130,8 +135,6 @@ class MODULES_EXPORT WebTransport final
                                            mojo::ScopedDataPipeConsumerHandle,
                                            bool succeeded,
                                            uint32_t stream_id);
-
-  bool cleanly_closed_ = false;
 
   Member<DatagramDuplexStream> datagrams_;
 

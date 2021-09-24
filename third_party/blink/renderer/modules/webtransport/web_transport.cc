@@ -774,34 +774,33 @@ ReadableStream* WebTransport::datagramReadable() {
 
 void WebTransport::close(const WebTransportCloseInfo* close_info) {
   DVLOG(1) << "WebTransport::close() this=" << this;
-  // TODO(ricea): Send |close_info| to the network service.
-
-  if (cleanly_closed_) {
-    // close() has already been called. Ignore it.
+  v8::Isolate* isolate = script_state_->GetIsolate();
+  if (!connector_.is_bound() && !transport_remote_.is_bound()) {
+    // This session has been closed or errored.
     return;
   }
-  cleanly_closed_ = true;
 
-  datagram_underlying_source_->Close();
-
-  received_streams_underlying_source_->Close();
-  received_bidirectional_streams_underlying_source_->Close();
-
-  // If we don't manage to close the writable stream here, then it will
-  // error when a write() is attempted.
-  if (!WritableStream::IsLocked(outgoing_datagrams_) &&
-      !WritableStream::CloseQueuedOrInFlight(outgoing_datagrams_)) {
-    auto promise = WritableStream::Close(script_state_, outgoing_datagrams_);
-    promise->MarkAsHandled();
+  if (!transport_remote_.is_bound()) {
+    // The state is "connecting".
+    v8::Local<v8::Value> error =
+        WebTransportError::Create(isolate, /*stream_error_code=*/absl::nullopt,
+                                  "close() is called while connecting.",
+                                  WebTransportError::Source::kSession);
+    Cleanup(error, error, /*abruptly=*/true);
+    return;
   }
-  closed_resolver_->Resolve(close_info);
 
-  v8::Local<v8::Value> reason = WebTransportError::Create(
-      script_state_->GetIsolate(), /*stream_error_code=*/absl::nullopt,
-      "Connection closed.", WebTransportError::Source::kSession);
-  ready_resolver_->Reject(reason);
-  RejectPendingStreamResolvers();
-  ResetAll();
+  v8::Local<v8::Object> reason = v8::Object::New(isolate);
+  // TODO(yhirano): Set up `reason` correctly. We probably need to accept
+  // "any", to maintain the object identity.
+
+  v8::Local<v8::Value> error = WebTransportError::Create(
+      isolate, /*stream_error_code=*/absl::nullopt, "The session is closed.",
+      WebTransportError::Source::kSession);
+
+  // TODO(yhirano): Call transport_remote_->Close().
+
+  Cleanup(reason, error, /*abruptly=*/false);
 }
 
 void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
@@ -854,15 +853,11 @@ void WebTransport::OnHandshakeFailed(
   DCHECK(!error);
   DVLOG(1) << "WebTransport::OnHandshakeFailed() this=" << this;
   ScriptState::Scope scope(script_state_);
-  {
-    v8::Local<v8::Value> reason = WebTransportError::Create(
-        script_state_->GetIsolate(),
-        /*stream_error_code=*/absl::nullopt, "Connection lost.",
-        WebTransportError::Source::kSession);
-    ready_resolver_->Reject(reason);
-    closed_resolver_->Reject(reason);
-  }
-  ResetAll();
+  v8::Local<v8::Value> error_to_pass = WebTransportError::Create(
+      script_state_->GetIsolate(),
+      /*stream_error_code=*/absl::nullopt, "Opening handshake failed.",
+      WebTransportError::Source::kSession);
+  Cleanup(error_to_pass, error_to_pass, /*abruptly=*/true);
 }
 
 void WebTransport::OnDatagramReceived(base::span<const uint8_t> data) {
@@ -892,6 +887,26 @@ void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
   WebTransportStream* stream = it->value;
   DCHECK(stream);
   stream->OnIncomingStreamClosed(fin_received);
+}
+
+void WebTransport::OnClosed(
+    const absl::optional<WebTransportCloseInfo>& close_info) {
+  ScriptState::Scope scope(script_state_);
+  v8::Isolate* isolate = script_state_->GetIsolate();
+
+  v8::Local<v8::Value> reason;
+  if (close_info) {
+    reason = ToV8(&close_info.value(), script_state_);
+  } else {
+    WebTransportCloseInfo empty_close_info;
+    reason = ToV8(&empty_close_info, script_state_);
+  }
+
+  v8::Local<v8::Value> error = WebTransportError::Create(
+      isolate, /*stream_error_code=*/absl::nullopt, "The session is closed.",
+      WebTransportError::Source::kSession);
+
+  Cleanup(reason, error, /*abruptly=*/false);
 }
 
 void WebTransport::ContextDestroyed() {
@@ -1100,34 +1115,59 @@ void WebTransport::Dispose() {
   feature_handle_for_scheduler_.reset();
 }
 
-void WebTransport::OnConnectionError() {
-  DVLOG(1) << "WebTransport::OnConnectionError() this=" << this;
+// https://w3c.github.io/webtransport/#webtransport-cleanup
+void WebTransport::Cleanup(v8::Local<v8::Value> reason,
+                           v8::Local<v8::Value> error,
+                           bool abruptly) {
+  v8::Isolate* isolate = script_state_->GetIsolate();
 
-  ScriptState::Scope scope(script_state_);
-  if (!cleanly_closed_) {
-    v8::Local<v8::Value> reason = WebTransportError::Create(
-        script_state_->GetIsolate(),
-        /*stream_error_code=*/absl::nullopt, "Connection lost.",
-        WebTransportError::Source::kSession);
-    datagram_underlying_source_->Error(reason);
-    received_streams_underlying_source_->Error(reason);
-    received_bidirectional_streams_underlying_source_->Error(reason);
-    WritableStreamDefaultController::ErrorIfNeeded(
-        script_state_, outgoing_datagrams_->Controller(), reason);
-    ready_resolver_->Reject(reason);
-    closed_resolver_->Reject(reason);
-  }
+  RejectPendingStreamResolvers(error);
+  // TODO(yhirano): Error all the incoming/outgoing streams.
 
-  RejectPendingStreamResolvers();
+  datagram_underlying_source_->Error(error);
+  outgoing_datagrams_->Controller()->error(script_state_,
+                                           ScriptValue(isolate, error));
+
+  // We use local variables to avoid re-entrant problems.
+  auto* incoming_bidirectional_streams_source =
+      received_bidirectional_streams_underlying_source_.Get();
+  auto* incoming_unidirectional_streams_source =
+      received_streams_underlying_source_.Get();
+  auto* closed_resolver = closed_resolver_.Get();
+  auto* ready_resolver = ready_resolver_.Get();
+
   ResetAll();
+
+  if (abruptly) {
+    closed_resolver->Reject(error);
+    ready_resolver->Reject(error);
+    incoming_bidirectional_streams_source->Error(error);
+    incoming_unidirectional_streams_source->Error(error);
+  } else {
+    closed_resolver->Resolve(reason);
+    DCHECK_EQ(ready_.V8Promise()->State(),
+              v8::Promise::PromiseState::kFulfilled);
+    incoming_bidirectional_streams_source->Close();
+    incoming_unidirectional_streams_source->Close();
+  }
 }
 
-void WebTransport::RejectPendingStreamResolvers() {
-  v8::Local<v8::Value> reason = WebTransportError::Create(
-      script_state_->GetIsolate(), /*stream_error_code=*/absl::nullopt,
-      "Connection lost.", WebTransportError::Source::kSession);
+void WebTransport::OnConnectionError() {
+  DVLOG(1) << "WebTransport::OnConnectionError() this=" << this;
+  v8::Isolate* isolate = script_state_->GetIsolate();
+
+  ScriptState::Scope scope(script_state_);
+  v8::Local<v8::Value> error = WebTransportError::Create(
+      isolate,
+      /*stream_error_code=*/absl::nullopt, "Connection lost.",
+      WebTransportError::Source::kSession);
+
+  Cleanup(error, error, /*abruptly=*/true);
+}
+
+void WebTransport::RejectPendingStreamResolvers(v8::Local<v8::Value> error) {
   for (ScriptPromiseResolver* resolver : create_stream_resolvers_) {
-    resolver->Reject(reason);
+    resolver->Reject(error);
   }
   create_stream_resolvers_.clear();
 }
