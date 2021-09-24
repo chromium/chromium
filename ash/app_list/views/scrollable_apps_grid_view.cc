@@ -102,8 +102,15 @@ gfx::Insets ScrollableAppsGridView::GetTilePadding() const {
   int content_width = GetContentsBounds().width();
   int tile_width = GetAppListConfig().grid_tile_width();
   int width_to_distribute = content_width - cols() * tile_width;
-  // Each column has padding on left and on right.
-  int horizontal_tile_padding = width_to_distribute / (cols() * 2);
+
+  // While calculating tile padding, assume no padding between a tile and a
+  // container bounds.
+  DCHECK_GT(cols(), 1);
+  const int spaces_between_items = cols() - 1;
+  // Each column has padding on left and on right, so a space between two tiles
+  // is double the tile padding size.
+  const int horizontal_tile_padding =
+      width_to_distribute / (spaces_between_items * 2);
   return gfx::Insets(-kVerticalTilePadding, -horizontal_tile_padding);
 }
 

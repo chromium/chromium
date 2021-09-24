@@ -309,8 +309,11 @@ TEST_F(ScrollableAppsGridViewTest, AutoScrollDown) {
   const int scroll_offset2 = scroll_view_->GetVisibleRect().y();
   EXPECT_GT(scroll_offset2, scroll_offset1);
 
-  // Move the mouse back into the center of the view (not in the scroll margin).
-  generator->MoveMouseTo(scroll_view_->GetBoundsInScreen().CenterPoint());
+  // Move the mouse back into the (vertical) center of the view (not in the
+  // scroll margin). Use a point close to a horizontal edge to avoid hitting an
+  // item bounds (which would trigger reparent instead of reorder timer).
+  generator->MoveMouseTo(scroll_view_->GetBoundsInScreen().left_center() +
+                         gfx::Vector2d(5, 0));
 
   // Scroll position didn't change, auto-scrolling is stopped, and reordering
   // started again.

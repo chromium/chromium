@@ -1686,7 +1686,7 @@ const AppListConfig& AppsGridView::GetAppListConfig() const {
   // GetAppListConfig() during this object's destruction.
   if (!contents_view_) {
     AppListConfig* config = AppListConfigProvider::Get().GetConfigForType(
-        AppListConfigType::kLarge, /*can_create=*/true);
+        AppListConfigType::kMedium, /*can_create=*/true);
     return *config;
   }
   return contents_view_->app_list_view()->GetAppListConfig();

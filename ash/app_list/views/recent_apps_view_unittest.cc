@@ -19,11 +19,25 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
+
+// Used to compare distances between point that allow for certain margin of
+// error when comparing horizontal distance. Used to compare spacing between
+// views that accounts for 1 off rounding errors.
+bool AreVectorsClose(const gfx::Vector2d& v1, const gfx::Vector2d& v2) {
+  const int kHorizontalMarginOfError = 1;
+  return std::abs(v1.x() - v2.x()) <= kHorizontalMarginOfError &&
+         std::abs(v1.y() - v2.y()) == 0;
+}
 
 // Returns the first window with type WINDOW_TYPE_MENU found via depth-first
 // search. Returns nullptr if no such window exists.
@@ -74,6 +88,24 @@ class RecentAppsViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetBubbleRecentAppsView();
   }
 
+  // Adds `count` installed app search results.
+  void AddAppResults(int count) {
+    for (int i = 0; i < count; ++i) {
+      std::string id = base::StringPrintf("id%d", i);
+      AddAppListItem(id);
+      AddSearchResult(id, AppListSearchResultType::kInstalledApp);
+    }
+  }
+
+  std::vector<AppListItemView*> GetAppListItemViews(RecentAppsView* view) {
+    std::vector<AppListItemView*> app_list_item_views;
+    for (auto* child : view->children()) {
+      if (views::IsViewClass<AppListItemView>(child))
+        app_list_item_views.push_back(static_cast<AppListItemView*>(child));
+    }
+    return app_list_item_views;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -90,7 +122,103 @@ TEST_F(RecentAppsViewTest, CreatesIconsForApps) {
   ShowAppList();
 
   RecentAppsView* view = GetRecentAppsView();
-  EXPECT_EQ(view->children().size(), 4u);
+  EXPECT_EQ(GetAppListItemViews(view).size(), 4u);
+}
+
+TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith5Items) {
+  AddAppResults(5);
+  ShowAppList();
+
+  RecentAppsView* view = GetRecentAppsView();
+  std::vector<AppListItemView*> items = GetAppListItemViews(view);
+  ASSERT_EQ(5u, items.size());
+
+  for (int i = 4; i > 1; --i) {
+    const gfx::Vector2d right_space = items[i]->bounds().left_center() -
+                                      items[i - 1]->bounds().right_center();
+    const gfx::Vector2d left_space = items[i - 1]->bounds().left_center() -
+                                     items[i - 2]->bounds().right_center();
+    EXPECT_TRUE(AreVectorsClose(right_space, left_space))
+        << i << " " << right_space.ToString() << " " << left_space.ToString();
+  }
+}
+
+TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith5Items) {
+  AddAppResults(5);
+  ShowAppList();
+
+  RecentAppsView* view = GetRecentAppsView();
+  std::vector<AppListItemView*> items = GetAppListItemViews(view);
+  ASSERT_EQ(5u, items.size());
+
+  EXPECT_EQ(view->GetContentsBounds().left_center(),
+            items[0]->bounds().left_center());
+  EXPECT_EQ(view->GetContentsBounds().right_center(),
+            items[4]->bounds().right_center());
+}
+
+TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith4Items) {
+  AddAppResults(4);
+  ShowAppList();
+
+  RecentAppsView* view = GetRecentAppsView();
+  std::vector<AppListItemView*> items = GetAppListItemViews(view);
+  ASSERT_EQ(4u, items.size());
+
+  for (int i = 3; i > 1; --i) {
+    const gfx::Vector2d right_space = items[i]->bounds().left_center() -
+                                      items[i - 1]->bounds().right_center();
+    const gfx::Vector2d left_space = items[i - 1]->bounds().left_center() -
+                                     items[i - 2]->bounds().right_center();
+    EXPECT_TRUE(AreVectorsClose(right_space, left_space))
+        << i << " " << right_space.ToString() << " " << left_space.ToString();
+  }
+}
+
+TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith4Items) {
+  AddAppResults(4);
+  ShowAppList();
+
+  RecentAppsView* view = GetRecentAppsView();
+  std::vector<AppListItemView*> items = GetAppListItemViews(view);
+  ASSERT_EQ(4u, items.size());
+
+  EXPECT_EQ(view->GetContentsBounds().left_center(),
+            items[0]->bounds().left_center());
+  EXPECT_EQ(view->GetContentsBounds().right_center(),
+            items[3]->bounds().right_center());
+}
+
+TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith3Items) {
+  AddAppResults(3);
+  ShowAppList();
+
+  RecentAppsView* view = GetRecentAppsView();
+  std::vector<AppListItemView*> items = GetAppListItemViews(view);
+  ASSERT_EQ(3u, items.size());
+
+  for (int i = 2; i > 1; --i) {
+    const gfx::Vector2d right_space = items[i]->bounds().left_center() -
+                                      items[i - 1]->bounds().right_center();
+    const gfx::Vector2d left_space = items[i - 1]->bounds().left_center() -
+                                     items[i - 2]->bounds().right_center();
+    EXPECT_TRUE(AreVectorsClose(right_space, left_space))
+        << i << " " << right_space.ToString() << " " << left_space.ToString();
+  }
+}
+
+TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith3Items) {
+  AddAppResults(3);
+  ShowAppList();
+
+  RecentAppsView* view = GetRecentAppsView();
+  std::vector<AppListItemView*> items = GetAppListItemViews(view);
+  ASSERT_EQ(3u, items.size());
+
+  EXPECT_EQ(view->GetContentsBounds().left_center(),
+            items[0]->bounds().left_center());
+  EXPECT_EQ(view->GetContentsBounds().right_center(),
+            items[2]->bounds().right_center());
 }
 
 TEST_F(RecentAppsViewTest, DoesNotCreateIconsForNonApps) {
@@ -101,7 +229,7 @@ TEST_F(RecentAppsViewTest, DoesNotCreateIconsForNonApps) {
   ShowAppList();
 
   RecentAppsView* view = GetRecentAppsView();
-  EXPECT_EQ(view->children().size(), 0u);
+  EXPECT_EQ(GetAppListItemViews(view).size(), 0u);
 }
 
 TEST_F(RecentAppsViewTest, DoesNotCreateIconForMismatchedId) {
@@ -121,9 +249,10 @@ TEST_F(RecentAppsViewTest, ClickOnRecentApp) {
   ShowAppList();
 
   // Click on the first icon.
-  RecentAppsView* view = GetRecentAppsView();
-  ASSERT_FALSE(view->children().empty());
-  views::View* icon = view->children()[0];
+  std::vector<AppListItemView*> items =
+      GetAppListItemViews(GetRecentAppsView());
+  ASSERT_FALSE(items.empty());
+  views::View* icon = items[0];
   GetEventGenerator()->MoveMouseTo(icon->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
 
@@ -138,10 +267,10 @@ TEST_F(RecentAppsViewTest, RightClickOpensContextMenu) {
   ShowAppList();
 
   // Right click on the first icon.
-  RecentAppsView* view = GetRecentAppsView();
-  ASSERT_FALSE(view->children().empty());
-  views::View* icon = view->children()[0];
-  GetEventGenerator()->MoveMouseTo(icon->GetBoundsInScreen().CenterPoint());
+  std::vector<AppListItemView*> items =
+      GetAppListItemViews(GetRecentAppsView());
+  ASSERT_FALSE(items.empty());
+  GetEventGenerator()->MoveMouseTo(items[0]->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickRightButton();
 
   // A menu opened.
@@ -163,11 +292,11 @@ TEST_F(RecentAppsViewTest, AppIconSelectedWhenMenuIsShown) {
   AddSearchResult("id2", AppListSearchResultType::kInstalledApp);
   ShowAppList();
 
-  // There are 2 items.
-  RecentAppsView* view = GetRecentAppsView();
-  ASSERT_EQ(2u, view->children().size());
-  AppListItemView* item1 = view->GetItemViewForTest(0);
-  AppListItemView* item2 = view->GetItemViewForTest(1);
+  std::vector<AppListItemView*> items =
+      GetAppListItemViews(GetRecentAppsView());
+  ASSERT_EQ(2u, items.size());
+  AppListItemView* item1 = items[0];
+  AppListItemView* item2 = items[1];
 
   // The grid delegates are the same, so it doesn't matter which one we use for
   // expectations below.

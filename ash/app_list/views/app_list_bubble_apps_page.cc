@@ -38,6 +38,14 @@ constexpr int kContinueColumnCount = 2;
 // Insets for the vertical scroll bar.
 constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
 
+// The padding between different sections within the apps page. Also used for
+// interior apps page container margin.
+constexpr int kVerticalPaddingBetweenSections = 16;
+
+// The horizontal interior margin for the apps page container - i.e. the margin
+// between the apps page bounds and the page content.
+constexpr int kHorizontalInteriorMargin = 20;
+
 }  // namespace
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
@@ -71,8 +79,10 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
 
   auto scroll_contents = std::make_unique<views::View>();
-  auto* layout = scroll_contents->SetLayoutManager(
-      std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
+  auto* layout = scroll_contents->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kVertical,
+      gfx::Insets(kVerticalPaddingBetweenSections, kHorizontalInteriorMargin),
+      kVerticalPaddingBetweenSections));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
   // Continue section row.
