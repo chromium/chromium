@@ -53,6 +53,9 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
     // The URL could not be downloaded because of an error. Client may want to
     // try again later.
     ERROR,
+    // The URL could not be downloaded because of an error. Client should not
+    // try again.
+    PERMANENT_ERROR,
   };
 
   // A completion callback that takes a GURL and a bool indicating the
