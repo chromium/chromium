@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h"
 
+#include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -20,10 +21,14 @@ constexpr char kFakeDeviceId[] = "fake_device_id";
 }  // namespace
 
 class BrowserSignalsDecoratorTest : public testing::Test {
- public:
+ protected:
   void SetUp() override {
     fake_dm_token_storage_.SetClientId(kFakeDeviceId);
-    decorator_.emplace(&fake_dm_token_storage_, &mock_cloud_policy_store_);
+    auto stub_device_info_fetcher =
+        enterprise_signals::DeviceInfoFetcher::CreateStubInstanceForTesting();
+    stub_device_info_fetcher_ = stub_device_info_fetcher.get();
+    decorator_.emplace(&fake_dm_token_storage_, &mock_cloud_policy_store_,
+                       std::move(stub_device_info_fetcher));
   }
 
   void SetFakeCustomerId() {
@@ -32,9 +37,15 @@ class BrowserSignalsDecoratorTest : public testing::Test {
         kFakeCustomerId);
   }
 
- protected:
+  void ValidateStaticSignals(const DeviceTrustSignals& signals) {
+    EXPECT_EQ(signals.device_id(), kFakeDeviceId);
+    EXPECT_EQ(signals.serial_number(), "twirlchange");
+    EXPECT_EQ(signals.is_disk_encrypted(), false);
+  }
+
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   policy::MockCloudPolicyStore mock_cloud_policy_store_;
+  enterprise_signals::DeviceInfoFetcher* stub_device_info_fetcher_;
   absl::optional<BrowserSignalsDecorator> decorator_;
 };
 
@@ -44,7 +55,7 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithCustomerId) {
   DeviceTrustSignals signals;
   decorator_->Decorate(signals);
 
-  EXPECT_EQ(kFakeDeviceId, signals.device_id());
+  ValidateStaticSignals(signals);
   EXPECT_EQ(kFakeCustomerId, signals.obfuscated_customer_id());
 }
 
@@ -52,7 +63,7 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutCustomerId) {
   DeviceTrustSignals signals;
   decorator_->Decorate(signals);
 
-  EXPECT_EQ(kFakeDeviceId, signals.device_id());
+  ValidateStaticSignals(signals);
   EXPECT_FALSE(signals.has_obfuscated_customer_id());
 }
 

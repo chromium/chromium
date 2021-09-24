@@ -51,6 +51,10 @@ class DeviceInfoFetcher {
   // the platform.
   static std::unique_ptr<DeviceInfoFetcher> CreateStubInstanceForTesting();
 
+  // Sets a value controlling whether DeviceInfoFetcher::CreateInstance should
+  // return a stubbed instance. Used for testing.
+  static void SetForceStubForTesting(bool should_force);
+
   // Fetches the device information for the current platform.
   virtual DeviceInfo Fetch() = 0;
 };

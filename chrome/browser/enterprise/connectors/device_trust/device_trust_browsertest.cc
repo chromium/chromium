@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/scoped_tpm_signing_key_pair.h"
+#include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,6 +95,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     scoped_tpm_signing_key_pair_.emplace();
+    enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(true);
 
     auto* browser_policy_manager =
         g_browser_process->browser_policy_connector()

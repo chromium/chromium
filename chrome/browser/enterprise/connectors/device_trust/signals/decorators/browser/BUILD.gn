@@ -2,27 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("browser") {
-  sources = [ "browser_signals_decorator.cc" ]
-
-  public = [ "browser_signals_decorator.h" ]
-
-  deps = [
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
-    "//components/enterprise",
-    "//components/policy/core/common",
-    "//components/policy/proto",
-  ]
-
-  public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [ "browser_signals_decorator_unittest.cc" ]
 
   deps = [
-    ":browser",
+    "//chrome/browser",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
     "//components/enterprise:test_support",
     "//components/policy/core/common:test_support",
