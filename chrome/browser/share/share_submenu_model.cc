@@ -61,7 +61,7 @@ std::u16string FormatURLForClipboard(const GURL& url) {
 
 const base::Feature kShareMenu{
     "ShareMenu",
-    base::FEATURE_DISABLED_BY_DEFAULT,
+    base::FEATURE_ENABLED_BY_DEFAULT,
 };
 
 ShareSubmenuModel::ShareSubmenuModel(
