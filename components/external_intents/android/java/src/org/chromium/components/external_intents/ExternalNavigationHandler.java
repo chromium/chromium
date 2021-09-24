@@ -873,6 +873,35 @@ public class ExternalNavigationHandler {
     }
 
     /**
+     * If an intent is targeting other browser-like apps, but this app can handle the target URL,
+     * then we should just handle the navigation in this app and avoid launching other browsers.
+     */
+    private boolean shouldHandleNonSelfWebIntent(boolean hasSpecializedHandler,
+            boolean isIntentWithSupportedProtocol, Intent targetIntent) {
+        // We allow specialized handlers to receive web intents.
+        if (hasSpecializedHandler) return false;
+        if (!isIntentWithSupportedProtocol) return false;
+
+        // Note that up until at least Android S, an empty action will match any intent filter
+        // with with an action specified.
+        if (!TextUtils.isEmpty(targetIntent.getAction())
+                && !targetIntent.getAction().equals(Intent.ACTION_VIEW)) {
+            return false;
+        }
+
+        // We currently allow websites to do things like open CCTs...
+        if (targetIntent.getPackage() != null
+                && targetIntent.getPackage().equals(
+                        ContextUtils.getApplicationContext().getPackageName())) {
+            return false;
+        }
+
+        RecordHistogram.recordBooleanHistogram("Android.Intent.WebIntentToOtherBrowser", true);
+        if (DEBUG) Log.i(TAG, "Intent to browser app.");
+        return true;
+    }
+
+    /**
      * Current URL has at least one specialized handler available. For navigations
      * within the same host, keep the navigation inside the browser unless the set of
      * available apps to handle the new navigation is different. http://crbug.com/463138
@@ -1203,7 +1232,12 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
+        GURL intentDataUrl = new GURL(targetIntent.getDataString());
         boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
+        // intent: URLs are considered an external protocol, but may still contain a Data URI that
+        // this app does support, and may still end up launching this app.
+        boolean isIntentWithSupportedProtocol = UrlUtilities.hasIntentScheme(params.getUrl())
+                && UrlUtilities.isAcceptedScheme(intentDataUrl);
 
         if (isInternalPdfDownload(isExternalProtocol, params)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1290,6 +1324,12 @@ public class ExternalNavigationHandler {
             }
             return fallBackToHandlingInApp();
         }
+        if (shouldHandleNonSelfWebIntent(
+                    hasSpecializedHandler, isIntentWithSupportedProtocol, targetIntent)) {
+            // We could consider using the fallback URL here, but loading the URL the site was
+            // trying to load in a browser seems like the better choice.
+            return clobberCurrentTab(intentDataUrl, params.getReferrerUrl());
+        }
 
         // From this point on we should only have intents that this app can't handle, or intents for
         // apps with specialized handlers.
@@ -1313,7 +1353,7 @@ public class ExternalNavigationHandler {
         assert intentResolutionMatches(debugIntent, targetIntent);
 
         if (params.isIncognito()) {
-            return handleIncognitoIntent(params, targetIntent, resolvingInfos.get(),
+            return handleIncognitoIntent(params, targetIntent, intentDataUrl, resolvingInfos.get(),
                     browserFallbackUrl, shouldProxyForInstantApps);
         }
 
@@ -1334,17 +1374,16 @@ public class ExternalNavigationHandler {
     }
 
     private OverrideUrlLoadingResult handleIncognitoIntent(ExternalNavigationParams params,
-            Intent targetIntent, List<ResolveInfo> resolvingInfos, GURL browserFallbackUrl,
-            boolean shouldProxyForInstantApps) {
+            Intent targetIntent, GURL intentDataUrl, List<ResolveInfo> resolvingInfos,
+            GURL browserFallbackUrl, boolean shouldProxyForInstantApps) {
         boolean intentTargetedToApp = mDelegate.willAppHandleIntent(targetIntent);
 
         GURL fallbackUrl = browserFallbackUrl;
         // If we can handle the intent, then fall back to handling the target URL instead of
         // the fallbackUrl if the user decides not to leave incognito.
         if (resolveInfoContainsSelf(resolvingInfos)) {
-            GURL targetUrl = UrlUtilities.hasIntentScheme(params.getUrl())
-                    ? new GURL(targetIntent.getDataString())
-                    : params.getUrl();
+            GURL targetUrl =
+                    UrlUtilities.hasIntentScheme(params.getUrl()) ? intentDataUrl : params.getUrl();
             // Make sure the browser can handle this URL, in case the Intent targeted a
             // non-browser component for this app.
             if (UrlUtilities.isAcceptedScheme(targetUrl)) fallbackUrl = targetUrl;
