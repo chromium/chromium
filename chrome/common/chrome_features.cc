@@ -879,7 +879,7 @@ const base::Feature kShow10_10ObsoleteInfobar{
 // TODO(alexmos): Move this and the other site isolation features below to
 // browser_features, as they are only used on the browser side.
 const base::Feature kSitePerProcess {
-  "site-per-process",
+  "SitePerProcess",
 #if defined(OS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
