@@ -70,8 +70,6 @@ const char ModelLoader::kClientModelFinchExperiment[] =
     "ClientSideDetectionModelOnAndroid";
 #endif
 const char ModelLoader::kClientModelFinchParam[] = "ModelNum";
-const char kUmaModelDownloadResponseMetricName[] =
-    "SBClientPhishing.ClientModelDownloadResponseOrErrorCode";
 
 // Command-line flag that can be used to override the current CSD model. Must be
 // provided with an absolute path.
@@ -222,9 +220,6 @@ void ModelLoader::OnURLLoaderComplete(
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
-  V4ProtocolManagerUtil::RecordHttpResponseOrErrorCode(
-      kUmaModelDownloadResponseMetricName, url_loader_->NetError(),
-      response_code);
 
   // max_age is valid iff !0.
   base::TimeDelta max_age;

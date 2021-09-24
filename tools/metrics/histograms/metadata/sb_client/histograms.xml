@@ -439,7 +439,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.CacheDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2021-09-17">
+    enum="BooleanIsPhishing" expires_after="2022-09-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -501,7 +501,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SBClientPhishing.ClientModelDownloadResponseOrErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="M94">
-  <owner>drubery@google.com</owner>
+  <obsolete>
+    Remove 09-2021
+  </obsolete>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Response or error codes from the SafeBrowsing service. Logged after a
@@ -828,7 +830,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.TermFeatureChunkTime" units="ms"
-    expires_after="2021-10-17">
+    expires_after="2022-10-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -837,7 +839,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.TermFeatureIterations" units="units"
-    expires_after="2021-10-31">
+    expires_after="2022-10-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -846,7 +848,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.TermFeatureTimeout" units="units"
-    expires_after="2021-10-17">
+    expires_after="2022-10-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
