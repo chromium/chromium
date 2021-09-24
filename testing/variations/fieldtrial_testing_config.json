@@ -1346,24 +1346,6 @@
             ]
         }
     ],
-    "BackgroundSync": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "RelyOnAndroidNetworkDetection",
-                    "params": {
-                        "rely_on_android_network_detection": "true"
-                    },
-                    "enable_features": [
-                        "BackgroundSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackgroundThreadPool": [
         {
             "platforms": [
