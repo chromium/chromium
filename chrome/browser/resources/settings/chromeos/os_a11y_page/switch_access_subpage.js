@@ -7,25 +7,27 @@
  * Switch Access settings.
  */
 
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import '//resources/cr_elements/md_select_css.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
-import {routes} from '../os_route.m.js';
-import {Router, Route, RouteObserverBehavior} from '../../router.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import '../../settings_shared_css.js';
 import './switch_access_action_assignment_dialog.js';
-import {actionToPref, AUTO_SCAN_SPEED_RANGE_MS, AssignmentContext, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
-import {getLabelForAssignment} from './switch_access_action_assignment_pane.js';
 import './switch_access_setup_guide_dialog.js';
 import './switch_access_setup_guide_warning_dialog.js';
+
+import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
+import {getLabelForAssignment} from './switch_access_action_assignment_pane.js';
+import {actionToPref, AssignmentContext, AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
 /**
@@ -306,7 +308,7 @@ Polymer({
     // If this method is called with no SELECT switches, then the page has just
     // loaded, and we should open the setup guide.
     if (Object.keys(this.selectAssignments_).length === 0 &&
-        this.showSetupGuide_) {
+        this.showSetupGuide_()) {
       this.openSetupGuide_();
     }
   },
@@ -366,7 +368,8 @@ Polymer({
    * @private
    */
   showSetupGuide_() {
-    return loadTimeData.getBoolean('showSwitchAccessSetupGuide');
+    return loadTimeData.getBoolean('showSwitchAccessSetupGuide') &&
+        !this.showSwitchAccessActionAssignmentDialog_;
   },
 
   /**
