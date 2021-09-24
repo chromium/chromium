@@ -28,8 +28,10 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/service/context_url.h"
 #include "gpu/ipc/single_task_sequence.h"
 #include "gpu/vulkan/buildflags.h"
@@ -181,6 +183,13 @@ SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
       gpu_task_scheduler_(
           display_compositor_controller_->gpu_task_scheduler()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (features::IsUsingRawDraw()) {
+    auto* manager = dependency_->GetSharedImageManager();
+    DCHECK(manager->is_thread_safe());
+    representation_factory_ =
+        std::make_unique<gpu::SharedImageRepresentationFactory>(manager,
+                                                                nullptr);
+  }
 }
 
 SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
@@ -376,6 +385,23 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
   images_in_current_paint_.push_back(
       static_cast<ImageContextImpl*>(image_context));
 
+  const auto& mailbox_holder = image_context->mailbox_holder();
+
+  if (representation_factory_) {
+    auto* sync_point_manager = dependency_->GetSyncPointManager();
+    auto const& sync_token = mailbox_holder.sync_token;
+    if (sync_token.HasData() &&
+        !sync_point_manager->IsSyncTokenReleased(sync_token)) {
+      gpu_task_sync_tokens_.push_back(sync_token);
+      FlushGpuTasks(/*wait_for_finish=*/true);
+      image_context->mutable_mailbox_holder()->sync_token.Clear();
+    }
+
+    auto* impl = static_cast<ImageContextImpl*>(image_context);
+    if (impl->BeginRasterAccess(representation_factory_.get()))
+      return;
+  }
+
   if (image_context->has_image())
     return;
 
@@ -394,8 +420,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
           nullptr /* releaseProc */, image_context /* context */),
       backend_format);
 
-  if (image_context->mailbox_holder().sync_token.HasData()) {
-    resource_sync_tokens_.push_back(image_context->mailbox_holder().sync_token);
+  if (mailbox_holder.sync_token.HasData()) {
+    resource_sync_tokens_.push_back(mailbox_holder.sync_token);
     image_context->mutable_mailbox_holder()->sync_token.Clear();
   }
 }

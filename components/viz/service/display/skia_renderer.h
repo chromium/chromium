@@ -196,6 +196,12 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
                        SkPaint* paint,
                        DrawQuadParams* params);
 
+  void DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
+                         const absl::optional<SkColor>& clear_color,
+                         const TileDrawQuad* quad,
+                         const DrawRPDQParams* rpdq_params,
+                         const DrawQuadParams* params);
+
   // RPDQ, DebugBorder and picture quads cannot be batched. They
   // either are not textures (debug, picture), or it's very likely
   // the texture will have advanced paint effects (rpdq). Additionally, they do

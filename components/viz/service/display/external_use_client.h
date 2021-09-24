@@ -23,6 +23,10 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace cc {
+class PaintOpBuffer;
+}
+
 namespace viz {
 
 // DisplayResourceProvider takes ownership
@@ -77,6 +81,16 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     void SetImage(sk_sp<SkImage> image, GrBackendFormat backend_format);
     void clear_image() { image_.reset(); }
     const GrBackendFormat& backend_format() { return backend_format_; }
+    const cc::PaintOpBuffer* paint_op_buffer() const {
+      return paint_op_buffer_;
+    }
+    void set_paint_op_buffer(const cc::PaintOpBuffer* buffer) {
+      paint_op_buffer_ = buffer;
+    }
+    const absl::optional<SkColor>& clear_color() const { return clear_color_; }
+    void set_clear_color(const absl::optional<SkColor>& color) {
+      clear_color_ = color;
+    }
 
    private:
     gpu::MailboxHolder mailbox_holder_;
@@ -95,6 +109,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
     GrBackendFormat backend_format_;
+    const cc::PaintOpBuffer* paint_op_buffer_ = nullptr;
+    absl::optional<SkColor> clear_color_;
   };
 
   // If |maybe_concurrent_reads| is true then there can be concurrent reads to

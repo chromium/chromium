@@ -7,25 +7,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
-#include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace gpu {
-
-class SharedContextState;
-
 namespace raster {
 
 class GPU_GLES2_EXPORT SharedImageBackingFactoryRawDraw
     : public gpu::SharedImageBackingFactory {
  public:
-  explicit SharedImageBackingFactoryRawDraw(
-      scoped_refptr<SharedContextState> context_state);
+  SharedImageBackingFactoryRawDraw();
   ~SharedImageBackingFactoryRawDraw() override;
 
   // SharedImageBackingFactory implementation:
@@ -71,8 +62,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryRawDraw
  private:
   bool CanUseRawDrawBacking(uint32_t usage,
                             GrContextType gr_context_type) const;
-
-  scoped_refptr<SharedContextState> context_state_;
 };
 
 }  // namespace raster

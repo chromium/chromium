@@ -607,9 +607,13 @@ class SkiaRenderer::ScopedSkImageBuilder {
   ~ScopedSkImageBuilder() = default;
 
   const SkImage* sk_image() const { return sk_image_; }
+  const cc::PaintOpBuffer* paint_op_buffer() const { return paint_op_buffer_; }
+  const absl::optional<SkColor>& clear_color() const { return clear_color_; }
 
  private:
   const SkImage* sk_image_ = nullptr;
+  const cc::PaintOpBuffer* paint_op_buffer_ = nullptr;
+  absl::optional<SkColor> clear_color_;
 };
 
 SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
@@ -639,10 +643,13 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     image_context->set_alpha_type(alpha_type);
     image_context->set_origin(origin);
   }
+
   skia_renderer->skia_output_surface_->MakePromiseSkImage(image_context);
-  LOG_IF(ERROR, !image_context->has_image())
-      << "Failed to create the promise sk image.";
+  paint_op_buffer_ = image_context->paint_op_buffer();
+  clear_color_ = image_context->clear_color();
   sk_image_ = image_context->image().get();
+  LOG_IF(ERROR, !image_context->has_image() && !paint_op_buffer_)
+      << "Failed to create the promise sk image or get paint ops.";
 }
 
 class SkiaRenderer::ScopedYUVSkImageBuilder {
@@ -723,6 +730,9 @@ class SkiaRenderer::FrameResourceFence : public ResourceFence {
  public:
   FrameResourceFence() = default;
 
+  FrameResourceFence(const FrameResourceFence&) = delete;
+  FrameResourceFence& operator=(const FrameResourceFence&) = delete;
+
   // ResourceFence implementation.
   void Set() override { set_ = true; }
   bool HasPassed() override { return event_.IsSignaled(); }
@@ -737,8 +747,6 @@ class SkiaRenderer::FrameResourceFence : public ResourceFence {
   bool set_ = false;
 
   base::WaitableEvent event_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameResourceFence);
 };
 
 SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
@@ -1822,6 +1830,41 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
       constraint);
 }
 
+void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
+                                     const absl::optional<SkColor>& clear_color,
+                                     const TileDrawQuad* quad,
+                                     const DrawRPDQParams* rpdq_params,
+                                     const DrawQuadParams* params) {
+  if (!batched_quads_.empty())
+    FlushBatchedQuads();
+
+  SkAutoCanvasRestore auto_canvas_restore(current_canvas_, true /* do_save */);
+  PrepareCanvas(params->scissor_rect, params->rounded_corner_bounds,
+                &params->content_device_transform);
+
+  float scale_x = params->rect.width() / quad->tex_coord_rect.width();
+  float scale_y = params->rect.height() / quad->tex_coord_rect.height();
+
+  float offset_x =
+      params->visible_rect.x() - params->vis_tex_coords.x() * scale_x;
+  float offset_y =
+      params->visible_rect.y() - params->vis_tex_coords.y() * scale_y;
+
+  auto visible_rect = gfx::RectFToSkRect(params->visible_rect);
+  current_canvas_->clipRect(visible_rect);
+
+  DCHECK(!rpdq_params);
+
+  if (clear_color)
+    current_canvas_->drawColor(*clear_color);
+
+  current_canvas_->translate(offset_x, offset_y);
+  current_canvas_->scale(scale_x, scale_y);
+
+  cc::PlaybackParams playback_params(nullptr, SkM44());
+  buffer->Playback(current_canvas_, playback_params);
+}
+
 void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
                                        DrawQuadParams* params) {
   DCHECK(batched_quads_.empty());
@@ -2109,12 +2152,20 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   ScopedSkImageBuilder builder(
       this, quad->resource_id(), /*maybe_concurrent_reads=*/false,
       quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
+
+  params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
+      quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
+
+  if (builder.paint_op_buffer()) {
+    DrawPaintOpBuffer(builder.paint_op_buffer(), builder.clear_color(), quad,
+                      rpdq_params, params);
+    return;
+  }
+
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
 
-  params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
-      quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
   // When a tile is at the right or bottom edge of the entire tiled area, its
   // images won't be fully filled so use the unclipped texture coords. On
   // interior tiles or left/top tiles, the image has been filled with

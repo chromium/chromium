@@ -10,7 +10,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -35,6 +34,10 @@ namespace mojom {
 class DelegatedInkPointRenderer;
 }  // namespace mojom
 }  // namespace gfx
+
+namespace gpu {
+class SharedImageRepresentationFactory;
+}
 
 namespace viz {
 
@@ -64,11 +67,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       DisplayCompositorMemoryAndTaskController* display_controller,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);
+  ~SkiaOutputSurfaceImpl() override;
 
   SkiaOutputSurfaceImpl(const SkiaOutputSurfaceImpl&) = delete;
   SkiaOutputSurfaceImpl& operator=(const SkiaOutputSurfaceImpl&) = delete;
-
-  ~SkiaOutputSurfaceImpl() override;
 
   // OutputSurface implementation:
   gpu::SurfaceHandle GetSurfaceHandle() const override;
@@ -397,6 +399,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   int consecutive_frames_with_extra_buffer_ = 0;
   // Delayed task to drop frame buffers when idle.
   base::OneShotTimer idle_drop_frame_buffer_timer_;
+  // For accessing tile shared image backings from compositor thread.
+  std::unique_ptr<gpu::SharedImageRepresentationFactory>
+      representation_factory_;
 
   base::WeakPtr<SkiaOutputSurfaceImpl> weak_ptr_;
   base::WeakPtrFactory<SkiaOutputSurfaceImpl> weak_ptr_factory_{this};

@@ -93,6 +93,9 @@ void ImageContextImpl::BeginAccessIfNecessary(
     gpu::MailboxManager* mailbox_manager,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
+  if (representation_raster_scoped_access_)
+    return;
+
   // Prepare for accessing shared image.
   if (mailbox_holder().mailbox.IsSharedImage()) {
     if (!BeginAccessIfNecessaryForSharedImage(
@@ -156,6 +159,25 @@ void ImageContextImpl::BeginAccessIfNecessary(
   // TODO(crbug.com/1118166): The case above handles textures with the
   // passthrough command decoder, verify if something is required for the
   // validating command decoder as well.
+}
+
+bool ImageContextImpl::BeginRasterAccess(
+    gpu::SharedImageRepresentationFactory* representation_factory) {
+  auto raster = representation_factory->ProduceRaster(mailbox_holder().mailbox);
+  if (!raster)
+    return false;
+
+  auto scoped_access = raster->BeginScopedReadAccess();
+  if (!scoped_access)
+    return false;
+
+  set_paint_op_buffer(scoped_access->paint_op_buffer());
+  set_clear_color(scoped_access->clear_color());
+
+  raster_representation_ = std::move(raster);
+  representation_raster_scoped_access_ = std::move(scoped_access);
+
+  return true;
 }
 
 bool ImageContextImpl::BeginAccessIfNecessaryForSharedImage(
@@ -253,6 +275,11 @@ bool ImageContextImpl::BindOrCopyTextureIfNecessary(
 }
 
 void ImageContextImpl::EndAccessIfNecessary() {
+  if (paint_op_buffer()) {
+    DCHECK(!representation_scoped_read_access_);
+    return;
+  }
+
   if (!representation_scoped_read_access_)
     return;
 
