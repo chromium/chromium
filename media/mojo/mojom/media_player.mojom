@@ -56,6 +56,13 @@ interface MediaPlayer {
   SuspendForFrameClosed();
 };
 
+// Implemented by the MediaWebContentsObserver. The remote lives in the renderer
+// process and the receiver lives in the browser process.
+interface MediaPlayerObserverClient {
+  // Gets a flag indicating whether media has been played before.
+  GetHasPlayedBefore() => (bool has_played_before);
+};
+
 // Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the
 // browser process.
 interface MediaPlayerObserver {

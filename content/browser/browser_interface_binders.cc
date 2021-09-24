@@ -27,6 +27,7 @@
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/keyboard_lock/keyboard_lock_service_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
+#include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/midi_host.h"
 #include "content/browser/media/session/media_session_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
@@ -69,6 +70,7 @@
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
+#include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
@@ -587,6 +589,16 @@ void BindVibrationManager(
     GetDeviceService().BindVibrationManager(std::move(receiver));
 }
 
+void BindMediaPlayerObserverClientHandler(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<media::mojom::MediaPlayerObserverClient> receiver) {
+  content::WebContentsImpl* web_contents =
+      static_cast<content::WebContentsImpl*>(
+          content::WebContents::FromRenderFrameHost(frame_host));
+  web_contents->media_web_contents_observer()->BindMediaPlayerObserverClient(
+      std::move(receiver));
+}
+
 void BindSocketManager(
     RenderFrameHostImpl* frame,
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver) {
@@ -673,6 +685,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                             BrowserMainLoop::GetInstance()->midi_service()),
         GetIOThreadTaskRunner({}));
   }
+
+  map->Add<media::mojom::MediaPlayerObserverClient>(base::BindRepeating(
+      &BindMediaPlayerObserverClientHandler, base::Unretained(host)));
 
   map->Add<blink::mojom::NotificationService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateNotificationService, base::Unretained(host)));
@@ -952,6 +967,8 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(
           &EmptyBinderForFrame<
               media::mojom::SpeechRecognitionClientBrowserInterface>));
+  map->Add<media::mojom::MediaPlayerObserverClient>(base::BindRepeating(
+      &EmptyBinderForFrame<media::mojom::MediaPlayerObserverClient>));
 #endif
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
   map->Add<blink::mojom::UnhandledTapNotifier>(base::BindRepeating(

@@ -271,6 +271,17 @@ void MediaWebContentsObserver::DidUpdateAudioMutingState(bool muted) {
   session_controllers_manager_->WebContentsMutedStateChanged(muted);
 }
 
+void MediaWebContentsObserver::GetHasPlayedBefore(
+    GetHasPlayedBeforeCallback callback) {
+  std::move(callback).Run(has_played_before_);
+}
+
+void MediaWebContentsObserver::BindMediaPlayerObserverClient(
+    mojo::PendingReceiver<media::mojom::MediaPlayerObserverClient>
+        pending_receiver) {
+  receivers_.Add(this, std::move(pending_receiver));
+}
+
 void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
   if (!fullscreen_player_)
     return;
@@ -442,6 +453,7 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPlaying() {
   if (!player_info->is_playing())
     player_info->SetIsPlaying();
 
+  media_web_contents_observer_->OnMediaPlaying();
   NotifyAudioStreamMonitorIfNeeded();
 }
 
@@ -535,6 +547,10 @@ void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(
       (fullscreen_status !=
        blink::WebFullscreenVideoStatus::kNotEffectivelyFullscreen);
   web_contents_impl()->MediaEffectivelyFullscreenChanged(is_fullscreen);
+}
+
+void MediaWebContentsObserver::OnMediaPlaying() {
+  has_played_before_ = true;
 }
 
 void MediaWebContentsObserver::OnAudioOutputSinkChanged(
