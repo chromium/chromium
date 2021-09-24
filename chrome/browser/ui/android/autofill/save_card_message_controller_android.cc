@@ -76,7 +76,10 @@ void SaveCardMessageControllerAndroid::Show(
                        : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL));
 
   card_label_ = card.CardIdentifierStringForAutofillDisplay();
-  message_->SetDescription(card_label_);
+  std::u16string expiry_date =
+      card.AbbreviatedExpirationDateForDisplay(/*with_prefix=*/false);
+  message_->SetDescription(
+      expiry_date.empty() ? card_label_ : card_label_ + u"   " + expiry_date);
 
   bool use_gpay_icon =
       IsGooglePayBrandingEnabled() && messages::UseGPayIconForSaveCardMessage();
