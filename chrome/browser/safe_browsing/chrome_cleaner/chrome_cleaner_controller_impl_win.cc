@@ -123,11 +123,6 @@ ChromeCleanerController::IdleReason IdleReasonWhenConnectionClosedTooSoon(
              : ChromeCleanerController::IdleReason::kConnectionLost;
 }
 
-void RecordScannerLogsAcceptanceHistogram(bool logs_accepted) {
-  UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.ScannerLogsAcceptance",
-                        logs_accepted);
-}
-
 void RecordCleanerLogsAcceptanceHistogram(bool logs_accepted) {
   UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.CleanerLogsAcceptance",
                         logs_accepted);
@@ -143,10 +138,6 @@ void RecordReporterSequenceTypeHistogram(
   UMA_HISTOGRAM_ENUMERATION("SoftwareReporter.ReporterSequenceType",
                             static_cast<int>(invocation_type),
                             static_cast<int>(SwReporterInvocationType::kMax));
-}
-
-void RecordOnDemandUpdateRequiredHistogram(bool value) {
-  UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.OnDemandUpdateRequired", value);
 }
 
 }  // namespace
@@ -383,7 +374,6 @@ void ChromeCleanerControllerImpl::RequestUserInitiatedScan(Profile* profile) {
              SwReporterInvocationType::kUserInitiatedWithLogsDisallowed);
 
   const bool logs_enabled = this->logs_enabled(profile);
-  RecordScannerLogsAcceptanceHistogram(logs_enabled);
 
   SwReporterInvocationType invocation_type =
       logs_enabled ? SwReporterInvocationType::kUserInitiatedWithLogsAllowed
@@ -399,8 +389,6 @@ void ChromeCleanerControllerImpl::RequestUserInitiatedScan(Profile* profile) {
             // The invocations will be modified by the |ReporterRunner|.
             // Give it a copy to keep the cached invocations pristine.
             std::move(copied_sequence)));
-
-    RecordOnDemandUpdateRequiredHistogram(false);
   } else {
     pending_invocation_type_ = invocation_type;
     OnReporterSequenceStarted();
@@ -415,8 +403,6 @@ void ChromeCleanerControllerImpl::RequestUserInitiatedScan(Profile* profile) {
             base::BindOnce(&ChromeCleanerController::OnReporterSequenceDone,
                            base::Unretained(this),
                            SwReporterInvocationResult::kComponentNotAvailable));
-
-    RecordOnDemandUpdateRequiredHistogram(true);
   }
 }
 

@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/win/registry.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -220,7 +221,6 @@ void PostCleanupSettingsResetter::TagForResetting(Profile* profile) {
   DCHECK(profile);
 
   RecordResetPending(true, profile);
-  UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.TaggedProfileForResetting", true);
 }
 
 void PostCleanupSettingsResetter::ResetTaggedProfiles(

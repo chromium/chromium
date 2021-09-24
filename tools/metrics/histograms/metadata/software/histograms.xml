@@ -361,6 +361,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.OnDemandUpdateRequired"
     enum="BooleanRequired" expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -372,7 +375,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.OnDemandUpdateSucceeded"
-    enum="BooleanSuccess" expires_after="M95">
+    enum="BooleanSuccess" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -384,7 +387,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.PostCleanupSettingsReset" units="counts"
-    expires_after="M95">
+    expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -396,7 +399,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.PromptDialogResponse"
-    enum="SoftwareReporterPromptDialogResponse" expires_after="M95">
+    enum="SoftwareReporterPromptDialogResponse" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -409,6 +412,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.PromptShownWithType"
     enum="SoftwareReporterPromptShownWithType" expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -423,7 +429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.ReporterSequenceType"
-    enum="SoftwareReporterSequenceType" expires_after="M95">
+    enum="SoftwareReporterSequenceType" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -460,6 +466,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.ScannerLogsAcceptance" enum="BooleanAccepted"
     expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -473,6 +482,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.TaggedProfileForResetting" enum="Boolean"
     expires_after="M95">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
