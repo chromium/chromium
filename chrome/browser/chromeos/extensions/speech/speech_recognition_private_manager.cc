@@ -4,26 +4,130 @@
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_manager.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/speech_recognition_private.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 
 namespace extensions {
 
-SpeechRecogntionPrivateManager::SpeechRecogntionPrivateManager() = default;
-SpeechRecogntionPrivateManager::~SpeechRecogntionPrivateManager() = default;
+namespace {
 
-SpeechRecogntionPrivateManager* SpeechRecogntionPrivateManager::GetInstance() {
-  static base::NoDestructor<SpeechRecogntionPrivateManager> instance;
+std::string GetExtensionIdFromKey(const std::string& key) {
+  std::size_t pos = key.find('.');
+  if (pos != std::string::npos)
+    return key.substr(0, pos);
+
+  // If we couldn't find a ".", then the key is the extension ID.
+  return key;
+}
+
+absl::optional<int> GetClientIdFromKey(const std::string& key) {
+  int client_id = -1;
+  absl::optional<int> result;
+  std::size_t pos = key.find('.');
+  if (pos != std::string::npos) {
+    // Extract the number to the right of the "."
+    base::StringToInt(key.substr(pos + 1), &client_id);
+    result = client_id;
+  }
+
+  return result;
+}
+
+// Factory to get or create an instance of SpeechRecognitionPrivateManager from
+// a browser context.
+class SpeechRecognitionPrivateManagerFactory
+    : public BrowserContextKeyedServiceFactory {
+ public:
+  SpeechRecognitionPrivateManagerFactory(
+      const SpeechRecognitionPrivateManagerFactory&) = delete;
+  SpeechRecognitionPrivateManagerFactory& operator=(
+      const SpeechRecognitionPrivateManagerFactory&) = delete;
+
+  static SpeechRecognitionPrivateManager* GetForBrowserContext(
+      content::BrowserContext* context);
+
+ private:
+  friend class base::NoDestructor<SpeechRecognitionPrivateManagerFactory>;
+  static SpeechRecognitionPrivateManagerFactory* GetInstance();
+
+  SpeechRecognitionPrivateManagerFactory();
+  ~SpeechRecognitionPrivateManagerFactory() override = default;
+
+  // BrowserContextKeyedServiceFactory:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
+};
+
+// static
+SpeechRecognitionPrivateManager*
+SpeechRecognitionPrivateManagerFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<SpeechRecognitionPrivateManager*>(
+      GetInstance()->GetServiceForBrowserContext(context, true));
+}
+
+// static
+SpeechRecognitionPrivateManagerFactory*
+SpeechRecognitionPrivateManagerFactory::GetInstance() {
+  static base::NoDestructor<SpeechRecognitionPrivateManagerFactory> instance;
   return instance.get();
 }
 
-void SpeechRecogntionPrivateManager::HandleStart(
+SpeechRecognitionPrivateManagerFactory::SpeechRecognitionPrivateManagerFactory()
+    : BrowserContextKeyedServiceFactory(
+          "SpeechRecognitionApiManager",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(EventRouterFactory::GetInstance());
+}
+
+KeyedService* SpeechRecognitionPrivateManagerFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return new SpeechRecognitionPrivateManager(context);
+}
+
+content::BrowserContext*
+SpeechRecognitionPrivateManagerFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  // Redirected in incognito.
+  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+}
+
+}  // namespace
+
+SpeechRecognitionPrivateManager::SpeechRecognitionPrivateManager(
+    content::BrowserContext* context)
+    : context_(context) {}
+
+SpeechRecognitionPrivateManager::~SpeechRecognitionPrivateManager() = default;
+
+// static
+SpeechRecognitionPrivateManager* SpeechRecognitionPrivateManager::Get(
+    content::BrowserContext* context) {
+  return static_cast<SpeechRecognitionPrivateManagerFactory*>(GetFactory())
+      ->GetForBrowserContext(context);
+}
+
+// static
+BrowserContextKeyedServiceFactory*
+SpeechRecognitionPrivateManager::GetFactory() {
+  static base::NoDestructor<SpeechRecognitionPrivateManagerFactory> g_factory;
+  return g_factory.get();
+}
+
+void SpeechRecognitionPrivateManager::HandleStart(
     const std::string& key,
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
@@ -32,7 +136,33 @@ void SpeechRecogntionPrivateManager::HandleStart(
                                         std::move(on_start_callback));
 }
 
-std::string SpeechRecogntionPrivateManager::CreateKey(
+void SpeechRecognitionPrivateManager::HandleStop(
+    const std::string& key,
+    base::OnceCallback<void(absl::optional<std::string>)> callback) {
+  GetSpeechRecognizer(key)->HandleStop(std::move(callback));
+}
+
+void SpeechRecognitionPrivateManager::DispatchOnStopEvent(
+    const std::string& key) {
+  std::string extension_id = GetExtensionIdFromKey(key);
+  absl::optional<int> client_id = GetClientIdFromKey(key);
+  EventRouter* event_router = EventRouter::Get(context_);
+
+  base::Value return_dict(base::Value::Type::DICTIONARY);
+  if (client_id.has_value())
+    return_dict.SetIntKey("clientId", client_id.value());
+
+  auto event_args = std::vector<base::Value>();
+  event_args.push_back(std::move(return_dict));
+  std::unique_ptr<Event> event = std::make_unique<Event>(
+      events::SPEECH_RECOGNITION_PRIVATE_ON_STOP,
+      api::speech_recognition_private::OnStop::kEventName,
+      std::move(event_args));
+
+  event_router->DispatchEventToExtension(extension_id, std::move(event));
+}
+
+std::string SpeechRecognitionPrivateManager::CreateKey(
     const std::string& extension_id,
     absl::optional<int> client_id) {
   if (!client_id.has_value())
@@ -42,10 +172,13 @@ std::string SpeechRecogntionPrivateManager::CreateKey(
 }
 
 SpeechRecognitionPrivateRecognizer*
-SpeechRecogntionPrivateManager::GetSpeechRecognizer(const std::string& key) {
+SpeechRecognitionPrivateManager::GetSpeechRecognizer(const std::string& key) {
   auto& recognizer = recognition_data_[key];
   if (!recognizer)
-    recognizer = std::make_unique<SpeechRecognitionPrivateRecognizer>();
+    recognizer = std::make_unique<SpeechRecognitionPrivateRecognizer>(
+        base::BindRepeating(
+            &SpeechRecognitionPrivateManager::DispatchOnStopEvent, GetWeakPtr(),
+            key));
 
   return recognizer.get();
 }

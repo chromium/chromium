@@ -1651,6 +1651,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_RUNMEMORYROUTINE = 1588,
   OS_DIAGNOSTICS_GETROUTINEUPDATE = 1589,
   SPEECHRECOGNITIONPRIVATE_START = 1590,
+  SPEECHRECOGNITIONPRIVATE_STOP = 1591,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

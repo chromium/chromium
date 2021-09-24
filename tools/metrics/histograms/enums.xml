@@ -27672,6 +27672,7 @@ Called by update_extension_histograms.py.-->
   <int value="478" label="STORAGE_SESSION_ON_CHANGE"/>
   <int value="479" label="ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION"/>
   <int value="480" label="WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST"/>
+  <int value="481" label="SPEECH_RECOGNITION_PRIVATE_ON_STOP"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -29339,6 +29340,7 @@ Called by update_extension_histograms.py.-->
   <int value="1588" label="OS_DIAGNOSTICS_RUNMEMORYROUTINE"/>
   <int value="1589" label="OS_DIAGNOSTICS_GETROUTINEUPDATE"/>
   <int value="1590" label="SPEECHRECOGNITIONPRIVATE_START"/>
+  <int value="1591" label="SPEECHRECOGNITIONPRIVATE_STOP"/>
 </enum>
 
 <enum name="ExtensionIconState">

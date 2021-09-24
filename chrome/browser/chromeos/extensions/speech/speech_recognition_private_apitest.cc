@@ -21,7 +21,7 @@ class SpeechRecognitionPrivateApiTest
       const SpeechRecognitionPrivateApiTest&) = delete;
 
   void TearDownOnMainThread() override {
-    SpeechRecogntionPrivateManager::GetInstance()->recognition_data_.clear();
+    SpeechRecognitionPrivateManager::Get(profile())->recognition_data_.clear();
     SpeechRecognitionPrivateBaseTest::TearDownOnMainThread();
   }
 };
@@ -34,8 +34,8 @@ INSTANTIATE_TEST_SUITE_P(OnDevice,
                          SpeechRecognitionPrivateApiTest,
                          ::testing::Values(kOnDeviceRecognition));
 
-IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, Start) {
-  ASSERT_TRUE(RunExtensionTest("speech/speech_recognition_private/start"))
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, Simple) {
+  ASSERT_TRUE(RunExtensionTest("speech/speech_recognition_private/simple"))
       << message_;
 }
 

@@ -500,6 +500,7 @@ enum HistogramValue {
   STORAGE_SESSION_ON_CHANGE = 478,
   ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION = 479,
   WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST = 480,
+  SPEECH_RECOGNITION_PRIVATE_ON_STOP = 481,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

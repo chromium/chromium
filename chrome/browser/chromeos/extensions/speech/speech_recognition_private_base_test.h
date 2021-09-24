@@ -64,6 +64,8 @@ class SpeechRecognitionPrivateBaseTest
 
   // Waits for the speech recognition service to start.
   void WaitForRecognitionStarted();
+  // Waits for the speech recognition service to stop.
+  void WaitForRecognitionStopped();
 
  private:
   // Methods for additional setup.

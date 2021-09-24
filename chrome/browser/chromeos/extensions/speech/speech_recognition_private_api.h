@@ -15,12 +15,29 @@ class SpeechRecognitionPrivateStartFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("speechRecognitionPrivate.start",
                              SPEECHRECOGNITIONPRIVATE_START)
-  // A callback that is run when the speech recognition service starts.
-  void OnStart();
 
  protected:
   ~SpeechRecognitionPrivateStartFunction() override {}
   ResponseAction Run() override;
+
+ private:
+  // A callback that is run when the speech recognition service starts.
+  void OnStart();
+};
+
+// An API function that stops speech recognition.
+class SpeechRecognitionPrivateStopFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("speechRecognitionPrivate.stop",
+                             SPEECHRECOGNITIONPRIVATE_STOP)
+
+ protected:
+  ~SpeechRecognitionPrivateStopFunction() override {}
+  ResponseAction Run() override;
+
+ private:
+  // A callback that is run when the speech recognition service stops.
+  void OnStop(absl::optional<std::string> error);
 };
 
 }  // namespace extensions

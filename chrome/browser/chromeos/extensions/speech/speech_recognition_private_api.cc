@@ -8,6 +8,7 @@
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/common/extensions/api/speech_recognition_private.h"
+#include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
@@ -34,10 +35,9 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
   if (options->interim_results)
     interim_results = *options->interim_results;
 
-  // Get the unique key for this API client and ask the manager to handle this
-  // API call.
-  SpeechRecogntionPrivateManager* manager =
-      SpeechRecogntionPrivateManager::GetInstance();
+  // Get the manager for this context and ask it to handle this API call.
+  SpeechRecognitionPrivateManager* manager =
+      SpeechRecognitionPrivateManager::Get(browser_context());
   const std::string key = manager->CreateKey(extension_id(), client_id);
   manager->HandleStart(
       key, locale, interim_results,
@@ -47,6 +47,38 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
 }
 
 void SpeechRecognitionPrivateStartFunction::OnStart() {
+  Respond(NoArguments());
+}
+
+ExtensionFunction::ResponseAction SpeechRecognitionPrivateStopFunction::Run() {
+  // Extract arguments.
+  std::unique_ptr<api::speech_recognition_private::Stop::Params> params(
+      api::speech_recognition_private::Stop::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const api::speech_recognition_private::StopOptions* options =
+      &params->options;
+  DCHECK(options);
+  absl::optional<int> client_id;
+  if (options->client_id)
+    client_id = *options->client_id;
+
+  // Get the manager for this context and ask it to handle this API call.
+  SpeechRecognitionPrivateManager* manager =
+      SpeechRecognitionPrivateManager::Get(browser_context());
+  const std::string key = manager->CreateKey(extension_id(), client_id);
+  manager->HandleStop(
+      key, base::BindOnce(&SpeechRecognitionPrivateStopFunction::OnStop,
+                          base::RetainedRef(this)));
+  return RespondLater();
+}
+
+void SpeechRecognitionPrivateStopFunction::OnStop(
+    absl::optional<std::string> error) {
+  if (error.has_value()) {
+    Respond(Error(error.value()));
+    return;
+  }
+
   Respond(NoArguments());
 }
 

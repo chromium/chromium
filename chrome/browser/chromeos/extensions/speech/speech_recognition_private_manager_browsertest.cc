@@ -6,6 +6,7 @@
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_base_test.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
+#include "extensions/test/extension_test_message_listener.h"
 
 namespace {
 const char kEnglishLocale[] = "en-US";
@@ -23,31 +24,48 @@ class SpeechRecognitionPrivateManagerTest
   SpeechRecognitionPrivateManagerTest& operator=(
       const SpeechRecognitionPrivateManagerTest&) = delete;
 
+  void SetUpOnMainThread() override {
+    SpeechRecognitionPrivateBaseTest::SetUpOnMainThread();
+    manager_ = SpeechRecognitionPrivateManager::Get(profile());
+  }
+
   void TearDownOnMainThread() override {
-    SpeechRecogntionPrivateManager::GetInstance()->recognition_data_.clear();
+    manager_->recognition_data_.clear();
     SpeechRecognitionPrivateBaseTest::TearDownOnMainThread();
   }
 
   std::string CreateKey(const std::string& extension_id,
                         absl::optional<int> client_id) {
-    return SpeechRecogntionPrivateManager::GetInstance()->CreateKey(
-        extension_id, client_id);
+    return manager_->CreateKey(extension_id, client_id);
   }
 
   void HandleStartAndWait(const std::string& key,
                           absl::optional<std::string> locale,
                           absl::optional<bool> interim_results,
                           base::OnceClosure on_start_callback) {
-    SpeechRecogntionPrivateManager::GetInstance()->HandleStart(
-        key, locale, interim_results, std::move(on_start_callback));
+    manager_->HandleStart(key, locale, interim_results,
+                          std::move(on_start_callback));
     SpeechRecognitionPrivateBaseTest::WaitForRecognitionStarted();
+  }
+
+  void HandleStopAndWait(
+      const std::string& key,
+      base::OnceCallback<void(absl::optional<std::string>)> callback) {
+    manager_->HandleStop(key, std::move(callback));
+    SpeechRecognitionPrivateBaseTest::WaitForRecognitionStopped();
   }
 
   SpeechRecognitionPrivateRecognizer* GetSpeechRecognizer(
       const std::string& key) {
-    return SpeechRecogntionPrivateManager::GetInstance()->GetSpeechRecognizer(
-        key);
+    return manager_->GetSpeechRecognizer(key);
   }
+
+  void DispatchOnStopEvent(const std::string& key) {
+    manager_->DispatchOnStopEvent(key);
+  }
+
+ private:
+  SpeechRecognitionPrivateManager* manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(Network,
@@ -101,6 +119,55 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest, HandleStart) {
   ASSERT_EQ(kEnglishLocale, second_recognizer->locale());
   ASSERT_FALSE(second_recognizer->interim_results());
   ASSERT_EQ(SPEECH_RECOGNIZER_RECOGNIZING, second_recognizer->current_state());
+}
+
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
+                       HandleStartAndStop) {
+  const std::string key = "Testing";
+  absl::optional<std::string> locale;
+  absl::optional<bool> interim_results(true);
+
+  HandleStartAndWait(key, locale, interim_results, base::DoNothing());
+  SpeechRecognitionPrivateRecognizer* recognizer = GetSpeechRecognizer(key);
+  ASSERT_NE(nullptr, recognizer);
+  ASSERT_EQ(SPEECH_RECOGNIZER_RECOGNIZING, recognizer->current_state());
+
+  HandleStopAndWait(key, base::DoNothing());
+  recognizer = GetSpeechRecognizer(key);
+  ASSERT_NE(nullptr, recognizer);
+  ASSERT_EQ(SPEECH_RECOGNIZER_OFF, recognizer->current_state());
+}
+
+// Tests that events can be dispatched from the SpeechRecognitionPrivateManager
+// and received and processed in an extension.
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
+                       DispatchOnStopEvent) {
+  ASSERT_TRUE(
+      RunExtensionTest("speech/speech_recognition_private/onstop_event"))
+      << message_;
+
+  const char* kExtensionId = "egfdjlfmgnehecnclamagfafdccgfndp";
+  const char* kExtensionIdAndIncorrectClientId =
+      "egfdjlfmgnehecnclamagfafdccgfndp.0";
+  const char* kCorrectExtensionIdAndClientId =
+      "egfdjlfmgnehecnclamagfafdccgfndp.4";
+  const char* kSkippingEvent = "Skipping event";
+  const char* kProcessingEvent = "Processing event";
+
+  // Send onStop events and ensure that we only process the event whose client
+  // ID matches the extension's client ID.
+  const struct {
+    const char* key;
+    const char* expected;
+  } kTestCases[] = {{kExtensionId, kSkippingEvent},
+                    {kExtensionIdAndIncorrectClientId, kSkippingEvent},
+                    {kCorrectExtensionIdAndClientId, kProcessingEvent}};
+
+  for (const auto& test : kTestCases) {
+    ExtensionTestMessageListener listener(test.expected, false);
+    DispatchOnStopEvent(test.key);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
 }
 
 }  // namespace extensions

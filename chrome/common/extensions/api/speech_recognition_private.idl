@@ -7,6 +7,12 @@
 [platforms=("chromeos"), implemented_in="chrome/browser/chromeos/extensions/speech/speech_recognition_private_api.h"]
 
 namespace speechRecognitionPrivate {
+  // Interface for an onStop event.
+  dictionary SpeechRecognitionStopEvent {
+    // Optional client ID.
+    long? clientId;
+  };
+
   // Interface for options used when starting speech recognition.
   dictionary StartOptions {
     // An optional ID to specify the client.
@@ -17,13 +23,33 @@ namespace speechRecognitionPrivate {
     boolean? interimResults;
   };
 
+  // Interface for options used when stopping speech recognition.
+  dictionary StopOptions {
+    // An optional ID to specify the client. This must match the clientId
+    // used when starting speech recognition to work as intended.
+    long? clientId;
+  };
+
   // Called when speech recognition has begun listening to the user's audio.
   callback OnStartCallback = void();
+  // Called when speech recogntion has stopped listening to the user's audio.
+  callback OnStopCallback = void();
 
   interface Functions {
     // Starts listening to audio from the user. The callback is invoked when
     // speech recognition has started.
     [supportsPromises] static void start(StartOptions options,
                                          OnStartCallback callback);
+
+    // Stops listening to audio from the user. The callback is invoked when
+    // speech recognition has stopped. If speech recognition has already stopped
+    // when calling stop(), the callback is run with an error.
+    [supportsPromises] static void stop(StopOptions options,
+                                        OnStopCallback callback);
+  };
+
+  interface Events {
+    // Fired when speech recognition stops.
+    static void onStop(SpeechRecognitionStopEvent event);
   };
 };

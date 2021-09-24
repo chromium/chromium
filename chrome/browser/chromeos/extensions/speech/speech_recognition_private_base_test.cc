@@ -87,4 +87,10 @@ void SpeechRecognitionPrivateBaseTest::WaitForRecognitionStarted() {
   base::RunLoop().RunUntilIdle();
 }
 
+void SpeechRecognitionPrivateBaseTest::WaitForRecognitionStopped() {
+  if (GetParam() == kNetworkRecognition)
+    fake_speech_recognition_manager_->WaitForRecognitionEnded();
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace extensions

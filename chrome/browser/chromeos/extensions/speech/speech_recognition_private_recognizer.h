@@ -22,7 +22,8 @@ namespace extensions {
 // use the on-device or network speech recognition.
 class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
  public:
-  SpeechRecognitionPrivateRecognizer();
+  explicit SpeechRecognitionPrivateRecognizer(
+      base::RepeatingClosure on_stop_callback);
   ~SpeechRecognitionPrivateRecognizer() override;
 
   // SpeechRecognizerDelegate:
@@ -38,6 +39,10 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   void HandleStart(absl::optional<std::string> locale,
                    absl::optional<bool> interim_results,
                    base::OnceClosure callback);
+  // Handles a call to stop speech recognition. The callback accepts an
+  // optional string specifying an error message, if any.
+  void HandleStop(
+      base::OnceCallback<void(absl::optional<std::string>)> callback);
 
   std::string locale() { return locale_; }
   bool interim_results() { return interim_results_; }
@@ -45,6 +50,9 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
 
  private:
   friend class SpeechRecognitionPrivateRecognizerTest;
+
+  // Turns the speech recognizer off.
+  void RecognizerOff();
 
   // Updates properties used for speech recognition.
   void MaybeUpdateProperties(absl::optional<std::string> locale,
@@ -59,6 +67,8 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   std::string locale_ = speech::kUsEnglishLocale;
   bool interim_results_ = false;
   base::OnceClosure on_start_callback_;
+  // A callback that is run whenever speech recognition stops.
+  base::RepeatingClosure on_stop_callback_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;
 
   base::WeakPtrFactory<SpeechRecognitionPrivateRecognizer> weak_ptr_factory_{
