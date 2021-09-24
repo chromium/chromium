@@ -381,6 +381,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Windows.ServiceStatus.SSP" units="WindowsServiceStatus"
     expires_after="2021-12-12">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
   <owner>wfh@chromium.org</owner>
   <owner>ajgo@chromium.org</owner>
   <summary>

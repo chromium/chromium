@@ -77,8 +77,8 @@ const base::Feature kTriggerNetworkDataMigration{
 
 bool ShouldTriggerNetworkDataMigration() {
 #if defined(OS_WIN)
-  // LPAC Sandbox enabled means data must be migrated.
-  if (sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled())
+  // On Windows, if sandbox enabled means data must be migrated.
+  if (sandbox::policy::features::IsWinNetworkServiceSandboxEnabled())
     return true;
 #endif  // defined(OS_WIN)
   if (base::FeatureList::IsEnabled(kTriggerNetworkDataMigration))

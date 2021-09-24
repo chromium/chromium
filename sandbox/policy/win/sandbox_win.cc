@@ -660,9 +660,6 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
       sandbox_type != SandboxType::kNetwork)
     return SBOX_ERROR_UNSUPPORTED;
 
-  DCHECK(sandbox_type != SandboxType::kNetwork ||
-         sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled());
-
   if (sandbox_type == SandboxType::kGpu &&
       !container->AddImpersonationCapability(L"chromeInstallFiles")) {
     DLOG(ERROR) << "AppContainer::AddImpersonationCapability("
@@ -926,8 +923,10 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
   if (sandbox_type == SandboxType::kGpu)
     return base::FeatureList::IsEnabled(features::kGpuAppContainer);
 
-  if (sandbox_type == SandboxType::kNetwork)
-    return sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled();
+  if (sandbox_type == SandboxType::kNetwork) {
+    DCHECK(sandbox::policy::features::IsWinNetworkServiceSandboxEnabled());
+    return true;
+  }
 
   return false;
 }

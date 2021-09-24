@@ -5117,21 +5117,6 @@
             ]
         }
     ],
-    "NetworkServiceSandbox": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NetworkServiceSandbox"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpRealboxAnswersInSuggest": [
         {
             "platforms": [

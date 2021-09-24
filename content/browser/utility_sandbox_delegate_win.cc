@@ -64,66 +64,26 @@ bool AudioPreSpawnTarget(sandbox::TargetPolicy* policy) {
 
 // Sets the sandbox policy for the network service process.
 bool NetworkPreSpawnTarget(sandbox::TargetPolicy* policy) {
-  if (sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled()) {
-    // LPAC sandbox is enabled, so do not use a restricted token.
-    if (sandbox::SBOX_ALL_OK !=
-        policy->SetTokenLevel(sandbox::USER_UNPROTECTED,
-                              sandbox::USER_UNPROTECTED)) {
-      return false;
-    }
-
-    // Network Sandbox in LPAC sandbox needs access to its data files. These
-    // files are marked on disk with an ACE that permits this access.
-    auto lpacCapability =
-        GetContentClient()->browser()->GetLPACCapabilityNameForNetworkService();
-    if (lpacCapability.empty())
-      return false;
-    auto app_container = policy->GetAppContainer();
-    if (!app_container)
-      return false;
-    app_container->AddCapability(lpacCapability.c_str());
-
-    // All other app container policies are set in
-    // SandboxWin::StartSandboxedProcess.
-    return true;
-  }
-
-  // USER_LIMITED is as tight as this sandbox can be, because
-  // DNS running in-process is blocked by USER_RESTRICTED and
-  // below as it can't connect to the service.
-  if (policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                            sandbox::USER_LIMITED) != sandbox::SBOX_ALL_OK)
-    return false;
-
-  auto permitted_paths =
-      GetContentClient()->browser()->GetNetworkContextsParentDirectory();
-
-  for (auto permitted_path : permitted_paths) {
-    permitted_path = permitted_path.Append(FILE_PATH_LITERAL("*"));
-    if (policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                        sandbox::TargetPolicy::FILES_ALLOW_ANY,
-                        permitted_path.value().c_str()) !=
-        sandbox::SBOX_ALL_OK) {
-      return false;
-    }
-  }
-
-  // DNS needs to read policies which are ACLed NT AUTHORITY\Authenticated Users
-  // Allow ReadKey unlike the rest of HKLM which is BUILTIN\Users Allow ReadKey.
-  if (policy->AddRule(
-          sandbox::TargetPolicy::SUBSYS_REGISTRY,
-          sandbox::TargetPolicy::REG_ALLOW_READONLY,
-          L"HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\*") !=
-      sandbox::SBOX_ALL_OK) {
+  // LPAC sandbox is enabled, so do not use a restricted token.
+  if (sandbox::SBOX_ALL_OK !=
+      policy->SetTokenLevel(sandbox::USER_UNPROTECTED,
+                            sandbox::USER_UNPROTECTED)) {
     return false;
   }
 
-  // Needed for ::GetAdaptersAddresses calls in //net.
-  if (policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                      sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                      L"\\DEVICE\\NETBT_TCPIP\\*") != sandbox::SBOX_ALL_OK) {
+  // Network Sandbox in LPAC sandbox needs access to its data files. These
+  // files are marked on disk with an ACE that permits this access.
+  auto lpac_capability =
+      GetContentClient()->browser()->GetLPACCapabilityNameForNetworkService();
+  if (lpac_capability.empty())
     return false;
-  }
+  auto app_container = policy->GetAppContainer();
+  if (!app_container)
+    return false;
+  app_container->AddCapability(lpac_capability.c_str());
+
+  // All other app container policies are set in
+  // SandboxWin::StartSandboxedProcess.
   return true;
 }
 
@@ -142,7 +102,7 @@ bool PrintBackendPreSpawnTarget(sandbox::TargetPolicy* policy) {
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     std::string* appcontainer_id) {
   if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork) {
-    DCHECK(sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled());
+    DCHECK(sandbox::policy::features::IsWinNetworkServiceSandboxEnabled());
     *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
     return true;
   }
@@ -170,9 +130,9 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
       // of specific LPAC sandbox policies.
       return true;
     case sandbox::policy::SandboxType::kNetwork:
-      // If LPAC is enabled for network sandbox then LPAC-specific policy is set
-      // elsewhere.
-      return sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled();
+      // An LPAC specific policy for network service is set elsewhere.
+      DCHECK(sandbox::policy::features::IsWinNetworkServiceSandboxEnabled());
+      return true;
     default:
       return false;
   }

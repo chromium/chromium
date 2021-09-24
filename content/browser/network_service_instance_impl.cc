@@ -312,7 +312,7 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
     return false;
 #if defined(OS_WIN)
   // On platforms that don't support the LPAC sandbox, do nothing.
-  if (!sandbox::policy::features::IsNetworkServiceSandboxLPACSupported())
+  if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported())
     return true;
   DCHECK(!sandbox_params.lpac_capability_name.empty());
   auto ac_sids = base::win::Sid::FromNamedCapabilityVector(
@@ -610,39 +610,6 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
   return net::NetLogCaptureMode::kDefault;
 }
 
-#if defined(OS_WIN)
-// This enum is used to record a histogram and should not be renumbered.
-enum class ServiceStatus {
-  kUnknown = 0,
-  kNotFound = 1,
-  kFound = 2,
-  kMaxValue = kFound
-};
-
-ServiceStatus DetectSecurityProviders() {
-  // https://docs.microsoft.com/en-us/windows/win32/secauthn/writing-and-installing-a-security-support-provider
-  base::win::RegKey key(HKEY_LOCAL_MACHINE,
-                        L"SYSTEM\\CurrentControlSet\\Control\\Lsa", KEY_READ);
-  if (!key.Valid())
-    return ServiceStatus::kUnknown;
-
-  std::vector<std::wstring> packages;
-  if (key.ReadValues(L"Security Packages", &packages) != ERROR_SUCCESS)
-    return ServiceStatus::kUnknown;
-
-  for (const auto& package : packages) {
-    // Security Packages can be empty or just "". Anything else indicates
-    // there is potentially a third party SSP/APs DLL installed, and network
-    // sandbox should not be engaged.
-    if (package.empty())
-      continue;
-    if (package != L"\"\"")
-      return ServiceStatus::kFound;
-  }
-  return ServiceStatus::kNotFound;
-}
-#endif  // defined(OS_WIN)
-
 // Attempts to grant the sandbox access to the file data specified in the
 // `params`. This function will also perform a migration of existing data from
 // `unsandboxed_data_path` to `data_path` as necessary.
@@ -720,9 +687,9 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 
   if (!params->file_paths->unsandboxed_data_path.has_value()) {
 #if defined(OS_WIN)
-    // On Windows, if network LPAC sandbox is enabled then there a migration
-    // must happen, so a `unsandboxed_data_path` must be specified.
-    DCHECK(!sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled());
+    // On Windows, if network sandbox is enabled then there a migration must
+    // happen, so a `unsandboxed_data_path` must be specified.
+    DCHECK(!IsNetworkSandboxEnabled());
 #endif
     // Trigger migration should never be requested if `unsandboxed_data_path` is
     // not set.
@@ -759,9 +726,10 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // Case 1. above where nothing is done.
   if (!params->file_paths->trigger_migration && !migration_already_happened) {
 #if defined(OS_WIN)
-    // On Windows, if network LPAC sandbox is enabled then there a migration
-    // must happen, so `trigger_migration` must be true.
-    DCHECK(!sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled());
+    // On Windows, if network sandbox is enabled then there a migration must
+    // happen, so `trigger_migration` must be true, or a migration must have
+    // already happened.
+    DCHECK(!IsNetworkSandboxEnabled());
 #endif
     return SandboxGrantResult::kNoMigrationRequested;
   }
@@ -1262,24 +1230,12 @@ void SetCertVerifierServiceFactoryForTesting(
 bool IsNetworkSandboxEnabled() {
 #if defined(OS_MAC) || defined(OS_FUCHSIA)
   return true;
+#elif defined(OS_WIN)
+  return sandbox::policy::features::IsWinNetworkServiceSandboxEnabled();
 #else
-#if defined(OS_WIN)
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return false;
-  auto ssp_status = DetectSecurityProviders();
-  base::UmaHistogramEnumeration("Windows.ServiceStatus.SSP", ssp_status);
-  switch (ssp_status) {
-    case ServiceStatus::kUnknown:
-      return false;
-    case ServiceStatus::kNotFound:
-      break;
-    case ServiceStatus::kFound:
-      return false;
-  }
-#endif  // defined(OS_WIN)
   return base::FeatureList::IsEnabled(
       sandbox::policy::features::kNetworkServiceSandbox);
-#endif  // defined(OS_MAC) || defined(OS_FUCHSIA)
+#endif
 }
 
 void CreateNetworkContextInNetworkService(
