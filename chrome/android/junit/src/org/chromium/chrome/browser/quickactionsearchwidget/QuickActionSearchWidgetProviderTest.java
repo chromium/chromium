@@ -43,7 +43,8 @@ public class QuickActionSearchWidgetProviderTest {
      */
     private class TestProvider extends QuickActionSearchWidgetProvider {
         @Override
-        protected QuickActionSearchWidgetProviderDelegate getDelegate() {
+        protected QuickActionSearchWidgetProviderDelegate getDelegate(
+                Context context, AppWidgetManager manager, int widgetId) {
             return mDelegateMock;
         }
     }
@@ -79,6 +80,7 @@ public class QuickActionSearchWidgetProviderTest {
         verify(mWidgetProvider, times(1)).onUpdate(mContextMock, mAppWidgetManagerMock, WIDGET_IDS);
         verify(mWidgetProvider, times(1)).onUpdate(any(), any(), any());
 
-        verify(mDelegateMock, times(1)).createWidgetRemoteViews(any(), any());
+        // We create dedicated view based on widget size for every widget instance.
+        verify(mDelegateMock, times(2)).createWidgetRemoteViews(any(), any());
     }
 }
