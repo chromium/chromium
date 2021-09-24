@@ -102,7 +102,6 @@ namespace scripting {
 
   // Describes a content script to be injected into a web page registered
   // through this API.
-  [nodoc]
   dictionary RegisteredContentScript {
     // The id of the content script, specified in the API call. Must not start
     // with a '_' as it's reserved as a prefix for generated script IDs.
@@ -143,7 +142,6 @@ namespace scripting {
 
   // An object used to filter content scripts for
   // ${ref:getRegisteredContentScripts}.
-  [nodoc]
   dictionary ContentScriptFilter {
     // If specified, $(ref:getRegisteredContentScripts) will only return scripts
     // with an id specified in this list.
@@ -199,7 +197,7 @@ namespace scripting {
     // already exist, then no scripts are registered.
     // |callback|: A callback to be invoked once scripts have been fully
     // registered or if an error has occurred.
-    [nodoc, supportsPromises] static void registerContentScripts(
+    [supportsPromises] static void registerContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);
 
@@ -207,7 +205,7 @@ namespace scripting {
     // that match the given filter.
     // |filter|: An object to filter the extension's dynamically registered
     // scripts.
-    [nodoc, supportsPromises] static void getRegisteredContentScripts(
+    [supportsPromises] static void getRegisteredContentScripts(
         optional ContentScriptFilter filter,
         GetRegisteredContentScriptsCallback callback);
 
@@ -217,7 +215,7 @@ namespace scripting {
     // scripts are unregistered.
     // |callback|: A callback to be invoked once scripts have been unregistered
     // or if an error has occurred.
-    [nodoc, supportsPromises] static void unregisterContentScripts(
+    [supportsPromises] static void unregisterContentScripts(
         optional ContentScriptFilter filter,
         optional UnregisterContentScriptsCallback callback);
 
@@ -229,7 +227,7 @@ namespace scripting {
     // are updated.
     // |callback|: A callback to be invoked once scripts have been updated or
     // if an error has occurred.
-    [nodoc, supportsPromises] static void updateContentScripts(
+    [supportsPromises] static void updateContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);
   };

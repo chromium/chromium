@@ -57,9 +57,6 @@ class ScriptingAPITest : public ExtensionApiTest {
                        ->GetActiveWebContents()
                        ->GetLastCommittedURL());
   }
-
- private:
-  ScopedCurrentChannel current_channel_{version_info::Channel::UNKNOWN};
 };
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MainFrameTests) {
