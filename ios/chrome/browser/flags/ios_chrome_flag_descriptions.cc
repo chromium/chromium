@@ -194,6 +194,10 @@ const char kEnableFullPageScreenshotDescription[] =
     "Enables the option of capturing an entire webpage as a PDF when a "
     "screenshot is taken.";
 
+const char kEnableLongMessageDurationName[] = "Enable long message duration";
+const char kEnableLongMessageDurationDescription[] =
+    "Enables a long duration when an overlay message is shown.";
+
 const char kEnableManualPasswordGenerationName[] =
     "Enable manual password generation.";
 const char kEnableManualPasswordGenerationDescription[] =

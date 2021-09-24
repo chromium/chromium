@@ -2146,6 +2146,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-long-message-duration",
+    "owners": [ "tinazwang", "bling-flags@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-magnifier-continuous-mouse-following-mode-setting",
     "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 92
