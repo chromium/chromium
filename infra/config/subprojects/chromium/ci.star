@@ -1529,6 +1529,19 @@ ci.chromium_builder(
 )
 
 ci.chromium_builder(
+    name = "linux-archive-tagged",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "tag",
+    ),
+    cores = 32,
+    main_console_view = "main",
+    os = os.LINUX_BIONIC_REMOVE,
+    tree_closing = False,
+    schedule = "triggered",
+)
+
+ci.chromium_builder(
     name = "linux-official",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
