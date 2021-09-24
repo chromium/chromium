@@ -6,12 +6,18 @@
 
 #include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/api/scripting/constants.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/common/api/content_scripts.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
+#include "extensions/common/utils/content_script_utils.h"
 
 namespace extensions {
 
@@ -19,6 +25,11 @@ UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
+
+  StateStore* store =
+      ExtensionSystem::Get(browser_context_)->dynamic_user_scripts_store();
+  if (store)
+    store->RegisterKey(scripting::kRegisteredScriptsStorageKey);
 }
 
 UserScriptManager::~UserScriptManager() = default;
@@ -59,19 +70,14 @@ void UserScriptManager::OnExtensionLoaded(
   ExtensionUserScriptLoader* loader =
       GetUserScriptLoaderForExtension(extension->id());
 
-  std::unique_ptr<UserScriptList> scripts =
-      GetManifestScriptsMetadata(extension);
+  pending_manifest_load_count_++;
 
-  // Don't bother adding scripts if this extension has none because adding an
-  // empty set of scripts will not trigger a load. This also prevents redundant
-  // calls to OnInitialExtensionLoadComplete.
-  if (!scripts->empty()) {
-    pending_manifest_load_count_++;
-    loader->AddScripts(
-        std::move(scripts),
-        base::BindOnce(&UserScriptManager::OnInitialExtensionLoadComplete,
-                       weak_factory_.GetWeakPtr()));
-  }
+  // TODO(crbug.com/1248276): Maybe abstract/move some more of this logic into
+  // ExtensionUserScriptLoader.
+  loader->AddScriptsForExtensionLoad(
+      GetManifestScriptsMetadata(extension),
+      base::BindOnce(&UserScriptManager::OnInitialExtensionLoadComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void UserScriptManager::OnExtensionUnloaded(
@@ -125,6 +131,8 @@ ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
           .emplace(extension->id(),
                    std::make_unique<ExtensionUserScriptLoader>(
                        browser_context_, *extension,
+                       ExtensionSystem::Get(browser_context_)
+                           ->dynamic_user_scripts_store(),
                        /*listen_for_extension_system_loaded=*/true))
           .first->second.get();
 

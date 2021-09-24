@@ -42,20 +42,6 @@ using ContentScriptsKeys = content_scripts_api::ManifestKeys;
 
 namespace {
 
-mojom::RunLocation ConvertRunLocation(content_scripts_api::RunAt run_at) {
-  switch (run_at) {
-    case content_scripts_api::RUN_AT_DOCUMENT_END:
-      return mojom::RunLocation::kDocumentEnd;
-    case content_scripts_api::RUN_AT_DOCUMENT_IDLE:
-      return mojom::RunLocation::kDocumentIdle;
-    case content_scripts_api::RUN_AT_DOCUMENT_START:
-      return mojom::RunLocation::kDocumentStart;
-    case content_scripts_api::RUN_AT_NONE:
-      NOTREACHED();
-      return mojom::RunLocation::kDocumentIdle;
-  }
-}
-
 void ParseGlobs(const std::vector<std::string>* include_globs,
                 const std::vector<std::string>* exclude_globs,
                 UserScript* result) {
@@ -83,8 +69,10 @@ std::unique_ptr<UserScript> CreateUserScript(
   auto result = std::make_unique<UserScript>();
 
   // run_at
-  if (content_script.run_at != content_scripts_api::RUN_AT_NONE)
-    result->set_run_location(ConvertRunLocation(content_script.run_at));
+  if (content_script.run_at != content_scripts_api::RUN_AT_NONE) {
+    result->set_run_location(
+        script_parsing::ConvertManifestRunLocation(content_script.run_at));
+  }
 
   // all_frames
   if (content_script.all_frames)

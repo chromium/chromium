@@ -97,6 +97,9 @@ class ExtensionSystem : public KeyedService {
   // The rules store is created at startup.
   virtual StateStore* rules_store() = 0;
 
+  // The dynamic user scripts store is created at startup.
+  virtual StateStore* dynamic_user_scripts_store() = 0;
+
   // Returns the |ValueStore| factory created at startup.
   virtual scoped_refptr<value_store::ValueStoreFactory> store_factory() = 0;
 

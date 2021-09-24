@@ -128,6 +128,10 @@ StateStore* TestExtensionSystem::rules_store() {
   return state_store_.get();
 }
 
+StateStore* TestExtensionSystem::dynamic_user_scripts_store() {
+  return state_store_.get();
+}
+
 scoped_refptr<value_store::ValueStoreFactory>
 TestExtensionSystem::store_factory() {
   return store_factory_;

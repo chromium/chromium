@@ -61,6 +61,42 @@ bool IsScriptValid(const base::FilePath& path,
 
 }  // namespace
 
+mojom::RunLocation ConvertManifestRunLocation(
+    api::content_scripts::RunAt run_at) {
+  switch (run_at) {
+    case api::content_scripts::RUN_AT_DOCUMENT_END:
+      return mojom::RunLocation::kDocumentEnd;
+    case api::content_scripts::RUN_AT_DOCUMENT_IDLE:
+      return mojom::RunLocation::kDocumentIdle;
+    case api::content_scripts::RUN_AT_DOCUMENT_START:
+      return mojom::RunLocation::kDocumentStart;
+    case api::content_scripts::RUN_AT_NONE:
+      NOTREACHED();
+      return mojom::RunLocation::kDocumentIdle;
+  }
+}
+
+api::content_scripts::RunAt ConvertRunLocationToManifestType(
+    mojom::RunLocation run_at) {
+  // api::extension_types does not have analogues for kUndefined, kRunDeferred
+  // or kBrowserDriven. We don't expect to encounter them here.
+  switch (run_at) {
+    case mojom::RunLocation::kDocumentEnd:
+      return api::content_scripts::RUN_AT_DOCUMENT_END;
+    case mojom::RunLocation::kDocumentStart:
+      return api::content_scripts::RUN_AT_DOCUMENT_START;
+    case mojom::RunLocation::kDocumentIdle:
+      return api::content_scripts::RUN_AT_DOCUMENT_IDLE;
+    case mojom::RunLocation::kUndefined:
+    case mojom::RunLocation::kRunDeferred:
+    case mojom::RunLocation::kBrowserDriven:
+      break;
+  }
+
+  NOTREACHED();
+  return api::content_scripts::RUN_AT_DOCUMENT_IDLE;
+}
+
 bool ParseMatchPatterns(const std::vector<std::string>& matches,
                         const std::vector<std::string>* exclude_matches,
                         int definition_index,

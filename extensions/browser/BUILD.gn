@@ -151,6 +151,7 @@ source_set("browser_sources") {
     "api/hid/hid_connection_resource.h",
     "api/hid/hid_device_manager.cc",
     "api/hid/hid_device_manager.h",
+    "api/scripting/constants.h",
     "api/system_display/display_info_provider.cc",
     "api/system_display/display_info_provider.h",
     "api/system_display/system_display_api.cc",
