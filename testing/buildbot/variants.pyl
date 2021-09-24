@@ -587,7 +587,7 @@
   'CROS_ATLAS_LKGM': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_img': 'atlas-release/R96-14233.0.0',
+      'cros_img': 'atlas-release/R96-14236.0.0',
     },
     'identifier': 'ATLAS_LKGM',
   },
@@ -615,7 +615,7 @@
   'CROS_EVE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R96-14233.0.0',
+      'cros_img': 'eve-release/R96-14236.0.0',
     },
     'identifier': 'EVE_LKGM',
   },
@@ -643,7 +643,7 @@
   'CROS_KEVIN_LKGM': {
     'skylab': {
       'cros_board': 'kevin',
-      'cros_img': 'kevin-release/R96-14233.0.0',
+      'cros_img': 'kevin-release/R96-14236.0.0',
     },
     'identifier': 'KEVIN_LKGM',
   },
