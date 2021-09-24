@@ -92,6 +92,9 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
+    if (GetParam() == AXInspectFactory::kMac)
+      return property_filters;
+
     property_filters.emplace_back("name*", AXPropertyFilter::ALLOW_EMPTY);
     property_filters.emplace_back("description*",
                                   AXPropertyFilter::ALLOW_EMPTY);

@@ -235,6 +235,16 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
     }
   }
 
+  // Invoke any methods that are declared in the NSAccessibility protocol. Note
+  // that they all start with the prefix "accessibility...", ignore all
+  // other selectors the object may respond.
+  if (base::StartsWith(property_node.name_or_value, "accessibility")) {
+    auto optional_id = PerformSelector(target, property_node.name_or_value);
+    if (optional_id) {
+      return OptionalNSObject(*optional_id);
+    }
+  }
+
   // Unmatched attribute. No error for a tree dump calls because the tree dump
   // sets generic property filters not depending on a node, so we can be called
   // for an attribute not supported by the node.

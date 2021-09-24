@@ -126,6 +126,16 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
 
     RunTest(html_file, "accessibility/mac/textmarker");
   }
+
+  void RunMacMethodsTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path = GetTestFilePath("accessibility", "mac/methods");
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
+    RunTest(html_file, "accessibility/mac/methods");
+  }
 };
 
 std::vector<ui::AXPropertyFilter> DumpAccessibilityScriptTest::DefaultFilters()
@@ -195,6 +205,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXTextMarkerRangeForUIElement) {
   RunMacTextMarkerTest(
       FILE_PATH_LITERAL("ax-text-marker-range-for-ui-element.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
+  RunMacMethodsTest(FILE_PATH_LITERAL("title.html"));
 }
 
 #endif

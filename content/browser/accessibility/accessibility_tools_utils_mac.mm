@@ -174,6 +174,18 @@ id ParameterizedAttributeValueOf(const id node,
   return nil;
 }
 
+absl::optional<id> PerformSelector(const id node,
+                                   const std::string& selector_string) {
+  if (![node conformsToProtocol:@protocol(NSAccessibility)])
+    return absl::nullopt;
+
+  SEL selector = NSSelectorFromString(base::SysUTF8ToNSString(selector_string));
+
+  if ([node respondsToSelector:selector])
+    return [node performSelector:selector];
+  return absl::nullopt;
+}
+
 bool IsAttributeSettable(const id node, NSString* attribute) {
   if (IsBrowserAccessibilityCocoa(node))
     return [node accessibilityIsAttributeSettable:attribute];
