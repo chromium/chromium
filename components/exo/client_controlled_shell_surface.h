@@ -21,10 +21,6 @@
 namespace ash {
 class NonClientFrameViewAsh;
 class WideFrameView;
-
-namespace mojom {
-enum class WindowPinType;
-}
 }  // namespace ash
 
 namespace chromeos {
@@ -330,8 +326,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   bool pending_always_on_top_ = false;
 
   SurfaceFrameType pending_frame_type_ = SurfaceFrameType::NONE;
-
-  chromeos::WindowPinType current_pin_;
 
   bool can_maximize_ = true;
 
