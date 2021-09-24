@@ -8,10 +8,12 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/capture_mode/capture_mode_advanced_settings_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_menu_group.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_settings_entry_view.h"
@@ -243,6 +245,11 @@ class CaptureModeSessionTestApi {
 
   CaptureModeSettingsView* capture_mode_settings_view() const {
     return session_->capture_mode_settings_view_;
+  }
+
+  CaptureModeAdvancedSettingsView* capture_mode_advanced_settings_view() const {
+    EXPECT_TRUE(features::AreImprovedScreenCaptureSettingsEnabled());
+    return session_->capture_mode_advanced_settings_view_;
   }
 
   views::Widget* capture_mode_settings_widget() const {
@@ -4616,4 +4623,67 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(CaptureModeSource::kFullscreen,
                                          CaptureModeSource::kRegion,
                                          CaptureModeSource::kWindow));
+
+// -----------------------------------------------------------------------------
+// CaptureModeAdvancedSettingsTest:
+
+// Test fixture for CaptureMode advanced settings view.
+class CaptureModeAdvancedSettingsTest : public CaptureModeTest {
+ public:
+  CaptureModeAdvancedSettingsTest() = default;
+  ~CaptureModeAdvancedSettingsTest() override = default;
+
+  // CaptureModeTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kImprovedScreenCaptureSettings);
+    CaptureModeTest::SetUp();
+  }
+
+  CaptureModeAdvancedSettingsView* GetCaptureModeAdvancedSettingsView() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session)
+        .capture_mode_advanced_settings_view();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that clicking on audio input buttons updates the state in the
+// controller, and persists between sessions.
+TEST_F(CaptureModeAdvancedSettingsTest, AudioInputSettingsMenu) {
+  auto* controller = StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+
+  // Test that the audio recording preference is defaulted to off.
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_FALSE(controller->enable_audio_recording());
+
+  CaptureModeAdvancedSettingsView* settings_view =
+      GetCaptureModeAdvancedSettingsView();
+  CaptureModeMenuGroup* audio_input_menu_group =
+      settings_view->GetAudioInputMenuGroupForTesting();
+  views::View* microphone_option =
+      settings_view->GetMicrophoneOptionForTesting();
+  views::View* off_option = settings_view->GetOffOptionForTesting();
+  EXPECT_TRUE(audio_input_menu_group->IsOptionCheckedForTesting(off_option));
+  EXPECT_FALSE(
+      audio_input_menu_group->IsOptionCheckedForTesting(microphone_option));
+
+  // Click on the |microphone| option. It should be checked after click along
+  // with |off| is unchecked. Recording preference is set to microphone.
+  ClickOnView(microphone_option, event_generator);
+  EXPECT_TRUE(
+      audio_input_menu_group->IsOptionCheckedForTesting(microphone_option));
+  EXPECT_FALSE(audio_input_menu_group->IsOptionCheckedForTesting(off_option));
+  EXPECT_TRUE(controller->enable_audio_recording());
+
+  // Test that the user selected audio preference for audio recording is
+  // remembered between sessions.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  StartImageRegionCapture();
+  EXPECT_TRUE(controller->enable_audio_recording());
+}
 }  // namespace ash

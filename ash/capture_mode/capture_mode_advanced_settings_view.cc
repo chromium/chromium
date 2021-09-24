@@ -8,7 +8,7 @@
 
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
-#include "ash/capture_mode/capture_mode_menu_group.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,37 +18,61 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
 namespace {
 
-constexpr gfx::Size kSettingsSize{256, 124};
+constexpr gfx::Size kSettingsSize{256, 248};
 
 constexpr gfx::RoundedCornersF kBorderRadius{10.f};
+
+// All the options in the CaptureMode settings view.
+enum CaptureSettingsOption {
+  kAudioOff = 0,
+  kAudioMicrophone,
+  kDownloadsFolder,
+  kCustomFolder,
+};
 
 }  // namespace
 
 CaptureModeAdvancedSettingsView::CaptureModeAdvancedSettingsView()
-    : save_to_menu_group_(AddChildView(std::make_unique<CaptureModeMenuGroup>(
+    : audio_input_menu_group_(
+          AddChildView(std::make_unique<CaptureModeMenuGroup>(
+              this,
+              kCaptureModeMicIcon,
+              l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT)))),
+      separator_(AddChildView(std::make_unique<views::Separator>())),
+      save_to_menu_group_(AddChildView(std::make_unique<CaptureModeMenuGroup>(
+          this,
           kCaptureModeFolderIcon,
-          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO)))) {
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO)))) {
+  audio_input_menu_group_->AddOption(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
+      kAudioOff);
+  audio_input_menu_group_->AddOption(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
+      kAudioMicrophone);
   save_to_menu_group_->AddOption(
-      base::BindRepeating(&CaptureModeAdvancedSettingsView::HandleOptionClick,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO_DOWNLOADS),
-      /*checked=*/true);
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DOWNLOADS),
+      kDownloadsFolder);
   save_to_menu_group_->AddMenuItem(
       base::BindRepeating(&CaptureModeAdvancedSettingsView::HandleMenuClick,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO_SELECT_FOLDER));
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_SELECT_FOLDER));
+
+  auto* color_provider = AshColorProvider::Get();
+
+  const SkColor separator_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor);
+  separator_->SetColor(separator_color);
 
   SetPaintToLayer();
-  SetBackground(
-      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)));
+  SetBackground(views::CreateSolidBackground(color_provider->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80)));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kBorderRadius);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -73,7 +97,52 @@ gfx::Rect CaptureModeAdvancedSettingsView::GetBounds(
       kSettingsSize.width(), kSettingsSize.height());
 }
 
-void CaptureModeAdvancedSettingsView::HandleOptionClick() {}
+void CaptureModeAdvancedSettingsView::OnOptionSelected(int option_id) const {
+  switch (option_id) {
+    case kAudioOff:
+      CaptureModeController::Get()->EnableAudioRecording(false);
+      break;
+    case kAudioMicrophone:
+      CaptureModeController::Get()->EnableAudioRecording(true);
+      break;
+    case kDownloadsFolder:
+    case kCustomFolder:
+      // TODO(conniekxu|afakhry): Handle |kDownloadsFolder| and |kCustomFolder|
+      // options in the following up CLs. For now we only support
+      // |kDownloadsFolder| for |save_to_menu_group_|, that's why we don't need
+      // to handle it explicitly here.
+      break;
+    default:
+      return;
+  }
+}
+
+bool CaptureModeAdvancedSettingsView::IsOptionChecked(int option_id) const {
+  switch (option_id) {
+    case kAudioOff:
+      return !CaptureModeController::Get()->enable_audio_recording();
+    case kAudioMicrophone:
+      return CaptureModeController::Get()->enable_audio_recording();
+    // TODO(conniekxu|afakhry): Handle |kDownloadsFolder| and |kCustomFolder|
+    // options in the following up CLs. For now we only support
+    // |kDownloadsFolder|, hence we return true/false directly here.
+    case kDownloadsFolder:
+      return true;
+    case kCustomFolder:
+      return false;
+    default:
+      return false;
+  }
+}
+
+views::View* CaptureModeAdvancedSettingsView::GetMicrophoneOptionForTesting() {
+  return audio_input_menu_group_->GetOptionForTesting(  // IN-TEST
+      kAudioMicrophone);                                // IN-TEST
+}
+
+views::View* CaptureModeAdvancedSettingsView::GetOffOptionForTesting() {
+  return audio_input_menu_group_->GetOptionForTesting(kAudioOff);  // IN-TEST
+}
 
 void CaptureModeAdvancedSettingsView::HandleMenuClick() {}
 
