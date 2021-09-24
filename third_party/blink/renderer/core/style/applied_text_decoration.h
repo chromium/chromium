@@ -13,7 +13,9 @@
 
 namespace blink {
 
-class AppliedTextDecoration {
+struct SVGPaint;
+
+class CORE_EXPORT AppliedTextDecoration {
   DISALLOW_NEW();
 
  public:
@@ -22,13 +24,22 @@ class AppliedTextDecoration {
                         Color,
                         TextDecorationThickness,
                         Length);
+  AppliedTextDecoration(const AppliedTextDecoration& other);
+  ~AppliedTextDecoration();
+  AppliedTextDecoration& operator=(const AppliedTextDecoration& other);
 
   TextDecoration Lines() const { return static_cast<TextDecoration>(lines_); }
   ETextDecorationStyle Style() const {
     return static_cast<ETextDecorationStyle>(style_);
   }
+  // GetColor() should not be used for SVG elements. Use Fill() and
+  // Stroke() instead.
   Color GetColor() const { return color_; }
   void SetColor(Color color) { color_ = color; }
+  // Fill() and Stroke() should not be used for non-SVG elements. Use
+  // GetColor() instead.
+  const SVGPaint& Fill() const;
+  const SVGPaint& Stroke() const;
 
   TextDecorationThickness Thickness() const { return thickness_; }
   Length UnderlineOffset() const { return underline_offset_; }
@@ -44,6 +55,10 @@ class AppliedTextDecoration {
   Color color_;
   TextDecorationThickness thickness_;
   Length underline_offset_;
+
+  struct TextDecorationSvgPaints;
+  // svg_paints_ is not null if and only if this instance is for an SVG element.
+  std::unique_ptr<TextDecorationSvgPaints> svg_paints_;
 };
 
 }  // namespace blink
