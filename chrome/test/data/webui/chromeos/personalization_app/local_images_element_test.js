@@ -66,7 +66,7 @@ export function LocalImagesTest() {
 
     personalizationStore.data.loading.local = {
       images: false,
-      data: {'100,10': true, '200,20': true}
+      data: {'LocalImage0.png': true, 'LocalImage1.png': true},
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(localImagesElement);
@@ -78,7 +78,7 @@ export function LocalImagesTest() {
 
     personalizationStore.data.loading.local = {
       images: false,
-      data: {'100,10': false, '200,20': true},
+      data: {'LocalImage0.png': false, 'LocalImage1.png': true},
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(localImagesElement);
@@ -108,7 +108,9 @@ export function LocalImagesTest() {
         assertEquals(0, ironList.shadowRoot.querySelectorAll('img').length);
 
         // Set loading finished for first thumbnail.
-        personalizationStore.data.loading.local.data = {'100,10': false};
+        personalizationStore.data.loading.local.data = {
+          'LocalImage0.png': false
+        };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
         assertEquals(2, ironList.items.length);
@@ -118,12 +120,12 @@ export function LocalImagesTest() {
 
         // Set loading failed for second thumbnail.
         personalizationStore.data.loading.local.data = {
-          '100,10': false,
-          '200,20': false
+          'LocalImage0.png': false,
+          'LocalImage1.png': false
         };
         personalizationStore.data.local.data = {
-          '100,10': 'data://localimage0data',
-          '200,20': null
+          'LocalImage0.png': 'data://localimage0data',
+          'LocalImage1.png': null
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
@@ -143,7 +145,7 @@ export function LocalImagesTest() {
         // Done loading.
         personalizationStore.data.loading.local = {
           images: false,
-          data: {'100,10': false, '200,20': false},
+          data: {'LocalImage0.png': false, 'LocalImage1.png': false},
         };
 
         localImagesElement = initElement(LocalImages.is, {hidden: false});
@@ -159,7 +161,7 @@ export function LocalImagesTest() {
         assertTrue(Array.from(images).every(
             image => image.getAttribute('aria-selected') === 'false'));
 
-        personalizationStore.data.currentSelected = {key: 'LocalImage1'};
+        personalizationStore.data.currentSelected = {key: 'LocalImage1.png'};
         personalizationStore.notifyObservers();
 
         assertEquals(2, images.length);

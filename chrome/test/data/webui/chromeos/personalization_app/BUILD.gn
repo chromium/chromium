@@ -14,8 +14,9 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":local_images_element_test",
+    ":personalization_app_component_test",
+    ":personalization_app_controller_test",
     ":personalization_app_test_utils",
-    ":personalization_app_unified_test",
     ":personalization_toast_element_test",
     ":test_mojo_interface_provider",
     ":test_personalization_store",
@@ -56,12 +57,20 @@ js_library("personalization_app_test_utils") {
   ]
 }
 
-js_library("personalization_app_unified_test") {
+js_library("personalization_app_component_test") {
   deps = [
     ":local_images_element_test",
     ":wallpaper_collections_element_test",
     ":wallpaper_images_element_test",
     ":wallpaper_selected_element_test",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("personalization_app_controller_test") {
+  deps = [
+    ":test_mojo_interface_provider",
+    "//chromeos/components/personalization_app/resources/trusted:personalization_store",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

@@ -192,25 +192,4 @@ bool StructTraits<chromeos::personalization_app::mojom::WallpaperImageDataView,
   return false;
 }
 
-base::UnguessableToken StructTraits<
-    chromeos::personalization_app::mojom::LocalImageDataView,
-    ash::LocalImageInfo>::id(const ash::LocalImageInfo& local_image_info) {
-  return local_image_info.id;
-}
-
-std::string StructTraits<
-    chromeos::personalization_app::mojom::LocalImageDataView,
-    ash::LocalImageInfo>::name(const ash::LocalImageInfo& local_image_info) {
-  return local_image_info.path.BaseName().value();
-}
-
-// Default to false as we don't ever need to convert back to
-// |ash::LocalImageInfo|
-bool StructTraits<chromeos::personalization_app::mojom::LocalImageDataView,
-                  ash::LocalImageInfo>::
-    Read(chromeos::personalization_app::mojom::LocalImageDataView data,
-         ash::LocalImageInfo* out) {
-  return false;
-}
-
 }  // namespace mojo

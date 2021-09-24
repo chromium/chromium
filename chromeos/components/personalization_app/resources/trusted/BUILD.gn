@@ -34,6 +34,7 @@ js_library("local_images_element") {
     ":personalization_controller",
     ":personalization_reducers",
     ":styles",
+    "../../mojom:mojom_js_library_for_compile",
     "../common:constants",
     "../common:icons",
     "../common:styles",
@@ -216,9 +217,15 @@ copy("copy_static") {
 }
 
 copy("copy_mojo_to_trusted") {
-  deps = [ "../../mojom:mojom_js" ]
-  sources = [ "$target_gen_dir/../../mojom/personalization_app.mojom-lite.js" ]
-  outputs = [ "$target_gen_dir/personalization_app.mojom-lite.js" ]
+  deps = [
+    "../../mojom:mojom_js",
+    "//mojo/public/mojom/base",
+  ]
+  sources = [
+    "$root_gen_dir/mojo/public/mojom/base/file_path.mojom-lite.js",
+    "$target_gen_dir/../../mojom/personalization_app.mojom-lite.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 preprocess_if_expr("preprocess") {
@@ -237,5 +244,8 @@ preprocess_if_expr("preprocess") {
   foreach(file, static_files) {
     in_files += [ "trusted/$file" ]
   }
-  in_files += [ "trusted/personalization_app.mojom-lite.js" ]
+  in_files += [
+    "trusted/personalization_app.mojom-lite.js",
+    "trusted/file_path.mojom-lite.js",
+  ]
 }

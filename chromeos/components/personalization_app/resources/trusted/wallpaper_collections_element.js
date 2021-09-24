@@ -12,9 +12,9 @@ import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {kMaximumLocalImagePreviews} from '../common/constants.js';
 import {sendCollections, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '../common/iframe_api.js';
-import {isNonEmptyArray, promisifyOnload, unguessableTokenToString} from '../common/utils.js';
+import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {initializeBackdropData, initializeLocalData} from './personalization_controller.js';
+import {initializeBackdropData} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 let sendCollectionsFunction = sendCollections;
@@ -104,7 +104,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
       },
 
       /**
-       * @type {Array<!chromeos.personalizationApp.mojom.LocalImage>}
+       * @type {Array<!mojoBase.mojom.FilePath>}
        * @private
        */
       localImages_: {
@@ -172,9 +172,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     this.watch('localImageData_', state => state.local.data);
     this.watch('localImageDataLoading_', state => state.loading.local.data);
     this.updateFromStore();
-    const store = this.getStore();
-    initializeBackdropData(this.wallpaperProvider_, store);
-    initializeLocalData(this.wallpaperProvider_, store);
+    initializeBackdropData(this.wallpaperProvider_, this.getStore());
   }
 
   /**
@@ -247,10 +245,11 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   /**
    * Send updated local images list to the iframe.
-   * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} value
+   * @param {?Array<!mojoBase.mojom.FilePath>} value
    * @private
    */
   async onLocalImagesChanged_(value) {
+    this.didSendLocalImageData_ = false;
     if (Array.isArray(value)) {
       const iframe = await this.iframePromise_;
       sendLocalImagesFunction(
@@ -260,7 +259,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   /**
    * Send up to |maximumImageThumbnailsCount| image thumbnails to untrusted.
-   * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+   * @param {?Array<!mojoBase.mojom.FilePath>} images
    * @param {?Object<string, string>} imageData
    * @param {?Object<string, boolean>} imageDataLoading
    * @private
@@ -272,12 +271,11 @@ export class WallpaperCollections extends WithPersonalizationStore {
     }
 
     /** @type !Array<string> */
-    const successfullyLoaded =
-        images.map(image => unguessableTokenToString(image.id)).filter(key => {
-          const doneLoading = imageDataLoading[key] === false;
-          const success = !!imageData[key];
-          return success && doneLoading;
-        });
+    const successfullyLoaded = images.map(image => image.path).filter(key => {
+      const doneLoading = imageDataLoading[key] === false;
+      const success = !!imageData[key];
+      return success && doneLoading;
+    });
 
     /**
      * @return {boolean}
@@ -289,23 +287,40 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
       return didLoadMaximum ||
           // No more images to load so send now even if some failed.
-          images.every(
-              image => imageDataLoading[unguessableTokenToString(image.id)] ===
-                  false);
+          images.every(image => imageDataLoading[image.path] === false);
     };
 
 
     if (shouldSendImageData()) {
+      // Also send information about which images failed to load. This is
+      // necessary to decide whether to show loading animation or failure svg
+      // while updating local images.
+      const failures = images.map(image => image.path)
+                           .filter(key => {
+                             const doneLoading =
+                                 imageDataLoading[key] === false;
+                             const failure = imageData[key] === '';
+                             return failure && doneLoading;
+                           })
+                           .reduce((result, key) => {
+                             // Empty string means that this image failed to
+                             // load.
+                             result[key] = '';
+                             return result;
+                           }, {});
+
       const data =
           successfullyLoaded.filter((_, i) => i < kMaximumLocalImagePreviews)
               .reduce((result, key) => {
                 result[key] = imageData[key];
                 return result;
-              }, {});
+              }, failures);
+
+      this.didSendLocalImageData_ = true;
+
       const iframe = await this.iframePromise_;
       sendLocalImageDataFunction(
           /** @type {!Window} */ (iframe.contentWindow), data);
-      this.didSendLocalImageData_ = true;
     }
   }
 }

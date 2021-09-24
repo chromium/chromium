@@ -4,7 +4,7 @@
 
 module chromeos.personalization_app.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
 
 // This should be kept in sync with |ash::WallpaperLayout|
@@ -65,16 +65,6 @@ struct WallpaperImage {
     uint64 asset_id;
 };
 
-struct LocalImage {
-  // Unique ID for this image for fetching thumbnail data and setting as user
-  // background.
-  mojo_base.mojom.UnguessableToken id;
-
-  // Name of this local asset including extension. Matched against
-  // |CurrentWallpaper.key| to check if this image is set as user wallpaper.
-  string name;
-};
-
 // Represents the currently selected wallpaper image.
 struct CurrentWallpaper {
   // URL of the currently selected wallpaper image in data scheme.
@@ -91,7 +81,7 @@ struct CurrentWallpaper {
   WallpaperType type;
 
   // A unique identifier for the image. This is used to identify which
-  // |WallpaperImage| or |LocalImage| the user has selected.
+  // |WallpaperImage| or local image the user has selected.
   string key;
 };
 
@@ -118,13 +108,13 @@ interface WallpaperProvider {
     FetchImagesForCollection(string collection_id) => (
         array<WallpaperImage>? images);
 
-    // Fetch a list of LocalImage objects from the local file system. |images|
+    // Fetch a list of FilePath objects from the local file system. |images|
     // will be null on failure.
-    GetLocalImages() => (array<LocalImage>? images);
+    GetLocalImages() => (array<mojo_base.mojom.FilePath>? images);
 
-    // Fetch a thumbnail data url for the given LocalImage |id|. |data| will be
+    // Fetch a thumbnail data url for the given local image path. |data| will be
     // empty string on failure.
-    GetLocalImageThumbnail(mojo_base.mojom.UnguessableToken id) =>
+    GetLocalImageThumbnail(mojo_base.mojom.FilePath file_path) =>
         (string data);
 
     // Binds a listener to start receiving updates on wallpaper changes.
@@ -133,8 +123,9 @@ interface WallpaperProvider {
     // Sets the given backdrop wallpaper as the user's background.
     SelectWallpaper(uint64 image_asset_id) => (bool success);
 
-    // Sets the given local wallpaper as the user's background.
-    SelectLocalImage(mojo_base.mojom.UnguessableToken id) => (bool success);
+    // Sets the given local wallpaper as the user's background. Validated
+    // against list of file paths returned by |GetLocalImages|.
+    SelectLocalImage(mojo_base.mojom.FilePath path) => (bool success);
 
     // Sets the custom layout for current wallpaper
     SetCustomWallpaperLayout(WallpaperLayout layout);

@@ -10,16 +10,16 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
+#include <vector>
 
-#include "ash/public/cpp/wallpaper/local_image_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -80,7 +80,7 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
 
   void GetLocalImages(GetLocalImagesCallback callback) override;
 
-  void GetLocalImageThumbnail(const base::UnguessableToken& file_path,
+  void GetLocalImageThumbnail(const base::FilePath& file_path,
                               GetLocalImageThumbnailCallback callback) override;
 
   void SetWallpaperObserver(
@@ -95,7 +95,7 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
   void SelectWallpaper(uint64_t image_asset_id,
                        SelectWallpaperCallback callback) override;
 
-  void SelectLocalImage(const base::UnguessableToken& id,
+  void SelectLocalImage(const base::FilePath& path,
                         SelectLocalImageCallback callback) override;
 
   void SetCustomWallpaperLayout(ash::WallpaperLayout layout) override;
@@ -186,10 +186,10 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate,
   // user wallpaper selections.
   std::map<uint64_t, ImageInfo> image_asset_id_map_;
 
-  // When local images are fetched, assign each one a random |UnguessableToken|
-  // id. Store a mapping from these tokens to |ash::LocalImageInfo|. The SWA
-  // passes a token id to get an image thumbnail preview.
-  std::map<base::UnguessableToken, ash::LocalImageInfo> local_image_info_map_;
+  // When local images are fetched, store the valid file paths in the set. This
+  // is checked when the SWA requests thumbnail data or sets an image as the
+  // user's background.
+  std::set<base::FilePath> local_images_;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;

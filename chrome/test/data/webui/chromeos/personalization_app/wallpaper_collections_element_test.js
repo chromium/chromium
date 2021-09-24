@@ -158,24 +158,19 @@ export function WallpaperCollectionsTest() {
         wallpaperCollectionsElement.shadowRoot.querySelector('iframe').hidden);
   });
 
-  test('loads backdrop and local data and saves to store', async () => {
+  test('loads backdrop data and saves to store', async () => {
     // Make sure state starts at expected value.
     assertDeepEquals(emptyState(), personalizationStore.data);
     // Actually run the reducers.
     personalizationStore.setReducersEnabled(true);
 
-    const {
-      sendCollections: sendCollectionsPromise,
-      sendLocalImages: sendLocalImagesPromise
-    } = promisifyIframeFunctionsForTesting();
+    const {sendCollections: sendCollectionsPromise} =
+        promisifyIframeFunctionsForTesting();
 
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
     const [_, collections] = await sendCollectionsPromise;
     assertDeepEquals(wallpaperProvider.collections, collections);
-
-    const [__, localImages] = await sendLocalImagesPromise;
-    assertDeepEquals(wallpaperProvider.localImages, localImages);
 
     assertDeepEquals(
         {
@@ -189,25 +184,11 @@ export function WallpaperCollectionsTest() {
     );
     assertDeepEquals(
         {
-          images: wallpaperProvider.localImages,
-          data: wallpaperProvider.localImageData,
-        },
-        personalizationStore.data.local,
-    );
-    assertDeepEquals(
-        {
           ...emptyState().loading,
           collections: false,
           images: {
             'id_0': false,
             'id_1': false,
-          },
-          local: {
-            images: false,
-            data: {
-              '100,10': false,
-              '200,20': false,
-            },
           },
         },
         personalizationStore.data.loading,
@@ -222,9 +203,9 @@ export function WallpaperCollectionsTest() {
         personalizationStore.data.loading.local.images = false;
         personalizationStore.data.local.images = [];
         for (let i = 0; i < kMaximumLocalImagePreviews; i++) {
-          personalizationStore.data.local.images.push(
-              {id: {high: BigInt(i * 2), low: BigInt(i)}, name: `local-${i}`});
-          personalizationStore.data.loading.local.data[`${i * 2},${i}`] = true;
+          const path = `LocalImage${i}.png`;
+          personalizationStore.data.local.images.push({path});
+          personalizationStore.data.loading.local.data[path] = true;
         }
         // Collections are finished loading.
         personalizationStore.data.backdrop.collections =
@@ -242,8 +223,12 @@ export function WallpaperCollectionsTest() {
         assertFalse(wallpaperCollectionsElement.didSendLocalImageData_);
 
         // First thumbnail loads in.
-        personalizationStore.data.loading.local.data = {'0,0': false};
-        personalizationStore.data.local.data = {'0,0': 'local_data_0'};
+        personalizationStore.data.loading.local.data = {
+          'LocalImage0.png': false
+        };
+        personalizationStore.data.local.data = {
+          'LocalImage0.png': 'local_data_0'
+        };
         personalizationStore.notifyObservers();
 
         await wallpaperCollectionsElement.iframePromise_;
@@ -256,13 +241,13 @@ export function WallpaperCollectionsTest() {
         // Second thumbnail fails loading. Third succeeds.
         personalizationStore.data.loading.local.data = {
           ...personalizationStore.data.loading.local.data,
-          '2,1': false,
-          '4,2': false,
+          'LocalImage1.png': false,
+          'LocalImage2.png': false,
         };
         personalizationStore.data.local.data = {
           ...personalizationStore.data.local.data,
-          '2,1': null,
-          '4,2': 'local_data_2',
+          'LocalImage1.png': '',
+          'LocalImage2.png': 'local_data_2',
         };
         personalizationStore.notifyObservers();
 
@@ -272,6 +257,11 @@ export function WallpaperCollectionsTest() {
 
         assertTrue(wallpaperCollectionsElement.didSendLocalImageData_);
         assertDeepEquals(
-            {'0,0': 'local_data_0', '4,2': 'local_data_2'}, sentData);
+            {
+              'LocalImage0.png': 'local_data_0',
+              'LocalImage1.png': '',
+              'LocalImage2.png': 'local_data_2',
+            },
+            sentData);
       });
 }

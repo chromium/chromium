@@ -42,7 +42,7 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
 
   void GetLocalImages(GetLocalImagesCallback callback) override;
 
-  void GetLocalImageThumbnail(const base::UnguessableToken& id,
+  void GetLocalImageThumbnail(const base::FilePath& path,
                               GetLocalImageThumbnailCallback callback) override;
 
   void SetWallpaperObserver(
@@ -53,7 +53,7 @@ class FakePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   void SelectWallpaper(uint64_t image_asset_id,
                        SelectWallpaperCallback callback) override;
 
-  void SelectLocalImage(const base::UnguessableToken& token,
+  void SelectLocalImage(const base::FilePath& path,
                         SelectLocalImageCallback callback) override;
 
   void SetCustomWallpaperLayout(ash::WallpaperLayout layout) override;

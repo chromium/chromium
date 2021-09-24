@@ -18,10 +18,34 @@ import {TestStore} from '../../test_store.js';
 export class TestPersonalizationStore extends TestStore {
   constructor(data) {
     super(data, PersonalizationStore, emptyState(), reduce);
+    this.actions_ = [];
+    this.states_ = [];
+  }
+
+  get actions() {
+    return this.actions_;
+  }
+
+  get states() {
+    return this.states_;
   }
 
   /** @override */
   replaceSingleton() {
     PersonalizationStore.setInstance(this);
+  }
+
+  /** @override */
+  reduce_(action) {
+    super.reduce_(action);
+    this.actions_.push(action);
+    this.states_.push(this.data);
+  }
+
+  reset(data = {}) {
+    this.data = Object.assign(emptyState(), data);
+    this.resetLastAction();
+    this.actions_ = [];
+    this.states_ = [];
   }
 }

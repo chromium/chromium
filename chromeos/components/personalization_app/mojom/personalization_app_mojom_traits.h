@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
 #define CHROMEOS_COMPONENTS_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
 
-#include "ash/public/cpp/wallpaper/local_image_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom-shared.h"
@@ -62,17 +61,6 @@ struct StructTraits<
       chromeos::personalization_app::mojom::WallpaperImageDataView data,
       backdrop::Image* out);
   static bool isNull(const backdrop::Image& image);
-};
-
-template <>
-struct StructTraits<chromeos::personalization_app::mojom::LocalImageDataView,
-                    ash::LocalImageInfo> {
-  static base::UnguessableToken id(const ash::LocalImageInfo& local_image_info);
-  static std::string name(const ash::LocalImageInfo& local_image_info);
-
-  static bool Read(
-      chromeos::personalization_app::mojom::LocalImageDataView data,
-      ash::LocalImageInfo* out);
 };
 
 }  // namespace mojo

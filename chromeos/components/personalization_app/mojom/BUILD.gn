@@ -31,10 +31,6 @@ mojom("mojom") {
           mojom = "chromeos.personalization_app.mojom.WallpaperImage"
           cpp = "backdrop::Image"
         },
-        {
-          mojom = "chromeos.personalization_app.mojom.LocalImage"
-          cpp = "ash::LocalImageInfo"
-        },
       ]
       traits_headers = [ "personalization_app_mojom_traits.h" ]
       traits_sources = [ "personalization_app_mojom_traits.cc" ]

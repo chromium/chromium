@@ -8,7 +8,7 @@ import './styles.js';
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {selectCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
-import {getLoadingPlaceholderAnimationDelay, isSelectionEvent, unguessableTokenToString} from '../common/utils.js';
+import {getLoadingPlaceholderAnimationDelay, isSelectionEvent} from '../common/utils.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user
@@ -88,7 +88,7 @@ function getCountText(x) {
 
 /**
  *
- * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} localImages
+ * @param {?Array<!mojoBase.mojom.FilePath>} localImages
  * @param {Object<string, string>} localImageData
  * @return {!Array<!url.mojom.Url>}
  */
@@ -96,30 +96,50 @@ function getImages(localImages, localImageData) {
   if (!localImageData || !Array.isArray(localImages)) {
     return [];
   }
-  return localImages
-      .map(({id}) => ({url: localImageData[unguessableTokenToString(id)]}))
-      .filter((data, index) => {
-        // |data.url| may be undefined or empty if this local image thumbnail
-        // has not loaded yet.
-        return !!data.url && data.url.length > 0 &&
-            index < kMaximumLocalImagePreviews;
-      });
+  const result = [];
+  for (const {path} of localImages) {
+    const data = {url: localImageData[path]};
+    if (!!data.url && data.url.length > 0) {
+      result.push(data);
+    }
+    // Add at most |kMaximumLocalImagePreviews| thumbnail urls.
+    if (result.length >= kMaximumLocalImagePreviews) {
+      break;
+    }
+  }
+  return result;
 }
 
 /**
  * A common display format between local images and WallpaperCollection.
  * Get the first displayable image with data from the list of possible images.
- * @param {Array<!chromeos.personalizationApp.mojom.LocalImage>} localImages
- * @param {Object<string, string>} localImageData
- * @return {!ImageTile}
+ * @param {!Array<!mojoBase.mojom.FilePath>} localImages
+ * @param {!Object<string, string>} localImageData
+ * @return {!ImageTile|!LoadingTile}
  */
 function getLocalTile(localImages, localImageData) {
-  const name = loadTimeData.getString('myImagesLabel');
+  const isMoreToLoad =
+      localImages.some(({path}) => !localImageData.hasOwnProperty(path));
+
   const imagesToDisplay = getImages(localImages, localImageData);
+
+  if (imagesToDisplay.length < kMaximumLocalImagePreviews && isMoreToLoad) {
+    // If there are more images to attempt loading thumbnails for, wait until
+    // those are done.
+    return {type: TileType.loading};
+  }
+
+  // Count all images that failed to load and subtract them from "My Images"
+  // count.
+  const failureCount = Object.values(localImageData).reduce((result, next) => {
+    return next === '' ? result + 1 : result;
+  }, 0);
+
   return {
-    name,
+    name: loadTimeData.getString('myImagesLabel'),
     id: kLocalCollectionId,
-    count: getCountText(Array.isArray(localImages) ? localImages.length : 0),
+    count: getCountText(
+        Array.isArray(localImages) ? localImages.length - failureCount : 0),
     preview: imagesToDisplay,
     type: TileType.image,
   };
@@ -155,7 +175,7 @@ export class CollectionsGrid extends PolymerElement {
       },
 
       /**
-       * @type {Array<!chromeos.personalizationApp.mojom.LocalImage>}
+       * @type {Array<!mojoBase.mojom.FilePath>}
        * @private
        */
       localImages_: {
@@ -266,7 +286,7 @@ export class CollectionsGrid extends PolymerElement {
   /**
    * Called with updated local image list or local image thumbnail data when
    * either of those properties changes.
-   * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} localImages
+   * @param {?Array<!mojoBase.mojom.FilePath>} localImages
    * @param {Object<string, string>} localImageData
    * @private
    */
@@ -305,6 +325,7 @@ export class CollectionsGrid extends PolymerElement {
         } catch (e) {
           console.warn('Invalid local images received', e);
           this.localImages_ = [];
+          this.localImageData_ = {};
         }
         break;
       case EventType.SEND_LOCAL_IMAGE_DATA:
@@ -313,6 +334,7 @@ export class CollectionsGrid extends PolymerElement {
               validateReceivedData(message, EventType.SEND_LOCAL_IMAGE_DATA);
         } catch (e) {
           console.warn('Invalid local image data received', e);
+          this.localImages_ = [];
           this.localImageData_ = {};
         }
         break;

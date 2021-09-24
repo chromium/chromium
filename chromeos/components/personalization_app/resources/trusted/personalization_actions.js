@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
-import {unguessableTokenToString} from '../common/utils.js';
 import {DisplayableImage} from './personalization_reducers.js';
 
 /**
@@ -13,6 +12,7 @@ import {DisplayableImage} from './personalization_reducers.js';
 /** @enum {string} */
 export const ActionName = {
   BEGIN_LOAD_IMAGES_FOR_COLLECTIONS: 'begin_load_images_for_collections',
+  BEGIN_LOAD_LOCAL_IMAGES: 'begin_load_local_images',
   BEGIN_LOAD_LOCAL_IMAGE_DATA: 'begin_load_local_image_data',
   BEGIN_LOAD_SELECTED_IMAGE: 'begin_load_selected_image',
   BEGIN_SELECT_IMAGE: 'begin_select_image',
@@ -43,13 +43,21 @@ export function beginLoadImagesForCollectionsAction(collections) {
 }
 
 /**
+ * Notify that app is loading local image list.
+ * @return {!Action}
+ */
+export function beginLoadLocalImagesAction() {
+  return {name: ActionName.BEGIN_LOAD_LOCAL_IMAGES};
+}
+
+/**
  * Notify that app is loading thumbnail for the given local image.
- * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+ * @param {!mojoBase.mojom.FilePath} image
  * @return {!Action}
  */
 export function beginLoadLocalImageDataAction(image) {
   return {
-    id: unguessableTokenToString(image.id),
+    id: image.path,
     name: ActionName.BEGIN_LOAD_LOCAL_IMAGE_DATA,
   };
 }
@@ -132,13 +140,13 @@ export function setImagesForCollectionAction(collectionId, images) {
 
 /**
  * Set the thumbnail data for a local image.
- * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+ * @param {!mojoBase.mojom.FilePath} filePath
  * @param {string} data
  * @return {!Action}
  */
-export function setLocalImageDataAction(image, data) {
+export function setLocalImageDataAction(filePath, data) {
   return {
-    id: unguessableTokenToString(image.id),
+    id: filePath.path,
     data,
     name: ActionName.SET_LOCAL_IMAGE_DATA,
   };
@@ -146,7 +154,7 @@ export function setLocalImageDataAction(image, data) {
 
 /**
  * Set the list of local images.
- * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+ * @param {?Array<!mojoBase.mojom.FilePath>} images
  * @return {!Action}
  */
 export function setLocalImagesAction(images) {

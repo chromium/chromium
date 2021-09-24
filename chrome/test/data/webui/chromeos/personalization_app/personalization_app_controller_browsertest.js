@@ -12,11 +12,11 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
+var PersonalizationAppControllerBrowserTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://personalization/test_loader.html?' +
         'module=chromeos/personalization_app/' +
-        'personalization_app_component_test.js';
+        'personalization_app_controller_test.js';
   }
 
   get featureList() {
@@ -24,4 +24,4 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   }
 };
 
-TEST_F('PersonalizationAppComponentBrowserTest', 'All', () => mocha.run());
+TEST_F('PersonalizationAppControllerBrowserTest', 'All', () => mocha.run());

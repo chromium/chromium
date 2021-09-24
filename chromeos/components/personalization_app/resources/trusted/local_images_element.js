@@ -18,9 +18,9 @@ import '../common/styles.js';
 import {assert} from '/assert.m.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getLoadingPlaceholderAnimationDelay} from '../common/utils.js';
-import {isSelectionEvent, stringToUnguessableToken, unguessableTokensEqual, unguessableTokenToString} from '../common/utils.js';
+import {isSelectionEvent} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {selectWallpaper} from './personalization_controller.js';
+import {fetchLocalData, selectWallpaper} from './personalization_controller.js';
 import {DisplayableImage} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
@@ -44,7 +44,7 @@ export class LocalImages extends WithPersonalizationStore {
       },
 
       /**
-       * @type {!Array<!chromeos.personalizationApp.mojom.LocalImage>}
+       * @type {!Array<!mojoBase.mojom.FilePath>}
        * @private
        */
       images_: {
@@ -88,7 +88,7 @@ export class LocalImages extends WithPersonalizationStore {
       },
 
       /**
-       * @type {!Array<!chromeos.personalizationApp.mojom.LocalImage>}
+       * @type {!Array<!mojoBase.mojom.FilePath>}
        * @private
        */
       imagesToDisplay_: {
@@ -103,6 +103,13 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   /** @override */
+  constructor() {
+    super();
+    /** @private */
+    this.wallpaperProvider_ = getWallpaperProvider();
+  }
+
+  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.watch('images_', state => state.local.images);
@@ -111,6 +118,10 @@ export class LocalImages extends WithPersonalizationStore {
     this.watch('currentSelected_', state => state.currentSelected);
     this.watch('pendingSelected_', state => state.pendingSelected);
     this.updateFromStore();
+    fetchLocalData(this.wallpaperProvider_, this.getStore());
+    window.addEventListener('focus', () => {
+      fetchLocalData(this.wallpaperProvider_, this.getStore());
+    });
   }
 
   /**
@@ -132,12 +143,12 @@ export class LocalImages extends WithPersonalizationStore {
 
   /**
    * Sets |imagesToDisplay| when a new set of local images loads.
-   * @param {Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+   * @param {Array<!mojoBase.mojom.FilePath>} images
    * @private
    */
   onImagesChanged_(images) {
     this.imagesToDisplay_ = (images || []).filter(image => {
-      const key = unguessableTokenToString(image);
+      const key = image.path;
       if (this.imageDataLoading_[key] === false) {
         return !!this.imageData_[key];
       }
@@ -160,7 +171,7 @@ export class LocalImages extends WithPersonalizationStore {
     // |imagesToDisplay| while iterating.
     for (let i = this.imagesToDisplay_.length - 1; i >= 0; i--) {
       const image = this.imagesToDisplay_[i];
-      const key = unguessableTokenToString(image.id);
+      const key = image.path;
       const failed = imageDataLoading[key] === false && !imageData[key];
       if (failed) {
         this.splice('imagesToDisplay_', i, 1);
@@ -168,9 +179,8 @@ export class LocalImages extends WithPersonalizationStore {
     }
   }
 
-
   /**
-   * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+   * @param {!mojoBase.mojom.FilePath} image
    * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper}
    *     currentSelected
    * @param {?DisplayableImage} pendingSelected
@@ -181,14 +191,14 @@ export class LocalImages extends WithPersonalizationStore {
     if (!image || (!currentSelected && !pendingSelected)) {
       return 'false';
     }
-    return (!!pendingSelected && image.id === pendingSelected.id ||
-            !!currentSelected && currentSelected.key === image.name &&
+    return (!!pendingSelected && image.path === pendingSelected.path ||
+            !!currentSelected && image.path.endsWith(currentSelected.key) &&
                 !pendingSelected)
         .toString();
   }
 
   /**
-   * @param {chromeos.personalizationApp.mojom.LocalImage} image
+   * @param {mojoBase.mojom.FilePath} image
    * @param {Object<string, boolean>} imageDataLoading
    * @return {boolean}
    * @private
@@ -197,7 +207,7 @@ export class LocalImages extends WithPersonalizationStore {
     if (!image || !imageDataLoading) {
       return true;
     }
-    const key = unguessableTokenToString(image.id);
+    const key = image.path;
     // If key is not present, then loading has not yet started. Still show a
     // loading tile in this case.
     return !imageDataLoading.hasOwnProperty(key) ||
@@ -214,7 +224,7 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   /**
-   * @param {chromeos.personalizationApp.mojom.LocalImage} image
+   * @param {mojoBase.mojom.FilePath} image
    * @param {Object<string, string>} imageData
    * @param {Object<string, boolean>} imageDataLoading
    * @return {boolean}
@@ -224,28 +234,27 @@ export class LocalImages extends WithPersonalizationStore {
     if (!image || !imageData || !imageDataLoading) {
       return false;
     }
-    const key = unguessableTokenToString(image.id);
+    const key = image.path;
     return !!imageData[key] && imageDataLoading[key] === false;
   }
 
   /**
-   * @param {chromeos.personalizationApp.mojom.LocalImage} image
+   * @param {mojoBase.mojom.FilePath} image
    * @param {Object<string, string>} imageData
    * @return {string}
    * @private
    */
   getImageData_(image, imageData) {
-    const key = unguessableTokenToString(image.id);
-    return imageData[key];
+    return imageData[image.path];
   }
 
   /**
-   * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+   * @param {!mojoBase.mojom.FilePath} image
    * @return {string}
    * @private
    */
   getImageKey_(image) {
-    return unguessableTokenToString(image.id);
+    return image.path;
   }
 
   /**
@@ -256,13 +265,12 @@ export class LocalImages extends WithPersonalizationStore {
     if (!isSelectionEvent(event)) {
       return;
     }
-    const id = stringToUnguessableToken(event.currentTarget.dataset.id);
-    const image =
-        this.images_.find(image => unguessableTokensEqual(id, image.id));
-    assert(!!image, 'Image with that id not found');
+    const path = event.currentTarget.dataset.id;
+    const image = this.images_.find(image => path === image.path);
+    assert(!!image, 'Image with that path not found');
     selectWallpaper(
-        /** @type {!chromeos.personalizationApp.mojom.LocalImage} */ (image),
-        getWallpaperProvider(), this.getStore());
+        /** @type {!mojoBase.mojom.FilePath} */ (image),
+        this.wallpaperProvider_, this.getStore());
   }
 
   /**

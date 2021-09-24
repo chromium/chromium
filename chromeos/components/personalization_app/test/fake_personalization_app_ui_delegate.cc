@@ -64,7 +64,7 @@ void FakePersonalizationAppUiDelegate::GetLocalImages(
 }
 
 void FakePersonalizationAppUiDelegate::GetLocalImageThumbnail(
-    const base::UnguessableToken& id,
+    const base::FilePath& path,
     GetLocalImageThumbnailCallback callback) {
   std::move(callback).Run(std::string());
 }
@@ -80,7 +80,7 @@ void FakePersonalizationAppUiDelegate::SelectWallpaper(
 }
 
 void FakePersonalizationAppUiDelegate::SelectLocalImage(
-    const base::UnguessableToken& token,
+    const base::FilePath& path,
     SelectLocalImageCallback callback) {
   std::move(callback).Run(/*success=*/true);
 }

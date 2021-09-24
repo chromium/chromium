@@ -22,8 +22,8 @@ export let WallpaperLayout = chromeos.personalizationApp.mojom.WallpaperLayout;
 export let WallpaperType = chromeos.personalizationApp.mojom.WallpaperType;
 
 /**
- * @typedef {chromeos.personalizationApp.mojom.LocalImage|
- *           chromeos.personalizationApp.mojom.WallpaperImage}
+ * @typedef {mojoBase.mojom.FilePath |
+ * chromeos.personalizationApp.mojom.WallpaperImage}
  */
 export let DisplayableImage;
 
@@ -74,7 +74,7 @@ export let LoadingState;
  * |data| stores a mapping of image.id (converted to string) to a thumbnail data
  * url.
  * @typedef {{
- *   images: ?Array<!chromeos.personalizationApp.mojom.LocalImage>,
+ *   images: ?Array<!mojoBase.mojom.FilePath>,
  *   data: !Object<string, string>,
  * }}
  */
@@ -112,7 +112,7 @@ export function emptyState() {
     loading: {
       collections: true,
       images: {},
-      local: {images: true, data: {}},
+      local: {images: false, data: {}},
       refreshWallpaper: false,
       selected: false,
       setImage: 0,
@@ -216,11 +216,28 @@ function loadingReducer(state, action) {
         ...state,
         images: {...state.images, [action.collectionId]: false},
       });
-    case ActionName.SET_LOCAL_IMAGES:
+    case ActionName.BEGIN_LOAD_LOCAL_IMAGES:
       return /** @type {!LoadingState} */ ({
         ...state,
         local: {
           ...state.local,
+          images: true,
+        },
+      });
+    case ActionName.SET_LOCAL_IMAGES:
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        local: {
+          // Only keep loading state for most recent local images.
+          data: (action.images || []).reduce(
+              (result, {path}) => {
+                if (state.local.data.hasOwnProperty(path)) {
+                  result[path] = state.local.data[path];
+                }
+                return result;
+              },
+              {}),
+          // Image list is done loading.
           images: false,
         },
       });
@@ -260,6 +277,15 @@ function localReducer(state, action) {
       return /** @type {!LocalState} */ ({
         ...state,
         images: action.images,
+        // Only keep image thumbnails if the image is still in |images|.
+        data: (action.images || []).reduce(
+            (result, {path}) => {
+              if (state.data.hasOwnProperty(path)) {
+                result[path] = state.data[path];
+              }
+              return result;
+            },
+            {}),
       });
     case ActionName.SET_LOCAL_IMAGE_DATA:
       return /** @type {!LocalState} */ ({

@@ -63,13 +63,13 @@ export let SendImagesEvent;
 /**
  * @typedef {{
  *   type: EventType,
- *   images: !Array<!chromeos.personalizationApp.mojom.LocalImage>,
+ *   images: !Array<!mojoBase.mojom.FilePath>,
  * }}
  */
 export let SendLocalImagesEvent;
 
 /**
- * Sends local image data keyed by stringified local image id.
+ * Sends local image data keyed by stringified local image path.
  * @typedef {{
  *   type: EventType,
  *   data: !Object<string, string>,

@@ -67,7 +67,7 @@ export function sendImages(target, images) {
 /**
  * Send an array of local images to chrome-untrusted://.
  * @param {!Window} target the iframe window to send the message to.
- * @param {!Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+ * @param {!Array<!mojoBase.mojom.FilePath>} images
  */
 export function sendLocalImages(target, images) {
   /** @type {!SendLocalImagesEvent} */
