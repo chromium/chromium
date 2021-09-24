@@ -11,7 +11,6 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/controls/scroll_view.h"
 
 namespace views {
 class View;
@@ -47,13 +46,13 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView {
   void UpdateBluetoothEnabledState(bool enabled) override;
   BluetoothDeviceListItemView* AddDeviceListItem() override;
   ash::TriView* AddDeviceListSubHeader(const gfx::VectorIcon& /*icon*/,
-                                       int /*text_id*/) override;
+                                       int text_id) override;
   void NotifyDeviceListChanged() override;
   views::View* device_list() override;
 
   size_t notify_device_list_changed_call_count_ = 0;
   absl::optional<bool> last_bluetooth_enabled_state_;
-  std::unique_ptr<views::ScrollView> device_list_;
+  std::unique_ptr<views::View> device_list_;
 };
 
 }  // namespace tray

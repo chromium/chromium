@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
@@ -41,6 +42,10 @@ class ASH_EXPORT BluetoothDetailedViewController
       const BluetoothDetailedViewController&) = delete;
   ~BluetoothDetailedViewController() override;
 
+ protected:
+  using PairedBluetoothDevicePropertiesPtrs = std::vector<
+      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
+
  private:
   // DetailedViewControllerBase:
   views::View* CreateView() override;
@@ -73,6 +78,8 @@ class ASH_EXPORT BluetoothDetailedViewController
       chromeos::bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
   tray::BluetoothDetailedView* view_ = nullptr;
   std::unique_ptr<BluetoothDeviceListController> device_list_controller_;
+  PairedBluetoothDevicePropertiesPtrs connected_devices_;
+  PairedBluetoothDevicePropertiesPtrs previously_connected_devices_;
 };
 
 }  // namespace ash
