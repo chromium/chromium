@@ -1166,10 +1166,8 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
   ukm::builders::MobileFriendliness builder(GetDelegate().GetPageUkmSourceId());
   const blink::MobileFriendliness& mf = GetDelegate().GetMobileFriendliness();
 
-  builder.SetViewportDeviceWidth(mf.viewport_device_width ==
-                                 blink::mojom::ViewportStatus::kYes);
-  builder.SetAllowUserZoom(mf.allow_user_zoom ==
-                           blink::mojom::ViewportStatus::kYes);
+  builder.SetViewportDeviceWidth(mf.viewport_device_width);
+  builder.SetAllowUserZoom(mf.allow_user_zoom);
 
   builder.SetSmallTextRatio(mf.small_text_ratio);
   builder.SetViewportInitialScaleX10(

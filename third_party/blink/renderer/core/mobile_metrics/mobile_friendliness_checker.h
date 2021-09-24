@@ -44,13 +44,20 @@ class CORE_EXPORT MobileFriendlinessChecker
 
  private:
   void ComputeSmallTextRatio(const LayoutObject& object);
+
+  // Returns the percentage of the width of the content that overflows the
+  // viewport.
+  // Returns 0 if all content fits in the viewport.
   int ComputeContentOutsideViewport();
-  void ComputeBadTapTargetsRatio();
+
+  // Returns percentage value [0-100] of bad tap targets in the area of the
+  // first page. Returns kTimeBudgetExceeded if the time limit is exceeded.
+  int ComputeBadTapTargetsRatio();
 
  private:
   TextAreaWithFontSize text_area_sizes_;
   Member<LocalFrameView> frame_view_;
-  blink::MobileFriendliness mobile_friendliness_;
+  MobileFriendliness mobile_friendliness_;
   bool font_size_check_enabled_;
   bool tap_target_check_enabled_;
   float viewport_scalar_;

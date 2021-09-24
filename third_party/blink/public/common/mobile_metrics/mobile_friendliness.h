@@ -24,7 +24,7 @@ struct BLINK_COMMON_EXPORT MobileFriendliness {
 
   // Whether <meta name="viewport" content="width=device-width"> is specified or
   // not.
-  mojom::ViewportStatus viewport_device_width = mojom::ViewportStatus::kUnknown;
+  bool viewport_device_width = false;
 
   // The value specified in meta tag like <meta name="viewport"
   // content="initial-scale=1.0">.
@@ -38,7 +38,7 @@ struct BLINK_COMMON_EXPORT MobileFriendliness {
 
   // Whether the page allows user to zoom in/out.
   // It is specified like <meta name="viewport" content="user-scalable=no">.
-  mojom::ViewportStatus allow_user_zoom = mojom::ViewportStatus::kUnknown;
+  bool allow_user_zoom = true;
 
   // Percentage of small font size text area in all text area.
   // Default -1 means "Unknown" and should not be sent as UKM.

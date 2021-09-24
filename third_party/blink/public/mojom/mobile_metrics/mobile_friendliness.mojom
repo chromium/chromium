@@ -4,20 +4,14 @@
 
 module blink.mojom;
 
-enum ViewportStatus {
-  kUnknown,
-  kYes,
-  kNo,
-};
-
 // Metrics about mobile friendliness for UpdateTiming call. The various values
 // are calculated at different times by different signals, so the values may be
 // invalid (e.g. unknown or -1) if they have not yet been determined.
 struct MobileFriendliness {
   // Whether <meta name="viewport" content="width=device-width"> is specified or
   // not.
-  // Default value is kUnknown.
-  ViewportStatus viewport_device_width;
+  // Default value is false.
+  bool viewport_device_width;
 
   // The value specified in viewport initial-scale in meta tag multiplied by 10.
   // Default value is -1 as an invalid data.
@@ -28,8 +22,8 @@ struct MobileFriendliness {
   int32 viewport_hardcoded_width;
 
   // Whether the page allows user to zoom in/out.
-  // Default value is kUnknown.
-  ViewportStatus allow_user_zoom;
+  // Default value is true.
+  bool allow_user_zoom;
 
   // Percentage of small font text area in total text area.
   // Default value is -1 as an invalid data.

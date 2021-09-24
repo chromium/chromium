@@ -18,9 +18,9 @@
 namespace blink {
 
 using mobile_metrics_test_helpers::MobileFriendlinessTree;
-using mojom::ViewportStatus;
 
 static constexpr char kBaseUrl[] = "http://www.test.com/";
+
 class MobileFriendlinessCheckerTest : public testing::Test {
  public:
   ~MobileFriendlinessCheckerTest() override {
@@ -108,23 +108,23 @@ class ClockFixedMobileFriendlinessCheckerTest
 TEST_F(MobileFriendlinessCheckerTest, NoViewportSetting) {
   MobileFriendliness actual_mf =
       CalculateMainFrameMetricsForHTMLString("<body>bar</body>");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, DeviceWidth) {
   MobileFriendliness actual_mf =
       CalculateMainFrameMetricsForFile("viewport/viewport-1.html");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kYes);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, true);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, HardcodedViewport) {
   MobileFriendliness actual_mf =
       CalculateMainFrameMetricsForFile("viewport/viewport-30.html");
-  EXPECT_EQ(actual_mf.viewport_device_width, blink::mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.viewport_hardcoded_width, 200);
 }
 
@@ -133,8 +133,8 @@ TEST_F(MobileFriendlinessCheckerTest, HardcodedViewportWithDeviceScale3) {
   MobileFriendliness actual_mf =
       CalculateMainFrameMetricsForFile("viewport/viewport-30.html",
                                        /*device_scale=*/3.0);
-  EXPECT_EQ(actual_mf.viewport_device_width, blink::mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.viewport_hardcoded_width, 200);
 }
 
@@ -143,8 +143,8 @@ TEST_F(MobileFriendlinessCheckerTest, DeviceWidthWithInitialScale05) {
   // pages. But we cannot determine that such page must not be mobile friendly.
   MobileFriendliness actual_mf =
       CalculateMainFrameMetricsForFile("viewport/viewport-34.html");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kYes);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, true);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 5);
 }
 
@@ -154,7 +154,7 @@ TEST_F(MobileFriendlinessCheckerTest, AllowUserScalableWithSmallMaxZoom) {
       <meta name="viewport" content="user-scalable=yes, maximum-scale=1.1">
     </head>
   )");
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, false);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, AllowUserScalableWithLargeMaxZoom) {
@@ -163,7 +163,7 @@ TEST_F(MobileFriendlinessCheckerTest, AllowUserScalableWithLargeMaxZoom) {
       <meta name="viewport" content="user-scalable=yes, maximum-scale=2.0">
     </head>
   )");
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
 }
 
 TEST_F(MobileFriendlinessCheckerTest,
@@ -173,23 +173,23 @@ TEST_F(MobileFriendlinessCheckerTest,
       <meta name="viewport" content="user-scalable=yes, maximum-scale=2.0, initial-scale=1.9">
     </head>
   )");
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, false);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, UserZoom) {
   MobileFriendliness actual_mf = CalculateMainFrameMetricsForFile(
       "viewport-initial-scale-and-user-scalable-no.html");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, true);
   EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 20);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, false);
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
 TEST_F(ClockFixedMobileFriendlinessCheckerTest, NoText) {
   MobileFriendliness actual_mf =
       CalculateMainFrameMetricsForHTMLString(R"(<body></body>)");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.small_text_ratio, 0);
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
@@ -200,8 +200,8 @@ TEST_F(MobileFriendlinessCheckerTest, NoSmallFonts) {
   This is legible font size example.
 </div>
 )");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.small_text_ratio, 0);
 }
 
@@ -211,8 +211,8 @@ TEST_F(MobileFriendlinessCheckerTest, OnlySmallFonts) {
   Small font text.
 </div>
 )");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
@@ -297,8 +297,8 @@ TEST_F(MobileFriendlinessCheckerTest, DontCountInvisibleSmallFontArea) {
 </html>
 )");
   EXPECT_EQ(actual_mf.small_text_ratio, 0);
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ScaleZoomedLegibleFont) {
@@ -312,9 +312,9 @@ TEST_F(MobileFriendlinessCheckerTest, ScaleZoomedLegibleFont) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, true);
   EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 100);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.small_text_ratio, 0);
 }
 
@@ -329,10 +329,10 @@ TEST_F(MobileFriendlinessCheckerTest, ViewportZoomedOutIllegibleFont) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
   EXPECT_EQ(actual_mf.viewport_hardcoded_width, 480);
   EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 5);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
@@ -347,8 +347,8 @@ TEST_F(MobileFriendlinessCheckerTest, TooWideViewportWidthIllegibleFont) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.viewport_device_width, blink::mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.viewport_hardcoded_width, 960);
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
@@ -361,8 +361,8 @@ TEST_F(MobileFriendlinessCheckerTest, CSSZoomedIllegibleFont) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
-  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_device_width, false);
+  EXPECT_EQ(actual_mf.allow_user_zoom, true);
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
@@ -1024,8 +1024,8 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameTest) {
   MobileFriendlinessTree actual_mf_tree =
       CalculateMetricsForFile("single_iframe.html");
   const MobileFriendliness& mainframe_mf = actual_mf_tree.mf;
-  EXPECT_EQ(mainframe_mf.viewport_device_width, mojom::ViewportStatus::kNo);
-  EXPECT_EQ(mainframe_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(mainframe_mf.viewport_device_width, false);
+  EXPECT_EQ(mainframe_mf.allow_user_zoom, true);
   EXPECT_EQ(mainframe_mf.bad_tap_targets_ratio, 0);
 
   EXPECT_EQ(actual_mf_tree.children.size(), 1u);
