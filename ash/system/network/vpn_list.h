@@ -32,16 +32,19 @@ class ASH_EXPORT VpnList : public TrayNetworkStateObserver {
   // the primary user's profile changes.
   class Observer {
    public:
+    Observer& operator=(const Observer&) = delete;
+
     virtual void OnVpnProvidersChanged() = 0;
 
    protected:
     virtual ~Observer();
-
-   private:
-    DISALLOW_ASSIGN(Observer);
   };
 
   explicit VpnList(TrayNetworkStateModel* model);
+
+  VpnList(const VpnList&) = delete;
+  VpnList& operator=(const VpnList&) = delete;
+
   ~VpnList() override;
 
   const std::vector<VpnProviderPtr>& extension_vpn_providers() {
@@ -90,8 +93,6 @@ class ASH_EXPORT VpnList : public TrayNetworkStateObserver {
   std::vector<VpnProviderPtr> arc_vpn_providers_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnList);
 };
 
 }  // namespace ash

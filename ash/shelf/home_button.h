@@ -47,6 +47,10 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   static const char kViewClassName[];
 
   explicit HomeButton(Shelf* shelf);
+
+  HomeButton(const HomeButton&) = delete;
+  HomeButton& operator=(const HomeButton&) = delete;
+
   ~HomeButton() override;
 
   // views::Button:
@@ -91,8 +95,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // The controller used to determine the button's behavior.
   HomeButtonController controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomeButton);
 };
 
 }  // namespace ash

@@ -82,6 +82,11 @@ class ASH_EXPORT OverviewHighlightController {
   };
 
   explicit OverviewHighlightController(OverviewSession* overview_session);
+
+  OverviewHighlightController(const OverviewHighlightController&) = delete;
+  OverviewHighlightController& operator=(const OverviewHighlightController&) =
+      delete;
+
   ~OverviewHighlightController();
 
   // Moves the focus ring to the next traversable view.
@@ -151,8 +156,6 @@ class ASH_EXPORT OverviewHighlightController {
 
   // The current view that is being tab dragged, if any.
   OverviewHighlightableView* tab_dragged_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewHighlightController);
 };
 
 }  // namespace ash

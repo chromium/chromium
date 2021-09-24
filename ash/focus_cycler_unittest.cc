@@ -60,6 +60,9 @@ class FocusCyclerTest : public AshTestBase {
  public:
   FocusCyclerTest() = default;
 
+  FocusCyclerTest(const FocusCyclerTest&) = delete;
+  FocusCyclerTest& operator=(const FocusCyclerTest&) = delete;
+
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -100,8 +103,6 @@ class FocusCyclerTest : public AshTestBase {
 
  private:
   std::unique_ptr<FocusCycler> focus_cycler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusCyclerTest);
 };
 
 TEST_F(FocusCyclerTest, CycleFocusBrowserOnly) {

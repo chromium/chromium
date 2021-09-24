@@ -45,6 +45,12 @@ constexpr char kKeyboardNameForItem2[] = "keyboard2";
 class LoginExpandedPublicAccountViewTest
     : public LoginTestBase,
       public ::testing::WithParamInterface<const char*> {
+ public:
+  LoginExpandedPublicAccountViewTest(
+      const LoginExpandedPublicAccountViewTest&) = delete;
+  LoginExpandedPublicAccountViewTest& operator=(
+      const LoginExpandedPublicAccountViewTest&) = delete;
+
  protected:
   LoginExpandedPublicAccountViewTest() = default;
   ~LoginExpandedPublicAccountViewTest() override = default;
@@ -121,9 +127,6 @@ class LoginExpandedPublicAccountViewTest
   views::View* container_ = nullptr;
   LoginExpandedPublicAccountView* public_account_ = nullptr;
   views::View* other_view_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginExpandedPublicAccountViewTest);
 };
 
 }  // namespace

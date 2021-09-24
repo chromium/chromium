@@ -1115,6 +1115,11 @@ class PowerButtonControllerWithPositionTest
         switches::kAshPowerButtonPosition, json_position_info);
   }
 
+  PowerButtonControllerWithPositionTest(
+      const PowerButtonControllerWithPositionTest&) = delete;
+  PowerButtonControllerWithPositionTest& operator=(
+      const PowerButtonControllerWithPositionTest&) = delete;
+
   bool IsLeftOrRightPosition() const {
     return power_button_position_ == PowerButtonPosition::LEFT ||
            power_button_position_ == PowerButtonPosition::RIGHT;
@@ -1140,8 +1145,6 @@ class PowerButtonControllerWithPositionTest
 
  private:
   PowerButtonPosition power_button_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonControllerWithPositionTest);
 };
 
 // TODO(crbug.com/1010194).

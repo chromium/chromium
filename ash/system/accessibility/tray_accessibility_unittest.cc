@@ -104,6 +104,10 @@ void EnableSwitchAccess(bool enabled) {
 }  // namespace
 
 class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
+ public:
+  TrayAccessibilityTest(const TrayAccessibilityTest&) = delete;
+  TrayAccessibilityTest& operator=(const TrayAccessibilityTest&) = delete;
+
  protected:
   TrayAccessibilityTest() = default;
   ~TrayAccessibilityTest() override = default;
@@ -385,8 +389,6 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
 
   std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<tray::AccessibilityDetailedView> detailed_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayAccessibilityTest);
 };
 
 TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
@@ -748,12 +750,15 @@ TEST_F(TrayAccessibilitySodaTest, SodaDownloadDictationDisabled) {
 }
 
 class TrayAccessibilityLoginScreenTest : public TrayAccessibilityTest {
+ public:
+  TrayAccessibilityLoginScreenTest(const TrayAccessibilityLoginScreenTest&) =
+      delete;
+  TrayAccessibilityLoginScreenTest& operator=(
+      const TrayAccessibilityLoginScreenTest&) = delete;
+
  protected:
   TrayAccessibilityLoginScreenTest() { set_start_session(false); }
   ~TrayAccessibilityLoginScreenTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrayAccessibilityLoginScreenTest);
 };
 
 TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {

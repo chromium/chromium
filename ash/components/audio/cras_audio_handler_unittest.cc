@@ -42,6 +42,10 @@ class FakeMediaControllerManager
  public:
   FakeMediaControllerManager() = default;
 
+  FakeMediaControllerManager(const FakeMediaControllerManager&) = delete;
+  FakeMediaControllerManager& operator=(const FakeMediaControllerManager&) =
+      delete;
+
   mojo::PendingRemote<media_session::mojom::MediaControllerManager>
   MakeRemote() {
     mojo::PendingRemote<media_session::mojom::MediaControllerManager> remote;
@@ -63,8 +67,6 @@ class FakeMediaControllerManager
   }
 
   mojo::ReceiverSet<media_session::mojom::MediaControllerManager> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaControllerManager);
 };
 
 const uint64_t kInternalSpeakerId = 10001;
@@ -509,6 +511,9 @@ class HDMIRediscoverWaiter {
       : cras_audio_handler_test_(cras_audio_handler_test),
         grace_period_duration_in_ms_(grace_period_duration_in_ms) {}
 
+  HDMIRediscoverWaiter(const HDMIRediscoverWaiter&) = delete;
+  HDMIRediscoverWaiter& operator=(const HDMIRediscoverWaiter&) = delete;
+
   void WaitUntilTimeOut(int wait_duration_in_ms) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -538,8 +543,6 @@ class HDMIRediscoverWaiter {
  private:
   CrasAudioHandlerTest* cras_audio_handler_test_;  // not owned
   int grace_period_duration_in_ms_;
-
-  DISALLOW_COPY_AND_ASSIGN(HDMIRediscoverWaiter);
 };
 
 INSTANTIATE_TEST_SUITE_P(StableIdV1, CrasAudioHandlerTest, testing::Values(1));

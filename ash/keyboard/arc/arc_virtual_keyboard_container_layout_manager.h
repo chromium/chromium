@@ -17,6 +17,11 @@ class ArcVirtualKeyboardContainerLayoutManager : public aura::LayoutManager {
   explicit ArcVirtualKeyboardContainerLayoutManager(
       aura::Window* arc_ime_window_parent_container);
 
+  ArcVirtualKeyboardContainerLayoutManager(
+      const ArcVirtualKeyboardContainerLayoutManager&) = delete;
+  ArcVirtualKeyboardContainerLayoutManager& operator=(
+      const ArcVirtualKeyboardContainerLayoutManager&) = delete;
+
   // aura::LayoutManager:
   void OnWindowResized() override;
   void OnWindowAddedToLayout(aura::Window* child) override;
@@ -29,8 +34,6 @@ class ArcVirtualKeyboardContainerLayoutManager : public aura::LayoutManager {
 
  private:
   aura::Window* arc_ime_window_parent_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVirtualKeyboardContainerLayoutManager);
 };
 
 }  // namespace ash

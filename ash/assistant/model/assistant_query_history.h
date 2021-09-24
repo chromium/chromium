@@ -45,6 +45,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
   };
 
   AssistantQueryHistory(int capacity = 100);
+
+  AssistantQueryHistory(const AssistantQueryHistory&) = delete;
+  AssistantQueryHistory& operator=(const AssistantQueryHistory&) = delete;
+
   ~AssistantQueryHistory();
 
   // Gets the iterator of query history.
@@ -56,8 +60,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
  private:
   const int capacity_;
   base::circular_deque<std::string> queries_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantQueryHistory);
 };
 
 }  // namespace ash

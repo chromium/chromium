@@ -86,6 +86,10 @@ class ASH_EXPORT LoginPasswordView : public views::View,
 
   // Must call |Init| after construction.
   explicit LoginPasswordView(const LoginPalette& palette);
+
+  LoginPasswordView(const LoginPasswordView&) = delete;
+  LoginPasswordView& operator=(const LoginPasswordView&) = delete;
+
   ~LoginPasswordView() override;
 
   // |on_submit| is called when the user hits enter or has pressed the submit
@@ -214,8 +218,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   bool should_show_easy_unlock_ = false;
 
   bool is_capslock_higlight_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginPasswordView);
 };
 
 }  // namespace ash

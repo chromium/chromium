@@ -28,6 +28,9 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
  public:
   MockDriveFs() = default;
 
+  MockDriveFs(const MockDriveFs&) = delete;
+  MockDriveFs& operator=(const MockDriveFs&) = delete;
+
   DriveFs* GetForwardingInterface() override {
     NOTREACHED();
     return nullptr;
@@ -53,7 +56,6 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
  private:
   mojo::Receiver<mojom::SearchQuery> search_receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockDriveFs);
 };
 
 class DriveFsSearchTest : public testing::Test {

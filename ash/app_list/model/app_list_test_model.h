@@ -46,6 +46,9 @@ class AppListTestModel : public AppListModel {
 
   AppListTestModel();
 
+  AppListTestModel(const AppListTestModel&) = delete;
+  AppListTestModel& operator=(const AppListTestModel&) = delete;
+
   // Raw pointer version convenience versions of AppListModel methods.
   AppListItem* AddItem(AppListItem* item);
   AppListItem* AddItemToFolder(AppListItem* item, const std::string& folder_id);
@@ -87,8 +90,6 @@ class AppListTestModel : public AppListModel {
   int activate_count_ = 0;
   AppListItem* last_activated_ = nullptr;
   int naming_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListTestModel);
 };
 
 }  // namespace test

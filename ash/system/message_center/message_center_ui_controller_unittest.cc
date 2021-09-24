@@ -25,10 +25,11 @@ class TestNotificationDelegate : public message_center::NotificationDelegate {
  public:
   TestNotificationDelegate() = default;
 
+  TestNotificationDelegate(const TestNotificationDelegate&) = delete;
+  TestNotificationDelegate& operator=(const TestNotificationDelegate&) = delete;
+
  private:
   ~TestNotificationDelegate() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNotificationDelegate);
 };
 
 class MockDelegate : public MessageCenterUiDelegate {

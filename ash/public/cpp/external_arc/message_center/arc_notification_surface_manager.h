@@ -31,6 +31,10 @@ class ArcNotificationSurfaceManager {
   };
   static ArcNotificationSurfaceManager* Get();
 
+  ArcNotificationSurfaceManager(const ArcNotificationSurfaceManager&) = delete;
+  ArcNotificationSurfaceManager& operator=(
+      const ArcNotificationSurfaceManager&) = delete;
+
   virtual ~ArcNotificationSurfaceManager();
 
   virtual ArcNotificationSurface* GetArcSurface(
@@ -43,8 +47,6 @@ class ArcNotificationSurfaceManager {
 
  private:
   static ArcNotificationSurfaceManager* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationSurfaceManager);
 };
 
 }  // namespace ash

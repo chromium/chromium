@@ -2627,6 +2627,9 @@ class FakeMagnificationManager {
  public:
   FakeMagnificationManager() = default;
 
+  FakeMagnificationManager(const FakeMagnificationManager&) = delete;
+  FakeMagnificationManager& operator=(const FakeMagnificationManager&) = delete;
+
   void SetPrefs(PrefService* prefs) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(prefs);
@@ -2645,8 +2648,6 @@ class FakeMagnificationManager {
  private:
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMagnificationManager);
 };
 
 TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {

@@ -34,6 +34,9 @@ class ASH_EXPORT TouchObserverHud
       public display::DisplayConfigurator::Observer,
       public WindowTreeHostManager::Observer {
  public:
+  TouchObserverHud(const TouchObserverHud&) = delete;
+  TouchObserverHud& operator=(const TouchObserverHud&) = delete;
+
   // Called to clear touch points and traces from the screen.
   virtual void Clear() = 0;
 
@@ -85,8 +88,6 @@ class ASH_EXPORT TouchObserverHud
   views::Widget* widget_;
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TouchObserverHud);
 };
 
 }  // namespace ash

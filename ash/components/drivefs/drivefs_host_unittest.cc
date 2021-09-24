@@ -202,6 +202,9 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     clock_.SetNow(base::Time::Now());
   }
 
+  DriveFsHostTest(const DriveFsHostTest&) = delete;
+  DriveFsHostTest& operator=(const DriveFsHostTest&) = delete;
+
  protected:
   void SetUp() override {
     testing::Test::SetUp();
@@ -344,9 +347,6 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
   mojo::PendingReceiver<mojom::DriveFsDelegate> pending_delegate_receiver_;
   std::string token_;
   absl::optional<std::string> init_access_token_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DriveFsHostTest);
 };
 
 TEST_F(DriveFsHostTest, Basic) {

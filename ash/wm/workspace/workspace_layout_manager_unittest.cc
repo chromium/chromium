@@ -360,6 +360,11 @@ class DontClobberRestoreBoundsWindowObserver : public aura::WindowObserver {
  public:
   DontClobberRestoreBoundsWindowObserver() : window_(nullptr) {}
 
+  DontClobberRestoreBoundsWindowObserver(
+      const DontClobberRestoreBoundsWindowObserver&) = delete;
+  DontClobberRestoreBoundsWindowObserver& operator=(
+      const DontClobberRestoreBoundsWindowObserver&) = delete;
+
   void set_window(aura::Window* window) { window_ = window; }
 
   // aura::WindowObserver:
@@ -382,8 +387,6 @@ class DontClobberRestoreBoundsWindowObserver : public aura::WindowObserver {
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DontClobberRestoreBoundsWindowObserver);
 };
 
 // Creates a window, maximized the window and from within the maximized

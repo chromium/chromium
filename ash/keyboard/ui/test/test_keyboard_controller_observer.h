@@ -13,6 +13,12 @@ namespace keyboard {
 // A KeyboardControllerObserver that counts occurrences of events for testing.
 struct TestKeyboardControllerObserver : public ash::KeyboardControllerObserver {
   TestKeyboardControllerObserver();
+
+  TestKeyboardControllerObserver(const TestKeyboardControllerObserver&) =
+      delete;
+  TestKeyboardControllerObserver& operator=(
+      const TestKeyboardControllerObserver&) = delete;
+
   ~TestKeyboardControllerObserver() override;
 
   // KeyboardControllerObserver:
@@ -20,7 +26,6 @@ struct TestKeyboardControllerObserver : public ash::KeyboardControllerObserver {
 
   int enabled_count = 0;
   int disabled_count = 0;
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardControllerObserver);
 };
 
 }  // namespace keyboard

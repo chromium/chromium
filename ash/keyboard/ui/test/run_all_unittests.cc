@@ -21,6 +21,9 @@ class KeyboardTestSuite : public base::TestSuite {
  public:
   KeyboardTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
+  KeyboardTestSuite(const KeyboardTestSuite&) = delete;
+  KeyboardTestSuite& operator=(const KeyboardTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
@@ -41,8 +44,6 @@ class KeyboardTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<aura::Env> env_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardTestSuite);
 };
 
 }  // namespace

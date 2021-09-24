@@ -230,6 +230,9 @@ class FingerprintLabel : public views::Label {
                         false /*can_use_pin*/);
   }
 
+  FingerprintLabel(const FingerprintLabel&) = delete;
+  FingerprintLabel& operator=(const FingerprintLabel&) = delete;
+
   void SetTextBasedOnAuthAttempt(bool success) {
     SetText(l10n_util::GetStringUTF16(
         success ? IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_SUCCESS
@@ -288,8 +291,6 @@ class FingerprintLabel : public views::Label {
   }
 
   std::u16string accessible_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintLabel);
 };
 
 // The content needed to render the disabled auth message view.
@@ -744,6 +745,9 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     message_contents_->SetMultiLine(true);
   }
 
+  DisabledAuthMessageView(const DisabledAuthMessageView&) = delete;
+  DisabledAuthMessageView& operator=(const DisabledAuthMessageView&) = delete;
+
   ~DisabledAuthMessageView() override = default;
 
   // Set the parameters needed to render the message.
@@ -812,8 +816,6 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
   views::Label* message_contents_;
   views::ImageView* message_icon_;
   const gfx::VectorIcon* message_vector_icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DisabledAuthMessageView);
 };
 
 // The message shown to user when TPM is locked.

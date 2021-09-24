@@ -28,6 +28,10 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerImpl
   // |local_state| is the device-wide preference service.
   explicit AudioDevicesPrefHandlerImpl(PrefService* local_state);
 
+  AudioDevicesPrefHandlerImpl(const AudioDevicesPrefHandlerImpl&) = delete;
+  AudioDevicesPrefHandlerImpl& operator=(const AudioDevicesPrefHandlerImpl&) =
+      delete;
+
   // Overridden from AudioDevicesPrefHandler.
   double GetOutputVolumeValue(const AudioDevice* device) override;
   double GetInputGainValue(const AudioDevice* device) override;
@@ -120,8 +124,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerImpl
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<AudioPrefObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDevicesPrefHandlerImpl);
 };
 
 }  // namespace ash

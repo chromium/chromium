@@ -21,6 +21,11 @@ class DisplayConfigurationControllerTestApi {
   explicit DisplayConfigurationControllerTestApi(
       DisplayConfigurationController* controller);
 
+  DisplayConfigurationControllerTestApi(
+      const DisplayConfigurationControllerTestApi&) = delete;
+  DisplayConfigurationControllerTestApi& operator=(
+      const DisplayConfigurationControllerTestApi&) = delete;
+
   // Wrapper functions for DisplayConfigurationController.
   void SetDisplayAnimator(bool enable);
   ScreenRotationAnimator* GetScreenRotationAnimatorForDisplay(
@@ -32,8 +37,6 @@ class DisplayConfigurationControllerTestApi {
 
  private:
   DisplayConfigurationController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayConfigurationControllerTestApi);
 };
 
 }  // namespace ash

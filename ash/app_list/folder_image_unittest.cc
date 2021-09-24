@@ -39,6 +39,9 @@ class TestFolderImageObserver : public FolderImageObserver {
  public:
   TestFolderImageObserver() : updated_flag_(false) {}
 
+  TestFolderImageObserver(const TestFolderImageObserver&) = delete;
+  TestFolderImageObserver& operator=(const TestFolderImageObserver&) = delete;
+
   bool updated() const { return updated_flag_; }
 
   void Reset() { updated_flag_ = false; }
@@ -50,8 +53,6 @@ class TestFolderImageObserver : public FolderImageObserver {
 
  private:
   bool updated_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFolderImageObserver);
 };
 
 }  // namespace

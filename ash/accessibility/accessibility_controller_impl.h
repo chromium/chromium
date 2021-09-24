@@ -195,6 +195,11 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   };
 
   AccessibilityControllerImpl();
+
+  AccessibilityControllerImpl(const AccessibilityControllerImpl&) = delete;
+  AccessibilityControllerImpl& operator=(const AccessibilityControllerImpl&) =
+      delete;
+
   ~AccessibilityControllerImpl() override;
 
   // See Shell::RegisterProfilePrefs().
@@ -579,8 +584,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
 
   base::WeakPtrFactory<AccessibilityControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerImpl);
 };
 
 }  // namespace ash

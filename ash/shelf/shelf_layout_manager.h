@@ -114,6 +114,10 @@ class ASH_EXPORT ShelfLayoutManager
   };
 
   ShelfLayoutManager(ShelfWidget* shelf_widget, Shelf* shelf);
+
+  ShelfLayoutManager(const ShelfLayoutManager&) = delete;
+  ShelfLayoutManager& operator=(const ShelfLayoutManager&) = delete;
+
   ~ShelfLayoutManager() override;
 
   // Initializes observers.
@@ -730,8 +734,6 @@ class ASH_EXPORT ShelfLayoutManager
   std::unique_ptr<PresentationTimeRecorder> hotseat_presentation_time_recorder_;
 
   base::WeakPtrFactory<ShelfLayoutManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfLayoutManager);
 };
 
 }  // namespace ash

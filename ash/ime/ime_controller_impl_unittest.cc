@@ -74,6 +74,10 @@ class TestImeControllerObserver : public ImeControllerImpl::Observer {
  public:
   TestImeControllerObserver() = default;
 
+  TestImeControllerObserver(const TestImeControllerObserver&) = delete;
+  TestImeControllerObserver& operator=(const TestImeControllerObserver&) =
+      delete;
+
   // IMEController::Observer:
   void OnCapsLockChanged(bool enabled) override { ++caps_lock_count_; }
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {
@@ -87,8 +91,6 @@ class TestImeControllerObserver : public ImeControllerImpl::Observer {
  private:
   int caps_lock_count_ = 0;
   std::string last_keyboard_layout_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImeControllerObserver);
 };
 
 using ImeControllerImplTest = AshTestBase;

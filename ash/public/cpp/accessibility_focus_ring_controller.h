@@ -25,6 +25,11 @@ class ASH_PUBLIC_EXPORT AccessibilityFocusRingController {
  public:
   static AccessibilityFocusRingController* Get();
 
+  AccessibilityFocusRingController(const AccessibilityFocusRingController&) =
+      delete;
+  AccessibilityFocusRingController& operator=(
+      const AccessibilityFocusRingController&) = delete;
+
   // Sets the focus ring with the given ID to the specifications of focus_ring.
   virtual void SetFocusRing(
       const std::string& focus_ring_id,
@@ -49,9 +54,6 @@ class ASH_PUBLIC_EXPORT AccessibilityFocusRingController {
  protected:
   AccessibilityFocusRingController();
   virtual ~AccessibilityFocusRingController();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingController);
 };
 
 }  // namespace ash

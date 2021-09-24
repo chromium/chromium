@@ -23,6 +23,10 @@ class HoverHighlightView;
 class CommonPaletteTool : public PaletteTool, public ViewClickListener {
  protected:
   explicit CommonPaletteTool(Delegate* delegate);
+
+  CommonPaletteTool(const CommonPaletteTool&) = delete;
+  CommonPaletteTool& operator=(const CommonPaletteTool&) = delete;
+
   ~CommonPaletteTool() override;
 
   // PaletteTool:
@@ -46,8 +50,6 @@ class CommonPaletteTool : public PaletteTool, public ViewClickListener {
   // start_time_ is initialized when the tool becomes active.
   // Used for recording UMA metrics.
   base::TimeTicks start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommonPaletteTool);
 };
 
 }  // namespace ash

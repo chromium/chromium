@@ -111,6 +111,10 @@ bool ComparePortAssociations(
 }  // namespace
 
 class DisplayPrefsTest : public AshTestBase {
+ public:
+  DisplayPrefsTest(const DisplayPrefsTest&) = delete;
+  DisplayPrefsTest& operator=(const DisplayPrefsTest&) = delete;
+
  protected:
   DisplayPrefsTest() = default;
   ~DisplayPrefsTest() override = default;
@@ -240,16 +244,14 @@ class DisplayPrefsTest : public AshTestBase {
  private:
   std::unique_ptr<WindowTreeHostManager::Observer> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayPrefsTest);
 };
 
 class DisplayPrefsTestGuest : public DisplayPrefsTest {
  public:
   DisplayPrefsTestGuest() { set_start_session(false); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayPrefsTestGuest);
+  DisplayPrefsTestGuest(const DisplayPrefsTestGuest&) = delete;
+  DisplayPrefsTestGuest& operator=(const DisplayPrefsTestGuest&) = delete;
 };
 
 TEST_F(DisplayPrefsTest, ListedLayoutOverrides) {

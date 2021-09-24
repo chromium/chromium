@@ -56,6 +56,10 @@ class ASH_EXPORT VideoDetector : public aura::EnvObserver,
   };
 
   VideoDetector();
+
+  VideoDetector(const VideoDetector&) = delete;
+  VideoDetector& operator=(const VideoDetector&) = delete;
+
   ~VideoDetector() override;
 
   State state() const { return state_; }
@@ -112,8 +116,6 @@ class ASH_EXPORT VideoDetector : public aura::EnvObserver,
   mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_{this};
 
   base::WeakPtrFactory<VideoDetector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDetector);
 };
 
 }  // namespace ash

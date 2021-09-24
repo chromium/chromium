@@ -347,11 +347,12 @@ class TestMouseWatcherListener : public views::MouseWatcherListener {
  public:
   TestMouseWatcherListener() = default;
 
+  TestMouseWatcherListener(const TestMouseWatcherListener&) = delete;
+  TestMouseWatcherListener& operator=(const TestMouseWatcherListener&) = delete;
+
  private:
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestMouseWatcherListener);
 };
 
 }  // namespace

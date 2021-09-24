@@ -41,6 +41,10 @@ class ASH_PUBLIC_EXPORT AppListConfigProvider {
   static AppListConfigProvider& Get();
 
   AppListConfigProvider();
+
+  AppListConfigProvider(const AppListConfigProvider&) = delete;
+  AppListConfigProvider& operator=(const AppListConfigProvider&) = delete;
+
   ~AppListConfigProvider();
 
   void AddObserver(Observer* observer);
@@ -80,8 +84,6 @@ class ASH_PUBLIC_EXPORT AppListConfigProvider {
   std::map<AppListConfigType, std::unique_ptr<AppListConfig>> configs_;
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListConfigProvider);
 };
 
 }  // namespace ash

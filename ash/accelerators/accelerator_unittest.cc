@@ -63,6 +63,9 @@ class AcceleratorTest : public AshTestBase, public OverviewObserver {
  public:
   AcceleratorTest() : is_in_overview_mode_(false) {}
 
+  AcceleratorTest(const AcceleratorTest&) = delete;
+  AcceleratorTest& operator=(const AcceleratorTest&) = delete;
+
   void SetUp() override {
     ui_controls::InstallUIControlsAura(test::CreateAshUIControls());
 
@@ -98,9 +101,6 @@ class AcceleratorTest : public AshTestBase, public OverviewObserver {
 
  protected:
   bool is_in_overview_mode_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorTest);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

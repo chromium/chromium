@@ -2356,6 +2356,10 @@ class ShelfViewVisibleBoundsTest : public ShelfViewTest,
  public:
   ShelfViewVisibleBoundsTest() : scoped_locale_(GetParam() ? "he" : "") {}
 
+  ShelfViewVisibleBoundsTest(const ShelfViewVisibleBoundsTest&) = delete;
+  ShelfViewVisibleBoundsTest& operator=(const ShelfViewVisibleBoundsTest&) =
+      delete;
+
   void CheckAllItemsAreInBounds() {
     gfx::Rect visible_bounds = shelf_view_->GetVisibleItemsBoundsInScreen();
     gfx::Rect shelf_bounds = shelf_view_->GetBoundsInScreen();
@@ -2370,8 +2374,6 @@ class ShelfViewVisibleBoundsTest : public ShelfViewTest,
  private:
   // Restores locale to the default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfViewVisibleBoundsTest);
 };
 
 TEST_P(ShelfViewVisibleBoundsTest, ItemsAreInBounds) {

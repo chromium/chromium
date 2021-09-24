@@ -268,6 +268,9 @@ class ImeMenuListView : public ImeListView {
    public:
     Delegate() : DetailedViewDelegate(nullptr /* tray_controller */) {}
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // DetailedViewDelegate:
     void TransitionToMainView(bool restore_focus) override {}
     void CloseBubble() override {}
@@ -275,9 +278,6 @@ class ImeMenuListView : public ImeListView {
     gfx::Insets GetInsetsForDetailedView() const override {
       return gfx::Insets();
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   explicit ImeMenuListView(std::unique_ptr<Delegate> delegate)

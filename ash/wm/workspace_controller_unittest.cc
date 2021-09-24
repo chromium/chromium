@@ -586,6 +586,11 @@ class DontCrashOnChangeAndActivateDelegate
  public:
   DontCrashOnChangeAndActivateDelegate() : window_(NULL) {}
 
+  DontCrashOnChangeAndActivateDelegate(
+      const DontCrashOnChangeAndActivateDelegate&) = delete;
+  DontCrashOnChangeAndActivateDelegate& operator=(
+      const DontCrashOnChangeAndActivateDelegate&) = delete;
+
   void set_window(aura::Window* window) { window_ = window; }
 
   // WindowDelegate overrides:
@@ -599,8 +604,6 @@ class DontCrashOnChangeAndActivateDelegate
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DontCrashOnChangeAndActivateDelegate);
 };
 
 }  // namespace

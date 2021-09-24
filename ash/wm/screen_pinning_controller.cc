@@ -69,13 +69,17 @@ class ScreenPinningController::PinnedContainerChildWindowObserver
       ScreenPinningController* controller)
       : controller_(controller) {}
 
+  PinnedContainerChildWindowObserver(
+      const PinnedContainerChildWindowObserver&) = delete;
+  PinnedContainerChildWindowObserver& operator=(
+      const PinnedContainerChildWindowObserver&) = delete;
+
   void OnWindowStackingChanged(aura::Window* window) override {
     controller_->OnPinnedContainerWindowStackingChanged(window);
   }
 
  private:
   ScreenPinningController* controller_;
-  DISALLOW_COPY_AND_ASSIGN(PinnedContainerChildWindowObserver);
 };
 
 // Adapter to translate OnWindowAdded/OnWillRemoveWindow for the container
@@ -85,6 +89,10 @@ class ScreenPinningController::PinnedContainerWindowObserver
  public:
   explicit PinnedContainerWindowObserver(ScreenPinningController* controller)
       : controller_(controller) {}
+
+  PinnedContainerWindowObserver(const PinnedContainerWindowObserver&) = delete;
+  PinnedContainerWindowObserver& operator=(
+      const PinnedContainerWindowObserver&) = delete;
 
   void OnWindowAdded(aura::Window* new_window) override {
     controller_->OnWindowAddedToPinnedContainer(new_window);
@@ -99,7 +107,6 @@ class ScreenPinningController::PinnedContainerWindowObserver
 
  private:
   ScreenPinningController* controller_;
-  DISALLOW_COPY_AND_ASSIGN(PinnedContainerWindowObserver);
 };
 
 // Adapter to fire OnSystemModalContainerWindowStackingChanged().
@@ -110,13 +117,17 @@ class ScreenPinningController::SystemModalContainerChildWindowObserver
       ScreenPinningController* controller)
       : controller_(controller) {}
 
+  SystemModalContainerChildWindowObserver(
+      const SystemModalContainerChildWindowObserver&) = delete;
+  SystemModalContainerChildWindowObserver& operator=(
+      const SystemModalContainerChildWindowObserver&) = delete;
+
   void OnWindowStackingChanged(aura::Window* window) override {
     controller_->OnSystemModalContainerWindowStackingChanged(window);
   }
 
  private:
   ScreenPinningController* controller_;
-  DISALLOW_COPY_AND_ASSIGN(SystemModalContainerChildWindowObserver);
 };
 
 // Adapter to translate OnWindowAdded/OnWillRemoveWindow for the
@@ -127,6 +138,11 @@ class ScreenPinningController::SystemModalContainerWindowObserver
   explicit SystemModalContainerWindowObserver(
       ScreenPinningController* controller)
       : controller_(controller) {}
+
+  SystemModalContainerWindowObserver(
+      const SystemModalContainerWindowObserver&) = delete;
+  SystemModalContainerWindowObserver& operator=(
+      const SystemModalContainerWindowObserver&) = delete;
 
   void OnWindowAdded(aura::Window* new_window) override {
     controller_->OnWindowAddedToSystemModalContainer(new_window);
@@ -141,7 +157,6 @@ class ScreenPinningController::SystemModalContainerWindowObserver
 
  private:
   ScreenPinningController* controller_;
-  DISALLOW_COPY_AND_ASSIGN(SystemModalContainerWindowObserver);
 };
 
 ScreenPinningController::ScreenPinningController()

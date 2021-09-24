@@ -17,12 +17,12 @@ class NullMouseWarpController : public MouseWarpController {
  public:
   NullMouseWarpController() {}
 
+  NullMouseWarpController(const NullMouseWarpController&) = delete;
+  NullMouseWarpController& operator=(const NullMouseWarpController&) = delete;
+
   // MouseWarpController:
   bool WarpMouseCursor(ui::MouseEvent* event) override;
   void SetEnabled(bool enable) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullMouseWarpController);
 };
 
 }  // namespace ash

@@ -45,6 +45,10 @@ class WindowPreview : public views::View {
   WindowPreview(aura::Window* window,
                 Delegate* delegate,
                 const ui::NativeTheme* theme);
+
+  WindowPreview(const WindowPreview&) = delete;
+  WindowPreview& operator=(const WindowPreview&) = delete;
+
   ~WindowPreview() override;
 
   // views::View:
@@ -71,8 +75,6 @@ class WindowPreview : public views::View {
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPreview);
 };
 
 }  // namespace ash

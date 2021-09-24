@@ -185,6 +185,9 @@ class LoginUserView::UserImage : public NonAccessibleView {
     AddChildView(enterprise_icon_);
   }
 
+  UserImage(const UserImage&) = delete;
+  UserImage& operator=(const UserImage&) = delete;
+
   ~UserImage() override = default;
 
   void UpdateForUser(const LoginUserInfo& user) {
@@ -258,8 +261,6 @@ class LoginUserView::UserImage : public NonAccessibleView {
   bool animation_enabled_ = false;
 
   base::WeakPtrFactory<UserImage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserImage);
 };
 
 // Shows the user's name.

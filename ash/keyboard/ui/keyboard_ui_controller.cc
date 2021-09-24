@@ -146,6 +146,10 @@ class CallbackAnimationObserver : public ui::ImplicitAnimationObserver {
   explicit CallbackAnimationObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
 
+  CallbackAnimationObserver(const CallbackAnimationObserver&) = delete;
+  CallbackAnimationObserver& operator=(const CallbackAnimationObserver&) =
+      delete;
+
  private:
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
@@ -161,8 +165,6 @@ class CallbackAnimationObserver : public ui::ImplicitAnimationObserver {
   }
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackAnimationObserver);
 };
 
 KeyboardUIController::KeyboardUIController()

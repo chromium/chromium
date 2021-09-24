@@ -161,6 +161,9 @@ class FocusActivationStore {
         focused_(nullptr),
         active_(nullptr) {}
 
+  FocusActivationStore(const FocusActivationStore&) = delete;
+  FocusActivationStore& operator=(const FocusActivationStore&) = delete;
+
   void Store(bool clear_focus) {
     if (!activation_client_) {
       aura::Window* root = Shell::GetPrimaryRootWindow();
@@ -214,8 +217,6 @@ class FocusActivationStore {
   aura::WindowTracker tracker_;
   aura::Window* focused_;
   aura::Window* active_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusActivationStore);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

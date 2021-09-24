@@ -74,6 +74,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   };
 
   DesksController();
+
+  DesksController(const DesksController&) = delete;
+  DesksController& operator=(const DesksController&) = delete;
+
   ~DesksController() override;
 
   // Convenience method for returning the DesksController instance.
@@ -370,8 +374,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   // Scheduler for reporting the weekly active desks metric.
   base::OneShotTimer weekly_active_desks_scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesksController);
 };
 
 }  // namespace ash

@@ -56,6 +56,9 @@ class ASH_EXPORT TopShortcutsView : public views::View {
  public:
   explicit TopShortcutsView(UnifiedSystemTrayController* controller);
 
+  TopShortcutsView(const TopShortcutsView&) = delete;
+  TopShortcutsView& operator=(const TopShortcutsView&) = delete;
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Change the expanded state. CollapseButton icon will rotate.
@@ -80,8 +83,6 @@ class ASH_EXPORT TopShortcutsView : public views::View {
   CollapseButton* collapse_button_ = nullptr;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutsView);
 };
 
 }  // namespace ash

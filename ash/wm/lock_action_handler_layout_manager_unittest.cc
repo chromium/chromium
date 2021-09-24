@@ -170,6 +170,14 @@ class LockActionHandlerLayoutManagerTestWithTestBackgroundController
     : public LockActionHandlerLayoutManagerTest {
  public:
   LockActionHandlerLayoutManagerTestWithTestBackgroundController() = default;
+
+  LockActionHandlerLayoutManagerTestWithTestBackgroundController(
+      const LockActionHandlerLayoutManagerTestWithTestBackgroundController&) =
+      delete;
+  LockActionHandlerLayoutManagerTestWithTestBackgroundController& operator=(
+      const LockActionHandlerLayoutManagerTestWithTestBackgroundController&) =
+      delete;
+
   ~LockActionHandlerLayoutManagerTestWithTestBackgroundController() override =
       default;
 
@@ -194,9 +202,6 @@ class LockActionHandlerLayoutManagerTestWithTestBackgroundController
   // The lock screen action background controller created by
   // |CreateActionBackgroundController|.
   TestLockScreenActionBackgroundController* background_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      LockActionHandlerLayoutManagerTestWithTestBackgroundController);
 };
 
 TEST_F(LockActionHandlerLayoutManagerTest, PreserveNormalWindowBounds) {

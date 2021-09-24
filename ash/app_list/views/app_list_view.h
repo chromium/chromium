@@ -160,6 +160,10 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Does not take ownership of |delegate|.
   explicit AppListView(AppListViewDelegate* delegate);
+
+  AppListView(const AppListView&) = delete;
+  AppListView& operator=(const AppListView&) = delete;
+
   ~AppListView() override;
 
   // Prevents handling input events for the |window| in context of handling in
@@ -653,8 +657,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // detects that `SetState()` got called again (in which case the weak ptr will
   // be invalidated).
   base::WeakPtrFactory<AppListView> set_state_weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppListView);
 };
 
 }  // namespace ash

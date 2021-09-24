@@ -99,7 +99,8 @@ class Separator : public views::View {
             ContentLayerType::kSeparatorColor)));
   }
 
-  DISALLOW_COPY_AND_ASSIGN(Separator);
+  Separator(const Separator&) = delete;
+  Separator& operator=(const Separator&) = delete;
 };
 
 views::View* CreateAddUserErrorView(const std::u16string& message) {

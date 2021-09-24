@@ -37,6 +37,9 @@ class UsbNotificationDelegate : public message_center::NotificationDelegate {
   explicit UsbNotificationDelegate(PowerNotificationController* controller)
       : controller_(controller) {}
 
+  UsbNotificationDelegate(const UsbNotificationDelegate&) = delete;
+  UsbNotificationDelegate& operator=(const UsbNotificationDelegate&) = delete;
+
   // Overridden from message_center::NotificationDelegate.
   void Close(bool by_user) override {
     if (by_user)
@@ -47,8 +50,6 @@ class UsbNotificationDelegate : public message_center::NotificationDelegate {
   ~UsbNotificationDelegate() override = default;
 
   PowerNotificationController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbNotificationDelegate);
 };
 
 std::string GetNotificationStateString(

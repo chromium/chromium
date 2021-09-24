@@ -46,6 +46,9 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   // The UI that this instance is displaying.
   enum class ScreenType { kLogin, kLock };
 
+  LockScreen(const LockScreen&) = delete;
+  LockScreen& operator=(const LockScreen&) = delete;
+
   // Fetch the global lock screen instance. |Show()| must have been called
   // before this.
   static LockScreen* Get();
@@ -114,8 +117,6 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   ScopedSessionObserver session_observer_{this};
 
   std::vector<base::OnceClosure> on_shown_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreen);
 };
 
 }  // namespace ash

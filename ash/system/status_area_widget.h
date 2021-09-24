@@ -60,6 +60,10 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   };
 
   StatusAreaWidget(aura::Window* status_container, Shelf* shelf);
+
+  StatusAreaWidget(const StatusAreaWidget&) = delete;
+  StatusAreaWidget& operator=(const StatusAreaWidget&) = delete;
+
   ~StatusAreaWidget() override;
 
   // Returns the status area widget for the display that |window| is on.
@@ -252,8 +256,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   int tray_bubble_count_ = 0;
 
   base::WeakPtrFactory<StatusAreaWidget> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusAreaWidget);
 };
 
 }  // namespace ash

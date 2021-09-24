@@ -57,6 +57,9 @@ class MaxSizeNCFV : public views::NonClientFrameView {
  public:
   MaxSizeNCFV() = default;
 
+  MaxSizeNCFV(const MaxSizeNCFV&) = delete;
+  MaxSizeNCFV& operator=(const MaxSizeNCFV&) = delete;
+
  private:
   gfx::Size GetMaximumSize() const override { return gfx::Size(200, 200); }
   gfx::Rect GetBoundsForClientView() const override { return gfx::Rect(); }
@@ -76,8 +79,6 @@ class MaxSizeNCFV : public views::NonClientFrameView {
   void UpdateWindowIcon() override {}
   void UpdateWindowTitle() override {}
   void SizeConstraintsChanged() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(MaxSizeNCFV);
 };
 
 class MaxSizeWidgetDelegate : public views::WidgetDelegateView {

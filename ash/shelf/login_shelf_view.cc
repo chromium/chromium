@@ -352,6 +352,9 @@ class KioskAppsButton : public views::MenuButton,
         1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   }
 
+  KioskAppsButton(const KioskAppsButton&) = delete;
+  KioskAppsButton& operator=(const KioskAppsButton&) = delete;
+
   bool LaunchAppForTesting(const std::string& app_id) {
     for (size_t i = 0; i < kiosk_apps_.size(); ++i) {
       if (kiosk_apps_[i].app_id == app_id) {
@@ -449,8 +452,6 @@ class KioskAppsButton : public views::MenuButton,
   std::vector<KioskAppMenuEntry> kiosk_apps_;
 
   bool is_launch_enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppsButton);
 };
 
 // Class that temporarily disables Guest login buttin on shelf.

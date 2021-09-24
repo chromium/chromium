@@ -42,11 +42,12 @@ class TestAppMenuModelAdapter : public AppMenuModelAdapter {
                             base::OnceClosure(),
                             false /* is_tablet_mode */) {}
 
+  TestAppMenuModelAdapter(const TestAppMenuModelAdapter&) = delete;
+  TestAppMenuModelAdapter& operator=(const TestAppMenuModelAdapter&) = delete;
+
  private:
   // AppMenuModelAdapter overrides:
   void RecordHistogramOnMenuClosed() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppMenuModelAdapter);
 };
 
 }  // namespace

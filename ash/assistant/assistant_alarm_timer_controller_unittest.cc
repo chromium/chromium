@@ -334,6 +334,11 @@ class AssistantAlarmTimerControllerTest : public AssistantAshTestBase {
       : AssistantAshTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  AssistantAlarmTimerControllerTest(const AssistantAlarmTimerControllerTest&) =
+      delete;
+  AssistantAlarmTimerControllerTest& operator=(
+      const AssistantAlarmTimerControllerTest&) = delete;
+
   ~AssistantAlarmTimerControllerTest() override = default;
 
   // AshTestBase:
@@ -370,9 +375,6 @@ class AssistantAlarmTimerControllerTest : public AssistantAshTestBase {
   AssistantAlarmTimerController* controller() {
     return AssistantAlarmTimerController::Get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantAlarmTimerControllerTest);
 };
 
 // Tests -----------------------------------------------------------------------

@@ -132,6 +132,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   };
 
   LoginAuthUserView(const LoginUserInfo& user, const Callbacks& callbacks);
+
+  LoginAuthUserView(const LoginAuthUserView&) = delete;
+  LoginAuthUserView& operator=(const LoginAuthUserView&) = delete;
+
   ~LoginAuthUserView() override;
 
   // Set the displayed set of auth methods. |auth_methods| contains or-ed
@@ -297,8 +301,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   std::unique_ptr<UiState> previous_state_;
 
   base::WeakPtrFactory<LoginAuthUserView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginAuthUserView);
 };
 
 }  // namespace ash

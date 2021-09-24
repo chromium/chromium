@@ -61,20 +61,26 @@ class DoNotDisturbManager : public message_center::MessageCenterObserver {
  public:
   explicit DoNotDisturbManager(ArcNotificationManager* manager)
       : manager_(manager) {}
+
+  DoNotDisturbManager(const DoNotDisturbManager&) = delete;
+  DoNotDisturbManager& operator=(const DoNotDisturbManager&) = delete;
+
   void OnQuietModeChanged(bool in_quiet_mode) override {
     manager_->SetDoNotDisturbStatusOnAndroid(in_quiet_mode);
   }
 
  private:
   ArcNotificationManager* const manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DoNotDisturbManager);
 };
 
 class VisibilityManager : public message_center::MessageCenterObserver {
  public:
   explicit VisibilityManager(ArcNotificationManager* manager)
       : manager_(manager) {}
+
+  VisibilityManager(const VisibilityManager&) = delete;
+  VisibilityManager& operator=(const VisibilityManager&) = delete;
+
   void OnCenterVisibilityChanged(
       message_center::Visibility visibility) override {
     manager_->OnMessageCenterVisibilityChanged(toMojom(visibility));
@@ -92,8 +98,6 @@ class VisibilityManager : public message_center::MessageCenterObserver {
   }
 
   ArcNotificationManager* const manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VisibilityManager);
 };
 
 }  // namespace

@@ -18,6 +18,9 @@ class TouchHudProjection : public TouchObserverHud {
  public:
   explicit TouchHudProjection(aura::Window* initial_root);
 
+  TouchHudProjection(const TouchHudProjection&) = delete;
+  TouchHudProjection& operator=(const TouchHudProjection&) = delete;
+
   // TouchObserverHud:
   void Clear() override;
 
@@ -34,8 +37,6 @@ class TouchHudProjection : public TouchObserverHud {
 
   // TouchHudRenderer draws out the touch points.
   std::unique_ptr<TouchHudRenderer> touch_hud_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudProjection);
 };
 
 }  // namespace ash

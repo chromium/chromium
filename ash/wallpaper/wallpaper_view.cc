@@ -43,6 +43,9 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     view->SetPaintToLayer();
   }
 
+  WallpaperWidgetDelegate(const WallpaperWidgetDelegate&) = delete;
+  WallpaperWidgetDelegate& operator=(const WallpaperWidgetDelegate&) = delete;
+
   // Overrides views::View.
   void Layout() override {
     aura::Window* window = GetWidget()->GetNativeWindow();
@@ -63,9 +66,6 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
       child->SetTransform(transform);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WallpaperWidgetDelegate);
 };
 
 }  // namespace

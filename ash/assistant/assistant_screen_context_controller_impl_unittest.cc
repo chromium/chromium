@@ -41,6 +41,12 @@ ui::Layer* FindLayerWithClosure(
 }  // namespace
 
 class AssistantScreenContextControllerTest : public AssistantAshTestBase {
+ public:
+  AssistantScreenContextControllerTest(
+      const AssistantScreenContextControllerTest&) = delete;
+  AssistantScreenContextControllerTest& operator=(
+      const AssistantScreenContextControllerTest&) = delete;
+
  protected:
   AssistantScreenContextControllerTest()
       : AssistantAshTestBase(
@@ -95,8 +101,6 @@ class AssistantScreenContextControllerTest : public AssistantAshTestBase {
 
  private:
   AssistantScreenContextControllerImpl* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextControllerTest);
 };
 
 // Verify that incognito windows are blocked in screenshot.

@@ -33,6 +33,9 @@ class TriViewTest : public testing::Test {
  public:
   TriViewTest();
 
+  TriViewTest(const TriViewTest&) = delete;
+  TriViewTest& operator=(const TriViewTest&) = delete;
+
  protected:
   // Convenience function to get the minimum height of |container|.
   int GetMinHeight(TriView::Container container) const;
@@ -46,9 +49,6 @@ class TriViewTest : public testing::Test {
 
   // The test target.
   std::unique_ptr<TriView> tri_view_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TriViewTest);
 };
 
 TriViewTest::TriViewTest() : tri_view_(std::make_unique<TriView>()) {}

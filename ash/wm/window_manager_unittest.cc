@@ -103,10 +103,11 @@ class NonFocusableDelegate : public aura::test::TestWindowDelegate {
  public:
   NonFocusableDelegate() = default;
 
+  NonFocusableDelegate(const NonFocusableDelegate&) = delete;
+  NonFocusableDelegate& operator=(const NonFocusableDelegate&) = delete;
+
  private:
   bool CanFocus() override { return false; }
-
-  DISALLOW_COPY_AND_ASSIGN(NonFocusableDelegate);
 };
 
 class HitTestWindowDelegate : public aura::test::TestWindowDelegate {

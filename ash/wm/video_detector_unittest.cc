@@ -30,6 +30,9 @@ class TestObserver : public VideoDetector::Observer {
  public:
   TestObserver() = default;
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   bool empty() const { return states_.empty(); }
   void reset() { states_.clear(); }
 
@@ -49,8 +52,6 @@ class TestObserver : public VideoDetector::Observer {
  private:
   // States in the order they were received.
   base::circular_deque<VideoDetector::State> states_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class VideoDetectorTest : public AshTestBase {

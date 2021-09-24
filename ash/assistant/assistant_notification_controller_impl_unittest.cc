@@ -200,6 +200,12 @@ class AssistantServiceMock : public TestAssistantService {
 // AssistantNotificationControllerTest -----------------------------------------
 
 class AssistantNotificationControllerTest : public AshTestBase {
+ public:
+  AssistantNotificationControllerTest(
+      const AssistantNotificationControllerTest&) = delete;
+  AssistantNotificationControllerTest& operator=(
+      const AssistantNotificationControllerTest&) = delete;
+
  protected:
   AssistantNotificationControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -238,8 +244,6 @@ class AssistantNotificationControllerTest : public AshTestBase {
  private:
   AssistantNotificationControllerImpl* controller_;
   std::unique_ptr<AssistantNotificationModelObserverMock> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantNotificationControllerTest);
 };
 
 }  // namespace

@@ -25,6 +25,9 @@ class ASH_PUBLIC_EXPORT AssistantSetup {
  public:
   static AssistantSetup* GetInstance();
 
+  AssistantSetup(const AssistantSetup&) = delete;
+  AssistantSetup& operator=(const AssistantSetup&) = delete;
+
   using StartAssistantOptInFlowCallback = base::OnceCallback<void(bool)>;
 
   // Start the assistant setup flow.
@@ -40,9 +43,6 @@ class ASH_PUBLIC_EXPORT AssistantSetup {
  protected:
   AssistantSetup();
   virtual ~AssistantSetup();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantSetup);
 };
 
 }  // namespace ash

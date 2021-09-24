@@ -166,6 +166,10 @@ class ASH_EXPORT SessionStateAnimator {
   };
 
   SessionStateAnimator();
+
+  SessionStateAnimator(const SessionStateAnimator&) = delete;
+  SessionStateAnimator& operator=(const SessionStateAnimator&) = delete;
+
   virtual ~SessionStateAnimator();
 
   // Reports animation duration for |speed|.
@@ -199,9 +203,6 @@ class ASH_EXPORT SessionStateAnimator {
 
   // Hides the wallpaper immediately.
   virtual void HideWallpaper() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionStateAnimator);
 };
 
 }  // namespace ash

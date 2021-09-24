@@ -19,6 +19,11 @@ class ScreenOrientationControllerTestApi {
   explicit ScreenOrientationControllerTestApi(
       ScreenOrientationController* controller);
 
+  ScreenOrientationControllerTestApi(
+      const ScreenOrientationControllerTestApi&) = delete;
+  ScreenOrientationControllerTestApi& operator=(
+      const ScreenOrientationControllerTestApi&) = delete;
+
   void SetDisplayRotation(
       display::Display::Rotation rotation,
       display::Display::RotationSource source,
@@ -37,8 +42,6 @@ class ScreenOrientationControllerTestApi {
 
  private:
   ScreenOrientationController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationControllerTestApi);
 };
 
 }  // namespace ash

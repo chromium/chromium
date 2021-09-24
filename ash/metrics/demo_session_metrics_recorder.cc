@@ -230,6 +230,11 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
       DemoSessionMetricsRecorder* metrics_recorder)
       : metrics_recorder_(metrics_recorder) {}
 
+  ActiveAppArcPackageNameObserver(const ActiveAppArcPackageNameObserver&) =
+      delete;
+  ActiveAppArcPackageNameObserver& operator=(
+      const ActiveAppArcPackageNameObserver&) = delete;
+
   // aura::WindowObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
@@ -262,8 +267,6 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
   DemoSessionMetricsRecorder* metrics_recorder_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       scoped_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveAppArcPackageNameObserver);
 };
 
 // Observes changes in a window's ArcPackageName property for the purpose of
@@ -274,6 +277,11 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   explicit UniqueAppsLaunchedArcPackageNameObserver(
       DemoSessionMetricsRecorder* metrics_recorder)
       : metrics_recorder_(metrics_recorder) {}
+
+  UniqueAppsLaunchedArcPackageNameObserver(
+      const UniqueAppsLaunchedArcPackageNameObserver&) = delete;
+  UniqueAppsLaunchedArcPackageNameObserver& operator=(
+      const UniqueAppsLaunchedArcPackageNameObserver&) = delete;
 
   // aura::WindowObserver
   void OnWindowPropertyChanged(aura::Window* window,
@@ -307,8 +315,6 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   DemoSessionMetricsRecorder* metrics_recorder_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UniqueAppsLaunchedArcPackageNameObserver);
 };
 
 DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(

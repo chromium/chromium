@@ -220,6 +220,9 @@ class ScrollContentsView : public views::View {
  public:
   ScrollContentsView() = default;
 
+  ScrollContentsView(const ScrollContentsView&) = delete;
+  ScrollContentsView& operator=(const ScrollContentsView&) = delete;
+
   // views::View:
   const char* GetClassName() const override { return "ScrollContentsView"; }
 
@@ -247,8 +250,6 @@ class ScrollContentsView : public views::View {
     canvas->ClipRect(shadowed_area, SkClipOp::kDifference);
     canvas->DrawRect(shadowed_area, flags);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollContentsView);
 };
 
 // EmptyNotifierView -----------------------------------------------------------
@@ -285,6 +286,9 @@ class EmptyNotifierView : public views::View {
     label_ = AddChildView(label);
   }
 
+  EmptyNotifierView(const EmptyNotifierView&) = delete;
+  EmptyNotifierView& operator=(const EmptyNotifierView&) = delete;
+
   // views::View:
   const char* GetClassName() const override { return "EmptyNotifierView"; }
 
@@ -296,7 +300,6 @@ class EmptyNotifierView : public views::View {
   }
 
   views::Label* label_;
-  DISALLOW_COPY_AND_ASSIGN(EmptyNotifierView);
 };
 
 class NotifierViewCheckbox : public views::Checkbox {

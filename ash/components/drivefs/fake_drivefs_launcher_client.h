@@ -20,6 +20,10 @@ class FakeDriveFsLauncherClient {
   static void Init(const base::FilePath& socket_path,
                    const base::FilePath& chroot_path);
 
+  FakeDriveFsLauncherClient(const FakeDriveFsLauncherClient&) = delete;
+  FakeDriveFsLauncherClient& operator=(const FakeDriveFsLauncherClient&) =
+      delete;
+
  private:
   friend class base::NoDestructor<FakeDriveFsLauncherClient>;
 
@@ -35,8 +39,6 @@ class FakeDriveFsLauncherClient {
   const base::FilePath socket_path_;
 
   mojo::Remote<mojom::FakeDriveFsLauncher> launcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveFsLauncherClient);
 };
 
 }  // namespace drivefs

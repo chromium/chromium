@@ -90,6 +90,11 @@ class TestAssistantStateObserver : public AssistantStateObserver {
 };
 
 class AssistantStateControllerTest : public AshTestBase {
+ public:
+  AssistantStateControllerTest(const AssistantStateControllerTest&) = delete;
+  AssistantStateControllerTest& operator=(const AssistantStateControllerTest&) =
+      delete;
+
  protected:
   AssistantStateControllerTest() = default;
   ~AssistantStateControllerTest() override = default;
@@ -111,8 +116,6 @@ class AssistantStateControllerTest : public AshTestBase {
  private:
   PrefService* prefs_ = nullptr;
   std::unique_ptr<TestAssistantStateObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantStateControllerTest);
 };
 
 }  // namespace

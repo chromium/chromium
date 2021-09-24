@@ -36,6 +36,9 @@ class ASH_EXPORT TouchHudDebug : public TouchObserverHud {
 
   explicit TouchHudDebug(aura::Window* initial_root);
 
+  TouchHudDebug(const TouchHudDebug&) = delete;
+  TouchHudDebug& operator=(const TouchHudDebug&) = delete;
+
   // Changes the display mode (e.g. scale, visibility). Calling this repeatedly
   // cycles between a fixed number of display modes.
   void ChangeToNextMode();
@@ -69,8 +72,6 @@ class ASH_EXPORT TouchHudDebug : public TouchObserverHud {
   TouchHudCanvas* canvas_;
   views::View* label_container_;
   views::Label* touch_labels_[kMaxTouchPoints];
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudDebug);
 };
 
 }  // namespace ash

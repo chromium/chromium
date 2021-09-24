@@ -23,6 +23,10 @@ class ASH_PUBLIC_EXPORT NotifierSettingsController {
   // Returns the singleton instance.
   static NotifierSettingsController* Get();
 
+  NotifierSettingsController(const NotifierSettingsController&) = delete;
+  NotifierSettingsController& operator=(const NotifierSettingsController&) =
+      delete;
+
   // Assembles the list of active notifiers and updates all
   // NotifierSettingsObservers via OnNotifiersUpdated.
   virtual void GetNotifiers() = 0;
@@ -40,8 +44,6 @@ class ASH_PUBLIC_EXPORT NotifierSettingsController {
  protected:
   NotifierSettingsController();
   virtual ~NotifierSettingsController();
-
-  DISALLOW_COPY_AND_ASSIGN(NotifierSettingsController);
 };
 
 }  // namespace ash

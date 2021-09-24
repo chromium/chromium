@@ -59,6 +59,9 @@ class ResultLayer : public ui::Layer, public ui::LayerDelegate {
  public:
   ResultLayer(const gfx::Rect& bounds);
 
+  ResultLayer(const ResultLayer&) = delete;
+  ResultLayer& operator=(const ResultLayer&) = delete;
+
  private:
   // ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -75,8 +78,6 @@ class ResultLayer : public ui::Layer, public ui::LayerDelegate {
                          float y,
                          float width,
                          cc::PaintFlags& flags);
-
-  DISALLOW_COPY_AND_ASSIGN(ResultLayer);
 };
 
 ResultLayer::ResultLayer(const gfx::Rect& box) {

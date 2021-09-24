@@ -115,6 +115,9 @@ class MultiWindowResizeController::ResizeView : public views::View {
   ResizeView(MultiWindowResizeController* controller, Direction direction)
       : controller_(controller), direction_(direction) {}
 
+  ResizeView(const ResizeView&) = delete;
+  ResizeView& operator=(const ResizeView&) = delete;
+
   // views::View overrides:
   gfx::Size CalculatePreferredSize() const override {
     const bool vert = direction_ == Direction::kLeftRight;
@@ -185,8 +188,6 @@ class MultiWindowResizeController::ResizeView : public views::View {
 
   MultiWindowResizeController* controller_;
   const Direction direction_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeView);
 };
 
 // MouseWatcherHost implementation for MultiWindowResizeController. Forwards
@@ -195,6 +196,9 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
     : public views::MouseWatcherHost {
  public:
   ResizeMouseWatcherHost(MultiWindowResizeController* host) : host_(host) {}
+
+  ResizeMouseWatcherHost(const ResizeMouseWatcherHost&) = delete;
+  ResizeMouseWatcherHost& operator=(const ResizeMouseWatcherHost&) = delete;
 
   // MouseWatcherHost overrides:
   bool Contains(const gfx::Point& point_in_screen, EventType type) override {
@@ -205,8 +209,6 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
 
  private:
   MultiWindowResizeController* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeMouseWatcherHost);
 };
 
 MultiWindowResizeController::ResizeWindows::ResizeWindows()

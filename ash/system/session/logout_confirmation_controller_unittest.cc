@@ -29,6 +29,12 @@ namespace ash {
 constexpr char kUserEmail[] = "user1@test.com";
 
 class LogoutConfirmationControllerTest : public testing::Test {
+ public:
+  LogoutConfirmationControllerTest(const LogoutConfirmationControllerTest&) =
+      delete;
+  LogoutConfirmationControllerTest& operator=(
+      const LogoutConfirmationControllerTest&) = delete;
+
  protected:
   LogoutConfirmationControllerTest();
   ~LogoutConfirmationControllerTest() override;
@@ -41,9 +47,6 @@ class LogoutConfirmationControllerTest : public testing::Test {
   base::ThreadTaskRunnerHandle runner_handle_;
 
   LogoutConfirmationController controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogoutConfirmationControllerTest);
 };
 
 LogoutConfirmationControllerTest::LogoutConfirmationControllerTest()

@@ -254,6 +254,12 @@ class DesktopTaskSwitchMetricRecorderWithShellIntegrationTest
     : public AshTestBase {
  public:
   DesktopTaskSwitchMetricRecorderWithShellIntegrationTest();
+
+  DesktopTaskSwitchMetricRecorderWithShellIntegrationTest(
+      const DesktopTaskSwitchMetricRecorderWithShellIntegrationTest&) = delete;
+  DesktopTaskSwitchMetricRecorderWithShellIntegrationTest& operator=(
+      const DesktopTaskSwitchMetricRecorderWithShellIntegrationTest&) = delete;
+
   ~DesktopTaskSwitchMetricRecorderWithShellIntegrationTest() override;
 
   // AshTestBase:
@@ -276,10 +282,6 @@ class DesktopTaskSwitchMetricRecorderWithShellIntegrationTest
   // Delegate used when creating new windows using the
   // CreatePositionableWindowInShellWithBounds(...) method.
   aura::test::TestWindowDelegate test_window_delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      DesktopTaskSwitchMetricRecorderWithShellIntegrationTest);
 };
 
 DesktopTaskSwitchMetricRecorderWithShellIntegrationTest::

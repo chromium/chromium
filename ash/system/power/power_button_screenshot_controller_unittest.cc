@@ -318,14 +318,17 @@ class PowerButtonScreenshotControllerWithKeyCodeTest
  public:
   PowerButtonScreenshotControllerWithKeyCodeTest() : key_code_(GetParam()) {}
 
+  PowerButtonScreenshotControllerWithKeyCodeTest(
+      const PowerButtonScreenshotControllerWithKeyCodeTest&) = delete;
+  PowerButtonScreenshotControllerWithKeyCodeTest& operator=(
+      const PowerButtonScreenshotControllerWithKeyCodeTest&) = delete;
+
   ui::KeyboardCode key_code() const { return key_code_; }
 
  private:
   // Value of the |key_code_| will only be ui::VKEY_VOLUME_DOWN or
   // ui::VKEY_VOLUME_UP.
   ui::KeyboardCode key_code_ = ui::VKEY_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonScreenshotControllerWithKeyCodeTest);
 };
 
 // Tests power button screenshot accelerator works in tablet mode only.

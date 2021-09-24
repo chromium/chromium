@@ -22,6 +22,9 @@ class TestTool : public PaletteTool {
   TestTool(Delegate* delegate, PaletteGroup group, PaletteToolId tool_id)
       : PaletteTool(delegate), group_(group), tool_id_(tool_id) {}
 
+  TestTool(const TestTool&) = delete;
+  TestTool& operator=(const TestTool&) = delete;
+
   // PaletteTool:
   PaletteGroup GetGroup() const override { return group_; }
   PaletteToolId GetToolId() const override { return tool_id_; }
@@ -39,8 +42,6 @@ class TestTool : public PaletteTool {
 
   PaletteGroup group_;
   PaletteToolId tool_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTool);
 };
 
 // Base class for tool manager unittests.

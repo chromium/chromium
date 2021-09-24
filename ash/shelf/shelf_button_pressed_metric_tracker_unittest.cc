@@ -26,8 +26,8 @@ class DummyButton : public views::Button {
  public:
   DummyButton();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyButton);
+  DummyButton(const DummyButton&) = delete;
+  DummyButton& operator=(const DummyButton&) = delete;
 };
 
 DummyButton::DummyButton() : views::Button(views::Button::PressedCallback()) {}

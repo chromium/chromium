@@ -20,6 +20,10 @@
 namespace ash {
 
 class PointScanControllerTest : public AshTestBase {
+ public:
+  PointScanControllerTest(const PointScanControllerTest&) = delete;
+  PointScanControllerTest& operator=(const PointScanControllerTest&) = delete;
+
  protected:
   PointScanControllerTest() = default;
   ~PointScanControllerTest() override = default;
@@ -117,8 +121,6 @@ class PointScanControllerTest : public AshTestBase {
   int diff_count_ = 0;
   int row_diff_count_ = 0;
   int col_diff_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PointScanControllerTest);
 };
 
 TEST_F(PointScanControllerTest, StartScanning) {

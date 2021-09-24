@@ -20,6 +20,10 @@ namespace ash {
 
 class ASH_PUBLIC_EXPORT LoginScreenTestApi {
  public:
+  LoginScreenTestApi() = delete;
+  LoginScreenTestApi(const LoginScreenTestApi&) = delete;
+  LoginScreenTestApi& operator=(const LoginScreenTestApi&) = delete;
+
   static bool IsLockShown();
   // Schedules the callback to be run when the LockScreen is shown. Note that
   // the LockScreen class is used for both the Lock and the Login screens.
@@ -95,9 +99,6 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static std::u16string GetPinRequestWidgetTitle();
   static void SubmitPinRequestWidget(const std::string& pin);
   static void CancelPinRequestWidget();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LoginScreenTestApi);
 };
 
 }  // namespace ash

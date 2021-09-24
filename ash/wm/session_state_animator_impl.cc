@@ -342,6 +342,9 @@ class SessionStateAnimatorImpl::AnimationSequence
         sequences_attached_(0),
         sequences_completed_(0) {}
 
+  AnimationSequence(const AnimationSequence&) = delete;
+  AnimationSequence& operator=(const AnimationSequence&) = delete;
+
   // SessionStateAnimator::AnimationSequence:
   void StartAnimation(int container_mask,
                       SessionStateAnimator::AnimationType type,
@@ -380,8 +383,6 @@ class SessionStateAnimatorImpl::AnimationSequence
 
   // Number of sequences either ended or aborted.
   int sequences_completed_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
 };
 
 bool SessionStateAnimatorImpl::TestApi::ContainersAreAnimated(

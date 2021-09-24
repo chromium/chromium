@@ -35,6 +35,9 @@ class CallbackRunningObserver {
         animation_aborted_(false),
         callback_(std::move(callback)) {}
 
+  CallbackRunningObserver(const CallbackRunningObserver&) = delete;
+  CallbackRunningObserver& operator=(const CallbackRunningObserver&) = delete;
+
   void AddNewAnimator(ui::LayerAnimator* animator) {
     auto observer = std::make_unique<Observer>(animator, this);
     animator->AddObserver(observer.get());
@@ -63,6 +66,9 @@ class CallbackRunningObserver {
     Observer(ui::LayerAnimator* animator, CallbackRunningObserver* observer)
         : animator_(animator), observer_(observer) {}
 
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
    protected:
     // ui::LayerAnimationObserver overrides:
     void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
@@ -83,16 +89,12 @@ class CallbackRunningObserver {
    private:
     ui::LayerAnimator* animator_;
     CallbackRunningObserver* observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   size_t completed_counter_;
   bool animation_aborted_;
   std::vector<std::unique_ptr<Observer>> observer_list_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackRunningObserver);
 };
 
 }  // namespace

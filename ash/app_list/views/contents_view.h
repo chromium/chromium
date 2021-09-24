@@ -73,6 +73,10 @@ class ASH_EXPORT ContentsView : public views::View,
   };
 
   explicit ContentsView(AppListView* app_list_view);
+
+  ContentsView(const ContentsView&) = delete;
+  ContentsView& operator=(const ContentsView&) = delete;
+
   ~ContentsView() override;
 
   // Initialize the pages of the launcher. Should be called after
@@ -304,8 +308,6 @@ class ASH_EXPORT ContentsView : public views::View,
   // to a new app list view state.
   absl::optional<AppListState> target_page_for_last_view_state_update_;
   absl::optional<AppListViewState> last_target_view_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentsView);
 };
 
 }  // namespace ash

@@ -50,6 +50,10 @@ class ASH_EXPORT TrayPopupUtils {
     kSystemInfo,
   };
 
+  TrayPopupUtils() = delete;
+  TrayPopupUtils(const TrayPopupUtils&) = delete;
+  TrayPopupUtils& operator=(const TrayPopupUtils&) = delete;
+
   // Creates a default container view to be used by system menu rows that are
   // either a single targetable area or not targetable at all. The caller takes
   // over ownership of the created view.
@@ -209,9 +213,6 @@ class ASH_EXPORT TrayPopupUtils {
 
   // Sets the font list for |label| based on |style|.
   static void SetLabelFontList(views::Label* label, FontStyle style);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TrayPopupUtils);
 };
 
 }  // namespace ash

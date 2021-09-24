@@ -35,14 +35,14 @@ class WindowAnimationsTest : public AshTestBase {
  public:
   WindowAnimationsTest() = default;
 
+  WindowAnimationsTest(const WindowAnimationsTest&) = delete;
+  WindowAnimationsTest& operator=(const WindowAnimationsTest&) = delete;
+
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
     AshTestBase::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowAnimationsTest);
 };
 
 // Listens to animation scheduled notifications. Remembers the transition
@@ -55,6 +55,11 @@ class MinimizeAnimationObserver : public ui::LayerAnimationObserver {
     // RemoveObserver is called when the first animation is scheduled and so
     // there should be no need for now to remove it in destructor.
   }
+
+  MinimizeAnimationObserver(const MinimizeAnimationObserver&) = delete;
+  MinimizeAnimationObserver& operator=(const MinimizeAnimationObserver&) =
+      delete;
+
   base::TimeDelta duration() { return duration_; }
 
  protected:
@@ -70,8 +75,6 @@ class MinimizeAnimationObserver : public ui::LayerAnimationObserver {
  private:
   ui::LayerAnimator* animator_;
   base::TimeDelta duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinimizeAnimationObserver);
 };
 
 TEST_F(WindowAnimationsTest, HideShowBrightnessGrayscaleAnimation) {

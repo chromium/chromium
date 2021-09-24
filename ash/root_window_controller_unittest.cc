@@ -735,6 +735,9 @@ class MockTextInputClient : public ui::DummyTextInputClient {
  public:
   MockTextInputClient() : ui::DummyTextInputClient(ui::TEXT_INPUT_TYPE_TEXT) {}
 
+  MockTextInputClient(const MockTextInputClient&) = delete;
+  MockTextInputClient& operator=(const MockTextInputClient&) = delete;
+
   void EnsureCaretNotInRect(const gfx::Rect& rect) override {
     caret_exclude_rect_ = rect;
   }
@@ -743,13 +746,15 @@ class MockTextInputClient : public ui::DummyTextInputClient {
 
  private:
   gfx::Rect caret_exclude_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTextInputClient);
 };
 
 class TargetHitTestEventHandler : public ui::test::TestEventHandler {
  public:
   TargetHitTestEventHandler() = default;
+
+  TargetHitTestEventHandler(const TargetHitTestEventHandler&) = delete;
+  TargetHitTestEventHandler& operator=(const TargetHitTestEventHandler&) =
+      delete;
 
   // ui::test::TestEventHandler overrides.
   void OnMouseEvent(ui::MouseEvent* event) override {
@@ -757,9 +762,6 @@ class TargetHitTestEventHandler : public ui::test::TestEventHandler {
       ui::test::TestEventHandler::OnMouseEvent(event);
     event->StopPropagation();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TargetHitTestEventHandler);
 };
 
 // Test for http://crbug.com/263599. Virtual keyboard should be able to receive

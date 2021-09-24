@@ -61,6 +61,10 @@ class LoginAuthUserViewUnittest : public LoginTestBase,
                                   /*autosubmit_feature*/
                                   public ::testing::WithParamInterface<bool> {
  public:
+  LoginAuthUserViewUnittest(const LoginAuthUserViewUnittest&) = delete;
+  LoginAuthUserViewUnittest& operator=(const LoginAuthUserViewUnittest&) =
+      delete;
+
   static std::string ParamInfoToString(
       testing::TestParamInfo<LoginAuthUserViewUnittest::ParamType> info) {
     return base::StrCat(
@@ -145,9 +149,6 @@ class LoginAuthUserViewUnittest : public LoginTestBase,
   LoginUserInfo user_;
   views::View* container_ = nullptr;   // Owned by test widget view hierarchy.
   LoginAuthUserView* view_ = nullptr;  // Owned by test widget view hierarchy.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginAuthUserViewUnittest);
 };
 
 // Verifies showing the PIN keyboard makes the user view grow.

@@ -70,6 +70,11 @@ class ASH_EXPORT ScreenOrientationController
   };
 
   ScreenOrientationController();
+
+  ScreenOrientationController(const ScreenOrientationController&) = delete;
+  ScreenOrientationController& operator=(const ScreenOrientationController&) =
+      delete;
+
   ~ScreenOrientationController() override;
 
   OrientationLockType natural_orientation() const {
@@ -283,8 +288,6 @@ class ASH_EXPORT ScreenOrientationController
 
   // Register for DisplayObserver callbacks.
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationController);
 };
 
 }  // namespace ash

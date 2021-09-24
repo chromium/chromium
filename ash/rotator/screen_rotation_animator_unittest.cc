@@ -60,6 +60,9 @@ class AnimationObserver : public ScreenRotationAnimatorObserver {
  public:
   AnimationObserver() = default;
 
+  AnimationObserver(const AnimationObserver&) = delete;
+  AnimationObserver& operator=(const AnimationObserver&) = delete;
+
   bool copy_notified() const { return copy_notified_; }
   bool finish_notified() const { return finish_notified_; }
 
@@ -72,8 +75,6 @@ class AnimationObserver : public ScreenRotationAnimatorObserver {
  private:
   bool copy_notified_ = false;
   bool finish_notified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationObserver);
 };
 
 class TestScreenRotationAnimator : public ScreenRotationAnimator {

@@ -104,6 +104,11 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
  public:
   MultiDeviceNotificationPresenterTest() = default;
 
+  MultiDeviceNotificationPresenterTest(
+      const MultiDeviceNotificationPresenterTest&) = delete;
+  MultiDeviceNotificationPresenterTest& operator=(
+      const MultiDeviceNotificationPresenterTest&) = delete;
+
   void SetUp() override {
     fake_multidevice_setup_ =
         std::make_unique<chromeos::multidevice_setup::FakeMultiDeviceSetup>();
@@ -334,8 +339,6 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     EXPECT_EQ(title, kVisibleNotification->title());
     EXPECT_EQ(message, kVisibleNotification->message());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceNotificationPresenterTest);
 };
 
 TEST_F(MultiDeviceNotificationPresenterTest, NotSignedIntoAccount) {

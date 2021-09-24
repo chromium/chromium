@@ -123,6 +123,9 @@ class AshRootWindowTransformer : public RootWindowTransformer {
     initial_host_size_ = info.bounds_in_native().size();
   }
 
+  AshRootWindowTransformer(const AshRootWindowTransformer&) = delete;
+  AshRootWindowTransformer& operator=(const AshRootWindowTransformer&) = delete;
+
   // aura::RootWindowTransformer overrides:
   gfx::Transform GetTransform() const override { return transform_; }
   gfx::Transform GetInverseTransform() const override {
@@ -186,8 +189,6 @@ class AshRootWindowTransformer : public RootWindowTransformer {
   gfx::Transform insets_and_scale_transform_;
   gfx::Rect initial_root_bounds_;
   gfx::Size initial_host_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshRootWindowTransformer);
 };
 
 // RootWindowTransformer for mirror root window. We simply copy the
@@ -265,6 +266,10 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     }
   }
 
+  MirrorRootWindowTransformer(const MirrorRootWindowTransformer&) = delete;
+  MirrorRootWindowTransformer& operator=(const MirrorRootWindowTransformer&) =
+      delete;
+
   // aura::RootWindowTransformer overrides:
   gfx::Transform GetTransform() const override { return transform_; }
   gfx::Transform GetInverseTransform() const override {
@@ -286,8 +291,6 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
   gfx::Transform transform_;
   gfx::Rect root_bounds_;
   gfx::Insets insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(MirrorRootWindowTransformer);
 };
 
 class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
@@ -326,6 +329,11 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
                          -SkIntToScalar(display.bounds().y()));
   }
 
+  PartialBoundsRootWindowTransformer(
+      const PartialBoundsRootWindowTransformer&) = delete;
+  PartialBoundsRootWindowTransformer& operator=(
+      const PartialBoundsRootWindowTransformer&) = delete;
+
   // RootWindowTransformer:
   gfx::Transform GetTransform() const override { return transform_; }
   gfx::Transform GetInverseTransform() const override {
@@ -344,8 +352,6 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
  private:
   gfx::Transform transform_;
   gfx::Rect root_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartialBoundsRootWindowTransformer);
 };
 
 }  // namespace

@@ -51,6 +51,9 @@ class KEYBOARD_EXPORT KeyboardUIModel {
  public:
   KeyboardUIModel();
 
+  KeyboardUIModel(const KeyboardUIModel&) = delete;
+  KeyboardUIModel& operator=(const KeyboardUIModel&) = delete;
+
   // Get the current state of the keyboard UI.
   KeyboardUIState state() const { return state_; }
 
@@ -60,8 +63,6 @@ class KEYBOARD_EXPORT KeyboardUIModel {
  private:
   // Current state of the keyboard UI.
   KeyboardUIState state_ = KeyboardUIState::kInitial;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardUIModel);
 };
 
 }  // namespace keyboard

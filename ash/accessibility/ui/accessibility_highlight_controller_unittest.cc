@@ -54,6 +54,12 @@ class MockTextInputClient : public ui::DummyTextInputClient {
 }  // namespace
 
 class AccessibilityHighlightControllerTest : public AshTestBase {
+ public:
+  AccessibilityHighlightControllerTest(
+      const AccessibilityHighlightControllerTest&) = delete;
+  AccessibilityHighlightControllerTest& operator=(
+      const AccessibilityHighlightControllerTest&) = delete;
+
  protected:
   AccessibilityHighlightControllerTest() = default;
   ~AccessibilityHighlightControllerTest() override = default;
@@ -130,8 +136,6 @@ class AccessibilityHighlightControllerTest : public AshTestBase {
   gfx::Image after_;
   int diff_count_ = 0;
   SkColor average_diff_color_ = SK_ColorTRANSPARENT;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityHighlightControllerTest);
 };
 
 TEST_F(AccessibilityHighlightControllerTest, TestCaretRingDrawsBluePixels) {

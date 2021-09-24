@@ -19,6 +19,10 @@
 namespace ash {
 
 class DisplayErrorObserverTest : public AshTestBase {
+ public:
+  DisplayErrorObserverTest(const DisplayErrorObserverTest&) = delete;
+  DisplayErrorObserverTest& operator=(const DisplayErrorObserverTest&) = delete;
+
  protected:
   DisplayErrorObserverTest() = default;
 
@@ -38,8 +42,6 @@ class DisplayErrorObserverTest : public AshTestBase {
 
  private:
   std::unique_ptr<DisplayErrorObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayErrorObserverTest);
 };
 
 TEST_F(DisplayErrorObserverTest, Normal) {

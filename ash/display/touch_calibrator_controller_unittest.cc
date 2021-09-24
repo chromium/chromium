@@ -48,6 +48,10 @@ class TouchCalibratorControllerTest : public AshTestBase {
  public:
   TouchCalibratorControllerTest() = default;
 
+  TouchCalibratorControllerTest(const TouchCalibratorControllerTest&) = delete;
+  TouchCalibratorControllerTest& operator=(
+      const TouchCalibratorControllerTest&) = delete;
+
   void TearDown() override {
     // Reset all touch device and touch association.
     display::test::TouchDeviceManagerTestApi(touch_device_manager())
@@ -183,9 +187,6 @@ class TouchCalibratorControllerTest : public AshTestBase {
         ->ConfigureTouchDevices(transforms);
     return touchdevice;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchCalibratorControllerTest);
 };
 
 TEST_F(TouchCalibratorControllerTest, StartCalibration) {

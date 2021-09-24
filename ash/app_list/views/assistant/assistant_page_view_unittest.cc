@@ -163,8 +163,8 @@ class GestureEventForTest : public ui::GestureEvent {
                      base::TimeTicks(),
                      details) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureEventForTest);
+  GestureEventForTest(const GestureEventForTest&) = delete;
+  GestureEventForTest& operator=(const GestureEventForTest&) = delete;
 };
 
 // Base class for tests of the embedded assistant page in:
@@ -174,6 +174,9 @@ class GestureEventForTest : public ui::GestureEvent {
 class AssistantPageViewTest : public AssistantAshTestBase {
  public:
   AssistantPageViewTest() = default;
+
+  AssistantPageViewTest(const AssistantPageViewTest&) = delete;
+  AssistantPageViewTest& operator=(const AssistantPageViewTest&) = delete;
 
   void ShowAssistantUiInTextMode() {
     ShowAssistantUi(AssistantEntryPoint::kUnspecified);
@@ -207,9 +210,6 @@ class AssistantPageViewTest : public AssistantAshTestBase {
     SetNumberOfSessionsWhereOnboardingShown(
         assistant::ui::kOnboardingMaxSessionsShown);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantPageViewTest);
 };
 
 // Tests for the legacy non-bubble app list ("peeking launcher").
@@ -993,6 +993,11 @@ class AssistantPageViewTabletModeTest : public AssistantPageViewTest {
  public:
   AssistantPageViewTabletModeTest() = default;
 
+  AssistantPageViewTabletModeTest(const AssistantPageViewTabletModeTest&) =
+      delete;
+  AssistantPageViewTabletModeTest& operator=(
+      const AssistantPageViewTabletModeTest&) = delete;
+
   void SetUp() override {
     AssistantPageViewTest::SetUp();
     SetTabletMode(true);
@@ -1030,9 +1035,6 @@ class AssistantPageViewTabletModeTest : public AssistantPageViewTest {
   gfx::Point GetPointInside(const views::View* view) {
     return view->GetBoundsInScreen().CenterPoint();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantPageViewTabletModeTest);
 };
 
 TEST_F(AssistantPageViewTabletModeTest,

@@ -50,6 +50,10 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
   ScrollableUsersListView(const std::vector<LoginUserInfo>& users,
                           const ActionWithUser& on_tap_user,
                           LoginDisplayStyle display_style);
+
+  ScrollableUsersListView(const ScrollableUsersListView&) = delete;
+  ScrollableUsersListView& operator=(const ScrollableUsersListView&) = delete;
+
   ~ScrollableUsersListView() override;
 
   // Returns user view at |index| if it exists or nullptr otherwise.
@@ -103,8 +107,6 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
 
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollableUsersListView);
 };
 
 }  // namespace ash

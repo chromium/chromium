@@ -100,6 +100,9 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // percentage of charge remaining.
   static const double kCriticalBatteryChargePercentage;
 
+  PowerStatus(const PowerStatus&) = delete;
+  PowerStatus& operator=(const PowerStatus&) = delete;
+
   // Sets the global instance. Must be called before any calls to Get().
   static void Initialize();
 
@@ -230,8 +233,6 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
 
   // Current state.
   power_manager::PowerSupplyProperties proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerStatus);
 };
 
 }  // namespace ash

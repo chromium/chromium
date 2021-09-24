@@ -180,6 +180,10 @@ void DecodeJsonStringAndNormalize(const std::string& json_string,
 }  // namespace
 
 class PowerPrefsTest : public NoSessionAshTestBase {
+ public:
+  PowerPrefsTest(const PowerPrefsTest&) = delete;
+  PowerPrefsTest& operator=(const PowerPrefsTest&) = delete;
+
  protected:
   PowerPrefsTest() = default;
   ~PowerPrefsTest() override = default;
@@ -268,9 +272,6 @@ class PowerPrefsTest : public NoSessionAshTestBase {
       base::MakeRefCounted<PrefRegistrySimple>();
 
   std::unique_ptr<PrefService> local_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerPrefsTest);
 };
 
 TEST_F(PowerPrefsTest, LoginScreen) {

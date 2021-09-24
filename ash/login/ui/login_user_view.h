@@ -63,6 +63,10 @@ class ASH_EXPORT LoginUserView : public views::View,
                 const OnTap& on_tap,
                 const OnRemoveWarningShown& on_remove_warning_shown,
                 const OnRemove& on_remove);
+
+  LoginUserView(const LoginUserView&) = delete;
+  LoginUserView& operator=(const LoginUserView&) = delete;
+
   ~LoginUserView() override;
 
   // Update the user view to display the given user information.
@@ -141,8 +145,6 @@ class ASH_EXPORT LoginUserView : public views::View,
   base::ScopedObservation<display::DisplayConfigurator,
                           display::DisplayConfigurator::Observer>
       display_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUserView);
 };
 
 }  // namespace ash

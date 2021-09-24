@@ -49,6 +49,10 @@ namespace ash {
 
 class PinRequestViewTest : public LoginTestBase,
                            public PinRequestView::Delegate {
+ public:
+  PinRequestViewTest(const PinRequestViewTest&) = delete;
+  PinRequestViewTest& operator=(const PinRequestViewTest&) = delete;
+
  protected:
   PinRequestViewTest() {}
   ~PinRequestViewTest() override = default;
@@ -174,9 +178,6 @@ class PinRequestViewTest : public LoginTestBase,
   bool will_authenticate_ = true;
 
   PinRequestView* view_ = nullptr;  // Owned by test widget view hierarchy.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PinRequestViewTest);
 };
 
 // Tests that back button works.

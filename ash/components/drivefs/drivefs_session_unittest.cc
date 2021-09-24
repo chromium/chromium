@@ -286,6 +286,9 @@ class DriveFsSessionTest : public ::testing::Test,
  public:
   DriveFsSessionTest() {}
 
+  DriveFsSessionTest(const DriveFsSessionTest&) = delete;
+  DriveFsSessionTest& operator=(const DriveFsSessionTest&) = delete;
+
  protected:
   MOCK_METHOD1(OnMounted, void(const base::FilePath& path));
   MOCK_METHOD1(OnUnmounted, void(absl::optional<base::TimeDelta> delay));
@@ -344,9 +347,6 @@ class DriveFsSessionTest : public ::testing::Test,
   base::MockOneShotTimer timer_;
   std::unique_ptr<PointerHolder> holder_;
   std::unique_ptr<DriveFsSession> session_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DriveFsSessionTest);
 };
 
 }  // namespace

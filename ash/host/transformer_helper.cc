@@ -33,6 +33,10 @@ class SimpleRootWindowTransformer : public RootWindowTransformer {
                               const gfx::Transform& transform)
       : root_window_(root_window), transform_(transform) {}
 
+  SimpleRootWindowTransformer(const SimpleRootWindowTransformer&) = delete;
+  SimpleRootWindowTransformer& operator=(const SimpleRootWindowTransformer&) =
+      delete;
+
   // RootWindowTransformer overrides:
   gfx::Transform GetTransform() const override { return transform_; }
 
@@ -62,8 +66,6 @@ class SimpleRootWindowTransformer : public RootWindowTransformer {
 
   const aura::Window* root_window_;
   const gfx::Transform transform_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleRootWindowTransformer);
 };
 
 }  // namespace

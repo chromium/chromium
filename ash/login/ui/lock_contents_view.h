@@ -136,6 +136,10 @@ class ASH_EXPORT LockContentsView
       LockScreen::ScreenType screen_type,
       LoginDataDispatcher* data_dispatcher,
       std::unique_ptr<LoginDetachableBaseModel> detachable_base_model);
+
+  LockContentsView(const LockContentsView&) = delete;
+  LockContentsView& operator=(const LockContentsView&) = delete;
+
   ~LockContentsView() override;
 
   void FocusNextUser();
@@ -537,8 +541,6 @@ class ASH_EXPORT LockContentsView
       BottomIndicatorState::kNone;
 
   base::WeakPtrFactory<LockContentsView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockContentsView);
 };
 
 }  // namespace ash

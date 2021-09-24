@@ -32,6 +32,9 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
  public:
   static AccessibilityController* Get();
 
+  AccessibilityController(const AccessibilityController&) = delete;
+  AccessibilityController& operator=(const AccessibilityController&) = delete;
+
   // Sets the client interface.
   virtual void SetClient(AccessibilityControllerClient* client) = 0;
 
@@ -182,9 +185,6 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
  protected:
   AccessibilityController();
   virtual ~AccessibilityController();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityController);
 };
 
 }  // namespace ash

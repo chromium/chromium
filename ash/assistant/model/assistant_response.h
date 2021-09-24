@@ -43,6 +43,9 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse
 
   AssistantResponse();
 
+  AssistantResponse(const AssistantResponse&) = delete;
+  AssistantResponse& operator=(const AssistantResponse&) = delete;
+
   // Adds/removes the specified |observer|.
   // NOTE: only the AssistantInteractionController is able to obtain non-const
   // access to an AssistantResponse through its owned model, but there are const
@@ -120,8 +123,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse
   mutable base::ObserverList<AssistantResponseObserver> observers_;
 
   base::WeakPtrFactory<AssistantResponse> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantResponse);
 };
 
 }  // namespace ash

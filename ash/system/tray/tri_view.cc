@@ -34,11 +34,11 @@ class RelayoutView : public views::View {
  public:
   RelayoutView() = default;
 
+  RelayoutView(const RelayoutView&) = delete;
+  RelayoutView& operator=(const RelayoutView&) = delete;
+
   // views::View:
   void ChildPreferredSizeChanged(View* child) override { Layout(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RelayoutView);
 };
 
 }  // namespace

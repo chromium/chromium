@@ -45,6 +45,10 @@ class MirroringScreenPositionClient
   explicit MirroringScreenPositionClient(MirrorWindowController* controller)
       : controller_(controller) {}
 
+  MirroringScreenPositionClient(const MirroringScreenPositionClient&) = delete;
+  MirroringScreenPositionClient& operator=(
+      const MirroringScreenPositionClient&) = delete;
+
   // aura::client::ScreenPositionClient:
   void ConvertPointToScreen(const aura::Window* window,
                             gfx::PointF* point) override {
@@ -93,8 +97,6 @@ class MirroringScreenPositionClient
 
  private:
   MirrorWindowController* controller_;  // not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(MirroringScreenPositionClient);
 };
 
 // A trivial CaptureClient that does nothing. That is, calls to set/release

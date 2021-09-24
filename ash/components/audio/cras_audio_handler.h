@@ -67,6 +67,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   class AudioObserver {
    public:
+    AudioObserver(const AudioObserver&) = delete;
+    AudioObserver& operator=(const AudioObserver&) = delete;
+
     // Called when an active output volume changed.
     virtual void OnOutputNodeVolumeChanged(uint64_t node_id, int volume);
 
@@ -119,7 +122,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
    protected:
     AudioObserver();
     virtual ~AudioObserver();
-    DISALLOW_COPY_AND_ASSIGN(AudioObserver);
   };
 
   enum DeviceActivateType {
@@ -154,6 +156,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Gets the global instance. Initialize must be called first.
   static CrasAudioHandler* Get();
+
+  CrasAudioHandler(const CrasAudioHandler&) = delete;
+  CrasAudioHandler& operator=(const CrasAudioHandler&) = delete;
 
   // Overrides media::VideoCaptureObserver.
   void OnVideoCaptureStarted(media::VideoFacingMode facing) override;
@@ -753,8 +758,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   cras::DisplayRotation display_rotation_ = cras::DisplayRotation::ROTATE_0;
 
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioHandler);
 };
 
 // Helper class that will initialize the |CrasAudioHandler| for testing in its

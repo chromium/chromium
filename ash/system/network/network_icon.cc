@@ -50,6 +50,9 @@ class NetworkIconImpl {
                   IconType icon_type,
                   NetworkType network_type);
 
+  NetworkIconImpl(const NetworkIconImpl&) = delete;
+  NetworkIconImpl& operator=(const NetworkIconImpl&) = delete;
+
   // Determines whether or not the associated network might be dirty and if so
   // updates and generates the icon. Does nothing if network no longer exists.
   void Update(const NetworkStateProperties* network, bool show_vpn_badge);
@@ -82,8 +85,6 @@ class NetworkIconImpl {
 
   // Generated icon image.
   gfx::ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkIconImpl);
 };
 
 //------------------------------------------------------------------------------

@@ -71,6 +71,9 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
     DCHECK_LE(count_, kTrayNotificationMaxCount + 1);
   }
 
+  NumberIconImageSource(const NumberIconImageSource&) = delete;
+  NumberIconImageSource& operator=(const NumberIconImageSource&) = delete;
+
   void Draw(gfx::Canvas* canvas) override {
     SkColor tray_icon_color =
         TrayIconColor(Shell::Get()->session_controller()->GetSessionState());
@@ -97,8 +100,6 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
  private:
   size_t count_;
-
-  DISALLOW_COPY_AND_ASSIGN(NumberIconImageSource);
 };
 
 }  // namespace

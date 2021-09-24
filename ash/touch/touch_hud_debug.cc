@@ -93,6 +93,9 @@ class TouchTrace {
 
   TouchTrace() = default;
 
+  TouchTrace(const TouchTrace&) = delete;
+  TouchTrace& operator=(const TouchTrace&) = delete;
+
   void AddTouchPoint(const ui::TouchEvent& touch) {
     log_.push_back(TouchPointLog(touch));
   }
@@ -108,14 +111,15 @@ class TouchTrace {
 
  private:
   std::vector<TouchPointLog> log_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTrace);
 };
 
 // A TouchLog keeps track of all touch events of all touch points.
 class TouchLog {
  public:
   TouchLog() : next_trace_index_(0) {}
+
+  TouchLog(const TouchLog&) = delete;
+  TouchLog& operator=(const TouchLog&) = delete;
 
   void AddTouchPoint(const ui::TouchEvent& touch) {
     if (touch.type() == ui::ET_TOUCH_PRESSED)
@@ -161,8 +165,6 @@ class TouchLog {
   int next_trace_index_;
 
   std::map<int, int> touch_id_to_trace_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchLog);
 };
 
 // TouchHudCanvas draws touch traces in |FULLSCREEN| and |REDUCED_SCALE| modes.

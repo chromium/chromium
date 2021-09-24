@@ -46,14 +46,15 @@ class TestTextInputClient : public ui::DummyTextInputClient {
  public:
   TestTextInputClient() : ui::DummyTextInputClient(ui::TEXT_INPUT_TYPE_TEXT) {}
 
+  TestTextInputClient(const TestTextInputClient&) = delete;
+  TestTextInputClient& operator=(const TestTextInputClient&) = delete;
+
   ui::TextInputType GetTextInputType() const override { return type_; }
 
   void set_text_input_type(ui::TextInputType type) { type_ = type; }
 
  private:
   ui::TextInputType type_ = ui::TEXT_INPUT_TYPE_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTextInputClient);
 };
 
 }  // namespace

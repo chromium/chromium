@@ -84,6 +84,9 @@ class ShelfAppButtonAnimation : public gfx::AnimationDelegate {
     virtual ~Observer() = default;
   };
 
+  ShelfAppButtonAnimation(const ShelfAppButtonAnimation&) = delete;
+  ShelfAppButtonAnimation& operator=(const ShelfAppButtonAnimation&) = delete;
+
   static ShelfAppButtonAnimation* GetInstance() {
     static ShelfAppButtonAnimation* s_instance = new ShelfAppButtonAnimation();
     return s_instance;
@@ -136,8 +139,6 @@ class ShelfAppButtonAnimation : public gfx::AnimationDelegate {
 
   gfx::ThrobAnimation animation_;
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfAppButtonAnimation);
 };
 
 }  // namespace

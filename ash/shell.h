@@ -224,6 +224,9 @@ class ASH_EXPORT Shell : public SessionObserver,
  public:
   typedef std::vector<RootWindowController*> RootWindowControllerList;
 
+  Shell(const Shell&) = delete;
+  Shell& operator=(const Shell&) = delete;
+
   // Creates the single Shell instance.
   static Shell* CreateInstance(ShellInitParams init_params);
 
@@ -901,8 +904,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   base::ObserverList<ShellObserver>::Unchecked shell_observers_;
 
   base::WeakPtrFactory<Shell> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Shell);
 };
 
 }  // namespace ash

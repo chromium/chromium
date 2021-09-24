@@ -21,6 +21,9 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
  public:
   SearchResultBaseView();
 
+  SearchResultBaseView(const SearchResultBaseView&) = delete;
+  SearchResultBaseView& operator=(const SearchResultBaseView&) = delete;
+
   // Set whether the result is selected. It updates the background highlight,
   // and selects the result action associated with the result if
   // SearchBoxSelection feature is enabled.
@@ -128,8 +131,6 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   // activated by user by pressing ENTER key.
   bool is_default_result_ = false;
   SearchResult* result_ = nullptr;  // Owned by SearchModel::SearchResults.
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultBaseView);
 };
 
 }  // namespace ash

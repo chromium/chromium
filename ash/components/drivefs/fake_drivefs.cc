@@ -107,6 +107,9 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
               drivefs::mojom::QueryParametersPtr params)
       : drive_fs_(std::move(drive_fs)), params_(std::move(params)) {}
 
+  SearchQuery(const SearchQuery&) = delete;
+  SearchQuery& operator=(const SearchQuery&) = delete;
+
  private:
   void GetNextPage(GetNextPageCallback callback) override {
     if (!drive_fs_) {
@@ -234,8 +237,6 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
   size_t pending_callbacks_ = 0;
 
   base::WeakPtrFactory<SearchQuery> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchQuery);
 };
 
 FakeDriveFs::FakeDriveFs(const base::FilePath& mount_path)

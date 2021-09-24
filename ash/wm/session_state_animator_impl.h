@@ -26,6 +26,9 @@ class ASH_EXPORT SessionStateAnimatorImpl : public SessionStateAnimator {
     explicit TestApi(SessionStateAnimatorImpl* animator)
         : animator_(animator) {}
 
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     // Returns true if containers of a given |container_mask|
     // were last animated with |type| (probably; the analysis is fairly ad-hoc).
     // |container_mask| is a bitfield of a Container.
@@ -38,11 +41,13 @@ class ASH_EXPORT SessionStateAnimatorImpl : public SessionStateAnimator {
 
    private:
     SessionStateAnimatorImpl* animator_;  // not owned
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   SessionStateAnimatorImpl();
+
+  SessionStateAnimatorImpl(const SessionStateAnimatorImpl&) = delete;
+  SessionStateAnimatorImpl& operator=(const SessionStateAnimatorImpl&) = delete;
+
   ~SessionStateAnimatorImpl() override;
 
   // Fills |containers| with the containers included in |container_mask|.
@@ -78,8 +83,6 @@ class ASH_EXPORT SessionStateAnimatorImpl : public SessionStateAnimator {
                              SessionStateAnimator::AnimationType type,
                              SessionStateAnimator::AnimationSpeed speed,
                              ui::LayerAnimationObserver* observer);
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStateAnimatorImpl);
 };
 
 }  // namespace ash

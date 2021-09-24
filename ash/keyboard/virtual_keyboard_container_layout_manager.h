@@ -17,6 +17,11 @@ class VirtualKeyboardContainerLayoutManager : public aura::LayoutManager {
   explicit VirtualKeyboardContainerLayoutManager(
       aura::Window* ime_window_parent_container);
 
+  VirtualKeyboardContainerLayoutManager(
+      const VirtualKeyboardContainerLayoutManager&) = delete;
+  VirtualKeyboardContainerLayoutManager& operator=(
+      const VirtualKeyboardContainerLayoutManager&) = delete;
+
   // Overridden from aura::LayoutManager
   void OnWindowResized() override;
   void OnWindowAddedToLayout(aura::Window* child) override;
@@ -29,8 +34,6 @@ class VirtualKeyboardContainerLayoutManager : public aura::LayoutManager {
 
  private:
   aura::Window* ime_window_parent_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardContainerLayoutManager);
 };
 
 }  // namespace ash

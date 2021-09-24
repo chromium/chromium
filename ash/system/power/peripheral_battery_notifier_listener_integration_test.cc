@@ -163,11 +163,13 @@ class PeripheralBatteryNotifierListenerIncompleteDevicesTest
   PeripheralBatteryNotifierListenerIncompleteDevicesTest() {
     set_complete_devices(false);
   }
-  ~PeripheralBatteryNotifierListenerIncompleteDevicesTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      PeripheralBatteryNotifierListenerIncompleteDevicesTest);
+  PeripheralBatteryNotifierListenerIncompleteDevicesTest(
+      const PeripheralBatteryNotifierListenerIncompleteDevicesTest&) = delete;
+  PeripheralBatteryNotifierListenerIncompleteDevicesTest& operator=(
+      const PeripheralBatteryNotifierListenerIncompleteDevicesTest&) = delete;
+
+  ~PeripheralBatteryNotifierListenerIncompleteDevicesTest() override {}
 };
 
 TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {

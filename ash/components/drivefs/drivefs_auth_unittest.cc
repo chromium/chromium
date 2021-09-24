@@ -65,6 +65,9 @@ class DriveFsAuthTest : public ::testing::Test {
  public:
   DriveFsAuthTest() = default;
 
+  DriveFsAuthTest(const DriveFsAuthTest&) = delete;
+  DriveFsAuthTest& operator=(const DriveFsAuthTest&) = delete;
+
  protected:
   void SetUp() override {
     clock_.SetNow(base::Time::Now());
@@ -104,9 +107,6 @@ class DriveFsAuthTest : public ::testing::Test {
   std::unique_ptr<AuthDelegateImpl> delegate_;
   std::unique_ptr<DriveFsAuth> auth_;
   base::MockOneShotTimer* timer_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DriveFsAuthTest);
 };
 
 TEST_F(DriveFsAuthTest, GetAccessToken_Success) {

@@ -61,6 +61,11 @@ class BluetoothNotificationControllerTest : public AshTestBase {
  public:
   BluetoothNotificationControllerTest() = default;
 
+  BluetoothNotificationControllerTest(
+      const BluetoothNotificationControllerTest&) = delete;
+  BluetoothNotificationControllerTest& operator=(
+      const BluetoothNotificationControllerTest&) = delete;
+
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -156,8 +161,6 @@ class BluetoothNotificationControllerTest : public AshTestBase {
   TestSystemTrayClient* system_tray_client_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_1_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_2_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothNotificationControllerTest);
 };
 
 TEST_F(BluetoothNotificationControllerTest, DiscoverableNotification) {

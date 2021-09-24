@@ -25,6 +25,9 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
   TestActivationDelegate();
   explicit TestActivationDelegate(bool activate);
 
+  TestActivationDelegate(const TestActivationDelegate&) = delete;
+  TestActivationDelegate& operator=(const TestActivationDelegate&) = delete;
+
   // Associates this delegate with a Window.
   void SetWindow(aura::Window* window);
 
@@ -54,8 +57,6 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
   int activated_count_;
   int lost_active_count_;
   mutable int should_activate_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestActivationDelegate);
 };
 
 }  // namespace ash

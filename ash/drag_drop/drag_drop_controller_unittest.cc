@@ -66,6 +66,9 @@ class DragTestView : public views::View {
  public:
   DragTestView() : views::View() { Reset(); }
 
+  DragTestView(const DragTestView&) = delete;
+  DragTestView& operator=(const DragTestView&) = delete;
+
   void Reset() {
     num_drag_enters_ = 0;
     num_drag_exits_ = 0;
@@ -149,8 +152,6 @@ class DragTestView : public views::View {
     num_drops_++;
     output_drag_op = DragOperation::kCopy;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DragTestView);
 };
 
 class CompletableLinearAnimation : public gfx::LinearAnimation {
@@ -160,15 +161,19 @@ class CompletableLinearAnimation : public gfx::LinearAnimation {
                              gfx::AnimationDelegate* delegate)
       : gfx::LinearAnimation(duration, frame_rate, delegate) {}
 
-  void Complete() { Step(start_time() + duration()); }
+  CompletableLinearAnimation(const CompletableLinearAnimation&) = delete;
+  CompletableLinearAnimation& operator=(const CompletableLinearAnimation&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompletableLinearAnimation);
+  void Complete() { Step(start_time() + duration()); }
 };
 
 class TestDragDropController : public DragDropController {
  public:
   TestDragDropController() : DragDropController() { Reset(); }
+
+  TestDragDropController(const TestDragDropController&) = delete;
+  TestDragDropController& operator=(const TestDragDropController&) = delete;
 
   void Reset() {
     drag_start_received_ = false;
@@ -224,9 +229,6 @@ class TestDragDropController : public DragDropController {
   bool drop_received_;
   bool drag_canceled_;
   std::u16string drag_string_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDragDropController);
 };
 
 class MockObserver : public aura::client::DragDropClientObserver {
@@ -244,6 +246,9 @@ class TestObserver : public aura::client::DragDropClientObserver {
 
   TestObserver() : state_(State::kNotInvoked) {}
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   State state() const { return state_; }
 
   // aura::client::DragDropClientObserver
@@ -260,8 +265,6 @@ class TestObserver : public aura::client::DragDropClientObserver {
 
  private:
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class EventTargetTestDelegate : public aura::client::DragDropDelegate {
@@ -275,6 +278,10 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
   };
 
   explicit EventTargetTestDelegate(aura::Window* window) : window_(window) {}
+
+  EventTargetTestDelegate(const EventTargetTestDelegate&) = delete;
+  EventTargetTestDelegate& operator=(const EventTargetTestDelegate&) = delete;
+
   State state() const { return state_; }
 
   // aura::client::DragDropDelegate:
@@ -325,8 +332,6 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
 
   aura::Window* const window_;
   State state_{State::kNotInvoked};
-
-  DISALLOW_COPY_AND_ASSIGN(EventTargetTestDelegate);
 };
 
 void AddViewToWidgetAndResize(views::Widget* widget, views::View* view) {

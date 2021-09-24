@@ -64,6 +64,10 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
 
   // Creates the tool manager.
   PaletteToolManager(Delegate* delegate);
+
+  PaletteToolManager(const PaletteToolManager&) = delete;
+  PaletteToolManager& operator=(const PaletteToolManager&) = delete;
+
   ~PaletteToolManager() override;
 
   // Returns true if the given tool has been added to the tool manager.
@@ -121,8 +125,6 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
 
   // Owned list of all tools.
   std::vector<std::unique_ptr<PaletteTool>> tools_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaletteToolManager);
 };
 
 }  // namespace ash

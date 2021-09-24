@@ -47,6 +47,11 @@ class DriveFsBootstrapListenerForTest : public DriveFsBootstrapListener {
       mojo::PendingRemote<mojom::DriveFsBootstrap> available_bootstrap)
       : available_bootstrap_(std::move(available_bootstrap)) {}
 
+  DriveFsBootstrapListenerForTest(const DriveFsBootstrapListenerForTest&) =
+      delete;
+  DriveFsBootstrapListenerForTest& operator=(
+      const DriveFsBootstrapListenerForTest&) = delete;
+
   mojo::PendingRemote<mojom::DriveFsBootstrap> bootstrap() override {
     return std::move(available_bootstrap_);
   }
@@ -55,14 +60,15 @@ class DriveFsBootstrapListenerForTest : public DriveFsBootstrapListener {
 
  private:
   mojo::PendingRemote<mojom::DriveFsBootstrap> available_bootstrap_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsBootstrapListenerForTest);
 };
 
 class DriveFsBootstrapTest : public testing::Test,
                              public mojom::DriveFsBootstrap {
  public:
   DriveFsBootstrapTest() = default;
+
+  DriveFsBootstrapTest(const DriveFsBootstrapTest&) = delete;
+  DriveFsBootstrapTest& operator=(const DriveFsBootstrapTest&) = delete;
 
  protected:
   MOCK_CONST_METHOD0(OnDisconnect, void());
@@ -108,8 +114,6 @@ class DriveFsBootstrapTest : public testing::Test,
   mojo::Remote<mojom::DriveFsDelegate> delegate_;
   mojo::PendingReceiver<mojom::DriveFsDelegate> pending_delegate_receiver_;
   std::string email_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsBootstrapTest);
 };
 
 }  // namespace

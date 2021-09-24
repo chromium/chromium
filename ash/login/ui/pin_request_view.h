@@ -121,6 +121,10 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   // Creates pin request view that will enable the user to enter a pin.
   // |request| is used to configure callbacks and UI details.
   PinRequestView(PinRequest request, Delegate* delegate);
+
+  PinRequestView(const PinRequestView&) = delete;
+  PinRequestView& operator=(const PinRequestView&) = delete;
+
   ~PinRequestView() override;
 
   // views::View:
@@ -207,8 +211,6 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
       tablet_mode_observation_{this};
 
   base::WeakPtrFactory<PinRequestView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PinRequestView);
 };
 
 }  // namespace ash

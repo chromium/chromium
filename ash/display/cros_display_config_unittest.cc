@@ -63,6 +63,9 @@ class TestObserver : public mojom::CrosDisplayConfigObserver {
  public:
   TestObserver() = default;
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   // mojom::CrosDisplayConfigObserver:
   void OnDisplayConfigChanged() override { display_changes_++; }
 
@@ -71,8 +74,6 @@ class TestObserver : public mojom::CrosDisplayConfigObserver {
 
  private:
   int display_changes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace

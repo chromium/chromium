@@ -67,6 +67,10 @@ class ASH_EXPORT PaletteTool {
 
   // |delegate| must outlive this tool instance.
   explicit PaletteTool(Delegate* delegate);
+
+  PaletteTool(const PaletteTool&) = delete;
+  PaletteTool& operator=(const PaletteTool&) = delete;
+
   virtual ~PaletteTool();
 
   // The group this tool belongs to. Only one tool per group can be active at
@@ -111,8 +115,6 @@ class ASH_EXPORT PaletteTool {
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaletteTool);
 };
 
 }  // namespace ash

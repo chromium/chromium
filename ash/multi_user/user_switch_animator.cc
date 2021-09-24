@@ -59,13 +59,16 @@ class MaximizedWindowAnimationWatcher : public ui::ImplicitAnimationObserver {
       std::unique_ptr<ui::LayerTreeOwner> old_layer)
       : old_layer_(std::move(old_layer)) {}
 
+  MaximizedWindowAnimationWatcher(const MaximizedWindowAnimationWatcher&) =
+      delete;
+  MaximizedWindowAnimationWatcher& operator=(
+      const MaximizedWindowAnimationWatcher&) = delete;
+
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override { delete this; }
 
  private:
   std::unique_ptr<ui::LayerTreeOwner> old_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MaximizedWindowAnimationWatcher);
 };
 
 // Modifies the given |window_list| such that the most-recently used window (if

@@ -29,6 +29,10 @@ struct ResolutionNotificationController::ResolutionChangeInfo {
                        const display::ManagedDisplayMode& old_resolution,
                        const display::ManagedDisplayMode& new_resolution,
                        base::OnceClosure accept_callback);
+
+  ResolutionChangeInfo(const ResolutionChangeInfo&) = delete;
+  ResolutionChangeInfo& operator=(const ResolutionChangeInfo&) = delete;
+
   ~ResolutionChangeInfo();
 
   // The id of the display where the resolution change happens.
@@ -46,9 +50,6 @@ struct ResolutionNotificationController::ResolutionChangeInfo {
 
   // The callback when accept is chosen.
   base::OnceClosure accept_callback;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResolutionChangeInfo);
 };
 
 ResolutionNotificationController::ResolutionChangeInfo::ResolutionChangeInfo(

@@ -23,6 +23,11 @@ enum class MicState;
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantInteractionModelObserver
     : public base::CheckedObserver {
  public:
+  AssistantInteractionModelObserver(const AssistantInteractionModelObserver&) =
+      delete;
+  AssistantInteractionModelObserver& operator=(
+      const AssistantInteractionModelObserver&) = delete;
+
   // Invoked when the interaction state is changed.
   virtual void OnInteractionStateChanged(InteractionState interaction_state) {}
 
@@ -60,8 +65,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantInteractionModelObserver
  protected:
   AssistantInteractionModelObserver() = default;
   ~AssistantInteractionModelObserver() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantInteractionModelObserver);
 };
 
 }  // namespace ash

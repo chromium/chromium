@@ -45,6 +45,9 @@ class ASH_EXPORT PinRequestWidget {
     PinRequestWidget* const pin_request_widget_;
   };
 
+  PinRequestWidget(const PinRequestWidget&) = delete;
+  PinRequestWidget& operator=(const PinRequestWidget&) = delete;
+
   // Creates and shows the instance of PinRequestWidget.
   // This widget is modal and only one instance can be created at a time. It
   // will be destroyed when dismissed.
@@ -89,8 +92,6 @@ class ASH_EXPORT PinRequestWidget {
   std::unique_ptr<WindowDimmer> dimmer_;
 
   base::WeakPtrFactory<PinRequestWidget> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PinRequestWidget);
 };
 
 }  // namespace ash

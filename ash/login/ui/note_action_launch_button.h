@@ -50,6 +50,10 @@ class ASH_EXPORT NoteActionLaunchButton : public NonAccessibleView {
 
   explicit NoteActionLaunchButton(
       mojom::TrayActionState initial_note_action_state);
+
+  NoteActionLaunchButton(const NoteActionLaunchButton&) = delete;
+  NoteActionLaunchButton& operator=(const NoteActionLaunchButton&) = delete;
+
   ~NoteActionLaunchButton() override;
 
   // Updates the bubble visibility depending on the note taking action state.
@@ -64,8 +68,6 @@ class ASH_EXPORT NoteActionLaunchButton : public NonAccessibleView {
 
   // The actionable image button view.
   ActionButton* action_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NoteActionLaunchButton);
 };
 
 }  // namespace ash

@@ -145,6 +145,9 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
  public:
   explicit TrayWidgetObserver(TrayBackgroundView* host) : host_(host) {}
 
+  TrayWidgetObserver(const TrayWidgetObserver&) = delete;
+  TrayWidgetObserver& operator=(const TrayWidgetObserver&) = delete;
+
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override {
     host_->AnchorUpdated();
@@ -160,8 +163,6 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
   TrayBackgroundView* host_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrayWidgetObserver);
 };
 
 // Handles `TrayBackgroundView`'s animation on session changed.

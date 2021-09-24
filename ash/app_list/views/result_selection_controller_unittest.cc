@@ -52,6 +52,10 @@ class TestResultViewWithActions : public TestResultView,
     set_actions_view(actions_view_owned_.get());
   }
 
+  TestResultViewWithActions(const TestResultViewWithActions&) = delete;
+  TestResultViewWithActions& operator=(const TestResultViewWithActions&) =
+      delete;
+
   // TestResultView:
   TestResultViewWithActions* AsResultViewWithActions() override { return this; }
 
@@ -65,8 +69,6 @@ class TestResultViewWithActions : public TestResultView,
 
  private:
   std::unique_ptr<SearchResultActionsView> actions_view_owned_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResultViewWithActions);
 };
 
 // Allows immediate invocation of |VerticalTestContainer| and its derivatives,

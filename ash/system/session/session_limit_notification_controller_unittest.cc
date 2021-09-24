@@ -169,8 +169,10 @@ class SessionLimitNotificationControllerLoginTest
  public:
   SessionLimitNotificationControllerLoginTest() { set_start_session(false); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionLimitNotificationControllerLoginTest);
+  SessionLimitNotificationControllerLoginTest(
+      const SessionLimitNotificationControllerLoginTest&) = delete;
+  SessionLimitNotificationControllerLoginTest& operator=(
+      const SessionLimitNotificationControllerLoginTest&) = delete;
 };
 
 TEST_F(SessionLimitNotificationControllerLoginTest,
