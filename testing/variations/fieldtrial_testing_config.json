@@ -6928,33 +6928,6 @@
             ]
         }
     ],
-    "RenderDocument": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableForCrashedFrame",
-                    "params": {
-                        "level": "crashed-frame"
-                    },
-                    "enable_features": [
-                        "RenderDocument"
-                    ],
-                    "disable_features": [
-                        "SkipEarlyCommitPendingForCrashedFrame"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReportAllJavaScriptFrameworks": [
         {
             "platforms": [
