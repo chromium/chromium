@@ -1288,7 +1288,7 @@
                   '|components/media_router/'
     },
     'media_webrtc': {
-      'filepath': 'media/webrtc/'
+      'filepath': '^media/webrtc/'
     },
     'message_loop': {
       'filepath': 'base/message_'
