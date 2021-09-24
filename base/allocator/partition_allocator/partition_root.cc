@@ -491,6 +491,8 @@ void PartitionRoot<thread_safe>::DecommitEmptySlotSpans() {
       slot_span->DecommitIfPossible(this);
     slot_span = nullptr;
   }
+  // Just decommitted everything, and holding the lock, should be exactly 0.
+  PA_DCHECK(empty_slot_spans_dirty_bytes == 0);
 }
 
 template <bool thread_safe>

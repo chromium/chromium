@@ -85,6 +85,9 @@ ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
       PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   root->lock_.AssertAcquired();
 
+  root->empty_slot_spans_dirty_bytes +=
+      base::bits::AlignUp(slot_span->GetProvisionedSize(), SystemPageSize());
+
   slot_span->ToSuperPageExtent()->DecrementNumberOfNonemptySlotSpans();
 
   // If the slot span is already registered as empty, give it another life.
@@ -195,10 +198,12 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   PA_DCHECK(!bucket->is_direct_mapped());
   void* slot_span_start = SlotSpanMetadata::ToSlotSpanStartPtr(this);
   // If lazy commit is enabled, only provisioned slots are committed.
+  size_t dirty_size = bits::AlignUp(GetProvisionedSize(), SystemPageSize());
   size_t size_to_decommit =
-      root->use_lazy_commit
-          ? bits::AlignUp(GetProvisionedSize(), SystemPageSize())
-          : bucket->get_bytes_per_span();
+      root->use_lazy_commit ? dirty_size : bucket->get_bytes_per_span();
+
+  PA_DCHECK(root->empty_slot_spans_dirty_bytes >= dirty_size);
+  root->empty_slot_spans_dirty_bytes -= dirty_size;
 
   // Not decommitted slot span must've had at least 1 allocation.
   PA_DCHECK(size_to_decommit > 0);

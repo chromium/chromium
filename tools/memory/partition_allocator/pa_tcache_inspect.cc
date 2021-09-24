@@ -505,6 +505,9 @@ void DisplayRootData(PartitionRootInspector& root_inspector) {
                    std::memory_order_relaxed) /
                    1024
             << "kiB";
+  std::cout << "\nEmpty Slot Spans Dirty Size = "
+            << TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes) / 1024
+            << "kiB";
 }
 
 }  // namespace tools

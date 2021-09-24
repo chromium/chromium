@@ -896,6 +896,13 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
         new_slot_span->next_slot_span = nullptr;
         new_slot_span->ToSuperPageExtent()
             ->IncrementNumberOfNonemptySlotSpans();
+
+        // Re-activating an empty slot span, update accounting.
+        size_t dirty_size = bits::AlignUp(new_slot_span->GetProvisionedSize(),
+                                          SystemPageSize());
+        PA_DCHECK(root->empty_slot_spans_dirty_bytes >= dirty_size);
+        root->empty_slot_spans_dirty_bytes -= dirty_size;
+
         break;
       }
       PA_DCHECK(new_slot_span->is_decommitted());

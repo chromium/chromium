@@ -311,6 +311,12 @@ struct BASE_EXPORT PartitionRoot {
   std::atomic<size_t> total_size_of_brp_quarantined_bytes{0};
   std::atomic<size_t> total_count_of_brp_quarantined_slots{0};
 #endif
+  // Slot span memory which has been provisioned, and is currently unused as
+  // it's part of an empty SlotSpan. This is not clean memory, since it has
+  // either been used for a memory allocation, and/or contains freelist
+  // entries. But it might have been moved to swap. Note that all this memory
+  // can be decommitted at any time.
+  size_t empty_slot_spans_dirty_bytes GUARDED_BY(lock_) = 0;
 
   char* next_super_page = nullptr;
   char* next_partition_page = nullptr;
@@ -318,8 +324,9 @@ struct BASE_EXPORT PartitionRoot {
   SuperPageExtentEntry* current_extent = nullptr;
   SuperPageExtentEntry* first_extent = nullptr;
   DirectMapExtent* direct_map_list GUARDED_BY(lock_) = nullptr;
-  SlotSpan* global_empty_slot_span_ring[kMaxFreeableSpans] = {};
-  int16_t global_empty_slot_span_ring_index = 0;
+  SlotSpan* global_empty_slot_span_ring[kMaxFreeableSpans] GUARDED_BY(
+      lock_) = {};
+  int16_t global_empty_slot_span_ring_index GUARDED_BY(lock_) = 0;
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
