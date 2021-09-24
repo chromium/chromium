@@ -4,9 +4,17 @@
 
 package org.chromium.chrome.browser.privacy.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
@@ -20,6 +28,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoReauthManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -61,6 +70,22 @@ public class PrivacySettingsFragmentTest {
         });
     }
 
+    private View getIncognitoReauthSettingView(PrivacySettings privacySettings) {
+        String incognito_lock_title = mSettingsActivityTestRule.getActivity().getString(
+                R.string.settings_incognito_tab_lock_title);
+        RecyclerViewActions.scrollTo(withText(incognito_lock_title));
+        onView(withText(incognito_lock_title)).check(matches(isDisplayed()));
+
+        for (int i = 0; i < privacySettings.getListView().getChildCount(); ++i) {
+            View view = privacySettings.getListView().getChildAt(i);
+            String title = ((TextView) view.findViewById(android.R.id.title)).getText().toString();
+            if (!TextUtils.isEmpty(title) && TextUtils.equals(incognito_lock_title, title)) {
+                return view;
+            }
+        }
+        return null;
+    }
+
     @Test
     @LargeTest
     @Feature({"RenderTest"})
@@ -88,5 +113,35 @@ public class PrivacySettingsFragmentTest {
                             .findViewById(android.R.id.content)
                             .getRootView();
         mRenderTestRule.render(view, "privacy_and_security_settings_bottom_view");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testRenderIncognitoLockView_DeviceScreenLockDisabled() throws IOException {
+        IncognitoReauthManager.setShouldShowSettingForTesting(true);
+        IncognitoReauthManager.setIsDeviceScreenLockEnabledForTesting(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        waitForOptionsMenu();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+
+        mRenderTestRule.render(getIncognitoReauthSettingView(fragment),
+                "incognito_reauth_setting_screen_lock_disabled");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testRenderIncognitoLockView_DeviceScreenLockEnabled() throws IOException {
+        IncognitoReauthManager.setShouldShowSettingForTesting(true);
+        IncognitoReauthManager.setIsDeviceScreenLockEnabledForTesting(true);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        waitForOptionsMenu();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+
+        mRenderTestRule.render(getIncognitoReauthSettingView(fragment),
+                "incognito_reauth_setting_screen_lock_enabled");
     }
 }

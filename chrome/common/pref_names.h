@@ -585,6 +585,7 @@ extern const char kOpenPdfDownloadInSystemReader[];
 extern const char kPromptForDownloadAndroid[];
 extern const char kDownloadLaterPromptStatus[];
 extern const char kShowMissingSdCardErrorAndroid[];
+extern const char kIncognitoReauthenticationForAndroid[];
 #endif
 
 extern const char kSaveFileDefaultDirectory[];

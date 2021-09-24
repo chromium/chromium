@@ -24,6 +24,11 @@
         android:key="https_first_mode"
         android:title="@string/settings_https_first_mode_title"
         android:summary="@string/settings_https_first_mode_summary"/>
+     <org.chromium.chrome.browser.incognito.IncognitoReauthSettingSwitchPreference
+        android:key="incognito_lock"
+        android:title="@string/settings_incognito_tab_lock_title"
+        android:summary="@string/settings_incognito_tab_lock_summary_android_setting_off"
+        android:persistent="false"/>
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="can_make_payment"
         android:title="@string/can_make_payment_title"

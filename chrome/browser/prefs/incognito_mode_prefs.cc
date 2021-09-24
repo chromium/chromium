@@ -62,6 +62,10 @@ void IncognitoModePrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kIncognitoModeAvailability,
                                 static_cast<int>(kDefaultAvailability));
+#if defined(OS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kIncognitoReauthenticationForAndroid,
+                                false);
+#endif
 }
 
 // static
