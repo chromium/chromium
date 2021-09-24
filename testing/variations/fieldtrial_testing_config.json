@@ -6565,6 +6565,7 @@
                     "params": {
                         "base_url": "https://chromeupboarding-pa.googleapis.com",
                         "experiment_tag": "{maxLevels : 1, rankTiles : true}",
+                        "expire_duration": "86400",
                         "image_prefetch_mode": "top",
                         "is_unmetered_network_required": "false",
                         "max_trending_tile_impressions": "1",
