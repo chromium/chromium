@@ -52,6 +52,8 @@ shared_highlighting::LinkGenerationError OutcomeToError(
       return LinkGenerationError::kContextExhausted;
     case LinkGenerationOutcome::kTimeout:
       return LinkGenerationError::kTimeout;
+    case LinkGenerationOutcome::kExecutionFailed:
+      return LinkGenerationError::kUnknown;
     case LinkGenerationOutcome::kSuccess:
       // kSuccess is not supposed to happen, as it is not an error.
       NOTREACHED();
