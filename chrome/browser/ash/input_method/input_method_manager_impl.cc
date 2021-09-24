@@ -852,6 +852,34 @@ void InputMethodManagerImpl::StateImpl::ResetInputViewUrl() {
   input_view_url_overridden_ = false;
 }
 
+void InputMethodManagerImpl::StateImpl::LoadNecessaryComponentExtensions() {
+  // Load component extensions but also update |enabled_input_method_ids_| as
+  // some component extension IMEs may have been removed from the Chrome OS
+  // image. If specified component extension IME no longer exists, falling back
+  // to an existing IME.
+  TRACE_EVENT0(
+      "ime",
+      "InputMethodManagerImpl::StateImpl::LoadNecessaryComponentExtensions");
+  std::vector<std::string> unfiltered_input_method_ids;
+  unfiltered_input_method_ids.swap(enabled_input_method_ids_);
+  std::set<std::string> ext_loaded;
+  for (const auto& unfiltered_input_method_id : unfiltered_input_method_ids) {
+    if (!extension_ime_util::IsComponentExtensionIME(
+            unfiltered_input_method_id)) {
+      // Legacy IMEs or xkb layouts are alwayes enabled.
+      enabled_input_method_ids_.push_back(unfiltered_input_method_id);
+    } else if (manager_->component_extension_ime_manager_->IsAllowlisted(
+                   unfiltered_input_method_id)) {
+      if (manager_->enable_extension_loading_) {
+        manager_->component_extension_ime_manager_->LoadComponentExtensionIME(
+            profile, unfiltered_input_method_id, &ext_loaded);
+      }
+
+      enabled_input_method_ids_.push_back(unfiltered_input_method_id);
+    }
+  }
+}
+
 // ------------------------ InputMethodManagerImpl
 bool InputMethodManagerImpl::IsLoginKeyboard(
     const std::string& layout) const {
@@ -1098,35 +1126,6 @@ void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
     observer.InputMethodChanged(this, state_->profile, show_message);
   // Update the current input method in IME menu.
   NotifyImeMenuListChanged();
-}
-
-// TODO(crbug/1134465): Move this to "StateImpl" section of this .cc file.
-void InputMethodManagerImpl::StateImpl::LoadNecessaryComponentExtensions() {
-  // Load component extensions but also update |enabled_input_method_ids_| as
-  // some component extension IMEs may have been removed from the Chrome OS
-  // image. If specified component extension IME no longer exists, falling back
-  // to an existing IME.
-  TRACE_EVENT0(
-      "ime",
-      "InputMethodManagerImpl::StateImpl::LoadNecessaryComponentExtensions");
-  std::vector<std::string> unfiltered_input_method_ids;
-  unfiltered_input_method_ids.swap(enabled_input_method_ids_);
-  std::set<std::string> ext_loaded;
-  for (const auto& unfiltered_input_method_id : unfiltered_input_method_ids) {
-    if (!extension_ime_util::IsComponentExtensionIME(
-            unfiltered_input_method_id)) {
-      // Legacy IMEs or xkb layouts are alwayes enabled.
-      enabled_input_method_ids_.push_back(unfiltered_input_method_id);
-    } else if (manager_->component_extension_ime_manager_->IsAllowlisted(
-                   unfiltered_input_method_id)) {
-      if (manager_->enable_extension_loading_) {
-        manager_->component_extension_ime_manager_->LoadComponentExtensionIME(
-            profile, unfiltered_input_method_id, &ext_loaded);
-      }
-
-      enabled_input_method_ids_.push_back(unfiltered_input_method_id);
-    }
-  }
 }
 
 void InputMethodManagerImpl::ActivateInputMethodMenuItem(
