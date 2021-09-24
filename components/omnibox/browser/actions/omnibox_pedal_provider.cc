@@ -344,6 +344,11 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
       pedal->SetNavigationUrl(GURL(*url));
     }
 
+    OmniboxPedal::TokenSequence verbatim_sequence(0);
+    Tokenize(verbatim_sequence, pedal->GetLabelStrings().hint);
+    ignore_group_.EraseMatchesIn(verbatim_sequence, true);
+    pedal->AddVerbatimSequence(std::move(verbatim_sequence));
+
     std::vector<OmniboxPedal::SynonymGroupSpec> specs =
         pedal->SpecifySynonymGroups();
     // `specs` will be empty for any pedals not yet processed by l10n because

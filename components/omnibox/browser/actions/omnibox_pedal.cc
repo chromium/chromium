@@ -230,7 +230,9 @@ bool OmniboxPedal::SynonymGroup::IsValid() const {
 // =============================================================================
 
 OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
-    : OmniboxAction(strings, url), id_(id) {}
+    : OmniboxAction(strings, url),
+      id_(id),
+      verbatim_synonym_group_(false, true, 0) {}
 
 OmniboxPedal::~OmniboxPedal() = default;
 
@@ -262,6 +264,11 @@ const gfx::VectorIcon& OmniboxPedal::GetVectorIcon() const {
 }
 #endif
 
+void OmniboxPedal::AddVerbatimSequence(TokenSequence sequence) {
+  sequence.ResetLinks();
+  verbatim_synonym_group_.AddSynonym(std::move(sequence));
+}
+
 void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
   synonym_groups_.push_back(std::move(group));
 }
@@ -276,6 +283,12 @@ OmniboxPedalId OmniboxPedal::GetMetricsId() const {
 }
 
 bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
+  verbatim_synonym_group_.EraseMatchesIn(match_sequence, false);
+  if (match_sequence.IsFullyConsumed()) {
+    return true;
+  }
+  match_sequence.ResetLinks();
+
   for (const auto& group : synonym_groups_) {
     if (!group.EraseMatchesIn(match_sequence, false))
       return false;
@@ -297,6 +310,7 @@ size_t OmniboxPedal::EstimateMemoryUsage() const {
   size_t total = 0;
   total += OmniboxAction::EstimateMemoryUsage();
   total += base::trace_event::EstimateMemoryUsage(synonym_groups_);
+  total += base::trace_event::EstimateMemoryUsage(verbatim_synonym_group_);
   return total;
 }
 

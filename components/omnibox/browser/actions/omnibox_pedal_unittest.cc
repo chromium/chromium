@@ -104,3 +104,27 @@ TEST_F(OmniboxPedalTest, SynonymGroupsDriveConceptMatches) {
   EXPECT_FALSE(is_concept_match(
       make_sequence({required_b, required_a, optional, optional})));
 }
+
+TEST_F(OmniboxPedalTest, VerbatimSynonymGroupDrivesConceptMatches) {
+  constexpr int required_a = 1;
+  constexpr int required_b = 2;
+  constexpr int nonsense = 3;
+  scoped_refptr<OmniboxPedal> test_pedal = base::MakeRefCounted<OmniboxPedal>(
+      OmniboxPedalId::CLEAR_BROWSING_DATA,
+      OmniboxPedal::LabelStrings(
+          IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
+          IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
+          IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
+          IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
+      GURL());
+  const auto is_concept_match = [&](OmniboxPedal::TokenSequence sequence) {
+    return test_pedal->IsConceptMatch(sequence);
+  };
+
+  test_pedal->AddVerbatimSequence(make_sequence({required_a, required_b}));
+
+  EXPECT_TRUE(is_concept_match(make_sequence({required_a, required_b})));
+  EXPECT_FALSE(
+      is_concept_match(make_sequence({required_a, required_b, nonsense})));
+  EXPECT_FALSE(is_concept_match(make_sequence({required_b, required_a})));
+}

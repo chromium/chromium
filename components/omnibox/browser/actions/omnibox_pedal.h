@@ -188,6 +188,17 @@ class OmniboxPedal : public OmniboxAction {
   static const gfx::VectorIcon& GetDefaultVectorIcon();
 #endif
 
+  // Add a verbatim token sequence for direct matching.
+  // This can improve user experience of omnibox pedals by ensuring that
+  // button text entered verbatim is always a sufficient trigger. Since
+  // button text labels are not always within the specified set of triggers,
+  // it may be possible to discover a pedal, memorize the button
+  // label, and then go seeking it out again with the button label, but
+  // not find it. With the verbatim sequence, learning a pedal by label will
+  // always make the pedal available with that exact input (ignoring case and
+  // the common ignore group).
+  void AddVerbatimSequence(TokenSequence sequence);
+
   // Move a synonym group into this Pedal's collection.
   void AddSynonymGroup(SynonymGroup&& group);
 
@@ -220,12 +231,18 @@ class OmniboxPedal : public OmniboxAction {
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupErasesFirstMatchOnly);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupsDriveConceptMatches);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest,
+                           VerbatimSynonymGroupDrivesConceptMatches);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            UnorderedSynonymExpressionsAreConceptMatches);
 
   ~OmniboxPedal() override;
 
   OmniboxPedalId id_;
+
+  // Before standard synonym group matching, we can check the verbatim
+  // syonym group for direct matches, e.g. with the button label text.
+  SynonymGroup verbatim_synonym_group_;
 
   std::vector<SynonymGroup> synonym_groups_;
 };
