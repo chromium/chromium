@@ -432,7 +432,7 @@ bool SharedImageBackingFactoryRawDraw::IsSupported(
     return false;
   }
 
-  if (!is_pixel_used) {
+  if (is_pixel_used) {
     return false;
   }
 
