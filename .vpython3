@@ -54,14 +54,11 @@ wheel: <
 >
 
 # Common utilities.
-# For Python 2, this version needed to be compatible with the version range
-# specified by
-# //third_party/catapult/telemetry/telemetry/internal/util/external_modules.py
-# However, the hope is that Telemetry's Python 3 migration will fix this, so
-# use the newer version that's currently available in CIPD for now.
+# Use the same versions specified by //third_party/catapult/.vpython3 so that
+# Chromium tests using Telemetry function properly.
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.19.5"
+  version: "version:1.20.3"
 >
 wheel: <
   name: "infra/python/wheels/psutil/${vpython_platform}"
@@ -284,5 +281,15 @@ wheel: <
   >
   match_tag: <
     platform: "win_amd64"
+  >
+>
+
+# Used by:
+#   //content/test/gpu/gpu_tests/color_profile_manager_mac.py
+wheel: <
+  name: "infra/python/wheels/pyobjc/${vpython_platform}"
+  version: "version:7.3.chromium.1"
+  match_tag: <
+    platform: "macosx_10_10_intel"
   >
 >

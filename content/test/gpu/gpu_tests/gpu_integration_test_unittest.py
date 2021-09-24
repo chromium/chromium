@@ -262,7 +262,18 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       for t in tags:
         self.assertFalse(t.startswith('display-server'))
 
+    # Python 2's return value.
     with mock.patch('sys.platform', 'linux2'):
+      tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
+      self.assertIn('display-server-x', tags)
+
+      os.environ['WAYLAND_DISPLAY'] = 'wayland-0'
+      tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
+      self.assertIn('display-server-wayland', tags)
+
+    # Python 3's return value.
+    with mock.patch('sys.platform', 'linux'):
+      del os.environ['WAYLAND_DISPLAY']
       tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
       self.assertIn('display-server-x', tags)
 

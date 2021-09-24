@@ -206,7 +206,7 @@ def main():
   stale_message = ''
   if args.remove_stale_expectations:
     stale_expectations = []
-    for _, expectation_map in stale.iteritems():
+    for _, expectation_map in stale.items():
       stale_expectations.extend(expectation_map.keys())
     stale_expectations.extend(unused_expectations)
     affected_urls |= expectations_instance.RemoveExpectationsFromFile(

@@ -177,7 +177,7 @@ def GetDisplayServer(browser_type):
   # display server.
   if browser_type in REMOTE_BROWSER_TYPES:
     return None
-  if sys.platform == 'linux2':
+  if sys.platform.startswith('linux'):
     if 'WAYLAND_DISPLAY' in os.environ:
       return 'display-server-wayland'
     else:

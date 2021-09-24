@@ -68,7 +68,7 @@ def SetDisplayCustomProfile(device_id, profile_url):
 def GetSRGBProfileURL():
   srgb_profile_path = '/System/Library/ColorSync/Profiles/sRGB Profile.icc'
   srgb_profile_url = Foundation.CFURLCreateFromFileSystemRepresentation(
-      None, srgb_profile_path, len(srgb_profile_path), False)
+      None, srgb_profile_path.encode('utf-8'), len(srgb_profile_path), False)
   return srgb_profile_url
 
 

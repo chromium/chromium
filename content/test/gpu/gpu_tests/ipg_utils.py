@@ -163,7 +163,7 @@ def ProcessResultsFromMultipleIPGRuns(logfiles,
       the 'mean' and 'stdev' for the metric.
     """
     summary = {}
-    for key, data in metrics.iteritems():
+    for key, data in metrics.items():
       assert data and len(data) > 1
       n = len(data)
       if outliers > 0:

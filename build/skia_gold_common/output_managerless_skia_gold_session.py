@@ -10,6 +10,8 @@ import os
 import subprocess
 import time
 
+import six
+
 from skia_gold_common import skia_gold_session
 
 
@@ -62,7 +64,11 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
   @staticmethod
   def _RunCmdForRcAndOutput(cmd):
     try:
-      output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+      output = subprocess.check_output(cmd,
+                                       stderr=subprocess.STDOUT).decode('utf-8')
       return 0, output
     except subprocess.CalledProcessError as e:
-      return e.returncode, e.output
+      output = e.output
+      if not isinstance(output, six.string_types):
+        output = output.decode('utf-8')
+      return e.returncode, output
