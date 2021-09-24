@@ -7412,26 +7412,6 @@
             ]
         }
     ],
-    "SharedClipboard": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SharedClipboardUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharedHighlightingClankV2": [
         {
             "platforms": [
