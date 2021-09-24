@@ -81,7 +81,7 @@ WriteStatus Write(const base::FilePath& filepath,
 
 }  // namespace
 
-// PersistentProto wraps a proto class and persists it to disk. Usage summary.
+// PersistentProto wraps a proto class and persists it to disk. Usage summary:
 //  - Init is asynchronous, usage before |on_read| is called will crash.
 //  - pproto->Method() will call Method on the underlying proto.
 //  - Call QueueWrite() to write to disk.

@@ -106,7 +106,9 @@ TEST_F(PersistentProtoTest, Initialization) {
   PersistentProto<TestProto> pproto;
   pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   EXPECT_EQ(pproto.get(), nullptr);
+  EXPECT_FALSE(pproto.initialized());
   Wait();
+  EXPECT_TRUE(pproto.initialized());
   EXPECT_NE(pproto.get(), nullptr);
 }
 
@@ -136,8 +138,37 @@ TEST_F(PersistentProtoTest, Getters) {
   EXPECT_EQ(val.value(), 1);
 }
 
-// Test that the pproto correctly saves the in-memory proto to disk.
+// Test that the pproto correctly loads an on-disk proto into memory.
 TEST_F(PersistentProtoTest, Read) {
+  const auto test_proto = MakeTestProto();
+  WriteToDisk(test_proto);
+
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  EXPECT_EQ(pproto.get(), nullptr);
+
+  Wait();
+  EXPECT_EQ(read_status_, ReadStatus::kOk);
+  EXPECT_EQ(read_count_, 1);
+  EXPECT_EQ(write_count_, 0);
+  EXPECT_NE(pproto.get(), nullptr);
+  EXPECT_TRUE(ProtoEquals(pproto.get(), &test_proto));
+}
+
+// Test that invalid files on disk are handled correctly.
+TEST_F(PersistentProtoTest, ReadInvalidProto) {
+  ASSERT_TRUE(base::WriteFile(GetPath(), "this isn't a valid proto"));
+
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  Wait();
+  EXPECT_EQ(read_status_, ReadStatus::kParseError);
+  EXPECT_EQ(read_count_, 1);
+  EXPECT_EQ(write_count_, 1);
+}
+
+// Test that the pproto correctly saves the in-memory proto to disk.
+TEST_F(PersistentProtoTest, Write) {
   PersistentProto<TestProto> pproto;
   pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
   // Underlying proto should be nullptr until read is complete.
@@ -155,35 +186,6 @@ TEST_F(PersistentProtoTest, Read) {
 
   TestProto written = ReadFromDisk();
   EXPECT_TRUE(ProtoEquals(&written, pproto.get()));
-}
-
-// Test that invalid files on disk are handled correctly.
-TEST_F(PersistentProtoTest, ReadInvalidProto) {
-  ASSERT_TRUE(base::WriteFile(GetPath(), "this isn't a valid proto"));
-
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
-  Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kParseError);
-  EXPECT_EQ(read_count_, 1);
-  EXPECT_EQ(write_count_, 1);
-}
-
-// Test that the pproto correctly loads an on-disk proto into memory.
-TEST_F(PersistentProtoTest, Write) {
-  const auto test_proto = MakeTestProto();
-  WriteToDisk(test_proto);
-
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
-  EXPECT_EQ(pproto.get(), nullptr);
-
-  Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kOk);
-  EXPECT_EQ(read_count_, 1);
-  EXPECT_EQ(write_count_, 0);
-  EXPECT_NE(pproto.get(), nullptr);
-  EXPECT_TRUE(ProtoEquals(pproto.get(), &test_proto));
 }
 
 // Test that several saves all happen correctly.
@@ -227,6 +229,30 @@ TEST_F(PersistentProtoTest, QueueWrites) {
     pproto.QueueWrite();
   Wait();
   EXPECT_EQ(write_count_, 1);
+}
+
+// Test that a call to Purge deletes a proto from memory and disk.
+TEST_F(PersistentProtoTest, Purge) {
+  WriteToDisk(MakeTestProto());
+
+  PersistentProto<TestProto> pproto;
+  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  Wait();
+
+  // Values read from disk.
+  EXPECT_TRUE(pproto);
+  EXPECT_EQ(pproto->value(), 12345);
+
+  pproto.Purge();
+
+  // The backing proto should now be initialized but blank.
+  EXPECT_TRUE(pproto);
+  EXPECT_FALSE(pproto->has_value());
+
+  // The on-disk proto should have also been replaced with a blank copy after
+  // writes have been completed.
+  Wait();
+  EXPECT_FALSE(ReadFromDisk().has_value());
 }
 
 }  // namespace app_list
