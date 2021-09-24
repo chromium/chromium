@@ -205,7 +205,6 @@ class CORE_EXPORT Node : public EventTarget {
   virtual void setNodeValue(const String&);
   virtual NodeType getNodeType() const = 0;
   ContainerNode* parentNode() const;
-  ContainerNode* ParentNodeWithCounting() const;
   Element* parentElement() const;
   ContainerNode* ParentElementOrShadowRoot() const;
   ContainerNode* ParentElementOrDocumentFragment() const;
