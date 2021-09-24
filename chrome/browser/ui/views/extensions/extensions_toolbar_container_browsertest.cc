@@ -74,6 +74,13 @@ class BlockedActionWaiter
 class ExtensionsToolbarContainerBrowserTest
     : public ExtensionsToolbarBrowserTest {
  public:
+  enum class ExtensionRemovalMethod {
+    kDisable,
+    kUninstall,
+    kBlocklist,
+    kTerminate,
+  };
+
   ExtensionsToolbarContainerBrowserTest() = default;
   ExtensionsToolbarContainerBrowserTest(
       const ExtensionsToolbarContainerBrowserTest&) = delete;
@@ -93,6 +100,60 @@ class ExtensionsToolbarContainerBrowserTest
   }
 
   void ShowUi(const std::string& name) override { NOTREACHED(); }
+
+  void RemoveExtension(ExtensionRemovalMethod method,
+                       const std::string& extension_id) {
+    extensions::ExtensionService* const extension_service =
+        extensions::ExtensionSystem::Get(browser()->profile())
+            ->extension_service();
+    switch (method) {
+      case ExtensionRemovalMethod::kDisable:
+        extension_service->DisableExtension(
+            extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
+        break;
+      case ExtensionRemovalMethod::kUninstall:
+        extension_service->UninstallExtension(
+            extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+        break;
+      case ExtensionRemovalMethod::kBlocklist:
+        extension_service->BlocklistExtensionForTest(extension_id);
+        break;
+      case ExtensionRemovalMethod::kTerminate:
+        extension_service->TerminateExtension(extension_id);
+        break;
+    }
+
+    // Removing an extension can result in the container changing visibility.
+    // Allow it to finish laying out appropriately.
+    auto* container = GetExtensionsToolbarContainer();
+    container->GetWidget()->LayoutRootViewIfNecessary();
+  }
+
+  void VerifyContainerVisibility(ExtensionRemovalMethod method,
+                                 bool expected_visibility) {
+    // An empty container should not be shown.
+    EXPECT_FALSE(GetExtensionsToolbarContainer()->GetVisible());
+
+    // Loading the first extension should show the button (and container).
+    LoadTestExtension("extensions/uitest/long_name");
+    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
+
+    // Add another extension so we can make sure that removing some don't change
+    // the visibility.
+    LoadTestExtension("extensions/uitest/window_open");
+
+    // Remove 1/2 extensions, should still be drawn.
+    RemoveExtension(method, extensions()[0]->id());
+    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
+
+    // Removing the last extension. All actions now have the same state.
+    RemoveExtension(method, extensions()[1]->id());
+
+    // Container should remain visible during the removal animation.
+    EXPECT_TRUE(GetExtensionsToolbarContainer()->IsDrawn());
+    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+    EXPECT_EQ(expected_visibility, GetExtensionsToolbarContainer()->IsDrawn());
+  }
 };
 
 // TODO(devlin): There are probably some tests from
@@ -129,6 +190,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
   histogram_tester.ExpectBucketCount(
       kHistogramName,
       ToolbarActionViewController::InvocationSource::kToolbarButton, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       InvisibleWithoutExtension_Disable) {
+  VerifyContainerVisibility(ExtensionRemovalMethod::kDisable, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       InvisibleWithoutExtension_Uninstall) {
+  VerifyContainerVisibility(ExtensionRemovalMethod::kUninstall, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       InvisibleWithoutExtension_Blocklist) {
+  VerifyContainerVisibility(ExtensionRemovalMethod::kBlocklist, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       InvisibleWithoutExtension_Terminate) {
+  // TODO(pbos): Keep the container visible when extensions are terminated
+  // (crash). This lets users find and restart them. Then update this test
+  // expectation to be kept visible by terminated extensions. Also update the
+  // test name to reflect that the container should be visible with only
+  // terminated extensions.
+  VerifyContainerVisibility(ExtensionRemovalMethod::kTerminate, false);
 }
 
 // Tests that clicking on a second extension action will close a first if its
