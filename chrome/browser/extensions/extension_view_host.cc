@@ -225,6 +225,12 @@ void ExtensionViewHost::RunFileChooser(
                                    params);
 }
 
+std::unique_ptr<content::EyeDropper> ExtensionViewHost::OpenEyeDropper(
+    content::RenderFrameHost* frame,
+    content::EyeDropperListener* listener) {
+  return browser_ ? browser_->OpenEyeDropper(frame, listener) : nullptr;
+}
+
 void ExtensionViewHost::ResizeDueToAutoResize(content::WebContents* source,
                                               const gfx::Size& new_size) {
   view_->ResizeDueToAutoResize(source, new_size);
