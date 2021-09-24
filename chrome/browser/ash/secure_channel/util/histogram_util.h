@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
-#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
+#define CHROME_BROWSER_ASH_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
 
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 namespace util {
 
@@ -65,6 +65,6 @@ void RecordNearbyDisconnection(NearbyDisconnectionReason reason);
 
 }  // namespace util
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_SECURE_CHANNEL_UTIL_HISTOGRAM_UTIL_H_

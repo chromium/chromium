@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTOR_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTOR_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTOR_IMPL_H_
+#define CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTOR_IMPL_H_
 
 #include <memory>
 #include <vector>
@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 
 class NearbyConnectionBroker;
@@ -45,8 +45,10 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
     ConnectionRequestMetadata(
         const std::vector<uint8_t>& bluetooth_public_address,
         const std::vector<uint8_t>& eid,
-        mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
-        ConnectCallback callback);
+        mojo::PendingRemote<
+            chromeos::secure_channel::mojom::NearbyMessageReceiver>
+            message_receiver,
+        chromeos::secure_channel::NearbyConnector::ConnectCallback callback);
     ConnectionRequestMetadata(const ConnectionRequestMetadata&) = delete;
     ConnectionRequestMetadata& operator=(const ConnectionRequestMetadata&) =
         delete;
@@ -54,28 +56,31 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
 
     std::vector<uint8_t> bluetooth_public_address;
     std::vector<uint8_t> eid;
-    mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver;
-    ConnectCallback callback;
+    mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageReceiver>
+        message_receiver;
+    chromeos::secure_channel::NearbyConnector::ConnectCallback callback;
   };
 
   struct ActiveConnectionAttempt {
     ActiveConnectionAttempt(
         const base::UnguessableToken& attempt_id,
         std::unique_ptr<NearbyEndpointFinder> endpoint_finder,
-        ConnectCallback callback);
+        chromeos::secure_channel::NearbyConnector::ConnectCallback callback);
     ~ActiveConnectionAttempt();
 
     base::UnguessableToken attempt_id;
     std::unique_ptr<NearbyEndpointFinder> endpoint_finder;
-    ConnectCallback callback;
+    chromeos::secure_channel::NearbyConnector::ConnectCallback callback;
   };
 
   /// mojom::NearbyConnector:
-  void Connect(
-      const std::vector<uint8_t>& bluetooth_public_address,
-      const std::vector<uint8_t>& eid,
-      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
-      ConnectCallback callback) override;
+  void Connect(const std::vector<uint8_t>& bluetooth_public_address,
+               const std::vector<uint8_t>& eid,
+               mojo::PendingRemote<
+                   chromeos::secure_channel::mojom::NearbyMessageReceiver>
+                   message_receiver,
+               chromeos::secure_channel::NearbyConnector::ConnectCallback
+                   callback) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -89,12 +94,13 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
   void RecordNearbyDisconnectionForActiveBrokers(
       nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
-  void OnConnected(const base::UnguessableToken& id,
-                   mojo::PendingRemote<mojom::NearbyMessageSender>
-                       message_sender_pending_remote);
+  void OnConnected(
+      const base::UnguessableToken& id,
+      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageSender>
+          message_sender_pending_remote);
   void OnDisconnected(const base::UnguessableToken& id);
   void InvokeActiveConnectionAttemptCallback(
-      mojo::PendingRemote<mojom::NearbyMessageSender>
+      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageSender>
           message_sender_pending_remote);
 
   nearby::NearbyProcessManager* nearby_process_manager_;
@@ -127,6 +133,6 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
 };
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTOR_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTOR_IMPL_H_

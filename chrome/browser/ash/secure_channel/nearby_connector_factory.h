@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_
-#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_
+#ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_
+#define CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_
 
 #include "base/memory/singleton.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/nearby_connector.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
-
-class NearbyConnector;
 
 class NearbyConnectorFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -36,13 +36,13 @@ class NearbyConnectorFactory : public BrowserContextKeyedServiceFactory {
 };
 
 }  // namespace secure_channel
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::NearbyConnectorFactory;
-}
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace secure_channel {
+using ::ash::secure_channel::NearbyConnectorFactory;
+}
+}  // namespace chromeos
+
+#endif  // CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_

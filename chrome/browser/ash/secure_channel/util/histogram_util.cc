@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
+#include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 namespace util {
+
 namespace {
-using location::nearby::connections::mojom::Status;
-}  // namespace
+
+using ::location::nearby::connections::mojom::Status;
+
+}
 
 void RecordStartDiscoveryResult(Status status) {
   base::UmaHistogramEnumeration(
@@ -65,4 +68,4 @@ void RecordNearbyDisconnection(NearbyDisconnectionReason reason) {
 
 }  // namespace util
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash

@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
+#include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
 
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 #include "chromeos/services/secure_channel/secure_channel_base.h"
 #include "chromeos/services/secure_channel/secure_channel_initializer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace secure_channel {
+
+// TODO(https://crbug.com/1164001): remove after
+// chromeos/services/secure_channel is moved to namespace ash.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 SecureChannelClientProvider::SecureChannelClientProvider() = default;
 
@@ -38,5 +41,4 @@ SecureChannelClient* SecureChannelClientProvider::GetClient() {
 }
 
 }  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash

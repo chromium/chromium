@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/nearby_connector_impl.h"
+#include "chrome/browser/ash/secure_channel/nearby_connector_impl.h"
 
 #include <memory>
 #include <vector>
@@ -11,18 +11,22 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/chromeos/secure_channel/fake_nearby_connection_broker.h"
-#include "chrome/browser/chromeos/secure_channel/fake_nearby_endpoint_finder.h"
-#include "chrome/browser/chromeos/secure_channel/nearby_connection_broker_impl.h"
-#include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder_impl.h"
+#include "chrome/browser/ash/secure_channel/fake_nearby_connection_broker.h"
+#include "chrome/browser/ash/secure_channel/fake_nearby_endpoint_finder.h"
+#include "chrome/browser/ash/secure_channel/nearby_connection_broker_impl.h"
+#include "chrome/browser/ash/secure_channel/nearby_endpoint_finder_impl.h"
 #include "chromeos/services/nearby/public/cpp/fake_nearby_process_manager.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after
+// chromeos/services/secure_channel is moved to namespace ash.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 int g_next_message_receiver_id = 0;
 
@@ -372,4 +376,4 @@ TEST_F(NearbyConnectorImplTest, NearbyProcessStopsDuringConnectionAttempt) {
 }
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash

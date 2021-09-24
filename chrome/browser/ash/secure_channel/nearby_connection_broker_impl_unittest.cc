@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/nearby_connection_broker_impl.h"
+#include "chrome/browser/ash/secure_channel/nearby_connection_broker_impl.h"
 
 #include <memory>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
-#include "chrome/browser/chromeos/secure_channel/fake_nearby_endpoint_finder.h"
+#include "chrome/browser/ash/secure_channel/fake_nearby_endpoint_finder.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,25 +21,27 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 namespace {
 
-using location::nearby::connections::mojom::BytesPayload;
-using location::nearby::connections::mojom::ConnectionInfo;
-using location::nearby::connections::mojom::ConnectionLifecycleListener;
-using location::nearby::connections::mojom::ConnectionOptionsPtr;
-using location::nearby::connections::mojom::DiscoveredEndpointInfo;
-using location::nearby::connections::mojom::EndpointDiscoveryListener;
-using location::nearby::connections::mojom::FilePayload;
-using location::nearby::connections::mojom::Payload;
-using location::nearby::connections::mojom::PayloadContent;
-using location::nearby::connections::mojom::PayloadListener;
-using location::nearby::connections::mojom::PayloadPtr;
-using location::nearby::connections::mojom::Status;
+// TODO(https://crbug.com/1164001): remove after
+// chromeos/services/secure_channel is moved to namespace ash.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
-using testing::_;
-using testing::Invoke;
+using ::location::nearby::connections::mojom::BytesPayload;
+using ::location::nearby::connections::mojom::ConnectionInfo;
+using ::location::nearby::connections::mojom::ConnectionLifecycleListener;
+using ::location::nearby::connections::mojom::ConnectionOptionsPtr;
+using ::location::nearby::connections::mojom::DiscoveredEndpointInfo;
+using ::location::nearby::connections::mojom::FilePayload;
+using ::location::nearby::connections::mojom::Payload;
+using ::location::nearby::connections::mojom::PayloadContent;
+using ::location::nearby::connections::mojom::PayloadListener;
+using ::location::nearby::connections::mojom::PayloadPtr;
+using ::location::nearby::connections::mojom::Status;
+using ::testing::_;
+using ::testing::Invoke;
 
 const char kEndpointId[] = "endpointId";
 const int64_t kInvalidPayloadTypeId = 1234;
@@ -507,4 +509,4 @@ TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection_Timeout) {
 }
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash

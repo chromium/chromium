@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_SECURE_CHANNEL_CLIENT_PROVIDER_H_
-#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_SECURE_CHANNEL_CLIENT_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_SECURE_CHANNEL_CLIENT_PROVIDER_H_
+#define CHROME_BROWSER_ASH_SECURE_CHANNEL_SECURE_CHANNEL_CLIENT_PROVIDER_H_
 
 #include <memory>
 
 #include "base/macros.h"
 #include "base/no_destructor.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace secure_channel {
-
-class SecureChannelClient;
 
 // Singleton that owns a single SecureChannelClient instance associated with the
 // browser process.
@@ -36,15 +35,14 @@ class SecureChannelClientProvider {
 };
 
 }  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace secure_channel {
-using ::chromeos::secure_channel::SecureChannelClientProvider;
+using ::ash::secure_channel::SecureChannelClientProvider;
 }
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_SECURE_CHANNEL_CLIENT_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_SECURE_CHANNEL_SECURE_CHANNEL_CLIENT_PROVIDER_H_

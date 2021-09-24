@@ -2,20 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_BROKER_H_
-#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_BROKER_H_
+#ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_BROKER_H_
+#define CHROME_BROWSER_ASH_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_BROKER_H_
 
-#include "chrome/browser/chromeos/secure_channel/nearby_connection_broker.h"
+#include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 
 class FakeNearbyConnectionBroker : public NearbyConnectionBroker {
  public:
   FakeNearbyConnectionBroker(
       const std::vector<uint8_t>& bluetooth_public_address,
-      mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
-      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+      mojo::PendingReceiver<
+          chromeos::secure_channel::mojom::NearbyMessageSender>
+          message_sender_receiver,
+      mojo::PendingRemote<
+          chromeos::secure_channel::mojom::NearbyMessageReceiver>
+          message_receiver_remote,
       base::OnceClosure on_connected_callback,
       base::OnceClosure on_disconnected_callback);
   ~FakeNearbyConnectionBroker() override;
@@ -43,6 +47,6 @@ class FakeNearbyConnectionBroker : public NearbyConnectionBroker {
 };
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_BROKER_H_
+#endif  // CHROME_BROWSER_ASH_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_BROKER_H_

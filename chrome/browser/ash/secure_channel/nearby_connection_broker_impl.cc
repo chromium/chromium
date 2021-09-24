@@ -2,33 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/nearby_connection_broker_impl.h"
+#include "chrome/browser/ash/secure_channel/nearby_connection_broker_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder.h"
-#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
+#include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
+#include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 namespace {
 
-using location::nearby::connections::mojom::BytesPayload;
-using location::nearby::connections::mojom::ConnectionInfoPtr;
-using location::nearby::connections::mojom::ConnectionOptions;
-using location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
-using location::nearby::connections::mojom::Medium;
-using location::nearby::connections::mojom::MediumSelection;
-using location::nearby::connections::mojom::NearbyConnections;
-using location::nearby::connections::mojom::Payload;
-using location::nearby::connections::mojom::PayloadContent;
-using location::nearby::connections::mojom::PayloadPtr;
-using location::nearby::connections::mojom::PayloadTransferUpdatePtr;
-using location::nearby::connections::mojom::Status;
+// TODO(https://crbug.com/1164001): remove after
+// chromeos/services/secure_channel is moved to namespace ash.
+namespace mojom = ::chromeos::secure_channel::mojom;
+
+using ::location::nearby::connections::mojom::BytesPayload;
+using ::location::nearby::connections::mojom::ConnectionInfoPtr;
+using ::location::nearby::connections::mojom::ConnectionOptions;
+using ::location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
+using ::location::nearby::connections::mojom::Medium;
+using ::location::nearby::connections::mojom::MediumSelection;
+using ::location::nearby::connections::mojom::NearbyConnections;
+using ::location::nearby::connections::mojom::Payload;
+using ::location::nearby::connections::mojom::PayloadContent;
+using ::location::nearby::connections::mojom::PayloadPtr;
+using ::location::nearby::connections::mojom::Status;
 
 NearbyConnectionBrokerImpl::Factory* g_test_factory = nullptr;
 
@@ -232,10 +235,10 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
                                                   /*webrtc=*/true,
                                                   /*wifi_lan=*/false),
                              /*remote_bluetooth_mac_address=*/absl::nullopt,
-                             ash::features::IsNearbyKeepAliveFixEnabled()
+                             features::IsNearbyKeepAliveFixEnabled()
                                  ? absl::make_optional(kKeepAliveInterval)
                                  : absl::nullopt,
-                             ash::features::IsNearbyKeepAliveFixEnabled()
+                             features::IsNearbyKeepAliveFixEnabled()
                                  ? absl::make_optional(kKeepAliveTimeout)
                                  : absl::nullopt),
       connection_lifecycle_listener_receiver_.BindNewPipeAndPassRemote(),
@@ -552,4 +555,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash

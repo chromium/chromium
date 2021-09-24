@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder.h"
+#include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 
 NearbyEndpointFinder::NearbyEndpointFinder() = default;
@@ -38,4 +38,4 @@ void NearbyEndpointFinder::NotifyEndpointDiscoveryFailure() {
 }
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash

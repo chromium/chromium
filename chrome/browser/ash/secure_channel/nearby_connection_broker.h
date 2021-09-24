@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_H_
-#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_H_
+#ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_H_
+#define CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_H_
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 
 // Attempts to create a Nearby Connection to a remote device and exchange
@@ -26,15 +26,20 @@ namespace secure_channel {
 //
 // An instance of this class is only meant to be used for one connection
 // request to a single device. To make a new request, create a new object.
-class NearbyConnectionBroker : public mojom::NearbyMessageSender {
+class NearbyConnectionBroker
+    : public chromeos::secure_channel::mojom::NearbyMessageSender {
  public:
   ~NearbyConnectionBroker() override;
 
  protected:
   NearbyConnectionBroker(
       const std::vector<uint8_t>& bluetooth_public_address,
-      mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
-      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+      mojo::PendingReceiver<
+          chromeos::secure_channel::mojom::NearbyMessageSender>
+          message_sender_receiver,
+      mojo::PendingRemote<
+          chromeos::secure_channel::mojom::NearbyMessageReceiver>
+          message_receiver_remote,
       base::OnceClosure on_connected_callback,
       base::OnceClosure on_disconnected_callback);
 
@@ -52,13 +57,15 @@ class NearbyConnectionBroker : public mojom::NearbyMessageSender {
 
  private:
   std::vector<uint8_t> bluetooth_public_address_;
-  mojo::Receiver<mojom::NearbyMessageSender> message_sender_receiver_;
-  mojo::Remote<mojom::NearbyMessageReceiver> message_receiver_remote_;
+  mojo::Receiver<chromeos::secure_channel::mojom::NearbyMessageSender>
+      message_sender_receiver_;
+  mojo::Remote<chromeos::secure_channel::mojom::NearbyMessageReceiver>
+      message_receiver_remote_;
   base::OnceClosure on_connected_callback_;
   base::OnceClosure on_disconnected_callback_;
 };
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_H_
+#endif  // CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_H_

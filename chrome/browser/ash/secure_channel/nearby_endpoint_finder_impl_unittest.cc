@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder_impl.h"
+#include "chrome/browser/ash/secure_channel/nearby_endpoint_finder_impl.h"
 
 #include <memory>
 #include <vector>
@@ -16,17 +16,20 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 namespace {
 
-using location::nearby::connections::mojom::DiscoveredEndpointInfo;
-using location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
-using location::nearby::connections::mojom::EndpointDiscoveryListener;
-using location::nearby::connections::mojom::Status;
+// TODO(https://crbug.com/1164001): remove after
+// chromeos/services/secure_channel is moved to namespace ash.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
-using testing::_;
-using testing::Invoke;
+using ::location::nearby::connections::mojom::DiscoveredEndpointInfo;
+using ::location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
+using ::location::nearby::connections::mojom::EndpointDiscoveryListener;
+using ::location::nearby::connections::mojom::Status;
+using ::testing::_;
+using ::testing::Invoke;
 
 const std::vector<uint8_t> GetEid() {
   return std::vector<uint8_t>{0, 1};
@@ -228,4 +231,4 @@ TEST_F(NearbyEndpointFinderImplTest, FailStoppingDiscovery) {
 }
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash

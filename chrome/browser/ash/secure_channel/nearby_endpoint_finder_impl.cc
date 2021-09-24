@@ -2,24 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder_impl.h"
+#include "chrome/browser/ash/secure_channel/nearby_endpoint_finder_impl.h"
 
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
-#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
+#include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 namespace {
 
-using location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
-using location::nearby::connections::mojom::DiscoveryOptions;
-using location::nearby::connections::mojom::MediumSelection;
-using location::nearby::connections::mojom::Status;
-using location::nearby::connections::mojom::Strategy;
+// TODO(https://crbug.com/1164001): remove after
+// chromeos/services/secure_channel is moved to namespace ash.
+namespace mojom = ::chromeos::secure_channel::mojom;
+
+using ::location::nearby::connections::mojom::DiscoveredEndpointInfoPtr;
+using ::location::nearby::connections::mojom::DiscoveryOptions;
+using ::location::nearby::connections::mojom::MediumSelection;
+using ::location::nearby::connections::mojom::Status;
+using ::location::nearby::connections::mojom::Strategy;
 
 NearbyEndpointFinderImpl::Factory* g_test_factory = nullptr;
 
@@ -178,4 +182,4 @@ void NearbyEndpointFinderImpl::OnStopDiscoveryResult(
 }
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash

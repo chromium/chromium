@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_
+#define CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_
 
 #include <memory>
 #include <ostream>
@@ -12,12 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/secure_channel/nearby_connection_broker.h"
-#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
+#include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
+#include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 
 class NearbyEndpointFinder;
@@ -43,9 +43,11 @@ class NearbyConnectionBrokerImpl
         const std::vector<uint8_t>& bluetooth_public_address,
         const std::vector<uint8_t>& eid,
         NearbyEndpointFinder* endpoint_finder,
-        mojo::PendingReceiver<mojom::NearbyMessageSender>
+        mojo::PendingReceiver<
+            chromeos::secure_channel::mojom::NearbyMessageSender>
             message_sender_receiver,
-        mojo::PendingRemote<mojom::NearbyMessageReceiver>
+        mojo::PendingRemote<
+            chromeos::secure_channel::mojom::NearbyMessageReceiver>
             message_receiver_remote,
         const mojo::SharedRemote<
             location::nearby::connections::mojom::NearbyConnections>&
@@ -62,9 +64,11 @@ class NearbyConnectionBrokerImpl
     virtual std::unique_ptr<NearbyConnectionBroker> CreateInstance(
         const std::vector<uint8_t>& bluetooth_public_address,
         NearbyEndpointFinder* endpoint_finder,
-        mojo::PendingReceiver<mojom::NearbyMessageSender>
+        mojo::PendingReceiver<
+            chromeos::secure_channel::mojom::NearbyMessageSender>
             message_sender_receiver,
-        mojo::PendingRemote<mojom::NearbyMessageReceiver>
+        mojo::PendingRemote<
+            chromeos::secure_channel::mojom::NearbyMessageReceiver>
             message_receiver_remote,
         const mojo::SharedRemote<
             location::nearby::connections::mojom::NearbyConnections>&
@@ -95,8 +99,12 @@ class NearbyConnectionBrokerImpl
       const std::vector<uint8_t>& bluetooth_public_address,
       const std::vector<uint8_t>& eid,
       NearbyEndpointFinder* endpoint_finder,
-      mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
-      mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+      mojo::PendingReceiver<
+          chromeos::secure_channel::mojom::NearbyMessageSender>
+          message_sender_receiver,
+      mojo::PendingRemote<
+          chromeos::secure_channel::mojom::NearbyMessageReceiver>
+          message_receiver_remote,
       const mojo::SharedRemote<
           location::nearby::connections::mojom::NearbyConnections>&
           nearby_connections,
@@ -194,6 +202,6 @@ std::ostream& operator<<(std::ostream& stream,
                          NearbyConnectionBrokerImpl::ConnectionStatus status);
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_CONNECTION_BROKER_IMPL_H_

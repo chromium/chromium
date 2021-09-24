@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/secure_channel/nearby_connection_broker.h"
+#include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
 
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
+
+// TODO(https://crbug.com/1164001): remove after
+// chromeos/services/secure_channel is moved to namespace ash.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 NearbyConnectionBroker::NearbyConnectionBroker(
     const std::vector<uint8_t>& bluetooth_public_address,
@@ -48,4 +52,4 @@ void NearbyConnectionBroker::NotifyMessageReceived(
 }
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash

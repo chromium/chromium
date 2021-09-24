@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_FAKE_NEARBY_ENDPOINT_FINDER_H_
-#define CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_FAKE_NEARBY_ENDPOINT_FINDER_H_
+#ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_FAKE_NEARBY_ENDPOINT_FINDER_H_
+#define CHROME_BROWSER_ASH_SECURE_CHANNEL_FAKE_NEARBY_ENDPOINT_FINDER_H_
 
-#include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder.h"
+#include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
 
-namespace chromeos {
+namespace ash {
 namespace secure_channel {
 
 class FakeNearbyEndpointFinder : public NearbyEndpointFinder {
@@ -26,6 +26,6 @@ class FakeNearbyEndpointFinder : public NearbyEndpointFinder {
 };
 
 }  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_FAKE_NEARBY_ENDPOINT_FINDER_H_
+#endif  // CHROME_BROWSER_ASH_SECURE_CHANNEL_FAKE_NEARBY_ENDPOINT_FINDER_H_
