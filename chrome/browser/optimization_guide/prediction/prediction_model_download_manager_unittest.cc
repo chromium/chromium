@@ -276,6 +276,7 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
   EXPECT_EQ(download_params.request_params.method, "GET");
   EXPECT_TRUE(download_params.request_params.request_headers.HasHeader(
       "X-Goog-Api-Key"));
+  EXPECT_FALSE(download_params.request_params.require_safety_checks);
   EXPECT_EQ(download_params.scheduling_params.priority,
             download::SchedulingParams::Priority::NORMAL);
   EXPECT_EQ(
@@ -316,6 +317,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   EXPECT_EQ(download_params.request_params.method, "GET");
   EXPECT_TRUE(download_params.request_params.request_headers.HasHeader(
       "X-Goog-Api-Key"));
+  EXPECT_FALSE(download_params.request_params.require_safety_checks);
   EXPECT_EQ(download_params.scheduling_params.priority,
             download::SchedulingParams::Priority::HIGH);
   EXPECT_EQ(

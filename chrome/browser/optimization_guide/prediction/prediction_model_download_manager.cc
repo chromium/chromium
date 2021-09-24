@@ -111,6 +111,9 @@ void PredictionModelDownloadManager::StartDownload(const GURL& download_url) {
                           ui_weak_ptr_factory_.GetWeakPtr());
   download_params.traffic_annotation = net::MutableNetworkTrafficAnnotationTag(
       kOptimizationGuidePredictionModelsTrafficAnnotation);
+  // The downloaded models are all Google-generated, so bypass the safety
+  // checks.
+  download_params.request_params.require_safety_checks = false;
   download_params.request_params.url = download_url;
   download_params.request_params.method = "GET";
   download_params.request_params.request_headers.SetHeader(kGoogApiKey,
