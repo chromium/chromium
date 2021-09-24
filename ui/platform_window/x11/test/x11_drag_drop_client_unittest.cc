@@ -35,11 +35,16 @@
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/x11/x11_window.h"
 
-namespace views {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
+#else
+#include "ui/base/dragdrop/os_exchange_data_provider_x11.h"
+#endif
+
+namespace ui {
 namespace {
 
 using ::ui::mojom::DragOperation;
@@ -77,26 +82,26 @@ class ClientMessageEventCollector {
   std::vector<x11::ClientMessageEvent> events_;
 };
 
-// An implementation of ui::X11MoveLoop where RunMoveLoop() always starts the
+// An implementation of X11MoveLoop where RunMoveLoop() always starts the
 // move loop.
-class TestMoveLoop : public ui::X11MoveLoop {
+class TestMoveLoop : public X11MoveLoop {
  public:
-  explicit TestMoveLoop(ui::X11MoveLoopDelegate* delegate);
+  explicit TestMoveLoop(X11MoveLoopDelegate* delegate);
   ~TestMoveLoop() override;
 
   // Returns true if the move loop is running.
   bool IsRunning() const;
 
-  // ui::X11MoveLoop:
+  // X11MoveLoop:
   bool RunMoveLoop(bool can_grab_pointer,
-                   scoped_refptr<ui::X11Cursor> old_cursor,
-                   scoped_refptr<ui::X11Cursor> new_cursor) override;
-  void UpdateCursor(scoped_refptr<ui::X11Cursor> cursor) override;
+                   scoped_refptr<X11Cursor> old_cursor,
+                   scoped_refptr<X11Cursor> new_cursor) override;
+  void UpdateCursor(scoped_refptr<X11Cursor> cursor) override;
   void EndMoveLoop() override;
 
  private:
   // Not owned.
-  ui::X11MoveLoopDelegate* delegate_;
+  X11MoveLoopDelegate* delegate_;
 
   // Ends the move loop.
   base::OnceClosure quit_closure_;
@@ -105,11 +110,11 @@ class TestMoveLoop : public ui::X11MoveLoop {
 };
 
 // Implementation of XDragDropClient which short circuits FindWindowFor().
-class SimpleTestDragDropClient : public ui::XDragDropClient,
-                                 public ui::XDragDropClient::Delegate,
-                                 public ui::X11MoveLoopDelegate {
+class SimpleTestDragDropClient : public XDragDropClient,
+                                 public XDragDropClient::Delegate,
+                                 public X11MoveLoopDelegate {
  public:
-  explicit SimpleTestDragDropClient(ui::X11Window* window);
+  explicit SimpleTestDragDropClient(X11Window* window);
 
   SimpleTestDragDropClient(const SimpleTestDragDropClient&) = delete;
   SimpleTestDragDropClient& operator=(const SimpleTestDragDropClient&) = delete;
@@ -123,14 +128,14 @@ class SimpleTestDragDropClient : public ui::XDragDropClient,
   bool IsMoveLoopRunning();
 
   // Starts the move loop.
-  DragOperation StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
-                                 ui::X11Window* source_window,
+  DragOperation StartDragAndDrop(std::unique_ptr<OSExchangeData> data,
+                                 X11Window* source_window,
                                  int allowed_operations,
-                                 ui::mojom::DragEventSource source);
+                                 mojom::DragEventSource source);
 
  private:
-  // ui::XDragDropClient::Delegate:
-  std::unique_ptr<ui::XTopmostWindowFinder> CreateWindowFinder() override;
+  // XDragDropClient::Delegate:
+  std::unique_ptr<XTopmostWindowFinder> CreateWindowFinder() override;
   int UpdateDrag(const gfx::Point& screen_point) override;
   void UpdateCursor(DragOperation negotiated_operation) override;
   void OnBeginForeignDrag(x11::Window window) override;
@@ -142,15 +147,14 @@ class SimpleTestDragDropClient : public ui::XDragDropClient,
   // XDragDropClient:
   x11::Window FindWindowFor(const gfx::Point& screen_point) override;
 
-  // ui::X11MoveLoopDelegate:
+  // X11MoveLoopDelegate:
   void OnMouseMovement(const gfx::Point& screen_point,
                        int flags,
                        base::TimeTicks event_time) override;
   void OnMouseReleased() override;
   void OnMoveLoopEnded() override;
 
-  std::unique_ptr<ui::X11MoveLoop> CreateMoveLoop(
-      ui::X11MoveLoopDelegate* delegate);
+  std::unique_ptr<X11MoveLoop> CreateMoveLoop(X11MoveLoopDelegate* delegate);
 
   // The x11::Window of the window which is simulated to be the topmost window.
   x11::Window target_window_ = x11::Window::None;
@@ -170,7 +174,7 @@ class TestDragDropClient : public SimpleTestDragDropClient {
   static constexpr int kMouseMoveX = 100;
   static constexpr int kMouseMoveY = 200;
 
-  explicit TestDragDropClient(ui::X11Window* window);
+  explicit TestDragDropClient(X11Window* window);
 
   TestDragDropClient(const TestDragDropClient&) = delete;
   TestDragDropClient& operator=(const TestDragDropClient&) = delete;
@@ -249,7 +253,7 @@ void ClientMessageEventCollector::RecordEvent(
 ///////////////////////////////////////////////////////////////////////////////
 // TestMoveLoop
 
-TestMoveLoop::TestMoveLoop(ui::X11MoveLoopDelegate* delegate)
+TestMoveLoop::TestMoveLoop(X11MoveLoopDelegate* delegate)
     : delegate_(delegate) {}
 
 TestMoveLoop::~TestMoveLoop() = default;
@@ -259,8 +263,8 @@ bool TestMoveLoop::IsRunning() const {
 }
 
 bool TestMoveLoop::RunMoveLoop(bool can_grab_pointer,
-                               scoped_refptr<ui::X11Cursor> old_cursor,
-                               scoped_refptr<ui::X11Cursor> new_cursor) {
+                               scoped_refptr<X11Cursor> old_cursor,
+                               scoped_refptr<X11Cursor> new_cursor) {
   is_running_ = true;
   base::RunLoop run_loop;
   quit_closure_ = run_loop.QuitClosure();
@@ -268,7 +272,7 @@ bool TestMoveLoop::RunMoveLoop(bool can_grab_pointer,
   return true;
 }
 
-void TestMoveLoop::UpdateCursor(scoped_refptr<ui::X11Cursor> cursor) {}
+void TestMoveLoop::UpdateCursor(scoped_refptr<X11Cursor> cursor) {}
 
 void TestMoveLoop::EndMoveLoop() {
   if (is_running_) {
@@ -281,9 +285,8 @@ void TestMoveLoop::EndMoveLoop() {
 ///////////////////////////////////////////////////////////////////////////////
 // SimpleTestDragDropClient
 
-SimpleTestDragDropClient::SimpleTestDragDropClient(ui::X11Window* window)
-    : ui::XDragDropClient(this, static_cast<x11::Window>(window->GetWidget())) {
-}
+SimpleTestDragDropClient::SimpleTestDragDropClient(X11Window* window)
+    : XDragDropClient(this, static_cast<x11::Window>(window->GetWidget())) {}
 
 SimpleTestDragDropClient::~SimpleTestDragDropClient() = default;
 
@@ -295,17 +298,17 @@ bool SimpleTestDragDropClient::IsMoveLoopRunning() {
   return loop_->IsRunning();
 }
 
-std::unique_ptr<ui::X11MoveLoop> SimpleTestDragDropClient::CreateMoveLoop(
-    ui::X11MoveLoopDelegate* delegate) {
+std::unique_ptr<X11MoveLoop> SimpleTestDragDropClient::CreateMoveLoop(
+    X11MoveLoopDelegate* delegate) {
   loop_ = new TestMoveLoop(delegate);
   return base::WrapUnique(loop_);
 }
 
 DragOperation SimpleTestDragDropClient::StartDragAndDrop(
-    std::unique_ptr<ui::OSExchangeData> data,
-    ui::X11Window* source_window,
+    std::unique_ptr<OSExchangeData> data,
+    X11Window* source_window,
     int allowed_operations,
-    ui::mojom::DragEventSource source) {
+    mojom::DragEventSource source) {
   InitDrag(allowed_operations, data.get());
 
   auto loop = CreateMoveLoop(this);
@@ -322,7 +325,7 @@ int SimpleTestDragDropClient::UpdateDrag(const gfx::Point& screen_point) {
   return 0;
 }
 
-std::unique_ptr<ui::XTopmostWindowFinder>
+std::unique_ptr<XTopmostWindowFinder>
 SimpleTestDragDropClient::CreateWindowFinder() {
   return {};
 }
@@ -361,7 +364,7 @@ void SimpleTestDragDropClient::OnMoveLoopEnded() {
 ///////////////////////////////////////////////////////////////////////////////
 // TestDragDropClient
 
-TestDragDropClient::TestDragDropClient(ui::X11Window* window)
+TestDragDropClient::TestDragDropClient(X11Window* window)
     : SimpleTestDragDropClient(window),
       source_window_(static_cast<x11::Window>(window->GetWidget())) {}
 
@@ -417,8 +420,8 @@ void TestDragDropClient::OnFinished(x11::Window target_window,
 
 void TestDragDropClient::SetTopmostXWindowAndMoveMouse(x11::Window window) {
   SetTopmostXWindow(window);
-  HandleMouseMovement(gfx::Point(kMouseMoveX, kMouseMoveY), ui::EF_NONE,
-                      ui::EventTimeForNow());
+  HandleMouseMovement(gfx::Point(kMouseMoveX, kMouseMoveY), EF_NONE,
+                      EventTimeForNow());
 }
 
 void TestDragDropClient::SendXClientEvent(
@@ -429,7 +432,7 @@ void TestDragDropClient::SendXClientEvent(
     it->second->RecordEvent(event);
 }
 
-class TestPlatformWindowDelegate : public ui::PlatformWindowDelegate {
+class TestPlatformWindowDelegate : public PlatformWindowDelegate {
  public:
   TestPlatformWindowDelegate() = default;
   TestPlatformWindowDelegate(const TestPlatformWindowDelegate&) = delete;
@@ -441,11 +444,11 @@ class TestPlatformWindowDelegate : public ui::PlatformWindowDelegate {
   void OnBoundsChanged(
       const PlatformWindowDelegate::BoundsChange& change) override {}
   void OnDamageRect(const gfx::Rect& damaged_region) override {}
-  void DispatchEvent(ui::Event* event) override {}
+  void DispatchEvent(Event* event) override {}
   void OnCloseRequest() override {}
   void OnClosed() override {}
-  void OnWindowStateChanged(ui::PlatformWindowState old_state,
-                            ui::PlatformWindowState new_state) override {}
+  void OnWindowStateChanged(PlatformWindowState old_state,
+                            PlatformWindowState new_state) override {}
   void OnLostCapture() override {}
   void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override {}
   void OnWillDestroyAcceleratedWidget() override {}
@@ -456,16 +459,16 @@ class TestPlatformWindowDelegate : public ui::PlatformWindowDelegate {
 };
 
 class TestOSExchangeDataProvideFactory
-    : public ui::OSExchangeDataProviderFactoryOzone {
+    : public OSExchangeDataProviderFactoryOzone {
  public:
   TestOSExchangeDataProvideFactory() { SetInstance(this); }
   ~TestOSExchangeDataProvideFactory() override = default;
 
-  std::unique_ptr<ui::OSExchangeDataProvider> CreateProvider() override {
+  std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    return std::make_unique<ui::OSExchangeDataProviderNonBacked>();
+    return std::make_unique<OSExchangeDataProviderNonBacked>();
 #else
-    return std::make_unique<ui::OSExchangeDataProviderX11>();
+    return std::make_unique<OSExchangeDataProviderX11>();
 #endif
   }
 };
@@ -484,7 +487,7 @@ class X11DragDropClientTest : public testing::Test {
   ~X11DragDropClientTest() override = default;
 
   DragOperation StartDragAndDrop() {
-    auto data(std::make_unique<ui::OSExchangeData>());
+    auto data(std::make_unique<OSExchangeData>());
     data->SetString(u"Test");
     SkBitmap drag_bitmap;
     drag_bitmap.allocN32Pixels(10, 10);
@@ -493,25 +496,18 @@ class X11DragDropClientTest : public testing::Test {
     data->provider().SetDragImage(drag_image, gfx::Vector2d());
 
     return client_->StartDragAndDrop(std::move(data), window_.get(),
-                                     ui::DragDropTypes::DRAG_COPY,
-                                     ui::mojom::DragEventSource::kMouse);
+                                     DragDropTypes::DRAG_COPY,
+                                     mojom::DragEventSource::kMouse);
   }
 
   // testing::Test:
   void SetUp() override {
-    // TODO(msisov): uncomment this once X11DragDropClientTest is moved under
-    // //ui/platform_window/x11/test.
-    // auto* connection = x11::Connection::Get();
-    // event_source_ = std::make_unique<ui::X11EventSource>(connection);
+    auto* connection = x11::Connection::Get();
+    event_source_ = std::make_unique<X11EventSource>(connection);
 
-    // TODO(msisov): remove this once X11DragDropClientTest is moved under
-    // //ui/platform_window/x11/test.
-    if (ui::OzonePlatform::GetPlatformNameForTest() != "x11")
-      GTEST_SKIP();
-
-    ui::PlatformWindowInitProperties init_params(gfx::Rect(100, 100));
-    init_params.type = ui::PlatformWindowType::kWindow;
-    window_ = std::make_unique<ui::X11Window>(&delegate_);
+    PlatformWindowInitProperties init_params(gfx::Rect(100, 100));
+    init_params.type = PlatformWindowType::kWindow;
+    window_ = std::make_unique<X11Window>(&delegate_);
     window_->Initialize(std::move(init_params));
     window_->Show(false);
 
@@ -527,9 +523,7 @@ class X11DragDropClientTest : public testing::Test {
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_env_;
-  // TODO(msisov): uncomment this once X11DragDropClientTest is moved under
-  // //ui/platform_window/x11/test.
-  // std::unique_ptr<ui::X11EventSource> event_source_;
+  std::unique_ptr<X11EventSource> event_source_;
 
   std::unique_ptr<TestDragDropClient> client_;
 
@@ -537,7 +531,7 @@ class X11DragDropClientTest : public testing::Test {
   TestPlatformWindowDelegate delegate_;
 
   // The window used to initiate drags.
-  std::unique_ptr<ui::X11Window> window_;
+  std::unique_ptr<X11Window> window_;
 };
 
 namespace {
@@ -847,4 +841,4 @@ TEST_F(X11DragDropClientTest, RejectAfterMouseRelease) {
   EXPECT_EQ(DragOperation::kNone, result);
 }
 
-}  // namespace views
+}  // namespace ui

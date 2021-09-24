@@ -61,6 +61,7 @@ test("x11_unittests") {
   sources = [
     "test/device_data_manager_x11_unittest.cc",
     "test/events_x_unittest.cc",
+    "test/x11_drag_drop_client_unittest.cc",
     "test/x11_event_translation_unittest.cc",
     "test/x11_window_unittest.cc",
   ]
@@ -76,6 +77,7 @@ test("x11_unittests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/base:features",
+    "//ui/base/dragdrop:types",
     "//ui/base/x",
     "//ui/base/x:test_support",
     "//ui/events:test_support",

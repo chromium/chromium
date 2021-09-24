@@ -1364,13 +1364,6 @@ test("views_unittests") {
         "widget/desktop_aura/desktop_native_widget_aura_unittest.cc",
         "widget/desktop_widget_unittest.cc",
       ]
-      if (use_x11) {
-        sources += [ "widget/desktop_aura/x11_drag_drop_client_unittest.cc" ]
-        deps += [
-          "//ui/base/x",
-          "//ui/base/x:test_support",
-        ]
-      }
       if (is_linux || is_chromeos || is_fuchsia) {
         sources += [
           "widget/desktop_aura/desktop_window_tree_host_platform_unittest.cc",
