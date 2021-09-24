@@ -236,9 +236,11 @@ class ChildStatusCollectorTest : public testing::Test {
   void SetUp() override {
     RestartStatusCollector(base::BindRepeating(&GetEmptyAndroidStatus));
 
-    // Disable network interface reporting since it requires additional setup.
+    // Disable network reporting since it requires additional setup.
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        chromeos::kReportDeviceNetworkInterfaces, false);
+        chromeos::kReportDeviceNetworkConfiguration, false);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kReportDeviceNetworkStatus, false);
 
     // Mock clock in task environment is set to Unix Epoch, advance it to avoid
     // using times from before Unix Epoch in some tests.

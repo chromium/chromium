@@ -488,7 +488,6 @@ class DeviceStatusCollector : public StatusCollector,
   base::CallbackListSubscription activity_times_subscription_;
   base::CallbackListSubscription audio_status_subscription_;
   base::CallbackListSubscription network_configuration_subscription_;
-  base::CallbackListSubscription network_interfaces_subscription_;
   base::CallbackListSubscription network_status_subscription_;
   base::CallbackListSubscription users_subscription_;
   base::CallbackListSubscription session_status_subscription_;

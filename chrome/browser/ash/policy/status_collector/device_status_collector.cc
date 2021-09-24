@@ -1567,8 +1567,6 @@ DeviceStatusCollector::DeviceStatusCollector(
       chromeos::kReportDeviceBootMode, callback);
   audio_status_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kReportDeviceAudioStatus, callback);
-  network_interfaces_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceNetworkInterfaces, callback);
   network_configuration_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kReportDeviceNetworkConfiguration, callback);
   network_status_subscription_ = cros_settings_->AddSettingsObserver(
