@@ -55,6 +55,22 @@ void ReportEvent(GURL url,
   reporting_manager->ReportEvent(src_url, restriction, level);
 }
 
+// Helper method to check whether the restriction level is kBlock
+bool IsBlocked(RestrictionLevelAndUrl restriction_info) {
+  return restriction_info.level == DlpRulesManager::Level::kBlock;
+}
+
+// Helper method to check whether the restriction level is kWarn
+bool IsWarn(RestrictionLevelAndUrl restriction_info) {
+  return restriction_info.level == DlpRulesManager::Level::kWarn;
+}
+
+// Helper method to check if event should be reported
+bool IsReported(RestrictionLevelAndUrl restriction_info) {
+  return restriction_info.level == DlpRulesManager::Level::kReport ||
+         IsBlocked(restriction_info);
+}
+
 }  // namespace
 
 static DlpContentManager* g_dlp_content_manager = nullptr;
@@ -89,51 +105,46 @@ bool DlpContentManager::IsScreenshotRestricted(
     const ScreenshotArea& area) const {
   RestrictionLevelAndUrl restriction_info =
       GetAreaRestrictionInfo(area, DlpContentRestriction::kScreenshot);
-  const bool is_blocked =
-      restriction_info.level == DlpRulesManager::Level::kBlock;
-  if (is_blocked || restriction_info.level == DlpRulesManager::Level::kReport) {
+  if (IsReported(restriction_info)) {
     SYSLOG(INFO) << "DLP blocked taking a screenshot";
     if (reporting_manager_)
       ReportEvent(restriction_info.url,
                   DlpRulesManager::Restriction::kScreenshot,
                   restriction_info.level, reporting_manager_);
   }
-  DlpBooleanHistogram(dlp::kScreenshotBlockedUMA, is_blocked);
-  return is_blocked;
+  DlpBooleanHistogram(dlp::kScreenshotBlockedUMA, IsBlocked(restriction_info));
+  return IsBlocked(restriction_info);
 }
 
 bool DlpContentManager::IsVideoCaptureRestricted(
     const ScreenshotArea& area) const {
   RestrictionLevelAndUrl restriction_info =
       GetAreaRestrictionInfo(area, DlpContentRestriction::kVideoCapture);
-  const bool is_blocked =
-      restriction_info.level == DlpRulesManager::Level::kBlock;
-  if (is_blocked || restriction_info.level == DlpRulesManager::Level::kReport) {
+  if (IsReported(restriction_info)) {
     SYSLOG(INFO) << "DLP blocked taking a video capture";
     if (reporting_manager_)
       ReportEvent(restriction_info.url,
                   DlpRulesManager::Restriction::kScreenshot,
                   restriction_info.level, reporting_manager_);
   }
-  DlpBooleanHistogram(dlp::kVideoCaptureBlockedUMA, is_blocked);
-  return is_blocked;
+  DlpBooleanHistogram(dlp::kVideoCaptureBlockedUMA,
+                      IsBlocked(restriction_info));
+  return IsBlocked(restriction_info);
 }
 
 bool DlpContentManager::IsPrintingRestricted(
     content::WebContents* web_contents) const {
   RestrictionLevelAndUrl restriction_info =
       GetPrintingRestrictionInfo(web_contents);
-  const bool is_blocked =
-      restriction_info.level == DlpRulesManager::Level::kBlock;
-  DlpBooleanHistogram(dlp::kPrintingBlockedUMA, is_blocked);
-  if (is_blocked || restriction_info.level == DlpRulesManager::Level::kReport) {
+  DlpBooleanHistogram(dlp::kPrintingBlockedUMA, IsBlocked(restriction_info));
+  if (IsReported(restriction_info)) {
     SYSLOG(INFO) << "DLP blocked printing";
     if (reporting_manager_)
       ReportEvent(restriction_info.url, DlpRulesManager::Restriction::kPrinting,
                   restriction_info.level, reporting_manager_);
   }
 
-  return is_blocked;
+  return IsBlocked(restriction_info);
 }
 
 bool DlpContentManager::ShouldWarnBeforePrinting(
@@ -141,24 +152,22 @@ bool DlpContentManager::ShouldWarnBeforePrinting(
   RestrictionLevelAndUrl restriction_info =
       GetPrintingRestrictionInfo(web_contents);
   // TODO(crbug.com/1227700): Add reporting and metrics for WARN
-  return restriction_info.level == DlpRulesManager::Level::kWarn;
+  return IsWarn(restriction_info);
 }
 
 bool DlpContentManager::IsScreenCaptureRestricted(
     const content::DesktopMediaID& media_id) const {
   RestrictionLevelAndUrl restriction_info =
       GetScreenCaptureRestrictionInfo(media_id);
-  const bool is_blocked =
-      restriction_info.level == DlpRulesManager::Level::kBlock;
-  if (is_blocked || restriction_info.level == DlpRulesManager::Level::kReport) {
+  if (IsReported(restriction_info)) {
     SYSLOG(INFO) << "DLP blocked screen sharing";
     if (reporting_manager_)
       ReportEvent(restriction_info.url,
                   DlpRulesManager::Restriction::kScreenShare,
                   restriction_info.level, reporting_manager_);
   }
-  DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, is_blocked);
-  return is_blocked;
+  DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, IsBlocked(restriction_info));
+  return IsBlocked(restriction_info);
 }
 
 void DlpContentManager::OnVideoCaptureStarted(const ScreenshotArea& area) {
@@ -185,17 +194,16 @@ bool DlpContentManager::IsCaptureModeInitRestricted() const {
       screenshot_restriction_info.level >= videocapture_restriction_info.level
           ? screenshot_restriction_info
           : videocapture_restriction_info;
-  const bool is_blocked =
-      restriction_info.level == DlpRulesManager::Level::kBlock;
-  if (is_blocked || restriction_info.level == DlpRulesManager::Level::kReport) {
+  if (IsReported(restriction_info)) {
     SYSLOG(INFO) << "DLP blocked taking a screen capture";
     if (reporting_manager_)
       ReportEvent(restriction_info.url,
                   DlpRulesManager::Restriction::kScreenshot,
                   restriction_info.level, reporting_manager_);
   }
-  DlpBooleanHistogram(dlp::kCaptureModeInitBlockedUMA, is_blocked);
-  return is_blocked;
+  DlpBooleanHistogram(dlp::kCaptureModeInitBlockedUMA,
+                      IsBlocked(restriction_info));
+  return IsBlocked(restriction_info);
 }
 
 void DlpContentManager::OnScreenCaptureStarted(
@@ -574,10 +582,7 @@ void DlpContentManager::CheckRunningScreenCaptures() {
         GetScreenCaptureRestrictionInfo(capture.media_id);
     const bool is_allowed =
         restriction_info.level != DlpRulesManager::Level::kBlock;
-    const bool is_reported =
-        restriction_info.level == DlpRulesManager::Level::kBlock ||
-        restriction_info.level == DlpRulesManager::Level::kReport;
-    if (is_reported && capture.is_running) {
+    if (IsReported(restriction_info) && capture.is_running) {
       SYSLOG(INFO) << "DLP " << (is_allowed ? "resumed" : "paused")
                    << " running screen share";
       if (reporting_manager_) {
