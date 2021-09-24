@@ -53,6 +53,7 @@ LensSidePanelController::LensSidePanelController(SidePanel* side_panel,
                                   base::Unretained(this))))) {
   side_panel_->SetVisible(false);
   Observe(side_panel_view_->GetWebContents());
+  side_panel_view_->GetWebContents()->SetDelegate(this);
 }
 
 LensSidePanelController::~LensSidePanelController() = default;
@@ -102,6 +103,13 @@ void LensSidePanelController::LoadResultsInNewTab() {
         base::UserMetricsAction("LensSidePanel.LoadResultsInNewTab"));
   }
   Close();
+}
+
+bool LensSidePanelController::HandleContextMenu(
+    content::RenderFrameHost* render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Disable context menu.
+  return true;
 }
 
 void LensSidePanelController::DidOpenRequestedURL(
