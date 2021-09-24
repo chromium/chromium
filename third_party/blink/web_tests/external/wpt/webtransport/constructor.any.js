@@ -20,10 +20,17 @@ for (const url of BAD_URLS) {
   }, `WebTransport constructor should reject URL '${url}'`);
 }
 
-promise_test(t => {
+promise_test(async t => {
   const wt = new WebTransport(`https://${HOST}:0/`);
-  return Promise.all([
-    promise_rejects_js(t, TypeError, wt.ready, 'ready promise should be rejected'),
-    promise_rejects_js(t, TypeError, wt.closed, 'closed promise should be rejected'),
-  ]);
+
+  // Sadly we cannot use promise_rejects_dom as the error constructor is
+  // WebTransportError rather than DOMException.
+  // We get a possible error, and then make sure wt.ready is rejected with it.
+  const e = await wt.ready.catch(e => e);
+
+  await promise_rejects_exactly(t, e, wt.ready, 'ready should be rejected');
+  await promise_rejects_exactly(t, e, wt.closed, 'closed should be rejected');
+  assert_true(e instanceof WebTransportError);
+  assert_equals(e.source, 'session', 'source');
+  assert_equals(e.streamErrorCode, null, 'streamErrorCode');
 }, 'Connection to port 0 should fail');
