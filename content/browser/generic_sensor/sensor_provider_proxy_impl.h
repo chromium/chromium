@@ -52,10 +52,13 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
                                     blink::mojom::PermissionStatus);
   void OnConnectionError();
 
+  // Callbacks from |receiver_set_| are passed to |sensor_provider_| and so
+  // the ReceiverSet should be destroyed first so that the callbacks are
+  // invalidated before being discarded.
+  mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
   mojo::ReceiverSet<device::mojom::SensorProvider> receiver_set_;
   PermissionControllerImpl* permission_controller_;
   RenderFrameHost* render_frame_host_;
-  mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
 
   base::WeakPtrFactory<SensorProviderProxyImpl> weak_factory_{this};
 };

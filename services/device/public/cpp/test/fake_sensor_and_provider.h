@@ -68,6 +68,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   void GetSensor(mojom::SensorType type, GetSensorCallback callback) override;
 
   void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
+  bool is_bound() const;
 
   void set_ambient_light_sensor_is_available(
       bool ambient_light_sensor_is_available) {

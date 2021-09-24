@@ -198,6 +198,10 @@ void FakeSensorProvider::Bind(
   receivers_.Add(this, std::move(receiver));
 }
 
+bool FakeSensorProvider::is_bound() const {
+  return !receivers_.empty();
+}
+
 void FakeSensorProvider::SetAmbientLightSensorData(double value) {
   ambient_light_sensor_reading_.als.timestamp =
       (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
