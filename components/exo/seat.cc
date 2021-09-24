@@ -170,7 +170,10 @@ void Seat::SetSelection(DataSource* source) {
                      data_read_callback),
       base::BindOnce(&Seat::OnFilenamesRead, weak_ptr_factory_.GetWeakPtr(),
                      endpoint_type, writer, data_read_callback),
-      DataSource::ReadFileContentsDataCallback(), data_read_callback);
+      DataSource::ReadFileContentsDataCallback(),
+      base::BindOnce(&Seat::OnWebCustomDataRead, weak_ptr_factory_.GetWeakPtr(),
+                     writer, data_read_callback),
+      data_read_callback);
 }
 
 class Seat::RefCountedScopedClipboardWriter
@@ -246,6 +249,16 @@ void Seat::OnFilenamesRead(
   std::vector<ui::FileInfo> filenames =
       data_exchange_delegate_->GetFilenames(source, data);
   writer->WriteFilenames(ui::FileInfosToURIList(filenames));
+  std::move(callback).Run();
+}
+
+void Seat::OnWebCustomDataRead(
+    scoped_refptr<RefCountedScopedClipboardWriter> writer,
+    base::OnceClosure callback,
+    const std::string& mime_type,
+    const std::vector<uint8_t>& data) {
+  NOTREACHED()
+      << "Seat does not support custom data mime types for selections.";
   std::move(callback).Run();
 }
 

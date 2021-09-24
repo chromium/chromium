@@ -25,8 +25,8 @@ class DataSource {
  public:
   // The maximum number of different data types that will be read by
   // GetDataForPreferredMimeTypes (plain text, RTF, HTML, image, text/uri-list,
-  // application/octet-stream).
-  static constexpr int kMaxDataTypes = 6;
+  // application/octet-stream, chromium/x-web-custom-data).
+  static constexpr int kMaxDataTypes = 7;
 
   explicit DataSource(DataSourceDelegate* delegate);
 
@@ -71,12 +71,12 @@ class DataSource {
 
   // Search the set of offered MIME types for the most preferred of each of the
   // following categories: text/plain*, text/rtf, text/html*, image/*,
-  // text/uri-list. If any usable MIME types in a given category are available,
-  // the corresponding
+  // text/uri-list, chromium/x-web-custom-data. If any usable MIME types in a
+  // given category are available, the corresponding
   // |*_reader| input callback will be called with the best one and the
   // corresponding data. For any category that has no available MIME types,
   // |failure_callback| is run. |failure_callback| may therefore be run as many
-  // as four times.
+  // as seven times.
   using ReadDataCallback =
       base::OnceCallback<void(const std::string&, const std::vector<uint8_t>&)>;
   using ReadTextDataCallback =
@@ -85,6 +85,8 @@ class DataSource {
       base::OnceCallback<void(const std::string&,
                               const base::FilePath&,
                               const std::vector<uint8_t>&)>;
+  using ReadWebCustomDataCallback =
+      base::OnceCallback<void(const std::string&, const std::vector<uint8_t>&)>;
   void GetDataForPreferredMimeTypes(
       ReadTextDataCallback text_reader,
       ReadDataCallback rtf_reader,
@@ -92,6 +94,7 @@ class DataSource {
       ReadDataCallback image_reader,
       ReadDataCallback filenames_reader,
       ReadFileContentsDataCallback file_contents_reader,
+      ReadDataCallback web_custom_data_reader,
       base::RepeatingClosure failure_callback);
 
   void ReadDataForTesting(const std::string& mime_type,

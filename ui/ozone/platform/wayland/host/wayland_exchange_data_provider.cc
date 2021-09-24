@@ -47,6 +47,8 @@ int MimeTypeToFormat(const std::string& mime_type) {
     return OSExchangeData::HTML;
   if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream))
     return OSExchangeData::FILE_CONTENTS;
+  if (mime_type == ui::kMimeTypeWebCustomData)
+    return OSExchangeData::PICKLED_DATA;
   return 0;
 }
 
@@ -259,6 +261,14 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
     out_content->append(base::UTF16ToUTF8(data));
     return true;
   }
+  if (HasCustomFormat(ui::ClipboardFormatType::WebCustomDataType())) {
+    base::Pickle pickle;
+    GetPickledData(ui::ClipboardFormatType::WebCustomDataType(), &pickle);
+    *out_content = std::string(reinterpret_cast<const char*>(pickle.data()),
+                               pickle.size());
+    return true;
+  }
+
   return false;
 }
 

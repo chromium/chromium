@@ -189,6 +189,11 @@ class Seat : public aura::client::FocusChangeObserver,
                        base::OnceClosure callback,
                        const std::string& mime_type,
                        const std::vector<uint8_t>& data);
+  void OnWebCustomDataRead(
+      scoped_refptr<RefCountedScopedClipboardWriter> writer,
+      base::OnceClosure callback,
+      const std::string& mime_type,
+      const std::vector<uint8_t>& data);
 
   void OnAllReadsFinished(
       scoped_refptr<RefCountedScopedClipboardWriter> writer);

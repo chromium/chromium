@@ -125,7 +125,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
     return false;
   }
 
-  // Create new new data source and offers |data|.
+  // Create new data source and offers |data|.
   SetOfferedExchangeDataProvider(data);
   data_source_ = data_device_manager_->CreateSource(this);
   data_source_->Offer(GetOfferedExchangeDataProvider()->BuildMimeTypesList());
