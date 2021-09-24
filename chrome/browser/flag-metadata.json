@@ -5391,11 +5391,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "updated_cellular_activation_ui",
-    "owners": [ "azeemarshad", "khorimoto", "cros-connectivity@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "url-blocklist-ios",
     "owners": [ "michaeldo", "rohitrao", "bling-flags@google.com" ],
     "expiry_milestone": 90
