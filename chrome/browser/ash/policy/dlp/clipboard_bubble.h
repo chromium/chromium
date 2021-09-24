@@ -13,9 +13,10 @@
 #include "ui/views/view.h"
 
 namespace views {
-class Label;
 class ImageView;
+class Label;
 class LabelButton;
+class Link;
 }  // namespace views
 
 namespace policy {
@@ -37,6 +38,7 @@ class ClipboardBubbleView : public views::View {
   views::Label* label_ = nullptr;
   views::ImageView* managed_icon_ = nullptr;
   views::ImageView* border_ = nullptr;
+  views::Link* link_ = nullptr;
 };
 
 class ClipboardBlockBubble : public ClipboardBubbleView {

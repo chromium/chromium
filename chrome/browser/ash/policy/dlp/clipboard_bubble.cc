@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/dlp/clipboard_bubble.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "chrome/browser/ash/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -16,6 +17,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/link.h"
 
 namespace policy {
 
@@ -96,6 +98,11 @@ class Button : public views::LabelButton {
   }
 };
 
+void OnLearnMoreLinkClicked() {
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(kDlpLearnMoreUrl), /*from_user_interaction=*/true);
+}
+
 }  // namespace
 
 BEGIN_METADATA(Button, views::LabelButton)
@@ -143,6 +150,25 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label_->SetAutoColorReadabilityEnabled(false);
 
+  // Add "Learn more" link.
+  // TODO(crbug.com/1252779): Move it to continue the label text, not below it.
+  link_ = AddChildView(
+      std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE)));
+  link_->SetPaintToLayer();
+  link_->layer()->SetFillsBoundsOpaquely(false);
+  link_->SetPosition(
+      gfx::Point(kBubblePadding + kManagedIconSize + kIconLabelSpacing,
+                 kBubblePadding + label_->height()));
+  link_->SetFontList(gfx::FontList({kTextFontName}, gfx::Font::NORMAL,
+                                   kTextFontSize, gfx::Font::Weight::NORMAL));
+  link_->SetLineHeight(kLineHeight);
+  link_->SetMultiLine(true);
+  link_->SizeToFit(kBubbleWidth - 2 * kBubblePadding - kManagedIconSize -
+                   kIconLabelSpacing);
+  link_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  link_->SetAutoColorReadabilityEnabled(false);
+  link_->SetCallback(base::BindRepeating(&OnLearnMoreLinkClicked));
+
   // Bubble borders
   border_ = AddChildView(std::make_unique<views::ImageView>());
   border_->SetPaintToLayer();
@@ -155,6 +181,7 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   shadow_border->set_insets(kBubbleBorderInsets);
   border_->SetSize({kBubbleWidth, INT_MAX});
   border_->SetBorder(std::move(shadow_border));
+  border_->SetCanProcessEventsWithinSubtree(false);
 }
 
 ClipboardBubbleView::~ClipboardBubbleView() = default;
