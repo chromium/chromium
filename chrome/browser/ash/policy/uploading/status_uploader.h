@@ -85,6 +85,9 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   // if appropriate.
   void RefreshUploadFrequency();
 
+  // Updates the status collector being used.
+  void UpdateStatusCollector();
+
   // CloudPolicyClient used to issue requests to the server.
   CloudPolicyClient* client_;
 
@@ -99,6 +102,9 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
 
   // Subscription for the callback about changes in the upload frequency.
   base::CallbackListSubscription upload_frequency_subscription_;
+
+  // Subscription for whether or not to user granular reporting.
+  base::CallbackListSubscription granular_reporting_subscription_;
 
   // The time the last upload was performed.
   base::Time last_upload_;

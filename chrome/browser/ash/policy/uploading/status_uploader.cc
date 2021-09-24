@@ -15,9 +15,13 @@
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
+#include "chrome/browser/ash/policy/status_collector/legacy_device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
+#include "chrome/browser/browser_process.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
+#include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,6 +62,11 @@ StatusUploader::StatusUploader(
       ash::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kReportUploadFrequency,
           base::BindRepeating(&StatusUploader::RefreshUploadFrequency,
+                              base::Unretained(this)));
+  granular_reporting_subscription_ =
+      ash::CrosSettings::Get()->AddSettingsObserver(
+          chromeos::kEnableDeviceGranularReporting,
+          base::BindRepeating(&StatusUploader::UpdateStatusCollector,
                               base::Unretained(this)));
 
   // Update the upload frequency from settings.
@@ -100,6 +109,37 @@ bool StatusUploader::ScheduleNextStatusUpload(bool immediately) {
       base::BindOnce(&StatusUploader::UploadStatus, base::Unretained(this)));
   task_runner_->PostDelayedTask(FROM_HERE, upload_callback_.callback(), delay);
   return true;
+}
+
+void StatusUploader::UpdateStatusCollector() {
+  if (user_manager::UserManager::Get()->GetActiveUser()->IsChild()) {
+    return;
+  }
+
+  ash::CrosSettings* settings = ash::CrosSettings::Get();
+  if (chromeos::CrosSettingsProvider::TRUSTED !=
+      settings->PrepareTrustedValues(
+          base::BindOnce(&StatusUploader::UpdateStatusCollector,
+                         weak_factory_.GetWeakPtr()))) {
+    return;
+  }
+
+  bool granular_reporting_enabled;
+  if (!settings->GetBoolean(chromeos::kEnableDeviceGranularReporting,
+                            &granular_reporting_enabled)) {
+    granular_reporting_enabled = true;
+  }
+  PrefService* local_state = g_browser_process->local_state();
+
+  if (granular_reporting_enabled) {
+    SYSLOG(INFO) << "Enabling granular reporting controls";
+    collector_ = std::make_unique<DeviceStatusCollector>(
+        local_state, chromeos::system::StatisticsProvider::GetInstance());
+  } else {
+    SYSLOG(INFO) << "Disabling granular reporting controls";
+    collector_ = std::make_unique<LegacyDeviceStatusCollector>(
+        local_state, chromeos::system::StatisticsProvider::GetInstance());
+  }
 }
 
 void StatusUploader::RefreshUploadFrequency() {

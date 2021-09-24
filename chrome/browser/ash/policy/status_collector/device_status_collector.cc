@@ -739,7 +739,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     cros_healthd_data_fetcher.Run(
         CrosHealthdCollectionMode::kFull,
         base::BindOnce(&DeviceStatusCollectorState::OnCrosHealthdDataReceived,
-                       this, report_system_info, report_vpd_info, report_storage_status));
+                       this, report_system_info, report_vpd_info,
+                       report_storage_status));
   }
 
   void FetchEMMCLifeTime(
@@ -826,7 +827,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     em::TpmStatusInfo* const tpm_status_proto =
         response_params_.device_status->mutable_tpm_status_info();
 
-    LOG(WARNING) << "tpm_status_struct.attestation_prepared: " << tpm_status_struct.attestation_prepared;
+    LOG(WARNING) << "tpm_status_struct.attestation_prepared: "
+                 << tpm_status_struct.attestation_prepared;
     tpm_status_proto->set_enabled(tpm_status_struct.enabled);
     tpm_status_proto->set_owned(tpm_status_struct.owned);
     tpm_status_proto->set_tpm_initialized(tpm_status_struct.initialized);
