@@ -5,7 +5,7 @@
 # with versions less than or equal to $VERSION of the implementation.
 #
 # These lines are not comments! They define the set of known tags and other information.
-# tags: [ client_lte_91 client_lte_94 client_lte_95 ]
+# tags: [ client_lte_91 client_lte_94 client_lte_95 impl_lte_95 ]
 # 'all' disables the test from any skew test.
 # tags: [ all ]
 # results: [ Skip ]
@@ -56,6 +56,24 @@ crbug.com/1249962 [ client_lte_95 ] org.chromium.weblayer.test.ExternalNavigatio
 crbug.com/1249962 [ client_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testUserClicksLinkToPageWithExternalIntentLaunchedViaOnLoad [ Skip ]
 crbug.com/1249962 [ client_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testUserDecidingExternalIntentNavigationParamSetOnNavigationsToIntentsInIncognito [ Skip ]
 crbug.com/1249962 [ client_lte_95 ] org.chromium.weblayer.test.NavigationTest#testIsKnownProtocol [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentAfterRedirectInBackgroundTabLaunchedWhenBackgroundLaunchesAllowed [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentAfterRedirectLaunched [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentInNewTabLaunchedOnLinkClick [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentInSameTabLaunchedOnLinkClick [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentNavigationParamSetOnIntentLaunchViaLinkClick [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentNavigationParamSetOnNavigationsToIntents [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentViaOnLoadLaunched [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithFallbackUrlAfterRedirectLaunched [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBackgroundTabLaunchedWhenBackgroundLaunchesAllowed [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupInIncognitoBlockedWhenBackgroundLaunchesAllowedAndUserForbids [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupInIncognitoLaunchedWhenBackgroundLaunchesAllowedAndUserConsents [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupInIncognitoWithEmbedderPresentingWarningDialogBlockedWhenBackgroundLaunchesAllowedAndUserForbids [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupInIncognitoWithEmbedderPresentingWarningDialogLaunchedWhenBackgroundLaunchesAllowedAndUserConsents [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupLaunchedWhenBackgroundLaunchesAllowed [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectLaunched [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testUserClicksLinkToPageWithExternalIntentLaunchedViaOnLoad [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.ExternalNavigationTest#testUserDecidingExternalIntentNavigationParamSetOnNavigationsToIntentsInIncognito [ Skip ]
+crbug.com/1249962 [ impl_lte_95 ] org.chromium.weblayer.test.NavigationTest#testIsKnownProtocol [ Skip ]
 
 # Bulk disable to get bot green.
 crbug.com/1191751 [ all ] org.chromium.weblayer.test.InputTypesTest* [ Skip ]
