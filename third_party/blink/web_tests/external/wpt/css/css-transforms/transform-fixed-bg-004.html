@@ -3,6 +3,8 @@
   <head>
     <title>CSS Test (Transforms): Fixed Background (with rotation and scrolling)</title>
     <link rel="author" title="Aryeh Gregor" href="mailto:ayg@aryeh.name">
+    <link rel="author" title="L. David Baron" href="https://dbaron.org/">
+    <link rel="author" title="Google" href="http://www.google.com/">
     <link rel="help" href="http://www.w3.org/TR/css-transforms-1/#transform-rendering">
     <meta name="assert" content='This is the same as transform-fixed-bg-002,
     except that we also test that a rotation on a non-root element doesn&apos;t
@@ -16,7 +18,7 @@
         overflow: hidden;
       }
       div {
-        background: url(support/transform-triangle-left.svg) fixed;
+        background: url(support/transform-triangle-down.svg) fixed;
         width: 100px;
         height: 100px;
         transform: translate(50px, 150px) rotate(90deg);
