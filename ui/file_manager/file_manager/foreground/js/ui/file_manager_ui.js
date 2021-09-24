@@ -332,23 +332,6 @@ export class FileManagerUI {
     };
 
     /**
-     * The menu button for share options
-     * @type {!MultiMenuButton}
-     * @const
-     */
-    this.shareMenuButton =
-        util.queryDecoratedElement('#share-menu-button', MultiMenuButton);
-    const shareMenuButtonToggleRipple =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.shareMenuButton));
-    this.shareMenuButton.addEventListener('menushow', () => {
-      shareMenuButtonToggleRipple.activated = true;
-    });
-    this.shareMenuButton.addEventListener('menuhide', () => {
-      shareMenuButtonToggleRipple.activated = false;
-    });
-
-    /**
      * Banners in the file list.
      * @type {Banners|BannerController}
      */

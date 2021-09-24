@@ -697,16 +697,6 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
   -webkit-mask-image: url(../images/files/ui/search.svg);
 }
 
-.dialog-header.files-ng #share-menu-button > .icon {
-  -webkit-mask-image: url(../images/files/ui/share_ng.svg);
-  height: 48px;
-  margin-inline-end: -7px;
-  margin-inline-start: -7px;
-  margin-top: -7px;
-  position: absolute;
-  width: 48px;
-}
-
 .dialog-header.files-ng #sharesheet-button > .icon {
   -webkit-mask-image: url(../images/files/ui/share_ng.svg);
 }
@@ -2293,21 +2283,13 @@ body.check-select #list-container list li[selected] .detail-thumbnail
   opacity: 0;
 }
 
-#share-menu cr-menu-item,
 #tasks-menu cr-menu-item:not(.change-default) {
   background-position: left 10px center;
   padding-inline-start: 32px;
 }
 
-html[dir='rtl'] #share-menu cr-menu-item,
 html[dir='rtl'] #tasks-menu cr-menu-item:not(.change-default) {
   background-position: right 10px center;
-}
-
-#share-menu cr-menu-item[command='#share'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/person_add.png) 1x,
-      url(../images/files/ui/2x/person_add.png) 2x);
 }
 
 #action-bar {

@@ -14,7 +14,6 @@ import {FileOperationProgressEvent} from '../../common/js/file_operation_common.
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
-import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -71,7 +70,6 @@ const CommandUtil = {};
  */
 CommandUtil.SharingActionElementId = {
   CONTEXT_MENU: 'file-list',
-  SHARE_BUTTON: 'share-menu-button',
   SHARE_SHEET: 'sharesheet-button',
 };
 
@@ -87,8 +85,6 @@ CommandUtil.getSharingActionSource = event => {
   switch (id) {
     case CommandUtil.SharingActionElementId.CONTEXT_MENU:
       return FileTasks.SharingActionSourceForUMA.CONTEXT_MENU;
-    case CommandUtil.SharingActionElementId.SHARE_BUTTON:
-      return FileTasks.SharingActionSourceForUMA.SHARE_BUTTON;
     case CommandUtil.SharingActionElementId.SHARE_SHEET:
       return FileTasks.SharingActionSourceForUMA.SHARE_SHEET;
     default: {

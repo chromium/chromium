@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {expandTreeItem, IGNORE_APP_ERRORS, mountCrostini, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_DRIVE_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 
 /**
@@ -36,33 +36,19 @@ async function shareWithOthersExpectBrowserURL(
       !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]),
       'selectFile failed');
 
-  // Wait for the entry to be selected.
-  await remoteCall.waitForElement(appId, '.table-row[selected]');
-
-  // Wait for the share button to appear.
-  chrome.test.assertTrue(!!await remoteCall.waitForElement(
-      appId, '#share-menu-button:not([disabled])'));
-
-  // Click the share button to open share menu.
-  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['#share-menu-button']));
-
-  // Check: the "Share with others" menu item should be shown enabled.
-  const shareMenuItem =
-      '#share-menu:not([hidden]) [command="#share"]:not([disabled])';
+  // Right-click to show the context menu.
   chrome.test.assertTrue(
-      !!await remoteCall.waitForElement(appId, shareMenuItem));
+      !!await remoteCall.waitAndRightClick(appId, '.table-row[selected]'));
 
-  // Click the "Share with others" menu item.
-  const shareWithOthers = '#share-menu [command="#share"]:not([disabled])';
+  // Wait and click on the visible and enabled menu item.
+  const shareMenuItem = '#file-context-menu:not([hidden]) ' +
+      ' [command="#share"]:not([hidden]):not([disabled])';
   chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [shareWithOthers]),
-      'fakeMouseClick failed');
+      !!await remoteCall.waitAndClickElement(appId, shareMenuItem));
 
-  // Wait for the share menu to disappear.
+  // Wait for the context menu to disappear.
   chrome.test.assertTrue(
-      !!await remoteCall.waitForElement(appId, '#share-menu[hidden]'));
+      !!await remoteCall.waitForElement(appId, '#file-context-menu[hidden]'));
 
   // Wait for the browser window to appear and navigate to the expected URL.
   chrome.test.assertEq(

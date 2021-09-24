@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {AsyncUtil} from '../../common/js/async_util.js';
@@ -30,8 +28,6 @@ import {ComboButton} from './ui/combobutton.js';
 import {DefaultTaskDialog} from './ui/default_task_dialog.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
-import {FilesMenuItem} from './ui/files_menu.js';
-import {MultiMenuButton} from './ui/multi_menu_button.js';
 
 /**
  * Represents a collection of available tasks to execute for a specific list
@@ -971,15 +967,13 @@ export class FileTasks {
   }
 
   /**
-   * Displays the list of tasks in a open task picker combobutton and a share
-   * options menu.
+   * Displays the list of tasks in a open task picker combobutton..
    *
    * @param {!ComboButton} openCombobutton The open task picker
    *     combobutton.
-   * @param {!MultiMenuButton} shareMenuButton Button for share options.
    * @public
    */
-  display(openCombobutton, shareMenuButton) {
+  display(openCombobutton) {
     const openTasks = [];
     const otherTasks = [];
     for (const task of this.tasks_) {
@@ -990,7 +984,6 @@ export class FileTasks {
       }
     }
     this.updateOpenComboButton_(openCombobutton, openTasks);
-    this.updateShareMenuButton_(shareMenuButton, otherTasks);
   }
 
   /**
@@ -1040,39 +1033,6 @@ export class FileTasks {
         });
         changeDefaultMenuItem.classList.add('change-default');
       }
-    }
-  }
-
-  /**
-   * Setup a menu button for sharing options based on the given tasks.
-   * @param {!MultiMenuButton} shareMenuButton
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks
-   */
-  updateShareMenuButton_(shareMenuButton, tasks) {
-    const driveShareCommand =
-        shareMenuButton.menu.querySelector('cr-menu-item[command="#share"]');
-    const driveShareCommandSeparator =
-        shareMenuButton.menu.querySelector('#drive-share-separator');
-
-    // Update share command.
-    driveShareCommand.command.canExecuteChange(
-        this.ui_.listContainer.currentList);
-
-    // Hide share icon for New Folder creation.  See https://crbug.com/571355.
-    shareMenuButton.hidden = true;
-
-    // Show the separator if Drive share command is enabled and there is at
-    // least one other share actions.
-    driveShareCommandSeparator.hidden =
-        driveShareCommand.disabled || tasks.length == 0;
-
-    // Clear menu items except for drive share menu and a separator for it.
-    // As querySelectorAll() returns live NodeList, we need to copy elements to
-    // Array object to modify DOM in the for loop.
-    const itemsToRemove = [].slice.call(shareMenuButton.menu.querySelectorAll(
-        'cr-menu-item:not([command="#share"])'));
-    for (const item of itemsToRemove) {
-      item.parentNode.removeChild(item);
     }
   }
 

@@ -7,7 +7,7 @@ import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {strf, util} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -166,8 +166,6 @@ export class TaskController {
 
     ui.taskMenuButton.addEventListener(
         'select', this.onTaskItemClicked_.bind(this));
-    ui.shareMenuButton.menu.addEventListener(
-        'activate', this.onTaskItemClicked_.bind(this));
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE,
         this.onSelectionChanged_.bind(this));
@@ -274,8 +272,7 @@ export class TaskController {
             this.tasks_ = null;
             this.getFileTasks()
                 .then(tasks => {
-                  tasks.display(
-                      this.ui_.taskMenuButton, this.ui_.shareMenuButton);
+                  tasks.display(this.ui_.taskMenuButton);
                 })
                 .catch(error => {
                   if (error) {
@@ -379,7 +376,7 @@ export class TaskController {
         (selection.directoryCount > 0 || selection.fileCount > 0)) {
       this.getFileTasks()
           .then(tasks => {
-            tasks.display(this.ui_.taskMenuButton, this.ui_.shareMenuButton);
+            tasks.display(this.ui_.taskMenuButton);
             this.updateContextMenuTaskItems_(
                 tasks.getOpenTaskItems(), tasks.getNonOpenTaskItems());
           })
@@ -390,7 +387,6 @@ export class TaskController {
           });
     } else {
       this.ui_.taskMenuButton.hidden = true;
-      this.ui_.shareMenuButton.hidden = true;
     }
   }
 

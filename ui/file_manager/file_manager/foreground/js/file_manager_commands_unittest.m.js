@@ -23,10 +23,6 @@ export function testGetSharingActionSource() {
       expected: FileTasks.SharingActionSourceForUMA.CONTEXT_MENU,
     },
     {
-      event: {target: {id: CommandUtil.SharingActionElementId.SHARE_BUTTON}},
-      expected: FileTasks.SharingActionSourceForUMA.SHARE_BUTTON,
-    },
-    {
       event: {target: {id: CommandUtil.SharingActionElementId.SHARE_SHEET}},
       expected: FileTasks.SharingActionSourceForUMA.SHARE_SHEET,
     },

@@ -19,7 +19,6 @@ import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
-import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
@@ -636,18 +635,6 @@ export function testRecordSharingAction() {
       [FileTasks.SharingActionSourceForUMA.CONTEXT_MENU]);
   assertArrayEquals(countMap.get('Share.FileCount'), [3]);
   assertArrayEquals(enumMap.get('Share.FileType'), ['.log', '.doc', 'other']);
-
-  FileTasks.recordSharingActionUMA_(
-      FileTasks.SharingActionSourceForUMA.SHARE_BUTTON, [
-        MockFileEntry.create(mockFileSystem, '/test.log'),
-      ]);
-  assertArrayEquals(enumMap.get('Share.ActionSource'), [
-    FileTasks.SharingActionSourceForUMA.CONTEXT_MENU,
-    FileTasks.SharingActionSourceForUMA.SHARE_BUTTON,
-  ]);
-  assertArrayEquals(countMap.get('Share.FileCount'), [3, 1]);
-  assertArrayEquals(
-      enumMap.get('Share.FileType'), ['.log', '.doc', 'other', '.log']);
 }
 
 /**
