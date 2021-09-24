@@ -49,7 +49,7 @@ DevicePairingHandlerImpl::~DevicePairingHandlerImpl() {
   // If we have a pairing attempt and this class is destroyed, cancel the
   // pairing.
   if (!current_pairing_device_id().empty())
-    CancelPairing(mojom::PairingResult::kNonAuthFailure);
+    CancelPairing();
 
   NotifyFinished();
 }

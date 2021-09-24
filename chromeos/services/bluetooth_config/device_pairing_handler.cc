@@ -43,18 +43,17 @@ DevicePairingHandler::DevicePairingHandler(
 
 DevicePairingHandler::~DevicePairingHandler() = default;
 
-void DevicePairingHandler::CancelPairing(mojom::PairingResult result) {
+void DevicePairingHandler::CancelPairing() {
   device::BluetoothDevice* device = FindDevice(current_pairing_device_id_);
-  if (device) {
-    device->CancelPairing();
-  } else {
+  if (!device) {
     BLUETOOTH_LOG(ERROR)
         << "Could not cancel pairing for device to due device no longer being "
            "found, identifier: "
         << current_pairing_device_id_;
+    FinishCurrentPairingRequest(mojom::PairingResult::kAuthFailed);
+    return;
   }
-
-  FinishCurrentPairingRequest(result);
+  device->CancelPairing();
 }
 
 void DevicePairingHandler::NotifyFinished() {
@@ -102,10 +101,8 @@ void DevicePairingHandler::PairDevice(
 
   current_pairing_device_id_ = device_id;
   device->Connect(
-      /*delegate=*/this,
-      base::BindOnce(&DevicePairingHandler::OnDeviceConnect,
-                     weak_ptr_factory_.GetWeakPtr(), device->GetAddress(),
-                     device->GetDeviceType()));
+      /*delegate=*/this, base::BindOnce(&DevicePairingHandler::OnDeviceConnect,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DevicePairingHandler::RequestPinCode(device::BluetoothDevice* device) {
@@ -165,12 +162,10 @@ void DevicePairingHandler::OnAdapterStateChanged() {
     return;
 
   // If Bluetooth disables while we are attempting to pair, cancel the pairing.
-  CancelPairing(mojom::PairingResult::kNonAuthFailure);
+  CancelPairing();
 }
 
 void DevicePairingHandler::OnDeviceConnect(
-    const std::string& address,
-    device::BluetoothDeviceType device_type,
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (!error_code.has_value()) {
     FinishCurrentPairingRequest(mojom::PairingResult::kSuccess);
@@ -240,7 +235,7 @@ void DevicePairingHandler::OnRequestPasskey(const std::string& passkey) {
   }
 
   // If string to uint32_t conversion was unsuccessful, cancel the pairing.
-  CancelPairing(mojom::PairingResult::kAuthFailed);
+  CancelPairing();
 }
 
 void DevicePairingHandler::OnConfirmPairing(bool confirmed) {
@@ -270,9 +265,9 @@ void DevicePairingHandler::OnDelegateDisconnect() {
   // If the delegate disconnects and we have a pairing attempt, cancel the
   // pairing.
   if (!current_pairing_device_id_.empty())
-    CancelPairing(mojom::PairingResult::kNonAuthFailure);
+    CancelPairing();
 
-  NotifyFinished();
+  delegate_.reset();
 }
 
 bool DevicePairingHandler::IsBluetoothEnabled() const {

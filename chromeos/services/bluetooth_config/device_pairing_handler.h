@@ -42,9 +42,9 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
       const std::string& device_id) const = 0;
 
   // Cancels the pairing attempt occurring with the device with identifier
-  // |current_pairing_device_id_| if it exists, then calls
-  // FinishCurrentPairingRequest().
-  void CancelPairing(mojom::PairingResult result);
+  // |current_pairing_device_id_| if it exists. Cancelling an active pairing
+  // attempt will cause OnDeviceConnect() to fire with an error code.
+  void CancelPairing();
 
   // Calls the finished_pairing_callback_ to indicate that this class should no
   // longer handle pairing requests. This is called at most once.
@@ -79,8 +79,6 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
 
   // device::BluetoothDevice::Connect() callback.
   void OnDeviceConnect(
-      const std::string& address,
-      device::BluetoothDeviceType device_type,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // mojom::DevicePairingHandler method callbacks.

@@ -121,8 +121,12 @@ class DevicePairingHandlerImplTest : public testing::Test {
             }));
 
     ON_CALL(*mock_device, CancelPairing())
-        .WillByDefault(
-            testing::Invoke([this]() { num_cancel_pairing_calls_++; }));
+        .WillByDefault(testing::Invoke([this]() {
+          num_cancel_pairing_calls_++;
+          std::move(connect_callback_)
+              .Run(device::BluetoothDevice::ConnectErrorCode::
+                       ERROR_AUTH_CANCELED);
+        }));
 
     ON_CALL(*mock_device, ConfirmPairing())
         .WillByDefault(
@@ -288,7 +292,8 @@ TEST_F(DevicePairingHandlerImplTest, DisableBluetoothDuringPairing) {
 
   // Pairing should fail.
   EXPECT_TRUE(delegate->IsMojoPipeConnected());
-  EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
+  EXPECT_EQ(num_cancel_pairing_calls(), 1u);
+  EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
 }
 
@@ -340,10 +345,30 @@ TEST_F(DevicePairingHandlerImplTest, DisconnectDelegateBeforeConnectFinishes) {
 
   // CancelPairing() should be called since we had an active pairing.
   EXPECT_EQ(num_cancel_pairing_calls(), 1u);
-  EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
+  EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
 
-  // Disconnecting the pipe should call OnPairingAttemptFinished().
-  EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
+  // Disconnecting the pipe should not call OnPairingAttemptFinished().
+  EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+}
+
+TEST_F(DevicePairingHandlerImplTest,
+       DisconnectDelegateBeforeConnectFinishesDeviceNotFound) {
+  std::string device_id;
+  AddDevice(&device_id, AuthType::kNone);
+
+  std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
+  EXPECT_TRUE(HasPendingConnectCallback());
+  ClearDevices();
+
+  delegate->DisconnectMojoPipe();
+
+  // CancelPairing() won't be called since the device won't be found. We should
+  // still return with a pairing result.
+  EXPECT_EQ(num_cancel_pairing_calls(), 0u);
+  EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+
+  // Disconnecting the pipe should not call OnPairingAttemptFinished().
+  EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
 }
 
 TEST_F(DevicePairingHandlerImplTest,
@@ -362,8 +387,8 @@ TEST_F(DevicePairingHandlerImplTest,
   // CancelPairing() should not be called since we finished pairing.
   EXPECT_EQ(num_cancel_pairing_calls(), 0u);
 
-  // Disconnecting the pipe should call OnPairingAttemptFinished().
-  EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
+  // Disconnecting the pipe should not call OnPairingAttemptFinished().
+  EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairDeviceNotFound) {
