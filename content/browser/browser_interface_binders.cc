@@ -187,33 +187,23 @@ namespace internal {
 
 namespace {
 
-void BindShapeDetectionServiceOnProcessThread(
-    mojo::PendingReceiver<shape_detection::mojom::ShapeDetectionService>
-        receiver) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
-  content::ServiceProcessHost::Launch<
-      shape_detection::mojom::ShapeDetectionService>(
-      std::move(receiver), content::ServiceProcessHost::Options()
-                               .WithDisplayName("Shape Detection Service")
-                               .Pass());
-#else
-  auto* gpu = GpuProcessHost::Get();
-  if (gpu)
-    gpu->RunService(std::move(receiver));
-#endif
-}
-
 shape_detection::mojom::ShapeDetectionService* GetShapeDetectionService() {
   static base::NoDestructor<
       mojo::Remote<shape_detection::mojom::ShapeDetectionService>>
       remote;
   if (!*remote) {
-    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                           ? content::GetUIThreadTaskRunner({})
-                           : content::GetIOThreadTaskRunner({});
-    task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&BindShapeDetectionServiceOnProcessThread,
-                                  remote->BindNewPipeAndPassReceiver()));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_ASH)
+    content::ServiceProcessHost::Launch<
+        shape_detection::mojom::ShapeDetectionService>(
+        remote->BindNewPipeAndPassReceiver(),
+        content::ServiceProcessHost::Options()
+            .WithDisplayName("Shape Detection Service")
+            .Pass());
+#else
+    auto* gpu = GpuProcessHost::Get();
+    if (gpu)
+      gpu->RunService(remote->BindNewPipeAndPassReceiver());
+#endif
     remote->reset_on_disconnect();
   }
 

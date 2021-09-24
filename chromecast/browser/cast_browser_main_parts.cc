@@ -412,10 +412,7 @@ CastBrowserMainParts::CastBrowserMainParts(
   AddDefaultCommandLineSwitches(command_line);
 
   service_manager_context_ = std::make_unique<ServiceManagerContext>(
-      cast_content_browser_client_,
-      base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-          ? content::GetUIThreadTaskRunner({})
-          : content::GetIOThreadTaskRunner({}));
+      cast_content_browser_client_, content::GetUIThreadTaskRunner({}));
   ServiceManagerConnection::GetForProcess()->Start();
 }
 

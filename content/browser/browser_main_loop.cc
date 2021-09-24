@@ -1184,17 +1184,10 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   // ShaderCacheFactory.
   InitShaderCacheFactorySingleton();
 
-  // Initialize the FontRenderParams on IO thread. This needs to be initialized
-  // before gpu process initialization below.
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    viz::GpuHostImpl::InitFontRenderParams(
-        gfx::GetFontRenderParams(gfx::FontRenderParamsQuery(), nullptr));
-  } else {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&viz::GpuHostImpl::InitFontRenderParams,
-                                  gfx::GetFontRenderParams(
-                                      gfx::FontRenderParamsQuery(), nullptr)));
-  }
+  // Initialize the FontRenderParams. This needs to be initialized before gpu
+  // process initialization below.
+  viz::GpuHostImpl::InitFontRenderParams(
+      gfx::GetFontRenderParams(gfx::FontRenderParamsQuery(), nullptr));
 
   bool always_uses_gpu = true;
   bool established_gpu_channel = false;

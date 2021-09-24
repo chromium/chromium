@@ -130,23 +130,15 @@ class ProcessMonitor {
   void MarkProcessAsAlive(const ProcessMetadata& process_data,
                           int current_update_sequence);
 
-  // Returns the ProcessMetadata for every Chrome processes accessible from the
-  // UI thread.
-  static std::vector<ProcessMetadata> GatherProcessesOnUIThread();
+  // Returns the ProcessMetadata for renderer processes.
+  static std::vector<ProcessMetadata> GatherRendererProcesses();
 
-  // Returns the ProcessMetadata for every Chrome processes accessible from the
-  // process thread.
-  static std::vector<ProcessMetadata> GatherProcessesOnProcessThread();
+  // Returns the ProcessMetadata for non renderers.
+  static std::vector<ProcessMetadata> GatherNonRendererProcesses();
 
-  // Gather all the processes from both threads and then invokes GatherMetrics()
-  // back on the calling thread.
+  // Gather all the processes and updates the ProcessMetrics map with the
+  // current list of processes and gathers metrics from each entry.
   void GatherProcesses();
-
-  // Updates the ProcessMetrics map with the current list of processes and
-  // gathers metrics from each entry.
-  void GatherMetrics(int current_update_sequence,
-                     std::vector<ProcessMetadata> ui_thread_processes,
-                     std::vector<ProcessMetadata> io_thread_processes);
 
   // A map of currently running ProcessHandles to ProcessMetrics.
   std::map<base::ProcessHandle, std::unique_ptr<ProcessMetricsHistory>>
