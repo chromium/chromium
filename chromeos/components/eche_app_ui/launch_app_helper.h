@@ -64,7 +64,8 @@ class LaunchAppHelper {
 
   using LaunchEcheAppFunction = base::RepeatingCallback<void(
       const absl::optional<int64_t>& notification_id,
-      const std::string& package_name)>;
+      const std::string& package_name,
+      const std::u16string& visible_name)>;
 
   using CloseEcheAppFunction = base::RepeatingCallback<void()>;
 
@@ -88,7 +89,8 @@ class LaunchAppHelper {
                                 std::unique_ptr<NotificationInfo> info) const;
 
   void LaunchEcheApp(absl::optional<int64_t> notification_id,
-                     const std::string& package_name) const;
+                     const std::string& package_name,
+                     const std::u16string& visible_name) const;
 
   void CloseEcheApp() const;
 

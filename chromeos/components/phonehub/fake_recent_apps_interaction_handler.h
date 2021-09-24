@@ -31,7 +31,8 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
   }
 
   void NotifyRecentAppClicked(
-      const std::string& recent_app_package_name) override;
+      const std::string& recent_app_package_name,
+      const std::u16string& recent_app_visible_name) override;
   void AddRecentAppClickObserver(RecentAppClickObserver* observer) override;
   void RemoveRecentAppClickObserver(RecentAppClickObserver* observer) override;
   void NotifyRecentAppAddedOrUpdated(

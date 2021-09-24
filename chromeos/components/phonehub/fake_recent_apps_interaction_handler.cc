@@ -14,7 +14,8 @@ FakeRecentAppsInteractionHandler::FakeRecentAppsInteractionHandler() = default;
 FakeRecentAppsInteractionHandler::~FakeRecentAppsInteractionHandler() = default;
 
 void FakeRecentAppsInteractionHandler::NotifyRecentAppClicked(
-    const std::string& recent_app_package_name) {
+    const std::string& recent_app_package_name,
+    const std::u16string& recent_app_visible_name) {
   if (base::Contains(package_name_to_click_count_, recent_app_package_name)) {
     package_name_to_click_count_.at(recent_app_package_name)++;
     return;

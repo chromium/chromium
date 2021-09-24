@@ -48,10 +48,12 @@ void EcheRecentAppClickHandler::HandleNotificationClick(
 }
 
 void EcheRecentAppClickHandler::OnRecentAppClicked(
-    const std::string& recent_app_package_name) {
+    const std::string& recent_app_package_name,
+    const std::u16string& recent_app_visible_name) {
   if (launch_app_helper_->IsAppLaunchAllowed()) {
     launch_app_helper_->LaunchEcheApp(/*notification_id=*/absl::nullopt,
-                                      recent_app_package_name);
+                                      recent_app_package_name,
+                                      recent_app_visible_name);
   } else {
     launch_app_helper_->ShowNotification(
         /* title= */ absl::nullopt, /* message= */ absl::nullopt,

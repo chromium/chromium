@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
@@ -68,23 +69,27 @@ enum class NotificationInteraction {
 
 void LaunchSystemWebApp(Profile* profile,
                         const std::string& package_name,
-                        const absl::optional<int64_t>& notification_id) {
-  std::string url;
+                        const absl::optional<int64_t>& notification_id,
+                        const std::u16string& visible_name) {
+  std::u16string url;
   // Use hash mark(#) to send params to webui so we don't need to reload the
   // whole eche window.
   if (notification_id.has_value()) {
-    url = "chrome://eche-app/#notification_id=";
-    url.append(base::NumberToString(notification_id.value()));
-    url.append("&package_name=");
+    url = u"chrome://eche-app/#notification_id=";
+    url.append(base::NumberToString16(notification_id.value()));
+    url.append(u"&package_name=");
   } else {
-    url = "chrome://eche-app/#package_name=";
+    url = u"chrome://eche-app/#package_name=";
   }
-  url.append(package_name);
-  url.append("&timestamp=");
+  std::u16string u16_package_name = base::UTF8ToUTF16(package_name);
+  url.append(u16_package_name);
+  url.append(u"&visible_app_name=");
+  url.append(visible_name);
+  url.append(u"&timestamp=");
 
   double now_seconds = base::Time::Now().ToDoubleT();
   int64_t now_ms = static_cast<int64_t>(now_seconds * 1000);
-  url.append(base::NumberToString(now_ms));
+  url.append(base::NumberToString16(now_ms));
   web_app::SystemAppLaunchParams params;
   params.url = GURL(url);
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::ECHE,
@@ -93,8 +98,9 @@ void LaunchSystemWebApp(Profile* profile,
 
 void LaunchEcheApp(Profile* profile,
                    const absl::optional<int64_t>& notification_id,
-                   const std::string& package_name) {
-  LaunchSystemWebApp(profile, package_name, notification_id);
+                   const std::string& package_name,
+                   const std::u16string& visible_name) {
+  LaunchSystemWebApp(profile, package_name, notification_id, visible_name);
   base::UmaHistogramEnumeration("Eche.NotificationClicked",
                                 NotificationInteraction::kOpenAppStreaming);
 }

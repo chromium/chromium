@@ -25,9 +25,10 @@ void RecentAppsInteractionHandler::RemoveRecentAppClickObserver(
 }
 
 void RecentAppsInteractionHandler::NotifyRecentAppClicked(
-    const std::string& package_name) {
+    const std::string& package_name,
+    const std::u16string& visible_name) {
   for (auto& observer : observer_list_)
-    observer.OnRecentAppClicked(package_name);
+    observer.OnRecentAppClicked(package_name, visible_name);
 }
 
 void RecentAppsInteractionHandler::NotifyRecentAppAddedOrUpdated(

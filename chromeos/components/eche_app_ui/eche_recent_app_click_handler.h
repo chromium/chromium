@@ -45,7 +45,9 @@ class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
       const phonehub::Notification::AppMetadata& app_metadata) override;
 
   // phonehub::RecentAppClickObserver:
-  void OnRecentAppClicked(const std::string& recent_app_package_name) override;
+  void OnRecentAppClicked(
+      const std::string& recent_app_package_name,
+      const std::u16string& recent_app_visible_name) override;
 
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;

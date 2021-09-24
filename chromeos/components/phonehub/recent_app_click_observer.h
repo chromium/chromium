@@ -17,7 +17,8 @@ class RecentAppClickObserver : public base::CheckedObserver {
   // Called when the user clicks the recent app which has an open
   // action in the PhoneHub.
   virtual void OnRecentAppClicked(
-      const std::string& recent_app_package_name) = 0;
+      const std::string& recent_app_package_name,
+      const std::u16string& recent_app_visible_name) = 0;
 };
 
 }  // namespace phonehub

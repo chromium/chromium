@@ -82,8 +82,10 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
   }
 
   void FakeLaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
-                                 const std::string& package_name) {
+                                 const std::string& package_name,
+                                 const std::u16string& visible_name) {
     package_name_ = package_name;
+    visible_name_ = visible_name;
   }
 
   void FakeLaunchNotificationFunction(
@@ -106,8 +108,9 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
         ->recent_app_click_observer_count();
   }
 
-  void RecentAppClicked(const std::string& package_name) {
-    handler_->OnRecentAppClicked(package_name);
+  void RecentAppClicked(const std::string& package_name,
+                        const std::u16string& visible_name) {
+    handler_->OnRecentAppClicked(package_name, visible_name);
   }
 
   void HandleNotificationClick(
@@ -124,6 +127,8 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
 
   const std::string& package_name() { return package_name_; }
 
+  const std::u16string& visible_name() { return visible_name_; }
+
  private:
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -131,6 +136,7 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
   std::unique_ptr<EcheRecentAppClickHandler> handler_;
   std::string package_name_;
+  std::u16string visible_name_;
 };
 
 TEST_F(EcheRecentAppClickHandlerTest, StatusChangeTransitions) {
@@ -161,10 +167,12 @@ TEST_F(EcheRecentAppClickHandlerTest, StatusChangeTransitions) {
 
 TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
   const char expected_package_name[] = "com.fakeapp";
+  const char16_t expected_visible_name[] = u"Fake App";
 
-  RecentAppClicked(expected_package_name);
+  RecentAppClicked(expected_package_name, expected_visible_name);
 
   EXPECT_EQ(expected_package_name, package_name());
+  EXPECT_EQ(expected_visible_name, visible_name());
 }
 
 TEST_F(EcheRecentAppClickHandlerTest, HandleNotificationClick) {

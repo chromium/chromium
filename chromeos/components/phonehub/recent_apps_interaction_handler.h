@@ -27,7 +27,8 @@ class RecentAppsInteractionHandler {
       delete;
   virtual ~RecentAppsInteractionHandler();
 
-  virtual void NotifyRecentAppClicked(const std::string& package_name);
+  virtual void NotifyRecentAppClicked(const std::string& package_name,
+                                      const std::u16string& visible_name);
   virtual void AddRecentAppClickObserver(RecentAppClickObserver* observer);
   virtual void RemoveRecentAppClickObserver(RecentAppClickObserver* observer);
 

@@ -64,8 +64,9 @@ void LaunchAppHelper::ShowNotification(
 }
 
 void LaunchAppHelper::LaunchEcheApp(absl::optional<int64_t> notification_id,
-                                    const std::string& package_name) const {
-  launch_eche_app_function_.Run(notification_id, package_name);
+                                    const std::string& package_name,
+                                    const std::u16string& visible_name) const {
+  launch_eche_app_function_.Run(notification_id, package_name, visible_name);
 }
 
 void LaunchAppHelper::CloseEcheApp() const {

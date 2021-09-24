@@ -39,7 +39,8 @@ void EcheNotificationClickHandler::HandleNotificationClick(
     const phonehub::Notification::AppMetadata& app_metadata) {
   if (launch_app_helper_->IsAppLaunchAllowed()) {
     launch_app_helper_->LaunchEcheApp(notification_id,
-                                      app_metadata.package_name);
+                                      app_metadata.package_name,
+                                      app_metadata.visible_app_name);
   } else {
     launch_app_helper_->ShowNotification(
         /* title= */ absl::nullopt, /* message= */ absl::nullopt,
