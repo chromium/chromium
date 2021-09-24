@@ -15,6 +15,9 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
+import android.provider.Browser;
+import android.support.test.InstrumentationRegistry;
+
 import androidx.test.filters.MediumTest;
 
 import com.google.protobuf.GeneratedMessageLite;
@@ -25,27 +28,29 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.autofill_assistant.proto.GetTriggerScriptsResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Tests for TriggerContext.
+ * Tests for heuristics-based triggering in tabs created by GSA.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class InChromeTriggeringTest {
+public class InCctTriggeringFromGsaTest {
     private static final String HTML_DIRECTORY = "/components/test/data/autofill_assistant/html/";
     private static final String TEST_PAGE_UNSUPPORTED = "autofill_assistant_target_website.html";
     private static final String TEST_PAGE_SUPPORTED = "cart.html";
 
     @Rule
-    public ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
+    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
     private String getTargetWebsiteUrl(String testPage) {
         return mTestRule.getTestServer().getURL(HTML_DIRECTORY + testPage);
@@ -60,7 +65,11 @@ public class InChromeTriggeringTest {
 
     @Before
     public void setUp() {
-        mTestRule.startMainActivityOnBlankPage();
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsTestUtils
+                        .createMinimalCustomTabIntent(InstrumentationRegistry.getTargetContext(),
+                                getTargetWebsiteUrl(TEST_PAGE_UNSUPPORTED))
+                        .putExtra(Browser.EXTRA_APPLICATION_ID, IntentHandler.PACKAGE_GSA));
 
         // Enable MSBB.
         AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(true);
@@ -102,7 +111,7 @@ public class InChromeTriggeringTest {
     @MediumTest
     // clang-format off
     @CommandLineFlags.
-    Add({"enable-features=AutofillAssistantInTabTriggering<FakeStudyName,"
+    Add({"enable-features=AutofillAssistantInCctTriggering<FakeStudyName,"
               +"AutofillAssistantUrlHeuristics<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
             "force-fieldtrial-params=FakeStudyName.Enabled:json_parameters/"

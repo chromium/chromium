@@ -220,6 +220,16 @@ bool StarterAndroid::GetIsCustomTab() const {
   return ui_controller_android_utils::IsCustomTab(web_contents_);
 }
 
+bool StarterAndroid::GetIsTabCreatedByGSA() const {
+  if (!java_object_) {
+    // Failsafe, should never happen.
+    DCHECK(false);
+    return false;
+  }
+  return Java_Starter_getIsTabCreatedByGSA(base::android::AttachCurrentThread(),
+                                           java_object_);
+}
+
 void StarterAndroid::CreateJavaDependenciesIfNecessary() {
   if (java_dependencies_) {
     return;

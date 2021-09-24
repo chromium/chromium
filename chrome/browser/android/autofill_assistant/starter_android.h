@@ -74,6 +74,7 @@ class StarterAndroid : public StarterPlatformDelegate,
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsCustomTab() const override;
+  bool GetIsTabCreatedByGSA() const override;
 
   // Called by Java to start an autofill-assistant flow for an incoming intent.
   void Start(

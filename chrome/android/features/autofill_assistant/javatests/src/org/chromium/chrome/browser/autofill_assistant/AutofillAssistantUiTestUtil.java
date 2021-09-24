@@ -349,6 +349,36 @@ class AutofillAssistantUiTestUtil {
         };
     }
 
+    /**
+     * Runs the main loop for at least the specified amount of time. Useful in cases where you need
+     * to ensure a negative, e.g., a certain view is never displayed. Intended usage:
+     * onView(isRoot()).waitAtLeast(...);
+     */
+    static ViewAction waitAtLeast(long millis) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return ViewMatchers.isRoot();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Waits/idles for a specified amount of time";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                uiController.loopMainThreadUntilIdle();
+
+                long endTime = System.currentTimeMillis() + millis;
+                while (System.currentTimeMillis() < endTime) {
+                    uiController.loopMainThreadForAtLeast(
+                            Math.max(endTime - System.currentTimeMillis(), 50));
+                }
+            }
+        };
+    }
+
     static ViewAction openTextLink(String textLink) {
         return new ViewAction() {
             @Override

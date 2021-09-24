@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.content.Intent;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -11,6 +13,8 @@ import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -285,6 +289,20 @@ public class Starter extends EmptyTabObserver implements UserData {
         mDependencies =
                 AutofillAssistantFacade.createDependencies(TabUtils.getActivity(mTab), module);
         return mDependencies;
+    }
+
+    @CalledByNative
+    private boolean getIsTabCreatedByGSA() {
+        // This can fail for certain tabs (e.g., hidden background tabs).
+        if (TabUtils.getActivity(mTab) == null) {
+            return false;
+        }
+        Intent intent = TabUtils.getActivity(mTab).getIntent();
+        if (intent == null) {
+            // This should never happen, this is just a failsafe.
+            return false;
+        }
+        return IntentHandler.determineExternalIntentSource(intent) == ExternalAppId.GSA;
     }
 
     @NativeMethods

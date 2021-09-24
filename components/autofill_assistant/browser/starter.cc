@@ -369,7 +369,7 @@ void Starter::CheckSettings() {
   fetch_trigger_scripts_on_navigation_ =
       ((base::FeatureList::IsEnabled(
             features::kAutofillAssistantInCCTTriggering) &&
-        is_custom_tab_) ||
+        is_custom_tab_ && platform_delegate_->GetIsTabCreatedByGSA()) ||
        (base::FeatureList::IsEnabled(
             features::kAutofillAssistantInTabTriggering) &&
         !is_custom_tab_)) &&

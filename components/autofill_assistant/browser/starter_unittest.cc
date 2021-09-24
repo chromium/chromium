@@ -1111,6 +1111,21 @@ TEST_F(StarterTest, DoNotStartImplicitlyIfSettingDisabled) {
   EXPECT_THAT(GetUkmInChromeTriggering(ukm_recorder_), IsEmpty());
 }
 
+TEST_F(StarterTest, DoNotStartImplicitlyForNonAgaCct) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.is_tab_created_by_gsa_ = false;
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitAndEnableFeature(
+      features::kAutofillAssistantInCCTTriggering);
+  starter_->CheckSettings();
+
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
+      .Times(0);
+  SimulateNavigateToUrl(GURL("https://www.some-website.com/cart"));
+  task_environment()->RunUntilIdle();
+  EXPECT_THAT(GetUkmInChromeTriggering(ukm_recorder_), IsEmpty());
+}
+
 TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {
   SetupPlatformDelegateForReturningUser();
   fake_platform_delegate_.proactive_help_enabled_ = false;
