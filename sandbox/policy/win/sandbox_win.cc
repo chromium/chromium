@@ -767,7 +767,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
 // a Policy or TargetProcess. This supports both kNoSandbox and the --no-sandbox
 // command line flag.
 ResultCode LaunchWithoutSandbox(
-    base::CommandLine* cmd_line,
+    const base::CommandLine& cmd_line,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
     base::Process* process) {
@@ -799,14 +799,14 @@ ResultCode LaunchWithoutSandbox(
   // are not. When --no-sandbox is specified we disable CET for all children.
   // Otherwise we are here because the sandbox type is kNoSandbox, and allow
   // the process delegate to indicate if it is compatible with CET.
-  if (cmd_line->HasSwitch(switches::kNoSandbox) ||
+  if (cmd_line.HasSwitch(switches::kNoSandbox) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoSandbox)) {
     options.disable_cetcompat = true;
   } else if (!delegate->CetCompatible()) {
     options.disable_cetcompat = true;
   }
 
-  *process = base::LaunchProcess(*cmd_line, options);
+  *process = base::LaunchProcess(cmd_line, options);
   return SBOX_ALL_OK;
 }
 
@@ -978,7 +978,7 @@ bool SandboxWin::InitTargetServices(TargetServices* target_services) {
 
 // static
 ResultCode SandboxWin::StartSandboxedProcess(
-    base::CommandLine* cmd_line,
+    const base::CommandLine& cmd_line,
     const std::string& process_type,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
@@ -989,7 +989,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
   SandboxType sandbox_type = delegate->GetSandboxType();
   // --no-sandbox and kNoSandbox are launched without creating a Policy.
   if (IsUnsandboxedSandboxType(sandbox_type) ||
-      cmd_line->HasSwitch(switches::kNoSandbox) ||
+      cmd_line.HasSwitch(switches::kNoSandbox) ||
       launcher_process_command_line.HasSwitch(switches::kNoSandbox)) {
     return LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate,
                                 process);
@@ -1038,7 +1038,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
 
   // Post-startup mitigations.
   mitigations = MITIGATION_DLL_SEARCH_ORDER;
-  if (!cmd_line->HasSwitch(switches::kAllowThirdPartyModules) &&
+  if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
       sandbox_type != SandboxType::kSpeechRecognition) {
     mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
   }
@@ -1053,7 +1053,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
   if (result != SBOX_ALL_OK)
     return result;
 
-  result = SetJobLevel(*cmd_line, JOB_LOCKDOWN, 0, policy.get());
+  result = SetJobLevel(cmd_line, JOB_LOCKDOWN, 0, policy.get());
   if (result != SBOX_ALL_OK)
     return result;
 
@@ -1086,9 +1086,9 @@ ResultCode SandboxWin::StartSandboxedProcess(
   }
 
   std::string appcontainer_id;
-  if (IsAppContainerEnabledForSandbox(*cmd_line, sandbox_type) &&
+  if (IsAppContainerEnabledForSandbox(cmd_line, sandbox_type) &&
       delegate->GetAppContainerId(&appcontainer_id)) {
-    result = AddAppContainerProfileToPolicy(*cmd_line, sandbox_type,
+    result = AddAppContainerProfileToPolicy(cmd_line, sandbox_type,
                                             appcontainer_id, policy.get());
     DCHECK(result == SBOX_ALL_OK);
     if (result != SBOX_ALL_OK)
@@ -1134,8 +1134,8 @@ ResultCode SandboxWin::StartSandboxedProcess(
   ResultCode last_warning = sandbox::SBOX_ALL_OK;
   DWORD last_error = ERROR_SUCCESS;
   result = g_broker_services->SpawnTarget(
-      cmd_line->GetProgram().value().c_str(),
-      cmd_line->GetCommandLineString().c_str(), policy, &last_warning,
+      cmd_line.GetProgram().value().c_str(),
+      cmd_line.GetCommandLineString().c_str(), policy, &last_warning,
       &last_error, &temp_process_info);
 
   base::win::ScopedProcessInformation target(temp_process_info);
@@ -1162,7 +1162,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
       base::debug::GlobalActivityTracker::Get();
   if (tracker) {
     tracker->RecordProcessLaunch(target.process_id(),
-                                 cmd_line->GetCommandLineString());
+                                 cmd_line.GetCommandLineString());
   }
 
   if (SBOX_ALL_OK != last_warning)

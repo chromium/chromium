@@ -36,7 +36,7 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT SandboxWin {
  public:
   static ResultCode StartSandboxedProcess(
-      base::CommandLine* cmd_line,
+      const base::CommandLine& cmd_line,
       const std::string& process_type,
       const base::HandlesToInheritVector& handles_to_inherit,
       SandboxDelegate* delegate,

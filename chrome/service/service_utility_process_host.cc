@@ -339,8 +339,8 @@ bool ServiceUtilityProcessHost::Launch(base::CommandLine* cmd_line,
         cmd_line, delegate.GetSandboxType());
 
     base::Process process;
-    sandbox::ResultCode result = content::StartSandboxedProcess(
-        &delegate, cmd_line, handles, &process);
+    sandbox::ResultCode result =
+        content::StartSandboxedProcess(&delegate, *cmd_line, handles, &process);
     if (result != sandbox::SBOX_ALL_OK)
       return false;
 

@@ -109,7 +109,7 @@ void NaClBrokerListener::OnLaunchLoaderThroughBroker(
 
     base::Process loader_process;
     sandbox::ResultCode result = content::StartSandboxedProcess(
-        this, cmd_line, handles, &loader_process);
+        this, *cmd_line, handles, &loader_process);
 
     if (result == sandbox::SBOX_ALL_OK) {
       mojo::OutgoingInvitation::Send(std::move(invitation),

@@ -72,11 +72,8 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   mojo_channel_->PrepareToPassRemoteEndpoint(&handles, command_line());
   base::FieldTrialList::AppendFieldTrialHandleIfNeeded(&handles);
   ChildProcessLauncherHelper::Process process;
-  *launch_result = StartSandboxedProcess(
-      delegate_.get(),
-      command_line(),
-      handles,
-      &process.process);
+  *launch_result = StartSandboxedProcess(delegate_.get(), *command_line(),
+                                         handles, &process.process);
   return process;
 }
 
