@@ -38,11 +38,8 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
   DOMArrayBuffer* rawId() const { return raw_id_.Get(); }
   AuthenticatorResponse* response() const { return response_.Get(); }
   absl::optional<String> authenticatorAttachment() const {
-    return authenticatorAttachment_;
+    return authenticator_attachment_;
   }
-  absl::optional<String> GetAuthenticatorAttachment(
-      bool has_transport,
-      mojom::AuthenticatorTransport transport);
   static ScriptPromise isUserVerifyingPlatformAuthenticatorAvailable(
       ScriptState*);
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
@@ -54,7 +51,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
  private:
   const Member<DOMArrayBuffer> raw_id_;
   const Member<AuthenticatorResponse> response_;
-  const absl::optional<String> authenticatorAttachment_;
+  const absl::optional<String> authenticator_attachment_;
   Member<const AuthenticationExtensionsClientOutputs> extension_outputs_;
 };
 
