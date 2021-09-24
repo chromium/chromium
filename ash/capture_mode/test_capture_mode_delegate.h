@@ -49,7 +49,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void RequestAndWaitForVideoFrame();
 
   // CaptureModeDelegate:
-  base::FilePath GetScreenCaptureDir() const override;
+  base::FilePath GetUserDefaultDownloadsFolder() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;

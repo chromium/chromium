@@ -42,6 +42,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -87,6 +89,11 @@ constexpr char kAmPmTimeFmtStr[] = "%d.%02d.%02d";
 // Duration to clear the capture region selection from the previous session.
 constexpr base::TimeDelta kResetCaptureRegionDuration =
     base::TimeDelta::FromMinutes(8);
+
+// The name of a file path pref for the user-selected custom path to which
+// captured images and videos should be saved.
+constexpr char kCustomCapturePathPrefName[] =
+    "ash.capture_mode.custom_save_path";
 
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
@@ -380,6 +387,12 @@ CaptureModeController* CaptureModeController::Get() {
   return g_instance;
 }
 
+// static
+void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterFilePathPref(kCustomCapturePathPrefName,
+                                 /*default_value=*/base::FilePath());
+}
+
 bool CaptureModeController::IsActive() const {
   return capture_mode_session_ && !capture_mode_session_->is_shutting_down();
 }
@@ -479,6 +492,45 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
   user_capture_region_ = region;
   if (!user_capture_region_.IsEmpty() && by_user)
     last_capture_region_update_time_ = base::TimeTicks::Now();
+}
+
+void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(pref_service);
+  pref_service->SetFilePath(kCustomCapturePathPrefName, path);
+
+  // TODO(https://crbug.com/1250885): Propagate the changes to the capture
+  // session (if any).
+}
+
+CaptureModeController::CaptureFolder
+CaptureModeController::GetCurrentCaptureFolder() const {
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    base::FilePath temp_dir;
+    if (!base::GetTempDir(&temp_dir))
+      LOG(ERROR) << "Failed to find the temporary directory.";
+    return {temp_dir, /*is_default_downloads_folder=*/false};
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  const auto default_downloads_folder =
+      delegate_->GetUserDefaultDownloadsFolder();
+  if (pref_service) {
+    const auto custom_path =
+        pref_service->GetFilePath(kCustomCapturePathPrefName);
+    if (!custom_path.empty()) {
+      return {custom_path,
+              /*is_default_downloads_folder=*/custom_path ==
+                  default_downloads_folder};
+    }
+  }
+
+  return {default_downloads_folder,
+          /*is_default_downloads_folder=*/true};
 }
 
 void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
@@ -1122,11 +1174,13 @@ base::FilePath CaptureModeController::BuildImagePathForDisplay(
 base::FilePath CaptureModeController::BuildPathNoExtension(
     const char* const format_string,
     base::Time timestamp) const {
-  const base::FilePath path = delegate_->GetScreenCaptureDir();
   base::Time::Exploded exploded_time;
   timestamp.LocalExplode(&exploded_time);
 
-  return path.AppendASCII(base::StringPrintf(
+  // TODO(https://crbug.com/1252156): The current path can become unavailable at
+  // any time before we get here. We need to handle the cases mentioned on the
+  // bug.
+  return GetCurrentCaptureFolder().path.AppendASCII(base::StringPrintf(
       format_string, GetDateStr(exploded_time).c_str(),
       GetTimeStr(exploded_time, delegate_->Uses24HourFormat()).c_str()));
 }

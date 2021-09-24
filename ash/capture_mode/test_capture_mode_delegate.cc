@@ -8,6 +8,8 @@
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "ash/services/recording/recording_service_test_api.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 
@@ -61,7 +63,9 @@ void TestCaptureModeDelegate::RequestAndWaitForVideoFrame() {
   recording_service_->RequestAndWaitForVideoFrame();
 }
 
-base::FilePath TestCaptureModeDelegate::GetScreenCaptureDir() const {
+base::FilePath TestCaptureModeDelegate::GetUserDefaultDownloadsFolder() const {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+
   return fake_downloads_dir_;
 }
 

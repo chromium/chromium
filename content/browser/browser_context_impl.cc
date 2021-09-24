@@ -226,6 +226,8 @@ DownloadManager* BrowserContext::Impl::GetDownloadManager() {
 void BrowserContext::Impl::SetDownloadManagerForTesting(
     std::unique_ptr<DownloadManager> download_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (download_manager_)
+    download_manager_->Shutdown();
   download_manager_ = std::move(download_manager);
 }
 

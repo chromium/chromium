@@ -15,6 +15,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +27,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+
+class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
@@ -44,6 +47,16 @@ class ASH_EXPORT CaptureModeController
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
+  // Contains info about the folder used for saving the captured images and
+  // videos.
+  struct CaptureFolder {
+    // The absolute path of the folder used for saving the captures.
+    base::FilePath path;
+
+    // True if the above |path| is the default "Downloads" folder on the device.
+    bool is_default_downloads_folder = false;
+  };
+
   explicit CaptureModeController(std::unique_ptr<CaptureModeDelegate> delegate);
   CaptureModeController(const CaptureModeController&) = delete;
   CaptureModeController& operator=(const CaptureModeController&) = delete;
@@ -52,6 +65,8 @@ class ASH_EXPORT CaptureModeController
   // Convenience function to get the controller instance, which is created and
   // owned by Shell.
   static CaptureModeController* Get();
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   CaptureModeType type() const { return type_; }
   CaptureModeSource source() const { return source_; }
@@ -87,6 +102,17 @@ class ASH_EXPORT CaptureModeController
   // Sets the user capture region. If it's non-empty and changed by the user,
   // update |last_capture_region_update_time_|.
   void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
+
+  // Sets the given |path| as the custom save location of captured images and
+  // videos for the currently logged in user (i.e. can only be called when user
+  // is logged in). Setting an empty |path| clears any custom selected folder
+  // resulting in using the default downloads folder.
+  void SetCustomCaptureFolder(const base::FilePath& path);
+
+  // Returns the folder in which all taken screenshots and videos will be saved.
+  // It can be the temp directory if the user is not logged in, the default
+  // "Downloads" folder, or a user-selected custom location.
+  CaptureFolder GetCurrentCaptureFolder() const;
 
   // Full screen capture for each available display if no restricted
   // content exists on that display, each capture is saved as an individual

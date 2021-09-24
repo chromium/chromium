@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, InvalidDownloadsPath) {
   // by Capture Mode.
   EXPECT_EQ(invalid_path, download_prefs->DownloadPath());
   EXPECT_NE(invalid_path,
-            ChromeCaptureModeDelegate::Get()->GetScreenCaptureDir());
+            ChromeCaptureModeDelegate::Get()->GetUserDefaultDownloadsFolder());
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   FinishVideoRecordingTest(&test_api);

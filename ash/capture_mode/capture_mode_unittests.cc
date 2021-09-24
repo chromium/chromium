@@ -4001,6 +4001,64 @@ TEST_F(CaptureModeTest, AudioRecordingSetting) {
   EXPECT_TRUE(controller->enable_audio_recording());
 }
 
+TEST_F(CaptureModeTest, CaptureFolderSetting) {
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate = controller->delegate_for_testing();
+  const auto default_downloads_folder =
+      test_delegate->GetUserDefaultDownloadsFolder();
+
+  auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, default_downloads_folder);
+  EXPECT_TRUE(capture_folder.is_default_downloads_folder);
+
+  const base::FilePath custom_folder(FILE_PATH_LITERAL("/home/tests"));
+  controller->SetCustomCaptureFolder(custom_folder);
+
+  capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, custom_folder);
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+}
+
+TEST_F(CaptureModeTest, CaptureFolderSetToDefaultDownloads) {
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate = controller->delegate_for_testing();
+
+  const base::FilePath custom_folder(FILE_PATH_LITERAL("/home/tests"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+
+  // If the user selects the default downloads folder manually, we should be
+  // able to detect that.
+  const auto default_downloads_folder =
+      test_delegate->GetUserDefaultDownloadsFolder();
+  controller->SetCustomCaptureFolder(default_downloads_folder);
+
+  capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, default_downloads_folder);
+  EXPECT_TRUE(capture_folder.is_default_downloads_folder);
+}
+
+TEST_F(CaptureModeTest, CaptureFolderSetToEmptyPath) {
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate = controller->delegate_for_testing();
+
+  const base::FilePath custom_folder(FILE_PATH_LITERAL("/home/tests"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  auto capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_FALSE(capture_folder.is_default_downloads_folder);
+
+  // If we set the custom path to an empty folder to clear, we should revert
+  // back to the default downloads folder.
+  controller->SetCustomCaptureFolder(base::FilePath());
+
+  const auto default_downloads_folder =
+      test_delegate->GetUserDefaultDownloadsFolder();
+  capture_folder = controller->GetCurrentCaptureFolder();
+  EXPECT_EQ(capture_folder.path, default_downloads_folder);
+  EXPECT_TRUE(capture_folder.is_default_downloads_folder);
+}
+
 namespace {
 
 // -----------------------------------------------------------------------------

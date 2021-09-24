@@ -27,6 +27,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/audio_service.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "ui/aura/window.h"
 #include "ui/base/window_open_disposition.h"
@@ -76,22 +77,27 @@ void ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
     std::move(interrupt_video_recording_callback_).Run();
 }
 
-base::FilePath ChromeCaptureModeDelegate::GetScreenCaptureDir() const {
-  if (chromeos::LoginState::Get()->IsUserLoggedIn()) {
-    DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(
-        ProfileManager::GetActiveUserProfile());
-    // We use the default downloads directory instead of the one that can be
-    // configured from the browser's settings, since it can point to an invalid
-    // location, which the browser handles by prompting the user to select
-    // another one when accessed, but Capture Mode doesn't have this capability.
-    // We also decided that this browser setting should not affect when the OS
-    // saves the captured files. https://crbug.com/1192406.
-    return download_prefs->GetDefaultDownloadDirectoryForProfile();
+base::FilePath ChromeCaptureModeDelegate::GetUserDefaultDownloadsFolder()
+    const {
+  DCHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
+
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(profile);
+  if (!profile->GetDownloadManager()->GetBrowserContext()) {
+    // Some browser tests use a |content::MockDownloadManager| which doesn't
+    // have a browser context. In this case, just return an empty path.
+    return base::FilePath();
   }
-  base::FilePath tmp_dir;
-  if (!base::GetTempDir(&tmp_dir))
-    LOG(ERROR) << "Failed to find temporary directory.";
-  return tmp_dir;
+
+  DownloadPrefs* download_prefs =
+      DownloadPrefs::FromBrowserContext(ProfileManager::GetActiveUserProfile());
+  // We use the default downloads directory instead of the one that can be
+  // configured from the browser's settings, since it can point to an invalid
+  // location, which the browser handles by prompting the user to select
+  // another one when accessed, but Capture Mode doesn't have this capability.
+  // We also decided that this browser setting should not affect where the OS
+  // saves the captured files. https://crbug.com/1192406.
+  return download_prefs->GetDefaultDownloadDirectoryForProfile();
 }
 
 void ChromeCaptureModeDelegate::ShowScreenCaptureItemInFolder(
