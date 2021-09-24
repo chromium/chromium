@@ -223,6 +223,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"networkTechnologyLteAdvancedLabel",
        IDS_NETWORK_DIAGNOSTICS_CELLULAR_LTE_ADVANCED},
       {"networkTechnologyUmtsLabel", IDS_NETWORK_DIAGNOSTICS_CELLULAR_UMTS},
+      {"noIpAddressText", IDS_NETWORK_DIAGNOSTICS_NO_IP_ADDRESS_TEXT},
       {"notEnoughAvailableMemoryMessage",
        IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},
@@ -265,6 +266,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"troubleConnecting", IDS_DIAGNOSTICS_TROUBLE_CONNECTING},
       {"troubleshootingText", IDS_DIAGNOSTICS_TROUBLESHOOTING_TEXT},
       {"versionInfo", IDS_DIAGNOSTICS_VERSION_INFO_TEXT},
+      {"visitSettingsToConfigureLinkText",
+       IDS_NETWORK_DIAGNOSTICS_VISIT_SETTINGS_TO_CONFIGURE_LINK_TEXT},
       {"wifiGroupLabel", IDS_NETWORK_DIAGNOSTICS_WIFI_GROUP},
       {"wifiLabel", IDS_NETWORK_TYPE_WIFI},
   };

@@ -68,7 +68,8 @@ Polymer({
     /** @protected {boolean} */
     showNetworkDataPoints_: {
       type: Boolean,
-      computed: 'computeShouldShowNetworkDataPoints_(network.state)',
+      computed: 'computeShouldShowNetworkDataPoints_(network.state,' +
+          ' unableToObtainIpAddress_)',
     },
 
     /** @protected {boolean} */
@@ -83,10 +84,23 @@ Polymer({
       value: '',
     },
 
+    /** @protected {boolean} */
+    unableToObtainIpAddress_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @protected {TroubleshootingInfo} */
     troubleshootingInfo_: {
       type: Object,
-      computed: 'computeTroubleshootingInfo_(network.*)',
+      computed: 'computeTroubleshootingInfo_(network.*,' +
+          ' unableToObtainIpAddress_)',
+    },
+
+    /** @private */
+    timerId_: {
+      type: Number,
+      value: -1,
     },
   },
 
@@ -128,6 +142,26 @@ Polymer({
     this.networkState_ = getNetworkState(network.state);
     this.macAddress_ = network.macAddress || '';
     this.set('network', network);
+    let isIpAddressMissing = !network.ipConfig || !network.ipConfig.ipAddress;
+    let isTimerInProgress = this.timerId_ !== -1;
+
+    if (!isIpAddressMissing && this.unableToObtainIpAddress_) {
+      this.unableToObtainIpAddress_ = false;
+    }
+
+    if (isIpAddressMissing && !isTimerInProgress) {
+      // Seconds to wait before displaying the troubleshooting banner.
+      let maxTicks = 30;
+      let tickCount = 0;
+      this.timerId_ = setInterval(() => {
+        if (tickCount >= maxTicks) {
+          clearInterval(this.timerId_);
+          this.timerId_ = -1;
+          this.unableToObtainIpAddress_ = true;
+        }
+        tickCount++;
+      }, 1000);
+    }
   },
 
   /** @protected */
@@ -151,6 +185,10 @@ Polymer({
   computeShouldShowNetworkDataPoints_() {
     // Wait until the network is present before deciding.
     if (!this.network) {
+      return false;
+    }
+
+    if (this.unableToObtainIpAddress_) {
       return false;
     }
 
@@ -231,6 +269,15 @@ Polymer({
    */
   computeTroubleshootingInfo_() {
     if (!this.network || isConnectedOrOnline(this.network.state)) {
+      // Hide the troubleshooting banner if we're in an active state
+      // unlesss the network's IP Address has been missing for >=30
+      // seconds in which case we'd like to display the bannner to
+      // the user.
+      if (this.unableToObtainIpAddress_) {
+        this.showTroubleshootingCard_ = true;
+        return this.getMissingIpAddressInfo_();
+      }
+
       this.showTroubleshootingCard_ = false;
       return {
         header: '',
@@ -239,9 +286,23 @@ Polymer({
       };
     }
 
+    // At this point, |isConnectedOrOnline| was falsy which means
+    // out network state is either disabled or not connected.
     this.showTroubleshootingCard_ = true;
-    let disabled = this.network.state === NetworkState.kDisabled;
-    return disabled ? this.getDisabledTroubleshootingInfo_() :
-                      this.getNotConnectedTroubleshootingInfo_();
+    let isDisabled = this.network.state === NetworkState.kDisabled;
+    return isDisabled ? this.getDisabledTroubleshootingInfo_() :
+                        this.getNotConnectedTroubleshootingInfo_();
+  },
+
+  /**
+   * @private
+   * @return {!TroubleshootingInfo}
+   */
+  getMissingIpAddressInfo_() {
+    return {
+      header: this.i18n('noIpAddressText'),
+      linkText: this.i18n('visitSettingsToConfigureLinkText'),
+      url: SETTINGS_URL,
+    }
   },
 });
