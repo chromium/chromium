@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/app_restore/full_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -80,10 +80,12 @@ IN_PROC_BROWSER_TEST_P(FullRestorePolicyBrowserTest,
     ASSERT_FALSE(FullRestoreService::GetForProfile(browser()->profile()));
 
   if (ghost_window_enabled()) {
-    ASSERT_TRUE(FullRestoreArcTaskHandler::GetForProfile(browser()->profile())
+    ASSERT_TRUE(app_restore::AppRestoreArcTaskHandler::GetForProfile(
+                    browser()->profile())
                     ->window_handler());
   } else {
-    ASSERT_FALSE(FullRestoreArcTaskHandler::GetForProfile(browser()->profile())
+    ASSERT_FALSE(app_restore::AppRestoreArcTaskHandler::GetForProfile(
+                     browser()->profile())
                      ->window_handler());
   }
 }

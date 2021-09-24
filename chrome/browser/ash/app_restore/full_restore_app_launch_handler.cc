@@ -15,8 +15,8 @@
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
-#include "chrome/browser/ash/app_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -179,7 +179,7 @@ FullRestoreAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
 }
 
 void FullRestoreAppLaunchHandler::OnGetRestoreData(
-    std::unique_ptr<app_restore::RestoreData> restore_data) {
+    std::unique_ptr<::app_restore::RestoreData> restore_data) {
   set_restore_data(std::move(restore_data));
   LogRestoreData();
 
@@ -214,10 +214,9 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
   }
 
   VLOG(1) << "Restore apps in " << profile()->GetPath();
-  if (FullRestoreArcTaskHandler::GetForProfile(profile())) {
-    FullRestoreArcTaskHandler::GetForProfile(profile())
-        ->arc_app_launch_handler()
-        ->RestoreArcApps(this);
+  if (auto* arc_task_handler =
+          app_restore::AppRestoreArcTaskHandler::GetForProfile(profile())) {
+    arc_task_handler->arc_app_launch_handler()->RestoreArcApps(this);
   }
 
   LaunchApps();

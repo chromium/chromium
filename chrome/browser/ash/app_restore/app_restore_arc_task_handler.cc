@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_restore/full_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/arc_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
-#include "chrome/browser/ash/app_restore/full_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_restore/full_restore_utils.h"
 
 namespace ash {
-namespace full_restore {
+namespace app_restore {
 
 // static
-FullRestoreArcTaskHandler* FullRestoreArcTaskHandler::GetForProfile(
+AppRestoreArcTaskHandler* AppRestoreArcTaskHandler::GetForProfile(
     Profile* profile) {
-  return FullRestoreArcTaskHandlerFactory::GetForProfile(profile);
+  return AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
 }
 
-FullRestoreArcTaskHandler::FullRestoreArcTaskHandler(Profile* profile) {
+AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
   if (!prefs)
     return;
@@ -29,8 +29,8 @@ FullRestoreArcTaskHandler::FullRestoreArcTaskHandler(Profile* profile) {
   arc_prefs_observer_.Observe(prefs);
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-  if (IsArcGhostWindowEnabled())
-    window_handler_ = std::make_unique<ArcWindowHandler>();
+  if (full_restore::IsArcGhostWindowEnabled())
+    window_handler_ = std::make_unique<full_restore::ArcWindowHandler>();
 #endif
 
   arc_app_launch_handler_ = std::make_unique<ArcAppLaunchHandler>();
@@ -41,27 +41,27 @@ FullRestoreArcTaskHandler::FullRestoreArcTaskHandler(Profile* profile) {
     arc_session_manager->AddObserver(this);
 }
 
-FullRestoreArcTaskHandler::~FullRestoreArcTaskHandler() {
+AppRestoreArcTaskHandler::~AppRestoreArcTaskHandler() {
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager may be released first.
   if (arc_session_manager)
     arc_session_manager->RemoveObserver(this);
 }
 
-void FullRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
-                                              const std::string& package_name,
-                                              const std::string& activity,
-                                              const std::string& intent,
-                                              int32_t session_id) {
+void AppRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
+                                             const std::string& package_name,
+                                             const std::string& activity,
+                                             const std::string& intent,
+                                             int32_t session_id) {
   const std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity);
   ::full_restore::OnTaskCreated(app_id, task_id, session_id);
 }
 
-void FullRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
+void AppRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
   ::full_restore::OnTaskDestroyed(task_id);
 }
 
-void FullRestoreArcTaskHandler::OnTaskDescriptionChanged(
+void AppRestoreArcTaskHandler::OnTaskDescriptionChanged(
     int32_t task_id,
     const std::string& label,
     const arc::mojom::RawIconPngData& icon,
@@ -71,7 +71,7 @@ void FullRestoreArcTaskHandler::OnTaskDescriptionChanged(
                                           status_bar_color);
 }
 
-void FullRestoreArcTaskHandler::OnAppConnectionReady() {
+void AppRestoreArcTaskHandler::OnAppConnectionReady() {
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   if (window_handler_)
     window_handler_->OnAppInstanceConnected();
@@ -83,28 +83,28 @@ void FullRestoreArcTaskHandler::OnAppConnectionReady() {
   ::full_restore::SetArcConnection(/*is_connection_ready=*/true);
 }
 
-void FullRestoreArcTaskHandler::OnAppConnectionClosed() {
+void AppRestoreArcTaskHandler::OnAppConnectionClosed() {
   ::full_restore::SetArcConnection(/*is_connection_ready=*/false);
 }
 
-void FullRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {
+void AppRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {
   arc_prefs_observer_.Reset();
 }
 
-void FullRestoreArcTaskHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
+void AppRestoreArcTaskHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
   if (arc_app_launch_handler_)
     arc_app_launch_handler_->OnArcPlayStoreEnabledChanged(enabled);
 }
 
-void FullRestoreArcTaskHandler::OnShelfReady() {
+void AppRestoreArcTaskHandler::OnShelfReady() {
   if (arc_app_launch_handler_)
     arc_app_launch_handler_->OnShelfReady();
 }
 
-void FullRestoreArcTaskHandler::Shutdown() {
+void AppRestoreArcTaskHandler::Shutdown() {
   arc_app_launch_handler_.reset();
   window_handler_.reset();
 }
 
-}  // namespace full_restore
+}  // namespace app_restore
 }  // namespace ash

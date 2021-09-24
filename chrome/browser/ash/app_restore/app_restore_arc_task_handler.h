@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_ARC_TASK_HANDLER_H_
-#define CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_ARC_TASK_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_APP_RESTORE_APP_RESTORE_ARC_TASK_HANDLER_H_
+#define CHROME_BROWSER_ASH_APP_RESTORE_APP_RESTORE_ARC_TASK_HANDLER_H_
 
 #include <utility>
 
@@ -17,31 +17,35 @@ class Profile;
 
 namespace ash {
 namespace full_restore {
+class ArcWindowHandler;
+}  // namespace full_restore
+
+namespace app_restore {
 
 class ArcAppLaunchHandler;
-class ArcWindowHandler;
 
-// The FullRestoreArcTaskHandler class observes ArcAppListPrefs, and calls
+// The AppRestoreArcTaskHandler class observes ArcAppListPrefs, and calls
 // FullRestoreSaveHandler to update the ARC app launch info when a task is
 // created or destroyed.
 //
-// FullRestoreArcTaskHandler is an independent KeyedService so that it could be
+// AppRestoreArcTaskHandler is an independent KeyedService so that it could be
 // created along with ARC system rather than with FullRestoreService.
-class FullRestoreArcTaskHandler : public KeyedService,
-                                  public ArcAppListPrefs::Observer,
-                                  public arc::ArcSessionManagerObserver {
+class AppRestoreArcTaskHandler : public KeyedService,
+                                 public ArcAppListPrefs::Observer,
+                                 public arc::ArcSessionManagerObserver {
  public:
-  static FullRestoreArcTaskHandler* GetForProfile(Profile* profile);
+  static AppRestoreArcTaskHandler* GetForProfile(Profile* profile);
 
-  explicit FullRestoreArcTaskHandler(Profile* profile);
-  FullRestoreArcTaskHandler(const FullRestoreArcTaskHandler&) = delete;
-  FullRestoreArcTaskHandler& operator=(const FullRestoreArcTaskHandler&) =
-      delete;
+  explicit AppRestoreArcTaskHandler(Profile* profile);
+  AppRestoreArcTaskHandler(const AppRestoreArcTaskHandler&) = delete;
+  AppRestoreArcTaskHandler& operator=(const AppRestoreArcTaskHandler&) = delete;
 
-  ~FullRestoreArcTaskHandler() override;
+  ~AppRestoreArcTaskHandler() override;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-  ArcWindowHandler* window_handler() { return window_handler_.get(); }
+  full_restore::ArcWindowHandler* window_handler() {
+    return window_handler_.get();
+  }
 #endif
 
   ArcAppLaunchHandler* arc_app_launch_handler() {
@@ -78,13 +82,13 @@ class FullRestoreArcTaskHandler : public KeyedService,
       arc_prefs_observer_{this};
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-  std::unique_ptr<ArcWindowHandler> window_handler_;
+  std::unique_ptr<full_restore::ArcWindowHandler> window_handler_;
 #endif
 
   std::unique_ptr<ArcAppLaunchHandler> arc_app_launch_handler_;
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_ARC_TASK_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_APP_RESTORE_APP_RESTORE_ARC_TASK_HANDLER_H_

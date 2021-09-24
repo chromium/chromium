@@ -31,6 +31,10 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   // Returns true if there are some restore data. Otherwise, returns false.
   bool HasRestoreData();
 
+  // Called when an app has launched. Overriders can use this to record
+  // histograms based on `app_type_name`.
+  virtual void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) = 0;
+
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
@@ -39,6 +43,8 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   Profile* profile() { return profile_; }
   const Profile* profile() const { return profile_; }
+
+  ::app_restore::RestoreData* restore_data() { return restore_data_.get(); }
 
  protected:
   // Note: LaunchApps does not launch browser windows, this is handled
@@ -57,10 +63,9 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   virtual base::WeakPtr<AppLaunchHandler> GetWeakPtrAppLaunchHandler() = 0;
 
   void set_restore_data(
-      std::unique_ptr<app_restore::RestoreData> restore_data) {
+      std::unique_ptr<::app_restore::RestoreData> restore_data) {
     restore_data_ = std::move(restore_data);
   }
-  app_restore::RestoreData* restore_data() { return restore_data_.get(); }
 
  private:
   void LaunchApp(apps::mojom::AppType app_type, const std::string& app_id);
@@ -68,12 +73,10 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   virtual void LaunchSystemWebAppOrChromeApp(
       apps::mojom::AppType app_type,
       const std::string& app_id,
-      const app_restore::RestoreData::LaunchList& launch_list);
-
-  virtual void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) = 0;
+      const ::app_restore::RestoreData::LaunchList& launch_list);
 
   Profile* const profile_;
-  std::unique_ptr<app_restore::RestoreData> restore_data_;
+  std::unique_ptr<::app_restore::RestoreData> restore_data_;
 };
 
 }  // namespace ash

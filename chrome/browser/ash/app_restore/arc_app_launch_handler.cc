@@ -18,10 +18,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/arc_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
-#include "chrome/browser/ash/app_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -79,7 +79,7 @@ constexpr char kRestoredArcAppResultHistogram[] = "Apps.RestoreArcAppsResult";
 
 constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
 
-constexpr char kRestoreArcAppStates[] = "Apps.RestoreArcAppStates";
+constexpr char kRestoreArcAppStatesHistogram[] = "Apps.RestoreArcAppStates";
 
 constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
 
@@ -89,7 +89,7 @@ constexpr char kNoGhostWindowReasonHistogram[] =
 }  // namespace
 
 namespace ash {
-namespace full_restore {
+namespace app_restore {
 
 ArcAppLaunchHandler::ArcAppLaunchHandler() {
   if (aura::Env::HasInstance())
@@ -132,8 +132,7 @@ ArcAppLaunchHandler::~ArcAppLaunchHandler() {
     manager->RemoveObserver(this);
 }
 
-void ArcAppLaunchHandler::RestoreArcApps(
-    FullRestoreAppLaunchHandler* app_launch_handler) {
+void ArcAppLaunchHandler::RestoreArcApps(AppLaunchHandler* app_launch_handler) {
   DCHECK(app_launch_handler);
   handler_ = app_launch_handler;
 
@@ -149,9 +148,8 @@ void ArcAppLaunchHandler::RestoreArcApps(
     return;
   }
 
-  window_handler_ =
-      FullRestoreArcTaskHandler::GetForProfile(handler_->profile())
-          ->window_handler();
+  window_handler_ = AppRestoreArcTaskHandler::GetForProfile(handler_->profile())
+                        ->window_handler();
 
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(handler_->profile())
@@ -290,7 +288,7 @@ void ArcAppLaunchHandler::OnWindowActivated(
     return;
 
   const std::string* arc_app_id =
-      new_active->GetProperty(app_restore::kAppIdKey);
+      new_active->GetProperty(::app_restore::kAppIdKey);
   if (!arc_app_id || arc_app_id->empty() || !IsAppReady(*arc_app_id))
     return;
 
@@ -333,7 +331,7 @@ void ArcAppLaunchHandler::OnWindowDestroying(aura::Window* window) {
   auto window_id = it->second;
   session_id_to_window_id_.erase(session_id.value());
 
-  const std::string* arc_app_id = window->GetProperty(app_restore::kAppIdKey);
+  const std::string* arc_app_id = window->GetProperty(::app_restore::kAppIdKey);
   if (!arc_app_id || arc_app_id->empty())
     return;
 
@@ -450,12 +448,12 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
     if (data_it.second->intent.has_value()) {
       DCHECK(data_it.second->intent.value());
       ::full_restore::SaveAppLaunchInfo(
-          file_path, std::make_unique<app_restore::AppLaunchInfo>(
+          file_path, std::make_unique<::app_restore::AppLaunchInfo>(
                          app_id, event_flags, data_it.second->intent->Clone(),
                          arc_session_id, display_id));
     } else {
       ::full_restore::SaveAppLaunchInfo(
-          file_path, std::make_unique<app_restore::AppLaunchInfo>(
+          file_path, std::make_unique<::app_restore::AppLaunchInfo>(
                          app_id, event_flags, arc_session_id, display_id));
     }
 
@@ -619,7 +617,7 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
   DCHECK(data_it->second->event_flag.has_value());
 
   apps::mojom::WindowInfoPtr window_info =
-      HandleArcWindowInfo(data_it->second->GetAppWindowInfo());
+      full_restore::HandleArcWindowInfo(data_it->second->GetAppWindowInfo());
   const auto window_it = window_id_to_session_id_.find(window_id);
   if (window_it != window_id_to_session_id_.end()) {
     window_info->window_id = window_it->second;
@@ -879,7 +877,7 @@ void ArcAppLaunchHandler::RecordRestoreResult() {
     // For other cases, mark the failed state as "unknown".
   }
 
-  base::UmaHistogramEnumeration(kRestoreArcAppStates, restore_state);
+  base::UmaHistogramEnumeration(kRestoreArcAppStatesHistogram, restore_state);
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   if (window_handler_) {
@@ -896,5 +894,5 @@ ArcAppLaunchHandler::GetSchedulerConfigurationManager() {
   return g_browser_process->platform_part()->scheduler_configuration_manager();
 }
 
-}  // namespace full_restore
+}  // namespace app_restore
 }  // namespace ash

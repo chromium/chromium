@@ -29,12 +29,16 @@ class AppUpdate;
 }  // namespace apps
 
 namespace ash {
-namespace full_restore {
 
+class AppLaunchHandler;
+
+namespace full_restore {
 class ArcAppLaunchHandlerArcAppBrowserTest;
 class ArcWindowHandler;
-class FullRestoreAppLaunchHandler;
 class FullRestoreAppLaunchHandlerArcAppBrowserTest;
+}  // namespace full_restore
+
+namespace app_restore {
 
 struct CpuTick {
   uint64_t idle_time = 0;
@@ -118,7 +122,7 @@ class ArcAppLaunchHandler
 
   // Invoked when the restoration process can start. Reads the restore data, and
   // add the ARC apps windows to `windows_` and `no_stack_windows_`.
-  void RestoreArcApps(FullRestoreAppLaunchHandler* app_launch_handler);
+  void RestoreArcApps(AppLaunchHandler* app_launch_handler);
 
   void OnAppConnectionReady();
 
@@ -149,8 +153,8 @@ class ArcAppLaunchHandler
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
 
  private:
-  friend ArcAppLaunchHandlerArcAppBrowserTest;
-  friend FullRestoreAppLaunchHandlerArcAppBrowserTest;
+  friend class full_restore::ArcAppLaunchHandlerArcAppBrowserTest;
+  friend class full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
   // Reads the restore data, and add the ARC app windows to `windows_`,
   // `no_stack_windows_` and `app_ids_`.
@@ -220,7 +224,7 @@ class ArcAppLaunchHandler
 
   chromeos::SchedulerConfigurationManager* GetSchedulerConfigurationManager();
 
-  FullRestoreAppLaunchHandler* handler_ = nullptr;
+  AppLaunchHandler* handler_ = nullptr;
 
   // The app id list from the restore data. If the app has been added the
   // AppRegistryCache, the app will be removed from `app_ids_` to
@@ -243,7 +247,7 @@ class ArcAppLaunchHandler
   std::map<int32_t, int32_t> window_id_to_session_id_;
   std::map<int32_t, int32_t> session_id_to_window_id_;
 
-  ArcWindowHandler* window_handler_ = nullptr;
+  full_restore::ArcWindowHandler* window_handler_ = nullptr;
 
   // If the system is under memory pressuure or high CPU usage rate, only launch
   // 1 window following the window stack priority. `first_run_` is used to check
@@ -304,7 +308,7 @@ class ArcAppLaunchHandler
   base::WeakPtrFactory<ArcAppLaunchHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_LAUNCH_HANDLER_H_

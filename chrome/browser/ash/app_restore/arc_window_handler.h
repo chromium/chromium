@@ -66,7 +66,7 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
 
   void LaunchArcGhostWindow(const std::string& app_id,
                             int32_t session_id,
-                            app_restore::AppRestoreData* restore_data);
+                            ::app_restore::AppRestoreData* restore_data);
 
   void CloseWindow(int session_id);
 
@@ -83,7 +83,7 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
 
   int ghost_window_pop_count() { return ghost_window_pop_count_; }
 
-  // Override exo::WMHelper::LifetimeManager::Observer.
+  // exo::WMHelper::LifetimeManager::Observer:
   void OnDestroyed() override;
 
  private:
