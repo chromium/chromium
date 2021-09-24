@@ -1670,6 +1670,8 @@ component("base") {
       "fuchsia/intl_profile_watcher.h",
       "fuchsia/koid.cc",
       "fuchsia/koid.h",
+      "fuchsia/mem_buffer_util.cc",
+      "fuchsia/mem_buffer_util.h",
       "fuchsia/process_context.cc",
       "fuchsia/process_context.h",
       "fuchsia/scheduler.h",

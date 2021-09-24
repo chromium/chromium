@@ -12,6 +12,9 @@
 #include "base/files/file.h"
 #include "base/strings/utf_string_conversions.h"
 
+// These functions are deprecated. New code should use the definitions in
+// base/fuchsia/mem_buffer_util.h; see https://crbug.com/1120731.
+
 namespace cr_fuchsia {
 
 // TODO(crbug.com/1156780): Replace bool returns with absl::optional.
