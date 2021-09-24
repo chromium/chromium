@@ -30,6 +30,9 @@ bool ShouldUseWebSpeechFallback() {
 ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
     : controller_(controller) {
   controller_->SetClient(this);
+  if (ash::ProjectorController::AreExtendedProjectorFeaturesDisabled())
+    return;
+
   bool recognition_available =
       OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
           kEnglishLanguageCode) ||
@@ -115,6 +118,9 @@ void ProjectorClientImpl::OnSodaInstalled() {
 
 bool ProjectorClientImpl::GetDriveFsMountPointPath(
     base::FilePath* result) const {
+  // TODO(b/197164300) Implement persisting screencasts in this mode by
+  // creating a temp folder for testing purposes
+
   if (!IsDriveFsMounted())
     return false;
   drive::DriveIntegrationService* integration_service =

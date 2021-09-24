@@ -36,6 +36,10 @@ class ASH_PUBLIC_EXPORT ProjectorController {
 
   static ProjectorController* Get();
 
+  // Returns whether the extended features for projector are enabled. This is
+  // decided based on a command line switch.
+  static bool AreExtendedProjectorFeaturesDisabled();
+
   // Starts a capture mode session for the projector workflow if no video
   // recording is currently in progress. `storage_dir` is the container
   // directory name for screencasts and will be used to create the storage path.
