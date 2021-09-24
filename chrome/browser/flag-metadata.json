@@ -5170,7 +5170,15 @@
   {
     "name": "system-keyboard-lock",
     "owners": [ "joedow", "garykac", "jamiewalch" ],
-    "expiry_milestone": 95
+    // This flag allows users to prevent the keyboard-lock API from capturing
+    // system keys (e.g. by using low-level hooks) which might interfere with
+    // their workflows or other apps running on the machine. It is also needed
+    // for browsertests as the test framework relies on low-level keyboard hooks
+    // which prevents testing this feature if this flag is not disabled.
+    // Note that there is a second version of this API being discussed which
+    // allows the caller to select whether system hooks are enabled.
+    // See: https://github.com/WICG/keyboard-lock/blob/gh-pages/explainer2.md
+    "expiry_milestone": -1
   },
   {
     "name": "tab-groups-auto-create",
