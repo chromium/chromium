@@ -16,6 +16,7 @@
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
+#include "v8/include/v8-locker.h"
 #include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-persistent-handle.h"
 #include "v8/include/v8-primitive.h"
@@ -32,6 +33,7 @@ class GinJavaBridgeValueConverterTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    v8::Locker locked(isolate_);
     v8::HandleScope handle_scope(isolate_);
     v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate_);
     context_.Reset(isolate_, v8::Context::New(isolate_, NULL, global));
@@ -46,6 +48,7 @@ class GinJavaBridgeValueConverterTest : public testing::Test {
 };
 
 TEST_F(GinJavaBridgeValueConverterTest, BasicValues) {
+  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -82,6 +85,7 @@ TEST_F(GinJavaBridgeValueConverterTest, BasicValues) {
 }
 
 TEST_F(GinJavaBridgeValueConverterTest, ArrayBuffer) {
+  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -103,6 +107,7 @@ TEST_F(GinJavaBridgeValueConverterTest, ArrayBuffer) {
 }
 
 TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
+  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
