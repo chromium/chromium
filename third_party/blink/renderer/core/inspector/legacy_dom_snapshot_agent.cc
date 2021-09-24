@@ -113,7 +113,7 @@ Response LegacyDOMSnapshotAgent::GetSnapshot(
         layout_tree_nodes,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::ComputedStyle>>*
         computed_styles) {
-  document->View()->UpdateLifecycleToLayoutClean(
+  document->View()->UpdateLifecycleToCompositingInputsClean(
       DocumentUpdateReason::kInspector);
   // Setup snapshot.
   dom_nodes_ =
@@ -399,8 +399,9 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
     PaintLayer* paint_layer = layout_object->EnclosingLayer();
 
     // We visited all PaintLayers when building |paint_order_map_|.
-    if (int paint_order = paint_order_map_->at(paint_layer))
-      layout_tree_node->setPaintOrder(paint_order);
+    const auto paint_order = paint_order_map_->find(paint_layer);
+    if (paint_order != paint_order_map_->end())
+      layout_tree_node->setPaintOrder(paint_order->value);
   }
 
   if (layout_object->IsText()) {

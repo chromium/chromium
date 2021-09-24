@@ -290,7 +290,7 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
 
   // Update layout before traversal of document so that we inspect a
   // current and consistent state of all trees.
-  inspected_frames_->Root()->View()->UpdateLifecycleToLayoutClean(
+  inspected_frames_->Root()->View()->UpdateLifecycleToCompositingInputsClean(
       DocumentUpdateReason::kInspector);
 
   strings_ = std::make_unique<protocol::Array<String>>();
@@ -679,8 +679,15 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
 
   if (paint_order_map_) {
     PaintLayer* paint_layer = layout_object->EnclosingLayer();
-    int paint_order = paint_order_map_->at(paint_layer);
-    layout_tree_snapshot->getPaintOrders(nullptr)->emplace_back(paint_order);
+    const auto paint_order = paint_order_map_->find(paint_layer);
+    if (paint_order != paint_order_map_->end()) {
+      layout_tree_snapshot->getPaintOrders(nullptr)->emplace_back(
+          paint_order->value);
+    } else {
+      // Previously this returned the empty value if the paint order wasn't
+      // found. The empty value for this HashMap is 0, so just pick that here.
+      layout_tree_snapshot->getPaintOrders(nullptr)->emplace_back(0);
+    }
   }
 
   String text = layout_object->IsText()
