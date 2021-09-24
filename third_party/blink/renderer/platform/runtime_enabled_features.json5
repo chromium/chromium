@@ -1794,6 +1794,7 @@
     {
       name: "PrefersContrast",
       depends_on: ["ForcedColors"],
+      status: "stable",
     },
     {
       name: "PrefersReducedData",

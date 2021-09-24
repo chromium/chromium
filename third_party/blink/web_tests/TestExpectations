@@ -4153,9 +4153,6 @@ crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
 # CSS Scrollbars Level 1
 crbug.com/891944 external/wpt/css/cssom-view/client-props-root.html [ Failure ]
 
-# CSS prefers-contrast media query not implemented
-crbug.com/1107431 external/wpt/css/mediaqueries/prefers-contrast.html [ Failure ]
-
 # Sheriff failures 2017-03-10
 crbug.com/741210 [ Mac ] inspector-protocol/emulation/device-emulation-restore.js [ Failure ]
 
