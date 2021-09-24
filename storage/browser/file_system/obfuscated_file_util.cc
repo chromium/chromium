@@ -109,6 +109,15 @@ enum IsolatedOriginStatus {
 
 }  // namespace
 
+// TODO(https://crbug.com/1248104): This class will eventually interface with
+// Storage Buckets instead of directly interfacing with LevelDB. Thus, the below
+// functions were converted from url::Origin to blink::StorageKey to prepare for
+// Storage Partitioning of the FileSystem APIs. However, it is important to note
+// that, until the refactor to use Storage Buckets, the LevelDB structure above
+// is still used, and the entries are still keyed per-origin (achieved by
+// storage_key.origin()) and per-type. Going forward, OriginRecords will be
+// retrieved from the database and converted into StorageKey values until
+// Storage Buckets are implemented instead.
 class ObfuscatedFileEnumerator final
     : public FileSystemFileUtil::AbstractFileEnumerator {
  public:
@@ -206,38 +215,37 @@ class ObfuscatedFileEnumerator final
   base::File::Info current_platform_file_info_;
 };
 
-// TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-// to use StorageKey instead of url::Origin.
-class ObfuscatedOriginEnumerator
-    : public ObfuscatedFileUtil::AbstractOriginEnumerator {
+class ObfuscatedStorageKeyEnumerator
+    : public ObfuscatedFileUtil::AbstractStorageKeyEnumerator {
  public:
   using OriginRecord = SandboxOriginDatabase::OriginRecord;
-  ObfuscatedOriginEnumerator(
+  ObfuscatedStorageKeyEnumerator(
       SandboxOriginDatabaseInterface* origin_database,
       base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
       const base::FilePath& base_file_path)
       : base_file_path_(base_file_path),
         memory_file_util_(std::move(memory_file_util)) {
     if (origin_database)
-      origin_database->ListAllOrigins(&origins_);
+      origin_database->ListAllOrigins(&origin_records_);
   }
 
-  ~ObfuscatedOriginEnumerator() override = default;
+  ~ObfuscatedStorageKeyEnumerator() override = default;
 
-  // Returns the next origin.  Returns empty if there are no more origins.
-  absl::optional<url::Origin> Next() override {
+  // Returns the next StorageKey. Returns empty if there are no more
+  // StorageKeys.
+  absl::optional<blink::StorageKey> Next() override {
     OriginRecord record;
-    if (origins_.empty()) {
+    if (origin_records_.empty()) {
       current_ = record;
       return absl::nullopt;
     }
-    record = origins_.back();
-    origins_.pop_back();
+    record = origin_records_.back();
+    origin_records_.pop_back();
     current_ = record;
-    return GetOriginFromIdentifier(record.origin);
+    return blink::StorageKey(GetOriginFromIdentifier(record.origin));
   }
 
-  // Returns the current origin's information.
+  // Returns the current StorageKey.origin()'s information.
   bool HasTypeDirectory(const std::string& type_string) const override {
     if (current_.path.empty())
       return false;
@@ -254,7 +262,7 @@ class ObfuscatedOriginEnumerator
   }
 
  private:
-  std::vector<OriginRecord> origins_;
+  std::vector<OriginRecord> origin_records_;
   OriginRecord current_;
   base::FilePath base_file_path_;
   base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_;
@@ -943,13 +951,9 @@ void ObfuscatedFileUtil::CloseFileSystemForStorageKeyAndType(
   }
 }
 
-// TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-// to use StorageKey instead of url::Origin.
-std::unique_ptr<ObfuscatedFileUtil::AbstractOriginEnumerator>
-ObfuscatedFileUtil::CreateOriginEnumerator() {
+std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator>
+ObfuscatedFileUtil::CreateStorageKeyEnumerator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::vector<SandboxOriginDatabase::OriginRecord> origins;
 
   InitOriginDatabase(url::Origin(), false);
   base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> file_util_delegate;
@@ -958,7 +962,7 @@ ObfuscatedFileUtil::CreateOriginEnumerator() {
         static_cast<ObfuscatedFileUtilMemoryDelegate*>(delegate())
             ->GetWeakPtr();
   }
-  return std::make_unique<ObfuscatedOriginEnumerator>(
+  return std::make_unique<ObfuscatedStorageKeyEnumerator>(
       origin_database_.get(), file_util_delegate, file_system_directory_);
 }
 

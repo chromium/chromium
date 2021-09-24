@@ -28,7 +28,7 @@
 
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace blink {
 class StorageKey;
@@ -41,11 +41,11 @@ class SandboxFileSystemTestHelper;
 
 namespace leveldb {
 class Env;
-}
+}  // namespace leveldb
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace storage {
 
@@ -73,23 +73,23 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   // The FileSystem directory name.
   static const base::FilePath::CharType kFileSystemDirectory[];
 
-  // Origin enumerator interface.
+  // StorageKey enumerator interface.
   // An instance of this interface is assumed to be called on the file thread.
-  class OriginEnumerator {
+  class StorageKeyEnumerator {
    public:
-    OriginEnumerator(const OriginEnumerator&) = delete;
-    OriginEnumerator& operator=(const OriginEnumerator&) = delete;
-    virtual ~OriginEnumerator() = default;
+    StorageKeyEnumerator(const StorageKeyEnumerator&) = delete;
+    StorageKeyEnumerator& operator=(const StorageKeyEnumerator&) = delete;
+    virtual ~StorageKeyEnumerator() = default;
 
-    // Returns the next origin.  Returns absl::nullopt if there are no more
-    // origins.
-    virtual absl::optional<url::Origin> Next() = 0;
+    // Returns the next StorageKey.  Returns absl::nullopt if there are no more
+    // StorageKey.
+    virtual absl::optional<blink::StorageKey> Next() = 0;
 
-    // Returns the current origin's information.
+    // Returns the current StorageKey's information.
     virtual bool HasFileSystemType(FileSystemType type) const = 0;
 
    protected:
-    OriginEnumerator() = default;
+    StorageKeyEnumerator() = default;
   };
 
   // Returns the type directory name in sandbox directory for given |type|.
@@ -109,9 +109,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
       const SandboxFileSystemBackendDelegate&) = delete;
   ~SandboxFileSystemBackendDelegate() override;
 
-  // Returns an origin enumerator of sandbox filesystem.
+  // Returns a StorageKey enumerator of sandbox filesystem.
   // This method can only be called on the file thread.
-  OriginEnumerator* CreateOriginEnumerator();
+  StorageKeyEnumerator* CreateStorageKeyEnumerator();
 
   // Gets a base directory path of the sandboxed filesystem that is
   // specified by `storage_key` and `type`.
@@ -154,9 +154,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
                                              QuotaManagerProxy* proxy,
                                              FileSystemType type) override;
-  std::vector<url::Origin> GetOriginsForTypeOnFileTaskRunner(
+  std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override;
-  std::vector<url::Origin> GetOriginsForHostOnFileTaskRunner(
+  std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
       FileSystemType type,
       const std::string& host) override;
   int64_t GetStorageKeyUsageOnFileTaskRunner(

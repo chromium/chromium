@@ -52,7 +52,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using url::Origin;
 
@@ -140,8 +139,9 @@ std::string GetTypeString(FileSystemType type) {
   return SandboxFileSystemBackendDelegate::GetTypeString(type);
 }
 
-bool HasFileSystemType(ObfuscatedFileUtil::AbstractOriginEnumerator* enumerator,
-                       FileSystemType type) {
+bool HasFileSystemType(
+    ObfuscatedFileUtil::AbstractStorageKeyEnumerator* enumerator,
+    FileSystemType type) {
   return enumerator->HasTypeDirectory(GetTypeString(type));
 }
 
@@ -1565,12 +1565,12 @@ TEST_P(ObfuscatedFileUtilTest, TestEnumerator) {
   EXPECT_FALSE(DirectoryExists(dest_url));
 }
 
-TEST_P(ObfuscatedFileUtilTest, TestOriginEnumerator) {
-  std::unique_ptr<ObfuscatedFileUtil::AbstractOriginEnumerator> enumerator =
-      ofu()->CreateOriginEnumerator();
+TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
+  std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator> enumerator =
+      ofu()->CreateStorageKeyEnumerator();
   // The test helper starts out with a single filesystem.
   EXPECT_TRUE(enumerator.get());
-  EXPECT_EQ(origin(), enumerator->Next());
+  EXPECT_EQ(storage_key(), enumerator->Next());
   ASSERT_TRUE(type() == kFileSystemTypeTemporary);
   EXPECT_TRUE(HasFileSystemType(enumerator.get(), kFileSystemTypeTemporary));
   EXPECT_FALSE(HasFileSystemType(enumerator.get(), kFileSystemTypePersistent));
@@ -1578,19 +1578,20 @@ TEST_P(ObfuscatedFileUtilTest, TestOriginEnumerator) {
   EXPECT_FALSE(HasFileSystemType(enumerator.get(), kFileSystemTypeTemporary));
   EXPECT_FALSE(HasFileSystemType(enumerator.get(), kFileSystemTypePersistent));
 
-  std::set<Origin> origins_expected;
-  origins_expected.insert(origin());
+  std::set<blink::StorageKey> storage_keys_expected;
+  storage_keys_expected.insert(storage_key());
 
   for (size_t i = 0; i < base::size(kOriginEnumerationTestRecords); ++i) {
     SCOPED_TRACE(testing::Message()
                  << "Validating kOriginEnumerationTestRecords " << i);
     const OriginEnumerationTestRecord& record =
         kOriginEnumerationTestRecords[i];
-    Origin origin = Origin::Create(GURL(record.origin_url));
-    origins_expected.insert(origin);
+    blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting(record.origin_url);
+    storage_keys_expected.insert(storage_key);
     if (record.has_temporary) {
       std::unique_ptr<SandboxFileSystemTestHelper> file_system =
-          NewFileSystem(origin, kFileSystemTypeTemporary);
+          NewFileSystem(storage_key.origin(), kFileSystemTypeTemporary);
       std::unique_ptr<FileSystemOperationContext> context(
           NewContext(file_system.get()));
       bool created = false;
@@ -1602,7 +1603,7 @@ TEST_P(ObfuscatedFileUtilTest, TestOriginEnumerator) {
     }
     if (record.has_persistent) {
       std::unique_ptr<SandboxFileSystemTestHelper> file_system =
-          NewFileSystem(origin, kFileSystemTypePersistent);
+          NewFileSystem(storage_key.origin(), kFileSystemTypePersistent);
       std::unique_ptr<FileSystemOperationContext> context(
           NewContext(file_system.get()));
       bool created = false;
@@ -1613,17 +1614,18 @@ TEST_P(ObfuscatedFileUtilTest, TestOriginEnumerator) {
       EXPECT_TRUE(created);
     }
   }
-  enumerator = ofu()->CreateOriginEnumerator();
+  enumerator = ofu()->CreateStorageKeyEnumerator();
   EXPECT_TRUE(enumerator.get());
-  std::set<Origin> origins_found;
-  absl::optional<url::Origin> enumerator_origin;
-  while ((enumerator_origin = enumerator->Next()).has_value()) {
-    origins_found.insert(enumerator_origin.value());
+  std::set<blink::StorageKey> storage_keys_found;
+  absl::optional<blink::StorageKey> enumerator_storage_key;
+  while ((enumerator_storage_key = enumerator->Next()).has_value()) {
+    storage_keys_found.insert(enumerator_storage_key.value());
     SCOPED_TRACE(testing::Message()
-                 << "Handling " << enumerator_origin->Serialize());
+                 << "Handling "
+                 << enumerator_storage_key->origin().Serialize());
     bool found = false;
     for (const auto& record : kOriginEnumerationTestRecords) {
-      if (enumerator_origin->GetURL() != record.origin_url)
+      if (enumerator_storage_key->origin().GetURL() != record.origin_url)
         continue;
       found = true;
       EXPECT_EQ(record.has_temporary,
@@ -1632,7 +1634,7 @@ TEST_P(ObfuscatedFileUtilTest, TestOriginEnumerator) {
                 HasFileSystemType(enumerator.get(), kFileSystemTypePersistent));
     }
     // Deal with the default filesystem created by the test helper.
-    if (!found && enumerator_origin == origin()) {
+    if (!found && enumerator_storage_key == storage_key()) {
       ASSERT_TRUE(type() == kFileSystemTypeTemporary);
       EXPECT_TRUE(
           HasFileSystemType(enumerator.get(), kFileSystemTypeTemporary));
@@ -1643,10 +1645,11 @@ TEST_P(ObfuscatedFileUtilTest, TestOriginEnumerator) {
     EXPECT_TRUE(found);
   }
 
-  std::set<Origin> diff;
+  std::set<blink::StorageKey> diff;
   std::set_symmetric_difference(
-      origins_expected.begin(), origins_expected.end(), origins_found.begin(),
-      origins_found.end(), inserter(diff, diff.begin()));
+      storage_keys_expected.begin(), storage_keys_expected.end(),
+      storage_keys_found.begin(), storage_keys_found.end(),
+      inserter(diff, diff.begin()));
   EXPECT_TRUE(diff.empty());
 }
 

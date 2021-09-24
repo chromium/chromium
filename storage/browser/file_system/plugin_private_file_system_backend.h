@@ -115,9 +115,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
                                              QuotaManagerProxy* proxy,
                                              FileSystemType type) override;
-  std::vector<url::Origin> GetOriginsForTypeOnFileTaskRunner(
+  std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override;
-  std::vector<url::Origin> GetOriginsForHostOnFileTaskRunner(
+  std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
       FileSystemType type,
       const std::string& host) override;
   int64_t GetStorageKeyUsageOnFileTaskRunner(

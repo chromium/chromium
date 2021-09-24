@@ -260,35 +260,35 @@ void PluginPrivateFileSystemBackend::PerformStorageCleanupOnFileTaskRunner(
   obfuscated_file_util()->RewriteDatabases();
 }
 
-std::vector<url::Origin>
-PluginPrivateFileSystemBackend::GetOriginsForTypeOnFileTaskRunner(
+std::vector<blink::StorageKey>
+PluginPrivateFileSystemBackend::GetStorageKeysForTypeOnFileTaskRunner(
     FileSystemType type) {
   if (!CanHandleType(type))
-    return std::vector<url::Origin>();
-  std::unique_ptr<ObfuscatedFileUtil::AbstractOriginEnumerator> enumerator(
-      obfuscated_file_util()->CreateOriginEnumerator());
-  std::vector<url::Origin> origins;
-  absl::optional<url::Origin> origin;
-  while ((origin = enumerator->Next()).has_value())
-    origins.push_back(std::move(origin).value());
-  return origins;
+    return std::vector<blink::StorageKey>();
+  std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator> enumerator(
+      obfuscated_file_util()->CreateStorageKeyEnumerator());
+  std::vector<blink::StorageKey> storage_keys;
+  absl::optional<blink::StorageKey> storage_key;
+  while ((storage_key = enumerator->Next()).has_value())
+    storage_keys.push_back(std::move(storage_key).value());
+  return storage_keys;
 }
 
-std::vector<url::Origin>
-PluginPrivateFileSystemBackend::GetOriginsForHostOnFileTaskRunner(
+std::vector<blink::StorageKey>
+PluginPrivateFileSystemBackend::GetStorageKeysForHostOnFileTaskRunner(
     FileSystemType type,
     const std::string& host) {
   if (!CanHandleType(type))
-    return std::vector<url::Origin>();
-  std::unique_ptr<ObfuscatedFileUtil::AbstractOriginEnumerator> enumerator(
-      obfuscated_file_util()->CreateOriginEnumerator());
-  std::vector<url::Origin> origins;
-  absl::optional<url::Origin> origin;
-  while ((origin = enumerator->Next()).has_value()) {
-    if (host == origin->host())
-      origins.push_back(std::move(origin).value());
+    return std::vector<blink::StorageKey>();
+  std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator> enumerator(
+      obfuscated_file_util()->CreateStorageKeyEnumerator());
+  std::vector<blink::StorageKey> storage_keys;
+  absl::optional<blink::StorageKey> storage_key;
+  while ((storage_key = enumerator->Next()).has_value()) {
+    if (host == storage_key->origin().host())
+      storage_keys.push_back(std::move(storage_key).value());
   }
-  return origins;
+  return storage_keys;
 }
 
 int64_t PluginPrivateFileSystemBackend::GetStorageKeyUsageOnFileTaskRunner(

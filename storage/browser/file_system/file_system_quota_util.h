@@ -19,10 +19,6 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace storage {
 
 class FileSystemContext;
@@ -49,16 +45,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaUtil {
                                                      QuotaManagerProxy* proxy,
                                                      FileSystemType type) = 0;
 
-  // TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-  // to use StorageKey instead of url::Origin and access those StorageKeys
-  // below.
-  virtual std::vector<url::Origin> GetOriginsForTypeOnFileTaskRunner(
+  virtual std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) = 0;
 
-  // TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-  // to use StorageKey instead of url::Origin and access those StorageKeys
-  // below.
-  virtual std::vector<url::Origin> GetOriginsForHostOnFileTaskRunner(
+  virtual std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
       FileSystemType type,
       const std::string& host) = 0;
 

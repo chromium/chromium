@@ -81,18 +81,15 @@ class SpecialStoragePolicy;
 class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
     : public FileSystemFileUtil {
  public:
-  // TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-  // to use StorageKey instead of url::Origin.
-  //
-  // Origin enumerator interface.
+  // StorageKey enumerator interface.
   // An instance of this interface is assumed to be called on the file thread.
-  class AbstractOriginEnumerator {
+  class AbstractStorageKeyEnumerator {
    public:
-    virtual ~AbstractOriginEnumerator() = default;
+    virtual ~AbstractStorageKeyEnumerator() = default;
 
-    // Returns the next origin.  Returns absl::nullopt if there are no more
-    // origins.
-    virtual absl::optional<url::Origin> Next() = 0;
+    // Returns the next StorageKey. Returns absl::nullopt if there are no more
+    // StorageKeys.
+    virtual absl::optional<blink::StorageKey> Next() = 0;
 
     // Returns the current origin's information.
     // `type_string` must be ascii string.
@@ -197,13 +194,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   void CloseFileSystemForStorageKeyAndType(const blink::StorageKey& storage_key,
                                            const std::string& type_string);
 
-  // TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-  // to use StorageKey instead of url::Origin.
-  //
   // This method and all methods of its returned class must be called only on
   // the FILE thread.  The caller is responsible for deleting the returned
   // object.
-  std::unique_ptr<AbstractOriginEnumerator> CreateOriginEnumerator();
+  std::unique_ptr<AbstractStorageKeyEnumerator> CreateStorageKeyEnumerator();
 
   // Deletes a directory database from the database list in the ObfuscatedFSFU
   // and destroys the database on the disk.

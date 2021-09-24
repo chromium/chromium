@@ -25,7 +25,7 @@ using content::BrowserThread;
 
 namespace storage {
 class FileSystemContext;
-}
+}  // namespace storage
 
 namespace browsing_data {
 
@@ -77,19 +77,17 @@ void FileSystemHelper::FetchFileSystemInfoInFileThread(FetchCallback callback) {
     storage::FileSystemQuotaUtil* quota_util =
         filesystem_context_->GetQuotaUtil(type);
     DCHECK(quota_util);
-    std::vector<url::Origin> origins =
-        quota_util->GetOriginsForTypeOnFileTaskRunner(type);
-    for (const auto& current : origins) {
-      if (!HasWebScheme(current.GetURL()))
+    std::vector<blink::StorageKey> storage_keys =
+        quota_util->GetStorageKeysForTypeOnFileTaskRunner(type);
+    for (const auto& current : storage_keys) {
+      if (!HasWebScheme(current.origin().GetURL()))
         continue;  // Non-websafe state is not considered browsing data.
-      // TODO(https://crbug.com/1247726): Refactor
-      // SandboxObfuscatedOriginEnumerator to use StorageKey instead of
-      // url::Origin and access those StorageKeys below.
       int64_t usage = quota_util->GetStorageKeyUsageOnFileTaskRunner(
-          filesystem_context_.get(), blink::StorageKey(current), type);
+          filesystem_context_.get(), current, type);
       auto inserted =
           file_system_info_map
-              .insert(std::make_pair(current.GetURL(), FileSystemInfo(current)))
+              .insert(std::make_pair(current.origin().GetURL(),
+                                     FileSystemInfo(current.origin())))
               .first;
       inserted->second.usage_map[type] = usage;
     }

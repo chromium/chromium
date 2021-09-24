@@ -669,11 +669,15 @@ class RemovePluginPrivateDataTester {
             storage::kFileSystemTypePluginPrivate);
     storage::FileSystemQuotaUtil* quota_util = backend->GetQuotaUtil();
 
-    // Determine the set of origins used.
-    std::vector<url::Origin> origins =
-        quota_util->GetOriginsForTypeOnFileTaskRunner(
+    // Determine the set of StorageKeys used.
+    std::vector<blink::StorageKey> storage_keys =
+        quota_util->GetStorageKeysForTypeOnFileTaskRunner(
             storage::kFileSystemTypePluginPrivate);
-    *data_exists_for_origin = base::Contains(origins, origin);
+    // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+    // file system will be partitioned; if so, replace the in-line conversion
+    // with the correct third-party StorageKey.
+    *data_exists_for_origin =
+        base::Contains(storage_keys, blink::StorageKey(origin));
 
     // AwaitCompletionHelper and MessageLoop don't work on a
     // SequencedTaskRunner, so post a task on the IO thread.

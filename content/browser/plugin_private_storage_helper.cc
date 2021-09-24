@@ -47,6 +47,18 @@ std::string StringTypeToString(const base::FilePath::StringType& value) {
 #endif
 }
 
+// TODO(https://crbug.com/1231162): temporary function to convert a vector of
+// StorageKeys to a vector of their origin values; should be obsolete when
+// Plugin-Private File System is converted to StorageKey and partitioned.
+std::vector<url::Origin> ToOrigins(
+    const std::vector<blink::StorageKey>& storage_keys) {
+  std::vector<url::Origin> origins;
+  origins.reserve(storage_keys.size());
+  for (const blink::StorageKey& storage_key : storage_keys)
+    origins.emplace_back(storage_key.origin());
+  return origins;
+}
+
 // Helper for checking the plugin private data for a specified origin and
 // plugin for the existence of any file that matches the time range specified.
 // All of the operations in this class are done on the IO thread.
@@ -418,48 +430,50 @@ void ClearPluginPrivateDataOnFileTaskRunner(
           storage::kFileSystemTypePluginPrivate);
   storage::FileSystemQuotaUtil* quota_util = backend->GetQuotaUtil();
 
-  // Determine the origins used.
-  std::vector<url::Origin> origins =
-      quota_util->GetOriginsForTypeOnFileTaskRunner(
+  // Determine the StorageKeys used.
+  std::vector<blink::StorageKey> storage_keys =
+      quota_util->GetStorageKeysForTypeOnFileTaskRunner(
           storage::kFileSystemTypePluginPrivate);
 
-  if (origins.empty()) {
-    // No origins, so nothing to do.
+  if (storage_keys.empty()) {
+    // No StorageKeys, so nothing to do.
     std::move(callback).Run();
     return;
   }
 
-  // If a specific origin is provided, then check that it is in the list
-  // returned and remove all the other origins.
+  // If a specific origin parameter is provided, then check that it is in the
+  // list returned and remove all the other StorageKeys.
   if (!storage_origin_url.is_empty()) {
     DCHECK(!origin_matcher) << "Only 1 of |storage_origin_url| and "
                                "|origin_matcher| should be specified.";
-    url::Origin storage_origin = url::Origin::Create(storage_origin_url);
-    if (!base::Contains(origins, storage_origin)) {
+    const blink::StorageKey storage_key =
+        blink::StorageKey(url::Origin::Create(storage_origin_url));
+    if (!base::Contains(storage_keys, storage_key)) {
       // Nothing matches, so nothing to do.
       std::move(callback).Run();
       return;
     }
 
     // List should only contain the one value that matches.
-    origins.clear();
-    origins.push_back(storage_origin);
+    storage_keys.clear();
+    storage_keys.push_back(storage_key);
   }
 
-  // If a filter is provided, determine which origins match.
+  // If a filter is provided, determine which StorageKeys match.
   if (origin_matcher) {
     DCHECK(storage_origin_url.is_empty())
         << "Only 1 of |storage_origin_url| and |origin_matcher| should be "
            "specified.";
-    std::vector<url::Origin> origins_to_check;
-    origins_to_check.swap(origins);
-    for (auto& origin : origins_to_check) {
-      if (origin_matcher.Run(origin, special_storage_policy.get()))
-        origins.push_back(std::move(origin));
+    std::vector<blink::StorageKey> storage_keys_to_check;
+    storage_keys_to_check.swap(storage_keys);
+    for (auto& storage_key : storage_keys_to_check) {
+      if (origin_matcher.Run(storage_key.origin(),
+                             special_storage_policy.get()))
+        storage_keys.push_back(std::move(storage_key));
     }
 
-    // If no origins matched, there is nothing to do.
-    if (origins.empty()) {
+    // If no StorageKeys matched, there is nothing to do.
+    if (storage_keys.empty()) {
       std::move(callback).Run();
       return;
     }
@@ -467,7 +481,7 @@ void ClearPluginPrivateDataOnFileTaskRunner(
 
   PluginPrivateDataDeletionHelper* helper = new PluginPrivateDataDeletionHelper(
       std::move(filesystem_context), begin, end, std::move(callback));
-  helper->CheckOriginsOnFileTaskRunner(origins);
+  helper->CheckOriginsOnFileTaskRunner(ToOrigins(storage_keys));
   // |helper| will delete itself when all origins have been checked.
 }
 

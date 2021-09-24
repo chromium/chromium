@@ -38,7 +38,6 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace storage {
 
@@ -95,17 +94,16 @@ std::set<std::string> GetKnownTypeStrings() {
   return known_type_strings;
 }
 
-// TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-// to use StorageKey instead of url::Origin.
-class SandboxObfuscatedOriginEnumerator
-    : public SandboxFileSystemBackendDelegate::OriginEnumerator {
+class SandboxObfuscatedStorageKeyEnumerator
+    : public SandboxFileSystemBackendDelegate::StorageKeyEnumerator {
  public:
-  explicit SandboxObfuscatedOriginEnumerator(ObfuscatedFileUtil* file_util) {
-    enum_ = file_util->CreateOriginEnumerator();
+  explicit SandboxObfuscatedStorageKeyEnumerator(
+      ObfuscatedFileUtil* file_util) {
+    enum_ = file_util->CreateStorageKeyEnumerator();
   }
-  ~SandboxObfuscatedOriginEnumerator() override = default;
+  ~SandboxObfuscatedStorageKeyEnumerator() override = default;
 
-  absl::optional<url::Origin> Next() override { return enum_->Next(); }
+  absl::optional<blink::StorageKey> Next() override { return enum_->Next(); }
 
   bool HasFileSystemType(FileSystemType type) const override {
     return enum_->HasTypeDirectory(
@@ -113,7 +111,7 @@ class SandboxObfuscatedOriginEnumerator
   }
 
  private:
-  std::unique_ptr<ObfuscatedFileUtil::AbstractOriginEnumerator> enum_;
+  std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator> enum_;
 };
 
 base::File::Error OpenSandboxFileSystemOnFileTaskRunner(
@@ -226,9 +224,9 @@ SandboxFileSystemBackendDelegate::~SandboxFileSystemBackendDelegate() {
   }
 }
 
-SandboxFileSystemBackendDelegate::OriginEnumerator*
-SandboxFileSystemBackendDelegate::CreateOriginEnumerator() {
-  return new SandboxObfuscatedOriginEnumerator(obfuscated_file_util());
+SandboxFileSystemBackendDelegate::StorageKeyEnumerator*
+SandboxFileSystemBackendDelegate::CreateStorageKeyEnumerator() {
+  return new SandboxObfuscatedStorageKeyEnumerator(obfuscated_file_util());
 }
 
 base::FilePath
@@ -361,47 +359,47 @@ void SandboxFileSystemBackendDelegate::PerformStorageCleanupOnFileTaskRunner(
   obfuscated_file_util()->RewriteDatabases();
 }
 
-// TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-// to use StorageKey instead of url::Origin and access those StorageKeys below.
-std::vector<url::Origin>
-SandboxFileSystemBackendDelegate::GetOriginsForTypeOnFileTaskRunner(
+std::vector<blink::StorageKey>
+SandboxFileSystemBackendDelegate::GetStorageKeysForTypeOnFileTaskRunner(
     FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  std::unique_ptr<OriginEnumerator> enumerator(CreateOriginEnumerator());
-  std::vector<url::Origin> origins;
-  absl::optional<url::Origin> origin;
-  while ((origin = enumerator->Next()).has_value()) {
+  std::unique_ptr<StorageKeyEnumerator> enumerator(
+      CreateStorageKeyEnumerator());
+  std::vector<blink::StorageKey> storage_keys;
+  absl::optional<blink::StorageKey> storage_key;
+  while ((storage_key = enumerator->Next()).has_value()) {
     if (enumerator->HasFileSystemType(type))
-      origins.push_back(std::move(origin).value());
+      storage_keys.push_back(std::move(storage_key).value());
   }
   switch (type) {
     case kFileSystemTypeTemporary:
-      UMA_HISTOGRAM_COUNTS_1M(kTemporaryOriginsCountLabel, origins.size());
+      UMA_HISTOGRAM_COUNTS_1M(kTemporaryOriginsCountLabel, storage_keys.size());
       break;
     case kFileSystemTypePersistent:
-      UMA_HISTOGRAM_COUNTS_1M(kPersistentOriginsCountLabel, origins.size());
+      UMA_HISTOGRAM_COUNTS_1M(kPersistentOriginsCountLabel,
+                              storage_keys.size());
       break;
     default:
       break;
   }
-  return origins;
+  return storage_keys;
 }
 
-// TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
-// to use StorageKey instead of url::Origin and access those StorageKeys below.
-std::vector<url::Origin>
-SandboxFileSystemBackendDelegate::GetOriginsForHostOnFileTaskRunner(
+std::vector<blink::StorageKey>
+SandboxFileSystemBackendDelegate::GetStorageKeysForHostOnFileTaskRunner(
     FileSystemType type,
     const std::string& host) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  std::vector<url::Origin> origins;
-  std::unique_ptr<OriginEnumerator> enumerator(CreateOriginEnumerator());
-  absl::optional<url::Origin> origin;
-  while ((origin = enumerator->Next()).has_value()) {
-    if (host == origin->host() && enumerator->HasFileSystemType(type))
-      origins.push_back(std::move(origin).value());
+  std::vector<blink::StorageKey> storage_keys;
+  std::unique_ptr<StorageKeyEnumerator> enumerator(
+      CreateStorageKeyEnumerator());
+  absl::optional<blink::StorageKey> storage_key;
+  while ((storage_key = enumerator->Next()).has_value()) {
+    if (host == storage_key->origin().host() &&
+        enumerator->HasFileSystemType(type))
+      storage_keys.push_back(std::move(storage_key).value());
   }
-  return origins;
+  return storage_keys;
 }
 
 int64_t SandboxFileSystemBackendDelegate::GetStorageKeyUsageOnFileTaskRunner(

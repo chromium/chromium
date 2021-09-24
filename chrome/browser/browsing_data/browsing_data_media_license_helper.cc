@@ -98,20 +98,21 @@ void BrowsingDataMediaLicenseHelperImpl::FetchMediaLicenseInfoOnFileTaskRunner(
       static_cast<storage::PluginPrivateFileSystemBackend*>(
           filesystem_context_->GetFileSystemBackend(kType));
 
-  // Determine the set of origins used.
-  std::vector<url::Origin> origins =
-      backend->GetOriginsForTypeOnFileTaskRunner(kType);
+  // Determine the set of StorageKeys used.
+  std::vector<blink::StorageKey> storage_keys =
+      backend->GetStorageKeysForTypeOnFileTaskRunner(kType);
   std::list<MediaLicenseInfo> result;
-  for (const auto& origin : origins) {
-    if (!browsing_data::HasWebScheme(origin.GetURL()))
+  for (const auto& storage_key : storage_keys) {
+    if (!browsing_data::HasWebScheme(storage_key.origin().GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
 
     int64_t size;
     base::Time last_modified_time;
-    backend->GetOriginDetailsOnFileTaskRunner(filesystem_context_.get(), origin,
-                                              &size, &last_modified_time);
-    result.push_back(
-        MediaLicenseInfo(origin.GetURL(), size, last_modified_time));
+    backend->GetOriginDetailsOnFileTaskRunner(filesystem_context_.get(),
+                                              storage_key.origin(), &size,
+                                              &last_modified_time);
+    result.emplace_back(storage_key.origin().GetURL(), size,
+                                      last_modified_time);
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
