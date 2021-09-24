@@ -61,6 +61,8 @@ const char* kAllowListPrefixesForPlatform[] = {
     "/Last Browser"};
 #elif defined(OS_CHROMEOS)
 const char* kAllowListPrefixesForPlatform[] = {
+    "/Default/Local Storage/leveldb/CURRENT",
+    "/Default/Site Characteristics Database", "/Default/Sync Data/LevelDB",
     "/test-user/.variations-list.txt"};
 #elif defined(OS_LINUX)
 const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
