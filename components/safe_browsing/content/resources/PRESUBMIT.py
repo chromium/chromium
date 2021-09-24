@@ -45,6 +45,19 @@ def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
                     download_file_types_file.LocalPath() + ' if you are '
                     'updating the file types proto.'))
 
+    if len(download_file_types_files) == 1:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                'You only modified either of download_file_types.asciipb or ' +
+                'download_file_types_experiment.asciipb, please make sure ' +
+                'your change does not affect any ongoing experiment.'))
+
+    results.append(
+        output_api.PresubmitPromptWarning(
+            'Please make sure you have read https://chromium.googlesource.com'
+            + '/chromium/src/+/HEAD/chrome/browser/resources/safe_browsing/' +
+            'README.md before editing the download_file_types config files.'))
+
     return results
 
 
