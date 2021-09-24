@@ -49,22 +49,21 @@ JaPhoneticData = class {
     for (const char of chars) {
       const currentCharacterSet =
           JaPhoneticData.getCharacterSet(char, lastCharacterSet);
-      if (currentCharacterSet !== JaPhoneticData.CharacterSet.OTHER) {
-        const info =
-            JaPhoneticData.getPrefixInfo(lastCharacterSet, currentCharacterSet);
-        if (info.prefix) {
-          // Need to announce the new charset explicitly.
-          result.push(info.prefix);
-        }
-        if (info.delimiter === false && result.length > 0) {
-          // Does not convert small Kana if it is not the beginning of the
-          // element.
-          result[result.length - 1] += char;
-        } else {
-          result.push(JaPhoneticData.maybeGetLargeLetterKana(char));
-        }
-      } else {
+      const info =
+          JaPhoneticData.getPrefixInfo(lastCharacterSet, currentCharacterSet);
+      if (info.prefix) {
+        // Need to announce the new character set explicitly.
+        result.push(info.prefix);
+      }
+
+      if (info.delimiter === false && result.length > 0) {
+        // Does not convert small Kana if it is not the beginning of the
+        // element.
+        result[result.length - 1] += char;
+      } else if (JaPhoneticData.alwaysReadPhonetically(currentCharacterSet)) {
         result.push(JaPhoneticData.phoneticMap_.get(char) || char);
+      } else {
+        result.push(JaPhoneticData.maybeGetLargeLetterKana(char));
       }
 
       lastCharacterSet = currentCharacterSet;
@@ -108,6 +107,10 @@ JaPhoneticData = class {
     if (character >= '0' && character <= '9') {
       return JaPhoneticData.CharacterSet.HALF_WIDTH_NUMERIC;
     }
+    // See https://unicode.org/charts/PDF/U0000.pdf
+    if (character >= '!' && character <= '~') {
+      return JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL;
+    }
     if (character >= 'Ａ' && character <= 'Ｚ') {
       return JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER;
     }
@@ -116,6 +119,10 @@ JaPhoneticData = class {
     }
     if (character >= '０' && character <= '９') {
       return JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC;
+    }
+    // See https://unicode.org/charts/PDF/UFF00.pdf
+    if (character >= '！' && character <= '～') {
+      return JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL;
     }
     if (character === 'ー') {
       switch (lastCharacterSet) {
@@ -168,9 +175,12 @@ JaPhoneticData = class {
    * prefix: a string that represents the character set. Null if unncessary.
    */
   static getPrefixInfo(lastCharacterSet, currentCharacterSet) {
-    // Don't add prefixes for the same character set.
+    // Don't add prefixes for the same character set except for the sets always
+    // read phonetically.
     if (lastCharacterSet === currentCharacterSet) {
-      return {delimiter: false, prefix: null};
+      return JaPhoneticData.alwaysReadPhonetically(currentCharacterSet) ?
+          {delimiter: true, prefix: null} :
+          {delimiter: false, prefix: null};
     }
     // Exceptional cases:
     switch (currentCharacterSet) {
@@ -227,12 +237,14 @@ JaPhoneticData = class {
           case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC:
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
           case JaPhoneticData.CharacterSet.OTHER:
             return {delimiter: true, prefix: 'ハンカクオオモジ'};
         }
         break;
       case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER:
       case JaPhoneticData.CharacterSet.HALF_WIDTH_NUMERIC:
+      case JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL:
         switch (lastCharacterSet) {
           case JaPhoneticData.CharacterSet.NONE:
             return {delimiter: false, prefix: null};
@@ -245,6 +257,7 @@ JaPhoneticData = class {
           case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER:
           case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER:
           case JaPhoneticData.CharacterSet.HALF_WIDTH_NUMERIC:
+          case JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL:
             return {delimiter: true, prefix: null};
         }
         break;
@@ -252,25 +265,44 @@ JaPhoneticData = class {
         switch (lastCharacterSet) {
           case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC:
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
           case JaPhoneticData.CharacterSet.OTHER:
             return {delimiter: true, prefix: 'オオモジ'};
         }
         break;
       case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
       case JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC:
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
         switch (lastCharacterSet) {
           case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
           case JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC:
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
             return {delimiter: true, prefix: null};
         }
         break;
+      case JaPhoneticData.CharacterSet.OTHER:
+        return {delimiter: true, prefix: null};
     }
     // Returns the default prefix.
     return {
       delimiter: true,
       prefix: JaPhoneticData.getDefaultPrefix(currentCharacterSet)
     };
+  }
+
+  /**
+   * @param {JaPhoneticData.CharacterSet} characterSet
+   * @return {boolean}
+   */
+  static alwaysReadPhonetically(characterSet) {
+    switch (characterSet) {
+      case JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL:
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL:
+      case JaPhoneticData.CharacterSet.OTHER:
+        return true;
+    }
+    return false;
   }
 };
 
@@ -286,10 +318,12 @@ JaPhoneticData.CharacterSet = {
   HALF_WIDTH_ALPHABET_UPPER: 7,         // 'A'
   HALF_WIDTH_ALPHABET_LOWER: 8,         // 'a'
   HALF_WIDTH_NUMERIC: 9,                // '1'
-  FULL_WIDTH_ALPHABET_UPPER: 10,        // 'Ａ'
-  FULL_WIDTH_ALPHABET_LOWER: 11,        // 'ａ'
-  FULL_WIDTH_NUMERIC: 12,               // '１'
-  OTHER: 13                             // Kanji, symbol...
+  HALF_WIDTH_SYMBOL: 10,                // '@'
+  FULL_WIDTH_ALPHABET_UPPER: 11,        // 'Ａ'
+  FULL_WIDTH_ALPHABET_LOWER: 12,        // 'ａ'
+  FULL_WIDTH_NUMERIC: 13,               // '１'
+  FULL_WIDTH_SYMBOL: 14,                // '＠'
+  OTHER: 15                             // Kanji and unsupported symbols
 };
 
 /**
@@ -318,12 +352,16 @@ JaPhoneticData.DEFAULT_PREFIX = new Map([
   [JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER, 'ハンカク'],
   // '1'
   [JaPhoneticData.CharacterSet.HALF_WIDTH_NUMERIC, 'ハンカク'],
+  // '@'
+  [JaPhoneticData.CharacterSet.HALF_WIDTH_SYMBOL, 'ハンカク'],
   // 'Ａ'
   [JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER, 'ゼンカクオオモジ'],
   // 'ａ'
   [JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER, 'ゼンカク'],
   // '１'
   [JaPhoneticData.CharacterSet.FULL_WIDTH_NUMERIC, 'ゼンカク'],
+  // '＠'
+  [JaPhoneticData.CharacterSet.FULL_WIDTH_SYMBOL, 'ゼンカク'],
 ]);
 
 /**

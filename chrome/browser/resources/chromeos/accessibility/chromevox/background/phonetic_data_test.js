@@ -37,6 +37,8 @@ JA_TEST_MAP = new Map([
   ['１', 'イチ'],
   ['ー', 'チョウオン'],
   ['。', 'マル'],
+  ['@', 'アットマーク'],
+  ['＠', 'アットマーク'],
   ['亜', 'アジア ノ ア'],
   ['今', 'コンゲツノコン'],
   ['日', 'ニチヨウビノニチ'],
@@ -57,9 +59,11 @@ TEST_F('ChromeVoxPhoneticDataTest', 'forCharacterJa', function() {
   assertEquals('オオモジ A', PhoneticData.forCharacter('A', 'ja'));
   assertEquals('ハンカク a', PhoneticData.forCharacter('a', 'ja'));
   assertEquals('ハンカク 1', PhoneticData.forCharacter('1', 'ja'));
+  assertEquals('ハンカク @', PhoneticData.forCharacter('@', 'ja'));
   assertEquals('ゼンカクオオモジ Ａ', PhoneticData.forCharacter('Ａ', 'ja'));
   assertEquals('ゼンカク ａ', PhoneticData.forCharacter('ａ', 'ja'));
   assertEquals('ゼンカク １', PhoneticData.forCharacter('１', 'ja'));
+  assertEquals('ゼンカク ＠', PhoneticData.forCharacter('＠', 'ja'));
   assertEquals('アジア ノ ア', PhoneticData.forCharacter('亜', 'ja'));
 });
 
@@ -73,9 +77,11 @@ TEST_F('ChromeVoxPhoneticDataTest', 'forTextJaSingleCharacter', function() {
   assertEquals('オオモジ A', PhoneticData.forText('A', 'ja'));
   assertEquals('a', PhoneticData.forText('a', 'ja'));
   assertEquals('1', PhoneticData.forText('1', 'ja'));
+  assertEquals('アットマーク', PhoneticData.forText('@', 'ja'));
   assertEquals('ゼンカクオオモジ Ａ', PhoneticData.forText('Ａ', 'ja'));
   assertEquals('ゼンカク ａ', PhoneticData.forText('ａ', 'ja'));
   assertEquals('ゼンカク １', PhoneticData.forText('１', 'ja'));
+  assertEquals('ゼンカク アットマーク', PhoneticData.forText('＠', 'ja'));
   assertEquals('アジア ノ ア', PhoneticData.forText('亜', 'ja'));
 });
 
@@ -162,6 +168,17 @@ TEST_F(
 
 TEST_F(
     'ChromeVoxPhoneticDataTest',
+    'forTextJaPairCharacters_EndWithHalfWidthSymbol', function() {
+      assertEquals(
+          'アットマーク アットマーク', PhoneticData.forText('@@', 'ja'));
+      assertEquals('あ アットマーク', PhoneticData.forText('あ@', 'ja'));
+      assertEquals(
+          'ゼンカクオオモジ Ａ ハンカク アットマーク',
+          PhoneticData.forText('Ａ@', 'ja'));
+    });
+
+TEST_F(
+    'ChromeVoxPhoneticDataTest',
     'forTextJaPairCharacters_EndWithFullWidthAlphabetUpper', function() {
       assertEquals('ゼンカクオオモジ ＡＡ', PhoneticData.forText('ＡＡ', 'ja'));
       assertEquals(
@@ -186,6 +203,19 @@ TEST_F(
       assertEquals(
           'ゼンカクオオモジ Ａ １', PhoneticData.forText('Ａ１', 'ja'));
       assertEquals('あ ゼンカク １', PhoneticData.forText('あ１', 'ja'));
+    });
+
+TEST_F(
+    'ChromeVoxPhoneticDataTest',
+    'forTextJaPairCharacters_EndWithFullWidthSymbol', function() {
+      assertEquals(
+          'ゼンカク アットマーク アットマーク',
+          PhoneticData.forText('＠＠', 'ja'));
+      assertEquals(
+          'ゼンカクオオモジ Ａ アットマーク',
+          PhoneticData.forText('Ａ＠', 'ja'));
+      assertEquals(
+          'あ ゼンカク アットマーク', PhoneticData.forText('あ＠', 'ja'));
     });
 
 TEST_F(
