@@ -16,9 +16,9 @@
 
 namespace policy {
 
-using ResultCode = DeviceCommandStartCRDSessionJob::ResultCode;
-using AccessCodeCallback = DeviceCommandStartCRDSessionJob::AccessCodeCallback;
-using ErrorCallback = DeviceCommandStartCRDSessionJob::ErrorCallback;
+using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
+using AccessCodeCallback = DeviceCommandStartCrdSessionJob::AccessCodeCallback;
+using ErrorCallback = DeviceCommandStartCrdSessionJob::ErrorCallback;
 
 namespace {
 
@@ -186,7 +186,7 @@ void CrdHostDelegate::TerminateSession(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void CrdHostDelegate::StartCRDHostAndGetCode(
+void CrdHostDelegate::StartCrdHostAndGetCode(
     const SessionParameters& parameters,
     AccessCodeCallback success_callback,
     ErrorCallback error_callback) {

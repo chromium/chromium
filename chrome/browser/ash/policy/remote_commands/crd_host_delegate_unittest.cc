@@ -22,7 +22,7 @@ namespace policy {
 namespace {
 
 using SessionParameters =
-    DeviceCommandStartCRDSessionJob::Delegate::SessionParameters;
+    DeviceCommandStartCrdSessionJob::Delegate::SessionParameters;
 using StartSupportSessionCallback =
     crosapi::mojom::Remoting::StartSupportSessionCallback;
 using remoting::mojom::StartSupportSessionResponse;
@@ -118,7 +118,7 @@ class Response {
     return Response(access_code);
   }
 
-  static Response Error(DeviceCommandStartCRDSessionJob::ResultCode error_code,
+  static Response Error(DeviceCommandStartCrdSessionJob::ResultCode error_code,
                         const std::string& error_message) {
     return Response(error_code, error_message);
   }
@@ -134,9 +134,9 @@ class Response {
     return error_message_.value_or("<no error received>");
   }
 
-  DeviceCommandStartCRDSessionJob::ResultCode error_code() const {
+  DeviceCommandStartCrdSessionJob::ResultCode error_code() const {
     return error_code_.value_or(
-        DeviceCommandStartCRDSessionJob::ResultCode::SUCCESS);
+        DeviceCommandStartCrdSessionJob::ResultCode::SUCCESS);
   }
 
   std::string access_code() const {
@@ -146,12 +146,12 @@ class Response {
  private:
   explicit Response(const std::string& access_code)
       : access_code_(access_code) {}
-  Response(DeviceCommandStartCRDSessionJob::ResultCode error_code,
+  Response(DeviceCommandStartCrdSessionJob::ResultCode error_code,
            const std::string& error_message)
       : error_code_(error_code), error_message_(error_message) {}
 
   absl::optional<std::string> access_code_;
-  absl::optional<DeviceCommandStartCRDSessionJob::ResultCode> error_code_;
+  absl::optional<DeviceCommandStartCrdSessionJob::ResultCode> error_code_;
   absl::optional<std::string> error_message_;
 };
 
@@ -179,7 +179,7 @@ class CrdHostDelegateTest : public ::testing::Test {
   auto error_callback() {
     return base::BindOnce(
         [](base::OnceCallback<void(Response)> setter,
-           DeviceCommandStartCRDSessionJob::ResultCode error_code,
+           DeviceCommandStartCrdSessionJob::ResultCode error_code,
            const std::string& error_message) {
           std::move(setter).Run(Response::Error(error_code, error_message));
         },
@@ -190,7 +190,7 @@ class CrdHostDelegateTest : public ::testing::Test {
   // and return the response.
   Response WaitForResponse() { return result_.Take(); }
 
-  // Call delegate().StartCRDHostAndGetCode() and wait until the
+  // Call delegate().StartCrdHostAndGetCode() and wait until the
   // |SupportHostObserver| is bound.
   // This observer is used by the CRD host code to inform our delegate of status
   // updates, and is returned by this method so we can spoof these status
@@ -206,7 +206,7 @@ class CrdHostDelegateTest : public ::testing::Test {
               std::move(callback).Run(std::move(response));
             });
 
-    delegate().StartCRDHostAndGetCode(SessionParameters{}, success_callback(),
+    delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
                                       error_callback());
 
     EXPECT_TRUE(observer_.is_bound()) << "StartSession() was not called";
@@ -233,7 +233,7 @@ TEST_F(CrdHostDelegateTest, ShouldPassOAuthTokenToRemotingService) {
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
 
-  delegate().StartCRDHostAndGetCode(parameters, success_callback(),
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
                                     error_callback());
 
   ASSERT_FALSE(actual_parameters.is_null());
@@ -248,7 +248,7 @@ TEST_F(CrdHostDelegateTest, ShouldPassUserNameToRemotingService) {
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
 
-  delegate().StartCRDHostAndGetCode(parameters, success_callback(),
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
                                     error_callback());
 
   ASSERT_FALSE(actual_parameters.is_null());
@@ -264,7 +264,7 @@ TEST_F(CrdHostDelegateTest,
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
 
-  delegate().StartCRDHostAndGetCode(parameters, success_callback(),
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
                                     error_callback());
 
   EXPECT_EQ(actual_parameters.suppress_notifications, false);
@@ -280,7 +280,7 @@ TEST_F(CrdHostDelegateTest,
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
 
-  delegate().StartCRDHostAndGetCode(parameters, success_callback(),
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
                                     error_callback());
 
   EXPECT_EQ(actual_parameters.suppress_notifications, true);
@@ -296,7 +296,7 @@ TEST_F(CrdHostDelegateTest,
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
 
-  delegate().StartCRDHostAndGetCode(parameters, success_callback(),
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
                                     error_callback());
 
   EXPECT_EQ(actual_parameters.terminate_upon_input, false);
@@ -310,7 +310,7 @@ TEST_F(CrdHostDelegateTest, ShouldPassTerminateUponInputTrueToRemotingService) {
   EXPECT_CALL(remoting_service(), StartSession)
       .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
 
-  delegate().StartCRDHostAndGetCode(parameters, success_callback(),
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
                                     error_callback());
 
   EXPECT_EQ(actual_parameters.terminate_upon_input, true);
@@ -326,12 +326,12 @@ TEST_F(CrdHostDelegateTest, ShouldReportErrorIfStartSessionReturnsError) {
         std::move(callback).Run(std::move(response));
       });
 
-  delegate().StartCRDHostAndGetCode(SessionParameters{}, success_callback(),
+  delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
                                     error_callback());
 
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
-  EXPECT_EQ(DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR,
+  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
             response.error_code());
 }
 
@@ -355,7 +355,7 @@ TEST_F(CrdHostDelegateTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("host disconnected", response.error_message());
-  EXPECT_EQ(DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR,
+  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
             response.error_code());
 }
 
@@ -368,7 +368,7 @@ TEST_F(CrdHostDelegateTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("policy error", response.error_message());
-  EXPECT_EQ(DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR,
+  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
             response.error_code());
 }
 
@@ -381,7 +381,7 @@ TEST_F(CrdHostDelegateTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("invalid domain error", response.error_message());
-  EXPECT_EQ(DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR,
+  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
             response.error_code());
 }
 
@@ -394,21 +394,21 @@ TEST_F(CrdHostDelegateTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("host state error", response.error_message());
-  EXPECT_EQ(DeviceCommandStartCRDSessionJob::FAILURE_CRD_HOST_ERROR,
+  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
             response.error_code());
 }
 
 TEST_F(CrdHostDelegateTest, HasActiveSessionShouldBeTrueWhenASessionIsStarted) {
   EXPECT_FALSE(delegate().HasActiveSession());
 
-  delegate().StartCRDHostAndGetCode(SessionParameters{}, success_callback(),
+  delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
                                     error_callback());
 
   EXPECT_TRUE(delegate().HasActiveSession());
 }
 
 TEST_F(CrdHostDelegateTest, TerminateSessionShouldTerminateTheActiveSession) {
-  delegate().StartCRDHostAndGetCode(SessionParameters{}, success_callback(),
+  delegate().StartCrdHostAndGetCode(SessionParameters{}, success_callback(),
                                     error_callback());
   EXPECT_TRUE(delegate().HasActiveSession());
 

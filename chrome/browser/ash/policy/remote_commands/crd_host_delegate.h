@@ -18,7 +18,7 @@ namespace policy {
 // Delegate that will start a session with the CRD native host.
 // Will keep the session alive and active as long as this class lives.
 // Deleting this class object will forcefully interrupt the active CRD session.
-class CrdHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate {
+class CrdHostDelegate : public DeviceCommandStartCrdSessionJob::Delegate {
  public:
   // Proxy class to establish a connection with the Remoting service.
   // Overwritten in unittests to inject a test service.
@@ -44,13 +44,13 @@ class CrdHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate {
   CrdHostDelegate& operator=(const CrdHostDelegate&) = delete;
   ~CrdHostDelegate() override;
 
-  // DeviceCommandStartCRDSessionJob::Delegate implementation:
+  // DeviceCommandStartCrdSessionJob::Delegate implementation:
   bool HasActiveSession() const override;
   void TerminateSession(base::OnceClosure callback) override;
-  void StartCRDHostAndGetCode(
+  void StartCrdHostAndGetCode(
       const SessionParameters& parameters,
-      DeviceCommandStartCRDSessionJob::AccessCodeCallback success_callback,
-      DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) override;
+      DeviceCommandStartCrdSessionJob::AccessCodeCallback success_callback,
+      DeviceCommandStartCrdSessionJob::ErrorCallback error_callback) override;
 
  private:
   class CrdHostSession;

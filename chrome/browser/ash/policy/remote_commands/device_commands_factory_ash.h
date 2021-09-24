@@ -32,9 +32,9 @@ class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
 
  private:
   DeviceCloudPolicyManagerAsh* policy_manager_;
-  std::unique_ptr<DeviceCommandStartCRDSessionJob::Delegate> crd_host_delegate_;
+  std::unique_ptr<DeviceCommandStartCrdSessionJob::Delegate> crd_host_delegate_;
 
-  DeviceCommandStartCRDSessionJob::Delegate* GetCrdHostDelegate();
+  DeviceCommandStartCrdSessionJob::Delegate* GetCrdHostDelegate();
 };
 
 }  // namespace policy

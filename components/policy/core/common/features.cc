@@ -27,7 +27,7 @@ const base::FeatureParam<base::TimeDelta>
 const base::Feature kUploadBrowserDeviceIdentifier{
     "UploadBrowserDeviceIdentifier", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kCRDForManagedUserSessions{
+const base::Feature kCrdForManagedUserSessions{
     "CRDForManagedUserSessions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kLoginEventReporting{"LoginEventReporting",

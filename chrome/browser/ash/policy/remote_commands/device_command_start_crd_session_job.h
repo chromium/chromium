@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
@@ -20,7 +19,7 @@ namespace policy {
 // Remote command that would start Chrome Remote Desktop host and return auth
 // code. This command is usable only for devices running Kiosk sessions, for
 // Affiliated Users and for Managed Guest Sessions.
-class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
+class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  public:
   enum ResultCode {
     // Successfully obtained access code.
@@ -70,19 +69,18 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
     virtual void TerminateSession(base::OnceClosure callback) = 0;
 
     // Attempts to start CRD host and get Auth Code.
-    virtual void StartCRDHostAndGetCode(const SessionParameters& parameters,
+    virtual void StartCrdHostAndGetCode(const SessionParameters& parameters,
                                         AccessCodeCallback success_callback,
                                         ErrorCallback error_callback) = 0;
   };
 
-  explicit DeviceCommandStartCRDSessionJob(Delegate* crd_host_delegate);
+  explicit DeviceCommandStartCrdSessionJob(Delegate* crd_host_delegate);
+  ~DeviceCommandStartCrdSessionJob() override;
 
-  DeviceCommandStartCRDSessionJob(const DeviceCommandStartCRDSessionJob&) =
+  DeviceCommandStartCrdSessionJob(const DeviceCommandStartCrdSessionJob&) =
       delete;
-  DeviceCommandStartCRDSessionJob& operator=(
-      const DeviceCommandStartCRDSessionJob&) = delete;
-
-  ~DeviceCommandStartCRDSessionJob() override;
+  DeviceCommandStartCrdSessionJob& operator=(
+      const DeviceCommandStartCrdSessionJob&) = delete;
 
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
@@ -114,7 +112,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
 
   // Check if all required system services (singletons) are ready.
   bool AreServicesReady() const;
-  bool UserTypeSupportsCRD() const;
+  bool UserTypeSupportsCrd() const;
   UserType GetUserType() const;
   bool IsRunningAutoLaunchedKiosk() const;
   bool IsDeviceIdle() const;
@@ -166,7 +164,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
 
   bool terminate_session_attempted_ = false;
 
-  base::WeakPtrFactory<DeviceCommandStartCRDSessionJob> weak_factory_{this};
+  base::WeakPtrFactory<DeviceCommandStartCrdSessionJob> weak_factory_{this};
 };
 
 }  // namespace policy
