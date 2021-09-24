@@ -1330,6 +1330,8 @@ source_set("browser") {
     "portal/portal.h",
     "portal/portal_navigation_throttle.cc",
     "portal/portal_navigation_throttle.h",
+    "prerender/prerender_attributes.cc",
+    "prerender/prerender_attributes.h",
     "prerender/prerender_commit_deferring_condition.cc",
     "prerender/prerender_commit_deferring_condition.h",
     "prerender/prerender_host.cc",

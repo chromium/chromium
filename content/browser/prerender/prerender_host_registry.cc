@@ -71,10 +71,8 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
 }
 
 int PrerenderHostRegistry::CreateAndStartHost(
-    blink::mojom::PrerenderAttributesPtr attributes,
+    const PrerenderAttributes& attributes,
     RenderFrameHostImpl& initiator_render_frame_host) {
-  DCHECK(attributes);
-
   // The prerender request from a page being prerendered should be deferred
   // until activation by the Mojo capability control.
   DCHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
@@ -88,7 +86,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
   // Ensure observers are notified that a trigger occurred.
   base::ScopedClosureRunner notify_trigger(
       base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
-                     base::Unretained(this), attributes->url));
+                     base::Unretained(this), attributes.url));
 
   // Don't prerender when the trigger is in the background.
   auto* web_contents =
@@ -113,7 +111,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
   // TODO(crbug.com/1176054): Support cross-origin prerendering.
   if (!initiator_render_frame_host.GetLastCommittedOrigin().IsSameOriginWith(
-          url::Origin::Create(attributes->url))) {
+          url::Origin::Create(attributes.url))) {
     base::UmaHistogramEnumeration(
         "Prerender.Experimental.PrerenderHostFinalStatus",
         PrerenderHost::FinalStatus::kCrossOriginNavigation);
@@ -122,7 +120,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
   // Ignore prerendering requests for the same URL.
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-    if (iter.second->GetInitialUrl() == attributes->url)
+    if (iter.second->GetInitialUrl() == attributes.url)
       return iter.first;
   }
 
@@ -136,8 +134,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 
-  auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_render_frame_host);
+  auto prerender_host =
+      std::make_unique<PrerenderHost>(attributes, initiator_render_frame_host);
   const int frame_tree_node_id = prerender_host->frame_tree_node_id();
 
   CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,

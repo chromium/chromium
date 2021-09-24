@@ -11,11 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
+#include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -66,9 +66,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // For triggers.
   // Creates and starts a host. Returns the root frame tree node id of the
   // prerendered page, which can be used as the id of the host.
-  // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
-  // PrerenderAttributesPtr.
-  int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
+  int CreateAndStartHost(const PrerenderAttributes& attributes,
                          RenderFrameHostImpl& initiator_render_frame_host);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is

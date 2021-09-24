@@ -411,9 +411,9 @@ bool TestWebContents::IsBackForwardCacheSupported() {
 }
 
 int TestWebContents::AddPrerender(const GURL& url) {
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = url;
-  return GetPrerenderHostRegistry()->CreateAndStartHost(std::move(attributes),
+  PrerenderAttributes attributes{url, PrerenderTriggerType::kSpeculationRule,
+                                 Referrer()};
+  return GetPrerenderHostRegistry()->CreateAndStartHost(attributes,
                                                         *GetMainFrame());
 }
 

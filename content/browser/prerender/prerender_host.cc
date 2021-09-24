@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/referrer.h"
 #include "net/base/load_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -309,9 +310,9 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
   std::unique_ptr<FrameTree> frame_tree_;
 };
 
-PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
+PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
                              RenderFrameHostImpl& initiator_render_frame_host)
-    : attributes_(std::move(attributes)),
+    : attributes_(attributes),
       initiator_origin_(initiator_render_frame_host.GetLastCommittedOrigin()),
       initiator_process_id_(initiator_render_frame_host.GetProcess()->GetID()),
       initiator_frame_token_(initiator_render_frame_host.GetFrameToken()) {
@@ -344,7 +345,7 @@ bool PrerenderHost::StartPrerendering() {
   Observe(page_holder_->GetWebContents());
 
   // Start prerendering navigation.
-  NavigationController::LoadURLParams load_url_params(attributes_->url);
+  NavigationController::LoadURLParams load_url_params(attributes_.url);
   load_url_params.initiator_origin = initiator_origin_;
   load_url_params.initiator_process_id = initiator_process_id_;
   load_url_params.initiator_frame_token = initiator_frame_token_;
@@ -352,8 +353,7 @@ bool PrerenderHost::StartPrerendering() {
   // Just use the referrer from attributes, as NoStatePrefetch does.
   // TODO(crbug.com/1176054): For cross-origin prerender, follow the spec steps
   // for "sufficiently-strict speculative navigation referrer policies".
-  if (attributes_->referrer)
-    load_url_params.referrer = Referrer(*attributes_->referrer);
+  load_url_params.referrer = attributes_.referrer;
 
   // TODO(https://crbug.com/1189034): Should we set `override_user_agent` here?
   // Things seem to work without it.
@@ -798,7 +798,7 @@ void PrerenderHost::RecordFinalStatus(FinalStatus status) {
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {
-  return attributes_->url;
+  return attributes_.url;
 }
 
 void PrerenderHost::AddObserver(Observer* observer) {

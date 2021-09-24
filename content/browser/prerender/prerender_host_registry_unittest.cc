@@ -181,11 +181,11 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     RenderFrameHostImpl* render_frame_host = web_contents->GetMainFrame();
 
     const GURL kPrerenderingUrl("https://example.com/next");
-    auto attributes = blink::mojom::PrerenderAttributes::New();
-    attributes->url = kPrerenderingUrl;
+    PrerenderAttributes attributes{
+        kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
     PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-    registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+    registry->CreateAndStartHost(attributes, *render_frame_host);
     PrerenderHost* prerender_host =
         registry->FindHostByUrlForTesting(kPrerenderingUrl);
     CommitPrerenderNavigation(*prerender_host);
@@ -229,12 +229,12 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
     ASSERT_TRUE(render_frame_host);
 
     const GURL kPrerenderingUrl("https://example.com/next");
-    auto attributes = blink::mojom::PrerenderAttributes::New();
-    attributes->url = kPrerenderingUrl;
+    PrerenderAttributes attributes{
+        kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
     PrerenderHostRegistry* registry = wc->GetPrerenderHostRegistry();
     const int prerender_frame_tree_node_id =
-        registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+        registry->CreateAndStartHost(attributes, *render_frame_host);
     ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
     PrerenderHost* prerender_host =
         registry->FindNonReservedHostById(prerender_frame_tree_node_id);
@@ -265,12 +265,12 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   ASSERT_TRUE(render_frame_host);
 
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
+  PrerenderAttributes attributes{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+      registry->CreateAndStartHost(attributes, *render_frame_host);
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -288,22 +288,21 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
 
   const GURL kPrerenderingUrl("https://example.com/next");
 
-  auto attributes1 = blink::mojom::PrerenderAttributes::New();
-  attributes1->url = kPrerenderingUrl;
-
-  auto attributes2 = blink::mojom::PrerenderAttributes::New();
-  attributes2->url = kPrerenderingUrl;
+  PrerenderAttributes attributes1{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
+  PrerenderAttributes attributes2{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int frame_tree_node_id1 =
-      registry->CreateAndStartHost(std::move(attributes1), *render_frame_host);
+      registry->CreateAndStartHost(attributes1, *render_frame_host);
   PrerenderHost* prerender_host1 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
 
   // Start the prerender host for the same URL. This second host should be
   // ignored, and the first host should still be findable.
   const int frame_tree_node_id2 =
-      registry->CreateAndStartHost(std::move(attributes2), *render_frame_host);
+      registry->CreateAndStartHost(attributes2, *render_frame_host);
   EXPECT_EQ(frame_tree_node_id1, frame_tree_node_id2);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl),
             prerender_host1);
@@ -325,18 +324,17 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
   // After the first prerender page was activated, PrerenderHostRegistry can
   // start prerendering a new one.
   const GURL kPrerenderingUrl1("https://example.com/next1");
-  auto attributes1 = blink::mojom::PrerenderAttributes::New();
-  attributes1->url = kPrerenderingUrl1;
-
   const GURL kPrerenderingUrl2("https://example.com/next2");
-  auto attributes2 = blink::mojom::PrerenderAttributes::New();
-  attributes2->url = kPrerenderingUrl2;
+  PrerenderAttributes attributes1{
+      kPrerenderingUrl1, PrerenderTriggerType::kSpeculationRule, Referrer()};
+  PrerenderAttributes attributes2{
+      kPrerenderingUrl2, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   int frame_tree_node_id1 =
-      registry->CreateAndStartHost(std::move(attributes1), *render_frame_host);
+      registry->CreateAndStartHost(attributes1, *render_frame_host);
   int frame_tree_node_id2 =
-      registry->CreateAndStartHost(std::move(attributes2), *render_frame_host);
+      registry->CreateAndStartHost(attributes2, *render_frame_host);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
@@ -353,10 +351,8 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_Activation) {
 
   // After the first prerender page was activated, PrerenderHostRegistry can
   // start prerendering a new one.
-  attributes2 = blink::mojom::PrerenderAttributes::New();
-  attributes2->url = kPrerenderingUrl2;
   frame_tree_node_id2 =
-      registry->CreateAndStartHost(std::move(attributes2), *render_frame_host);
+      registry->CreateAndStartHost(attributes2, *render_frame_host);
   EXPECT_NE(frame_tree_node_id2, kNoFrameTreeNodeId);
   histogram_tester.ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus",
@@ -465,12 +461,12 @@ TEST_F(PrerenderHostRegistryTest,
   ASSERT_TRUE(render_frame_host);
 
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
+  PrerenderAttributes attributes{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+      registry->CreateAndStartHost(attributes, *render_frame_host);
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -523,12 +519,12 @@ TEST_F(PrerenderHostRegistryTest, CancelHost) {
   ASSERT_TRUE(render_frame_host);
 
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
+  PrerenderAttributes attributes{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+      registry->CreateAndStartHost(attributes, *render_frame_host);
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   registry->CancelHost(prerender_frame_tree_node_id,
@@ -548,12 +544,12 @@ TEST_F(PrerenderHostRegistryTest,
 
   // Start prerendering.
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
+  PrerenderAttributes attributes{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+      registry->CreateAndStartHost(attributes, *render_frame_host);
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -613,12 +609,12 @@ TEST_F(PrerenderHostRegistryTest,
   ASSERT_TRUE(render_frame_host);
 
   const GURL kPrerenderingUrl("https://example.com/next");
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
+  PrerenderAttributes attributes{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *render_frame_host);
+      registry->CreateAndStartHost(attributes, *render_frame_host);
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -660,11 +656,11 @@ TEST_F(PrerenderHostRegistryTest,
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   // Start the second prerender for the same URL.
-  auto attributes2 = blink::mojom::PrerenderAttributes::New();
-  attributes2->url = kPrerenderingUrl;
+  PrerenderAttributes attributes2{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
 
   const int prerender_frame_tree_node_id2 =
-      registry->CreateAndStartHost(std::move(attributes2), *render_frame_host);
+      registry->CreateAndStartHost(attributes2, *render_frame_host);
   ASSERT_NE(prerender_frame_tree_node_id2, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host2 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -694,10 +690,10 @@ TEST_F(PrerenderHostRegistryTest,
   const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
   PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
-  auto attributes = blink::mojom::PrerenderAttributes::New();
-  attributes->url = kPrerenderingUrl;
+  PrerenderAttributes attributes{
+      kPrerenderingUrl, PrerenderTriggerType::kSpeculationRule, Referrer()};
   const int prerender_frame_tree_node_id =
-      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+      registry->CreateAndStartHost(attributes, *initiator_rfh);
   EXPECT_EQ(prerender_frame_tree_node_id, RenderFrameHost::kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_frame_tree_node_id);

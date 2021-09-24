@@ -9,6 +9,7 @@
 
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
+#include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
@@ -18,7 +19,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
-#include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -86,7 +86,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kMaxValue = kTriggerBackgrounded,
   };
 
-  PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
+  PrerenderHost(const PrerenderAttributes& attributes,
                 RenderFrameHostImpl& initiator_render_frame_host);
   ~PrerenderHost() override;
 
@@ -174,9 +174,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   bool AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation);
 
-  // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
-  // PrerenderAttributesPtr.
-  const blink::mojom::PrerenderAttributesPtr attributes_;
+  const PrerenderAttributes attributes_;
   const url::Origin initiator_origin_;
   const int initiator_process_id_;
   const blink::LocalFrameToken initiator_frame_token_;
