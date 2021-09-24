@@ -178,7 +178,7 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
     ConfigAgc1AnalogForClippingControlExperiment(agc1_analog_config);
   }
 
-  // Hybrid AGC experiment.
+  // Hybrid AGC feature.
   const bool use_hybrid_agc =
       base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc);
   auto& agc2_config = apm_config.gain_controller2;

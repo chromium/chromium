@@ -25,9 +25,8 @@ webrtc::AudioProcessing::Config CreateApmGetConfig(
 }
 
 // Verify that the default settings in AudioProcessingSettings are applied
-// correctly by CreateWebRtcAudioProcessingModule().
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     CheckDefaultAudioProcessingSettings) {
+// correctly by `CreateWebRtcAudioProcessingModule()`.
+TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   auto config = CreateApmGetConfig(/*settings=*/{});
 
   EXPECT_TRUE(config.pipeline.multi_channel_render);
@@ -37,8 +36,11 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
   EXPECT_FALSE(config.pre_amplifier.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
   EXPECT_TRUE(config.gain_controller1.enabled);
-  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  EXPECT_TRUE(config.gain_controller2.enabled);
+#else
   EXPECT_FALSE(config.gain_controller2.enabled);
+#endif
   EXPECT_TRUE(config.noise_suppression.enabled);
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
@@ -65,7 +67,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAgcConfig) {
   EXPECT_EQ(config.gain_controller1.mode, Mode::kFixedDigital);
 #else
   EXPECT_EQ(config.gain_controller1.mode, Mode::kAdaptiveAnalog);
-#endif  // defined(OS_ANDROID)
+#endif
 
   const auto& agc1_analog_config =
       config.gain_controller1.analog_gain_controller;
@@ -91,7 +93,17 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAgcConfig) {
   // TODO(bugs.webrtc.org/7909): Uncomment below once fixed.
   // #endif
 
+  // Check that either AGC1 digital or AGC2 digital is used based on the
+  // platforms where the Hybrid AGC is enabled by default.
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  EXPECT_FALSE(agc1_analog_config.enable_digital_adaptive);
+  EXPECT_TRUE(config.gain_controller2.enabled);
+  EXPECT_TRUE(config.gain_controller2.adaptive_digital.enabled);
+#else
+  // AGC1 Digital.
+  EXPECT_TRUE(agc1_analog_config.enable_digital_adaptive);
   EXPECT_FALSE(config.gain_controller2.enabled);
+#endif
 }
 
 // When `automatic_gain_control` and `experimental_automatic_gain_control` are
@@ -103,12 +115,14 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
       /*settings=*/{.automatic_gain_control = false,
                     .experimental_automatic_gain_control = false});
 #if BUILDFLAG(IS_CHROMECAST)
+  // Override the default config since on Chromecast AGC1 is explicitly
+  // disabled.
   auto expected_config = kDefaultApmConfig.gain_controller1;
   expected_config.analog_gain_controller.enabled = false;
   EXPECT_EQ(config.gain_controller1, expected_config);
 #else
   EXPECT_EQ(config.gain_controller1, kDefaultApmConfig.gain_controller1);
-#endif  // !BUILDFLAG(IS_CHROMECAST)
+#endif
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest,
@@ -117,25 +131,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
       /*settings=*/{.automatic_gain_control = false,
                     .experimental_automatic_gain_control = false});
   EXPECT_EQ(config.gain_controller2, kDefaultApmConfig.gain_controller2);
-}
-
-// When `automatic_gain_control` and `experimental_automatic_gain_control` are
-// false and the Hybrid AGC experiment is enabled, the default AGC1
-// configuration is used, but on Chromecast AGC1 Analog is explicitly disabled.
-TEST(CreateWebRtcAudioProcessingModuleTest,
-     Agc1ConfigUnchangedIfAgcSettingsDisabledAndHybridAgcEnabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebRtcAnalogAgcClippingControl);
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = false,
-                    .experimental_automatic_gain_control = false});
-#if BUILDFLAG(IS_CHROMECAST)
-  auto expected_config = kDefaultApmConfig.gain_controller1;
-  expected_config.analog_gain_controller.enabled = false;
-  EXPECT_EQ(config.gain_controller1, expected_config);
-#else
-  EXPECT_EQ(config.gain_controller1, kDefaultApmConfig.gain_controller1);
-#endif  // !BUILDFLAG(IS_CHROMECAST)
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest,
@@ -165,7 +160,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, DisableAnalogAgc) {
   EXPECT_TRUE(config.gain_controller1.enabled);
   EXPECT_FALSE(config.gain_controller1.analog_gain_controller.enabled);
 }
-#else   // BUILDFLAG(IS_CHROMECAST)
+#else  // !BUILDFLAG(IS_CHROMECAST)
 // Checks that setting `experimental_automatic_gain_control` to false does not
 // disable the analog controller.
 // TODO(bugs.webrtc.org/7909): Remove once fixed.
@@ -208,17 +203,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, OverrideAgcStartupMinVolume) {
             123);
 }
 #endif  // !(defined(OS_ANDROID) || defined(OS_IOS))
-
-TEST(CreateWebRtcAudioProcessingModuleTest, EnableAgcAndExperimentalAgc) {
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  EXPECT_TRUE(config.gain_controller1.enabled);
-  EXPECT_TRUE(config.gain_controller1.analog_gain_controller.enabled);
-  EXPECT_FALSE(config.gain_controller1.analog_gain_controller.clipping_predictor
-                   .enabled);
-  EXPECT_FALSE(config.gain_controller2.enabled);
-}
 
 TEST(CreateWebRtcAudioProcessingModuleTest, EnableAgc1AnalogClippingControl) {
   ::base::test::ScopedFeatureList feature_list;
@@ -346,7 +330,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, EnableHybridAgcDryRun) {
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest,
-     CannotEnableHybridAgcWhenAgcIsDisabled) {
+     HybridAgcDisabledWhenAgcIsDisabled) {
   ::base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kWebRtcHybridAgc);
   auto config =
@@ -356,7 +340,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest,
-     CannotEnableHybridAgcWhenExperimentalAgcIsDisabled) {
+     HybridAgcDisabledWhenExperimentalAgcIsDisabled) {
   ::base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kWebRtcHybridAgc);
   auto config = CreateApmGetConfig(

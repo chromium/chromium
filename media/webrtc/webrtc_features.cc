@@ -8,6 +8,15 @@
 #include "build/build_config.h"
 
 namespace features {
+namespace {
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+constexpr base::FeatureState kWebRtcHybridAgcState =
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#else
+constexpr base::FeatureState kWebRtcHybridAgcState =
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#endif
+}  // namespace
 
 // When enabled we will tell WebRTC that we want to use the
 // Windows.Graphics.Capture API based DesktopCapturer, if it is available.
@@ -25,10 +34,9 @@ const base::Feature kWebRtcEnableCaptureMultiChannelApm{
 const base::Feature kWebRtcAllow48kHzProcessingOnArm{
     "WebRtcAllow48kHzProcessingOnArm", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the WebRTC Agc2 digital adaptation with WebRTC Agc1 analog
-// adaptation. Feature for http://crbug.com/873650. Is sent to WebRTC.
-const base::Feature kWebRtcHybridAgc{"WebRtcHybridAgc",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables the WebRTC Hybrid AGC configuration - i.e., AGC1 analog and AGC2
+// digital (see http://crbug.com/1231085).
+const base::Feature kWebRtcHybridAgc{"WebRtcHybridAgc", kWebRtcHybridAgcState};
 
 // Enables and configures the clipping control in the WebRTC analog AGC.
 const base::Feature kWebRtcAnalogAgcClippingControl{
