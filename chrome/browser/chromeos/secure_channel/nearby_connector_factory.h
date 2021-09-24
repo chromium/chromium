@@ -38,4 +38,11 @@ class NearbyConnectorFactory : public BrowserContextKeyedServiceFactory {
 }  // namespace secure_channel
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::NearbyConnectorFactory;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_SECURE_CHANNEL_NEARBY_CONNECTOR_FACTORY_H_

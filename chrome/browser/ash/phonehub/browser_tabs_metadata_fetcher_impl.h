@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
+#define CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
+#include "chromeos/components/phonehub/browser_tabs_model.h"
 
 namespace favicon_base {
 struct FaviconImageResult;
@@ -16,7 +17,7 @@ namespace favicon {
 class HistoryUiFaviconRequestHandler;
 }  // namespace favicon
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // BrowserTabsMetadataFetcher implementation. First, a vector containing
@@ -53,6 +54,6 @@ class BrowserTabsMetadataFetcherImpl : public BrowserTabsMetadataFetcher {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_IMPL_H_

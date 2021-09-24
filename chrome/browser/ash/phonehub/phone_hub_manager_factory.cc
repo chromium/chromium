@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
+#include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/ash/phonehub/browser_tabs_metadata_fetcher_impl.h"
+#include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
-#include "chrome/browser/chromeos/phonehub/browser_tabs_model_provider_impl.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
@@ -28,15 +28,24 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after chromeos/components/phonehub is
+// migrated.
+using ::chromeos::phonehub::MultideviceSetupStateUpdater;
+using ::chromeos::phonehub::NotificationAccessManagerImpl;
+using ::chromeos::phonehub::OnboardingUiTrackerImpl;
+using ::chromeos::phonehub::PhoneHubManagerImpl;
+using ::chromeos::phonehub::ScreenLockManagerImpl;
 
 content::BrowserContext* g_context_for_service = nullptr;
 
 bool IsProhibitedByPolicy(Profile* profile) {
   return !multidevice_setup::IsFeatureAllowed(
-      multidevice_setup::mojom::Feature::kPhoneHub, profile->GetPrefs());
+      chromeos::multidevice_setup::mojom::Feature::kPhoneHub,
+      profile->GetPrefs());
 }
 
 bool IsLoggedInAsPrimaryUser(Profile* profile) {
@@ -110,7 +119,7 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
 
   // Provide |phone_hub_manager| to the system tray so that it can be used by
   // the UI.
-  ash::SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
+  SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
 
   DCHECK(!g_context_for_service);
   g_context_for_service = context;
@@ -138,7 +147,7 @@ void PhoneHubManagerFactory::BrowserContextShutdown(
   // expected to be deleted *before* the Profile, so this check is only expected
   // to be necessary in tests.
   if (g_context_for_service == context) {
-    ash::SystemTray* system_tray = ash::SystemTray::Get();
+    auto* system_tray = SystemTray::Get();
     if (system_tray)
       system_tray->SetPhoneHubManager(nullptr);
 
@@ -157,4 +166,4 @@ void PhoneHubManagerFactory::RegisterProfilePrefs(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

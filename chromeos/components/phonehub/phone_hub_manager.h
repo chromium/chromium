@@ -60,4 +60,11 @@ class PhoneHubManager {
 }  // namespace phonehub
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace phonehub {
+using ::chromeos::phonehub::PhoneHubManager;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_

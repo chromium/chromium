@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
+#include "chrome/browser/ash/phonehub/browser_tabs_metadata_fetcher_impl.h"
 
 #include "base/barrier_closure.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -10,7 +10,7 @@
 #include "components/sync_sessions/synced_session.h"
 #include "components/ukm/scheme_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -118,4 +118,4 @@ void BrowserTabsMetadataFetcherImpl::OnFaviconReady(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

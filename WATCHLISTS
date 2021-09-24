@@ -1543,7 +1543,7 @@
                   '|permission_context',
     },
     'phonehub': {
-      'filepath': 'chrome/browser/chromeos/phonehub/'\
+      'filepath': 'chrome/browser/ash/phonehub/'\
                   '|chromeos/components/phonehub/'\
                   '|ash/system/phonehub/',
     },

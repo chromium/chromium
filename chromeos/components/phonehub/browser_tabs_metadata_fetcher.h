@@ -45,4 +45,11 @@ class BrowserTabsMetadataFetcher {
 }  // namespace phonehub
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace phonehub {
+using ::chromeos::phonehub::BrowserTabsMetadataFetcher;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_H_

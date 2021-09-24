@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/phonehub/browser_tabs_model_provider_impl.h"
+#include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
@@ -12,7 +12,7 @@
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 BrowserTabsModelProviderImpl::BrowserTabsModelProviderImpl(
@@ -129,4 +129,4 @@ void BrowserTabsModelProviderImpl::OnMetadataFetched(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/phonehub/browser_tabs_model_provider_impl.h"
+#include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/phonehub/fake_browser_tabs_metadata_fetcher.h"
@@ -15,13 +15,18 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
-using testing::_;
-using testing::Return;
-
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after chromeos/components/phonehub is
+// migrated.
+using ::chromeos::phonehub::CreateFakeBrowserTabMetadata;
+using ::chromeos::phonehub::FakeBrowserTabsMetadataFetcher;
+using ::chromeos::phonehub::MutablePhoneModel;
+
+using ::testing::_;
 
 const char kPhoneNameOne[] = "Pixel";
 const char kPhoneNameTwo[] = "Galaxy";
@@ -126,9 +131,10 @@ class BrowserTabsModelProviderImplTest
   }
 
   void SetPiiFreeName(const std::string& pii_free_name) {
-    fake_multidevice_setup_client_.SetHostStatusWithDevice(std::make_pair(
-        multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-        CreatePhoneDevice(/*pii_name=*/pii_free_name)));
+    fake_multidevice_setup_client_.SetHostStatusWithDevice(
+        std::make_pair(chromeos::multidevice_setup::mojom::HostStatus::
+                           kEligibleHostExistsButNoHostSet,
+                       CreatePhoneDevice(/*pii_name=*/pii_free_name)));
   }
 
   base::CallbackListSubscription MockSubscribeToForeignSessionsChanged(
@@ -289,4 +295,4 @@ TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

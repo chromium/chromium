@@ -105,9 +105,9 @@
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/account_manager_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
@@ -411,7 +411,7 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
         ash::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
             profile);
     chromeos::phonehub::PhoneHubManager* phone_hub_manager =
-        chromeos::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
+        ash::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     web_ui()->AddMessageHandler(std::make_unique<
                                 chromeos::settings::MultideviceHandler>(
         profile->GetPrefs(),

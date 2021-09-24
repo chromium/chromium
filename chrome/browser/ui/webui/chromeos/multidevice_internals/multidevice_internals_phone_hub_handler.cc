@@ -7,7 +7,7 @@
 #include "ash/public/cpp/system_tray.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
+#include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
@@ -321,7 +321,7 @@ void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
   PA_LOG(VERBOSE) << "Setting real Phone Hub Manager";
   Profile* profile = Profile::FromWebUI(web_ui());
   chromeos::phonehub::PhoneHubManager* phone_hub_manager =
-      chromeos::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
+      phonehub::PhoneHubManagerFactory::GetForProfile(profile);
   ash::SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
 
   RemoveObservers();

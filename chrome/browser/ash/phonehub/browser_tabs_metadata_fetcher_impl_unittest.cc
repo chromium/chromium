@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
+#include "chrome/browser/ash/phonehub/browser_tabs_metadata_fetcher_impl.h"
 
 #include <deque>
 
@@ -18,7 +18,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -349,4 +349,4 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, MultipleWindows) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
