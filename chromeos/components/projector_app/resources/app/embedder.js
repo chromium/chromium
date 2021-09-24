@@ -37,8 +37,13 @@ Polymer({
 
     let client = AppTrustedCommFactory.getPostMessageAPIClient();
 
-    this.addWebUIListener('onCanStartNewSession', (canStart) => {
-      client.onCanStartNewSession(canStart);
+    this.addWebUIListener('onNewScreencastPreconditionChanged', (canStart) => {
+      if (typeof canStart !== "boolean") {
+        console.error(
+            'Invalid argument to onNewScreencastPreconditionChanged', canStart);
+        return;
+      }
+      client.onNewScreencastPreconditionChanged(canStart);
     });
   },
 });

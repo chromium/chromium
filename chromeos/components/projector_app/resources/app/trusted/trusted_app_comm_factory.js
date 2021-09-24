@@ -24,8 +24,8 @@ export class UntrustedAppClient extends PostMessageAPIClient {
    * @param {!boolean} canStart
    * @return {Promise<boolean>}
    */
-  onCanStartNewSession(canStart) {
-    return this.callApiFn('onCanStartNewSession', [canStart]);
+  onNewScreencastPreconditionChanged(canStart) {
+    return this.callApiFn('onNewScreencastPreconditionChanged', [canStart]);
   }
 }
 

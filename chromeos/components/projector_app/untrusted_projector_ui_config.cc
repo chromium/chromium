@@ -31,7 +31,8 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
   source->AddResourcePaths(
       base::make_span(kChromeosProjectorAppBundleResources,
                       kChromeosProjectorAppBundleResourcesSize));
-  source->AddResourcePath("", IDR_PROJECTOR_APP_INDEX_HTML);
+  source->AddResourcePath("",
+                          IDR_CHROMEOS_PROJECTOR_APP_UNTRUSTED_APP_INDEX_HTML);
 
   // Allows WebUI resources like Polymer and PostMessageAPI to be accessible
   // inside the untrusted iframe.

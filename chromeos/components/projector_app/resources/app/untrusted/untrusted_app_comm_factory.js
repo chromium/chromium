@@ -7,6 +7,15 @@ import {RequestHandler} from 'chrome-untrusted://projector/js/post_message_api_r
 
 const TARGET_URL = 'chrome://projector/'
 
+/**
+ * Returns the projector app element inside this current DOM.
+ * @return {projectorApp.AppApi}
+ */
+function getAppElement() {
+  return /** @type {projectorApp.AppApi} */ (
+      document.querySelector('projector-app'));
+}
+
 // A client that sends notification to the chrome://projector embedder.
 export class TrustedAppClient extends PostMessageAPIClient {
   /**
@@ -78,10 +87,14 @@ export class UntrustedAppRequestHandler extends RequestHandler {
     super(null, TARGET_URL, TARGET_URL);
     this.targetWindow_ = parentWindow;
 
-    this.registerMethod('onCanStartNewSession', (canStart) => {
-      // TODO(b/196245932) Call into the projector app externs to notify it on
-      // whether it can start a new session.
-      return true;
+    this.registerMethod('onNewScreencastPreconditionChanged', (canStart) => {
+      if (canStart.length !== 1 || typeof canStart[0] !== "boolean") {
+        console.error(
+            'Invalid argument to onNewScreencastPreconditionChanged', canStart);
+        return;
+      }
+
+      getAppElement().onNewScreencastPreconditionChanged(canStart[0]);
     });
   }
 
@@ -110,7 +123,9 @@ export class AppUntrustedCommFactory {
 
     AppUntrustedCommFactory.requestHandler_ =
         new UntrustedAppRequestHandler(window.parent);
-  }
+
+    getAppElement().setClientDelegate(AppUntrustedCommFactory.client_);
+}
 
   /**
    * In order to use this class, please do the following (e.g. to check if it is
