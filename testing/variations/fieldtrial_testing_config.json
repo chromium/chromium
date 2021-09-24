@@ -6231,25 +6231,6 @@
             ]
         }
     ],
-    "PreconnectSameOriginDesktop": [
-        {
-            "platforms": [
-                "windows",
-                "chromeos",
-                "chromeos_lacros",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithExtendedSocket",
-                    "disable_features": [
-                        "NavigationPredictorPreconnectHoldback"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectToSearch": [
         {
             "platforms": [
