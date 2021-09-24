@@ -215,6 +215,10 @@ class ScanService : public scanning::mojom::ScanService,
   // a user launching the Scan app and being able to interact with it.
   base::TimeTicks get_scanners_time_;
 
+  // The time a multi-page scan session starts. Used to record the duration of a
+  // multi-page scan session.
+  base::TimeTicks multi_page_start_time_;
+
   // Helper class for for file path manipulation and verification.
   ScanningFilePathHelper file_path_helper_;
 

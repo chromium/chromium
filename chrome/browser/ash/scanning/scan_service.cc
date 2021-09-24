@@ -251,6 +251,8 @@ void ScanService::StartMultiPageScan(
   multi_page_controller_receiver_.set_disconnect_handler(base::BindOnce(
       &ScanService::ResetMultiPageScanController, base::Unretained(this)));
   std::move(callback).Run(std::move(pending_remote));
+
+  multi_page_start_time_ = base::TimeTicks::Now();
 }
 
 bool ScanService::SendScanRequest(
@@ -363,6 +365,10 @@ void ScanService::CompleteMultiPageScan() {
                   lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
   base::UmaHistogramCounts100("Scanning.MultiPageScan.NumPagesScanned",
                               num_pages_scanned_);
+  base::UmaHistogramLongTimes100(
+      "Scanning.MultiPageScan.SessionDuration",
+      base::TimeTicks::Now() - multi_page_start_time_);
+  multi_page_start_time_ = base::TimeTicks();
   multi_page_controller_receiver_.reset();
 }
 

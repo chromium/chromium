@@ -49,6 +49,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Scanning.MultiPageScan.SessionDuration" units="ms"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the time between a user starting the first scan in a multi-page scan
+    session to the time the user clicks save to end the session. This does not
+    record when a multi-page scan session ends prematurely without the PDF being
+    saved.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.MultiPageScan.ToolbarAction"
     enum="ScanMultiPageToolbarAction" expires_after="2022-09-03">
   <owner>gavinwill@chromium.org</owner>
