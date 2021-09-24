@@ -23,21 +23,6 @@ namespace extensions {
 
 using StorageAreaTest = NativeExtensionBindingsSystemUnittest;
 
-// A specialization of StorageAreaTest that pretends it's running
-// on version_info::Channel::UNKNOWN.
-class StorageAreaTrunkTest : public StorageAreaTest {
- public:
-  StorageAreaTrunkTest() = default;
-  ~StorageAreaTrunkTest() override = default;
-  StorageAreaTrunkTest(const StorageAreaTrunkTest& other) = delete;
-  StorageAreaTrunkTest& operator=(const StorageAreaTrunkTest& other) = delete;
-
- private:
-  // TODO(crbug.com/1185226): Remove unknown channel when chrome.storage.session
-  // is released in stable.
-  ScopedCurrentChannel current_channel_{version_info::Channel::UNKNOWN};
-};
-
 // Test that trying to use StorageArea.get without a StorageArea `this` fails
 // (with a helpful error message).
 TEST_F(StorageAreaTest, TestUnboundedUse) {
@@ -133,7 +118,7 @@ TEST_F(StorageAreaTest, InvalidInvocationError) {
               "No matching signature."));
 }
 
-TEST_F(StorageAreaTrunkTest, HasOnChanged) {
+TEST_F(StorageAreaTest, HasOnChanged) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
           .SetManifestKey("manifest_version", 3)

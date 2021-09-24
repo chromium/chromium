@@ -303,23 +303,6 @@ class ServiceWorkerBasedBackgroundTest : public ServiceWorkerTest {
   }
 };
 
-// A specialization of ExtensionSettingsApiTest that pretends it's running
-// on version_info::Channel::UNKNOWN.
-class ServiceWorkerBasedBackgroundTrunkTest
-    : public ServiceWorkerBasedBackgroundTest {
- public:
-  ServiceWorkerBasedBackgroundTrunkTest() = default;
-  ~ServiceWorkerBasedBackgroundTrunkTest() override = default;
-  ServiceWorkerBasedBackgroundTrunkTest(
-      const ServiceWorkerBasedBackgroundTrunkTest& other) = delete;
-  ServiceWorkerBasedBackgroundTrunkTest& operator=(
-      const ServiceWorkerBasedBackgroundTrunkTest& other) = delete;
-
- private:
-  // TODO(crbug.com/1185226): Remove unknown channel when chrome.storage.session
-  // is released in stable.
-  ScopedCurrentChannel current_channel_{version_info::Channel::UNKNOWN};
-};
 
 class ServiceWorkerBasedBackgroundTestWithNotification
     : public ServiceWorkerBasedBackgroundTest {
@@ -552,22 +535,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, ChromeAppUndefined) {
 }
 
 // Tests chrome.storage APIs.
-// TODO(crbug.com/1185226): Change parent class to
-// `ServiceWorkerBasedBackgroundTest` when chrome.storage.session is released in
-// stable.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTrunkTest,
-                       StorageSetAndGet) {
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, StorageSetAndGet) {
   ASSERT_TRUE(
       RunExtensionTest("service_worker/worker_based_background/storage"))
       << message_;
 }
 
 // Tests chrome.storage APIs are only enabled with permission.
-// TODO(crbug.com/1185226): Change parent class to
-// `ServiceWorkerBasedBackgroundTest` when chrome.storage.session is released in
-// stable.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTrunkTest,
-                       StorageNoPermissions) {
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, StorageNoPermissions) {
   ASSERT_TRUE(RunExtensionTest(
       "service_worker/worker_based_background/storage_no_permissions"))
       << message_;
