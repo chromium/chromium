@@ -19,6 +19,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -228,8 +230,8 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
   widget->set_frame_type(views::Widget::FrameType::kForceCustom);
   widget->Init(std::move(params));
 
-  SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground)));
+  SetBackground(views::CreateSolidBackground(
+      GetColorProvider()->GetColor(ui::kColorDialogBackground)));
 
   display::Screen* screen = display::Screen::GetScreen();
   // TODO(sergeyu): Move the notification to the display being captured when
@@ -271,8 +273,8 @@ ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
   constexpr auto kPadding = gfx::Insets(5, 10);
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), kPadding);
-  SkColor color = widget->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground);
+  SkColor color =
+      widget->GetColorProvider()->GetColor(ui::kColorDialogBackground);
   frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW, color));
   return frame;

@@ -46,6 +46,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_event_details.h"
@@ -580,15 +581,14 @@ void TabStripPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
       color_utils::SkColorToRgbaString(
           embedder_->GetColor(ThemeProperties::COLOR_TAB_THROBBER_WAITING));
   colors["--tabstrip-indicator-recording-color"] =
-      color_utils::SkColorToRgbaString(embedder_->GetSystemColor(
-          ui::NativeTheme::kColorId_AlertSeverityHigh));
+      color_utils::SkColorToRgbaString(
+          embedder_->GetColorProviderColor(ui::kColorAlertHighSeverity));
   colors["--tabstrip-indicator-pip-color"] = throbber_color;
   colors["--tabstrip-indicator-capturing-color"] = throbber_color;
-  colors["--tabstrip-tab-blocked-color"] =
-      color_utils::SkColorToRgbaString(embedder_->GetSystemColor(
-          ui::NativeTheme::kColorId_ProminentButtonColor));
+  colors["--tabstrip-tab-blocked-color"] = color_utils::SkColorToRgbaString(
+      embedder_->GetColorProviderColor(ui::kColorButtonBackgroundProminent));
   colors["--tabstrip-focus-outline-color"] = color_utils::SkColorToRgbaString(
-      embedder_->GetSystemColor(ui::NativeTheme::kColorId_FocusedBorderColor));
+      embedder_->GetColorProviderColor(ui::kColorFocusableBorderFocused));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   colors["--tabstrip-scrollbar-thumb-color-rgb"] =

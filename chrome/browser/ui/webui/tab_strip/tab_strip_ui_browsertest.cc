@@ -52,7 +52,7 @@ class MockTabStripUIEmbedder : public TabStripUIEmbedder {
   MOCK_METHOD0(HideEditDialogForGroup, void());
   MOCK_METHOD0(GetLayout, TabStripUILayout());
   MOCK_CONST_METHOD1(GetColor, SkColor(int));
-  MOCK_CONST_METHOD1(GetSystemColor, SkColor(ui::NativeTheme::ColorId));
+  MOCK_CONST_METHOD1(GetColorProviderColor, SkColor(ui::ColorId));
 };
 
 }  // namespace

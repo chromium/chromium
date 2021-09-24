@@ -34,11 +34,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -441,11 +442,9 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
 
 void FindBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  ui::NativeTheme* theme = GetNativeTheme();
-  SkColor bg_color =
-      SkColorSetA(theme->GetSystemColor(
-                      ui::NativeTheme::kColorId_TextfieldDefaultBackground),
-                  0xFF);
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  SkColor bg_color = SkColorSetA(
+      color_provider->GetColor(ui::kColorTextfieldBackground), 0xFF);
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
       bg_color);
@@ -457,7 +456,7 @@ void FindBarView::OnThemeChanged() {
   SetBorder(std::move(border));
 
   const SkColor base_foreground_color =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_TextfieldDefaultColor);
+      color_provider->GetColor(ui::kColorTextfieldForeground);
 
   match_count_text_->SetBackgroundColor(bg_color);
   match_count_text_->SetEnabledColor(

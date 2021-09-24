@@ -69,7 +69,7 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
   void HideEditDialogForGroup() override {}
   TabStripUILayout GetLayout() override { return TabStripUILayout(); }
   SkColor GetColor(int id) const override { return SK_ColorWHITE; }
-  SkColor GetSystemColor(ui::NativeTheme::ColorId id) const override {
+  SkColor GetColorProviderColor(ui::ColorId id) const override {
     return SK_ColorWHITE;
   }
 };

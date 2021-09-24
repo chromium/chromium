@@ -20,8 +20,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -166,12 +167,12 @@ void CookieInfoView::OnThemeChanged() {
 }
 
 void CookieInfoView::SetTextfieldColors() {
-  auto* theme = GetNativeTheme();
+  const auto* color_provider = GetColorProvider();
   for (const auto textfield_pair : property_textfields_) {
     textfield_pair.second->SetBackgroundColor(
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DialogBackground));
+        color_provider->GetColor(ui::kColorDialogBackground));
     textfield_pair.second->SetTextColor(
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DialogForeground));
+        color_provider->GetColor(ui::kColorDialogForeground));
   }
 }
 

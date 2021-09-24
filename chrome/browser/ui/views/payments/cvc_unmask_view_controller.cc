@@ -36,6 +36,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -60,8 +61,7 @@ class ErrorLabelView : public views::Label {
   // views::View:
   void OnThemeChanged() override {
     Label::OnThemeChanged();
-    SetEnabledColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityHigh));
+    SetEnabledColor(GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
   }
 };
 

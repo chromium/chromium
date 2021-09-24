@@ -21,6 +21,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
@@ -106,10 +108,9 @@ void LocalCardMigrationErrorDialogView::Init() {
       views::BoxLayout::MainAxisAlignment::kCenter);
   error_view->SetBorder(views::CreateEmptyBorder(kMigrationDialogInsets));
   auto* error_image = new views::ImageView();
-  error_image->SetImage(
-      gfx::CreateVectorIcon(kBrowserToolsErrorIcon,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_AlertSeverityHigh)));
+  error_image->SetImage(gfx::CreateVectorIcon(
+      kBrowserToolsErrorIcon,
+      GetColorProvider()->GetColor(ui::kColorAlertHighSeverity)));
   error_view->AddChildView(error_image);
 
   auto* error_message = new views::Label(

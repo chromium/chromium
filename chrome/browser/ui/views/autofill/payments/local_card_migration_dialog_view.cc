@@ -37,6 +37,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -143,8 +144,7 @@ class TipTextContainer : public views::View {
     tip_->SetEnabledColor(
         should_use_dark_colors
             ? gfx::kGoogleGrey200
-            : GetNativeTheme()->GetSystemColor(
-                  ui::NativeTheme::kColorId_LabelSecondaryColor));
+            : GetColorProvider()->GetColor(ui::kColorLabelForegroundSecondary));
   }
 
  private:

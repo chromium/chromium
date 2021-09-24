@@ -14,6 +14,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -64,8 +66,7 @@ class PayIconView : public views::ImageView {
 #else
     gfx::ImageSkia image =
         gfx::CreateVectorIcon(kCreditCardIcon, kGooglePayLogoHeight,
-                              GetNativeTheme()->GetSystemColor(
-                                  ui::NativeTheme::kColorId_DefaultIconColor));
+                              GetColorProvider()->GetColor(ui::kColorIcon));
 #endif
     SetImage(image);
   }

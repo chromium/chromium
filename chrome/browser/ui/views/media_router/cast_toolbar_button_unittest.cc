@@ -23,6 +23,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -103,19 +105,17 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     button_ = widget_->SetContentsView(std::make_unique<CastToolbarButton>(
         browser_.get(), media_router, std::move(context_menu)));
 
-    ui::NativeTheme* native_theme = button_->GetNativeTheme();
+    const ui::ColorProvider* color_provider = button_->GetColorProvider();
     idle_icon_ = gfx::Image(
         gfx::CreateVectorIcon(vector_icons::kMediaRouterIdleIcon,
                               button_->GetThemeProvider()->GetColor(
                                   ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON)));
     warning_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterWarningIcon,
-        native_theme->GetSystemColor(
-            ui::NativeTheme::kColorId_AlertSeverityMedium)));
+        color_provider->GetColor(ui::kColorAlertMediumSeverity)));
     error_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterErrorIcon,
-        native_theme->GetSystemColor(
-            ui::NativeTheme::kColorId_AlertSeverityHigh)));
+        color_provider->GetColor(ui::kColorAlertHighSeverity)));
     active_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterActiveIcon, gfx::kGoogleBlue500));
   }

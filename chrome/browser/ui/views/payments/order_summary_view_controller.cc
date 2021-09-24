@@ -17,6 +17,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -46,9 +48,7 @@ class LineItemRow : public views::View {
         kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets,
         kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets);
     SetBorder(payments::CreatePaymentRequestRowBorder(
-        GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_SeparatorColor),
-        row_insets));
+        GetColorProvider()->GetColor(ui::kColorSeparator), row_insets));
   }
 };
 

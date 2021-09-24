@@ -10,7 +10,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -69,8 +70,8 @@ bool PaymentRequestRowView::GetClickable() const {
 }
 
 void PaymentRequestRowView::SetActiveBackground() {
-  // TODO(crbug/976890): Check whether we can GetSystemColor from a NativeTheme
-  // ColorId instead of hard code here.
+  // TODO(crbug/976890): Check whether we can GetColor from a ColorId instead of
+  // hard code here.
   SetBackground(views::CreateSolidBackground(SkColorSetA(SK_ColorBLACK, 0x0D)));
 }
 
@@ -93,12 +94,11 @@ void PaymentRequestRowView::UpdateBottomSeparator() {
   // Widget.
   // TODO(crbug.com/1213247): Update PaymentRequestSheetController to recompute
   // the bounds of its ScrollView in response to changes in preferred size.
-  SetBorder(bottom_separator_visible_ && GetWidget()
-                ? payments::CreatePaymentRequestRowBorder(
-                      GetNativeTheme()->GetSystemColor(
-                          ui::NativeTheme::kColorId_SeparatorColor),
-                      insets_)
-                : views::CreateEmptyBorder(insets_));
+  SetBorder(
+      bottom_separator_visible_ && GetWidget()
+          ? payments::CreatePaymentRequestRowBorder(
+                GetColorProvider()->GetColor(ui::kColorSeparator), insets_)
+          : views::CreateEmptyBorder(insets_));
 }
 
 void PaymentRequestRowView::SetIsHighlighted(bool highlighted) {

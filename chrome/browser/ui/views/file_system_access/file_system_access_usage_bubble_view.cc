@@ -34,6 +34,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -203,11 +204,10 @@ class CollapsibleListView : public views::View {
   // views::View
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    auto* theme = GetNativeTheme();
-    const SkColor icon_color =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DefaultIconColor);
+    const auto* color_provider = GetColorProvider();
+    const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
     const SkColor disabled_icon_color =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DisabledIconColor);
+        color_provider->GetColor(ui::kColorIconDisabled);
     views::SetImageFromVectorIconWithColor(
         expand_collapse_button_, vector_icons::kCaretDownIcon,
         ui::TableModel::kIconSize, icon_color);

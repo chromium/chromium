@@ -14,6 +14,8 @@
 #include "components/payments/content/secure_payment_confirmation_model.h"
 #include "components/payments/core/sizes.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -41,9 +43,7 @@ class BorderedRowView : public views::View {
   void OnThemeChanged() override {
     View::OnThemeChanged();
     SetBorder(views::CreateSolidSidedBorder(
-        0, 0, 1, 0,
-        GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_SeparatorColor)));
+        0, 0, 1, 0, GetColorProvider()->GetColor(ui::kColorSeparator)));
   }
 };
 

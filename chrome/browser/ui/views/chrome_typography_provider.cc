@@ -9,10 +9,11 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/platform_font.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
@@ -151,18 +152,18 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
     style = views::style::STYLE_SECONDARY;
   }
 
-  ui::NativeTheme::ColorId color_id;
+  ui::ColorId color_id;
   switch (style) {
     case STYLE_RED:
-      color_id = ui::NativeTheme::kColorId_AlertSeverityHigh;
+      color_id = ui::kColorAlertHighSeverity;
       break;
     case STYLE_GREEN:
-      color_id = ui::NativeTheme::kColorId_AlertSeverityLow;
+      color_id = ui::kColorAlertLowSeverity;
       break;
     default:
       return TypographyProvider::GetColor(view, context, style);
   }
-  return view.GetNativeTheme()->GetSystemColor(color_id);
+  return view.GetColorProvider()->GetColor(color_id);
 }
 
 int ChromeTypographyProvider::GetLineHeight(int context, int style) const {

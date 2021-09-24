@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -193,9 +194,7 @@ class BorderedScrollView : public views::ScrollView {
     ScrollView::OnThemeChanged();
     SetBorder(views::CreateBorderPainter(
         std::make_unique<BorderedScrollViewBorderPainter>(
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_SeparatorColor),
-            this),
+            GetColorProvider()->GetColor(ui::kColorSeparator), this),
         gfx::Insets(1, 0)));
   }
 };

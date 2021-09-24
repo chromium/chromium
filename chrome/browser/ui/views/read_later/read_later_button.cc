@@ -32,6 +32,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -156,8 +158,7 @@ void ReadLaterButton::OnThemeChanged() {
           gfx::kGoogleBlue050, gfx::kGoogleBlue900));
 
   dot_indicator_->SetColor(
-      /*dot_color=*/GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_AlertSeverityHigh),
+      /*dot_color=*/GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
       /*border_color=*/theme_provider->GetColor(
           ThemeProperties::COLOR_TOOLBAR));
 }

@@ -36,6 +36,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -210,8 +211,8 @@ class CircularImageButton : public views::ImageButton {
     const SkScalar kButtonRadius =
         (kCircularImageButtonSize + 2 * kBorderThickness) / 2.0f;
 
-    SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
+    const auto* color_provider = GetColorProvider();
+    SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
     if (background_profile_color_ != SK_ColorTRANSPARENT)
       icon_color = GetProfileForegroundIconColor(background_profile_color_);
     gfx::ImageSkia image =
@@ -221,8 +222,8 @@ class CircularImageButton : public views::ImageButton {
     views::InkDrop::Get(this)->SetBaseColor(icon_color);
 
     if (show_border_) {
-      const SkColor separator_color = GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_MenuSeparatorColor);
+      const SkColor separator_color =
+          color_provider->GetColor(ui::kColorMenuSeparator);
       SetBorder(views::CreateRoundedRectBorder(kBorderThickness, kButtonRadius,
                                                separator_color));
     }
@@ -247,8 +248,7 @@ class FeatureButtonIconView : public views::ImageView {
   void OnThemeChanged() override {
     views::ImageView::OnThemeChanged();
     constexpr int kIconSize = 16;
-    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
+    const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
     gfx::ImageSkia image =
         ImageForMenu(icon_, icon_to_image_ratio_, icon_color);
     SetImage(SizeImage(ColorImage(image, icon_color), kIconSize));
@@ -270,8 +270,7 @@ class ProfileManagementIconView : public views::ImageView {
     views::ImageView::OnThemeChanged();
     constexpr float kIconToImageRatio = 0.75f;
     constexpr int kIconSize = 20;
-    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DefaultIconColor);
+    const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
     gfx::ImageSkia image = ImageForMenu(icon_, kIconToImageRatio, icon_color);
     SetImage(SizeImage(image, kIconSize));
   }
@@ -321,8 +320,7 @@ class AvatarImageView : public views::ImageView {
 
  private:
   SkColor GetBackgroundColor() const {
-    return GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_BubbleBackground);
+    return GetColorProvider()->GetColor(ui::kColorBubbleBackground);
   }
 
   ui::ImageModel avatar_image_;
@@ -662,7 +660,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
     const std::u16string& description,
     const std::u16string& button_text,
-    ui::NativeTheme::ColorId background_color_id,
+    ui::ColorId background_color_id,
     const base::RepeatingClosure& action,
     bool show_sync_badge) {
   const int kDescriptionIconSpacing =
@@ -748,7 +746,7 @@ void ProfileMenuViewBase::BuildSyncInfoWithoutCallToAction(
                           base::Unretained(this), std::move(action)),
       this, text));
 
-  // No background required, so ui::NativeTheme isn't needed and
+  // No background required, so ui::ColorProvider isn't needed and
   // |sync_info_background_callback_| can be set to base::DoNothing().
   sync_info_container_->SetBackground(nullptr);
   sync_info_background_callback_ = base::DoNothing();
@@ -1001,17 +999,15 @@ void ProfileMenuViewBase::FocusFirstProfileButton() {
 }
 
 void ProfileMenuViewBase::BuildSyncInfoCallToActionBackground(
-    ui::NativeTheme::ColorId background_color_id,
-    ui::NativeTheme* native_theme) {
+    ui::ColorId background_color_id,
+    const ui::ColorProvider* color_provider) {
   const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
   sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
-      native_theme->GetSystemColor(background_color_id), radius));
+      color_provider->GetColor(background_color_id), radius));
   sync_info_container_->SetBorder(views::CreatePaddedBorder(
       views::CreateRoundedRectBorder(
-          1, radius,
-          native_theme->GetSystemColor(
-              ui::NativeTheme::kColorId_MenuSeparatorColor)),
+          1, radius, color_provider->GetColor(ui::kColorMenuSeparator)),
       gfx::Insets(kSyncInfoInsidePadding)));
 }
 
@@ -1022,9 +1018,10 @@ void ProfileMenuViewBase::Init() {
 
 void ProfileMenuViewBase::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground)));
-  sync_info_background_callback_.Run(GetNativeTheme());
+  const auto* color_provider = GetColorProvider();
+  SetBackground(views::CreateSolidBackground(
+      color_provider->GetColor(ui::kColorDialogBackground)));
+  sync_info_background_callback_.Run(color_provider);
 }
 
 void ProfileMenuViewBase::OnWindowClosing() {

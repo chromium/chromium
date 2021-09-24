@@ -56,6 +56,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
@@ -241,25 +243,18 @@ class InMenuButton : public LabelButton {
   // views::LabelButton
   void OnThemeChanged() override {
     LabelButton::OnThemeChanged();
-    ui::NativeTheme* theme = GetNativeTheme();
-    if (theme) {
-      SetTextColor(
-          views::Button::STATE_DISABLED,
-          theme->GetSystemColor(
-              ui::NativeTheme::kColorId_DisabledMenuItemForegroundColor));
-      SetTextColor(
-          views::Button::STATE_HOVERED,
-          theme->GetSystemColor(
-              ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor));
-      SetTextColor(
-          views::Button::STATE_PRESSED,
-          theme->GetSystemColor(
-              ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor));
-      SetTextColor(
-          views::Button::STATE_NORMAL,
-          theme->GetSystemColor(
-              ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor));
-    }
+    const ui::ColorProvider* color_provider = GetColorProvider();
+    SetTextColor(
+        views::Button::STATE_DISABLED,
+        color_provider->GetColor(ui::kColorMenuItemForegroundDisabled));
+    SetTextColor(
+        views::Button::STATE_HOVERED,
+        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
+    SetTextColor(
+        views::Button::STATE_PRESSED,
+        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
+    SetTextColor(views::Button::STATE_NORMAL,
+                 color_provider->GetColor(ui::kColorMenuItemForeground));
   }
 };
 
@@ -580,20 +575,18 @@ class AppMenu::ZoomView : public AppMenuView {
   void OnThemeChanged() override {
     AppMenuView::OnThemeChanged();
 
-    ui::NativeTheme* theme = GetNativeTheme();
-    zoom_label_->SetEnabledColor(theme->GetSystemColor(
-        ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor));
+    const ui::ColorProvider* color_provider = GetColorProvider();
+    zoom_label_->SetEnabledColor(
+        color_provider->GetColor(ui::kColorMenuItemForeground));
 
     fullscreen_button_->SetImage(
         ImageButton::STATE_NORMAL,
         gfx::CreateVectorIcon(
             kFullscreenIcon,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor)));
+            color_provider->GetColor(ui::kColorMenuItemForeground)));
     gfx::ImageSkia hovered_fullscreen_image = gfx::CreateVectorIcon(
         kFullscreenIcon,
-        theme->GetSystemColor(
-            ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor));
+        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
     fullscreen_button_->SetImage(ImageButton::STATE_HOVERED,
                                  hovered_fullscreen_image);
     fullscreen_button_->SetImage(ImageButton::STATE_PRESSED,

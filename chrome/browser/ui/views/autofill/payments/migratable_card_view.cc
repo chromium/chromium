@@ -18,8 +18,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -84,9 +84,8 @@ std::u16string MigratableCardView::GetCardIdentifierString() const {
 
 void MigratableCardView::OnThemeChanged() {
   View::OnThemeChanged();
-  checkbox_uncheck_text_container_->SetBackground(
-      views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_BubbleFooterBackground)));
+  checkbox_uncheck_text_container_->SetBackground(views::CreateSolidBackground(
+      GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground)));
 }
 
 std::unique_ptr<views::View>

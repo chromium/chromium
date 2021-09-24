@@ -69,6 +69,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_target.h"
 #include "ui/gfx/animation/tween.h"
@@ -864,9 +866,9 @@ SkColor WebUITabStripContainerView::GetColor(int id) const {
   return GetThemeProvider()->GetColor(id);
 }
 
-SkColor WebUITabStripContainerView::GetSystemColor(
-    ui::NativeTheme::ColorId id) const {
-  return GetNativeTheme()->GetSystemColor(id);
+SkColor WebUITabStripContainerView::GetColorProviderColor(
+    ui::ColorId id) const {
+  return GetColorProvider()->GetColor(id);
 }
 
 int WebUITabStripContainerView::GetHeightForWidth(int w) const {

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -31,6 +32,7 @@ class Button;
 }  // namespace views
 
 namespace ui {
+class ColorProvider;
 class ImageModel;
 }  // namespace ui
 
@@ -121,12 +123,11 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
   // Displays the sync info section as a rounded rectangle with text on top and
   // a button on the bottom. Clicking the button triggers |action|.
-  void BuildSyncInfoWithCallToAction(
-      const std::u16string& description,
-      const std::u16string& button_text,
-      ui::NativeTheme::ColorId background_color_id,
-      const base::RepeatingClosure& action,
-      bool show_sync_badge);
+  void BuildSyncInfoWithCallToAction(const std::u16string& description,
+                                     const std::u16string& button_text,
+                                     ui::ColorId background_color_id,
+                                     const base::RepeatingClosure& action,
+                                     bool show_sync_badge);
   // Displays the sync info section as a rectangle with text. Clicking the
   // rectangle triggers |action|.
   void BuildSyncInfoWithoutCallToAction(const std::u16string& text,
@@ -181,8 +182,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void FocusFirstProfileButton();
 
   void BuildSyncInfoCallToActionBackground(
-      ui::NativeTheme::ColorId background_color_id,
-      ui::NativeTheme* native_theme);
+      ui::ColorId background_color_id,
+      const ui::ColorProvider* color_provider);
 
   // views::BubbleDialogDelegateView:
   void Init() final;
@@ -221,9 +222,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   CloseBubbleOnTabActivationHelper close_bubble_helper_;
 
   // Builds the background for |sync_info_container_|. This requires
-  // ui::NativeTheme, which is only available once OnThemeChanged() is called,
+  // ui::ColorProvider, which is only available once OnThemeChanged() is called,
   // so the class caches this callback and calls it afterwards.
-  base::RepeatingCallback<void(ui::NativeTheme*)>
+  base::RepeatingCallback<void(const ui::ColorProvider*)>
       sync_info_background_callback_ = base::DoNothing();
 
   // Actual heading string would be set by children classes.

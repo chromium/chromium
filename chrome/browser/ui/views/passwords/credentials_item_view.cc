@@ -21,6 +21,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -176,8 +178,8 @@ int CredentialsItemView::GetPreferredHeight() const {
 
 void CredentialsItemView::OnPaintBackground(gfx::Canvas* canvas) {
   if (GetState() == STATE_PRESSED || GetState() == STATE_HOVERED) {
-    canvas->DrawColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor));
+    canvas->DrawColor(
+        GetColorProvider()->GetColor(ui::kColorMenuItemBackgroundSelected));
   }
 }
 

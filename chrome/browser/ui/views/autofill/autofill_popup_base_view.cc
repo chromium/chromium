@@ -24,9 +24,10 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/skia_util.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -41,38 +42,31 @@ int AutofillPopupBaseView::GetCornerRadius() {
 }
 
 SkColor AutofillPopupBaseView::GetBackgroundColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DropdownBackgroundColor);
+  return GetColorProvider()->GetColor(ui::kColorDropdownBackground);
 }
 
 SkColor AutofillPopupBaseView::GetForegroundColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DropdownForegroundColor);
+  return GetColorProvider()->GetColor(ui::kColorDropdownForeground);
 }
 
 SkColor AutofillPopupBaseView::GetSelectedBackgroundColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DropdownSelectedBackgroundColor);
+  return GetColorProvider()->GetColor(ui::kColorDropdownBackgroundSelected);
 }
 
 SkColor AutofillPopupBaseView::GetSelectedForegroundColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DropdownSelectedForegroundColor);
+  return GetColorProvider()->GetColor(ui::kColorDropdownForegroundSelected);
 }
 
 SkColor AutofillPopupBaseView::GetFooterBackgroundColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_BubbleFooterBackground);
+  return GetColorProvider()->GetColor(ui::kColorBubbleFooterBackground);
 }
 
 SkColor AutofillPopupBaseView::GetSeparatorColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_MenuSeparatorColor);
+  return GetColorProvider()->GetColor(ui::kColorMenuSeparator);
 }
 
 SkColor AutofillPopupBaseView::GetWarningColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_AlertSeverityHigh);
+  return GetColorProvider()->GetColor(ui::kColorAlertHighSeverity);
 }
 
 AutofillPopupBaseView::AutofillPopupBaseView(

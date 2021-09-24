@@ -15,10 +15,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/image_model_utils.h"
 
 #if defined(OS_WIN)
@@ -95,11 +96,9 @@ void TabIconView::PaintThrobber(gfx::Canvas* canvas) {
   if (throbber_start_time_ == base::TimeTicks())
     throbber_start_time_ = base::TimeTicks::Now();
 
-  gfx::PaintThrobberSpinning(
-      canvas, GetLocalBounds(),
-      GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberSpinningColor),
-      base::TimeTicks::Now() - throbber_start_time_);
+  gfx::PaintThrobberSpinning(canvas, GetLocalBounds(),
+                             GetColorProvider()->GetColor(ui::kColorThrobber),
+                             base::TimeTicks::Now() - throbber_start_time_);
 }
 
 void TabIconView::PaintFavicon(gfx::Canvas* canvas,

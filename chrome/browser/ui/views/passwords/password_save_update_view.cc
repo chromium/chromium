@@ -43,6 +43,7 @@
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -539,11 +540,10 @@ void PasswordSaveUpdateView::AddedToWidget() {
 void PasswordSaveUpdateView::OnThemeChanged() {
   PasswordBubbleViewBase::OnThemeChanged();
   if (password_view_button_) {
-    auto* theme = GetNativeTheme();
-    const SkColor icon_color =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DefaultIconColor);
+    const auto* color_provider = GetColorProvider();
+    const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
     const SkColor disabled_icon_color =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DisabledIconColor);
+        color_provider->GetColor(ui::kColorIconDisabled);
     views::SetImageFromVectorIconWithColor(password_view_button_, kEyeIcon,
                                            GetDefaultSizeOfVectorIcon(kEyeIcon),
                                            icon_color);

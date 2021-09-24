@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -64,18 +65,17 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
   SetEnabled(true);
 
   title()->SetTextContext(views::style::CONTEXT_MENU);
-  SetBackground(views::CreateThemedSolidBackground(
-      this, ui::NativeTheme::kColorId_MenuBackgroundColor));
+  SetBackground(
+      views::CreateThemedSolidBackground(this, ui::kColorMenuBackground));
 }
 
 SharingHubBubbleActionButton::~SharingHubBubbleActionButton() = default;
 
 void SharingHubBubbleActionButton::UpdateBackgroundColor() {
   // Pretend to be a menu item:
-  SkColor bg_color = GetNativeTheme()->GetSystemColor(
-      GetVisualState() == STATE_HOVERED
-          ? ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor
-          : ui::NativeTheme::kColorId_MenuBackgroundColor);
+  SkColor bg_color = GetColorProvider()->GetColor(
+      GetVisualState() == STATE_HOVERED ? ui::kColorMenuItemBackgroundSelected
+                                        : ui::kColorMenuBackground);
 
   SetBackground(views::CreateSolidBackground(bg_color));
   SetTitleTextStyle(

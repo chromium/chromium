@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/skia_util.h"
@@ -92,9 +94,9 @@ void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     clip.inset(one_pixel, one_pixel);
 
   cc::PaintFlags flags;
-  flags.setColor(GetNativeTheme()->GetSystemColor(
-      showing_shadow ? ui::NativeTheme::kColorId_BubbleBorderWhenShadowPresent
-                     : ui::NativeTheme::kColorId_BubbleBorder));
+  flags.setColor(GetColorProvider()->GetColor(
+      showing_shadow ? ui::kColorBubbleBorderWhenShadowPresent
+                     : ui::kColorBubbleBorder));
   flags.setAntiAlias(true);
   if (showing_shadow)
     flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowValues()));

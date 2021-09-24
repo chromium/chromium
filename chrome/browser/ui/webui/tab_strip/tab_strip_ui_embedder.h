@@ -10,8 +10,8 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/native_theme/native_theme.h"
 
 // Interface to be implemented by the embedder. Provides native UI
 // functionality such as showing context menus.
@@ -39,7 +39,7 @@ class TabStripUIEmbedder {
   virtual TabStripUILayout GetLayout() = 0;
 
   virtual SkColor GetColor(int id) const = 0;
-  virtual SkColor GetSystemColor(ui::NativeTheme::ColorId id) const = 0;
+  virtual SkColor GetColorProviderColor(ui::ColorId id) const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_EMBEDDER_H_

@@ -22,6 +22,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
@@ -141,8 +142,7 @@ gfx::ImageSkia ImageWithBadge::GetMainImage() const {
   if (main_image_skia_)
     return main_image_skia_.value();
   DCHECK(main_vector_icon_);
-  const SkColor color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DefaultIconColor);
+  const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
   return gfx::CreateVectorIcon(*main_vector_icon_, kImageSize, color);
 }
 
@@ -150,20 +150,18 @@ gfx::ImageSkia ImageWithBadge::GetBadge() const {
   if (badge_image_skia_)
     return badge_image_skia_.value();
   // If there is no badge set, fallback to the default globe icon.
-  const SkColor color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DefaultIconColor);
+  const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
   return gfx::CreateVectorIcon(kGlobeIcon, gfx::kFaviconSize, color);
 }
 
 void ImageWithBadge::Render() {
   constexpr int kBadgePadding = 6;
-  const SkColor kBackgroundColor = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_BubbleBackground);
+  const auto* color_provider = GetColorProvider();
+  const SkColor kBackgroundColor =
+      color_provider->GetColor(ui::kColorBubbleBackground);
   // Make the border color a softer version of the icon color.
   const SkColor kBorderColor =
-      SkColorSetA(GetNativeTheme()->GetSystemColor(
-                      ui::NativeTheme::kColorId_DefaultIconColor),
-                  96);
+      SkColorSetA(color_provider->GetColor(ui::kColorIcon), 96);
 
   gfx::Image rounded_badge = profiles::GetSizedAvatarIcon(
       gfx::Image(GetBadge()),

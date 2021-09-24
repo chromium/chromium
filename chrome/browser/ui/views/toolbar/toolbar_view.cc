@@ -85,12 +85,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/native_theme/native_theme_aura.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/layout/fill_layout.h"
@@ -784,22 +785,22 @@ void ToolbarView::UpdateTypeAndSeverity(
 
 SkColor ToolbarView::GetDefaultColorForSeverity(
     AppMenuIconController::Severity severity) const {
-  ui::NativeTheme::ColorId color_id;
+  ui::ColorId color_id;
   switch (severity) {
     case AppMenuIconController::Severity::NONE:
       return GetThemeProvider()->GetColor(
           ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
     case AppMenuIconController::Severity::LOW:
-      color_id = ui::NativeTheme::kColorId_AlertSeverityLow;
+      color_id = ui::kColorAlertLowSeverity;
       break;
     case AppMenuIconController::Severity::MEDIUM:
-      color_id = ui::NativeTheme::kColorId_AlertSeverityMedium;
+      color_id = ui::kColorAlertMediumSeverity;
       break;
     case AppMenuIconController::Severity::HIGH:
-      color_id = ui::NativeTheme::kColorId_AlertSeverityHigh;
+      color_id = ui::kColorAlertHighSeverity;
       break;
   }
-  return GetNativeTheme()->GetSystemColor(color_id);
+  return GetColorProvider()->GetColor(color_id);
 }
 
 ExtensionsToolbarContainer* ToolbarView::GetExtensionsToolbarContainer() {

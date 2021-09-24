@@ -28,10 +28,10 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -221,13 +221,13 @@ void CardUnmaskPromptViews::AddedToWidget() {
 
 void CardUnmaskPromptViews::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
-  SkColor bg_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground);
+  const auto* color_provider = GetColorProvider();
+  SkColor bg_color = color_provider->GetColor(ui::kColorDialogBackground);
   overlay_->SetBackground(views::CreateSolidBackground(bg_color));
   if (overlay_label_) {
     overlay_label_->SetBackgroundColor(bg_color);
-    overlay_label_->SetEnabledColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_ThrobberSpinningColor));
+    overlay_label_->SetEnabledColor(
+        color_provider->GetColor(ui::kColorThrobber));
   }
 }
 
