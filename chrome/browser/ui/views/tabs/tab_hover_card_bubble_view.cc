@@ -667,7 +667,12 @@ class TabHoverCardBubbleView::ThumbnailView
   // `target_tab_image_`. Does a smart three-way crossfade if an image is
   // already fading out.
   void StartFadeOut() {
-    if (!GetVisible())
+    // If we aren't visible, don't have a widget, or our widget is being
+    // destructed and has no theme provider, skip trying to fade out since a
+    // ThemeProvider is needed for fading out placeholder images. (Note that
+    // GetThemeProvider() returns nullptr if there is no widget.)
+    // See: crbug.com/1246914
+    if (!GetVisible() || !GetThemeProvider())
       return;
 
     if (!GetPreviewImageCrossfadeStart().has_value())
