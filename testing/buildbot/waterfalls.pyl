@@ -4406,6 +4406,18 @@
           'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
         },
       },
+      'Mac FYI Release (Apple M1)': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'mixins': [
+          'mac_arm64_apple_m1_gpu',
+        ],
+        'test_suites': {
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+          'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
+        },
+      },
       'Mac FYI Release (Intel UHD 630)': {
         'os_type': 'mac',
         'browser_config': 'release',

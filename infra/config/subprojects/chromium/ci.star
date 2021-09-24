@@ -4970,6 +4970,14 @@ ci.gpu_fyi_mac_builder(
     ),
 )
 
+ci.gpu_fyi_mac_builder(
+    name = "GPU FYI Mac arm64 Builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Builder",
+        short_name = "arm",
+    ),
+)
+
 ci.gpu_fyi_thin_tester(
     name = "Lacros FYI x64 Release (AMD)",
     console_view_entry = consoles.console_view_entry(
@@ -5128,6 +5136,15 @@ ci.gpu_fyi_thin_tester(
     # See crbug.com/853307 for more context.
     execution_timeout = 12 * time.hour,
     triggered_by = ["GPU FYI Mac Builder"],
+)
+
+ci.gpu_fyi_thin_tester(
+    name = "Mac FYI Release (Apple M1)",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|Apple",
+        short_name = "rel",
+    ),
+    triggered_by = ["GPU FYI Mac arm64 Builder"],
 )
 
 ci.gpu_fyi_thin_tester(
