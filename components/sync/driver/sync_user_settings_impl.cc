@@ -114,16 +114,12 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool SyncUserSettingsImpl::IsSyncAllOsTypesEnabled() const {
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync from this check.
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled() ||
-         chromeos::features::IsSyncSettingsCategorizationEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   return prefs_->IsSyncAllOsTypesEnabled();
 }
 
 UserSelectableOsTypeSet SyncUserSettingsImpl::GetSelectedOsTypes() const {
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync from this check.
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled() ||
-         chromeos::features::IsSyncSettingsCategorizationEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   UserSelectableOsTypeSet types = prefs_->GetSelectedOsTypes();
   types.RetainAll(GetRegisteredSelectableOsTypes());
   return types;
@@ -131,9 +127,7 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetSelectedOsTypes() const {
 
 void SyncUserSettingsImpl::SetSelectedOsTypes(bool sync_all_os_types,
                                               UserSelectableOsTypeSet types) {
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync from this check.
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled() ||
-         chromeos::features::IsSyncSettingsCategorizationEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   UserSelectableOsTypeSet registered_types = GetRegisteredSelectableOsTypes();
   DCHECK(registered_types.HasAll(types));
   prefs_->SetSelectedOsTypes(sync_all_os_types, registered_types, types);
@@ -141,9 +135,7 @@ void SyncUserSettingsImpl::SetSelectedOsTypes(bool sync_all_os_types,
 
 UserSelectableOsTypeSet SyncUserSettingsImpl::GetRegisteredSelectableOsTypes()
     const {
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync from this check.
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled() ||
-         chromeos::features::IsSyncSettingsCategorizationEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   UserSelectableOsTypeSet registered_types;
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     if (registered_model_types_.Has(
@@ -155,9 +147,7 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetRegisteredSelectableOsTypes()
 }
 
 bool SyncUserSettingsImpl::IsOsSyncFeatureEnabled() const {
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync from this check.
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled() ||
-         chromeos::features::IsSyncSettingsCategorizationEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   return prefs_->IsOsSyncFeatureEnabled();
 }
 
@@ -250,9 +240,7 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   ModelTypeSet types = ResolvePreferredTypes(GetSelectedTypes());
   types.PutAll(AlwaysPreferredUserTypes());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync from this check.
-  if (chromeos::features::IsSplitSettingsSyncEnabled() ||
-      chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     types.PutAll(ResolvePreferredOsTypes(GetSelectedOsTypes()));
   }
 #endif
