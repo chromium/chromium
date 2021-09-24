@@ -21,6 +21,7 @@
 #include "base/time/default_tick_clock.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/reporter_running_ios.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
@@ -174,10 +175,10 @@ void IOSChromeMainParts::PreCreateThreads() {
   DCHECK_EQ(application_context_.get(), GetApplicationContext());
 
   // Check the first run state early; this must be done before IO is disallowed
-  // so that later calls can use the cached value. (The return value is ignored
-  // because this is only to trigger the internal lookup and caching for later
-  // use.)
-  FirstRun::IsChromeFirstRun();
+  // so that later calls can use the cached value.
+  static crash_reporter::CrashKeyString<4> key("first-run");
+  if (FirstRun::IsChromeFirstRun())
+    key.Set("yes");
 
   // Convert freeform experimental settings into switches before initializing
   // local state, in case any of the settings affect policy.
