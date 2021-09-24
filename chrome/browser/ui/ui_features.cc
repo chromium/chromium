@@ -65,11 +65,6 @@ const base::FeatureParam<std::string> kExtensionsSidePanelId{
 const base::Feature kForceSignInReauth{"ForceSignInReauth",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables updated tabstrip animations, required for a scrollable tabstrip.
-// https://crbug.com/958173
-const base::Feature kNewTabstripAnimation{"NewTabstripAnimation",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables a more prominent active tab title in dark mode to aid with
 // accessibility.
 const base::Feature kProminentDarkModeActiveTabTitle{

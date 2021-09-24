@@ -199,12 +199,6 @@ const char kU2FSecurityKeyAPIDescription[] =
     "information, refer to the deprecation announcement at "
     "https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A";
 
-const char kUseLookalikesForNavigationSuggestionsName[] =
-    "Use lookalike URL suggestions for navigation suggestions";
-const char kUseLookalikesForNavigationSuggestionsDescription[] =
-    "Use lookalike URL suggestions to suggest navigations to users who "
-    "face domain not found error.";
-
 const char kUseStorkSmdsServerAddressName[] = "Use Stork SM-DS address";
 const char kUseStorkSmdsServerAddressDescription[] =
     "Use the Stork SM-DS address to fetch pending eSIM profiles managed by the "
@@ -1685,10 +1679,6 @@ const char kDestroyProfileOnBrowserCloseDescription[] =
 const char kNewUsbBackendName[] = "Enable new USB backend";
 const char kNewUsbBackendDescription[] =
     "Enables the new experimental USB backend for macOS";
-
-const char kNewTabstripAnimationName[] = "New tabstrip animations";
-const char kNewTabstripAnimationDescription[] =
-    "New implementation of tabstrip animations.";
 
 const char kNotificationIndicatorName[] = "Notification Indicators";
 const char kNotificationIndicatorDescription[] =

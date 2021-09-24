@@ -3287,11 +3287,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"debug-packed-apps", flag_descriptions::kDebugPackedAppName,
      flag_descriptions::kDebugPackedAppDescription, kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kDebugPackedApps)},
-    {"use-lookalikes-for-navigation-suggestions",
-     flag_descriptions::kUseLookalikesForNavigationSuggestionsName,
-     flag_descriptions::kUseLookalikesForNavigationSuggestionsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kUseLookalikesForNavigationSuggestions)},
     {"username-first-flow", flag_descriptions::kUsernameFirstFlowName,
      flag_descriptions::kUsernameFirstFlowDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kUsernameFirstFlow)},
@@ -4794,10 +4789,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabGroupsSave,
                                     kTabGroupsSaveUIVariations,
                                     "TabGroupsSave")},
-
-    {"new-tabstrip-animation", flag_descriptions::kNewTabstripAnimationName,
-     flag_descriptions::kNewTabstripAnimationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kNewTabstripAnimation)},
 
     {flag_descriptions::kScrollableTabStripFlagId,
      flag_descriptions::kScrollableTabStripName,

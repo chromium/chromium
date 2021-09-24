@@ -136,9 +136,6 @@ extern const char kU2FPermissionPromptDescription[];
 extern const char kU2FSecurityKeyAPIName[];
 extern const char kU2FSecurityKeyAPIDescription[];
 
-extern const char kUseLookalikesForNavigationSuggestionsName[];
-extern const char kUseLookalikesForNavigationSuggestionsDescription[];
-
 extern const char kUseStorkSmdsServerAddressName[];
 extern const char kUseStorkSmdsServerAddressDescription[];
 
@@ -969,9 +966,6 @@ extern const char kDestroyProfileOnBrowserCloseDescription[];
 
 extern const char kNewUsbBackendName[];
 extern const char kNewUsbBackendDescription[];
-
-extern const char kNewTabstripAnimationName[];
-extern const char kNewTabstripAnimationDescription[];
 
 extern const char kNotificationIndicatorName[];
 extern const char kNotificationIndicatorDescription[];

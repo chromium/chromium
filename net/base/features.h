@@ -303,10 +303,6 @@ NET_EXPORT extern const base::Feature kSchemefulSameSite;
 // those algorithms. If disabled, the algorithms will always be offered.
 NET_EXPORT extern const base::Feature kTLSLegacyCryptoFallbackForMetrics;
 
-// When enabled, DNS_PROBE_FINISHED_NXDOMAIN error pages may show
-// locally-generated suggestions to visit similar domains.
-NET_EXPORT extern const base::Feature kUseLookalikesForNavigationSuggestions;
-
 // When enabled, the Network Quality Estimator (NQE) will notify the operating
 // system whenever it detects that the current default network may have
 // significantly degraded connectivity. Currently only effective on Android.
