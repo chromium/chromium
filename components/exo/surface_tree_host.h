@@ -113,6 +113,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void MoveToDesk(int desk_index) override {}
   void SetVisibleOnAllWorkspaces() override {}
   void SetInitialWorkspace(const char* initial_workspace) override {}
+  void Pin(bool trusted) override {}
+  void Unpin() override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

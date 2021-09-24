@@ -26,6 +26,7 @@ class ScopedWindowTargeter;
 
 namespace ui {
 class DeskExtension;
+class PinnedModeExtension;
 class X11Extension;
 class WaylandExtension;
 }  // namespace ui
@@ -82,6 +83,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   ui::DeskExtension* GetDeskExtension();
   const ui::DeskExtension* GetDeskExtension() const;
+
+  ui::PinnedModeExtension* GetPinnedModeExtension();
+  const ui::PinnedModeExtension* GetPinnedModeExtension() const;
 
  protected:
   // Overridden from DesktopWindowTreeHost:

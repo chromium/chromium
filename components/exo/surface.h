@@ -382,6 +382,14 @@ class Surface final : public ui::PropertyHandler {
   // Sets the initial workspace to restore a window to the corresponding desk.
   void SetInitialWorkspace(const char* initial_workspace);
 
+  // Pins/locks a window to the screen so that the user cannot do anything
+  // else before the mode is released. If trusted is set, it is an invocation
+  // from a trusted app like a school test mode app.
+  void Pin(bool trusted);
+
+  // Release the pinned mode and allows the user to do other things again.
+  void Unpin();
+
  private:
   struct State {
     State();

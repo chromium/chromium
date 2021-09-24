@@ -338,6 +338,13 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
 }
 
 ShellSurfaceBase::~ShellSurfaceBase() {
+  // If the surface was TrustedPinned, we have to unpin first as this might have
+  // locked down some system functions.
+  if (current_pinned_state_ == chromeos::WindowPinType::kTrustedPinned) {
+    pending_pinned_state_ = chromeos::WindowPinType::kNone;
+    UpdatePinned();
+  }
+
   // Close the overlay in case the window is deleted by the server.
   overlay_widget_.reset();
 
@@ -556,6 +563,38 @@ void ShellSurfaceBase::SetInitialWorkspace(const char* initial_workspace) {
     initial_workspace_ = std::string(initial_workspace);
   else
     initial_workspace_.reset();
+}
+
+void ShellSurfaceBase::Pin(bool trusted) {
+  pending_pinned_state_ = trusted ? chromeos::WindowPinType::kTrustedPinned
+                                  : chromeos::WindowPinType::kPinned;
+  UpdatePinned();
+}
+
+void ShellSurfaceBase::Unpin() {
+  // Only need to do something when we have to set a pinned mode.
+  if (pending_pinned_state_ == chromeos::WindowPinType::kNone)
+    return;
+
+  // Remove any pending pin states which might not have been applied yet.
+  pending_pinned_state_ = chromeos::WindowPinType::kNone;
+  UpdatePinned();
+}
+
+void ShellSurfaceBase::UpdatePinned() {
+  if (!widget_) {
+    // It is possible to get here before the widget has actually been created.
+    // The state will be set once the widget gets created.
+    return;
+  }
+  if (current_pinned_state_ != pending_pinned_state_) {
+    // TODO(crbug/1234010) - This will be done in follow up patch: call Ash to
+    // inform Ash of the change.
+    // ash::ShellDelegate* shell = ash::Shell::Get()->shell_delegate();
+    // auto* window = widget_->GetNativeWindow();
+    // shell->SetPinnedFromExo(window, pending_pinned_state_);
+    current_pinned_state_ = pending_pinned_state_;
+  }
 }
 
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
@@ -1176,6 +1215,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   widget_ = new ShellSurfaceWidget;
   widget_->Init(std::move(params));
   widget_->AddObserver(this);
+
+  // As setting the pinned mode may have come in earlier we apply it now.
+  UpdatePinned();
 
   aura::Window* window = widget_->GetNativeWindow();
   window->SetName(base::StringPrintf("ExoShellSurface-%d", shell_id++));

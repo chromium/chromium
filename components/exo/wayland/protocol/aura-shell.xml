@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="24">
+  <interface name="zaura_shell" version="25">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -118,7 +118,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_surface" version="23">
+  <interface name="zaura_surface" version="25">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -444,6 +444,32 @@
       </description>
       <arg name="initial_workspace" type="string" summary="intial workspace for restoring or '-1' for visible on all workspaces"/>
     </request>
+
+    <!-- Version 25 additions -->
+    <request name="set_pin" since="25">
+      <description summary="pin a window (trusted or not)">
+	Requests that a window is pinned which means that the system does not allow
+  the user to leave the window until an exit criteria is met.
+
+	This is a request to get the window pinned so that the user cannot get to any
+	other window / application. There are two modes:
+  A. trusted is 0 - which is slightly less restrictive and allows the user to
+  get out of the window by a predefined way of authentication.
+  B. trusted is not 0 in which case a trusted application was locking down the
+  system and needs to unlock. This is used for e.g. School tests.
+      </description>
+      <arg name="trusted" type="int" summary="0 for non trusted"/>
+    </request>
+
+    <request name="unset_pin" since="25">
+      <description summary="unpin a window">
+	Requests that the user can leave a previously pinned window.
+
+	This is a request to unpin a previously pinned window. It does not matter if
+  the window was locked with the trusted state or not.
+      </description>
+    </request>
+
   </interface>
 
   <interface name="zaura_output" version="6">

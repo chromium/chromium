@@ -81,6 +81,8 @@ class SubSurface : public SurfaceDelegate, public SurfaceObserver {
   void MoveToDesk(int desk_index) override {}
   void SetVisibleOnAllWorkspaces() override {}
   void SetInitialWorkspace(const char* initial_workspace) override {}
+  void Pin(bool trusted) override {}
+  void Unpin() override {}
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

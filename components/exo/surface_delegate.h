@@ -91,6 +91,14 @@ class SurfaceDelegate {
   // corresponding desk.
   virtual void SetInitialWorkspace(const char* initial_workspace) = 0;
 
+  // Pins/locks a window to the screen so that the user cannot do anything
+  // else before the mode is released. If trusted is set, it is an invocation
+  // from a trusted app like a school test mode app.
+  virtual void Pin(bool trusted) = 0;
+
+  // Releases the pinned mode and allows the user to do other things again.
+  virtual void Unpin() = 0;
+
  protected:
   virtual ~SurfaceDelegate() {}
 };

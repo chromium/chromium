@@ -472,6 +472,7 @@ bool WaylandToplevelWindow::OnInitialize(
     workspace_ = kVisibleOnAllWorkspaces;
   }
 
+  SetPinnedModeExtension(this, static_cast<PinnedModeExtension*>(this));
   return true;
 }
 
@@ -676,6 +677,20 @@ void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
   if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
                            ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION) {
     zaura_surface_move_to_desk(aura_surface_.get(), index);
+  }
+}
+
+void WaylandToplevelWindow::Pin(bool trusted) const {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_SET_PIN_SINCE_VERSION) {
+    zaura_surface_set_pin(aura_surface_.get(), trusted);
+  }
+}
+
+void WaylandToplevelWindow::Unpin() const {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_UNSET_PIN_SINCE_VERSION) {
+    zaura_surface_unset_pin(aura_surface_.get());
   }
 }
 

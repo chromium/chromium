@@ -114,6 +114,8 @@ class MockSurfaceDelegate : public SurfaceDelegate {
               SetInitialWorkspace,
               (const char* initial_workspace),
               (override));
+  MOCK_METHOD(void, Pin, (bool trusted), (override));
+  MOCK_METHOD(void, Unpin, (), (override));
 };
 
 }  // namespace
@@ -368,6 +370,26 @@ TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToPlain) {
   EXPECT_CALL(delegate, SetUseImmersiveForFullscreen(false));
 
   aura_surface().SetFullscreenMode(ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN);
+}
+
+TEST_F(ZAuraSurfaceTest, CanPin) {
+  MockSurfaceDelegate delegate;
+  wl_resource resource;
+  resource.data = &aura_surface();
+  surface().SetSurfaceDelegate(&delegate);
+  EXPECT_CALL(delegate, Pin(true));
+
+  aura_surface().Pin(true);
+}
+
+TEST_F(ZAuraSurfaceTest, CanUnpin) {
+  MockSurfaceDelegate delegate;
+  wl_resource resource;
+  resource.data = &aura_surface();
+  surface().SetSurfaceDelegate(&delegate);
+  EXPECT_CALL(delegate, Unpin());
+
+  aura_surface().Unpin();
 }
 
 TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToImmersive) {

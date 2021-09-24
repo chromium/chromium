@@ -247,6 +247,16 @@ void aura_surface_set_initial_workspace(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->SetInitialWorkspace(initial_workspace);
 }
 
+void aura_surface_set_pin(wl_client* client,
+                          wl_resource* resource,
+                          int32_t trusted) {
+  GetUserDataAs<AuraSurface>(resource)->Pin(trusted);
+}
+
+void aura_surface_unset_pin(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraSurface>(resource)->Unpin();
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -272,7 +282,9 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_unset_pip,
     aura_surface_set_aspect_ratio,
     aura_surface_move_to_desk,
-    aura_surface_set_initial_workspace};
+    aura_surface_set_initial_workspace,
+    aura_surface_set_pin,
+    aura_surface_unset_pin};
 
 }  // namespace
 
@@ -578,6 +590,14 @@ void AuraSurface::MoveToDesk(int desk_index) {
 
 void AuraSurface::SetInitialWorkspace(const char* initial_workspace) {
   surface_->SetInitialWorkspace(initial_workspace);
+}
+
+void AuraSurface::Pin(bool trusted) {
+  surface_->Pin(trusted);
+}
+
+void AuraSurface::Unpin() {
+  surface_->Unpin();
 }
 
 namespace {

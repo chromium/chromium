@@ -46,6 +46,8 @@ component("platform_window") {
     sources += [
       "extensions/desk_extension.cc",
       "extensions/desk_extension.h",
+      "extensions/pinned_mode_extension.cc",
+      "extensions/pinned_mode_extension.h",
       "extensions/wayland_extension.cc",
       "extensions/wayland_extension.h",
       "extensions/x11_extension.cc",

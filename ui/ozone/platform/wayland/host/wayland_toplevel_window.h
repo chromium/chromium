@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/extensions/desk_extension.h"
+#include "ui/platform_window/extensions/pinned_mode_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
@@ -27,7 +28,8 @@ class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveLoopHandler,
                               public WaylandExtension,
                               public WorkspaceExtension,
-                              public DeskExtension {
+                              public DeskExtension,
+                              public PinnedModeExtension {
  public:
   WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                         WaylandConnection* connection);
@@ -140,6 +142,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsVisibleOnAllWorkspaces() const override;
   void SetWorkspaceExtensionDelegate(
       WorkspaceExtensionDelegate* delegate) override;
+
+  // PinnedModeExtension:
+  void Pin(bool trusted) const override;
+  void Unpin() const override;
 
   void TriggerStateChanges();
   void SetWindowState(PlatformWindowState state);

@@ -1496,4 +1496,14 @@ void Surface::SetInitialWorkspace(const char* initial_workspace) {
     delegate_->SetInitialWorkspace(initial_workspace);
 }
 
+void Surface::Pin(bool trusted) {
+  if (delegate_)
+    delegate_->Pin(trusted);
+}
+
+void Surface::Unpin() {
+  if (delegate_)
+    delegate_->Unpin();
+}
+
 }  // namespace exo

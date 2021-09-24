@@ -18,7 +18,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxAuraShellVersion = 23;
+constexpr uint32_t kMaxAuraShellVersion = 24;
 }
 
 // static
@@ -46,6 +46,11 @@ void WaylandZAuraShell::Instantiate(WaylandConnection* connection,
   ReportShellUMA(UMALinuxWaylandShell::kZauraShell);
 }
 
+void OnActivated(void* data,
+                 struct zaura_shell* zaura_shell,
+                 wl_surface* x,
+                 wl_surface* y) {}
+
 WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
                                      WaylandConnection* connection)
     : obj_(aura_shell), connection_(connection) {
@@ -53,10 +58,8 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
   DCHECK(connection_);
 
   static constexpr zaura_shell_listener zaura_shell_listener = {
-      &OnLayoutMode,
-      &OnBugFix,
-      &OnDesksChanged,
-      &OnDeskActivationChanged,
+      &OnLayoutMode, &OnBugFix, &OnDesksChanged, &OnDeskActivationChanged,
+      &OnActivated,
   };
   zaura_shell_add_listener(obj_.get(), &zaura_shell_listener, this);
 }
