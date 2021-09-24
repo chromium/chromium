@@ -29,6 +29,26 @@ namespace {
 const char kElementKey[] = "ELEMENT";
 const char kElementKeyW3C[] = "element-6066-11e4-a52e-4f735466cecf";
 const char kShadowRootKey[] = "shadow-6066-11e4-a52e-4f735466cecf";
+const char kFindSubFrameScript[] =
+    "function findSubFrame(frame_id) {"
+    " const findSubFrameDeep = function(nodes, id) {"
+    "   let r = null;"
+    "   for (let i = 0, el; (el = nodes[i]) && !r; ++i) {"
+    "     if ((el.tagName === 'IFRAME') "
+    "       && el.getAttribute('cd_frame_id_') === id) {"
+    "       r = el;"
+    "     } else if (el.shadowRoot) {"
+    "       r = findSubFrameDeep(el.shadowRoot.querySelectorAll('*'), id);"
+    "     }"
+    "   }"
+    "   return r;"
+    " };"
+    " const xpath = \"//*[@cd_frame_id_ ='\" + frame_id + \"']\";"
+    " const r = document.evaluate(xpath, document, null,"
+    "      XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;"
+    " return r || findSubFrameDeep(document.querySelectorAll('*'), "
+    "frame_id);"
+    "}";
 
 bool ParseFromValue(base::Value* value, WebPoint* point) {
   if (!value->is_dict())
@@ -877,19 +897,14 @@ Status ScrollElementRegionIntoView(
       center, clickable_element_id, &region_offset);
   if (status.IsError())
     return status;
-  const char kFindSubFrameScript[] =
-      "function(xpath) {"
-      "  return document.evaluate(xpath, document, null,"
-      "      XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;"
-      "}";
+
   // If the element is in a frame, go up the frame chain (from the innermost
   // frame up to the top-level window) and scroll each frame relative to its
   // parent frame, so that the region becomes visible in the parent frame.
   for (auto rit = session->frames.rbegin(); rit != session->frames.rend();
        ++rit) {
     base::ListValue args;
-    args.Append(base::StringPrintf("//*[@cd_frame_id_ = '%s']",
-                                   rit->chromedriver_frame_id.c_str()));
+    args.Append(rit->chromedriver_frame_id.c_str());
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(
         rit->parent_frame_id, kFindSubFrameScript, args, &result);
@@ -934,16 +949,11 @@ Status GetElementLocationInViewCenter(Session* session,
       &center_location);
   if (status.IsError())
     return status;
-  const char kFindSubFrameScript[] =
-      "function(xpath) {"
-      "  return document.evaluate(xpath, document, null,"
-      "      XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;"
-      "}";
+
   for (auto rit = session->frames.rbegin(); rit != session->frames.rend();
        ++rit) {
     base::ListValue args;
-    args.Append(base::StringPrintf("//*[@cd_frame_id_ = '%s']",
-                                   rit->chromedriver_frame_id.c_str()));
+    args.Append(rit->chromedriver_frame_id.c_str());
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(rit->parent_frame_id, kFindSubFrameScript,
                                     args, &result);
