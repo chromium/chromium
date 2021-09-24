@@ -6182,9 +6182,16 @@ void RenderFrameHostImpl::ShowPopupMenu(
     bool right_aligned,
     bool allow_multiple_selection) {
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  // Do not open popups in an inactive document.
   if (!IsActive()) {
-    local_frame_host_receiver_.ReportBadMessage(
-        "RFHI: Attempt to show popup menu in an inactive document");
+    // Sending this message requires user activation, which is impossible
+    // for a prerendering document, so the renderer process should be
+    // terminated. See
+    // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
+    if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::RFH_POPUP_REQUEST_WHILE_PRERENDERING);
+    }
     return;
   }
 
@@ -6873,13 +6880,16 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
         blink_popup_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
-  // Sending this message requires user activation, which is impossible
-  // for an inactive document, so the renderer process should be terminated.
-  // See
-  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
+  // Do not open popups in an inactive document.
   if (!IsActive()) {
-    local_frame_host_receiver_.ReportBadMessage(
-        "RFHI: Create a popup widget in an inactive document");
+    // Sending this message requires user activation, which is impossible
+    // for a prerendering document, so the renderer process should be
+    // terminated. See
+    // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
+    if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::RFH_POPUP_REQUEST_WHILE_PRERENDERING);
+    }
     return;
   }
 

@@ -277,6 +277,7 @@ enum BadMessageReason {
   RFH_DID_CHANGE_IFRAME_ATTRIBUTE = 249,
   FARI_LOGOUT_BAD_ENDPOINT = 250,
   RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE = 251,
+  RFH_POPUP_REQUEST_WHILE_PRERENDERING = 252,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
